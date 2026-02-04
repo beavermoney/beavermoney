@@ -92,6 +92,13 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
+		edge.To("projections", Projection.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 	}
 }
 
