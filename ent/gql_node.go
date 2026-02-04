@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/internal"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -54,6 +55,11 @@ var investmentlotImplementors = []string{"InvestmentLot", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*InvestmentLot) IsNode() {}
+
+var projectionImplementors = []string{"Projection", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Projection) IsNode() {}
 
 var recurringsubscriptionImplementors = []string{"RecurringSubscription", "Node"}
 
@@ -208,6 +214,15 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			Where(investmentlot.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, investmentlotImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case projection.Table:
+		query := c.Projection.Query().
+			Where(projection.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, projectionImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -416,6 +431,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.InvestmentLot.Query().
 			Where(investmentlot.IDIn(ids...))
 		query, err := query.CollectFields(ctx, investmentlotImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case projection.Table:
+		query := c.Projection.Query().
+			Where(projection.IDIn(ids...))
+		query, err := query.CollectFields(ctx, projectionImplementors...)
 		if err != nil {
 			return nil, err
 		}

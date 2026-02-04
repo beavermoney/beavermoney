@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -43,6 +44,7 @@ type HouseholdQuery struct {
 	withTransactionCategories       *TransactionCategoryQuery
 	withTransactionEntries          *TransactionEntryQuery
 	withRecurringSubscriptions      *RecurringSubscriptionQuery
+	withProjections                 *ProjectionQuery
 	withUserHouseholds              *UserHouseholdQuery
 	loadTotal                       []func(context.Context, []*Household) error
 	modifiers                       []func(*sql.Selector)
@@ -54,6 +56,7 @@ type HouseholdQuery struct {
 	withNamedTransactionCategories  map[string]*TransactionCategoryQuery
 	withNamedTransactionEntries     map[string]*TransactionEntryQuery
 	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
+	withNamedProjections            map[string]*ProjectionQuery
 	withNamedUserHouseholds         map[string]*UserHouseholdQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -289,6 +292,28 @@ func (_q *HouseholdQuery) QueryRecurringSubscriptions() *RecurringSubscriptionQu
 	return query
 }
 
+// QueryProjections chains the current query on the "projections" edge.
+func (_q *HouseholdQuery) QueryProjections() *ProjectionQuery {
+	query := (&ProjectionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, selector),
+			sqlgraph.To(projection.Table, projection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.ProjectionsTable, household.ProjectionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryUserHouseholds chains the current query on the "user_households" edge.
 func (_q *HouseholdQuery) QueryUserHouseholds() *UserHouseholdQuery {
 	query := (&UserHouseholdClient{config: _q.config}).Query()
@@ -512,6 +537,7 @@ func (_q *HouseholdQuery) Clone() *HouseholdQuery {
 		withTransactionCategories:  _q.withTransactionCategories.Clone(),
 		withTransactionEntries:     _q.withTransactionEntries.Clone(),
 		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
+		withProjections:            _q.withProjections.Clone(),
 		withUserHouseholds:         _q.withUserHouseholds.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -619,6 +645,17 @@ func (_q *HouseholdQuery) WithRecurringSubscriptions(opts ...func(*RecurringSubs
 	return _q
 }
 
+// WithProjections tells the query-builder to eager-load the nodes that are connected to
+// the "projections" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithProjections(opts ...func(*ProjectionQuery)) *HouseholdQuery {
+	query := (&ProjectionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withProjections = query
+	return _q
+}
+
 // WithUserHouseholds tells the query-builder to eager-load the nodes that are connected to
 // the "user_households" edge. The optional arguments are used to configure the query builder of the edge.
 func (_q *HouseholdQuery) WithUserHouseholds(opts ...func(*UserHouseholdQuery)) *HouseholdQuery {
@@ -714,7 +751,7 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	var (
 		nodes       = []*Household{}
 		_spec       = _q.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			_q.withCurrency != nil,
 			_q.withUsers != nil,
 			_q.withAccounts != nil,
@@ -724,6 +761,7 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 			_q.withTransactionCategories != nil,
 			_q.withTransactionEntries != nil,
 			_q.withRecurringSubscriptions != nil,
+			_q.withProjections != nil,
 			_q.withUserHouseholds != nil,
 		}
 	)
@@ -816,6 +854,13 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 			return nil, err
 		}
 	}
+	if query := _q.withProjections; query != nil {
+		if err := _q.loadProjections(ctx, query, nodes,
+			func(n *Household) { n.Edges.Projections = []*Projection{} },
+			func(n *Household, e *Projection) { n.Edges.Projections = append(n.Edges.Projections, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withUserHouseholds; query != nil {
 		if err := _q.loadUserHouseholds(ctx, query, nodes,
 			func(n *Household) { n.Edges.UserHouseholds = []*UserHousehold{} },
@@ -876,6 +921,13 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 		if err := _q.loadRecurringSubscriptions(ctx, query, nodes,
 			func(n *Household) { n.appendNamedRecurringSubscriptions(name) },
 			func(n *Household, e *RecurringSubscription) { n.appendNamedRecurringSubscriptions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedProjections {
+		if err := _q.loadProjections(ctx, query, nodes,
+			func(n *Household) { n.appendNamedProjections(name) },
+			func(n *Household, e *Projection) { n.appendNamedProjections(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1194,6 +1246,36 @@ func (_q *HouseholdQuery) loadRecurringSubscriptions(ctx context.Context, query 
 	}
 	return nil
 }
+func (_q *HouseholdQuery) loadProjections(ctx context.Context, query *ProjectionQuery, nodes []*Household, init func(*Household), assign func(*Household, *Projection)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Household)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(projection.FieldHouseholdID)
+	}
+	query.Where(predicate.Projection(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(household.ProjectionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (_q *HouseholdQuery) loadUserHouseholds(ctx context.Context, query *UserHouseholdQuery, nodes []*Household, init func(*Household), assign func(*Household, *UserHousehold)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Household)
@@ -1430,6 +1512,20 @@ func (_q *HouseholdQuery) WithNamedRecurringSubscriptions(name string, opts ...f
 		_q.withNamedRecurringSubscriptions = make(map[string]*RecurringSubscriptionQuery)
 	}
 	_q.withNamedRecurringSubscriptions[name] = query
+	return _q
+}
+
+// WithNamedProjections tells the query-builder to eager-load the nodes that are connected to the "projections"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithNamedProjections(name string, opts ...func(*ProjectionQuery)) *HouseholdQuery {
+	query := (&ProjectionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedProjections == nil {
+		_q.withNamedProjections = make(map[string]*ProjectionQuery)
+	}
+	_q.withNamedProjections[name] = query
 	return _q
 }
 

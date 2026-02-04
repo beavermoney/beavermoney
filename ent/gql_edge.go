@@ -220,6 +220,18 @@ func (_m *Household) RecurringSubscriptions(ctx context.Context) (result []*Recu
 	return result, err
 }
 
+func (_m *Household) Projections(ctx context.Context) (result []*Projection, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedProjections(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.ProjectionsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryProjections().All(ctx)
+	}
+	return result, err
+}
+
 func (_m *Household) UserHouseholds(ctx context.Context) (result []*UserHousehold, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedUserHouseholds(graphql.GetFieldContext(ctx).Field.Alias)
@@ -288,6 +300,14 @@ func (_m *InvestmentLot) Transaction(ctx context.Context) (*Transaction, error) 
 	result, err := _m.Edges.TransactionOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryTransaction().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *Projection) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
 	}
 	return result, err
 }

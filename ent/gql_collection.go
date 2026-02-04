@@ -10,6 +10,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -487,6 +488,19 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				*wq = *query
 			})
 
+		case "projections":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&ProjectionClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, projectionImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedProjections(alias, func(wq *ProjectionQuery) {
+				*wq = *query
+			})
+
 		case "userHouseholds":
 			var (
 				alias = field.Alias
@@ -878,6 +892,108 @@ func newInvestmentLotPaginateArgs(rv map[string]any) *investmentlotPaginateArgs 
 	}
 	if v, ok := rv[whereField].(*InvestmentLotWhereInput); ok {
 		args.opts = append(args.opts, WithInvestmentLotFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *ProjectionQuery) CollectFields(ctx context.Context, satisfies ...string) (*ProjectionQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *ProjectionQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(projection.Columns))
+		selectedFields = []string{projection.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[projection.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, projection.FieldHouseholdID)
+				fieldSeen[projection.FieldHouseholdID] = struct{}{}
+			}
+		case "createTime":
+			if _, ok := fieldSeen[projection.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, projection.FieldCreateTime)
+				fieldSeen[projection.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[projection.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, projection.FieldUpdateTime)
+				fieldSeen[projection.FieldUpdateTime] = struct{}{}
+			}
+		case "householdID":
+			if _, ok := fieldSeen[projection.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, projection.FieldHouseholdID)
+				fieldSeen[projection.FieldHouseholdID] = struct{}{}
+			}
+		case "name":
+			if _, ok := fieldSeen[projection.FieldName]; !ok {
+				selectedFields = append(selectedFields, projection.FieldName)
+				fieldSeen[projection.FieldName] = struct{}{}
+			}
+		case "config":
+			if _, ok := fieldSeen[projection.FieldConfig]; !ok {
+				selectedFields = append(selectedFields, projection.FieldConfig)
+				fieldSeen[projection.FieldConfig] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type projectionPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []ProjectionPaginateOption
+}
+
+func newProjectionPaginateArgs(rv map[string]any) *projectionPaginateArgs {
+	args := &projectionPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*ProjectionWhereInput); ok {
+		args.opts = append(args.opts, WithProjectionFilter(v.Filter))
 	}
 	return args
 }

@@ -89,6 +89,11 @@ func (r *queryResolver) InvestmentLots(ctx context.Context, after *entgql.Cursor
 	return r.entClient.InvestmentLot.Query().Paginate(ctx, after, first, before, last, ent.WithInvestmentLotFilter(where.Filter))
 }
 
+// Projections is the resolver for the projections field.
+func (r *queryResolver) Projections(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.ProjectionWhereInput) (*ent.ProjectionConnection, error) {
+	panic(fmt.Errorf("not implemented: Projections - projections"))
+}
+
 // RecurringSubscriptions is the resolver for the recurringSubscriptions field.
 func (r *queryResolver) RecurringSubscriptions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) (*ent.RecurringSubscriptionConnection, error) {
 	return r.entClient.RecurringSubscription.Query().Paginate(ctx, after, first, before, last, ent.WithRecurringSubscriptionFilter(where.Filter))

@@ -22,6 +22,8 @@ type Tx struct {
 	Investment *InvestmentClient
 	// InvestmentLot is the client for interacting with the InvestmentLot builders.
 	InvestmentLot *InvestmentLotClient
+	// Projection is the client for interacting with the Projection builders.
+	Projection *ProjectionClient
 	// RecurringSubscription is the client for interacting with the RecurringSubscription builders.
 	RecurringSubscription *RecurringSubscriptionClient
 	// Transaction is the client for interacting with the Transaction builders.
@@ -172,6 +174,7 @@ func (tx *Tx) init() {
 	tx.Household = NewHouseholdClient(tx.config)
 	tx.Investment = NewInvestmentClient(tx.config)
 	tx.InvestmentLot = NewInvestmentLotClient(tx.config)
+	tx.Projection = NewProjectionClient(tx.config)
 	tx.RecurringSubscription = NewRecurringSubscriptionClient(tx.config)
 	tx.Transaction = NewTransactionClient(tx.config)
 	tx.TransactionCategory = NewTransactionCategoryClient(tx.config)

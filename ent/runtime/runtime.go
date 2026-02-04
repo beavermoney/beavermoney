@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/schema"
 	"beavermoney.app/ent/transaction"
@@ -191,6 +192,34 @@ func init() {
 	investmentlotDescTransactionID := investmentlotFields[3].Descriptor()
 	// investmentlot.TransactionIDValidator is a validator for the "transaction_id" field. It is called by the builders before save.
 	investmentlot.TransactionIDValidator = investmentlotDescTransactionID.Validators[0].(func(int) error)
+	projectionMixin := schema.Projection{}.Mixin()
+	projection.Policy = privacy.NewPolicies(projectionMixin[1], schema.Projection{})
+	projection.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := projection.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	projectionMixinFields0 := projectionMixin[0].Fields()
+	_ = projectionMixinFields0
+	projectionFields := schema.Projection{}.Fields()
+	_ = projectionFields
+	// projectionDescCreateTime is the schema descriptor for create_time field.
+	projectionDescCreateTime := projectionMixinFields0[0].Descriptor()
+	// projection.DefaultCreateTime holds the default value on creation for the create_time field.
+	projection.DefaultCreateTime = projectionDescCreateTime.Default.(func() time.Time)
+	// projectionDescUpdateTime is the schema descriptor for update_time field.
+	projectionDescUpdateTime := projectionMixinFields0[1].Descriptor()
+	// projection.DefaultUpdateTime holds the default value on creation for the update_time field.
+	projection.DefaultUpdateTime = projectionDescUpdateTime.Default.(func() time.Time)
+	// projection.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	projection.UpdateDefaultUpdateTime = projectionDescUpdateTime.UpdateDefault.(func() time.Time)
+	// projectionDescName is the schema descriptor for name field.
+	projectionDescName := projectionFields[0].Descriptor()
+	// projection.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	projection.NameValidator = projectionDescName.Validators[0].(func(string) error)
 	recurringsubscriptionMixin := schema.RecurringSubscription{}.Mixin()
 	recurringsubscription.Policy = privacy.NewPolicies(recurringsubscriptionMixin[1], schema.RecurringSubscription{})
 	recurringsubscription.Hooks[0] = func(next ent.Mutator) ent.Mutator {

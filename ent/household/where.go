@@ -517,6 +517,29 @@ func HasRecurringSubscriptionsWith(preds ...predicate.RecurringSubscription) pre
 	})
 }
 
+// HasProjections applies the HasEdge predicate on the "projections" edge.
+func HasProjections() predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectionsTable, ProjectionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectionsWith applies the HasEdge predicate on the "projections" edge with a given conditions (other predicates).
+func HasProjectionsWith(preds ...predicate.Projection) predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := newProjectionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasUserHouseholds applies the HasEdge predicate on the "user_households" edge.
 func HasUserHouseholds() predicate.Household {
 	return predicate.Household(func(s *sql.Selector) {

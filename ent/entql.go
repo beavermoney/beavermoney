@@ -9,6 +9,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -25,7 +26,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 12)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 13)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   account.Table,
@@ -129,6 +130,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   projection.Table,
+			Columns: projection.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeInt,
+				Column: projection.FieldID,
+			},
+		},
+		Type: "Projection",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			projection.FieldCreateTime:  {Type: field.TypeTime, Column: projection.FieldCreateTime},
+			projection.FieldUpdateTime:  {Type: field.TypeTime, Column: projection.FieldUpdateTime},
+			projection.FieldHouseholdID: {Type: field.TypeInt, Column: projection.FieldHouseholdID},
+			projection.FieldName:        {Type: field.TypeString, Column: projection.FieldName},
+			projection.FieldConfig:      {Type: field.TypeJSON, Column: projection.FieldConfig},
+		},
+	}
+	graph.Nodes[6] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   recurringsubscription.Table,
 			Columns: recurringsubscription.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -153,7 +172,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			recurringsubscription.FieldUserID:        {Type: field.TypeInt, Column: recurringsubscription.FieldUserID},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transaction.Table,
 			Columns: transaction.Columns,
@@ -174,7 +193,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transaction.FieldExcludeFromReports: {Type: field.TypeBool, Column: transaction.FieldExcludeFromReports},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactioncategory.Table,
 			Columns: transactioncategory.Columns,
@@ -194,7 +213,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactioncategory.FieldIsImmutable: {Type: field.TypeBool, Column: transactioncategory.FieldIsImmutable},
 		},
 	}
-	graph.Nodes[8] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactionentry.Table,
 			Columns: transactionentry.Columns,
@@ -214,7 +233,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactionentry.FieldTransactionID: {Type: field.TypeInt, Column: transactionentry.FieldTransactionID},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -231,7 +250,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldName:       {Type: field.TypeString, Column: user.FieldName},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userhousehold.Table,
 			Columns: userhousehold.Columns,
@@ -249,7 +268,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userhousehold.FieldRole:        {Type: field.TypeEnum, Column: userhousehold.FieldRole},
 		},
 	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userkey.Table,
 			Columns: userkey.Columns,
@@ -496,6 +515,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"RecurringSubscription",
 	)
 	graph.MustAddE(
+		"projections",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+		},
+		"Household",
+		"Projection",
+	)
+	graph.MustAddE(
 		"user_households",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -590,6 +621,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"InvestmentLot",
 		"Transaction",
+	)
+	graph.MustAddE(
+		"household",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   projection.HouseholdTable,
+			Columns: []string{projection.HouseholdColumn},
+			Bidi:    false,
+		},
+		"Projection",
+		"Household",
 	)
 	graph.MustAddE(
 		"household",
@@ -1352,6 +1395,20 @@ func (f *HouseholdFilter) WhereHasRecurringSubscriptionsWith(preds ...predicate.
 	})))
 }
 
+// WhereHasProjections applies a predicate to check if query has an edge projections.
+func (f *HouseholdFilter) WhereHasProjections() {
+	f.Where(entql.HasEdge("projections"))
+}
+
+// WhereHasProjectionsWith applies a predicate to check if query has an edge projections with a given conditions (other predicates).
+func (f *HouseholdFilter) WhereHasProjectionsWith(preds ...predicate.Projection) {
+	f.Where(entql.HasEdgeWith("projections", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // WhereHasUserHouseholds applies a predicate to check if query has an edge user_households.
 func (f *HouseholdFilter) WhereHasUserHouseholds() {
 	f.Where(entql.HasEdge("user_households"))
@@ -1635,6 +1692,85 @@ func (f *InvestmentLotFilter) WhereHasTransactionWith(preds ...predicate.Transac
 }
 
 // addPredicate implements the predicateAdder interface.
+func (_q *ProjectionQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the ProjectionQuery builder.
+func (_q *ProjectionQuery) Filter() *ProjectionFilter {
+	return &ProjectionFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *ProjectionMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the ProjectionMutation builder.
+func (m *ProjectionMutation) Filter() *ProjectionFilter {
+	return &ProjectionFilter{config: m.config, predicateAdder: m}
+}
+
+// ProjectionFilter provides a generic filtering capability at runtime for ProjectionQuery.
+type ProjectionFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *ProjectionFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql int predicate on the id field.
+func (f *ProjectionFilter) WhereID(p entql.IntP) {
+	f.Where(p.Field(projection.FieldID))
+}
+
+// WhereCreateTime applies the entql time.Time predicate on the create_time field.
+func (f *ProjectionFilter) WhereCreateTime(p entql.TimeP) {
+	f.Where(p.Field(projection.FieldCreateTime))
+}
+
+// WhereUpdateTime applies the entql time.Time predicate on the update_time field.
+func (f *ProjectionFilter) WhereUpdateTime(p entql.TimeP) {
+	f.Where(p.Field(projection.FieldUpdateTime))
+}
+
+// WhereHouseholdID applies the entql int predicate on the household_id field.
+func (f *ProjectionFilter) WhereHouseholdID(p entql.IntP) {
+	f.Where(p.Field(projection.FieldHouseholdID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *ProjectionFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(projection.FieldName))
+}
+
+// WhereConfig applies the entql json.RawMessage predicate on the config field.
+func (f *ProjectionFilter) WhereConfig(p entql.BytesP) {
+	f.Where(p.Field(projection.FieldConfig))
+}
+
+// WhereHasHousehold applies a predicate to check if query has an edge household.
+func (f *ProjectionFilter) WhereHasHousehold() {
+	f.Where(entql.HasEdge("household"))
+}
+
+// WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
+func (f *ProjectionFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
+	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (_q *RecurringSubscriptionQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -1663,7 +1799,7 @@ type RecurringSubscriptionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RecurringSubscriptionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1810,7 +1946,7 @@ type TransactionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1960,7 +2096,7 @@ type TransactionCategoryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionCategoryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2063,7 +2199,7 @@ type TransactionEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2194,7 +2330,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2338,7 +2474,7 @@ type UserHouseholdFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserHouseholdFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2431,7 +2567,7 @@ type UserKeyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserKeyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

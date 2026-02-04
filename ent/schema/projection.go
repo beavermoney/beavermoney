@@ -19,6 +19,7 @@ type Projection struct {
 func (Projection) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty(),
+		field.JSON("config", map[string]any{}),
 	}
 }
 

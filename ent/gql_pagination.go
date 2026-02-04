@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -1349,6 +1350,255 @@ func (_m *InvestmentLot) ToEdge(order *InvestmentLotOrder) *InvestmentLotEdge {
 		order = DefaultInvestmentLotOrder
 	}
 	return &InvestmentLotEdge{
+		Node:   _m,
+		Cursor: order.Field.toCursor(_m),
+	}
+}
+
+// ProjectionEdge is the edge representation of Projection.
+type ProjectionEdge struct {
+	Node   *Projection `json:"node"`
+	Cursor Cursor      `json:"cursor"`
+}
+
+// ProjectionConnection is the connection containing edges to Projection.
+type ProjectionConnection struct {
+	Edges      []*ProjectionEdge `json:"edges"`
+	PageInfo   PageInfo          `json:"pageInfo"`
+	TotalCount int               `json:"totalCount"`
+}
+
+func (c *ProjectionConnection) build(nodes []*Projection, pager *projectionPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Projection
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Projection {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Projection {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*ProjectionEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &ProjectionEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// ProjectionPaginateOption enables pagination customization.
+type ProjectionPaginateOption func(*projectionPager) error
+
+// WithProjectionOrder configures pagination ordering.
+func WithProjectionOrder(order *ProjectionOrder) ProjectionPaginateOption {
+	if order == nil {
+		order = DefaultProjectionOrder
+	}
+	o := *order
+	return func(pager *projectionPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultProjectionOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithProjectionFilter configures pagination filter.
+func WithProjectionFilter(filter func(*ProjectionQuery) (*ProjectionQuery, error)) ProjectionPaginateOption {
+	return func(pager *projectionPager) error {
+		if filter == nil {
+			return errors.New("ProjectionQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type projectionPager struct {
+	reverse bool
+	order   *ProjectionOrder
+	filter  func(*ProjectionQuery) (*ProjectionQuery, error)
+}
+
+func newProjectionPager(opts []ProjectionPaginateOption, reverse bool) (*projectionPager, error) {
+	pager := &projectionPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultProjectionOrder
+	}
+	return pager, nil
+}
+
+func (p *projectionPager) applyFilter(query *ProjectionQuery) (*ProjectionQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *projectionPager) toCursor(_m *Projection) Cursor {
+	return p.order.Field.toCursor(_m)
+}
+
+func (p *projectionPager) applyCursors(query *ProjectionQuery, after, before *Cursor) (*ProjectionQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultProjectionOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *projectionPager) applyOrder(query *ProjectionQuery) *ProjectionQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultProjectionOrder.Field {
+		query = query.Order(DefaultProjectionOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *projectionPager) orderExpr(query *ProjectionQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultProjectionOrder.Field {
+			b.Comma().Ident(DefaultProjectionOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Projection.
+func (_m *ProjectionQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ProjectionPaginateOption,
+) (*ProjectionConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newProjectionPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if _m, err = pager.applyFilter(_m); err != nil {
+		return nil, err
+	}
+	conn := &ProjectionConnection{Edges: []*ProjectionEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := _m.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if _m, err = pager.applyCursors(_m, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		_m.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := _m.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	_m = pager.applyOrder(_m)
+	nodes, err := _m.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+// ProjectionOrderField defines the ordering field of Projection.
+type ProjectionOrderField struct {
+	// Value extracts the ordering value from the given Projection.
+	Value    func(*Projection) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) projection.OrderOption
+	toCursor func(*Projection) Cursor
+}
+
+// ProjectionOrder defines the ordering of Projection.
+type ProjectionOrder struct {
+	Direction OrderDirection        `json:"direction"`
+	Field     *ProjectionOrderField `json:"field"`
+}
+
+// DefaultProjectionOrder is the default ordering of Projection.
+var DefaultProjectionOrder = &ProjectionOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &ProjectionOrderField{
+		Value: func(_m *Projection) (ent.Value, error) {
+			return _m.ID, nil
+		},
+		column: projection.FieldID,
+		toTerm: projection.ByID,
+		toCursor: func(_m *Projection) Cursor {
+			return Cursor{ID: _m.ID}
+		},
+	},
+}
+
+// ToEdge converts Projection into ProjectionEdge.
+func (_m *Projection) ToEdge(order *ProjectionOrder) *ProjectionEdge {
+	if order == nil {
+		order = DefaultProjectionOrder
+	}
+	return &ProjectionEdge{
 		Node:   _m,
 		Cursor: order.Field.toCursor(_m),
 	}

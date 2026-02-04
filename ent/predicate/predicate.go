@@ -21,6 +21,9 @@ type Investment func(*sql.Selector)
 // InvestmentLot is the predicate function for investmentlot builders.
 type InvestmentLot func(*sql.Selector)
 
+// Projection is the predicate function for projection builders.
+type Projection func(*sql.Selector)
+
 // RecurringSubscription is the predicate function for recurringsubscription builders.
 type RecurringSubscription func(*sql.Selector)
 

@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -212,6 +213,21 @@ func (_u *HouseholdUpdate) AddRecurringSubscriptions(v ...*RecurringSubscription
 	return _u.AddRecurringSubscriptionIDs(ids...)
 }
 
+// AddProjectionIDs adds the "projections" edge to the Projection entity by IDs.
+func (_u *HouseholdUpdate) AddProjectionIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.AddProjectionIDs(ids...)
+	return _u
+}
+
+// AddProjections adds the "projections" edges to the Projection entity.
+func (_u *HouseholdUpdate) AddProjections(v ...*Projection) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddProjectionIDs(ids...)
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
 func (_u *HouseholdUpdate) AddUserHouseholdIDs(ids ...int) *HouseholdUpdate {
 	_u.mutation.AddUserHouseholdIDs(ids...)
@@ -404,6 +420,27 @@ func (_u *HouseholdUpdate) RemoveRecurringSubscriptions(v ...*RecurringSubscript
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
+}
+
+// ClearProjections clears all "projections" edges to the Projection entity.
+func (_u *HouseholdUpdate) ClearProjections() *HouseholdUpdate {
+	_u.mutation.ClearProjections()
+	return _u
+}
+
+// RemoveProjectionIDs removes the "projections" edge to Projection entities by IDs.
+func (_u *HouseholdUpdate) RemoveProjectionIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.RemoveProjectionIDs(ids...)
+	return _u
+}
+
+// RemoveProjections removes "projections" edges to Projection entities.
+func (_u *HouseholdUpdate) RemoveProjections(v ...*Projection) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveProjectionIDs(ids...)
 }
 
 // ClearUserHouseholds clears all "user_households" edges to the UserHousehold entity.
@@ -920,6 +957,51 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.ProjectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projection.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedProjectionsIDs(); len(nodes) > 0 && !_u.mutation.ProjectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projection.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ProjectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projection.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _u.mutation.UserHouseholdsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1160,6 +1242,21 @@ func (_u *HouseholdUpdateOne) AddRecurringSubscriptions(v ...*RecurringSubscript
 	return _u.AddRecurringSubscriptionIDs(ids...)
 }
 
+// AddProjectionIDs adds the "projections" edge to the Projection entity by IDs.
+func (_u *HouseholdUpdateOne) AddProjectionIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.AddProjectionIDs(ids...)
+	return _u
+}
+
+// AddProjections adds the "projections" edges to the Projection entity.
+func (_u *HouseholdUpdateOne) AddProjections(v ...*Projection) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddProjectionIDs(ids...)
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
 func (_u *HouseholdUpdateOne) AddUserHouseholdIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddUserHouseholdIDs(ids...)
@@ -1352,6 +1449,27 @@ func (_u *HouseholdUpdateOne) RemoveRecurringSubscriptions(v ...*RecurringSubscr
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
+}
+
+// ClearProjections clears all "projections" edges to the Projection entity.
+func (_u *HouseholdUpdateOne) ClearProjections() *HouseholdUpdateOne {
+	_u.mutation.ClearProjections()
+	return _u
+}
+
+// RemoveProjectionIDs removes the "projections" edge to Projection entities by IDs.
+func (_u *HouseholdUpdateOne) RemoveProjectionIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.RemoveProjectionIDs(ids...)
+	return _u
+}
+
+// RemoveProjections removes "projections" edges to Projection entities.
+func (_u *HouseholdUpdateOne) RemoveProjections(v ...*Projection) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveProjectionIDs(ids...)
 }
 
 // ClearUserHouseholds clears all "user_households" edges to the UserHousehold entity.
@@ -1891,6 +2009,51 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(recurringsubscription.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ProjectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projection.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedProjectionsIDs(); len(nodes) > 0 && !_u.mutation.ProjectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projection.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ProjectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.ProjectionsTable,
+			Columns: []string{household.ProjectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

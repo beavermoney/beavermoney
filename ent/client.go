@@ -16,6 +16,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -44,6 +45,8 @@ type Client struct {
 	Investment *InvestmentClient
 	// InvestmentLot is the client for interacting with the InvestmentLot builders.
 	InvestmentLot *InvestmentLotClient
+	// Projection is the client for interacting with the Projection builders.
+	Projection *ProjectionClient
 	// RecurringSubscription is the client for interacting with the RecurringSubscription builders.
 	RecurringSubscription *RecurringSubscriptionClient
 	// Transaction is the client for interacting with the Transaction builders.
@@ -74,6 +77,7 @@ func (c *Client) init() {
 	c.Household = NewHouseholdClient(c.config)
 	c.Investment = NewInvestmentClient(c.config)
 	c.InvestmentLot = NewInvestmentLotClient(c.config)
+	c.Projection = NewProjectionClient(c.config)
 	c.RecurringSubscription = NewRecurringSubscriptionClient(c.config)
 	c.Transaction = NewTransactionClient(c.config)
 	c.TransactionCategory = NewTransactionCategoryClient(c.config)
@@ -178,6 +182,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Household:             NewHouseholdClient(cfg),
 		Investment:            NewInvestmentClient(cfg),
 		InvestmentLot:         NewInvestmentLotClient(cfg),
+		Projection:            NewProjectionClient(cfg),
 		RecurringSubscription: NewRecurringSubscriptionClient(cfg),
 		Transaction:           NewTransactionClient(cfg),
 		TransactionCategory:   NewTransactionCategoryClient(cfg),
@@ -209,6 +214,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Household:             NewHouseholdClient(cfg),
 		Investment:            NewInvestmentClient(cfg),
 		InvestmentLot:         NewInvestmentLotClient(cfg),
+		Projection:            NewProjectionClient(cfg),
 		RecurringSubscription: NewRecurringSubscriptionClient(cfg),
 		Transaction:           NewTransactionClient(cfg),
 		TransactionCategory:   NewTransactionCategoryClient(cfg),
@@ -245,7 +251,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Account, c.Currency, c.Household, c.Investment, c.InvestmentLot,
+		c.Account, c.Currency, c.Household, c.Investment, c.InvestmentLot, c.Projection,
 		c.RecurringSubscription, c.Transaction, c.TransactionCategory,
 		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
 	} {
@@ -257,7 +263,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Account, c.Currency, c.Household, c.Investment, c.InvestmentLot,
+		c.Account, c.Currency, c.Household, c.Investment, c.InvestmentLot, c.Projection,
 		c.RecurringSubscription, c.Transaction, c.TransactionCategory,
 		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
 	} {
@@ -278,6 +284,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Investment.mutate(ctx, m)
 	case *InvestmentLotMutation:
 		return c.InvestmentLot.mutate(ctx, m)
+	case *ProjectionMutation:
+		return c.Projection.mutate(ctx, m)
 	case *RecurringSubscriptionMutation:
 		return c.RecurringSubscription.mutate(ctx, m)
 	case *TransactionMutation:
@@ -976,6 +984,22 @@ func (c *HouseholdClient) QueryRecurringSubscriptions(_m *Household) *RecurringS
 	return query
 }
 
+// QueryProjections queries the projections edge of a Household.
+func (c *HouseholdClient) QueryProjections(_m *Household) *ProjectionQuery {
+	query := (&ProjectionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, id),
+			sqlgraph.To(projection.Table, projection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.ProjectionsTable, household.ProjectionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryUserHouseholds queries the user_households edge of a Household.
 func (c *HouseholdClient) QueryUserHouseholds(_m *Household) *UserHouseholdQuery {
 	query := (&UserHouseholdClient{config: c.config}).Query()
@@ -1395,6 +1419,156 @@ func (c *InvestmentLotClient) mutate(ctx context.Context, m *InvestmentLotMutati
 		return (&InvestmentLotDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown InvestmentLot mutation op: %q", m.Op())
+	}
+}
+
+// ProjectionClient is a client for the Projection schema.
+type ProjectionClient struct {
+	config
+}
+
+// NewProjectionClient returns a client for the Projection from the given config.
+func NewProjectionClient(c config) *ProjectionClient {
+	return &ProjectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projection.Hooks(f(g(h())))`.
+func (c *ProjectionClient) Use(hooks ...Hook) {
+	c.hooks.Projection = append(c.hooks.Projection, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `projection.Intercept(f(g(h())))`.
+func (c *ProjectionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Projection = append(c.inters.Projection, interceptors...)
+}
+
+// Create returns a builder for creating a Projection entity.
+func (c *ProjectionClient) Create() *ProjectionCreate {
+	mutation := newProjectionMutation(c.config, OpCreate)
+	return &ProjectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Projection entities.
+func (c *ProjectionClient) CreateBulk(builders ...*ProjectionCreate) *ProjectionCreateBulk {
+	return &ProjectionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProjectionClient) MapCreateBulk(slice any, setFunc func(*ProjectionCreate, int)) *ProjectionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProjectionCreateBulk{err: fmt.Errorf("calling to ProjectionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProjectionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ProjectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Projection.
+func (c *ProjectionClient) Update() *ProjectionUpdate {
+	mutation := newProjectionMutation(c.config, OpUpdate)
+	return &ProjectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectionClient) UpdateOne(_m *Projection) *ProjectionUpdateOne {
+	mutation := newProjectionMutation(c.config, OpUpdateOne, withProjection(_m))
+	return &ProjectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectionClient) UpdateOneID(id int) *ProjectionUpdateOne {
+	mutation := newProjectionMutation(c.config, OpUpdateOne, withProjectionID(id))
+	return &ProjectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Projection.
+func (c *ProjectionClient) Delete() *ProjectionDelete {
+	mutation := newProjectionMutation(c.config, OpDelete)
+	return &ProjectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ProjectionClient) DeleteOne(_m *Projection) *ProjectionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ProjectionClient) DeleteOneID(id int) *ProjectionDeleteOne {
+	builder := c.Delete().Where(projection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectionDeleteOne{builder}
+}
+
+// Query returns a query builder for Projection.
+func (c *ProjectionClient) Query() *ProjectionQuery {
+	return &ProjectionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeProjection},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Projection entity by its id.
+func (c *ProjectionClient) Get(ctx context.Context, id int) (*Projection, error) {
+	return c.Query().Where(projection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectionClient) GetX(ctx context.Context, id int) *Projection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryHousehold queries the household edge of a Projection.
+func (c *ProjectionClient) QueryHousehold(_m *Projection) *HouseholdQuery {
+	query := (&HouseholdClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projection.Table, projection.FieldID, id),
+			sqlgraph.To(household.Table, household.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projection.HouseholdTable, projection.HouseholdColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectionClient) Hooks() []Hook {
+	hooks := c.hooks.Projection
+	return append(hooks[:len(hooks):len(hooks)], projection.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *ProjectionClient) Interceptors() []Interceptor {
+	return c.inters.Projection
+}
+
+func (c *ProjectionClient) mutate(ctx context.Context, m *ProjectionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ProjectionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ProjectionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ProjectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ProjectionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Projection mutation op: %q", m.Op())
 	}
 }
 
@@ -2707,13 +2881,13 @@ func (c *UserKeyClient) mutate(ctx context.Context, m *UserKeyMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Account, Currency, Household, Investment, InvestmentLot, RecurringSubscription,
-		Transaction, TransactionCategory, TransactionEntry, User, UserHousehold,
-		UserKey []ent.Hook
+		Account, Currency, Household, Investment, InvestmentLot, Projection,
+		RecurringSubscription, Transaction, TransactionCategory, TransactionEntry,
+		User, UserHousehold, UserKey []ent.Hook
 	}
 	inters struct {
-		Account, Currency, Household, Investment, InvestmentLot, RecurringSubscription,
-		Transaction, TransactionCategory, TransactionEntry, User, UserHousehold,
-		UserKey []ent.Interceptor
+		Account, Currency, Household, Investment, InvestmentLot, Projection,
+		RecurringSubscription, Transaction, TransactionCategory, TransactionEntry,
+		User, UserHousehold, UserKey []ent.Interceptor
 	}
 )

@@ -230,6 +230,54 @@ func (c *InvestmentLotUpdateOne) SetInput(i UpdateInvestmentLotInput) *Investmen
 	return c
 }
 
+// CreateProjectionInput represents a mutation input for creating projections.
+type CreateProjectionInput struct {
+	Name   string
+	Config map[string]interface{}
+}
+
+// Mutate applies the CreateProjectionInput on the ProjectionMutation builder.
+func (i *CreateProjectionInput) Mutate(m *ProjectionMutation) {
+	m.SetName(i.Name)
+	if v := i.Config; v != nil {
+		m.SetConfig(v)
+	}
+}
+
+// SetInput applies the change-set in the CreateProjectionInput on the ProjectionCreate builder.
+func (c *ProjectionCreate) SetInput(i CreateProjectionInput) *ProjectionCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateProjectionInput represents a mutation input for updating projections.
+type UpdateProjectionInput struct {
+	Name   *string
+	Config map[string]interface{}
+}
+
+// Mutate applies the UpdateProjectionInput on the ProjectionMutation builder.
+func (i *UpdateProjectionInput) Mutate(m *ProjectionMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Config; v != nil {
+		m.SetConfig(v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateProjectionInput on the ProjectionUpdate builder.
+func (c *ProjectionUpdate) SetInput(i UpdateProjectionInput) *ProjectionUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateProjectionInput on the ProjectionUpdateOne builder.
+func (c *ProjectionUpdateOne) SetInput(i UpdateProjectionInput) *ProjectionUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateRecurringSubscriptionInput represents a mutation input for creating recurringsubscriptions.
 type CreateRecurringSubscriptionInput struct {
 	Name          string

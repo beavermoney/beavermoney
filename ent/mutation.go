@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -41,6 +42,7 @@ const (
 	TypeHousehold             = "Household"
 	TypeInvestment            = "Investment"
 	TypeInvestmentLot         = "InvestmentLot"
+	TypeProjection            = "Projection"
 	TypeRecurringSubscription = "RecurringSubscription"
 	TypeTransaction           = "Transaction"
 	TypeTransactionCategory   = "TransactionCategory"
@@ -2212,6 +2214,9 @@ type HouseholdMutation struct {
 	recurring_subscriptions        map[int]struct{}
 	removedrecurring_subscriptions map[int]struct{}
 	clearedrecurring_subscriptions bool
+	projections                    map[int]struct{}
+	removedprojections             map[int]struct{}
+	clearedprojections             bool
 	user_households                map[int]struct{}
 	removeduser_households         map[int]struct{}
 	cleareduser_households         bool
@@ -2957,6 +2962,60 @@ func (m *HouseholdMutation) ResetRecurringSubscriptions() {
 	m.removedrecurring_subscriptions = nil
 }
 
+// AddProjectionIDs adds the "projections" edge to the Projection entity by ids.
+func (m *HouseholdMutation) AddProjectionIDs(ids ...int) {
+	if m.projections == nil {
+		m.projections = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.projections[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjections clears the "projections" edge to the Projection entity.
+func (m *HouseholdMutation) ClearProjections() {
+	m.clearedprojections = true
+}
+
+// ProjectionsCleared reports if the "projections" edge to the Projection entity was cleared.
+func (m *HouseholdMutation) ProjectionsCleared() bool {
+	return m.clearedprojections
+}
+
+// RemoveProjectionIDs removes the "projections" edge to the Projection entity by IDs.
+func (m *HouseholdMutation) RemoveProjectionIDs(ids ...int) {
+	if m.removedprojections == nil {
+		m.removedprojections = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.projections, ids[i])
+		m.removedprojections[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjections returns the removed IDs of the "projections" edge to the Projection entity.
+func (m *HouseholdMutation) RemovedProjectionsIDs() (ids []int) {
+	for id := range m.removedprojections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectionsIDs returns the "projections" edge IDs in the mutation.
+func (m *HouseholdMutation) ProjectionsIDs() (ids []int) {
+	for id := range m.projections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjections resets all changes to the "projections" edge.
+func (m *HouseholdMutation) ResetProjections() {
+	m.projections = nil
+	m.clearedprojections = false
+	m.removedprojections = nil
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by ids.
 func (m *HouseholdMutation) AddUserHouseholdIDs(ids ...int) {
 	if m.user_households == nil {
@@ -3215,7 +3274,7 @@ func (m *HouseholdMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *HouseholdMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.currency != nil {
 		edges = append(edges, household.EdgeCurrency)
 	}
@@ -3242,6 +3301,9 @@ func (m *HouseholdMutation) AddedEdges() []string {
 	}
 	if m.recurring_subscriptions != nil {
 		edges = append(edges, household.EdgeRecurringSubscriptions)
+	}
+	if m.projections != nil {
+		edges = append(edges, household.EdgeProjections)
 	}
 	if m.user_households != nil {
 		edges = append(edges, household.EdgeUserHouseholds)
@@ -3305,6 +3367,12 @@ func (m *HouseholdMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case household.EdgeProjections:
+		ids := make([]ent.Value, 0, len(m.projections))
+		for id := range m.projections {
+			ids = append(ids, id)
+		}
+		return ids
 	case household.EdgeUserHouseholds:
 		ids := make([]ent.Value, 0, len(m.user_households))
 		for id := range m.user_households {
@@ -3317,7 +3385,7 @@ func (m *HouseholdMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *HouseholdMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedusers != nil {
 		edges = append(edges, household.EdgeUsers)
 	}
@@ -3341,6 +3409,9 @@ func (m *HouseholdMutation) RemovedEdges() []string {
 	}
 	if m.removedrecurring_subscriptions != nil {
 		edges = append(edges, household.EdgeRecurringSubscriptions)
+	}
+	if m.removedprojections != nil {
+		edges = append(edges, household.EdgeProjections)
 	}
 	if m.removeduser_households != nil {
 		edges = append(edges, household.EdgeUserHouseholds)
@@ -3400,6 +3471,12 @@ func (m *HouseholdMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case household.EdgeProjections:
+		ids := make([]ent.Value, 0, len(m.removedprojections))
+		for id := range m.removedprojections {
+			ids = append(ids, id)
+		}
+		return ids
 	case household.EdgeUserHouseholds:
 		ids := make([]ent.Value, 0, len(m.removeduser_households))
 		for id := range m.removeduser_households {
@@ -3412,7 +3489,7 @@ func (m *HouseholdMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *HouseholdMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedcurrency {
 		edges = append(edges, household.EdgeCurrency)
 	}
@@ -3439,6 +3516,9 @@ func (m *HouseholdMutation) ClearedEdges() []string {
 	}
 	if m.clearedrecurring_subscriptions {
 		edges = append(edges, household.EdgeRecurringSubscriptions)
+	}
+	if m.clearedprojections {
+		edges = append(edges, household.EdgeProjections)
 	}
 	if m.cleareduser_households {
 		edges = append(edges, household.EdgeUserHouseholds)
@@ -3468,6 +3548,8 @@ func (m *HouseholdMutation) EdgeCleared(name string) bool {
 		return m.clearedtransaction_entries
 	case household.EdgeRecurringSubscriptions:
 		return m.clearedrecurring_subscriptions
+	case household.EdgeProjections:
+		return m.clearedprojections
 	case household.EdgeUserHouseholds:
 		return m.cleareduser_households
 	}
@@ -3515,6 +3597,9 @@ func (m *HouseholdMutation) ResetEdge(name string) error {
 		return nil
 	case household.EdgeRecurringSubscriptions:
 		m.ResetRecurringSubscriptions()
+		return nil
+	case household.EdgeProjections:
+		m.ResetProjections()
 		return nil
 	case household.EdgeUserHouseholds:
 		m.ResetUserHouseholds()
@@ -5585,6 +5670,605 @@ func (m *InvestmentLotMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown InvestmentLot edge %s", name)
+}
+
+// ProjectionMutation represents an operation that mutates the Projection nodes in the graph.
+type ProjectionMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *int
+	create_time      *time.Time
+	update_time      *time.Time
+	name             *string
+	_config          *map[string]interface{}
+	clearedFields    map[string]struct{}
+	household        *int
+	clearedhousehold bool
+	done             bool
+	oldValue         func(context.Context) (*Projection, error)
+	predicates       []predicate.Projection
+}
+
+var _ ent.Mutation = (*ProjectionMutation)(nil)
+
+// projectionOption allows management of the mutation configuration using functional options.
+type projectionOption func(*ProjectionMutation)
+
+// newProjectionMutation creates new mutation for the Projection entity.
+func newProjectionMutation(c config, op Op, opts ...projectionOption) *ProjectionMutation {
+	m := &ProjectionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProjection,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProjectionID sets the ID field of the mutation.
+func withProjectionID(id int) projectionOption {
+	return func(m *ProjectionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Projection
+		)
+		m.oldValue = func(ctx context.Context) (*Projection, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Projection.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProjection sets the old Projection of the mutation.
+func withProjection(node *Projection) projectionOption {
+	return func(m *ProjectionMutation) {
+		m.oldValue = func(context.Context) (*Projection, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProjectionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProjectionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProjectionMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProjectionMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Projection.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *ProjectionMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *ProjectionMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Projection entity.
+// If the Projection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectionMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *ProjectionMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *ProjectionMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *ProjectionMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Projection entity.
+// If the Projection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectionMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *ProjectionMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetHouseholdID sets the "household_id" field.
+func (m *ProjectionMutation) SetHouseholdID(i int) {
+	m.household = &i
+}
+
+// HouseholdID returns the value of the "household_id" field in the mutation.
+func (m *ProjectionMutation) HouseholdID() (r int, exists bool) {
+	v := m.household
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHouseholdID returns the old "household_id" field's value of the Projection entity.
+// If the Projection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectionMutation) OldHouseholdID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHouseholdID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHouseholdID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHouseholdID: %w", err)
+	}
+	return oldValue.HouseholdID, nil
+}
+
+// ResetHouseholdID resets all changes to the "household_id" field.
+func (m *ProjectionMutation) ResetHouseholdID() {
+	m.household = nil
+}
+
+// SetName sets the "name" field.
+func (m *ProjectionMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *ProjectionMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Projection entity.
+// If the Projection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectionMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *ProjectionMutation) ResetName() {
+	m.name = nil
+}
+
+// SetConfig sets the "config" field.
+func (m *ProjectionMutation) SetConfig(value map[string]interface{}) {
+	m._config = &value
+}
+
+// Config returns the value of the "config" field in the mutation.
+func (m *ProjectionMutation) Config() (r map[string]interface{}, exists bool) {
+	v := m._config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfig returns the old "config" field's value of the Projection entity.
+// If the Projection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectionMutation) OldConfig(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfig is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfig requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfig: %w", err)
+	}
+	return oldValue.Config, nil
+}
+
+// ResetConfig resets all changes to the "config" field.
+func (m *ProjectionMutation) ResetConfig() {
+	m._config = nil
+}
+
+// ClearHousehold clears the "household" edge to the Household entity.
+func (m *ProjectionMutation) ClearHousehold() {
+	m.clearedhousehold = true
+	m.clearedFields[projection.FieldHouseholdID] = struct{}{}
+}
+
+// HouseholdCleared reports if the "household" edge to the Household entity was cleared.
+func (m *ProjectionMutation) HouseholdCleared() bool {
+	return m.clearedhousehold
+}
+
+// HouseholdIDs returns the "household" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// HouseholdID instead. It exists only for internal usage by the builders.
+func (m *ProjectionMutation) HouseholdIDs() (ids []int) {
+	if id := m.household; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetHousehold resets all changes to the "household" edge.
+func (m *ProjectionMutation) ResetHousehold() {
+	m.household = nil
+	m.clearedhousehold = false
+}
+
+// Where appends a list predicates to the ProjectionMutation builder.
+func (m *ProjectionMutation) Where(ps ...predicate.Projection) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ProjectionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ProjectionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Projection, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ProjectionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ProjectionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Projection).
+func (m *ProjectionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProjectionMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.create_time != nil {
+		fields = append(fields, projection.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, projection.FieldUpdateTime)
+	}
+	if m.household != nil {
+		fields = append(fields, projection.FieldHouseholdID)
+	}
+	if m.name != nil {
+		fields = append(fields, projection.FieldName)
+	}
+	if m._config != nil {
+		fields = append(fields, projection.FieldConfig)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProjectionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case projection.FieldCreateTime:
+		return m.CreateTime()
+	case projection.FieldUpdateTime:
+		return m.UpdateTime()
+	case projection.FieldHouseholdID:
+		return m.HouseholdID()
+	case projection.FieldName:
+		return m.Name()
+	case projection.FieldConfig:
+		return m.Config()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProjectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case projection.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case projection.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case projection.FieldHouseholdID:
+		return m.OldHouseholdID(ctx)
+	case projection.FieldName:
+		return m.OldName(ctx)
+	case projection.FieldConfig:
+		return m.OldConfig(ctx)
+	}
+	return nil, fmt.Errorf("unknown Projection field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case projection.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case projection.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case projection.FieldHouseholdID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHouseholdID(v)
+		return nil
+	case projection.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case projection.FieldConfig:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfig(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Projection field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProjectionMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProjectionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Projection numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProjectionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProjectionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProjectionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Projection nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProjectionMutation) ResetField(name string) error {
+	switch name {
+	case projection.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case projection.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case projection.FieldHouseholdID:
+		m.ResetHouseholdID()
+		return nil
+	case projection.FieldName:
+		m.ResetName()
+		return nil
+	case projection.FieldConfig:
+		m.ResetConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown Projection field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProjectionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.household != nil {
+		edges = append(edges, projection.EdgeHousehold)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProjectionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case projection.EdgeHousehold:
+		if id := m.household; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProjectionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProjectionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProjectionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedhousehold {
+		edges = append(edges, projection.EdgeHousehold)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProjectionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case projection.EdgeHousehold:
+		return m.clearedhousehold
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProjectionMutation) ClearEdge(name string) error {
+	switch name {
+	case projection.EdgeHousehold:
+		m.ClearHousehold()
+		return nil
+	}
+	return fmt.Errorf("unknown Projection unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProjectionMutation) ResetEdge(name string) error {
+	switch name {
+	case projection.EdgeHousehold:
+		m.ResetHousehold()
+		return nil
+	}
+	return fmt.Errorf("unknown Projection edge %s", name)
 }
 
 // RecurringSubscriptionMutation represents an operation that mutates the RecurringSubscription nodes in the graph.

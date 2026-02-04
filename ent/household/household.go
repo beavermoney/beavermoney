@@ -43,6 +43,8 @@ const (
 	EdgeTransactionEntries = "transaction_entries"
 	// EdgeRecurringSubscriptions holds the string denoting the recurring_subscriptions edge name in mutations.
 	EdgeRecurringSubscriptions = "recurring_subscriptions"
+	// EdgeProjections holds the string denoting the projections edge name in mutations.
+	EdgeProjections = "projections"
 	// EdgeUserHouseholds holds the string denoting the user_households edge name in mutations.
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the household in the database.
@@ -108,6 +110,13 @@ const (
 	RecurringSubscriptionsInverseTable = "recurring_subscriptions"
 	// RecurringSubscriptionsColumn is the table column denoting the recurring_subscriptions relation/edge.
 	RecurringSubscriptionsColumn = "household_id"
+	// ProjectionsTable is the table that holds the projections relation/edge.
+	ProjectionsTable = "projections"
+	// ProjectionsInverseTable is the table name for the Projection entity.
+	// It exists in this package in order to avoid circular dependency with the "projection" package.
+	ProjectionsInverseTable = "projections"
+	// ProjectionsColumn is the table column denoting the projections relation/edge.
+	ProjectionsColumn = "household_id"
 	// UserHouseholdsTable is the table that holds the user_households relation/edge.
 	UserHouseholdsTable = "user_households"
 	// UserHouseholdsInverseTable is the table name for the UserHousehold entity.
@@ -317,6 +326,20 @@ func ByRecurringSubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderO
 	}
 }
 
+// ByProjectionsCount orders the results by projections count.
+func ByProjectionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newProjectionsStep(), opts...)
+	}
+}
+
+// ByProjections orders the results by projections terms.
+func ByProjections(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newProjectionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByUserHouseholdsCount orders the results by user_households count.
 func ByUserHouseholdsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -391,6 +414,13 @@ func newRecurringSubscriptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RecurringSubscriptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RecurringSubscriptionsTable, RecurringSubscriptionsColumn),
+	)
+}
+func newProjectionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ProjectionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ProjectionsTable, ProjectionsColumn),
 	)
 }
 func newUserHouseholdsStep() *sqlgraph.Step {

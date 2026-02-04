@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/projection"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -1012,6 +1013,10 @@ type HouseholdWhereInput struct {
 	HasRecurringSubscriptions     *bool                              `json:"hasRecurringSubscriptions,omitempty"`
 	HasRecurringSubscriptionsWith []*RecurringSubscriptionWhereInput `json:"hasRecurringSubscriptionsWith,omitempty"`
 
+	// "projections" edge predicates.
+	HasProjections     *bool                   `json:"hasProjections,omitempty"`
+	HasProjectionsWith []*ProjectionWhereInput `json:"hasProjectionsWith,omitempty"`
+
 	// "user_households" edge predicates.
 	HasUserHouseholds     *bool                      `json:"hasUserHouseholds,omitempty"`
 	HasUserHouseholdsWith []*UserHouseholdWhereInput `json:"hasUserHouseholdsWith,omitempty"`
@@ -1412,6 +1417,24 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, household.HasRecurringSubscriptionsWith(with...))
+	}
+	if i.HasProjections != nil {
+		p := household.HasProjections()
+		if !*i.HasProjections {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectionsWith) > 0 {
+		with := make([]predicate.Projection, 0, len(i.HasProjectionsWith))
+		for _, w := range i.HasProjectionsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasProjectionsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasProjectionsWith(with...))
 	}
 	if i.HasUserHouseholds != nil {
 		p := household.HasUserHouseholds()
@@ -2380,6 +2403,292 @@ func (i *InvestmentLotWhereInput) P() (predicate.InvestmentLot, error) {
 		return predicates[0], nil
 	default:
 		return investmentlot.And(predicates...), nil
+	}
+}
+
+// ProjectionWhereInput represents a where input for filtering Projection queries.
+type ProjectionWhereInput struct {
+	Predicates []predicate.Projection  `json:"-"`
+	Not        *ProjectionWhereInput   `json:"not,omitempty"`
+	Or         []*ProjectionWhereInput `json:"or,omitempty"`
+	And        []*ProjectionWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *ProjectionWhereInput) AddPredicates(predicates ...predicate.Projection) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the ProjectionWhereInput filter on the ProjectionQuery builder.
+func (i *ProjectionWhereInput) Filter(q *ProjectionQuery) (*ProjectionQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyProjectionWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyProjectionWhereInput is returned in case the ProjectionWhereInput is empty.
+var ErrEmptyProjectionWhereInput = errors.New("ent: empty predicate ProjectionWhereInput")
+
+// P returns a predicate for filtering projections.
+// An error is returned if the input is empty or invalid.
+func (i *ProjectionWhereInput) P() (predicate.Projection, error) {
+	var predicates []predicate.Projection
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, projection.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Projection, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, projection.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Projection, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, projection.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, projection.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, projection.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, projection.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, projection.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, projection.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, projection.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, projection.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, projection.IDLTE(*i.IDLTE))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, projection.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, projection.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, projection.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, projection.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, projection.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, projection.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, projection.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, projection.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, projection.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, projection.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, projection.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, projection.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, projection.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, projection.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, projection.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, projection.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, projection.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, projection.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, projection.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, projection.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, projection.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, projection.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, projection.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, projection.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, projection.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, projection.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, projection.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, projection.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, projection.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, projection.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, projection.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, projection.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, projection.NameContainsFold(*i.NameContainsFold))
+	}
+
+	if i.HasHousehold != nil {
+		p := projection.HasHousehold()
+		if !*i.HasHousehold {
+			p = projection.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projection.HasHouseholdWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyProjectionWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return projection.And(predicates...), nil
 	}
 }
 
