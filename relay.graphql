@@ -1921,12 +1921,6 @@ input UpdateTransactionInput {
   clearDescription: Boolean
   datetime: Time
   categoryID: ID
-  addTransactionEntryIDs: [ID!]
-  removeTransactionEntryIDs: [ID!]
-  clearTransactionEntries: Boolean
-  addInvestmentLotIDs: [ID!]
-  removeInvestmentLotIDs: [ID!]
-  clearInvestmentLots: Boolean
 }
 
 type User implements Node {

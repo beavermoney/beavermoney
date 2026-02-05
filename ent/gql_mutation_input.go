@@ -344,16 +344,10 @@ func (c *TransactionCreate) SetInput(i CreateTransactionInput) *TransactionCreat
 
 // UpdateTransactionInput represents a mutation input for updating transactions.
 type UpdateTransactionInput struct {
-	ClearDescription          bool
-	Description               *string
-	Datetime                  *time.Time
-	CategoryID                *int
-	ClearTransactionEntries   bool
-	AddTransactionEntryIDs    []int
-	RemoveTransactionEntryIDs []int
-	ClearInvestmentLots       bool
-	AddInvestmentLotIDs       []int
-	RemoveInvestmentLotIDs    []int
+	ClearDescription bool
+	Description      *string
+	Datetime         *time.Time
+	CategoryID       *int
 }
 
 // Mutate applies the UpdateTransactionInput on the TransactionMutation builder.
@@ -369,24 +363,6 @@ func (i *UpdateTransactionInput) Mutate(m *TransactionMutation) {
 	}
 	if v := i.CategoryID; v != nil {
 		m.SetCategoryID(*v)
-	}
-	if i.ClearTransactionEntries {
-		m.ClearTransactionEntries()
-	}
-	if v := i.AddTransactionEntryIDs; len(v) > 0 {
-		m.AddTransactionEntryIDs(v...)
-	}
-	if v := i.RemoveTransactionEntryIDs; len(v) > 0 {
-		m.RemoveTransactionEntryIDs(v...)
-	}
-	if i.ClearInvestmentLots {
-		m.ClearInvestmentLots()
-	}
-	if v := i.AddInvestmentLotIDs; len(v) > 0 {
-		m.AddInvestmentLotIDs(v...)
-	}
-	if v := i.RemoveInvestmentLotIDs; len(v) > 0 {
-		m.RemoveInvestmentLotIDs(v...)
 	}
 }
 

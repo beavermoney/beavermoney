@@ -20215,7 +20215,7 @@ func (ec *executionContext) unmarshalInputUpdateTransactionInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"description", "clearDescription", "datetime", "categoryID", "addTransactionEntryIDs", "removeTransactionEntryIDs", "clearTransactionEntries", "addInvestmentLotIDs", "removeInvestmentLotIDs", "clearInvestmentLots"}
+	fieldsInOrder := [...]string{"description", "clearDescription", "datetime", "categoryID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20250,48 +20250,6 @@ func (ec *executionContext) unmarshalInputUpdateTransactionInput(ctx context.Con
 				return it, err
 			}
 			it.CategoryID = data
-		case "addTransactionEntryIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionEntryIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.AddTransactionEntryIDs = data
-		case "removeTransactionEntryIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionEntryIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RemoveTransactionEntryIDs = data
-		case "clearTransactionEntries":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearTransactionEntries"))
-			data, err := ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ClearTransactionEntries = data
-		case "addInvestmentLotIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addInvestmentLotIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.AddInvestmentLotIDs = data
-		case "removeInvestmentLotIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeInvestmentLotIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RemoveInvestmentLotIDs = data
-		case "clearInvestmentLots":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearInvestmentLots"))
-			data, err := ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ClearInvestmentLots = data
 		}
 	}
 

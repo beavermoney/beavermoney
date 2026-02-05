@@ -69,6 +69,7 @@ func (Transaction) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 				entsql.OnDelete(entsql.Cascade),
 			),
@@ -76,6 +77,7 @@ func (Transaction) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 				entsql.OnDelete(entsql.Cascade),
 			),
