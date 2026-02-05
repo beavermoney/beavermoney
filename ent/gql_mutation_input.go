@@ -342,6 +342,66 @@ func (c *TransactionCreate) SetInput(i CreateTransactionInput) *TransactionCreat
 	return c
 }
 
+// UpdateTransactionInput represents a mutation input for updating transactions.
+type UpdateTransactionInput struct {
+	ClearDescription          bool
+	Description               *string
+	Datetime                  *time.Time
+	CategoryID                *int
+	ClearTransactionEntries   bool
+	AddTransactionEntryIDs    []int
+	RemoveTransactionEntryIDs []int
+	ClearInvestmentLots       bool
+	AddInvestmentLotIDs       []int
+	RemoveInvestmentLotIDs    []int
+}
+
+// Mutate applies the UpdateTransactionInput on the TransactionMutation builder.
+func (i *UpdateTransactionInput) Mutate(m *TransactionMutation) {
+	if i.ClearDescription {
+		m.ClearDescription()
+	}
+	if v := i.Description; v != nil {
+		m.SetDescription(*v)
+	}
+	if v := i.Datetime; v != nil {
+		m.SetDatetime(*v)
+	}
+	if v := i.CategoryID; v != nil {
+		m.SetCategoryID(*v)
+	}
+	if i.ClearTransactionEntries {
+		m.ClearTransactionEntries()
+	}
+	if v := i.AddTransactionEntryIDs; len(v) > 0 {
+		m.AddTransactionEntryIDs(v...)
+	}
+	if v := i.RemoveTransactionEntryIDs; len(v) > 0 {
+		m.RemoveTransactionEntryIDs(v...)
+	}
+	if i.ClearInvestmentLots {
+		m.ClearInvestmentLots()
+	}
+	if v := i.AddInvestmentLotIDs; len(v) > 0 {
+		m.AddInvestmentLotIDs(v...)
+	}
+	if v := i.RemoveInvestmentLotIDs; len(v) > 0 {
+		m.RemoveInvestmentLotIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTransactionInput on the TransactionUpdate builder.
+func (c *TransactionUpdate) SetInput(i UpdateTransactionInput) *TransactionUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateTransactionInput on the TransactionUpdateOne builder.
+func (c *TransactionUpdateOne) SetInput(i UpdateTransactionInput) *TransactionUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateTransactionCategoryInput represents a mutation input for creating transactioncategories.
 type CreateTransactionCategoryInput struct {
 	Name string
@@ -362,6 +422,54 @@ func (c *TransactionCategoryCreate) SetInput(i CreateTransactionCategoryInput) *
 	return c
 }
 
+// UpdateTransactionCategoryInput represents a mutation input for updating transactioncategories.
+type UpdateTransactionCategoryInput struct {
+	Name                 *string
+	Type                 *transactioncategory.Type
+	Icon                 *string
+	IsImmutable          *bool
+	ClearTransactions    bool
+	AddTransactionIDs    []int
+	RemoveTransactionIDs []int
+}
+
+// Mutate applies the UpdateTransactionCategoryInput on the TransactionCategoryMutation builder.
+func (i *UpdateTransactionCategoryInput) Mutate(m *TransactionCategoryMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Type; v != nil {
+		m.SetType(*v)
+	}
+	if v := i.Icon; v != nil {
+		m.SetIcon(*v)
+	}
+	if v := i.IsImmutable; v != nil {
+		m.SetIsImmutable(*v)
+	}
+	if i.ClearTransactions {
+		m.ClearTransactions()
+	}
+	if v := i.AddTransactionIDs; len(v) > 0 {
+		m.AddTransactionIDs(v...)
+	}
+	if v := i.RemoveTransactionIDs; len(v) > 0 {
+		m.RemoveTransactionIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTransactionCategoryInput on the TransactionCategoryUpdate builder.
+func (c *TransactionCategoryUpdate) SetInput(i UpdateTransactionCategoryInput) *TransactionCategoryUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateTransactionCategoryInput on the TransactionCategoryUpdateOne builder.
+func (c *TransactionCategoryUpdateOne) SetInput(i UpdateTransactionCategoryInput) *TransactionCategoryUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateTransactionEntryInput represents a mutation input for creating transactionentries.
 type CreateTransactionEntryInput struct {
 	Amount    decimal.Decimal
@@ -376,6 +484,34 @@ func (i *CreateTransactionEntryInput) Mutate(m *TransactionEntryMutation) {
 
 // SetInput applies the change-set in the CreateTransactionEntryInput on the TransactionEntryCreate builder.
 func (c *TransactionEntryCreate) SetInput(i CreateTransactionEntryInput) *TransactionEntryCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateTransactionEntryInput represents a mutation input for updating transactionentries.
+type UpdateTransactionEntryInput struct {
+	Amount    *decimal.Decimal
+	AccountID *int
+}
+
+// Mutate applies the UpdateTransactionEntryInput on the TransactionEntryMutation builder.
+func (i *UpdateTransactionEntryInput) Mutate(m *TransactionEntryMutation) {
+	if v := i.Amount; v != nil {
+		m.SetAmount(*v)
+	}
+	if v := i.AccountID; v != nil {
+		m.SetAccountID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTransactionEntryInput on the TransactionEntryUpdate builder.
+func (c *TransactionEntryUpdate) SetInput(i UpdateTransactionEntryInput) *TransactionEntryUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateTransactionEntryInput on the TransactionEntryUpdateOne builder.
+func (c *TransactionEntryUpdateOne) SetInput(i UpdateTransactionEntryInput) *TransactionEntryUpdateOne {
 	i.Mutate(c.Mutation())
 	return c
 }

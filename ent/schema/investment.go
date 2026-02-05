@@ -181,6 +181,7 @@ func (InvestmentLot) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 			),
 	}

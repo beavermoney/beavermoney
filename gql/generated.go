@@ -68,6 +68,7 @@ type ResolverRoot interface {
 	TransactionEntryWhereInput() TransactionEntryWhereInputResolver
 	UpdateInvestmentInput() UpdateInvestmentInputResolver
 	UpdateInvestmentLotInput() UpdateInvestmentLotInputResolver
+	UpdateTransactionEntryInput() UpdateTransactionEntryInputResolver
 }
 
 type DirectiveRoot struct {
@@ -610,6 +611,9 @@ type UpdateInvestmentInputResolver interface {
 type UpdateInvestmentLotInputResolver interface {
 	Amount(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error
 	Price(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error
+}
+type UpdateTransactionEntryInputResolver interface {
+	Amount(ctx context.Context, obj *ent.UpdateTransactionEntryInput, data *string) error
 }
 
 type executableSchema struct {
@@ -2293,6 +2297,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateInvestmentInput,
 		ec.unmarshalInputUpdateInvestmentLotInput,
 		ec.unmarshalInputUpdateRecurringSubscriptionInput,
+		ec.unmarshalInputUpdateTransactionCategoryInput,
+		ec.unmarshalInputUpdateTransactionEntryInput,
+		ec.unmarshalInputUpdateTransactionInput,
 		ec.unmarshalInputUserHouseholdWhereInput,
 		ec.unmarshalInputUserKeyWhereInput,
 		ec.unmarshalInputUserWhereInput,
@@ -20090,6 +20097,201 @@ func (ec *executionContext) unmarshalInputUpdateRecurringSubscriptionInput(ctx c
 				return it, err
 			}
 			it.ClearIcon = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateTransactionCategoryInput(ctx context.Context, obj any) (ent.UpdateTransactionCategoryInput, error) {
+	var it ent.UpdateTransactionCategoryInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "type", "icon", "isImmutable", "addTransactionIDs", "removeTransactionIDs", "clearTransactions"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "type":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			data, err := ec.unmarshalOTransactionCategoryType2ᚖbeavermoneyᚗappᚋentᚋtransactioncategoryᚐType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Type = data
+		case "icon":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Icon = data
+		case "isImmutable":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isImmutable"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsImmutable = data
+		case "addTransactionIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionIDs"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddTransactionIDs = data
+		case "removeTransactionIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionIDs"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RemoveTransactionIDs = data
+		case "clearTransactions":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearTransactions"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearTransactions = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateTransactionEntryInput(ctx context.Context, obj any) (ent.UpdateTransactionEntryInput, error) {
+	var it ent.UpdateTransactionEntryInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"amount", "accountID"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "amount":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amount"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.UpdateTransactionEntryInput().Amount(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "accountID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AccountID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateTransactionInput(ctx context.Context, obj any) (ent.UpdateTransactionInput, error) {
+	var it ent.UpdateTransactionInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"description", "clearDescription", "datetime", "categoryID", "addTransactionEntryIDs", "removeTransactionEntryIDs", "clearTransactionEntries", "addInvestmentLotIDs", "removeInvestmentLotIDs", "clearInvestmentLots"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "clearDescription":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearDescription"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearDescription = data
+		case "datetime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("datetime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Datetime = data
+		case "categoryID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CategoryID = data
+		case "addTransactionEntryIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionEntryIDs"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddTransactionEntryIDs = data
+		case "removeTransactionEntryIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionEntryIDs"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RemoveTransactionEntryIDs = data
+		case "clearTransactionEntries":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearTransactionEntries"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearTransactionEntries = data
+		case "addInvestmentLotIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addInvestmentLotIDs"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddInvestmentLotIDs = data
+		case "removeInvestmentLotIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeInvestmentLotIDs"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RemoveInvestmentLotIDs = data
+		case "clearInvestmentLots":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearInvestmentLots"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearInvestmentLots = data
 		}
 	}
 

@@ -44,6 +44,7 @@ func (Transaction) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 			),
 		edge.From("household", Household.Type).
@@ -55,6 +56,7 @@ func (Transaction) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 			),
 		edge.From("category", TransactionCategory.Type).
@@ -89,7 +91,7 @@ func (Transaction) Indexes() []ent.Index {
 func (Transaction) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.Mutations(entgql.MutationCreate()),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 		entgql.QueryField(),
 	}
 }
@@ -161,7 +163,7 @@ func (TransactionCategory) Indexes() []ent.Index {
 func (TransactionCategory) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.Mutations(entgql.MutationCreate()),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 		entgql.QueryField(),
 	}
 }
@@ -210,6 +212,7 @@ func (TransactionEntry) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 			),
 		edge.From("account", Account.Type).
@@ -226,6 +229,7 @@ func (TransactionEntry) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 			),
 		edge.From("transaction", Transaction.Type).
@@ -237,6 +241,7 @@ func (TransactionEntry) Edges() []ent.Edge {
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
 				),
 			),
 	}
@@ -244,7 +249,7 @@ func (TransactionEntry) Edges() []ent.Edge {
 
 func (TransactionEntry) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entgql.Mutations(entgql.MutationCreate()),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 		entgql.QueryField(),
 	}
 }
