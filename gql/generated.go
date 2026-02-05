@@ -458,8 +458,8 @@ type MutationResolver interface {
 	BuyInvestment(ctx context.Context, input model.BuyInvestmentInputCustom) (*ent.TransactionEdge, error)
 	SellInvestment(ctx context.Context, input model.SellInvestmentInputCustom) (*ent.TransactionEdge, error)
 	MoveInvestment(ctx context.Context, input model.MoveInvestmentInputCustom) (*ent.TransactionEdge, error)
-	Refresh(ctx context.Context) (bool, error)
 	DeleteTransaction(ctx context.Context, id int) (bool, error)
+	Refresh(ctx context.Context) (bool, error)
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id int) (ent.Noder, error)
@@ -7414,35 +7414,6 @@ func (ec *executionContext) fieldContext_Mutation_moveInvestment(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_refresh(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Mutation_refresh,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Mutation().Refresh(ctx)
-		},
-		nil,
-		ec.marshalNBoolean2bool,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Mutation_refresh(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Mutation_deleteTransaction(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -7480,6 +7451,35 @@ func (ec *executionContext) fieldContext_Mutation_deleteTransaction(ctx context.
 	if fc.Args, err = ec.field_Mutation_deleteTransaction_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_refresh(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_refresh,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Mutation().Refresh(ctx)
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_refresh(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
 	}
 	return fc, nil
 }
@@ -23579,16 +23579,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "refresh":
+		case "deleteTransaction":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_refresh(ctx, field)
+				return ec._Mutation_deleteTransaction(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "deleteTransaction":
+		case "refresh":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deleteTransaction(ctx, field)
+				return ec._Mutation_refresh(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++

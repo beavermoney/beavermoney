@@ -2,10 +2,13 @@ type Mutation {
   createHousehold(input: CreateHouseholdInput!): Household!
 
   createAccount(input: CreateAccountInput!): AccountEdge!
+
   createInvestment(input: CreateInvestmentInputCustom!): InvestmentEdge!
+
   createTransactionCategory(
     input: CreateTransactionCategoryInput!
   ): TransactionCategoryEdge!
+
   createRecurringSubscription(
     input: CreateRecurringSubscriptionInput!
   ): RecurringSubscriptionEdge!
@@ -17,10 +20,9 @@ type Mutation {
   buyInvestment(input: BuyInvestmentInputCustom!): TransactionEdge!
   sellInvestment(input: SellInvestmentInputCustom!): TransactionEdge!
   moveInvestment(input: MoveInvestmentInputCustom!): TransactionEdge!
+  deleteTransaction(id: ID!): Boolean!
 
   refresh: Boolean!
-
-  deleteTransaction(id: ID!): Boolean!
 }
 
 input CreateInvestmentInputCustom {

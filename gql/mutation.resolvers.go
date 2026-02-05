@@ -1063,6 +1063,29 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	}, nil
 }
 
+// DeleteTransaction is the resolver for the deleteTransaction field.
+func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteTransaction",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	err := client.Transaction.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // Refresh is the resolver for the refresh field.
 func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 	userID := contextkeys.GetUserID(ctx)
@@ -1233,29 +1256,6 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 				}
 			}
 		}
-	}
-
-	return true, nil
-}
-
-// DeleteTransaction is the resolver for the deleteTransaction field.
-func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteTransaction",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	client := ent.FromContext(ctx)
-
-	err := client.Transaction.DeleteOneID(id).Exec(ctx)
-	if err != nil {
-		return false, err
 	}
 
 	return true, nil
