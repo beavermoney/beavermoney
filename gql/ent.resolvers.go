@@ -658,11 +658,6 @@ func (r *transactionEntryWhereInputResolver) AmountLte(ctx context.Context, obj 
 }
 
 // Amount is the resolver for the amount field.
-func (r *updateInvestmentInputResolver) Amount(ctx context.Context, obj *ent.UpdateInvestmentInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Amount - amount"))
-}
-
-// Amount is the resolver for the amount field.
 func (r *updateInvestmentLotInputResolver) Amount(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error {
 	panic(fmt.Errorf("not implemented: Amount - amount"))
 }
@@ -747,11 +742,6 @@ func (r *Resolver) TransactionEntryWhereInput() TransactionEntryWhereInputResolv
 	return &transactionEntryWhereInputResolver{r}
 }
 
-// UpdateInvestmentInput returns UpdateInvestmentInputResolver implementation.
-func (r *Resolver) UpdateInvestmentInput() UpdateInvestmentInputResolver {
-	return &updateInvestmentInputResolver{r}
-}
-
 // UpdateInvestmentLotInput returns UpdateInvestmentLotInputResolver implementation.
 func (r *Resolver) UpdateInvestmentLotInput() UpdateInvestmentLotInputResolver {
 	return &updateInvestmentLotInputResolver{r}
@@ -778,6 +768,5 @@ type investmentLotWhereInputResolver struct{ *Resolver }
 type investmentWhereInputResolver struct{ *Resolver }
 type recurringSubscriptionWhereInputResolver struct{ *Resolver }
 type transactionEntryWhereInputResolver struct{ *Resolver }
-type updateInvestmentInputResolver struct{ *Resolver }
 type updateInvestmentLotInputResolver struct{ *Resolver }
 type updateTransactionEntryInputResolver struct{ *Resolver }

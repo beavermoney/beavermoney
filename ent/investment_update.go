@@ -79,27 +79,6 @@ func (_u *InvestmentUpdate) SetNillableSymbol(v *string) *InvestmentUpdate {
 	return _u
 }
 
-// SetAmount sets the "amount" field.
-func (_u *InvestmentUpdate) SetAmount(v decimal.Decimal) *InvestmentUpdate {
-	_u.mutation.ResetAmount()
-	_u.mutation.SetAmount(v)
-	return _u
-}
-
-// SetNillableAmount sets the "amount" field if the given value is not nil.
-func (_u *InvestmentUpdate) SetNillableAmount(v *decimal.Decimal) *InvestmentUpdate {
-	if v != nil {
-		_u.SetAmount(*v)
-	}
-	return _u
-}
-
-// AddAmount adds value to the "amount" field.
-func (_u *InvestmentUpdate) AddAmount(v decimal.Decimal) *InvestmentUpdate {
-	_u.mutation.AddAmount(v)
-	return _u
-}
-
 // SetQuote sets the "quote" field.
 func (_u *InvestmentUpdate) SetQuote(v decimal.Decimal) *InvestmentUpdate {
 	_u.mutation.ResetQuote()
@@ -118,27 +97,6 @@ func (_u *InvestmentUpdate) SetNillableQuote(v *decimal.Decimal) *InvestmentUpda
 // AddQuote adds value to the "quote" field.
 func (_u *InvestmentUpdate) AddQuote(v decimal.Decimal) *InvestmentUpdate {
 	_u.mutation.AddQuote(v)
-	return _u
-}
-
-// SetValue sets the "value" field.
-func (_u *InvestmentUpdate) SetValue(v decimal.Decimal) *InvestmentUpdate {
-	_u.mutation.ResetValue()
-	_u.mutation.SetValue(v)
-	return _u
-}
-
-// SetNillableValue sets the "value" field if the given value is not nil.
-func (_u *InvestmentUpdate) SetNillableValue(v *decimal.Decimal) *InvestmentUpdate {
-	if v != nil {
-		_u.SetValue(*v)
-	}
-	return _u
-}
-
-// AddValue adds value to the "value" field.
-func (_u *InvestmentUpdate) AddValue(v decimal.Decimal) *InvestmentUpdate {
-	_u.mutation.AddValue(v)
 	return _u
 }
 
@@ -279,23 +237,11 @@ func (_u *InvestmentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.Symbol(); ok {
 		_spec.SetField(investment.FieldSymbol, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Amount(); ok {
-		_spec.SetField(investment.FieldAmount, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedAmount(); ok {
-		_spec.AddField(investment.FieldAmount, field.TypeFloat64, value)
-	}
 	if value, ok := _u.mutation.Quote(); ok {
 		_spec.SetField(investment.FieldQuote, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedQuote(); ok {
 		_spec.AddField(investment.FieldQuote, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.Value(); ok {
-		_spec.SetField(investment.FieldValue, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedValue(); ok {
-		_spec.AddField(investment.FieldValue, field.TypeFloat64, value)
 	}
 	if _u.mutation.InvestmentLotsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -412,27 +358,6 @@ func (_u *InvestmentUpdateOne) SetNillableSymbol(v *string) *InvestmentUpdateOne
 	return _u
 }
 
-// SetAmount sets the "amount" field.
-func (_u *InvestmentUpdateOne) SetAmount(v decimal.Decimal) *InvestmentUpdateOne {
-	_u.mutation.ResetAmount()
-	_u.mutation.SetAmount(v)
-	return _u
-}
-
-// SetNillableAmount sets the "amount" field if the given value is not nil.
-func (_u *InvestmentUpdateOne) SetNillableAmount(v *decimal.Decimal) *InvestmentUpdateOne {
-	if v != nil {
-		_u.SetAmount(*v)
-	}
-	return _u
-}
-
-// AddAmount adds value to the "amount" field.
-func (_u *InvestmentUpdateOne) AddAmount(v decimal.Decimal) *InvestmentUpdateOne {
-	_u.mutation.AddAmount(v)
-	return _u
-}
-
 // SetQuote sets the "quote" field.
 func (_u *InvestmentUpdateOne) SetQuote(v decimal.Decimal) *InvestmentUpdateOne {
 	_u.mutation.ResetQuote()
@@ -451,27 +376,6 @@ func (_u *InvestmentUpdateOne) SetNillableQuote(v *decimal.Decimal) *InvestmentU
 // AddQuote adds value to the "quote" field.
 func (_u *InvestmentUpdateOne) AddQuote(v decimal.Decimal) *InvestmentUpdateOne {
 	_u.mutation.AddQuote(v)
-	return _u
-}
-
-// SetValue sets the "value" field.
-func (_u *InvestmentUpdateOne) SetValue(v decimal.Decimal) *InvestmentUpdateOne {
-	_u.mutation.ResetValue()
-	_u.mutation.SetValue(v)
-	return _u
-}
-
-// SetNillableValue sets the "value" field if the given value is not nil.
-func (_u *InvestmentUpdateOne) SetNillableValue(v *decimal.Decimal) *InvestmentUpdateOne {
-	if v != nil {
-		_u.SetValue(*v)
-	}
-	return _u
-}
-
-// AddValue adds value to the "value" field.
-func (_u *InvestmentUpdateOne) AddValue(v decimal.Decimal) *InvestmentUpdateOne {
-	_u.mutation.AddValue(v)
 	return _u
 }
 
@@ -642,23 +546,11 @@ func (_u *InvestmentUpdateOne) sqlSave(ctx context.Context) (_node *Investment, 
 	if value, ok := _u.mutation.Symbol(); ok {
 		_spec.SetField(investment.FieldSymbol, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Amount(); ok {
-		_spec.SetField(investment.FieldAmount, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedAmount(); ok {
-		_spec.AddField(investment.FieldAmount, field.TypeFloat64, value)
-	}
 	if value, ok := _u.mutation.Quote(); ok {
 		_spec.SetField(investment.FieldQuote, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedQuote(); ok {
 		_spec.AddField(investment.FieldQuote, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.Value(); ok {
-		_spec.SetField(investment.FieldValue, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedValue(); ok {
-		_spec.AddField(investment.FieldValue, field.TypeFloat64, value)
 	}
 	if _u.mutation.InvestmentLotsCleared() {
 		edge := &sqlgraph.EdgeSpec{

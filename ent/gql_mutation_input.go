@@ -155,7 +155,6 @@ type UpdateInvestmentInput struct {
 	Name   *string
 	Type   *investment.Type
 	Symbol *string
-	Amount *decimal.Decimal
 }
 
 // Mutate applies the UpdateInvestmentInput on the InvestmentMutation builder.
@@ -168,9 +167,6 @@ func (i *UpdateInvestmentInput) Mutate(m *InvestmentMutation) {
 	}
 	if v := i.Symbol; v != nil {
 		m.SetSymbol(*v)
-	}
-	if v := i.Amount; v != nil {
-		m.SetAmount(*v)
 	}
 }
 

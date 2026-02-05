@@ -66,7 +66,6 @@ type ResolverRoot interface {
 	InvestmentWhereInput() InvestmentWhereInputResolver
 	RecurringSubscriptionWhereInput() RecurringSubscriptionWhereInputResolver
 	TransactionEntryWhereInput() TransactionEntryWhereInputResolver
-	UpdateInvestmentInput() UpdateInvestmentInputResolver
 	UpdateInvestmentLotInput() UpdateInvestmentLotInputResolver
 	UpdateTransactionEntryInput() UpdateTransactionEntryInputResolver
 }
@@ -604,9 +603,6 @@ type TransactionEntryWhereInputResolver interface {
 	AmountGte(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error
 	AmountLt(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error
 	AmountLte(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error
-}
-type UpdateInvestmentInputResolver interface {
-	Amount(ctx context.Context, obj *ent.UpdateInvestmentInput, data *string) error
 }
 type UpdateInvestmentLotInputResolver interface {
 	Amount(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error
@@ -19953,7 +19949,7 @@ func (ec *executionContext) unmarshalInputUpdateInvestmentInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "type", "symbol", "amount"}
+	fieldsInOrder := [...]string{"name", "type", "symbol"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19981,15 +19977,6 @@ func (ec *executionContext) unmarshalInputUpdateInvestmentInput(ctx context.Cont
 				return it, err
 			}
 			it.Symbol = data
-		case "amount":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amount"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			if err = ec.resolvers.UpdateInvestmentInput().Amount(ctx, &it, data); err != nil {
-				return it, err
-			}
 		}
 	}
 

@@ -52,27 +52,6 @@ func (_u *AccountUpdate) SetNillableName(v *string) *AccountUpdate {
 	return _u
 }
 
-// SetBalance sets the "balance" field.
-func (_u *AccountUpdate) SetBalance(v decimal.Decimal) *AccountUpdate {
-	_u.mutation.ResetBalance()
-	_u.mutation.SetBalance(v)
-	return _u
-}
-
-// SetNillableBalance sets the "balance" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableBalance(v *decimal.Decimal) *AccountUpdate {
-	if v != nil {
-		_u.SetBalance(*v)
-	}
-	return _u
-}
-
-// AddBalance adds value to the "balance" field.
-func (_u *AccountUpdate) AddBalance(v decimal.Decimal) *AccountUpdate {
-	_u.mutation.AddBalance(v)
-	return _u
-}
-
 // SetIcon sets the "icon" field.
 func (_u *AccountUpdate) SetIcon(v string) *AccountUpdate {
 	_u.mutation.SetIcon(v)
@@ -90,27 +69,6 @@ func (_u *AccountUpdate) SetNillableIcon(v *string) *AccountUpdate {
 // ClearIcon clears the value of the "icon" field.
 func (_u *AccountUpdate) ClearIcon() *AccountUpdate {
 	_u.mutation.ClearIcon()
-	return _u
-}
-
-// SetValue sets the "value" field.
-func (_u *AccountUpdate) SetValue(v decimal.Decimal) *AccountUpdate {
-	_u.mutation.ResetValue()
-	_u.mutation.SetValue(v)
-	return _u
-}
-
-// SetNillableValue sets the "value" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableValue(v *decimal.Decimal) *AccountUpdate {
-	if v != nil {
-		_u.SetValue(*v)
-	}
-	return _u
-}
-
-// AddValue adds value to the "value" field.
-func (_u *AccountUpdate) AddValue(v decimal.Decimal) *AccountUpdate {
-	_u.mutation.AddValue(v)
 	return _u
 }
 
@@ -297,23 +255,11 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(account.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Balance(); ok {
-		_spec.SetField(account.FieldBalance, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedBalance(); ok {
-		_spec.AddField(account.FieldBalance, field.TypeFloat64, value)
-	}
 	if value, ok := _u.mutation.Icon(); ok {
 		_spec.SetField(account.FieldIcon, field.TypeString, value)
 	}
 	if _u.mutation.IconCleared() {
 		_spec.ClearField(account.FieldIcon, field.TypeString)
-	}
-	if value, ok := _u.mutation.Value(); ok {
-		_spec.SetField(account.FieldValue, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedValue(); ok {
-		_spec.AddField(account.FieldValue, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.FxRate(); ok {
 		_spec.SetField(account.FieldFxRate, field.TypeFloat64, value)
@@ -453,27 +399,6 @@ func (_u *AccountUpdateOne) SetNillableName(v *string) *AccountUpdateOne {
 	return _u
 }
 
-// SetBalance sets the "balance" field.
-func (_u *AccountUpdateOne) SetBalance(v decimal.Decimal) *AccountUpdateOne {
-	_u.mutation.ResetBalance()
-	_u.mutation.SetBalance(v)
-	return _u
-}
-
-// SetNillableBalance sets the "balance" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableBalance(v *decimal.Decimal) *AccountUpdateOne {
-	if v != nil {
-		_u.SetBalance(*v)
-	}
-	return _u
-}
-
-// AddBalance adds value to the "balance" field.
-func (_u *AccountUpdateOne) AddBalance(v decimal.Decimal) *AccountUpdateOne {
-	_u.mutation.AddBalance(v)
-	return _u
-}
-
 // SetIcon sets the "icon" field.
 func (_u *AccountUpdateOne) SetIcon(v string) *AccountUpdateOne {
 	_u.mutation.SetIcon(v)
@@ -491,27 +416,6 @@ func (_u *AccountUpdateOne) SetNillableIcon(v *string) *AccountUpdateOne {
 // ClearIcon clears the value of the "icon" field.
 func (_u *AccountUpdateOne) ClearIcon() *AccountUpdateOne {
 	_u.mutation.ClearIcon()
-	return _u
-}
-
-// SetValue sets the "value" field.
-func (_u *AccountUpdateOne) SetValue(v decimal.Decimal) *AccountUpdateOne {
-	_u.mutation.ResetValue()
-	_u.mutation.SetValue(v)
-	return _u
-}
-
-// SetNillableValue sets the "value" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableValue(v *decimal.Decimal) *AccountUpdateOne {
-	if v != nil {
-		_u.SetValue(*v)
-	}
-	return _u
-}
-
-// AddValue adds value to the "value" field.
-func (_u *AccountUpdateOne) AddValue(v decimal.Decimal) *AccountUpdateOne {
-	_u.mutation.AddValue(v)
 	return _u
 }
 
@@ -728,23 +632,11 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(account.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Balance(); ok {
-		_spec.SetField(account.FieldBalance, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedBalance(); ok {
-		_spec.AddField(account.FieldBalance, field.TypeFloat64, value)
-	}
 	if value, ok := _u.mutation.Icon(); ok {
 		_spec.SetField(account.FieldIcon, field.TypeString, value)
 	}
 	if _u.mutation.IconCleared() {
 		_spec.ClearField(account.FieldIcon, field.TypeString)
-	}
-	if value, ok := _u.mutation.Value(); ok {
-		_spec.SetField(account.FieldValue, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedValue(); ok {
-		_spec.AddField(account.FieldValue, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.FxRate(); ok {
 		_spec.SetField(account.FieldFxRate, field.TypeFloat64, value)

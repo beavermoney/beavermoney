@@ -526,24 +526,6 @@ func (u *AccountUpsert) UpdateName() *AccountUpsert {
 	return u
 }
 
-// SetBalance sets the "balance" field.
-func (u *AccountUpsert) SetBalance(v decimal.Decimal) *AccountUpsert {
-	u.Set(account.FieldBalance, v)
-	return u
-}
-
-// UpdateBalance sets the "balance" field to the value that was provided on create.
-func (u *AccountUpsert) UpdateBalance() *AccountUpsert {
-	u.SetExcluded(account.FieldBalance)
-	return u
-}
-
-// AddBalance adds v to the "balance" field.
-func (u *AccountUpsert) AddBalance(v decimal.Decimal) *AccountUpsert {
-	u.Add(account.FieldBalance, v)
-	return u
-}
-
 // SetIcon sets the "icon" field.
 func (u *AccountUpsert) SetIcon(v string) *AccountUpsert {
 	u.Set(account.FieldIcon, v)
@@ -559,24 +541,6 @@ func (u *AccountUpsert) UpdateIcon() *AccountUpsert {
 // ClearIcon clears the value of the "icon" field.
 func (u *AccountUpsert) ClearIcon() *AccountUpsert {
 	u.SetNull(account.FieldIcon)
-	return u
-}
-
-// SetValue sets the "value" field.
-func (u *AccountUpsert) SetValue(v decimal.Decimal) *AccountUpsert {
-	u.Set(account.FieldValue, v)
-	return u
-}
-
-// UpdateValue sets the "value" field to the value that was provided on create.
-func (u *AccountUpsert) UpdateValue() *AccountUpsert {
-	u.SetExcluded(account.FieldValue)
-	return u
-}
-
-// AddValue adds v to the "value" field.
-func (u *AccountUpsert) AddValue(v decimal.Decimal) *AccountUpsert {
-	u.Add(account.FieldValue, v)
 	return u
 }
 
@@ -617,6 +581,12 @@ func (u *AccountUpsertOne) UpdateNewValues() *AccountUpsertOne {
 		}
 		if _, exists := u.create.mutation.GetType(); exists {
 			s.SetIgnore(account.FieldType)
+		}
+		if _, exists := u.create.mutation.Balance(); exists {
+			s.SetIgnore(account.FieldBalance)
+		}
+		if _, exists := u.create.mutation.Value(); exists {
+			s.SetIgnore(account.FieldValue)
 		}
 		if _, exists := u.create.mutation.CurrencyID(); exists {
 			s.SetIgnore(account.FieldCurrencyID)
@@ -683,27 +653,6 @@ func (u *AccountUpsertOne) UpdateName() *AccountUpsertOne {
 	})
 }
 
-// SetBalance sets the "balance" field.
-func (u *AccountUpsertOne) SetBalance(v decimal.Decimal) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetBalance(v)
-	})
-}
-
-// AddBalance adds v to the "balance" field.
-func (u *AccountUpsertOne) AddBalance(v decimal.Decimal) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.AddBalance(v)
-	})
-}
-
-// UpdateBalance sets the "balance" field to the value that was provided on create.
-func (u *AccountUpsertOne) UpdateBalance() *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateBalance()
-	})
-}
-
 // SetIcon sets the "icon" field.
 func (u *AccountUpsertOne) SetIcon(v string) *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
@@ -722,27 +671,6 @@ func (u *AccountUpsertOne) UpdateIcon() *AccountUpsertOne {
 func (u *AccountUpsertOne) ClearIcon() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.ClearIcon()
-	})
-}
-
-// SetValue sets the "value" field.
-func (u *AccountUpsertOne) SetValue(v decimal.Decimal) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetValue(v)
-	})
-}
-
-// AddValue adds v to the "value" field.
-func (u *AccountUpsertOne) AddValue(v decimal.Decimal) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.AddValue(v)
-	})
-}
-
-// UpdateValue sets the "value" field to the value that was provided on create.
-func (u *AccountUpsertOne) UpdateValue() *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateValue()
 	})
 }
 
@@ -952,6 +880,12 @@ func (u *AccountUpsertBulk) UpdateNewValues() *AccountUpsertBulk {
 			if _, exists := b.mutation.GetType(); exists {
 				s.SetIgnore(account.FieldType)
 			}
+			if _, exists := b.mutation.Balance(); exists {
+				s.SetIgnore(account.FieldBalance)
+			}
+			if _, exists := b.mutation.Value(); exists {
+				s.SetIgnore(account.FieldValue)
+			}
 			if _, exists := b.mutation.CurrencyID(); exists {
 				s.SetIgnore(account.FieldCurrencyID)
 			}
@@ -1018,27 +952,6 @@ func (u *AccountUpsertBulk) UpdateName() *AccountUpsertBulk {
 	})
 }
 
-// SetBalance sets the "balance" field.
-func (u *AccountUpsertBulk) SetBalance(v decimal.Decimal) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetBalance(v)
-	})
-}
-
-// AddBalance adds v to the "balance" field.
-func (u *AccountUpsertBulk) AddBalance(v decimal.Decimal) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.AddBalance(v)
-	})
-}
-
-// UpdateBalance sets the "balance" field to the value that was provided on create.
-func (u *AccountUpsertBulk) UpdateBalance() *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateBalance()
-	})
-}
-
 // SetIcon sets the "icon" field.
 func (u *AccountUpsertBulk) SetIcon(v string) *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
@@ -1057,27 +970,6 @@ func (u *AccountUpsertBulk) UpdateIcon() *AccountUpsertBulk {
 func (u *AccountUpsertBulk) ClearIcon() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.ClearIcon()
-	})
-}
-
-// SetValue sets the "value" field.
-func (u *AccountUpsertBulk) SetValue(v decimal.Decimal) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetValue(v)
-	})
-}
-
-// AddValue adds v to the "value" field.
-func (u *AccountUpsertBulk) AddValue(v decimal.Decimal) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.AddValue(v)
-	})
-}
-
-// UpdateValue sets the "value" field to the value that was provided on create.
-func (u *AccountUpsertBulk) UpdateValue() *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateValue()
 	})
 }
 

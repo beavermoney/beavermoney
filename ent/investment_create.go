@@ -513,24 +513,6 @@ func (u *InvestmentUpsert) UpdateSymbol() *InvestmentUpsert {
 	return u
 }
 
-// SetAmount sets the "amount" field.
-func (u *InvestmentUpsert) SetAmount(v decimal.Decimal) *InvestmentUpsert {
-	u.Set(investment.FieldAmount, v)
-	return u
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *InvestmentUpsert) UpdateAmount() *InvestmentUpsert {
-	u.SetExcluded(investment.FieldAmount)
-	return u
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *InvestmentUpsert) AddAmount(v decimal.Decimal) *InvestmentUpsert {
-	u.Add(investment.FieldAmount, v)
-	return u
-}
-
 // SetQuote sets the "quote" field.
 func (u *InvestmentUpsert) SetQuote(v decimal.Decimal) *InvestmentUpsert {
 	u.Set(investment.FieldQuote, v)
@@ -546,24 +528,6 @@ func (u *InvestmentUpsert) UpdateQuote() *InvestmentUpsert {
 // AddQuote adds v to the "quote" field.
 func (u *InvestmentUpsert) AddQuote(v decimal.Decimal) *InvestmentUpsert {
 	u.Add(investment.FieldQuote, v)
-	return u
-}
-
-// SetValue sets the "value" field.
-func (u *InvestmentUpsert) SetValue(v decimal.Decimal) *InvestmentUpsert {
-	u.Set(investment.FieldValue, v)
-	return u
-}
-
-// UpdateValue sets the "value" field to the value that was provided on create.
-func (u *InvestmentUpsert) UpdateValue() *InvestmentUpsert {
-	u.SetExcluded(investment.FieldValue)
-	return u
-}
-
-// AddValue adds v to the "value" field.
-func (u *InvestmentUpsert) AddValue(v decimal.Decimal) *InvestmentUpsert {
-	u.Add(investment.FieldValue, v)
 	return u
 }
 
@@ -583,6 +547,12 @@ func (u *InvestmentUpsertOne) UpdateNewValues() *InvestmentUpsertOne {
 		}
 		if _, exists := u.create.mutation.HouseholdID(); exists {
 			s.SetIgnore(investment.FieldHouseholdID)
+		}
+		if _, exists := u.create.mutation.Amount(); exists {
+			s.SetIgnore(investment.FieldAmount)
+		}
+		if _, exists := u.create.mutation.Value(); exists {
+			s.SetIgnore(investment.FieldValue)
 		}
 		if _, exists := u.create.mutation.AccountID(); exists {
 			s.SetIgnore(investment.FieldAccountID)
@@ -677,27 +647,6 @@ func (u *InvestmentUpsertOne) UpdateSymbol() *InvestmentUpsertOne {
 	})
 }
 
-// SetAmount sets the "amount" field.
-func (u *InvestmentUpsertOne) SetAmount(v decimal.Decimal) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *InvestmentUpsertOne) AddAmount(v decimal.Decimal) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *InvestmentUpsertOne) UpdateAmount() *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateAmount()
-	})
-}
-
 // SetQuote sets the "quote" field.
 func (u *InvestmentUpsertOne) SetQuote(v decimal.Decimal) *InvestmentUpsertOne {
 	return u.Update(func(s *InvestmentUpsert) {
@@ -716,27 +665,6 @@ func (u *InvestmentUpsertOne) AddQuote(v decimal.Decimal) *InvestmentUpsertOne {
 func (u *InvestmentUpsertOne) UpdateQuote() *InvestmentUpsertOne {
 	return u.Update(func(s *InvestmentUpsert) {
 		s.UpdateQuote()
-	})
-}
-
-// SetValue sets the "value" field.
-func (u *InvestmentUpsertOne) SetValue(v decimal.Decimal) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetValue(v)
-	})
-}
-
-// AddValue adds v to the "value" field.
-func (u *InvestmentUpsertOne) AddValue(v decimal.Decimal) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.AddValue(v)
-	})
-}
-
-// UpdateValue sets the "value" field to the value that was provided on create.
-func (u *InvestmentUpsertOne) UpdateValue() *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateValue()
 	})
 }
 
@@ -922,6 +850,12 @@ func (u *InvestmentUpsertBulk) UpdateNewValues() *InvestmentUpsertBulk {
 			if _, exists := b.mutation.HouseholdID(); exists {
 				s.SetIgnore(investment.FieldHouseholdID)
 			}
+			if _, exists := b.mutation.Amount(); exists {
+				s.SetIgnore(investment.FieldAmount)
+			}
+			if _, exists := b.mutation.Value(); exists {
+				s.SetIgnore(investment.FieldValue)
+			}
 			if _, exists := b.mutation.AccountID(); exists {
 				s.SetIgnore(investment.FieldAccountID)
 			}
@@ -1016,27 +950,6 @@ func (u *InvestmentUpsertBulk) UpdateSymbol() *InvestmentUpsertBulk {
 	})
 }
 
-// SetAmount sets the "amount" field.
-func (u *InvestmentUpsertBulk) SetAmount(v decimal.Decimal) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *InvestmentUpsertBulk) AddAmount(v decimal.Decimal) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *InvestmentUpsertBulk) UpdateAmount() *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateAmount()
-	})
-}
-
 // SetQuote sets the "quote" field.
 func (u *InvestmentUpsertBulk) SetQuote(v decimal.Decimal) *InvestmentUpsertBulk {
 	return u.Update(func(s *InvestmentUpsert) {
@@ -1055,27 +968,6 @@ func (u *InvestmentUpsertBulk) AddQuote(v decimal.Decimal) *InvestmentUpsertBulk
 func (u *InvestmentUpsertBulk) UpdateQuote() *InvestmentUpsertBulk {
 	return u.Update(func(s *InvestmentUpsert) {
 		s.UpdateQuote()
-	})
-}
-
-// SetValue sets the "value" field.
-func (u *InvestmentUpsertBulk) SetValue(v decimal.Decimal) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetValue(v)
-	})
-}
-
-// AddValue adds v to the "value" field.
-func (u *InvestmentUpsertBulk) AddValue(v decimal.Decimal) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.AddValue(v)
-	})
-}
-
-// UpdateValue sets the "value" field to the value that was provided on create.
-func (u *InvestmentUpsertBulk) UpdateValue() *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateValue()
 	})
 }
 

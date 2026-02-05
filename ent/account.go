@@ -31,11 +31,11 @@ type Account struct {
 	Name string `json:"name,omitempty"`
 	// Type holds the value of the "type" field.
 	Type account.Type `json:"type,omitempty"`
-	// Balance holds the value of the "balance" field.
+	// Balance is only the cash portion of the account excluding investments
 	Balance decimal.Decimal `json:"balance,omitempty"`
 	// Icon holds the value of the "icon" field.
 	Icon string `json:"icon,omitempty"`
-	// Value holds the value of the "value" field.
+	// Value is the total value of the account including investments
 	Value decimal.Decimal `json:"value,omitempty"`
 	// FxRate holds the value of the "fx_rate" field.
 	FxRate decimal.Decimal `json:"fx_rate,omitempty"`

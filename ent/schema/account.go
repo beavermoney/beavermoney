@@ -26,6 +26,7 @@ func (Account) Fields() []ent.Field {
 			Immutable(),
 
 		field.Float("balance").GoType(decimal.Decimal{}).
+			Comment("Balance is only the cash portion of the account excluding investments").
 			SchemaType(map[string]string{
 				dialect.Postgres: "numeric(36,18)",
 			}).
@@ -35,6 +36,7 @@ func (Account) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			).
+			Immutable().
 			DefaultFunc(func() decimal.Decimal {
 				return decimal.NewFromInt(0)
 			}),
@@ -42,6 +44,7 @@ func (Account) Fields() []ent.Field {
 		field.String("icon").Optional(),
 
 		field.Float("value").GoType(decimal.Decimal{}).
+			Comment("Value is the total value of the account including investments").
 			SchemaType(map[string]string{
 				dialect.Postgres: "numeric(36,18)",
 			}).
@@ -52,6 +55,7 @@ func (Account) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			).
+			Immutable().
 			DefaultFunc(func() decimal.Decimal {
 				return decimal.NewFromInt(0)
 			}),
