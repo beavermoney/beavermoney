@@ -19,6 +19,8 @@ type Mutation {
   moveInvestment(input: MoveInvestmentInputCustom!): TransactionEdge!
 
   refresh: Boolean!
+
+  deleteTransaction(id: ID!): Boolean!
 }
 
 input CreateInvestmentInputCustom {

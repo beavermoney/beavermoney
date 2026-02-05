@@ -5,6 +5,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -67,12 +68,14 @@ func (Transaction) Edges() []ent.Edge {
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 				),
+				entsql.OnDelete(entsql.Cascade),
 			),
 		edge.To("investment_lots", InvestmentLot.Type).
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 				),
+				entsql.OnDelete(entsql.Cascade),
 			),
 	}
 }

@@ -159,7 +159,7 @@ var (
 				Symbol:     "investment_lots_transactions_investment_lots",
 				Columns:    []*schema.Column{InvestmentLotsColumns[7]},
 				RefColumns: []*schema.Column{TransactionsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -321,7 +321,7 @@ var (
 				Symbol:     "transaction_entries_transactions_transaction_entries",
 				Columns:    []*schema.Column{TransactionEntriesColumns[7]},
 				RefColumns: []*schema.Column{TransactionsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
