@@ -1063,6 +1063,32 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	}, nil
 }
 
+// UpdateTransaction is the resolver for the updateTransaction field.
+func (r *mutationResolver) UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput) (*ent.TransactionEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateTransaction",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	data, err := client.Transaction.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ent.TransactionEdge{
+		Node:   data,
+		Cursor: gqlutil.EncodeCursor(data.ID),
+	}, nil
+}
+
 // DeleteTransaction is the resolver for the deleteTransaction field.
 func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool, error) {
 	userID := contextkeys.GetUserID(ctx)
