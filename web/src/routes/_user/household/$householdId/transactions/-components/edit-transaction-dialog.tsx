@@ -57,6 +57,7 @@ import {
 import { commitMutationResult } from '@/lib/relay'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
+import { Item, ItemGroup } from '@/components/ui/item'
 
 const editTransactionDialogFragment = graphql`
   fragment editTransactionDialogFragment on Transaction {
@@ -288,40 +289,29 @@ export function EditTransactionDialog({
         </DialogDescription>
       </DialogHeader>
 
+      <div>
+        {(data.investmentLots ?? []).map((lot, index) => (
+          <div>
+            <InvestmentLotCard
+              fragmentRef={lot}
+              isFirst={index === 0}
+              isLast={index === (data.investmentLots ?? []).length - 1}
+            />
+          </div>
+        ))}
+
+        {(data.transactionEntries ?? []).map((entry, index) => (
+          <div>
+            <TransactionEntryCard
+              fragmentRef={entry}
+              isFirst={index === 0}
+              isLast={index === (data.transactionEntries ?? []).length - 1}
+            />
+          </div>
+        ))}
+      </div>
+
       <div className="space-y-4">
-        {/* Display existing entries and lots - read-only for now, clickable later */}
-        <div className="bg-muted/30 space-y-2 rounded-lg border p-3">
-          <p className="text-muted-foreground text-xs font-medium">
-            Transaction Details
-          </p>
-
-          {/* Show investment lots if they exist */}
-          {(data.investmentLots ?? []).length > 0 && (
-            <div className="space-y-1">
-              {(data.investmentLots ?? []).map((lot, index) => (
-                <InvestmentLotCard
-                  fragmentRef={lot}
-                  isFirst={index === 0}
-                  isLast={index === (data.investmentLots ?? []).length - 1}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Show transaction entries if they exist */}
-          {(data.transactionEntries ?? []).length > 0 && (
-            <div className="space-y-1">
-              {(data.transactionEntries ?? []).map((entry, index) => (
-                <TransactionEntryCard
-                  fragmentRef={entry}
-                  isFirst={index === 0}
-                  isLast={index === (data.transactionEntries ?? []).length - 1}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Edit form */}
         <form
           id="edit-transaction-form"
