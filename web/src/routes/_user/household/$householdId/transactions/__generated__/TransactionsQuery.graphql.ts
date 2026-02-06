@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<83e402b86de11ed48eb8b65c27b644ef>>
+ * @generated SignedSource<<df33dee1d90af5b4876edd699f02a631>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -951,10 +951,17 @@ v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "amount",
+  "name": "type",
   "storageKey": null
 },
 v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "Currency",
@@ -973,7 +980,7 @@ v10 = {
   ],
   "storageKey": null
 },
-v11 = [
+v12 = [
   {
     "alias": null,
     "args": null,
@@ -1057,13 +1064,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v8/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "type",
-                        "storageKey": null
-                      },
+                      (v9/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -1084,7 +1085,7 @@ return {
                     "plural": true,
                     "selections": [
                       (v7/*: any*/),
-                      (v9/*: any*/),
+                      (v10/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -1108,7 +1109,7 @@ return {
                             "name": "symbol",
                             "storageKey": null
                           },
-                          (v10/*: any*/),
+                          (v11/*: any*/),
                           (v7/*: any*/)
                         ],
                         "storageKey": null
@@ -1125,7 +1126,7 @@ return {
                     "plural": true,
                     "selections": [
                       (v7/*: any*/),
-                      (v9/*: any*/),
+                      (v10/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -1135,12 +1136,26 @@ return {
                         "plural": false,
                         "selections": [
                           (v8/*: any*/),
-                          (v10/*: any*/),
+                          (v11/*: any*/),
                           (v7/*: any*/)
                         ],
                         "storageKey": null
                       }
                     ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "description",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "categoryID",
                     "storageKey": null
                   },
                   {
@@ -1205,6 +1220,42 @@ return {
       },
       {
         "alias": null,
+        "args": null,
+        "concreteType": "TransactionCategoryConnection",
+        "kind": "LinkedField",
+        "name": "transactionCategories",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "TransactionCategoryEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "TransactionCategory",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v7/*: any*/),
+                  (v8/*: any*/),
+                  (v9/*: any*/)
+                ],
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      },
+      {
+        "alias": null,
         "args": [
           {
             "fields": [
@@ -1227,7 +1278,7 @@ return {
             "kind": "LinkedField",
             "name": "incomeBreakdown",
             "plural": false,
-            "selections": (v11/*: any*/),
+            "selections": (v12/*: any*/),
             "storageKey": null
           },
           {
@@ -1237,7 +1288,7 @@ return {
             "kind": "LinkedField",
             "name": "expensesBreakdown",
             "plural": false,
-            "selections": (v11/*: any*/),
+            "selections": (v12/*: any*/),
             "storageKey": null
           }
         ],
@@ -1246,12 +1297,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "624af311d4ce3e7a8badbe21c816d52c",
+    "cacheID": "f7b3823670eccfac7d7fc107088bd520",
     "id": null,
     "metadata": {},
     "name": "TransactionsQuery",
     "operationKind": "query",
-    "text": "query TransactionsQuery(\n  $where: TransactionWhereInput\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...transactionsPanelFragment_7P6yy\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Query {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsPanelFragment_7P6yy on Query {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    ...financialSummaryCardsFragment\n  }\n}\n"
+    "text": "query TransactionsQuery(\n  $where: TransactionWhereInput\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...transactionsPanelFragment_7P6yy\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  ...editTransactionDialogFragment\n}\n\nfragment transactionsListFragment_3FC4Qo on Query {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n  ...editTransactionDialogCategoriesFragment\n}\n\nfragment transactionsPanelFragment_7P6yy on Query {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    ...financialSummaryCardsFragment\n  }\n}\n"
   }
 };
 })();

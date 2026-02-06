@@ -33,6 +33,7 @@ const transactionsListFragment = graphql`
         endCursor
       }
     }
+    ...editTransactionDialogCategoriesFragment
   }
 `
 
@@ -64,7 +65,10 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
 
           return (
             <Fragment key={transaction.node.id}>
-              <TransactionCard fragmentRef={transaction.node} />
+              <TransactionCard
+                fragmentRef={transaction.node}
+                categoriesRef={data}
+              />
             </Fragment>
           )
         })}

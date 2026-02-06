@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3b3e1ed46b69ee4f14d951dc23387cb7>>
+ * @generated SignedSource<<ff73f6cd52cfc419aef19789303c4b96>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,6 +23,7 @@ export type transactionsListFragment$data = {
       readonly hasNextPage: boolean;
     };
   };
+  readonly " $fragmentSpreads": FragmentRefs<"editTransactionDialogCategoriesFragment">;
   readonly " $fragmentType": "transactionsListFragment";
 };
 export type transactionsListFragment$key = {
@@ -176,6 +177,11 @@ return {
         }
       ],
       "storageKey": null
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "editTransactionDialogCategoriesFragment"
     }
   ],
   "type": "Query",
@@ -183,6 +189,6 @@ return {
 };
 })();
 
-(node as any).hash = "77764bae328c28c1bce6d5bb6b63050b";
+(node as any).hash = "d528011a15cc3bc5e453c9d2243cf153";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<62ca2de9c01131bcc7182d9b7b412bfd>>
+ * @generated SignedSource<<b95c388e57bcf02bbd5f5d508440c692>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -948,10 +948,17 @@ v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "amount",
+  "name": "type",
   "storageKey": null
 },
 v6 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v7 = {
   "alias": null,
   "args": null,
   "concreteType": "Currency",
@@ -1045,13 +1052,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v4/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "type",
-                        "storageKey": null
-                      },
+                      (v5/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -1072,7 +1073,7 @@ return {
                     "plural": true,
                     "selections": [
                       (v3/*: any*/),
-                      (v5/*: any*/),
+                      (v6/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -1096,7 +1097,7 @@ return {
                             "name": "symbol",
                             "storageKey": null
                           },
-                          (v6/*: any*/),
+                          (v7/*: any*/),
                           (v3/*: any*/)
                         ],
                         "storageKey": null
@@ -1113,7 +1114,7 @@ return {
                     "plural": true,
                     "selections": [
                       (v3/*: any*/),
-                      (v5/*: any*/),
+                      (v6/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -1123,12 +1124,26 @@ return {
                         "plural": false,
                         "selections": [
                           (v4/*: any*/),
-                          (v6/*: any*/),
+                          (v7/*: any*/),
                           (v3/*: any*/)
                         ],
                         "storageKey": null
                       }
                     ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "description",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "categoryID",
                     "storageKey": null
                   },
                   {
@@ -1190,20 +1205,56 @@ return {
         "key": "transactionsList_transactions",
         "kind": "LinkedHandle",
         "name": "transactions"
+      },
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "TransactionCategoryConnection",
+        "kind": "LinkedField",
+        "name": "transactionCategories",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "TransactionCategoryEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "TransactionCategory",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v3/*: any*/),
+                  (v4/*: any*/),
+                  (v5/*: any*/)
+                ],
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "d9fffb1cd6172bf07f3e6747c41bc9a6",
+    "cacheID": "91383d868d72e3f765bad9499d6b1e66",
     "id": null,
     "metadata": {},
     "name": "transactionsListRefetch",
     "operationKind": "query",
-    "text": "query transactionsListRefetch(\n  $count: Int = 20\n  $cursor: Cursor\n  $where: TransactionWhereInput\n) {\n  ...transactionsListFragment_mjR8k\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionsListFragment_mjR8k on Query {\n  transactions(first: $count, after: $cursor, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+    "text": "query transactionsListRefetch(\n  $count: Int = 20\n  $cursor: Cursor\n  $where: TransactionWhereInput\n) {\n  ...transactionsListFragment_mjR8k\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  ...editTransactionDialogFragment\n}\n\nfragment transactionsListFragment_mjR8k on Query {\n  transactions(first: $count, after: $cursor, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n  ...editTransactionDialogCategoriesFragment\n}\n"
   }
 };
 })();
 
-(node as any).hash = "77764bae328c28c1bce6d5bb6b63050b";
+(node as any).hash = "d528011a15cc3bc5e453c9d2243cf153";
 
 export default node;

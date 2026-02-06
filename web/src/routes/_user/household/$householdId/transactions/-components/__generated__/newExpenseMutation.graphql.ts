@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<faa0b5cde31595a98fd96482069423fe>>
+ * @generated SignedSource<<ecdcf2db983218496f2774be4b49a1a1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -286,7 +286,14 @@ return {
                 ],
                 "storageKey": null
               },
-              (v3/*: any*/)
+              (v3/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "categoryID",
+                "storageKey": null
+              }
             ],
             "storageKey": null
           }
@@ -296,12 +303,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1696ae2c843c5be23142a673c4bbaf03",
+    "cacheID": "17993e4801669f319c57ce0d47680c20",
     "id": null,
     "metadata": {},
     "name": "newExpenseMutation",
     "operationKind": "mutation",
-    "text": "mutation newExpenseMutation(\n  $input: CreateExpenseInputCustom!\n) {\n  createExpense(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n"
+    "text": "mutation newExpenseMutation(\n  $input: CreateExpenseInputCustom!\n) {\n  createExpense(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  ...editTransactionDialogFragment\n}\n"
   }
 };
 })();

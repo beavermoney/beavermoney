@@ -1,0 +1,544 @@
+import { graphql, useFragment, useMutation } from 'react-relay'
+import { useForm } from '@tanstack/react-form'
+import { toast } from 'sonner'
+import * as z from 'zod'
+import { format } from 'date-fns'
+import { match } from 'ts-pattern'
+import invariant from 'tiny-invariant'
+import { useState, Fragment } from 'react'
+import { Trash2Icon, AlertTriangleIcon } from 'lucide-react'
+import { ConnectionHandler } from 'relay-runtime'
+
+import type { editTransactionDialogFragment$key } from './__generated__/editTransactionDialogFragment.graphql'
+import type { editTransactionDialogUpdateMutation } from './__generated__/editTransactionDialogUpdateMutation.graphql'
+import type { editTransactionDialogDeleteMutation } from './__generated__/editTransactionDialogDeleteMutation.graphql'
+import type { editTransactionDialogCategoriesFragment$key } from './__generated__/editTransactionDialogCategoriesFragment.graphql'
+
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { commitMutationResult } from '@/lib/relay'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+
+const editTransactionDialogFragment = graphql`
+  fragment editTransactionDialogFragment on Transaction {
+    id
+    description
+    datetime
+    categoryID
+    category {
+      id
+      name
+      type
+      icon
+    }
+    investmentLots {
+      id
+      amount
+      price
+      investment {
+        name
+        symbol
+        currency {
+          code
+        }
+      }
+    }
+    transactionEntries {
+      id
+      amount
+      account {
+        name
+        currency {
+          code
+        }
+      }
+    }
+  }
+`
+
+const editTransactionDialogUpdateMutation = graphql`
+  mutation editTransactionDialogUpdateMutation(
+    $id: ID!
+    $input: UpdateTransactionInput!
+  ) {
+    updateTransaction(id: $id, input: $input) {
+      node {
+        id
+        description
+        datetime
+        categoryID
+        category {
+          id
+          name
+          type
+          icon
+        }
+        ...transactionCardFragment
+      }
+    }
+  }
+`
+
+const editTransactionDialogDeleteMutation = graphql`
+  mutation editTransactionDialogDeleteMutation($id: ID!) {
+    deleteTransaction(id: $id)
+  }
+`
+
+const editTransactionDialogCategoriesFragment = graphql`
+  fragment editTransactionDialogCategoriesFragment on Query {
+    transactionCategories {
+      edges {
+        node {
+          id
+          name
+          type
+        }
+      }
+    }
+  }
+`
+
+const formSchema = z.object({
+  description: z
+    .string()
+    .max(256, 'Description must be at most 256 characters.'),
+  datetime: z.date(),
+  categoryId: z.string().min(1, 'Please select a category'),
+})
+
+type EditTransactionDialogProps = {
+  fragmentRef: editTransactionDialogFragment$key
+  categoriesRef: editTransactionDialogCategoriesFragment$key
+  onOpenChange: (open: boolean) => void
+}
+
+export function EditTransactionDialog({
+  fragmentRef,
+  categoriesRef,
+  onOpenChange,
+}: EditTransactionDialogProps) {
+  const data = useFragment(editTransactionDialogFragment, fragmentRef)
+  const categoriesData = useFragment(
+    editTransactionDialogCategoriesFragment,
+    categoriesRef,
+  )
+
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
+
+  const [commitUpdate, isUpdateInFlight] =
+    useMutation<editTransactionDialogUpdateMutation>(
+      editTransactionDialogUpdateMutation,
+    )
+
+  const [commitDelete, isDeleteInFlight] =
+    useMutation<editTransactionDialogDeleteMutation>(
+      editTransactionDialogDeleteMutation,
+    )
+
+  // Get all categories
+  const allCategories =
+    categoriesData.transactionCategories.edges
+      ?.map((category) => {
+        invariant(category?.node, 'Category node is null')
+        return category.node
+      })
+      .filter((cat) => {
+        // Filter based on current transaction category type
+        return cat.type === data.category.type
+      }) ?? []
+
+  const form = useForm({
+    defaultValues: {
+      description: data.description ?? '',
+      datetime: new Date(data.datetime),
+      categoryId: data.categoryID,
+    },
+    validators: {
+      onSubmit: formSchema,
+    },
+    onSubmit: async ({ value }) => {
+      const formData = formSchema.parse(value)
+
+      const result =
+        await commitMutationResult<editTransactionDialogUpdateMutation>(
+          commitUpdate,
+          {
+            variables: {
+              id: data.id,
+              input: {
+                description: formData.description || null,
+                datetime: formData.datetime.toISOString(),
+                categoryID: formData.categoryId,
+              },
+            },
+            optimisticResponse: {
+              updateTransaction: {
+                node: {
+                  id: data.id,
+                  description: formData.description,
+                  datetime: formData.datetime.toISOString(),
+                  categoryID: formData.categoryId,
+                  category: {
+                    id: formData.categoryId,
+                    name:
+                      allCategories.find(
+                        (cat) => cat.id === formData.categoryId,
+                      )?.name ?? data.category.name,
+                    type: data.category.type,
+                    icon: data.category.icon,
+                  },
+                },
+              },
+            },
+          },
+        )
+
+      match(result)
+        .with({ status: 'success' }, () => {
+          toast.success('Transaction updated successfully!')
+        })
+        .with({ status: 'error' }, ({ error }) => {
+          toast.error(error.toString())
+        })
+        .exhaustive()
+    },
+  })
+
+  const handleDelete = async () => {
+    const result =
+      await commitMutationResult<editTransactionDialogDeleteMutation>(
+        commitDelete,
+        {
+          variables: {
+            id: data.id,
+          },
+          updater: (store) => {
+            // Remove from transactions connection
+            const connection = ConnectionHandler.getConnection(
+              store.getRoot(),
+              'transactionsList_transactions',
+            )
+
+            if (connection) {
+              ConnectionHandler.deleteNode(connection, data.id)
+            }
+
+            // Delete the record
+            store.delete(data.id)
+          },
+          optimisticUpdater: (store) => {
+            const connection = ConnectionHandler.getConnection(
+              store.getRoot(),
+              'transactionsList_transactions',
+            )
+
+            if (connection) {
+              ConnectionHandler.deleteNode(connection, data.id)
+            }
+          },
+        },
+      )
+
+    match(result)
+      .with({ status: 'success' }, () => {
+        toast.success('Transaction deleted successfully!')
+        setDeleteAlertOpen(false)
+        onOpenChange(false)
+      })
+      .with({ status: 'error' }, ({ error }) => {
+        toast.error(error.toString())
+        setDeleteAlertOpen(false)
+      })
+      .exhaustive()
+  }
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Edit Transaction</DialogTitle>
+        <DialogDescription>
+          Update transaction details. Click on entries or lots below to edit
+          them individually (coming soon).
+        </DialogDescription>
+      </DialogHeader>
+
+      <div className="space-y-4">
+        {/* Display existing entries and lots - read-only for now, clickable later */}
+        <div className="bg-muted/30 space-y-2 rounded-lg border p-3">
+          <p className="text-muted-foreground text-xs font-medium">
+            Transaction Details
+          </p>
+
+          {/* Show investment lots if they exist */}
+          {(data.investmentLots ?? []).length > 0 && (
+            <div className="space-y-1">
+              {(data.investmentLots ?? []).map((lot, index) => (
+                <Fragment key={lot.id}>
+                  {index > 0 && <Separator />}
+                  <button
+                    type="button"
+                    className={cn(
+                      'w-full rounded-md p-2 text-left text-xs transition-colors',
+                      'hover:bg-muted/50 cursor-not-allowed opacity-60',
+                    )}
+                    disabled
+                    title="Edit investment lot (coming soon)"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">
+                        {lot.investment.name} ({lot.investment.symbol})
+                      </span>
+                      <span className="font-mono">
+                        {lot.amount} @ {lot.price}{' '}
+                        {lot.investment.currency.code}
+                      </span>
+                    </div>
+                  </button>
+                </Fragment>
+              ))}
+            </div>
+          )}
+
+          {/* Show transaction entries if they exist */}
+          {(data.transactionEntries ?? []).length > 0 && (
+            <div className="space-y-1">
+              {(data.transactionEntries ?? []).map((entry, index) => (
+                <Fragment key={entry.id}>
+                  {(index > 0 || (data.investmentLots ?? []).length > 0) && (
+                    <Separator />
+                  )}
+                  <button
+                    type="button"
+                    className={cn(
+                      'w-full rounded-md p-2 text-left text-xs transition-colors',
+                      'hover:bg-muted/50 cursor-not-allowed opacity-60',
+                    )}
+                    disabled
+                    title="Edit transaction entry (coming soon)"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{entry.account.name}</span>
+                      <span className="font-mono">
+                        {entry.amount} {entry.account.currency.code}
+                      </span>
+                    </div>
+                  </button>
+                </Fragment>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Edit form */}
+        <form
+          id="edit-transaction-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
+          <FieldGroup>
+            <form.Field
+              name="description"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                    <Input
+                      data-1p-ignore
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="Transaction description"
+                      autoComplete="off"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+
+            <form.Field
+              name="datetime"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-left font-normal"
+                          />
+                        }
+                      >
+                        {format(field.state.value, 'PPP')}
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.state.value}
+                          onSelect={(date) => {
+                            if (date) {
+                              field.handleChange(date)
+                            }
+                          }}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                        />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+
+            <form.Field
+              name="categoryId"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                const selectedCategory = allCategories.find(
+                  (cat) => cat.id === field.state.value,
+                )
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                    <Combobox
+                      value={field.state.value}
+                      onValueChange={(value) => {
+                        if (value) {
+                          field.handleChange(value)
+                        }
+                      }}
+                    >
+                      <ComboboxInput
+                        placeholder={
+                          selectedCategory?.name ?? 'Select category...'
+                        }
+                      />
+                      <ComboboxContent>
+                        <ComboboxList>
+                          <ComboboxEmpty>No categories found</ComboboxEmpty>
+                          {allCategories.map((category) => (
+                            <ComboboxItem key={category.id} value={category.id}>
+                              {category.name}
+                            </ComboboxItem>
+                          ))}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+          </FieldGroup>
+        </form>
+      </div>
+
+      <DialogFooter>
+        <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+          <AlertDialogTrigger
+            render={
+              <Button
+                variant="destructive"
+                type="button"
+                disabled={isDeleteInFlight || isUpdateInFlight}
+              />
+            }
+          >
+            <Trash2Icon className="mr-2 size-4" />
+            Delete
+          </AlertDialogTrigger>
+          <AlertDialogContent size="sm">
+            <AlertDialogHeader>
+              <AlertDialogMedia>
+                <AlertTriangleIcon className="text-destructive" />
+              </AlertDialogMedia>
+              <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                transaction and all associated entries and investment lots.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isDeleteInFlight}
+              >
+                {isDeleteInFlight ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <Button
+          type="submit"
+          form="edit-transaction-form"
+          disabled={isUpdateInFlight || isDeleteInFlight}
+        >
+          {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </DialogFooter>
+    </>
+  )
+}

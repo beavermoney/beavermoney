@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import currency from 'currency.js'
+import { useState } from 'react'
 import type {
   TransactionCategoryType,
   transactionCardFragment$data,
@@ -29,6 +30,9 @@ import { cn } from '@/lib/utils'
 import { Fragment } from 'react/jsx-runtime'
 import { Separator } from '@/components/ui/separator'
 import { format } from 'date-fns'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { EditTransactionDialog } from './edit-transaction-dialog'
+import { editTransactionDialogCategoriesFragment$key } from './__generated__/editTransactionDialogCategoriesFragment.graphql'
 
 const transactionCardFragment = graphql`
   fragment transactionCardFragment on Transaction {
@@ -61,45 +65,67 @@ const transactionCardFragment = graphql`
         }
       }
     }
+    ...editTransactionDialogFragment
   }
 `
 
 type TransactionCardProps = {
   fragmentRef: transactionCardFragment$key
+  categoriesRef: editTransactionDialogCategoriesFragment$key
 }
 
-export function TransactionCard({ fragmentRef }: TransactionCardProps) {
+export function TransactionCard({
+  fragmentRef,
+  categoriesRef,
+}: TransactionCardProps) {
   const data = useFragment(transactionCardFragment, fragmentRef)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   // Sort entries based on category type
   const sortedItems = getSortedTransactionItems(data)
 
   return (
-    <div className="border-border [a]:hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center rounded-md border text-xs/relaxed transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors">
-      {sortedItems.map((item, index) =>
-        item.type === 'lot' ? (
-          <Fragment key={item.lot.id}>
-            {index !== 0 && <Separator className="" />}
-            <InvestmentLotCard
-              data={data}
-              investmentLot={item.lot}
-              isFirst={index === 0}
-              isLast={index === sortedItems.length - 1}
-            />
-          </Fragment>
-        ) : (
-          <Fragment key={item.entry.id}>
-            {index !== 0 && <Separator className="" />}
-            <TransactionEntryCard
-              data={data}
-              transactionEntry={item.entry}
-              isFirst={index === 0}
-              isLast={index === sortedItems.length - 1}
-            />
-          </Fragment>
-        ),
-      )}
-    </div>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger
+        render={
+          <button
+            type="button"
+            className="border-border hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center rounded-md border text-xs/relaxed transition-colors duration-100 outline-none focus-visible:ring-[3px]"
+          />
+        }
+      >
+        {sortedItems.map((item, index) =>
+          item.type === 'lot' ? (
+            <Fragment key={item.lot.id}>
+              {index !== 0 && <Separator className="" />}
+              <InvestmentLotCard
+                data={data}
+                investmentLot={item.lot}
+                isFirst={index === 0}
+                isLast={index === sortedItems.length - 1}
+              />
+            </Fragment>
+          ) : (
+            <Fragment key={item.entry.id}>
+              {index !== 0 && <Separator className="" />}
+              <TransactionEntryCard
+                data={data}
+                transactionEntry={item.entry}
+                isFirst={index === 0}
+                isLast={index === sortedItems.length - 1}
+              />
+            </Fragment>
+          ),
+        )}
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <EditTransactionDialog
+          fragmentRef={data}
+          categoriesRef={categoriesRef}
+          onOpenChange={setDialogOpen}
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
 

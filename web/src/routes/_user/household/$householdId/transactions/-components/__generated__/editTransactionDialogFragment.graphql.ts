@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4ccb41058b2483b153449b3ec2bb7498>>
+ * @generated SignedSource<<a0e8c68637ade720a8993becf265e4fb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,13 +11,16 @@
 import { ReaderFragment } from 'relay-runtime';
 export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
-export type transactionCardFragment$data = {
+export type editTransactionDialogFragment$data = {
   readonly category: {
     readonly icon: string;
+    readonly id: string;
     readonly name: string;
     readonly type: TransactionCategoryType;
   };
+  readonly categoryID: string;
   readonly datetime: any;
+  readonly description: string | null | undefined;
   readonly id: string;
   readonly investmentLots: ReadonlyArray<{
     readonly amount: string;
@@ -41,12 +44,11 @@ export type transactionCardFragment$data = {
     readonly amount: string;
     readonly id: string;
   }> | null | undefined;
-  readonly " $fragmentSpreads": FragmentRefs<"editTransactionDialogFragment">;
-  readonly " $fragmentType": "transactionCardFragment";
+  readonly " $fragmentType": "editTransactionDialogFragment";
 };
-export type transactionCardFragment$key = {
-  readonly " $data"?: transactionCardFragment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"transactionCardFragment">;
+export type editTransactionDialogFragment$key = {
+  readonly " $data"?: editTransactionDialogFragment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"editTransactionDialogFragment">;
 };
 
 const node: ReaderFragment = (function(){
@@ -93,9 +95,16 @@ return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "transactionCardFragment",
+  "name": "editTransactionDialogFragment",
   "selections": [
     (v0/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "description",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": null,
@@ -106,11 +115,19 @@ return {
     {
       "alias": null,
       "args": null,
+      "kind": "ScalarField",
+      "name": "categoryID",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": "TransactionCategory",
       "kind": "LinkedField",
       "name": "category",
       "plural": false,
       "selections": [
+        (v0/*: any*/),
         (v1/*: any*/),
         {
           "alias": null,
@@ -194,11 +211,6 @@ return {
         }
       ],
       "storageKey": null
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "editTransactionDialogFragment"
     }
   ],
   "type": "Transaction",
@@ -206,6 +218,6 @@ return {
 };
 })();
 
-(node as any).hash = "b5e30322186705ed105ba5f36298f917";
+(node as any).hash = "04fe8765e18a111809f6d249578d9443";
 
 export default node;
