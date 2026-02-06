@@ -14,6 +14,7 @@ We use [mise](https://mise.jdx.dev/) to manage the development environment.
 ### Configured tools
 
 The following tools are managed by mise (see `mise.toml`):
+
 - **atlas** (latest) - Database schema management
 - **docker-compose** (latest)
 - **just** (latest) - Command runner
@@ -25,22 +26,26 @@ The following tools are managed by mise (see `mise.toml`):
 ### Using mise
 
 **Install all tools** (first time setup):
+
 ```bash
 mise install
 ```
 
 **Activate mise in your shell** (if not already configured):
+
 ```bash
 # Add to your ~/.bashrc or ~/.zshrc
 eval "$(mise activate bash)"  # or zsh, fish, etc.
 ```
 
 **Check installed tools**:
+
 ```bash
 mise list
 ```
 
 **Update tools**:
+
 ```bash
 mise upgrade
 ```
@@ -50,11 +55,13 @@ mise upgrade
 After installing mise and activating it in your shell, follow these steps:
 
 1. **Install web dependencies:**
+
    ```bash
    just install-web
    ```
 
 2. **Create environment files:**
+
    ```bash
    # From project root
    cp .env.example .env
@@ -62,21 +69,25 @@ After installing mise and activating it in your shell, follow these steps:
    ```
 
 3. **Generate secrets** (SESSION_SECRET and JWT_SECRET in .env):
+
    ```bash
    # Generate SESSION_SECRET
    openssl rand -base64 32
    # Generate JWT_SECRET
    openssl rand -base64 32
    ```
+
    Copy these values into your `.env` file.
 
 4. **Start the database:**
+
    ```bash
    just compose up
    ```
 
 5. **Start the development server:**
    The server automatically runs database migrations on startup.
+
    ```bash
    just server
    ```
@@ -95,6 +106,7 @@ After installing mise and activating it in your shell, follow these steps:
 ### Note on Database Migrations
 
 The Go server automatically:
+
 - Drops and recreates the database schema on startup (development only)
 - Applies all migrations from `ent/migrate/migrations`
 - Seeds the database with test data
