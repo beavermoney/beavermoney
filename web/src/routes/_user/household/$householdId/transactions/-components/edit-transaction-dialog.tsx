@@ -57,6 +57,8 @@ import {
 import { commitMutationResult } from '@/lib/relay'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { InvestmentLotCard } from './investment-lot-card'
+import { TransactionEntryCard } from './transaction-entry-card'
 
 const editTransactionDialogFragment = graphql`
   fragment editTransactionDialogFragment on Transaction {
@@ -71,6 +73,7 @@ const editTransactionDialogFragment = graphql`
       icon
     }
     investmentLots {
+      ...investmentLotCardFragment
       id
       amount
       price
@@ -83,6 +86,7 @@ const editTransactionDialogFragment = graphql`
       }
     }
     transactionEntries {
+      ...transactionEntryCardFragment
       id
       amount
       account {
@@ -313,28 +317,11 @@ export function EditTransactionDialog({
           {(data.investmentLots ?? []).length > 0 && (
             <div className="space-y-1">
               {(data.investmentLots ?? []).map((lot, index) => (
-                <Fragment key={lot.id}>
-                  {index > 0 && <Separator />}
-                  <button
-                    type="button"
-                    className={cn(
-                      'w-full rounded-md p-2 text-left text-xs transition-colors',
-                      'hover:bg-muted/50 cursor-not-allowed opacity-60',
-                    )}
-                    disabled
-                    title="Edit investment lot (coming soon)"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">
-                        {lot.investment.name} ({lot.investment.symbol})
-                      </span>
-                      <span className="font-mono">
-                        {lot.amount} @ {lot.price}{' '}
-                        {lot.investment.currency.code}
-                      </span>
-                    </div>
-                  </button>
-                </Fragment>
+                <InvestmentLotCard
+                  fragmentRef={lot}
+                  isFirst={index === 0}
+                  isLast={index === (data.investmentLots ?? []).length - 1}
+                />
               ))}
             </div>
           )}
@@ -343,27 +330,11 @@ export function EditTransactionDialog({
           {(data.transactionEntries ?? []).length > 0 && (
             <div className="space-y-1">
               {(data.transactionEntries ?? []).map((entry, index) => (
-                <Fragment key={entry.id}>
-                  {(index > 0 || (data.investmentLots ?? []).length > 0) && (
-                    <Separator />
-                  )}
-                  <button
-                    type="button"
-                    className={cn(
-                      'w-full rounded-md p-2 text-left text-xs transition-colors',
-                      'hover:bg-muted/50 cursor-not-allowed opacity-60',
-                    )}
-                    disabled
-                    title="Edit transaction entry (coming soon)"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{entry.account.name}</span>
-                      <span className="font-mono">
-                        {entry.amount} {entry.account.currency.code}
-                      </span>
-                    </div>
-                  </button>
-                </Fragment>
+                <TransactionEntryCard
+                  fragmentRef={entry}
+                  isFirst={index === 0}
+                  isLast={index === (data.transactionEntries ?? []).length - 1}
+                />
               ))}
             </div>
           )}

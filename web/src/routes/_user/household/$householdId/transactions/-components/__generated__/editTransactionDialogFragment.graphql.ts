@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a0e8c68637ade720a8993becf265e4fb>>
+ * @generated SignedSource<<3be6815fbea9cc27e8075f082af92c50>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -33,6 +33,7 @@ export type editTransactionDialogFragment$data = {
       readonly symbol: string;
     };
     readonly price: string;
+    readonly " $fragmentSpreads": FragmentRefs<"investmentLotCardFragment">;
   }> | null | undefined;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
@@ -43,6 +44,7 @@ export type editTransactionDialogFragment$data = {
     };
     readonly amount: string;
     readonly id: string;
+    readonly " $fragmentSpreads": FragmentRefs<"transactionEntryCardFragment">;
   }> | null | undefined;
   readonly " $fragmentType": "editTransactionDialogFragment";
 };
@@ -154,6 +156,11 @@ return {
       "name": "investmentLots",
       "plural": true,
       "selections": [
+        {
+          "args": null,
+          "kind": "FragmentSpread",
+          "name": "investmentLotCardFragment"
+        },
         (v0/*: any*/),
         (v2/*: any*/),
         {
@@ -194,6 +201,11 @@ return {
       "name": "transactionEntries",
       "plural": true,
       "selections": [
+        {
+          "args": null,
+          "kind": "FragmentSpread",
+          "name": "transactionEntryCardFragment"
+        },
         (v0/*: any*/),
         (v2/*: any*/),
         {
@@ -218,6 +230,6 @@ return {
 };
 })();
 
-(node as any).hash = "04fe8765e18a111809f6d249578d9443";
+(node as any).hash = "ab238382bafa9b001573cab2b876455d";
 
 export default node;
