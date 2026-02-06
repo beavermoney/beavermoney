@@ -5,7 +5,7 @@ import * as z from 'zod'
 import { format } from 'date-fns'
 import { match } from 'ts-pattern'
 import invariant from 'tiny-invariant'
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Trash2Icon, AlertTriangleIcon } from 'lucide-react'
 import { ConnectionHandler } from 'relay-runtime'
 
@@ -55,8 +55,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { commitMutationResult } from '@/lib/relay'
-import { Separator } from '@/components/ui/separator'
-import { cn } from '@/lib/utils'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
 
@@ -75,26 +73,10 @@ const editTransactionDialogFragment = graphql`
     investmentLots {
       ...investmentLotCardFragment
       id
-      amount
-      price
-      investment {
-        name
-        symbol
-        currency {
-          code
-        }
-      }
     }
     transactionEntries {
       ...transactionEntryCardFragment
       id
-      amount
-      account {
-        name
-        currency {
-          code
-        }
-      }
     }
   }
 `

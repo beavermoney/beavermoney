@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3be6815fbea9cc27e8075f082af92c50>>
+ * @generated SignedSource<<cc3417a1d8c358674276ab481535a721>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,26 +23,10 @@ export type editTransactionDialogFragment$data = {
   readonly description: string | null | undefined;
   readonly id: string;
   readonly investmentLots: ReadonlyArray<{
-    readonly amount: string;
     readonly id: string;
-    readonly investment: {
-      readonly currency: {
-        readonly code: string;
-      };
-      readonly name: string;
-      readonly symbol: string;
-    };
-    readonly price: string;
     readonly " $fragmentSpreads": FragmentRefs<"investmentLotCardFragment">;
   }> | null | undefined;
   readonly transactionEntries: ReadonlyArray<{
-    readonly account: {
-      readonly currency: {
-        readonly code: string;
-      };
-      readonly name: string;
-    };
-    readonly amount: string;
     readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"transactionEntryCardFragment">;
   }> | null | undefined;
@@ -59,38 +43,6 @@ var v0 = {
   "args": null,
   "kind": "ScalarField",
   "name": "id",
-  "storageKey": null
-},
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "name",
-  "storageKey": null
-},
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "amount",
-  "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "Currency",
-  "kind": "LinkedField",
-  "name": "currency",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "code",
-      "storageKey": null
-    }
-  ],
   "storageKey": null
 };
 return {
@@ -130,7 +82,13 @@ return {
       "plural": false,
       "selections": [
         (v0/*: any*/),
-        (v1/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "name",
+          "storageKey": null
+        },
         {
           "alias": null,
           "args": null,
@@ -161,35 +119,7 @@ return {
           "kind": "FragmentSpread",
           "name": "investmentLotCardFragment"
         },
-        (v0/*: any*/),
-        (v2/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "price",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "Investment",
-          "kind": "LinkedField",
-          "name": "investment",
-          "plural": false,
-          "selections": [
-            (v1/*: any*/),
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "symbol",
-              "storageKey": null
-            },
-            (v3/*: any*/)
-          ],
-          "storageKey": null
-        }
+        (v0/*: any*/)
       ],
       "storageKey": null
     },
@@ -206,21 +136,7 @@ return {
           "kind": "FragmentSpread",
           "name": "transactionEntryCardFragment"
         },
-        (v0/*: any*/),
-        (v2/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "Account",
-          "kind": "LinkedField",
-          "name": "account",
-          "plural": false,
-          "selections": [
-            (v1/*: any*/),
-            (v3/*: any*/)
-          ],
-          "storageKey": null
-        }
+        (v0/*: any*/)
       ],
       "storageKey": null
     }
@@ -230,6 +146,6 @@ return {
 };
 })();
 
-(node as any).hash = "ab238382bafa9b001573cab2b876455d";
+(node as any).hash = "87ab2a256bbb805495d189172942c833";
 
 export default node;
