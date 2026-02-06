@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5ebdb655db20f24ec92286a17e4e5005>>
+ * @generated SignedSource<<4bfc849f04c3370f460477275b31534f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -118,6 +118,20 @@ v7 = {
     (v2/*: any*/)
   ],
   "storageKey": null
+},
+v8 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -194,32 +208,58 @@ return {
             "name": "node",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
-              (v4/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "TransactionCategory",
+                "concreteType": "TransactionEntry",
                 "kind": "LinkedField",
-                "name": "category",
-                "plural": false,
+                "name": "transactionEntries",
+                "plural": true,
                 "selections": [
-                  (v5/*: any*/),
+                  (v2/*: any*/),
+                  (v6/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "type",
+                    "concreteType": "Account",
+                    "kind": "LinkedField",
+                    "name": "account",
+                    "plural": false,
+                    "selections": [
+                      (v5/*: any*/),
+                      (v7/*: any*/),
+                      (v2/*: any*/)
+                    ],
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "icon",
+                    "concreteType": "Transaction",
+                    "kind": "LinkedField",
+                    "name": "transaction",
+                    "plural": false,
+                    "selections": [
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "TransactionCategory",
+                        "kind": "LinkedField",
+                        "name": "category",
+                        "plural": false,
+                        "selections": [
+                          (v5/*: any*/),
+                          (v8/*: any*/),
+                          (v9/*: any*/),
+                          (v2/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v4/*: any*/)
+                    ],
                     "storageKey": null
-                  },
-                  (v2/*: any*/)
+                  }
                 ],
                 "storageKey": null
               },
@@ -260,43 +300,59 @@ return {
                       (v2/*: any*/)
                     ],
                     "storageKey": null
-                  }
-                ],
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "TransactionEntry",
-                "kind": "LinkedField",
-                "name": "transactionEntries",
-                "plural": true,
-                "selections": [
-                  (v2/*: any*/),
-                  (v6/*: any*/),
+                  },
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "Account",
+                    "concreteType": "Transaction",
                     "kind": "LinkedField",
-                    "name": "account",
+                    "name": "transaction",
                     "plural": false,
                     "selections": [
-                      (v5/*: any*/),
-                      (v7/*: any*/),
-                      (v2/*: any*/)
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "TransactionCategory",
+                        "kind": "LinkedField",
+                        "name": "category",
+                        "plural": false,
+                        "selections": [
+                          (v5/*: any*/),
+                          (v2/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v4/*: any*/)
                     ],
                     "storageKey": null
                   }
                 ],
                 "storageKey": null
               },
+              (v2/*: any*/),
               (v3/*: any*/),
+              (v4/*: any*/),
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
                 "name": "categoryID",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "TransactionCategory",
+                "kind": "LinkedField",
+                "name": "category",
+                "plural": false,
+                "selections": [
+                  (v2/*: any*/),
+                  (v5/*: any*/),
+                  (v8/*: any*/),
+                  (v9/*: any*/)
+                ],
                 "storageKey": null
               }
             ],
@@ -308,12 +364,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "651c4350d04f81d2811a87170b12fba3",
+    "cacheID": "2a60f668ae6812585f1eca1ed338f7ed",
     "id": null,
     "metadata": {},
     "name": "newMoveMutation",
     "operationKind": "mutation",
-    "text": "mutation newMoveMutation(\n  $input: MoveInvestmentInputCustom!\n) {\n  moveInvestment(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  ...editTransactionDialogFragment\n}\n"
+    "text": "mutation newMoveMutation(\n  $input: MoveInvestmentInputCustom!\n) {\n  moveInvestment(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  ...editTransactionDialogFragment\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();

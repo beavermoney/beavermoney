@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c0532b820a7339df5736f177367719e0>>
+ * @generated SignedSource<<625a6b3797481ddcf41481254aa4e83a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -106,6 +106,20 @@ v6 = {
 v7 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v8 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
   "concreteType": "TransactionCategory",
   "kind": "LinkedField",
   "name": "category",
@@ -113,31 +127,19 @@ v7 = {
   "selections": [
     (v2/*: any*/),
     (v6/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "type",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "icon",
-      "storageKey": null
-    }
+    (v7/*: any*/),
+    (v8/*: any*/)
   ],
   "storageKey": null
 },
-v8 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
 },
-v9 = {
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "Currency",
@@ -183,7 +185,7 @@ return {
               (v3/*: any*/),
               (v4/*: any*/),
               (v5/*: any*/),
-              (v7/*: any*/),
+              (v9/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -225,7 +227,62 @@ return {
               (v3/*: any*/),
               (v4/*: any*/),
               (v5/*: any*/),
-              (v7/*: any*/),
+              (v9/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "TransactionEntry",
+                "kind": "LinkedField",
+                "name": "transactionEntries",
+                "plural": true,
+                "selections": [
+                  (v2/*: any*/),
+                  (v10/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Account",
+                    "kind": "LinkedField",
+                    "name": "account",
+                    "plural": false,
+                    "selections": [
+                      (v6/*: any*/),
+                      (v11/*: any*/),
+                      (v2/*: any*/)
+                    ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Transaction",
+                    "kind": "LinkedField",
+                    "name": "transaction",
+                    "plural": false,
+                    "selections": [
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "TransactionCategory",
+                        "kind": "LinkedField",
+                        "name": "category",
+                        "plural": false,
+                        "selections": [
+                          (v6/*: any*/),
+                          (v7/*: any*/),
+                          (v8/*: any*/),
+                          (v2/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v4/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              },
               {
                 "alias": null,
                 "args": null,
@@ -235,7 +292,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v8/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -259,35 +316,34 @@ return {
                         "name": "symbol",
                         "storageKey": null
                       },
-                      (v9/*: any*/),
+                      (v11/*: any*/),
                       (v2/*: any*/)
                     ],
                     "storageKey": null
-                  }
-                ],
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "TransactionEntry",
-                "kind": "LinkedField",
-                "name": "transactionEntries",
-                "plural": true,
-                "selections": [
-                  (v2/*: any*/),
-                  (v8/*: any*/),
+                  },
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "Account",
+                    "concreteType": "Transaction",
                     "kind": "LinkedField",
-                    "name": "account",
+                    "name": "transaction",
                     "plural": false,
                     "selections": [
-                      (v6/*: any*/),
-                      (v9/*: any*/),
-                      (v2/*: any*/)
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "TransactionCategory",
+                        "kind": "LinkedField",
+                        "name": "category",
+                        "plural": false,
+                        "selections": [
+                          (v6/*: any*/),
+                          (v2/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v4/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -303,12 +359,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ef645504c3613d786a1b5389a1656f28",
+    "cacheID": "8cdcb2755015b373720893ccdd014808",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogUpdateMutation",
     "operationKind": "mutation",
-    "text": "mutation editTransactionDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n) {\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n        icon\n      }\n      ...transactionCardFragment\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  datetime\n  category {\n    name\n    type\n    icon\n    id\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  ...editTransactionDialogFragment\n}\n"
+    "text": "mutation editTransactionDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n) {\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n        icon\n      }\n      ...transactionCardFragment\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      currency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  ...editTransactionDialogFragment\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();
