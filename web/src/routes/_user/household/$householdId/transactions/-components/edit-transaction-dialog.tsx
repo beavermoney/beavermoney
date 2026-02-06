@@ -57,7 +57,6 @@ import {
 import { commitMutationResult } from '@/lib/relay'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
-import { Item, ItemGroup } from '@/components/ui/item'
 
 const editTransactionDialogFragment = graphql`
   fragment editTransactionDialogFragment on Transaction {
