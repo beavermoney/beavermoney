@@ -71,8 +71,6 @@ END;
 $$;
 
 -- Create the trigger
--- IMPORTANT: We include 'account_id' in the UPDATE OF list
--- If we don't, switching accounts won't fire the trigger!
 CREATE TRIGGER account_value_on_investment_change_trigger
     AFTER INSERT OR UPDATE OF amount, quote, value, account_id OR DELETE
     ON investments
