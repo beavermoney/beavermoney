@@ -2,11 +2,10 @@ import { graphql, useFragment, useMutation } from 'react-relay'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
-import { format } from 'date-fns'
 import { match } from 'ts-pattern'
 import invariant from 'tiny-invariant'
 import { useState } from 'react'
-import { Trash2Icon, AlertTriangleIcon } from 'lucide-react'
+import { AlertTriangleIcon } from 'lucide-react'
 import { ConnectionHandler } from 'relay-runtime'
 
 import type { editTransactionDialogFragment$key } from './__generated__/editTransactionDialogFragment.graphql'
@@ -57,6 +56,7 @@ import {
 import { commitMutationResult } from '@/lib/relay'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
+import { useHousehold } from '@/hooks/use-household'
 
 const editTransactionDialogFragment = graphql`
   fragment editTransactionDialogFragment on Transaction {
@@ -148,6 +148,8 @@ export function EditTransactionDialog({
     editTransactionDialogCategoriesFragment,
     categoriesRef,
   )
+
+  const { household } = useHousehold()
 
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
 
@@ -340,14 +342,24 @@ export function EditTransactionDialog({
                       <DropdownMenuTrigger
                         render={
                           <Button
+                            id={field.name}
+                            name={field.name}
+                            type="button"
                             variant="outline"
                             className="w-full justify-start text-left font-normal"
-                          />
+                          >
+                            {field.state.value.toLocaleDateString(
+                              household.locale,
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )}
+                          </Button>
                         }
-                      >
-                        {format(field.state.value, 'PPP')}
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
+                      />
+                      <DropdownMenuContent className="w-auto p-0" side="top">
                         <Calendar
                           mode="single"
                           selected={field.state.value}
@@ -375,33 +387,36 @@ export function EditTransactionDialog({
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
-                const selectedCategory = allCategories.find(
-                  (cat) => cat.id === field.state.value,
-                )
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Category</FieldLabel>
                     <Combobox
+                      items={allCategories.map((cat) => cat.id)}
+                      itemToStringLabel={(item) =>
+                        allCategories.find((cat) => cat.id === item)?.name || ''
+                      }
                       value={field.state.value}
                       onValueChange={(value) => {
-                        if (value) {
-                          field.handleChange(value)
-                        }
+                        field.handleChange(value || '')
                       }}
                     >
                       <ComboboxInput
-                        placeholder={
-                          selectedCategory?.name ?? 'Select category...'
-                        }
+                        data-1p-ignore
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Select a category"
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
                       />
                       <ComboboxContent>
+                        <ComboboxEmpty>No items found.</ComboboxEmpty>
                         <ComboboxList>
-                          <ComboboxEmpty>No categories found</ComboboxEmpty>
-                          {allCategories.map((category) => (
-                            <ComboboxItem key={category.id} value={category.id}>
-                              {category.name}
+                          {(item: string) => (
+                            <ComboboxItem key={item} value={item}>
+                              {allCategories.find((cat) => cat.id === item)
+                                ?.name || ''}
                             </ComboboxItem>
-                          ))}
+                          )}
                         </ComboboxList>
                       </ComboboxContent>
                     </Combobox>
@@ -427,7 +442,6 @@ export function EditTransactionDialog({
               />
             }
           >
-            <Trash2Icon className="mr-2 size-4" />
             Delete
           </AlertDialogTrigger>
           <AlertDialogContent size="sm">
