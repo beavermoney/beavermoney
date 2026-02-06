@@ -197,25 +197,6 @@ export function EditTransactionDialog({
                 categoryID: formData.categoryId,
               },
             },
-            optimisticResponse: {
-              updateTransaction: {
-                node: {
-                  id: data.id,
-                  description: formData.description,
-                  datetime: formData.datetime.toISOString(),
-                  categoryID: formData.categoryId,
-                  category: {
-                    id: formData.categoryId,
-                    name:
-                      allCategories.find(
-                        (cat) => cat.id === formData.categoryId,
-                      )?.name ?? data.category.name,
-                    type: data.category.type,
-                    icon: data.category.icon,
-                  },
-                },
-              },
-            },
           },
         )
 
