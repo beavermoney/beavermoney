@@ -1,2 +1,0 @@
-DROP TRIGGER IF EXISTS transaction_balance_and_value_on_transaction_entry_change_trigger ON transaction_entries;
-DROP FUNCTION IF EXISTS update_account_balance_and_value_on_transaction_entry_change();
