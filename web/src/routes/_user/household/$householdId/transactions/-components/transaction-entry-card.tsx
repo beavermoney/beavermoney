@@ -11,7 +11,6 @@ import {
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { transactionEntryCardFragment$key } from './__generated__/transactionEntryCardFragment.graphql'
-import { TransactionCategoryType } from './__generated__/transactionCardFragment.graphql'
 import { match } from 'ts-pattern'
 import { DynamicIcon, IconName } from 'lucide-react/dynamic'
 import {
@@ -21,6 +20,7 @@ import {
   TrendingUpIcon,
   WrenchIcon,
 } from 'lucide-react'
+import { TransactionCategoryType } from '../__generated__/TransactionsQuery.graphql'
 
 const transactionEntryCardFragment = graphql`
   fragment transactionEntryCardFragment on TransactionEntry {
