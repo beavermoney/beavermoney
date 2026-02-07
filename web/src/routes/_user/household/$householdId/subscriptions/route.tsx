@@ -1,5 +1,9 @@
 import { zodValidator } from '@tanstack/zod-adapter'
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import {
+  Outlet,
+  createFileRoute,
+  stripSearchParams,
+} from '@tanstack/react-router'
 import {
   loadQuery,
   usePreloadedQuery,
@@ -27,6 +31,10 @@ const SearchSchema = z.object({
     .default('next_payment'),
 })
 
+const defaultValues = {
+  sort_by: 'next_payment' as const,
+}
+
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions',
 )({
@@ -39,6 +47,9 @@ export const Route = createFileRoute(
       {},
       { fetchPolicy: 'store-or-network' },
     )
+  },
+  search: {
+    middlewares: [stripSearchParams(defaultValues)],
   },
   pendingComponent: PendingComponent,
 })
