@@ -229,6 +229,11 @@ export function EditTransactionDialog({
     match(result)
       .with({ status: 'success' }, () => {
         toast.success('Transaction deleted successfully!')
+        navigate({
+          to: '.',
+          search: (old) => ({ ...old, edit_transaction_id: null }),
+          replace: true,
+        })
         setDeleteAlertOpen(false)
       })
       .with({ status: 'error' }, ({ error }) => {
