@@ -52,6 +52,7 @@ import { LogTransaction } from './transactions/-components/log-transaction'
 import { zodValidator } from '@tanstack/zod-adapter'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
+import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -78,11 +79,13 @@ const searchSchema = z.object({
     .nullable()
     .default(null),
   command_open: z.boolean().optional().default(false),
+  edit_transaction_id: z.string().nullable().default(null),
 })
 
 const defaultValues = {
   log_type: null,
   command_open: false,
+  edit_transaction_id: null,
 }
 
 export const Route = createFileRoute('/_user/household/$householdId')({
@@ -219,6 +222,10 @@ function RouteComponent() {
           </div>
         </SidebarInset>
         <MobileFabNav />
+
+        {search.edit_transaction_id && (
+          <EditTransactionDialog transactionId={search.edit_transaction_id} />
+        )}
 
         {/* Desktop: Resizable & Draggable New Transaction Form */}
         {!isMobile && (

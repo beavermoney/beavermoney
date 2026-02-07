@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<483e0949ba6af1d7c767584dfee31875>>
+ * @generated SignedSource<<04fc61db05b6b5b3e8ff4dc135a53602>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type transactionCardFragment$data = {
   readonly category: {
     readonly name: string;
   };
+  readonly id: string;
   readonly investmentLots: ReadonlyArray<{
     readonly amount: string;
     readonly id: string;
@@ -24,7 +25,6 @@ export type transactionCardFragment$data = {
     readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"transactionEntryCardFragment">;
   }> | null | undefined;
-  readonly " $fragmentSpreads": FragmentRefs<"editTransactionDialogFragment">;
   readonly " $fragmentType": "transactionCardFragment";
 };
 export type transactionCardFragment$key = {
@@ -53,6 +53,7 @@ return {
   "metadata": null,
   "name": "transactionCardFragment",
   "selections": [
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -90,11 +91,6 @@ return {
       "storageKey": null
     },
     {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "editTransactionDialogFragment"
-    },
-    {
       "alias": null,
       "args": null,
       "concreteType": "TransactionCategory",
@@ -118,6 +114,6 @@ return {
 };
 })();
 
-(node as any).hash = "0390493e019aa6263274bc23a9c6a74e";
+(node as any).hash = "96548bfe3c9f1c8286443a83b4ecd4b9";
 
 export default node;

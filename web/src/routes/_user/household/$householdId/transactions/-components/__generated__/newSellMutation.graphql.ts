@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e029a11f4c0658d3f3671bb35b9de815>>
+ * @generated SignedSource<<b3de4a2c411ec5a454fb7bdcce53a1da>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -123,15 +123,14 @@ v7 = {
 v8 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "type",
-  "storageKey": null
-},
-v9 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "icon",
+  "concreteType": "TransactionCategory",
+  "kind": "LinkedField",
+  "name": "category",
+  "plural": false,
+  "selections": [
+    (v5/*: any*/),
+    (v2/*: any*/)
+  ],
   "storageKey": null
 };
 return {
@@ -209,6 +208,7 @@ return {
             "name": "node",
             "plural": false,
             "selections": [
+              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -251,8 +251,20 @@ return {
                         "plural": false,
                         "selections": [
                           (v5/*: any*/),
-                          (v8/*: any*/),
-                          (v9/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "type",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "icon",
+                            "storageKey": null
+                          },
                           (v2/*: any*/)
                         ],
                         "storageKey": null
@@ -311,19 +323,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v2/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "TransactionCategory",
-                        "kind": "LinkedField",
-                        "name": "category",
-                        "plural": false,
-                        "selections": [
-                          (v5/*: any*/),
-                          (v2/*: any*/)
-                        ],
-                        "storageKey": null
-                      },
+                      (v8/*: any*/),
                       (v4/*: any*/)
                     ],
                     "storageKey": null
@@ -331,31 +331,9 @@ return {
                 ],
                 "storageKey": null
               },
-              (v2/*: any*/),
+              (v8/*: any*/),
               (v3/*: any*/),
-              (v4/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "categoryID",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "TransactionCategory",
-                "kind": "LinkedField",
-                "name": "category",
-                "plural": false,
-                "selections": [
-                  (v2/*: any*/),
-                  (v5/*: any*/),
-                  (v8/*: any*/),
-                  (v9/*: any*/)
-                ],
-                "storageKey": null
-              }
+              (v4/*: any*/)
             ],
             "storageKey": null
           }
@@ -365,12 +343,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b7ef7c92c1e55b097cf6591697c70387",
+    "cacheID": "7305e89bb685ffa3d0a342f2dcf4a626",
     "id": null,
     "metadata": {},
     "name": "newSellMutation",
     "operationKind": "mutation",
-    "text": "mutation newSellMutation(\n  $input: SellInvestmentInputCustom!\n) {\n  sellInvestment(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  category {\n    id\n    name\n    type\n    icon\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  ...editTransactionDialogFragment\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "mutation newSellMutation(\n  $input: SellInvestmentInputCustom!\n) {\n  sellInvestment(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();
