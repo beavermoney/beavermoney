@@ -10,6 +10,7 @@ import {
 import {
   Outlet,
   createFileRoute,
+  stripSearchParams,
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
@@ -79,10 +80,18 @@ const searchSchema = z.object({
   command_open: z.boolean().optional().default(false),
 })
 
+const defaultValues = {
+  log_type: null,
+  command_open: false,
+}
+
 export const Route = createFileRoute('/_user/household/$householdId')({
   component: RouteComponent,
   validateSearch: zodValidator(searchSchema),
   staleTime: Infinity,
+  search: {
+    middlewares: [stripSearchParams(defaultValues)],
+  },
   loader: async ({ params }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
     await fetchQuery<routeHouseholdIdQuery>(

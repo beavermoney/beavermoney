@@ -1,4 +1,8 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import {
+  Outlet,
+  createFileRoute,
+  stripSearchParams,
+} from '@tanstack/react-router'
 import {
   loadQuery,
   usePreloadedQuery,
@@ -30,6 +34,9 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   validateSearch: zodValidator(SearchSchema),
+  search: {
+    middlewares: [stripSearchParams(defaults)],
+  },
   beforeLoad: ({ search }) => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
