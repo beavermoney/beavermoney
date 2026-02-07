@@ -53,6 +53,9 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
+import { Suspense } from 'react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Spinner } from '@/components/ui/spinner'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -224,7 +227,23 @@ function RouteComponent() {
         <MobileFabNav />
 
         {search.edit_transaction_id && (
-          <EditTransactionDialog transactionId={search.edit_transaction_id} />
+          <Dialog
+            open={true}
+            onOpenChange={() =>
+              navigate({
+                to: '.',
+                search: (prev) => ({ ...prev, edit_transaction_id: null }),
+              })
+            }
+          >
+            <DialogContent>
+              <Suspense fallback={<PendingComponent />}>
+                <EditTransactionDialog
+                  transactionId={search.edit_transaction_id}
+                />
+              </Suspense>
+            </DialogContent>
+          </Dialog>
         )}
 
         {/* Desktop: Resizable & Draggable New Transaction Form */}
