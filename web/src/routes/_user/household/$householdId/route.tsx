@@ -55,7 +55,6 @@ import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
 import { Suspense } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Spinner } from '@/components/ui/spinner'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
