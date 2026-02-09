@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import * as z from 'zod'
 import { match } from 'ts-pattern'
 import invariant from 'tiny-invariant'
-import { useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { AlertTriangleIcon } from 'lucide-react'
 
 import type { editTransactionDialogUpdateMutation } from './__generated__/editTransactionDialogUpdateMutation.graphql'
@@ -56,6 +56,8 @@ import { TransactionEntryCard } from './transaction-entry-card'
 import { useHousehold } from '@/hooks/use-household'
 import { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
 import { useNavigate } from '@tanstack/react-router'
+import currency from 'currency.js'
+import { Separator } from '@/components/ui/separator'
 
 const EditTransactionDialogQuery = graphql`
   query editTransactionDialogQuery($transactionId: ID!) {
@@ -74,10 +76,12 @@ const EditTransactionDialogQuery = graphql`
         investmentLots {
           ...investmentLotCardFragment
           id
+          amount
         }
         transactionEntries {
           ...transactionEntryCardFragment
           id
+          amount
         }
       }
     }
@@ -242,6 +246,54 @@ export function EditTransactionDialog({
       .exhaustive()
   }
 
+  const sortedItems = useMemo(() => {
+    invariant(
+      transaction.transactionEntries,
+      'Transaction entries should be defined',
+    )
+    const entries = transaction.transactionEntries.map((entry) => ({
+      type: 'entry' as const,
+      entry,
+    }))
+    invariant(transaction.investmentLots, 'Investment lots should be defined')
+    const lots = transaction.investmentLots.map((lot) => ({
+      type: 'lot' as const,
+      lot,
+    }))
+    return match(transaction.category.name)
+      .with('Buy', () => {
+        const negativeEntries = entries.filter(
+          (item) => currency(item.entry.amount).value < 0,
+        )
+        const positiveLots = lots.filter(
+          (item) => currency(item.lot.amount).value > 0,
+        )
+        return [...positiveLots, ...negativeEntries]
+      })
+      .with('Sell', () => {
+        const negativeLots = lots.filter(
+          (item) => currency(item.lot.amount).value < 0,
+        )
+        const positiveEntries = entries.filter(
+          (item) => currency(item.entry.amount).value > 0,
+        )
+        return [...negativeLots, ...positiveEntries]
+      })
+      .otherwise(() => {
+        const debits = [...lots, ...entries].filter((item) => {
+          const amount =
+            item.type === 'lot' ? item.lot.amount : item.entry.amount
+          return currency(amount).value < 0
+        })
+        const credits = [...lots, ...entries].filter((item) => {
+          const amount =
+            item.type === 'lot' ? item.lot.amount : item.entry.amount
+          return currency(amount).value >= 0
+        })
+        return [...debits, ...credits]
+      })
+  }, [transaction])
+
   return (
     <>
       <DialogHeader>
@@ -252,28 +304,28 @@ export function EditTransactionDialog({
         </DialogDescription>
       </DialogHeader>
 
-      <div>
-        {(transaction.investmentLots ?? []).map((lot, index) => (
-          <div>
-            <InvestmentLotCard
-              fragmentRef={lot}
-              isFirst={index === 0}
-              isLast={index === (transaction.investmentLots ?? []).length - 1}
-            />
-          </div>
-        ))}
-
-        {(transaction.transactionEntries ?? []).map((entry, index) => (
-          <div>
-            <TransactionEntryCard
-              fragmentRef={entry}
-              isFirst={index === 0}
-              isLast={
-                index === (transaction.transactionEntries ?? []).length - 1
-              }
-            />
-          </div>
-        ))}
+      <div className="border-border [a]:hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center rounded-md border text-xs/relaxed transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors">
+        {sortedItems.map((item, index) =>
+          item.type === 'lot' ? (
+            <Fragment key={item.lot.id}>
+              {index !== 0 && <Separator className="" />}
+              <InvestmentLotCard
+                fragmentRef={item.lot}
+                isFirst={index === 0}
+                isLast={index === sortedItems.length - 1}
+              />
+            </Fragment>
+          ) : (
+            <Fragment key={item.entry.id}>
+              {index !== 0 && <Separator className="" />}
+              <TransactionEntryCard
+                fragmentRef={item.entry}
+                isFirst={index === 0}
+                isLast={index === sortedItems.length - 1}
+              />
+            </Fragment>
+          ),
+        )}
       </div>
 
       <div className="space-y-4">

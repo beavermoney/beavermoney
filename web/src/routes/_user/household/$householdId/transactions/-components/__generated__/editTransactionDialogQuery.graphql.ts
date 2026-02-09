@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5ff8a266b4fa764c35d61053ee8ec2cc>>
+ * @generated SignedSource<<62173ceab726927c601555a04ae80c82>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,10 +27,12 @@ export type editTransactionDialogQuery$data = {
     readonly description: string | null | undefined;
     readonly id: string;
     readonly investmentLots: ReadonlyArray<{
+      readonly amount: string;
       readonly id: string;
       readonly " $fragmentSpreads": FragmentRefs<"investmentLotCardFragment">;
     }> | null | undefined;
     readonly transactionEntries: ReadonlyArray<{
+      readonly amount: string;
       readonly id: string;
       readonly " $fragmentSpreads": FragmentRefs<"transactionEntryCardFragment">;
     }> | null | undefined;
@@ -136,6 +138,13 @@ v10 = {
 v11 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v12 = {
+  "alias": null,
+  "args": null,
   "concreteType": "TransactionCategoryConnection",
   "kind": "LinkedField",
   "name": "transactionCategories",
@@ -163,13 +172,6 @@ v11 = {
       "storageKey": null
     }
   ],
-  "storageKey": null
-},
-v12 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "amount",
   "storageKey": null
 },
 v13 = {
@@ -228,7 +230,8 @@ return {
                     "kind": "FragmentSpread",
                     "name": "investmentLotCardFragment"
                   },
-                  (v3/*: any*/)
+                  (v3/*: any*/),
+                  (v11/*: any*/)
                 ],
                 "storageKey": null
               },
@@ -245,7 +248,8 @@ return {
                     "kind": "FragmentSpread",
                     "name": "transactionEntryCardFragment"
                   },
-                  (v3/*: any*/)
+                  (v3/*: any*/),
+                  (v11/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -256,7 +260,7 @@ return {
         ],
         "storageKey": null
       },
-      (v11/*: any*/)
+      (v12/*: any*/)
     ],
     "type": "Query",
     "abstractKey": null
@@ -293,7 +297,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v3/*: any*/),
-                  (v12/*: any*/),
+                  (v11/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -360,7 +364,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v3/*: any*/),
-                  (v12/*: any*/),
+                  (v11/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -419,20 +423,20 @@ return {
         ],
         "storageKey": null
       },
-      (v11/*: any*/)
+      (v12/*: any*/)
     ]
   },
   "params": {
-    "cacheID": "e8ea837a119f78fafa1931951900d664",
+    "cacheID": "e349f993a788676cad12d7cd626c5313",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogQuery",
     "operationKind": "query",
-    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n      }\n      investmentLots {\n        ...investmentLotCardFragment\n        id\n      }\n      transactionEntries {\n        ...transactionEntryCardFragment\n        id\n      }\n    }\n    id\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n      }\n      investmentLots {\n        ...investmentLotCardFragment\n        id\n        amount\n      }\n      transactionEntries {\n        ...transactionEntryCardFragment\n        id\n        amount\n      }\n    }\n    id\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "394688238b8665799ea1aada870ad0f9";
+(node as any).hash = "73cb93b52b2d11e6f749df2f5af56d7d";
 
 export default node;

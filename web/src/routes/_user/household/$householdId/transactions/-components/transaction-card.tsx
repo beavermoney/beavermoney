@@ -2,15 +2,14 @@ import { graphql } from 'relay-runtime'
 import { match } from 'ts-pattern'
 import { useFragment } from 'react-relay'
 import currency from 'currency.js'
-import type {
-  transactionCardFragment$data,
-  transactionCardFragment$key,
-} from './__generated__/transactionCardFragment.graphql'
+import type { transactionCardFragment$key } from './__generated__/transactionCardFragment.graphql'
 import { Fragment } from 'react/jsx-runtime'
 import { Separator } from '@/components/ui/separator'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
 import { Link } from '@tanstack/react-router'
+import invariant from 'tiny-invariant'
+import { useMemo } from 'react'
 
 const transactionCardFragment = graphql`
   fragment transactionCardFragment on Transaction {
@@ -38,8 +37,52 @@ type TransactionCardProps = {
 export function TransactionCard({ fragmentRef }: TransactionCardProps) {
   const data = useFragment(transactionCardFragment, fragmentRef)
 
-  // Sort entries based on category type
-  const sortedItems = getSortedTransactionItems(data)
+  const categoryName = data.category.name
+
+  const sortedItems = useMemo(() => {
+    invariant(data.transactionEntries, 'Transaction entries should be defined')
+    const entries = data.transactionEntries.map((entry) => ({
+      type: 'entry' as const,
+      entry,
+    }))
+    invariant(data.investmentLots, 'Investment lots should be defined')
+    const lots = data.investmentLots.map((lot) => ({
+      type: 'lot' as const,
+      lot,
+    }))
+    return match(categoryName)
+      .with('Buy', () => {
+        const negativeEntries = entries.filter(
+          (item) => currency(item.entry.amount).value < 0,
+        )
+        const positiveLots = lots.filter(
+          (item) => currency(item.lot.amount).value > 0,
+        )
+        return [...positiveLots, ...negativeEntries]
+      })
+      .with('Sell', () => {
+        const negativeLots = lots.filter(
+          (item) => currency(item.lot.amount).value < 0,
+        )
+        const positiveEntries = entries.filter(
+          (item) => currency(item.entry.amount).value > 0,
+        )
+        return [...negativeLots, ...positiveEntries]
+      })
+      .otherwise(() => {
+        const debits = [...lots, ...entries].filter((item) => {
+          const amount =
+            item.type === 'lot' ? item.lot.amount : item.entry.amount
+          return currency(amount).value < 0
+        })
+        const credits = [...lots, ...entries].filter((item) => {
+          const amount =
+            item.type === 'lot' ? item.lot.amount : item.entry.amount
+          return currency(amount).value >= 0
+        })
+        return [...debits, ...credits]
+      })
+  }, [data, categoryName])
 
   return (
     <Link
@@ -70,63 +113,4 @@ export function TransactionCard({ fragmentRef }: TransactionCardProps) {
       )}
     </Link>
   )
-}
-
-type SortedItem =
-  | {
-      type: 'lot'
-      lot: NonNullable<transactionCardFragment$data['investmentLots']>[number]
-    }
-  | {
-      type: 'entry'
-      entry: NonNullable<
-        transactionCardFragment$data['transactionEntries']
-      >[number]
-    }
-
-function getSortedTransactionItems(
-  data: transactionCardFragment$data,
-): SortedItem[] {
-  const lots: SortedItem[] =
-    data.investmentLots?.map((lot) => ({ type: 'lot' as const, lot })) ?? []
-  const entries: SortedItem[] =
-    data.transactionEntries?.map((entry) => ({
-      type: 'entry' as const,
-      entry,
-    })) ?? []
-
-  const categoryName = data.category.name
-
-  return match(categoryName)
-    .with('Buy', () => {
-      const negativeEntries = entries.filter(
-        (item) =>
-          item.type === 'entry' && currency(item.entry.amount).value < 0,
-      )
-      const positiveLots = lots.filter(
-        (item) => item.type === 'lot' && currency(item.lot.amount).value > 0,
-      )
-      return [...positiveLots, ...negativeEntries]
-    })
-    .with('Sell', () => {
-      const negativeLots = lots.filter(
-        (item) => item.type === 'lot' && currency(item.lot.amount).value < 0,
-      )
-      const positiveEntries = entries.filter(
-        (item) =>
-          item.type === 'entry' && currency(item.entry.amount).value > 0,
-      )
-      return [...negativeLots, ...positiveEntries]
-    })
-    .otherwise(() => {
-      const debits = [...lots, ...entries].filter((item) => {
-        const amount = item.type === 'lot' ? item.lot.amount : item.entry.amount
-        return currency(amount).value < 0
-      })
-      const credits = [...lots, ...entries].filter((item) => {
-        const amount = item.type === 'lot' ? item.lot.amount : item.entry.amount
-        return currency(amount).value >= 0
-      })
-      return [...debits, ...credits]
-    })
 }
