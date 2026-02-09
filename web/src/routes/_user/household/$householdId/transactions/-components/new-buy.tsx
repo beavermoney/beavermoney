@@ -468,6 +468,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
+                      decimalScale={8}
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
@@ -505,6 +506,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
+                      decimalScale={8}
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
