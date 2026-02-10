@@ -234,7 +234,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
             })
             .reduce((a, b) => a.add(b), currency(0))
 
-          const percentage = (value.cents() / totalInvestment.cents()) * 100
+          const percentage = (value.value / totalInvestment.value) * 100
 
           return (
             <AccordionItem value={groupKey} key={groupKey}>
