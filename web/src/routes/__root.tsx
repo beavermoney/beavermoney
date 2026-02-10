@@ -9,12 +9,14 @@ import { RelayEnvironmentProvider } from 'react-relay'
 import { environment } from '@/environment'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { PrivacyModeProvider } from '@/hooks/use-privacy-mode'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const isMobile = useIsMobile()
   return (
     <RelayEnvironmentProvider environment={environment}>
       <PrivacyModeProvider>
@@ -31,7 +33,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           ]}
         />
         <TailwindIndicator />
-        <Toaster />
+        <Toaster position={isMobile ? 'top-right' : 'bottom-right'} />
       </PrivacyModeProvider>
     </RelayEnvironmentProvider>
   )
