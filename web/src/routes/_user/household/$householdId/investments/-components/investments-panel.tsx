@@ -234,16 +234,14 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
             })
             .reduce((a, b) => a.add(b), currency(0))
 
+          const percentage = (value.cents() / totalInvestment.cents()) * 100
+
           return (
             <AccordionItem value={groupKey} key={groupKey}>
               <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{groupLabel}</span>
                 <span className="grow"></span>
-                <span className="tabular-nums">
-                  (
-                  {((value.cents() / totalInvestment.cents()) * 100).toFixed(2)}
-                  %)
-                </span>
+                <span className="tabular-nums">({percentage.toFixed(2)}%)</span>
                 <span className="mr-3 tabular-nums">
                   {formatCurrencyWithPrivacyMode({
                     value,
