@@ -227,22 +227,24 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
             groupByOption === 'symbol'
               ? investments[0].node.name
               : investments[0].node.account.name
+          const value = investments
+            .map((investment) => {
+              invariant(investment?.node, 'Investment node is null')
+              return currency(investment.node.valueInHouseholdCurrency)
+            })
+            .reduce((a, b) => a.add(b), currency(0))
 
           return (
             <AccordionItem value={groupKey} key={groupKey}>
               <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{groupLabel}</span>
                 <span className="grow"></span>
+                <span className="tabular-nums">
+                  ({value.divide(totalInvestment).multiply(100).toString()}%)
+                </span>
                 <span className="mr-3 tabular-nums">
                   {formatCurrencyWithPrivacyMode({
-                    value: investments
-                      .map((investment) => {
-                        invariant(investment?.node, 'Investment node is null')
-                        return currency(
-                          investment.node.valueInHouseholdCurrency,
-                        )
-                      })
-                      .reduce((a, b) => a.add(b), currency(0)),
+                    value,
                     currencyCode: household.currency.code,
                   })}
                 </span>
