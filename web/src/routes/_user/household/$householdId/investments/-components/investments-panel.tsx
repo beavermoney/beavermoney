@@ -240,7 +240,9 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                 <span>{groupLabel}</span>
                 <span className="grow"></span>
                 <span className="tabular-nums">
-                  ({value.divide(totalInvestment).multiply(100).toString()}%)
+                  (
+                  {((value.cents() / totalInvestment.cents()) * 100).toFixed(2)}
+                  %)
                 </span>
                 <span className="mr-3 tabular-nums">
                   {formatCurrencyWithPrivacyMode({
