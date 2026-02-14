@@ -59,6 +59,7 @@ export function TransactionEntryCard({
     transactionEntryCardFragment,
     fragmentRef,
   )
+  console.log('entry', data)
 
   return (
     <Item

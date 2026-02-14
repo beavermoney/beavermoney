@@ -159,7 +159,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
       const formData = formSchema.parse(value)
 
       // Amount is negative for buying (cash going out)
-      const amount = currency(formData.totalPaid).multiply(-1)
+      const amount = currency(formData.totalPaid, { precision: 8 }).multiply(-1)
 
       const result = await commitMutationResult<newBuyMutation>(
         commitMutation,

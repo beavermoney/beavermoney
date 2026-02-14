@@ -159,7 +159,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
       const formData = formSchema.parse(value)
 
       // Amount is positive for selling (cash coming in)
-      const amount = currency(formData.totalReceived)
+      const amount = currency(formData.totalReceived, { precision: 8 })
 
       const result = await commitMutationResult<newSellMutation>(
         commitMutation,
@@ -176,7 +176,9 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                 accountID: formData.accountId,
               },
               investmentLot: {
-                amount: currency(formData.shares).multiply(-1).toString(),
+                amount: currency(formData.shares, { precision: 8 })
+                  .multiply(-1)
+                  .toString(),
                 price: formData.pricePerShare.toString(),
                 investmentID: formData.investmentId,
               },
