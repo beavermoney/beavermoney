@@ -263,19 +263,19 @@ export function EditTransactionDialog({
     return match(transaction.category.name)
       .with('Buy', () => {
         const negativeEntries = entries.filter(
-          (item) => currency(item.entry.amount).value < 0,
+          (item) => currency(item.entry.amount, { precision: 8 }).value < 0,
         )
         const positiveLots = lots.filter(
-          (item) => currency(item.lot.amount).value > 0,
+          (item) => currency(item.lot.amount, { precision: 8 }).value > 0,
         )
         return [...positiveLots, ...negativeEntries]
       })
       .with('Sell', () => {
         const negativeLots = lots.filter(
-          (item) => currency(item.lot.amount).value < 0,
+          (item) => currency(item.lot.amount, { precision: 8 }).value < 0,
         )
         const positiveEntries = entries.filter(
-          (item) => currency(item.entry.amount).value > 0,
+          (item) => currency(item.entry.amount, { precision: 8 }).value > 0,
         )
         return [...negativeLots, ...positiveEntries]
       })
@@ -283,12 +283,12 @@ export function EditTransactionDialog({
         const debits = [...lots, ...entries].filter((item) => {
           const amount =
             item.type === 'lot' ? item.lot.amount : item.entry.amount
-          return currency(amount).value < 0
+          return currency(amount, { precision: 8 }).value < 0
         })
         const credits = [...lots, ...entries].filter((item) => {
           const amount =
             item.type === 'lot' ? item.lot.amount : item.entry.amount
-          return currency(amount).value >= 0
+          return currency(amount, { precision: 8 }).value >= 0
         })
         return [...debits, ...credits]
       })
