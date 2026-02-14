@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<35be267c82a5720087165f6d537dc316>>
+ * @generated SignedSource<<23ed95d57a0ca0aef8f4dd04218e5d60>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -53,6 +53,8 @@ export type TransactionWhereInput = {
   descriptionNEQ?: string | null | undefined;
   descriptionNotIn?: ReadonlyArray<string> | null | undefined;
   descriptionNotNil?: boolean | null | undefined;
+  excludeFromReports?: boolean | null | undefined;
+  excludeFromReportsNEQ?: boolean | null | undefined;
   hasCategory?: boolean | null | undefined;
   hasCategoryWith?: ReadonlyArray<TransactionCategoryWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;

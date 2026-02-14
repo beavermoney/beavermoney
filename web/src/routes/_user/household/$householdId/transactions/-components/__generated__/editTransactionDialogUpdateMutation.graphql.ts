@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d9c01232956190e61e6e2a68c7723654>>
+ * @generated SignedSource<<0a26f230be8333f31b94c9009da62b03>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,7 @@ export type UpdateTransactionInput = {
   clearDescription?: boolean | null | undefined;
   datetime?: any | null | undefined;
   description?: string | null | undefined;
+  excludeFromReports?: boolean | null | undefined;
 };
 export type editTransactionDialogUpdateMutation$variables = {
   id: string;

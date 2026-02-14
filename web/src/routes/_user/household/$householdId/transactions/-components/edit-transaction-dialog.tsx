@@ -34,8 +34,11 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Combobox,
   ComboboxContent,
@@ -68,6 +71,7 @@ const EditTransactionDialogQuery = graphql`
         description
         datetime
         categoryID
+        excludeFromReports
         category {
           id
           name
@@ -132,6 +136,7 @@ const formSchema = z.object({
     .max(256, 'Description must be at most 256 characters.'),
   datetime: z.date(),
   categoryId: z.string().min(1, 'Please select a category'),
+  excludeFromReports: z.boolean(),
 })
 
 type EditTransactionDialogProps = {
@@ -185,6 +190,7 @@ export function EditTransactionDialog({
       description: transaction.description ?? '',
       datetime: new Date(transaction.datetime),
       categoryId: transaction.categoryID,
+      excludeFromReports: transaction.excludeFromReports,
     },
     validators: {
       onSubmit: formSchema,
@@ -202,6 +208,7 @@ export function EditTransactionDialog({
                 description: formData.description || null,
                 datetime: formData.datetime.toISOString(),
                 categoryID: formData.categoryId,
+                excludeFromReports: formData.excludeFromReports,
               },
             },
           },
@@ -462,6 +469,33 @@ export function EditTransactionDialog({
                 )
               }}
             />
+
+            <FieldSet>
+              <FieldLegend variant="label">Options</FieldLegend>
+              <FieldGroup data-slot="checkbox-group">
+                <form.Field
+                  name="excludeFromReports"
+                  children={(field) => {
+                    return (
+                      <Field orientation={'horizontal'}>
+                        <Checkbox
+                          id={field.name}
+                          name={field.name}
+                          checked={field.state.value}
+                          onCheckedChange={(checked) =>
+                            field.handleChange(checked === true)
+                          }
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldLabel htmlFor={field.name}>
+                          Exclude from reports
+                        </FieldLabel>
+                      </Field>
+                    )
+                  }}
+                />
+              </FieldGroup>
+            </FieldSet>
           </FieldGroup>
         </form>
       </div>

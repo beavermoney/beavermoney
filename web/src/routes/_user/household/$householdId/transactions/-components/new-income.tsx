@@ -30,8 +30,11 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Combobox,
   ComboboxContent,
@@ -56,6 +59,7 @@ const formSchema = z.object({
   datetime: z.date(),
   accountId: z.string().min(1, 'Please select an account'),
   categoryId: z.string().min(1, 'Please select a category'),
+  excludeFromReports: z.boolean(),
 })
 
 const newIncomeFragment = graphql`
@@ -139,6 +143,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
       datetime: new Date(),
       accountId: '',
       categoryId: '',
+      excludeFromReports: false,
     },
     validators: {
       onSubmit: formSchema,
@@ -158,6 +163,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                 description: formData.description,
                 datetime: formData.datetime.toISOString(),
                 categoryID: formData.categoryId,
+                excludeFromReports: formData.excludeFromReports,
               },
               transactionEntry: {
                 amount: amount.toString(),
@@ -443,6 +449,33 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                 )
               }}
             />
+
+            <FieldSet>
+              <FieldLegend variant="label">Options</FieldLegend>
+              <FieldGroup data-slot="checkbox-group">
+                <form.Field
+                  name="excludeFromReports"
+                  children={(field) => {
+                    return (
+                      <Field orientation={'horizontal'}>
+                        <Checkbox
+                          id={field.name}
+                          name={field.name}
+                          checked={field.state.value}
+                          onCheckedChange={(checked) =>
+                            field.handleChange(checked === true)
+                          }
+                          onBlur={field.handleBlur}
+                        />
+                        <FieldLabel htmlFor={field.name}>
+                          Exclude from reports
+                        </FieldLabel>
+                      </Field>
+                    )
+                  }}
+                />
+              </FieldGroup>
+            </FieldSet>
           </FieldGroup>
         </form>
       </CardContent>

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b3de4a2c411ec5a454fb7bdcce53a1da>>
+ * @generated SignedSource<<da817693e23c40166fe2bb976f3b8903>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,7 @@ export type CreateTransactionInput = {
   categoryID: string;
   datetime: any;
   description?: string | null | undefined;
+  excludeFromReports?: boolean | null | undefined;
 };
 export type CreateTransactionEntryInput = {
   accountID: string;
