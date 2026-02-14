@@ -318,9 +318,10 @@ func (c *RecurringSubscriptionUpdateOne) SetInput(i UpdateRecurringSubscriptionI
 
 // CreateTransactionInput represents a mutation input for creating transactions.
 type CreateTransactionInput struct {
-	Description *string
-	Datetime    time.Time
-	CategoryID  int
+	Description        *string
+	Datetime           time.Time
+	ExcludeFromReports *bool
+	CategoryID         int
 }
 
 // Mutate applies the CreateTransactionInput on the TransactionMutation builder.
@@ -329,6 +330,9 @@ func (i *CreateTransactionInput) Mutate(m *TransactionMutation) {
 		m.SetDescription(*v)
 	}
 	m.SetDatetime(i.Datetime)
+	if v := i.ExcludeFromReports; v != nil {
+		m.SetExcludeFromReports(*v)
+	}
 	m.SetCategoryID(i.CategoryID)
 }
 
@@ -340,10 +344,11 @@ func (c *TransactionCreate) SetInput(i CreateTransactionInput) *TransactionCreat
 
 // UpdateTransactionInput represents a mutation input for updating transactions.
 type UpdateTransactionInput struct {
-	ClearDescription bool
-	Description      *string
-	Datetime         *time.Time
-	CategoryID       *int
+	ClearDescription   bool
+	Description        *string
+	Datetime           *time.Time
+	ExcludeFromReports *bool
+	CategoryID         *int
 }
 
 // Mutate applies the UpdateTransactionInput on the TransactionMutation builder.
@@ -356,6 +361,9 @@ func (i *UpdateTransactionInput) Mutate(m *TransactionMutation) {
 	}
 	if v := i.Datetime; v != nil {
 		m.SetDatetime(*v)
+	}
+	if v := i.ExcludeFromReports; v != nil {
+		m.SetExcludeFromReports(*v)
 	}
 	if v := i.CategoryID; v != nil {
 		m.SetCategoryID(*v)

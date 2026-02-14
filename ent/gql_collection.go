@@ -1181,6 +1181,11 @@ func (_q *TransactionQuery) collectField(ctx context.Context, oneNode bool, opCt
 				selectedFields = append(selectedFields, transaction.FieldCategoryID)
 				fieldSeen[transaction.FieldCategoryID] = struct{}{}
 			}
+		case "excludeFromReports":
+			if _, ok := fieldSeen[transaction.FieldExcludeFromReports]; !ok {
+				selectedFields = append(selectedFields, transaction.FieldExcludeFromReports)
+				fieldSeen[transaction.FieldExcludeFromReports] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:

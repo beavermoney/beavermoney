@@ -34,6 +34,8 @@ type Transaction struct {
 	UserID int `json:"user_id,omitempty"`
 	// CategoryID holds the value of the "category_id" field.
 	CategoryID int `json:"category_id,omitempty"`
+	// ExcludeFromReports holds the value of the "exclude_from_reports" field.
+	ExcludeFromReports bool `json:"exclude_from_reports,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
 	Edges        TransactionEdges `json:"edges"`
@@ -118,6 +120,8 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case transaction.FieldExcludeFromReports:
+			values[i] = new(sql.NullBool)
 		case transaction.FieldID, transaction.FieldHouseholdID, transaction.FieldUserID, transaction.FieldCategoryID:
 			values[i] = new(sql.NullInt64)
 		case transaction.FieldDescription:
@@ -186,6 +190,12 @@ func (_m *Transaction) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
 			} else if value.Valid {
 				_m.CategoryID = int(value.Int64)
+			}
+		case transaction.FieldExcludeFromReports:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field exclude_from_reports", values[i])
+			} else if value.Valid {
+				_m.ExcludeFromReports = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -268,6 +278,9 @@ func (_m *Transaction) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("category_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CategoryID))
+	builder.WriteString(", ")
+	builder.WriteString("exclude_from_reports=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ExcludeFromReports))
 	builder.WriteByte(')')
 	return builder.String()
 }

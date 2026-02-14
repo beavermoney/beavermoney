@@ -72,6 +72,9 @@ func (r *financialReportResolver) TransactionCount(ctx context.Context, obj *mod
 			// Filter by household
 			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
 
+			// Filter out excluded transactions
+			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
+
 			// Apply time filters
 			if !obj.StartDate.IsZero() {
 				s.Where(sql.GTE(s.C(transaction.FieldDatetime), obj.StartDate))

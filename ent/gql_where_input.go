@@ -3057,6 +3057,10 @@ type TransactionWhereInput struct {
 	CategoryIDIn    []int `json:"categoryIDIn,omitempty"`
 	CategoryIDNotIn []int `json:"categoryIDNotIn,omitempty"`
 
+	// "exclude_from_reports" field predicates.
+	ExcludeFromReports    *bool `json:"excludeFromReports,omitempty"`
+	ExcludeFromReportsNEQ *bool `json:"excludeFromReportsNEQ,omitempty"`
+
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
 	HasUserWith []*UserWhereInput `json:"hasUserWith,omitempty"`
@@ -3325,6 +3329,12 @@ func (i *TransactionWhereInput) P() (predicate.Transaction, error) {
 	}
 	if len(i.CategoryIDNotIn) > 0 {
 		predicates = append(predicates, transaction.CategoryIDNotIn(i.CategoryIDNotIn...))
+	}
+	if i.ExcludeFromReports != nil {
+		predicates = append(predicates, transaction.ExcludeFromReportsEQ(*i.ExcludeFromReports))
+	}
+	if i.ExcludeFromReportsNEQ != nil {
+		predicates = append(predicates, transaction.ExcludeFromReportsNEQ(*i.ExcludeFromReportsNEQ))
 	}
 
 	if i.HasUser != nil {

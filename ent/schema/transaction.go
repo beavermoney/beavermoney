@@ -30,6 +30,7 @@ func (Transaction) Fields() []ent.Field {
 
 		field.Int("user_id").Positive(),
 		field.Int("category_id").Positive(),
+		field.Bool("exclude_from_reports").Default(false),
 	}
 }
 

@@ -326,6 +326,7 @@ type ComplexityRoot struct {
 		CreateTime         func(childComplexity int) int
 		Datetime           func(childComplexity int) int
 		Description        func(childComplexity int) int
+		ExcludeFromReports func(childComplexity int) int
 		Household          func(childComplexity int) int
 		HouseholdID        func(childComplexity int) int
 		ID                 func(childComplexity int) int
@@ -1861,6 +1862,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Transaction.Description(childComplexity), true
+	case "Transaction.excludeFromReports":
+		if e.complexity.Transaction.ExcludeFromReports == nil {
+			break
+		}
+
+		return e.complexity.Transaction.ExcludeFromReports(childComplexity), true
 	case "Transaction.household":
 		if e.complexity.Transaction.Household == nil {
 			break
@@ -5140,6 +5147,8 @@ func (ec *executionContext) fieldContext_Household_transactions(_ context.Contex
 				return ec.fieldContext_Transaction_userID(ctx, field)
 			case "categoryID":
 				return ec.fieldContext_Transaction_categoryID(ctx, field)
+			case "excludeFromReports":
+				return ec.fieldContext_Transaction_excludeFromReports(ctx, field)
 			case "user":
 				return ec.fieldContext_Transaction_user(ctx, field)
 			case "household":
@@ -6699,6 +6708,8 @@ func (ec *executionContext) fieldContext_InvestmentLot_transaction(_ context.Con
 				return ec.fieldContext_Transaction_userID(ctx, field)
 			case "categoryID":
 				return ec.fieldContext_Transaction_categoryID(ctx, field)
+			case "excludeFromReports":
+				return ec.fieldContext_Transaction_excludeFromReports(ctx, field)
 			case "user":
 				return ec.fieldContext_Transaction_user(ctx, field)
 			case "household":
@@ -10064,6 +10075,35 @@ func (ec *executionContext) fieldContext_Transaction_categoryID(_ context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Transaction_excludeFromReports(ctx context.Context, field graphql.CollectedField, obj *ent.Transaction) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Transaction_excludeFromReports,
+		func(ctx context.Context) (any, error) {
+			return obj.ExcludeFromReports, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Transaction_excludeFromReports(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Transaction",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Transaction_user(ctx context.Context, field graphql.CollectedField, obj *ent.Transaction) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -10674,6 +10714,8 @@ func (ec *executionContext) fieldContext_TransactionCategory_transactions(_ cont
 				return ec.fieldContext_Transaction_userID(ctx, field)
 			case "categoryID":
 				return ec.fieldContext_Transaction_categoryID(ctx, field)
+			case "excludeFromReports":
+				return ec.fieldContext_Transaction_excludeFromReports(ctx, field)
 			case "user":
 				return ec.fieldContext_Transaction_user(ctx, field)
 			case "household":
@@ -11017,6 +11059,8 @@ func (ec *executionContext) fieldContext_TransactionEdge_node(_ context.Context,
 				return ec.fieldContext_Transaction_userID(ctx, field)
 			case "categoryID":
 				return ec.fieldContext_Transaction_categoryID(ctx, field)
+			case "excludeFromReports":
+				return ec.fieldContext_Transaction_excludeFromReports(ctx, field)
 			case "user":
 				return ec.fieldContext_Transaction_user(ctx, field)
 			case "household":
@@ -11514,6 +11558,8 @@ func (ec *executionContext) fieldContext_TransactionEntry_transaction(_ context.
 				return ec.fieldContext_Transaction_userID(ctx, field)
 			case "categoryID":
 				return ec.fieldContext_Transaction_categoryID(ctx, field)
+			case "excludeFromReports":
+				return ec.fieldContext_Transaction_excludeFromReports(ctx, field)
 			case "user":
 				return ec.fieldContext_Transaction_user(ctx, field)
 			case "household":
@@ -11848,6 +11894,8 @@ func (ec *executionContext) fieldContext_User_transactions(_ context.Context, fi
 				return ec.fieldContext_Transaction_userID(ctx, field)
 			case "categoryID":
 				return ec.fieldContext_Transaction_categoryID(ctx, field)
+			case "excludeFromReports":
+				return ec.fieldContext_Transaction_excludeFromReports(ctx, field)
 			case "user":
 				return ec.fieldContext_Transaction_user(ctx, field)
 			case "household":
@@ -15326,7 +15374,7 @@ func (ec *executionContext) unmarshalInputCreateTransactionInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"description", "datetime", "categoryID"}
+	fieldsInOrder := [...]string{"description", "datetime", "excludeFromReports", "categoryID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -15347,6 +15395,13 @@ func (ec *executionContext) unmarshalInputCreateTransactionInput(ctx context.Con
 				return it, err
 			}
 			it.Datetime = data
+		case "excludeFromReports":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("excludeFromReports"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExcludeFromReports = data
 		case "categoryID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
 			data, err := ec.unmarshalNID2int(ctx, v)
@@ -19419,7 +19474,7 @@ func (ec *executionContext) unmarshalInputTransactionWhereInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "datetime", "datetimeNEQ", "datetimeIn", "datetimeNotIn", "datetimeGT", "datetimeGTE", "datetimeLT", "datetimeLTE", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "categoryID", "categoryIDNEQ", "categoryIDIn", "categoryIDNotIn", "hasUser", "hasUserWith", "hasHousehold", "hasHouseholdWith", "hasCategory", "hasCategoryWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasInvestmentLots", "hasInvestmentLotsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "datetime", "datetimeNEQ", "datetimeIn", "datetimeNotIn", "datetimeGT", "datetimeGTE", "datetimeLT", "datetimeLTE", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "categoryID", "categoryIDNEQ", "categoryIDIn", "categoryIDNotIn", "excludeFromReports", "excludeFromReportsNEQ", "hasUser", "hasUserWith", "hasHousehold", "hasHouseholdWith", "hasCategory", "hasCategoryWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasInvestmentLots", "hasInvestmentLotsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19860,6 +19915,20 @@ func (ec *executionContext) unmarshalInputTransactionWhereInput(ctx context.Cont
 				return it, err
 			}
 			it.CategoryIDNotIn = data
+		case "excludeFromReports":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("excludeFromReports"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExcludeFromReports = data
+		case "excludeFromReportsNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("excludeFromReportsNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExcludeFromReportsNEQ = data
 		case "hasUser":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUser"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -20278,7 +20347,7 @@ func (ec *executionContext) unmarshalInputUpdateTransactionInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"description", "clearDescription", "datetime", "categoryID"}
+	fieldsInOrder := [...]string{"description", "clearDescription", "datetime", "excludeFromReports", "categoryID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20306,6 +20375,13 @@ func (ec *executionContext) unmarshalInputUpdateTransactionInput(ctx context.Con
 				return it, err
 			}
 			it.Datetime = data
+		case "excludeFromReports":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("excludeFromReports"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExcludeFromReports = data
 		case "categoryID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
 			data, err := ec.unmarshalOID2ᚖint(ctx, v)
@@ -24901,6 +24977,11 @@ func (ec *executionContext) _Transaction(ctx context.Context, sel ast.SelectionS
 			}
 		case "categoryID":
 			out.Values[i] = ec._Transaction_categoryID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "excludeFromReports":
+			out.Values[i] = ec._Transaction_excludeFromReports(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

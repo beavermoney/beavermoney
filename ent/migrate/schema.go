@@ -213,6 +213,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "datetime", Type: field.TypeTime},
+		{Name: "exclude_from_reports", Type: field.TypeBool, Default: false},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "category_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
@@ -225,19 +226,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "transactions_households_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[5]},
+				Columns:    []*schema.Column{TransactionsColumns[6]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transactions_transaction_categories_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[6]},
+				Columns:    []*schema.Column{TransactionsColumns[7]},
 				RefColumns: []*schema.Column{TransactionCategoriesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transactions_users_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[7]},
+				Columns:    []*schema.Column{TransactionsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

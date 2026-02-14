@@ -1,4 +1,4 @@
-h1:GL0KSyfjpMyyleo/0I9N5qUZc24VY96qmp9Ciec8UYY=
+h1:rm+r3eRRbRCUY4hdkttN0UcnpMuS1oTrgP84RHrW+qw=
 20250114164520_init.up.sql h1:kLD19UMVgiQpXOcjVFQacyoZG9bNFyqN3pOveynp7lQ=
 20251227201721_balance-trigger.up.sql h1:s8dl6hthzA9WTMbpLrWsVYo4bsssRu+Y0ngJF5/EGjM=
 20251228225913_amount-trigger.up.sql h1:KLlttiUI43zcXXLl7oK/9InIhxcuCHEm6t171sA5miI=
@@ -10,3 +10,4 @@ h1:GL0KSyfjpMyyleo/0I9N5qUZc24VY96qmp9Ciec8UYY=
 20260201001944_currency-locales.up.sql h1:CZ8YpeJJ1s+5cf0+4ViIYvxxNQ/Ipg/0HvHueE7B8pE=
 20260201004024_locales-not-null.up.sql h1:hnxoMxWZKq71YOcon9cnMFZUYPbPEb8VNO0OX4VVPFA=
 20260205041036_transaction-cascade.up.sql h1:ML/JX8raEmOKNcAP8uYPKWqnXTU4jtViIiWauQs2pf0=
+20260214031841_transaction-exclude.up.sql h1:zocAwfgCGG8FGiBEYbmqaZ9Eflm+WMy+X6jpZ5jsc+M=

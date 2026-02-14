@@ -93,6 +93,20 @@ func (_c *TransactionCreate) SetCategoryID(v int) *TransactionCreate {
 	return _c
 }
 
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (_c *TransactionCreate) SetExcludeFromReports(v bool) *TransactionCreate {
+	_c.mutation.SetExcludeFromReports(v)
+	return _c
+}
+
+// SetNillableExcludeFromReports sets the "exclude_from_reports" field if the given value is not nil.
+func (_c *TransactionCreate) SetNillableExcludeFromReports(v *bool) *TransactionCreate {
+	if v != nil {
+		_c.SetExcludeFromReports(*v)
+	}
+	return _c
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_c *TransactionCreate) SetUser(v *User) *TransactionCreate {
 	return _c.SetUserID(v.ID)
@@ -189,6 +203,10 @@ func (_c *TransactionCreate) defaults() error {
 		v := transaction.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
+	if _, ok := _c.mutation.ExcludeFromReports(); !ok {
+		v := transaction.DefaultExcludeFromReports
+		_c.mutation.SetExcludeFromReports(v)
+	}
 	return nil
 }
 
@@ -221,6 +239,9 @@ func (_c *TransactionCreate) check() error {
 		if err := transaction.CategoryIDValidator(v); err != nil {
 			return &ValidationError{Name: "category_id", err: fmt.Errorf(`ent: validator failed for field "Transaction.category_id": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.ExcludeFromReports(); !ok {
+		return &ValidationError{Name: "exclude_from_reports", err: errors.New(`ent: missing required field "Transaction.exclude_from_reports"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Transaction.user"`)}
@@ -273,6 +294,10 @@ func (_c *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Datetime(); ok {
 		_spec.SetField(transaction.FieldDatetime, field.TypeTime, value)
 		_node.Datetime = value
+	}
+	if value, ok := _c.mutation.ExcludeFromReports(); ok {
+		_spec.SetField(transaction.FieldExcludeFromReports, field.TypeBool, value)
+		_node.ExcludeFromReports = value
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -475,6 +500,18 @@ func (u *TransactionUpsert) UpdateCategoryID() *TransactionUpsert {
 	return u
 }
 
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (u *TransactionUpsert) SetExcludeFromReports(v bool) *TransactionUpsert {
+	u.Set(transaction.FieldExcludeFromReports, v)
+	return u
+}
+
+// UpdateExcludeFromReports sets the "exclude_from_reports" field to the value that was provided on create.
+func (u *TransactionUpsert) UpdateExcludeFromReports() *TransactionUpsert {
+	u.SetExcluded(transaction.FieldExcludeFromReports)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -597,6 +634,20 @@ func (u *TransactionUpsertOne) SetCategoryID(v int) *TransactionUpsertOne {
 func (u *TransactionUpsertOne) UpdateCategoryID() *TransactionUpsertOne {
 	return u.Update(func(s *TransactionUpsert) {
 		s.UpdateCategoryID()
+	})
+}
+
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (u *TransactionUpsertOne) SetExcludeFromReports(v bool) *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.SetExcludeFromReports(v)
+	})
+}
+
+// UpdateExcludeFromReports sets the "exclude_from_reports" field to the value that was provided on create.
+func (u *TransactionUpsertOne) UpdateExcludeFromReports() *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.UpdateExcludeFromReports()
 	})
 }
 
@@ -888,6 +939,20 @@ func (u *TransactionUpsertBulk) SetCategoryID(v int) *TransactionUpsertBulk {
 func (u *TransactionUpsertBulk) UpdateCategoryID() *TransactionUpsertBulk {
 	return u.Update(func(s *TransactionUpsert) {
 		s.UpdateCategoryID()
+	})
+}
+
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (u *TransactionUpsertBulk) SetExcludeFromReports(v bool) *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.SetExcludeFromReports(v)
+	})
+}
+
+// UpdateExcludeFromReports sets the "exclude_from_reports" field to the value that was provided on create.
+func (u *TransactionUpsertBulk) UpdateExcludeFromReports() *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.UpdateExcludeFromReports()
 	})
 }
 

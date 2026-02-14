@@ -90,6 +90,11 @@ func CategoryID(v int) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldCategoryID, v))
 }
 
+// ExcludeFromReports applies equality check predicate on the "exclude_from_reports" field. It's identical to ExcludeFromReportsEQ.
+func ExcludeFromReports(v bool) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldExcludeFromReports, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldCreateTime, v))
@@ -343,6 +348,16 @@ func CategoryIDIn(vs ...int) predicate.Transaction {
 // CategoryIDNotIn applies the NotIn predicate on the "category_id" field.
 func CategoryIDNotIn(vs ...int) predicate.Transaction {
 	return predicate.Transaction(sql.FieldNotIn(FieldCategoryID, vs...))
+}
+
+// ExcludeFromReportsEQ applies the EQ predicate on the "exclude_from_reports" field.
+func ExcludeFromReportsEQ(v bool) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldExcludeFromReports, v))
+}
+
+// ExcludeFromReportsNEQ applies the NEQ predicate on the "exclude_from_reports" field.
+func ExcludeFromReportsNEQ(v bool) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNEQ(FieldExcludeFromReports, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

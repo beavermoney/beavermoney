@@ -101,6 +101,20 @@ func (_u *TransactionUpdate) SetNillableCategoryID(v *int) *TransactionUpdate {
 	return _u
 }
 
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (_u *TransactionUpdate) SetExcludeFromReports(v bool) *TransactionUpdate {
+	_u.mutation.SetExcludeFromReports(v)
+	return _u
+}
+
+// SetNillableExcludeFromReports sets the "exclude_from_reports" field if the given value is not nil.
+func (_u *TransactionUpdate) SetNillableExcludeFromReports(v *bool) *TransactionUpdate {
+	if v != nil {
+		_u.SetExcludeFromReports(*v)
+	}
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *TransactionUpdate) SetUser(v *User) *TransactionUpdate {
 	return _u.SetUserID(v.ID)
@@ -295,6 +309,9 @@ func (_u *TransactionUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if value, ok := _u.mutation.Datetime(); ok {
 		_spec.SetField(transaction.FieldDatetime, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.ExcludeFromReports(); ok {
+		_spec.SetField(transaction.FieldExcludeFromReports, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -534,6 +551,20 @@ func (_u *TransactionUpdateOne) SetNillableCategoryID(v *int) *TransactionUpdate
 	return _u
 }
 
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (_u *TransactionUpdateOne) SetExcludeFromReports(v bool) *TransactionUpdateOne {
+	_u.mutation.SetExcludeFromReports(v)
+	return _u
+}
+
+// SetNillableExcludeFromReports sets the "exclude_from_reports" field if the given value is not nil.
+func (_u *TransactionUpdateOne) SetNillableExcludeFromReports(v *bool) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetExcludeFromReports(*v)
+	}
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *TransactionUpdateOne) SetUser(v *User) *TransactionUpdateOne {
 	return _u.SetUserID(v.ID)
@@ -758,6 +789,9 @@ func (_u *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transaction
 	}
 	if value, ok := _u.mutation.Datetime(); ok {
 		_spec.SetField(transaction.FieldDatetime, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.ExcludeFromReports(); ok {
+		_spec.SetField(transaction.FieldExcludeFromReports, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

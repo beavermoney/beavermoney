@@ -6841,6 +6841,7 @@ type TransactionMutation struct {
 	update_time                *time.Time
 	description                *string
 	datetime                   *time.Time
+	exclude_from_reports       *bool
 	clearedFields              map[string]struct{}
 	user                       *int
 	cleareduser                bool
@@ -7222,6 +7223,42 @@ func (m *TransactionMutation) ResetCategoryID() {
 	m.category = nil
 }
 
+// SetExcludeFromReports sets the "exclude_from_reports" field.
+func (m *TransactionMutation) SetExcludeFromReports(b bool) {
+	m.exclude_from_reports = &b
+}
+
+// ExcludeFromReports returns the value of the "exclude_from_reports" field in the mutation.
+func (m *TransactionMutation) ExcludeFromReports() (r bool, exists bool) {
+	v := m.exclude_from_reports
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExcludeFromReports returns the old "exclude_from_reports" field's value of the Transaction entity.
+// If the Transaction object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TransactionMutation) OldExcludeFromReports(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExcludeFromReports is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExcludeFromReports requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExcludeFromReports: %w", err)
+	}
+	return oldValue.ExcludeFromReports, nil
+}
+
+// ResetExcludeFromReports resets all changes to the "exclude_from_reports" field.
+func (m *TransactionMutation) ResetExcludeFromReports() {
+	m.exclude_from_reports = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *TransactionMutation) ClearUser() {
 	m.cleareduser = true
@@ -7445,7 +7482,7 @@ func (m *TransactionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TransactionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.create_time != nil {
 		fields = append(fields, transaction.FieldCreateTime)
 	}
@@ -7466,6 +7503,9 @@ func (m *TransactionMutation) Fields() []string {
 	}
 	if m.category != nil {
 		fields = append(fields, transaction.FieldCategoryID)
+	}
+	if m.exclude_from_reports != nil {
+		fields = append(fields, transaction.FieldExcludeFromReports)
 	}
 	return fields
 }
@@ -7489,6 +7529,8 @@ func (m *TransactionMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case transaction.FieldCategoryID:
 		return m.CategoryID()
+	case transaction.FieldExcludeFromReports:
+		return m.ExcludeFromReports()
 	}
 	return nil, false
 }
@@ -7512,6 +7554,8 @@ func (m *TransactionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldUserID(ctx)
 	case transaction.FieldCategoryID:
 		return m.OldCategoryID(ctx)
+	case transaction.FieldExcludeFromReports:
+		return m.OldExcludeFromReports(ctx)
 	}
 	return nil, fmt.Errorf("unknown Transaction field %s", name)
 }
@@ -7569,6 +7613,13 @@ func (m *TransactionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCategoryID(v)
+		return nil
+	case transaction.FieldExcludeFromReports:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExcludeFromReports(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Transaction field %s", name)
@@ -7651,6 +7702,9 @@ func (m *TransactionMutation) ResetField(name string) error {
 		return nil
 	case transaction.FieldCategoryID:
 		m.ResetCategoryID()
+		return nil
+	case transaction.FieldExcludeFromReports:
+		m.ResetExcludeFromReports()
 		return nil
 	}
 	return fmt.Errorf("unknown Transaction field %s", name)

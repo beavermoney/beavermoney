@@ -164,13 +164,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Transaction",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			transaction.FieldCreateTime:  {Type: field.TypeTime, Column: transaction.FieldCreateTime},
-			transaction.FieldUpdateTime:  {Type: field.TypeTime, Column: transaction.FieldUpdateTime},
-			transaction.FieldHouseholdID: {Type: field.TypeInt, Column: transaction.FieldHouseholdID},
-			transaction.FieldDescription: {Type: field.TypeString, Column: transaction.FieldDescription},
-			transaction.FieldDatetime:    {Type: field.TypeTime, Column: transaction.FieldDatetime},
-			transaction.FieldUserID:      {Type: field.TypeInt, Column: transaction.FieldUserID},
-			transaction.FieldCategoryID:  {Type: field.TypeInt, Column: transaction.FieldCategoryID},
+			transaction.FieldCreateTime:         {Type: field.TypeTime, Column: transaction.FieldCreateTime},
+			transaction.FieldUpdateTime:         {Type: field.TypeTime, Column: transaction.FieldUpdateTime},
+			transaction.FieldHouseholdID:        {Type: field.TypeInt, Column: transaction.FieldHouseholdID},
+			transaction.FieldDescription:        {Type: field.TypeString, Column: transaction.FieldDescription},
+			transaction.FieldDatetime:           {Type: field.TypeTime, Column: transaction.FieldDatetime},
+			transaction.FieldUserID:             {Type: field.TypeInt, Column: transaction.FieldUserID},
+			transaction.FieldCategoryID:         {Type: field.TypeInt, Column: transaction.FieldCategoryID},
+			transaction.FieldExcludeFromReports: {Type: field.TypeBool, Column: transaction.FieldExcludeFromReports},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -1853,6 +1854,11 @@ func (f *TransactionFilter) WhereUserID(p entql.IntP) {
 // WhereCategoryID applies the entql int predicate on the category_id field.
 func (f *TransactionFilter) WhereCategoryID(p entql.IntP) {
 	f.Where(p.Field(transaction.FieldCategoryID))
+}
+
+// WhereExcludeFromReports applies the entql bool predicate on the exclude_from_reports field.
+func (f *TransactionFilter) WhereExcludeFromReports(p entql.BoolP) {
+	f.Where(p.Field(transaction.FieldExcludeFromReports))
 }
 
 // WhereHasUser applies a predicate to check if query has an edge user.

@@ -273,6 +273,10 @@ func init() {
 	transactionDescCategoryID := transactionFields[3].Descriptor()
 	// transaction.CategoryIDValidator is a validator for the "category_id" field. It is called by the builders before save.
 	transaction.CategoryIDValidator = transactionDescCategoryID.Validators[0].(func(int) error)
+	// transactionDescExcludeFromReports is the schema descriptor for exclude_from_reports field.
+	transactionDescExcludeFromReports := transactionFields[4].Descriptor()
+	// transaction.DefaultExcludeFromReports holds the default value on creation for the exclude_from_reports field.
+	transaction.DefaultExcludeFromReports = transactionDescExcludeFromReports.Default.(bool)
 	transactioncategoryMixin := schema.TransactionCategory{}.Mixin()
 	transactioncategory.Policy = privacy.NewPolicies(transactioncategoryMixin[1], schema.TransactionCategory{})
 	transactioncategory.Hooks[0] = func(next ent.Mutator) ent.Mutator {
