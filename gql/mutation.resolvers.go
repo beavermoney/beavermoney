@@ -913,6 +913,9 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	var fromLot, toLot *ent.CreateInvestmentLotInput
 	for i := range input.InvestmentLots {
 		lot := input.InvestmentLots[i]
+		if lot.Amount.IsZero() {
+			return nil, fmt.Errorf("investment lot amount cannot be zero")
+		}
 		if lot.Amount.IsNegative() {
 			fromLot = lot
 		} else if lot.Amount.IsPositive() {

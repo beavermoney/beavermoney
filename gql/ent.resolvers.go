@@ -296,6 +296,10 @@ func (r *createInvestmentLotInputResolver) Amount(ctx context.Context, obj *ent.
 		return fmt.Errorf("invalid decimal string for amount: %v", err)
 	}
 
+	if dec.IsZero() {
+		return fmt.Errorf("investment lot amount cannot be zero")
+	}
+
 	obj.Amount = dec
 	return nil
 }
@@ -331,6 +335,10 @@ func (r *createTransactionEntryInputResolver) Amount(ctx context.Context, obj *e
 	dec, err := decimal.NewFromString(data)
 	if err != nil {
 		return fmt.Errorf("invalid decimal string for amount: %v", err)
+	}
+
+	if dec.IsZero() {
+		return fmt.Errorf("transaction entry amount cannot be zero")
 	}
 
 	obj.Amount = dec
