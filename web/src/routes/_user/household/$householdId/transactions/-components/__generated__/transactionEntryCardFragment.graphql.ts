@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<af811f3c3c5ddcbc9c9f4147cbb413a3>>
+ * @generated SignedSource<<492c13bd537e6e1cd257705ea363f072>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,6 +27,7 @@ export type transactionEntryCardFragment$data = {
       readonly type: TransactionCategoryType;
     };
     readonly datetime: any;
+    readonly excludeFromReports: boolean;
     readonly id: string;
   };
   readonly " $fragmentType": "transactionEntryCardFragment";
@@ -107,6 +108,13 @@ return {
         {
           "alias": null,
           "args": null,
+          "kind": "ScalarField",
+          "name": "excludeFromReports",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
           "concreteType": "TransactionCategory",
           "kind": "LinkedField",
           "name": "category",
@@ -146,6 +154,6 @@ return {
 };
 })();
 
-(node as any).hash = "e8ee036a3abe46628d29964867ca83b8";
+(node as any).hash = "867caab77fa05f244a722b2a840863a4";
 
 export default node;

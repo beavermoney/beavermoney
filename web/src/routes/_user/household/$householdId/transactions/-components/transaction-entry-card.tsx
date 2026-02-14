@@ -21,6 +21,7 @@ import {
   WrenchIcon,
 } from 'lucide-react'
 import { TransactionCategoryType } from '../__generated__/TransactionsQuery.graphql'
+import { Badge } from '@/components/ui/badge'
 
 const transactionEntryCardFragment = graphql`
   fragment transactionEntryCardFragment on TransactionEntry {
@@ -34,6 +35,7 @@ const transactionEntryCardFragment = graphql`
     }
     transaction {
       id
+      excludeFromReports
       category {
         name
         type
@@ -59,7 +61,6 @@ export function TransactionEntryCard({
     transactionEntryCardFragment,
     fragmentRef,
   )
-  console.log('entry', data)
 
   return (
     <Item
@@ -81,6 +82,9 @@ export function TransactionEntryCard({
       <ItemContent className="gap-px">
         <ItemTitle className="">
           <span className="">{data.transaction.category.name}</span>
+          {data.transaction.excludeFromReports && (
+            <Badge className="h-4 px-1.5">Excluded</Badge>
+          )}
         </ItemTitle>
         <ItemDescription>
           {format(new Date(data.transaction.datetime), 'LLL d, iiii')}
