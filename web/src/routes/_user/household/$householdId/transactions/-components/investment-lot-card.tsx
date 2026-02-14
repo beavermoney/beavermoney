@@ -95,7 +95,7 @@ export function InvestmentLotCard({
         <ItemDescription>
           {data.amount} {data.investment.name} @{' '}
           {formatCurrency({
-            value: currency(data.price),
+            value: currency(data.price, { precision: 8 }),
             currencyCode: data.investment.currency.code,
           })}
         </ItemDescription>
