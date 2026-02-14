@@ -227,7 +227,9 @@ export function NewSell({ fragmentRef }: NewSellProps) {
   // Update totalReceived when shares or pricePerShare changes
   useEffect(() => {
     if (shares && pricePerShare) {
-      const computed = currency(shares).multiply(pricePerShare)
+      const computed = currency(shares, { precision: 8 }).multiply(
+        currency(pricePerShare, { precision: 8 }),
+      )
       form.setFieldValue('totalReceived', computed.value)
     }
   }, [shares, pricePerShare, form])

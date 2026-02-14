@@ -227,7 +227,9 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
   // Update totalPaid when shares or pricePerShare changes
   useEffect(() => {
     if (shares && pricePerShare) {
-      const computed = currency(shares).multiply(pricePerShare)
+      const computed = currency(shares, { precision: 8 }).multiply(
+        currency(pricePerShare, { precision: 8 }),
+      )
       form.setFieldValue('totalPaid', computed.value)
     }
   }, [shares, pricePerShare, form])
