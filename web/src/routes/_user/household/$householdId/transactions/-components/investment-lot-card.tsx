@@ -78,7 +78,11 @@ export function InvestmentLotCard({
           <span>{data.transaction.category.name}</span>
         </ItemTitle>
         <ItemDescription>
-          {format(new Date(data.transaction.datetime), 'LLL d, iiii')}
+          {data.amount} {data.investment.name} @{' '}
+          {formatCurrency({
+            value: currency(data.price, { precision: 8 }),
+            currencyCode: data.investment.currency.code,
+          })}
         </ItemDescription>
       </ItemContent>
       <ItemContent className="items-end gap-px">
@@ -93,11 +97,7 @@ export function InvestmentLotCard({
           </span>
         </ItemTitle>
         <ItemDescription>
-          {data.amount} {data.investment.name} @{' '}
-          {formatCurrency({
-            value: currency(data.price, { precision: 8 }),
-            currencyCode: data.investment.currency.code,
-          })}
+          {format(new Date(data.transaction.datetime), 'LLL d')}
         </ItemDescription>
       </ItemContent>
     </Item>

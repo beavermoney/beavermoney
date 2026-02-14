@@ -86,9 +86,7 @@ export function TransactionEntryCard({
             <Badge className="h-4 px-1.5">Excluded</Badge>
           )}
         </ItemTitle>
-        <ItemDescription>
-          {format(new Date(data.transaction.datetime), 'LLL d, iiii')}
-        </ItemDescription>
+        <ItemDescription className="">{data.account.name}</ItemDescription>
       </ItemContent>
       <ItemContent className="items-end gap-px">
         <ItemTitle className="">
@@ -99,7 +97,9 @@ export function TransactionEntryCard({
             })}
           </span>
         </ItemTitle>
-        <ItemDescription>{data.account.name}</ItemDescription>
+        <ItemDescription>
+          {format(new Date(data.transaction.datetime), 'LLL d')}
+        </ItemDescription>
       </ItemContent>
     </Item>
   )
