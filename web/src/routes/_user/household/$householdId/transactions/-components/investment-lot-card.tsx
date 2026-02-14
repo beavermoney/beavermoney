@@ -52,7 +52,6 @@ export function InvestmentLotCard({
     investmentLotCardFragment,
     fragmentRef,
   )
-  console.log(data)
 
   return (
     <Item
