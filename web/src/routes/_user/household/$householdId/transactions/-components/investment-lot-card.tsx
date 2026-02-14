@@ -52,6 +52,7 @@ export function InvestmentLotCard({
     investmentLotCardFragment,
     fragmentRef,
   )
+  console.log(data)
 
   return (
     <Item
@@ -85,7 +86,9 @@ export function InvestmentLotCard({
         <ItemTitle className="">
           <span className="tabular-nums">
             {formatCurrency({
-              value: currency(data.price).multiply(currency(data.amount)),
+              value: currency(data.price, { precision: 8 }).multiply(
+                currency(data.amount, { precision: 8 }),
+              ),
               currencyCode: data.investment.currency.code,
             })}
           </span>

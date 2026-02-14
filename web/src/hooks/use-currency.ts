@@ -18,7 +18,8 @@ export function useCurrency() {
     currencyCode,
     liability,
   }: FormatCurrencyArgs) => {
-    const curr = typeof value === 'string' ? currency(value) : value
+    const curr =
+      typeof value === 'string' ? currency(value, { precision: 8 }) : value
 
     const formatted = Intl.NumberFormat(household.locale, {
       currency: currencyCode,
