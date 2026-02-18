@@ -20,7 +20,7 @@ export const Route = createFileRoute(
     // Use a very wide date range to get all-time data
     const farPast = new Date('1900-01-01T00:00:00Z').toISOString()
     const farFuture = new Date('2100-01-01T00:00:00Z').toISOString()
-    
+
     return loadQuery<CategoryIdQuery>(
       environment,
       CategoryIdQuery,
@@ -36,11 +36,7 @@ export const Route = createFileRoute(
 })
 
 const CategoryIdQuery = graphql`
-  query CategoryIdQuery(
-    $id: ID!
-    $startDate: Time!
-    $endDate: Time!
-  ) {
+  query CategoryIdQuery($id: ID!, $startDate: Time!, $endDate: Time!) {
     node(id: $id) {
       ... on TransactionCategory {
         id
@@ -63,7 +59,7 @@ function RouteComponent() {
   useSubscribeToInvalidationState([ROOT_ID], () => {
     const farPast = new Date('1900-01-01T00:00:00Z').toISOString()
     const farFuture = new Date('2100-01-01T00:00:00Z').toISOString()
-    
+
     return loadQuery<CategoryIdQuery>(
       environment,
       CategoryIdQuery,

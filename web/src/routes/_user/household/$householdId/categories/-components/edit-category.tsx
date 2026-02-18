@@ -78,7 +78,10 @@ const editCategoryFragment = graphql`
 `
 
 const editCategoryMutation = graphql`
-  mutation editCategoryMutation($id: ID!, $input: UpdateTransactionCategoryInput!) {
+  mutation editCategoryMutation(
+    $id: ID!
+    $input: UpdateTransactionCategoryInput!
+  ) {
     updateTransactionCategory(id: $id, input: $input) {
       node {
         id
