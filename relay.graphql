@@ -2233,6 +2233,11 @@ type Mutation {
   createRecurringSubscription(
     input: CreateRecurringSubscriptionInput!
   ): RecurringSubscriptionEdge!
+  updateRecurringSubscription(
+    id: ID!
+    input: UpdateRecurringSubscriptionInput!
+  ): RecurringSubscriptionEdge!
+  deleteRecurringSubscription(id: ID!): Boolean!
   createExpense(input: CreateExpenseInputCustom!): TransactionEdge!
   createIncome(input: CreateIncomeInputCustom!): TransactionEdge!
   createTransfer(input: CreateTransferInputCustom!): TransactionEdge!

@@ -232,10 +232,12 @@ type ComplexityRoot struct {
 		CreateRecurringSubscription func(childComplexity int, input ent.CreateRecurringSubscriptionInput) int
 		CreateTransactionCategory   func(childComplexity int, input ent.CreateTransactionCategoryInput) int
 		CreateTransfer              func(childComplexity int, input model.CreateTransferInputCustom) int
+		DeleteRecurringSubscription func(childComplexity int, id int) int
 		DeleteTransaction           func(childComplexity int, id int) int
 		MoveInvestment              func(childComplexity int, input model.MoveInvestmentInputCustom) int
 		Refresh                     func(childComplexity int) int
 		SellInvestment              func(childComplexity int, input model.SellInvestmentInputCustom) int
+		UpdateRecurringSubscription func(childComplexity int, id int, input ent.UpdateRecurringSubscriptionInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
 	}
 
@@ -454,6 +456,8 @@ type MutationResolver interface {
 	CreateInvestment(ctx context.Context, input model.CreateInvestmentInputCustom) (*ent.InvestmentEdge, error)
 	CreateTransactionCategory(ctx context.Context, input ent.CreateTransactionCategoryInput) (*ent.TransactionCategoryEdge, error)
 	CreateRecurringSubscription(ctx context.Context, input ent.CreateRecurringSubscriptionInput) (*ent.RecurringSubscriptionEdge, error)
+	UpdateRecurringSubscription(ctx context.Context, id int, input ent.UpdateRecurringSubscriptionInput) (*ent.RecurringSubscriptionEdge, error)
+	DeleteRecurringSubscription(ctx context.Context, id int) (bool, error)
 	CreateExpense(ctx context.Context, input model.CreateExpenseInputCustom) (*ent.TransactionEdge, error)
 	CreateIncome(ctx context.Context, input model.CreateIncomeInputCustom) (*ent.TransactionEdge, error)
 	CreateTransfer(ctx context.Context, input model.CreateTransferInputCustom) (*ent.TransactionEdge, error)
@@ -1366,6 +1370,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.CreateTransfer(childComplexity, args["input"].(model.CreateTransferInputCustom)), true
+	case "Mutation.deleteRecurringSubscription":
+		if e.complexity.Mutation.DeleteRecurringSubscription == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteRecurringSubscription_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteRecurringSubscription(childComplexity, args["id"].(int)), true
 	case "Mutation.deleteTransaction":
 		if e.complexity.Mutation.DeleteTransaction == nil {
 			break
@@ -1405,6 +1420,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.SellInvestment(childComplexity, args["input"].(model.SellInvestmentInputCustom)), true
+	case "Mutation.updateRecurringSubscription":
+		if e.complexity.Mutation.UpdateRecurringSubscription == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateRecurringSubscription_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateRecurringSubscription(childComplexity, args["id"].(int), args["input"].(ent.UpdateRecurringSubscriptionInput)), true
 	case "Mutation.updateTransaction":
 		if e.complexity.Mutation.UpdateTransaction == nil {
 			break
@@ -2537,6 +2563,17 @@ func (ec *executionContext) field_Mutation_createTransfer_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteRecurringSubscription_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteTransaction_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -2567,6 +2604,22 @@ func (ec *executionContext) field_Mutation_sellInvestment_args(ctx context.Conte
 		return nil, err
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateRecurringSubscription_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateRecurringSubscriptionInput2beavermoneyᚗappᚋentᚐUpdateRecurringSubscriptionInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -7169,6 +7222,94 @@ func (ec *executionContext) fieldContext_Mutation_createRecurringSubscription(ct
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createRecurringSubscription_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateRecurringSubscription(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateRecurringSubscription,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateRecurringSubscription(ctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateRecurringSubscriptionInput))
+		},
+		nil,
+		ec.marshalNRecurringSubscriptionEdge2ᚖbeavermoneyᚗappᚋentᚐRecurringSubscriptionEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateRecurringSubscription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_RecurringSubscriptionEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_RecurringSubscriptionEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscriptionEdge", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateRecurringSubscription_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteRecurringSubscription(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_deleteRecurringSubscription,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().DeleteRecurringSubscription(ctx, fc.Args["id"].(int))
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteRecurringSubscription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteRecurringSubscription_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -23836,6 +23977,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "updateRecurringSubscription":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateRecurringSubscription(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteRecurringSubscription":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteRecurringSubscription(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createExpense":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createExpense(ctx, field)
@@ -27513,6 +27668,11 @@ func (ec *executionContext) marshalNTransactionOrderField2ᚖbeavermoneyᚗapp�
 func (ec *executionContext) unmarshalNTransactionWhereInput2ᚖbeavermoneyᚗappᚋentᚐTransactionWhereInput(ctx context.Context, v any) (*ent.TransactionWhereInput, error) {
 	res, err := ec.unmarshalInputTransactionWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateRecurringSubscriptionInput2beavermoneyᚗappᚋentᚐUpdateRecurringSubscriptionInput(ctx context.Context, v any) (ent.UpdateRecurringSubscriptionInput, error) {
+	res, err := ec.unmarshalInputUpdateRecurringSubscriptionInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateTransactionInput2beavermoneyᚗappᚋentᚐUpdateTransactionInput(ctx context.Context, v any) (ent.UpdateTransactionInput, error) {

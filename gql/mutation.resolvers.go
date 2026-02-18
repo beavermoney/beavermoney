@@ -358,6 +358,55 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 	}, nil
 }
 
+// UpdateRecurringSubscription is the resolver for the updateRecurringSubscription field.
+func (r *mutationResolver) UpdateRecurringSubscription(ctx context.Context, id int, input ent.UpdateRecurringSubscriptionInput) (*ent.RecurringSubscriptionEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateRecurringSubscription",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	subscription, err := client.RecurringSubscription.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ent.RecurringSubscriptionEdge{
+		Node:   subscription,
+		Cursor: gqlutil.EncodeCursor(subscription.ID),
+	}, nil
+}
+
+// DeleteRecurringSubscription is the resolver for the deleteRecurringSubscription field.
+func (r *mutationResolver) DeleteRecurringSubscription(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteRecurringSubscription",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	err := client.RecurringSubscription.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // CreateExpense is the resolver for the createExpense field.
 func (r *mutationResolver) CreateExpense(ctx context.Context, input model.CreateExpenseInputCustom) (*ent.TransactionEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
