@@ -50,12 +50,10 @@ function RouteComponent() {
   })
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1">
-        <Item className="p-0">
-          <NewSubscription fragmentRef={data} />
-        </Item>
-      </div>
+    <div className="flex h-full flex-col">
+      <Item className="p-0">
+        <NewSubscription fragmentRef={data} />
+      </Item>
     </div>
   )
 }

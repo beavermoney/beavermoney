@@ -210,7 +210,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         activeCount: activeSubscriptions.length,
         sortedSubscriptions: subscriptionsToSort,
       }
-    }, [data.recurringSubscriptions, sortBy])
+    }, [data, sortBy])
 
   const summaryContent = useMemo(() => {
     switch (summaryDisplay) {

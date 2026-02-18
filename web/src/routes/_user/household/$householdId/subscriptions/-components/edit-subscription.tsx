@@ -1,5 +1,5 @@
 import { graphql } from 'relay-runtime'
-import { useForm } from '@tanstack/react-form'
+import { useForm, useStore } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 import { useFragment, useMutation } from 'react-relay'
@@ -46,6 +46,8 @@ import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
+import { CurrencyInput } from '@/components/currency-input'
+import { editSubscriptionCurrenciesFragment$key } from './__generated__/editSubscriptionCurrenciesFragment.graphql'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -68,8 +70,19 @@ const formSchema = z.object({
     .min(1, 'Interval count must be at least 1.')
     .max(100, 'Interval count must be at most 100.'),
   startDate: z.date(),
+  cost: z.string(),
+  currencyCode: z.string(),
   active: z.boolean(),
 })
+
+const editSubscriptionCurrenciesFragment = graphql`
+  fragment editSubscriptionCurrenciesFragment on Query {
+    currencies {
+      id
+      code
+    }
+  }
+`
 
 const editSubscriptionFragment = graphql`
   fragment editSubscriptionFragment on RecurringSubscription {
@@ -79,12 +92,20 @@ const editSubscriptionFragment = graphql`
     interval
     intervalCount
     startDate
+    cost
+    currency {
+      id
+      code
+    }
     active
   }
 `
 
 const editSubscriptionMutation = graphql`
-  mutation editSubscriptionMutation($id: ID!, $input: UpdateRecurringSubscriptionInput!) {
+  mutation editSubscriptionMutation(
+    $id: ID!
+    $input: UpdateRecurringSubscriptionInput!
+  ) {
     updateRecurringSubscription(id: $id, input: $input) {
       node {
         id
@@ -92,7 +113,14 @@ const editSubscriptionMutation = graphql`
         interval
         intervalCount
         startDate
+        cost
+        fxRate
+        currency {
+          id
+          code
+        }
         active
+        ...subscriptionCardFragment
       }
     }
   }
@@ -106,10 +134,18 @@ const editSubscriptionDeleteMutation = graphql`
 
 type EditSubscriptionProps = {
   fragmentRef: editSubscriptionFragment$key
+  currenciesRef: editSubscriptionCurrenciesFragment$key
 }
 
-export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
+export function EditSubscription({
+  fragmentRef,
+  currenciesRef,
+}: EditSubscriptionProps) {
   const data = useFragment(editSubscriptionFragment, fragmentRef)
+  const currencies = useFragment(
+    editSubscriptionCurrenciesFragment,
+    currenciesRef,
+  )
   const navigate = useNavigate()
 
   const [commitUpdateMutation, isUpdateMutationInFlight] =
@@ -124,9 +160,11 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
     defaultValues: {
       name: data.name,
       icon: data.icon || '',
-      interval: data.interval as 'week' | 'month' | 'year',
+      interval: data.interval as '' | 'week' | 'month' | 'year',
       intervalCount: data.intervalCount,
       startDate: new Date(data.startDate),
+      cost: data.cost,
+      currencyCode: data.currency.code,
       active: data.active,
     },
     validators: {
@@ -134,6 +172,12 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
     },
     onSubmit: async ({ value }) => {
       const formData = formSchema.parse(value)
+
+      const currencyID = currencies.currencies.find(
+        (curr: { id: string; code: string }) =>
+          curr.code === formData.currencyCode,
+      )?.id
+      invariant(currencyID, 'Currency not found')
 
       const result = await commitMutationResult<editSubscriptionMutation>(
         commitUpdateMutation,
@@ -145,6 +189,8 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
               interval: formData.interval,
               intervalCount: formData.intervalCount,
               startDate: formData.startDate.toISOString(),
+              cost: formData.cost,
+              currencyID: currencyID,
               icon: formData.icon || null,
               active: formData.active,
             },
@@ -160,11 +206,6 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
             'No data returned from mutation',
           )
 
-          navigate({
-            from: '/household/$householdId/subscriptions/$subscriptionId',
-            to: '/household/$householdId/subscriptions',
-            search: (prev) => ({ ...prev }),
-          })
           toast.success(
             `${resultData.updateRecurringSubscription.node.name} updated!`,
           )
@@ -205,13 +246,15 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
       .exhaustive()
   }
 
+  const currencyCode = useStore(form.store, (state) => {
+    return state.values.currencyCode || household.currency.code
+  })
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Edit Subscription</CardTitle>
-        <CardDescription>
-          Update your subscription details
-        </CardDescription>
+        <CardDescription>Update your subscription details</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -424,6 +467,80 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                         />
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+            <form.Field
+              name="currencyCode"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
+                    <Combobox
+                      items={currencies.currencies.map(
+                        (c: { id: string; code: string }) => c.code,
+                      )}
+                      value={field.state.value}
+                      onValueChange={(value) => {
+                        field.handleChange(value || '')
+                      }}
+                    >
+                      <ComboboxInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Select a currency"
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>No items found.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(item: string) => (
+                            <ComboboxItem key={item} value={item}>
+                              {item}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+            <form.Field
+              name="cost"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Cost</FieldLabel>
+                    <FieldDescription>
+                      How much does this subscription cost per interval?
+                    </FieldDescription>
+                    <CurrencyInput
+                      id={field.name}
+                      name={field.name}
+                      placeholder="Please enter a number"
+                      onValueChange={(e) => {
+                        field.handleChange(e.value)
+                      }}
+                      value={field.state.value}
+                      locale={household.locale}
+                      currency={currencyCode}
+                      onBlur={field.handleBlur}
+                      aria-invalid={isInvalid}
+                      allowNegative={false}
+                    />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}
