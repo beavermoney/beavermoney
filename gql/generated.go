@@ -20318,7 +20318,7 @@ func (ec *executionContext) unmarshalInputUpdateRecurringSubscriptionInput(ctx c
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "interval", "intervalCount", "startDate", "active", "icon", "clearIcon", "cost"}
+	fieldsInOrder := [...]string{"name", "interval", "intervalCount", "startDate", "active", "icon", "clearIcon", "cost", "currencyID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20383,6 +20383,13 @@ func (ec *executionContext) unmarshalInputUpdateRecurringSubscriptionInput(ctx c
 			if err = ec.resolvers.UpdateRecurringSubscriptionInput().Cost(ctx, &it, data); err != nil {
 				return it, err
 			}
+		case "currencyID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyID = data
 		}
 	}
 

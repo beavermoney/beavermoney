@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"entgo.io/ent/dialect/sql"
@@ -175,9 +176,34 @@ func (_u *RecurringSubscriptionUpdate) AddFxRate(v decimal.Decimal) *RecurringSu
 	return _u
 }
 
+// SetCurrencyID sets the "currency_id" field.
+func (_u *RecurringSubscriptionUpdate) SetCurrencyID(v int) *RecurringSubscriptionUpdate {
+	_u.mutation.SetCurrencyID(v)
+	return _u
+}
+
+// SetNillableCurrencyID sets the "currency_id" field if the given value is not nil.
+func (_u *RecurringSubscriptionUpdate) SetNillableCurrencyID(v *int) *RecurringSubscriptionUpdate {
+	if v != nil {
+		_u.SetCurrencyID(*v)
+	}
+	return _u
+}
+
+// SetCurrency sets the "currency" edge to the Currency entity.
+func (_u *RecurringSubscriptionUpdate) SetCurrency(v *Currency) *RecurringSubscriptionUpdate {
+	return _u.SetCurrencyID(v.ID)
+}
+
 // Mutation returns the RecurringSubscriptionMutation object of the builder.
 func (_u *RecurringSubscriptionUpdate) Mutation() *RecurringSubscriptionMutation {
 	return _u.mutation
+}
+
+// ClearCurrency clears the "currency" edge to the Currency entity.
+func (_u *RecurringSubscriptionUpdate) ClearCurrency() *RecurringSubscriptionUpdate {
+	_u.mutation.ClearCurrency()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -237,6 +263,11 @@ func (_u *RecurringSubscriptionUpdate) check() error {
 	if v, ok := _u.mutation.IntervalCount(); ok {
 		if err := recurringsubscription.IntervalCountValidator(v); err != nil {
 			return &ValidationError{Name: "interval_count", err: fmt.Errorf(`ent: validator failed for field "RecurringSubscription.interval_count": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.CurrencyID(); ok {
+		if err := recurringsubscription.CurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "RecurringSubscription.currency_id": %w`, err)}
 		}
 	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
@@ -307,6 +338,35 @@ func (_u *RecurringSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, 
 	}
 	if value, ok := _u.mutation.AddedFxRate(); ok {
 		_spec.AddField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
+	}
+	if _u.mutation.CurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   recurringsubscription.CurrencyTable,
+			Columns: []string{recurringsubscription.CurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   recurringsubscription.CurrencyTable,
+			Columns: []string{recurringsubscription.CurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -475,9 +535,34 @@ func (_u *RecurringSubscriptionUpdateOne) AddFxRate(v decimal.Decimal) *Recurrin
 	return _u
 }
 
+// SetCurrencyID sets the "currency_id" field.
+func (_u *RecurringSubscriptionUpdateOne) SetCurrencyID(v int) *RecurringSubscriptionUpdateOne {
+	_u.mutation.SetCurrencyID(v)
+	return _u
+}
+
+// SetNillableCurrencyID sets the "currency_id" field if the given value is not nil.
+func (_u *RecurringSubscriptionUpdateOne) SetNillableCurrencyID(v *int) *RecurringSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetCurrencyID(*v)
+	}
+	return _u
+}
+
+// SetCurrency sets the "currency" edge to the Currency entity.
+func (_u *RecurringSubscriptionUpdateOne) SetCurrency(v *Currency) *RecurringSubscriptionUpdateOne {
+	return _u.SetCurrencyID(v.ID)
+}
+
 // Mutation returns the RecurringSubscriptionMutation object of the builder.
 func (_u *RecurringSubscriptionUpdateOne) Mutation() *RecurringSubscriptionMutation {
 	return _u.mutation
+}
+
+// ClearCurrency clears the "currency" edge to the Currency entity.
+func (_u *RecurringSubscriptionUpdateOne) ClearCurrency() *RecurringSubscriptionUpdateOne {
+	_u.mutation.ClearCurrency()
+	return _u
 }
 
 // Where appends a list predicates to the RecurringSubscriptionUpdate builder.
@@ -550,6 +635,11 @@ func (_u *RecurringSubscriptionUpdateOne) check() error {
 	if v, ok := _u.mutation.IntervalCount(); ok {
 		if err := recurringsubscription.IntervalCountValidator(v); err != nil {
 			return &ValidationError{Name: "interval_count", err: fmt.Errorf(`ent: validator failed for field "RecurringSubscription.interval_count": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.CurrencyID(); ok {
+		if err := recurringsubscription.CurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "RecurringSubscription.currency_id": %w`, err)}
 		}
 	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
@@ -637,6 +727,35 @@ func (_u *RecurringSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *R
 	}
 	if value, ok := _u.mutation.AddedFxRate(); ok {
 		_spec.AddField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
+	}
+	if _u.mutation.CurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   recurringsubscription.CurrencyTable,
+			Columns: []string{recurringsubscription.CurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   recurringsubscription.CurrencyTable,
+			Columns: []string{recurringsubscription.CurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &RecurringSubscription{config: _u.config}

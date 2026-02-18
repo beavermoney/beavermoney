@@ -610,6 +610,18 @@ func (u *RecurringSubscriptionUpsert) AddFxRate(v decimal.Decimal) *RecurringSub
 	return u
 }
 
+// SetCurrencyID sets the "currency_id" field.
+func (u *RecurringSubscriptionUpsert) SetCurrencyID(v int) *RecurringSubscriptionUpsert {
+	u.Set(recurringsubscription.FieldCurrencyID, v)
+	return u
+}
+
+// UpdateCurrencyID sets the "currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsert) UpdateCurrencyID() *RecurringSubscriptionUpsert {
+	u.SetExcluded(recurringsubscription.FieldCurrencyID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -626,9 +638,6 @@ func (u *RecurringSubscriptionUpsertOne) UpdateNewValues() *RecurringSubscriptio
 		}
 		if _, exists := u.create.mutation.HouseholdID(); exists {
 			s.SetIgnore(recurringsubscription.FieldHouseholdID)
-		}
-		if _, exists := u.create.mutation.CurrencyID(); exists {
-			s.SetIgnore(recurringsubscription.FieldCurrencyID)
 		}
 		if _, exists := u.create.mutation.UserID(); exists {
 			s.SetIgnore(recurringsubscription.FieldUserID)
@@ -818,6 +827,20 @@ func (u *RecurringSubscriptionUpsertOne) UpdateFxRate() *RecurringSubscriptionUp
 	})
 }
 
+// SetCurrencyID sets the "currency_id" field.
+func (u *RecurringSubscriptionUpsertOne) SetCurrencyID(v int) *RecurringSubscriptionUpsertOne {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.SetCurrencyID(v)
+	})
+}
+
+// UpdateCurrencyID sets the "currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsertOne) UpdateCurrencyID() *RecurringSubscriptionUpsertOne {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.UpdateCurrencyID()
+	})
+}
+
 // Exec executes the query.
 func (u *RecurringSubscriptionUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -999,9 +1022,6 @@ func (u *RecurringSubscriptionUpsertBulk) UpdateNewValues() *RecurringSubscripti
 			}
 			if _, exists := b.mutation.HouseholdID(); exists {
 				s.SetIgnore(recurringsubscription.FieldHouseholdID)
-			}
-			if _, exists := b.mutation.CurrencyID(); exists {
-				s.SetIgnore(recurringsubscription.FieldCurrencyID)
 			}
 			if _, exists := b.mutation.UserID(); exists {
 				s.SetIgnore(recurringsubscription.FieldUserID)
@@ -1189,6 +1209,20 @@ func (u *RecurringSubscriptionUpsertBulk) AddFxRate(v decimal.Decimal) *Recurrin
 func (u *RecurringSubscriptionUpsertBulk) UpdateFxRate() *RecurringSubscriptionUpsertBulk {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
 		s.UpdateFxRate()
+	})
+}
+
+// SetCurrencyID sets the "currency_id" field.
+func (u *RecurringSubscriptionUpsertBulk) SetCurrencyID(v int) *RecurringSubscriptionUpsertBulk {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.SetCurrencyID(v)
+	})
+}
+
+// UpdateCurrencyID sets the "currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsertBulk) UpdateCurrencyID() *RecurringSubscriptionUpsertBulk {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.UpdateCurrencyID()
 	})
 }
 
