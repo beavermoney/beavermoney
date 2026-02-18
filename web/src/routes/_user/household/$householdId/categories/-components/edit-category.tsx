@@ -15,7 +15,6 @@ import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 import { useFragment, useMutation } from 'react-relay'
-import { capitalize } from 'lodash-es'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { useNavigate } from '@tanstack/react-router'
@@ -39,25 +38,10 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
 import { commitMutationResult } from '@/lib/relay'
 import { IconPicker, type IconName } from '@/components/ui/icon-picker'
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
-
-const CATEGORY_TYPES = ['expense', 'income'] as const
-
-const CATEGORY_TYPE_DESCRIPTION: Record<string, string> = {
-  expense: 'Money going out',
-  income: 'Money coming in',
-}
 
 const formSchema = z.object({
   name: z
@@ -65,14 +49,12 @@ const formSchema = z.object({
     .min(1, 'Category name must be at least 1 character.')
     .max(32, 'Category name must be at most 32 characters.'),
   icon: z.string(),
-  type: z.enum(['expense', 'income']),
 })
 
 const editCategoryFragment = graphql`
   fragment editCategoryFragment on TransactionCategory {
     id
     name
-    type
     icon
   }
 `
@@ -120,7 +102,6 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
     defaultValues: {
       name: data.name,
       icon: data.icon || '',
-      type: data.type as '' | 'expense' | 'income',
     },
     validators: {
       onSubmit: formSchema,
@@ -136,7 +117,6 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
             input: {
               name: formData.name,
               icon: formData.icon || null,
-              type: formData.type,
             },
           },
         },
@@ -242,52 +222,6 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
                       onValueChange={(value) => field.handleChange(value)}
                       className="max-w-min"
                     />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="type"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Type</FieldLabel>
-                    <Combobox
-                      items={[...CATEGORY_TYPES]}
-                      value={field.state.value}
-                      onValueChange={(value) => field.handleChange(value || '')}
-                    >
-                      <ComboboxInput
-                        id={field.name}
-                        name={field.name}
-                        placeholder="Select a type"
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                        className="*:capitalize"
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item: string) => (
-                            <ComboboxItem
-                              key={item}
-                              value={item}
-                              className="flex flex-col items-start gap-0"
-                            >
-                              <span className="font-semibold">
-                                {capitalize(item)}
-                              </span>
-                              <span>{CATEGORY_TYPE_DESCRIPTION[item]}</span>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}

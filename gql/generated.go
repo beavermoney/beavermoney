@@ -20544,7 +20544,7 @@ func (ec *executionContext) unmarshalInputUpdateTransactionCategoryInput(ctx con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "type", "icon", "isImmutable", "addTransactionIDs", "removeTransactionIDs", "clearTransactions"}
+	fieldsInOrder := [...]string{"name", "icon", "isImmutable", "addTransactionIDs", "removeTransactionIDs", "clearTransactions"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20558,13 +20558,6 @@ func (ec *executionContext) unmarshalInputUpdateTransactionCategoryInput(ctx con
 				return it, err
 			}
 			it.Name = data
-		case "type":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			data, err := ec.unmarshalOTransactionCategoryType2ᚖbeavermoneyᚗappᚋentᚋtransactioncategoryᚐType(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Type = data
 		case "icon":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
