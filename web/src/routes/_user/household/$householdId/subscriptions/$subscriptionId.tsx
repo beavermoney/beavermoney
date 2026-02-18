@@ -39,6 +39,7 @@ const SubscriptionIdQuery = graphql`
 `
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
   const data = usePreloadedQuery<subscriptionIdQuery>(
@@ -50,7 +51,7 @@ function RouteComponent() {
     return loadQuery<subscriptionIdQuery>(
       environment,
       SubscriptionIdQuery,
-      { id: Route.useParams().subscriptionId },
+      { id: params.subscriptionId },
       { fetchPolicy: 'network-only' },
     )
   })
