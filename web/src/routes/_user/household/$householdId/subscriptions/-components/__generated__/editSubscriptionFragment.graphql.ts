@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b1744ba7417d00d5e097bfb1e1e9b37c>>
+ * @generated SignedSource<<a0d3e32f1d56d4bd8608e5bb9af0862c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,11 @@ export type RecurringSubscriptionInterval = "month" | "week" | "year" | "%future
 import { FragmentRefs } from "relay-runtime";
 export type editSubscriptionFragment$data = {
   readonly active: boolean;
+  readonly cost: string;
+  readonly currency: {
+    readonly code: string;
+    readonly id: string;
+  };
   readonly icon: string | null | undefined;
   readonly id: string;
   readonly interval: RecurringSubscriptionInterval;
@@ -26,19 +31,21 @@ export type editSubscriptionFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"editSubscriptionFragment">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "editSubscriptionFragment",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -78,6 +85,32 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
+      "name": "cost",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "Currency",
+      "kind": "LinkedField",
+      "name": "currency",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "code",
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "active",
       "storageKey": null
     }
@@ -85,7 +118,8 @@ const node: ReaderFragment = {
   "type": "RecurringSubscription",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "8b961f7edc226ef7a2c4b43ca81768fc";
+(node as any).hash = "db9e0d14c588577049f68a067ca636b9";
 
 export default node;

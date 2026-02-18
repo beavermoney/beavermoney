@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<df7f7e070e4c46bebe7ed8d8cbc1433e>>
+ * @generated SignedSource<<44c92f84758671c670701c845f70cea9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,6 +28,10 @@ export type newSubscriptionMutation$data = {
     readonly node: {
       readonly active: boolean;
       readonly cost: string;
+      readonly currency: {
+        readonly code: string;
+        readonly id: string;
+      };
       readonly id: string;
       readonly interval: RecurringSubscriptionInterval;
       readonly intervalCount: number;
@@ -49,7 +53,14 @@ var v0 = [
     "name": "input"
   }
 ],
-v1 = [
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = [
   {
     "alias": null,
     "args": [
@@ -72,13 +83,7 @@ v1 = [
         "name": "node",
         "plural": false,
         "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
-          },
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -117,6 +122,25 @@ v1 = [
           {
             "alias": null,
             "args": null,
+            "concreteType": "Currency",
+            "kind": "LinkedField",
+            "name": "currency",
+            "plural": false,
+            "selections": [
+              (v1/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "code",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
             "kind": "ScalarField",
             "name": "active",
             "storageKey": null
@@ -134,7 +158,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "newSubscriptionMutation",
-    "selections": (v1/*: any*/),
+    "selections": (v2/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
@@ -143,19 +167,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "newSubscriptionMutation",
-    "selections": (v1/*: any*/)
+    "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "20dde2afdb4ba8d393453f1601dec1b4",
+    "cacheID": "d807dd3304745874c2654fef17618b4f",
     "id": null,
     "metadata": {},
     "name": "newSubscriptionMutation",
     "operationKind": "mutation",
-    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      active\n    }\n  }\n}\n"
+    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f60fec1e01251ea355d504c5c730da2e";
+(node as any).hash = "53927d1a79e273da1c5cac89e5e9d9c9";
 
 export default node;

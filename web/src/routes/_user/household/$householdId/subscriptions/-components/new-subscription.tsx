@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import * as z from 'zod'
 import { useFragment, useMutation } from 'react-relay'
 import { capitalize } from 'lodash-es'
-import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { useNavigate } from '@tanstack/react-router'
@@ -69,7 +68,7 @@ const formSchema = z.object({
     .min(1, 'Interval count must be at least 1.')
     .max(100, 'Interval count must be at most 100.'),
   startDate: z.date(),
-  cost: z.number(),
+  cost: z.string(),
   currencyCode: z.string(),
   active: z.boolean(),
 })
@@ -93,6 +92,10 @@ const newSubscriptionMutation = graphql`
         intervalCount
         startDate
         cost
+        currency {
+          id
+          code
+        }
         active
       }
     }
@@ -119,7 +122,7 @@ export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
       interval: '' as '' | 'week' | 'month' | 'year',
       intervalCount: 1,
       startDate: new Date(),
-      cost: undefined as unknown as number,
+      cost: '',
       currencyCode: household.currency.code,
       active: true,
     },
@@ -144,7 +147,7 @@ export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
               interval: formData.interval,
               intervalCount: formData.intervalCount,
               startDate: formData.startDate.toISOString(),
-              cost: currency(formData.cost).toString(),
+              cost: formData.cost,
               currencyID: currencyID,
               icon: formData.icon || null,
               active: formData.active,
@@ -466,7 +469,7 @@ export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
                       name={field.name}
                       placeholder="Please enter a number"
                       onValueChange={(e) => {
-                        field.handleChange(e.floatValue!)
+                        field.handleChange(e.value)
                       }}
                       value={field.state.value}
                       locale={household.locale}

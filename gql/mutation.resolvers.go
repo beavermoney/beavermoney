@@ -373,7 +373,36 @@ func (r *mutationResolver) UpdateRecurringSubscription(ctx context.Context, id i
 
 	client := ent.FromContext(ctx)
 
-	subscription, err := client.RecurringSubscription.UpdateOneID(id).SetInput(input).Save(ctx)
+	originalSubscription, err := client.RecurringSubscription.Get(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("recurring subscription not found: %w", err)
+	}
+
+	fxRate := originalSubscription.FxRate
+	if input.CurrencyID != nil && *input.CurrencyID != originalSubscription.CurrencyID {
+		fxRate = decimal.NewFromInt(1)
+		// We need to update the fx rate in this case
+		currency, err := client.Currency.Get(ctx, *input.CurrencyID)
+		if err != nil {
+			return nil, fmt.Errorf("currency not found: %w", err)
+		}
+
+		household, err := r.entClient.Household.Query().Where(
+			household.IDEQ(householdID),
+		).WithCurrency().Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if currency.ID != household.Edges.Currency.ID {
+			fxRate, err = r.fxrateClient.GetRate(ctx, currency.Code, household.Edges.Currency.Code, time.Now())
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	subscription, err := client.RecurringSubscription.UpdateOneID(id).SetInput(input).SetFxRate(fxRate).Save(ctx)
 	if err != nil {
 		return nil, err
 	}

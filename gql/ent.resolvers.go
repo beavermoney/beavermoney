@@ -677,7 +677,21 @@ func (r *updateInvestmentLotInputResolver) Price(ctx context.Context, obj *ent.U
 
 // Cost is the resolver for the cost field.
 func (r *updateRecurringSubscriptionInputResolver) Cost(ctx context.Context, obj *ent.UpdateRecurringSubscriptionInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Cost - cost"))
+	if data == nil || *data == "" {
+		return nil
+	}
+
+	dec, err := decimal.NewFromString(*data)
+	if err != nil {
+		return fmt.Errorf("invalid decimal string for cost: %v", err)
+	}
+
+	if dec.IsZero() {
+		return fmt.Errorf("recurring subscription cost cannot be zero")
+	}
+
+	obj.Cost = &dec
+	return nil
 }
 
 // Amount is the resolver for the amount field.

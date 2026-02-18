@@ -7,19 +7,19 @@ import {
 } from 'react-relay'
 import { EditSubscription } from './-components/edit-subscription'
 import { SubscriptionCard } from './-components/subscription-card'
-import type { subscriptionIdQuery } from './__generated__/subscriptionIdQuery.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 import { Item } from '@/components/ui/item'
+import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/$subscriptionId',
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<subscriptionIdQuery>(
+    return loadQuery<SubscriptionIdQuery>(
       environment,
-      SubscriptionIdQuery,
+      subscriptionIdQuery,
       { id: params.subscriptionId },
       { fetchPolicy: 'store-or-network' },
     )
@@ -27,14 +27,16 @@ export const Route = createFileRoute(
   pendingComponent: PendingComponent,
 })
 
-const SubscriptionIdQuery = graphql`
+const subscriptionIdQuery = graphql`
   query SubscriptionIdQuery($id: ID!) {
     node(id: $id) {
       ... on RecurringSubscription {
+        id
         ...subscriptionCardFragment
         ...editSubscriptionFragment
       }
     }
+    ...editSubscriptionCurrenciesFragment
   }
 `
 
@@ -42,15 +44,15 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
-  const data = usePreloadedQuery<subscriptionIdQuery>(
-    SubscriptionIdQuery,
+  const data = usePreloadedQuery<SubscriptionIdQuery>(
+    subscriptionIdQuery,
     queryRef,
   )
 
   useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<subscriptionIdQuery>(
+    return loadQuery<SubscriptionIdQuery>(
       environment,
-      SubscriptionIdQuery,
+      subscriptionIdQuery,
       { id: params.subscriptionId },
       { fetchPolicy: 'network-only' },
     )
@@ -61,11 +63,15 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full flex-col">
       <Item className="p-0">
         <SubscriptionCard fragmentRef={data.node} />
+        <EditSubscription
+          key={data.node.id}
+          fragmentRef={data.node}
+          currenciesRef={data}
+        />
       </Item>
-      <EditSubscription fragmentRef={data.node} />
     </div>
   )
 }
