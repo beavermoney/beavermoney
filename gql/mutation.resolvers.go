@@ -351,6 +351,11 @@ func (r *mutationResolver) DeleteTransactionCategory(ctx context.Context, id int
 
 	err := client.TransactionCategory.DeleteOneID(id).Exec(ctx)
 	if err != nil {
+		// Check if this is a foreign key constraint violation
+		if ent.IsConstraintError(err) {
+			r.logger.Error("Cannot delete transaction category with existing transactions", "error", err)
+			return false, fmt.Errorf("cannot delete category: it has existing transactions. Please reassign or delete those transactions first")
+		}
 		r.logger.Error("Failed to delete transaction category", "error", err)
 		return false, err
 	}
