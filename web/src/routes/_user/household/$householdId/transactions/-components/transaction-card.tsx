@@ -39,7 +39,6 @@ export function TransactionCard({ fragmentRef }: TransactionCardProps) {
 
   const categoryName = data.category.name
 
-  console.log(data)
   const sortedItems = useMemo(() => {
     invariant(data.transactionEntries, 'Transaction entries should be defined')
     const entries = data.transactionEntries.map((entry) => ({
