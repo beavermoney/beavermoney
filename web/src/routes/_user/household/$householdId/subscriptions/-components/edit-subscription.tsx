@@ -1,10 +1,9 @@
 import { graphql } from 'relay-runtime'
-import { useForm, useStore } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
 import { useFragment, useMutation } from 'react-relay'
 import { capitalize } from 'lodash-es'
-import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { useNavigate } from '@tanstack/react-router'
@@ -44,7 +43,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Calendar } from '@/components/ui/calendar'
 import { useHousehold } from '@/hooks/use-household'
-import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
@@ -78,14 +76,10 @@ const editSubscriptionFragment = graphql`
     id
     name
     icon
-    cost
     interval
     intervalCount
     startDate
     active
-    currency {
-      code
-    }
   }
 `
 
