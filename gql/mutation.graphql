@@ -8,6 +8,11 @@ type Mutation {
   createTransactionCategory(
     input: CreateTransactionCategoryInput!
   ): TransactionCategoryEdge!
+  updateTransactionCategory(
+    id: ID!
+    input: UpdateTransactionCategoryInput!
+  ): TransactionCategoryEdge!
+  deleteTransactionCategory(id: ID!): Boolean!
 
   createRecurringSubscription(
     input: CreateRecurringSubscriptionInput!

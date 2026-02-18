@@ -307,6 +307,57 @@ func (r *mutationResolver) CreateTransactionCategory(ctx context.Context, input 
 	}, nil
 }
 
+// UpdateTransactionCategory is the resolver for the updateTransactionCategory field.
+func (r *mutationResolver) UpdateTransactionCategory(ctx context.Context, id int, input ent.UpdateTransactionCategoryInput) (*ent.TransactionCategoryEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateTransactionCategory",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	category, err := client.TransactionCategory.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		r.logger.Error("Failed to update transaction category", "error", err)
+		return nil, err
+	}
+
+	return &ent.TransactionCategoryEdge{
+		Node:   category,
+		Cursor: gqlutil.EncodeCursor(category.ID),
+	}, nil
+}
+
+// DeleteTransactionCategory is the resolver for the deleteTransactionCategory field.
+func (r *mutationResolver) DeleteTransactionCategory(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteTransactionCategory",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	err := client.TransactionCategory.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete transaction category", "error", err)
+		return false, err
+	}
+
+	return true, nil
+}
+
 // CreateRecurringSubscription is the resolver for the createRecurringSubscription field.
 func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, input ent.CreateRecurringSubscriptionInput) (*ent.RecurringSubscriptionEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
