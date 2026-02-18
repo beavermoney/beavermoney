@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c95f372a3b72d397c78c66513dbb4ba9>>
+ * @generated SignedSource<<e30e906242cbe33078184eb1d8cf09c8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,7 +18,6 @@ export type UpdateTransactionCategoryInput = {
   isImmutable?: boolean | null | undefined;
   name?: string | null | undefined;
   removeTransactionIDs?: ReadonlyArray<string> | null | undefined;
-  type?: TransactionCategoryType | null | undefined;
 };
 export type editCategoryMutation$variables = {
   id: string;

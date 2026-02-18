@@ -121,7 +121,12 @@ func (TransactionCategory) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty(),
 		field.Enum("type").
-			Values("expense", "income", "transfer", "investment", "setup"),
+			Values("expense", "income", "transfer", "investment", "setup").
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 
 		field.String("icon"),
 

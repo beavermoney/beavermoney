@@ -413,7 +413,6 @@ func (c *TransactionCategoryCreate) SetInput(i CreateTransactionCategoryInput) *
 // UpdateTransactionCategoryInput represents a mutation input for updating transactioncategories.
 type UpdateTransactionCategoryInput struct {
 	Name                 *string
-	Type                 *transactioncategory.Type
 	Icon                 *string
 	IsImmutable          *bool
 	ClearTransactions    bool
@@ -425,9 +424,6 @@ type UpdateTransactionCategoryInput struct {
 func (i *UpdateTransactionCategoryInput) Mutate(m *TransactionCategoryMutation) {
 	if v := i.Name; v != nil {
 		m.SetName(*v)
-	}
-	if v := i.Type; v != nil {
-		m.SetType(*v)
 	}
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
