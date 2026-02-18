@@ -12,6 +12,7 @@ import { EditCategory } from './-components/edit-category'
 import { CategoryCard } from './-components/category-card'
 import { Item } from '@/components/ui/item'
 import { parseDateRangeFromURL } from '@/lib/date-range'
+import { TransactionsList } from '../transactions/-components/transactions-list'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/$categoryId',
@@ -27,6 +28,11 @@ export const Route = createFileRoute(
         id: params.categoryId,
         startDate: period.startDate,
         endDate: period.endDate,
+        where: {
+          hasCategoryWith: [{ id: params.categoryId }],
+          datetimeGTE: period.startDate,
+          datetimeLT: period.endDate,
+        },
       },
       { fetchPolicy: 'store-or-network' },
     )
@@ -35,7 +41,12 @@ export const Route = createFileRoute(
 })
 
 const CategoryIdQuery = graphql`
-  query CategoryIdQuery($id: ID!, $startDate: Time!, $endDate: Time!) {
+  query CategoryIdQuery(
+    $id: ID!
+    $startDate: Time!
+    $endDate: Time!
+    $where: TransactionWhereInput
+  ) {
     node(id: $id) {
       ... on TransactionCategory {
         id
@@ -46,6 +57,7 @@ const CategoryIdQuery = graphql`
     financialReport(period: { startDate: $startDate, endDate: $endDate }) {
       ...categoryCardFinancialReportFragment
     }
+    ...transactionsListFragment @arguments(where: $where)
   }
 `
 
@@ -65,6 +77,11 @@ function RouteComponent() {
         id: params.categoryId,
         startDate: period.startDate,
         endDate: period.endDate,
+        where: {
+          hasCategoryWith: [{ id: params.categoryId }],
+          datetimeGTE: period.startDate,
+          datetimeLT: period.endDate,
+        },
       },
       { fetchPolicy: 'network-only' },
     )
@@ -75,7 +92,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col gap-4">
       <Item className="p-0">
         <CategoryCard
           categoryRef={data.node}
@@ -83,6 +100,7 @@ function RouteComponent() {
         />
         <EditCategory key={data.node.id} fragmentRef={data.node} />
       </Item>
+      <TransactionsList fragmentRef={data} />
     </div>
   )
 }
