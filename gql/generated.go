@@ -67,6 +67,7 @@ type ResolverRoot interface {
 	RecurringSubscriptionWhereInput() RecurringSubscriptionWhereInputResolver
 	TransactionEntryWhereInput() TransactionEntryWhereInputResolver
 	UpdateInvestmentLotInput() UpdateInvestmentLotInputResolver
+	UpdateRecurringSubscriptionInput() UpdateRecurringSubscriptionInputResolver
 	UpdateTransactionEntryInput() UpdateTransactionEntryInputResolver
 }
 
@@ -614,6 +615,9 @@ type TransactionEntryWhereInputResolver interface {
 type UpdateInvestmentLotInputResolver interface {
 	Amount(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error
 	Price(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error
+}
+type UpdateRecurringSubscriptionInputResolver interface {
+	Cost(ctx context.Context, obj *ent.UpdateRecurringSubscriptionInput, data *string) error
 }
 type UpdateTransactionEntryInputResolver interface {
 	Amount(ctx context.Context, obj *ent.UpdateTransactionEntryInput, data *string) error
@@ -20314,7 +20318,7 @@ func (ec *executionContext) unmarshalInputUpdateRecurringSubscriptionInput(ctx c
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "interval", "intervalCount", "startDate", "active", "icon", "clearIcon"}
+	fieldsInOrder := [...]string{"name", "interval", "intervalCount", "startDate", "active", "icon", "clearIcon", "cost"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20370,6 +20374,15 @@ func (ec *executionContext) unmarshalInputUpdateRecurringSubscriptionInput(ctx c
 				return it, err
 			}
 			it.ClearIcon = data
+		case "cost":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cost"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.UpdateRecurringSubscriptionInput().Cost(ctx, &it, data); err != nil {
+				return it, err
+			}
 		}
 	}
 

@@ -1852,6 +1852,7 @@ input UpdateRecurringSubscriptionInput {
   active: Boolean
   icon: String
   clearIcon: Boolean
+  cost: String
 }
 """
 UpdateTransactionCategoryInput is used for update TransactionCategory object.
