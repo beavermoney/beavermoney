@@ -1,4 +1,16 @@
 import { graphql } from 'relay-runtime'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { useForm, useStore } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -48,6 +60,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { CurrencyInput } from '@/components/currency-input'
 import { editSubscriptionCurrenciesFragment$key } from './__generated__/editSubscriptionCurrenciesFragment.graphql'
+import { AlertTriangleIcon } from 'lucide-react'
+import { useState } from 'react'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -146,6 +160,8 @@ export function EditSubscription({
     editSubscriptionCurrenciesFragment,
     currenciesRef,
   )
+
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
   const navigate = useNavigate()
 
   const [commitUpdateMutation, isUpdateMutationInFlight] =
@@ -218,10 +234,6 @@ export function EditSubscription({
   })
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this subscription?')) {
-      return
-    }
-
     const result = await commitMutationResult<editSubscriptionDeleteMutation>(
       commitDeleteMutation,
       {
@@ -553,14 +565,45 @@ export function EditSubscription({
       </CardContent>
       <CardFooter>
         <Field orientation="horizontal">
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isDeleteMutationInFlight}
-          >
-            {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
-          </Button>
+          <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+            <AlertDialogTrigger
+              render={
+                <Button
+                  variant="destructive"
+                  type="button"
+                  disabled={
+                    isDeleteMutationInFlight || isUpdateMutationInFlight
+                  }
+                />
+              }
+            >
+              Delete
+            </AlertDialogTrigger>
+            <AlertDialogContent size="sm">
+              <AlertDialogHeader>
+                <AlertDialogMedia>
+                  <AlertTriangleIcon className="text-destructive" />
+                </AlertDialogMedia>
+                <AlertDialogTitle>
+                  Delete Recurring Subscription
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  recurring subscription.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleteMutationInFlight}
+                >
+                  {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Button
             disabled={isUpdateMutationInFlight}
             type="submit"

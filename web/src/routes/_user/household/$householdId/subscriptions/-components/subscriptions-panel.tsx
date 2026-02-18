@@ -319,11 +319,6 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
             <SubscriptionCard fragmentRef={subscription} />
           </Fragment>
         ))}
-        {sortedSubscriptions.length === 0 && (
-          <div className="text-muted-foreground py-8 text-center text-sm">
-            No active subscriptions
-          </div>
-        )}
       </ItemGroup>
     </Fragment>
   )
