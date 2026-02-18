@@ -153,6 +153,7 @@ func (TransactionCategory) Edges() []ent.Edge {
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 				),
+				entsql.OnDelete(entsql.Restrict),
 			),
 	}
 }
