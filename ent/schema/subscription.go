@@ -40,9 +40,6 @@ func (RecurringSubscription) Fields() []ent.Field {
 			}).
 			Annotations(
 				entgql.Type("String"),
-				entgql.Skip(
-					entgql.SkipMutationUpdateInput,
-				),
 			).
 			DefaultFunc(func() decimal.Decimal {
 				return decimal.NewFromInt(0)

@@ -277,6 +277,7 @@ type UpdateRecurringSubscriptionInput struct {
 	Active        *bool
 	ClearIcon     bool
 	Icon          *string
+	Cost          *decimal.Decimal
 }
 
 // Mutate applies the UpdateRecurringSubscriptionInput on the RecurringSubscriptionMutation builder.
@@ -301,6 +302,9 @@ func (i *UpdateRecurringSubscriptionInput) Mutate(m *RecurringSubscriptionMutati
 	}
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
+	}
+	if v := i.Cost; v != nil {
+		m.SetCost(*v)
 	}
 }
 
