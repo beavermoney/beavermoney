@@ -49,7 +49,6 @@ import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { CommandMenu } from '@/components/command-menu'
 import { LogTransaction } from './transactions/-components/log-transaction'
-import { zodValidator } from '@tanstack/zod-adapter'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
@@ -92,7 +91,7 @@ const defaultValues = {
 
 export const Route = createFileRoute('/_user/household/$householdId')({
   component: RouteComponent,
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: searchSchema,
   staleTime: Infinity,
   search: {
     middlewares: [stripSearchParams(defaultValues)],

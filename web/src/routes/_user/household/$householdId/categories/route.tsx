@@ -20,7 +20,6 @@ import {
   parseDateRangeFromURL,
 } from '@/lib/date-range'
 import { format } from 'date-fns'
-import { zodValidator } from '@tanstack/zod-adapter'
 import { ROOT_ID } from 'relay-runtime'
 
 // Get default "This Month" dates
@@ -43,7 +42,7 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/categories',
 )({
   component: RouteComponent,
-  validateSearch: zodValidator(SearchSchema),
+  validateSearch: SearchSchema,
   beforeLoad: ({ search }) => {
     const period = parseDateRangeFromURL(search.start, search.end)
 

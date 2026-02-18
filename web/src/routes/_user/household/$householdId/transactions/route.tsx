@@ -19,7 +19,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { transactionsQuery } from './-transactions-query'
 import { type TransactionsQuery } from './__generated__/TransactionsQuery.graphql'
 import { parseDateRangeFromURL, getDefaultDates } from '@/lib/date-range'
-import { zodValidator } from '@tanstack/zod-adapter'
 import { ROOT_ID } from 'relay-runtime'
 
 const defaults = getDefaultDates()
@@ -33,7 +32,7 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/transactions',
 )({
   component: RouteComponent,
-  validateSearch: zodValidator(SearchSchema),
+  validateSearch: SearchSchema,
   search: {
     middlewares: [stripSearchParams(defaults)],
   },

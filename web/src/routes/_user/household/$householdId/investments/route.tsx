@@ -1,4 +1,3 @@
-import { zodValidator } from '@tanstack/zod-adapter'
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import {
   loadQuery,
@@ -28,7 +27,7 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/investments',
 )({
   component: RouteComponent,
-  validateSearch: zodValidator(SearchSchema),
+  validateSearch: SearchSchema,
   beforeLoad: () => {
     return loadQuery<InvestmentsQuery>(
       environment,
