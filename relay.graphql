@@ -1903,6 +1903,7 @@ input UpdateRecurringSubscriptionInput {
   icon: String
   clearIcon: Boolean
   cost: String
+  currencyID: ID
 }
 
 """

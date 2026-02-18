@@ -56,7 +56,7 @@ func (RecurringSubscription) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("currency_id").Positive().Immutable(),
+		field.Int("currency_id").Positive(),
 		field.Int("user_id").Positive().Immutable(),
 	}
 }
@@ -80,7 +80,6 @@ func (RecurringSubscription) Edges() []ent.Edge {
 			Field("currency_id").
 			Ref("recurring_subscriptions").
 			Unique().
-			Immutable().
 			Required(),
 		edge.From("user", User.Type).
 			Ref("recurring_subscriptions").
