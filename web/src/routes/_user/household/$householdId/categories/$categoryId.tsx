@@ -11,23 +11,22 @@ import { PendingComponent } from '@/components/pending-component'
 import { EditCategory } from './-components/edit-category'
 import { CategoryCard } from './-components/category-card'
 import { Item } from '@/components/ui/item'
+import { parseDateRangeFromURL } from '@/lib/date-range'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/$categoryId',
 )({
   component: RouteComponent,
-  loader: ({ params }) => {
-    // Use a very wide date range to get all-time data
-    const farPast = new Date('1900-01-01T00:00:00Z').toISOString()
-    const farFuture = new Date('2100-01-01T00:00:00Z').toISOString()
-
+  loaderDeps: ({ search }) => search,
+  loader: ({ params, deps: search }) => {
+    const period = parseDateRangeFromURL(search.start, search.end)
     return loadQuery<CategoryIdQuery>(
       environment,
       CategoryIdQuery,
       {
         id: params.categoryId,
-        startDate: farPast,
-        endDate: farFuture,
+        startDate: period.startDate,
+        endDate: period.endDate,
       },
       { fetchPolicy: 'store-or-network' },
     )
@@ -52,21 +51,20 @@ const CategoryIdQuery = graphql`
 
 function RouteComponent() {
   const params = Route.useParams()
+  const search = Route.useSearch()
   const queryRef = Route.useLoaderData()
 
   const data = usePreloadedQuery<CategoryIdQuery>(CategoryIdQuery, queryRef)
 
   useSubscribeToInvalidationState([ROOT_ID], () => {
-    const farPast = new Date('1900-01-01T00:00:00Z').toISOString()
-    const farFuture = new Date('2100-01-01T00:00:00Z').toISOString()
-
+    const period = parseDateRangeFromURL(search.start, search.end)
     return loadQuery<CategoryIdQuery>(
       environment,
       CategoryIdQuery,
       {
         id: params.categoryId,
-        startDate: farPast,
-        endDate: farFuture,
+        startDate: period.startDate,
+        endDate: period.endDate,
       },
       { fetchPolicy: 'network-only' },
     )

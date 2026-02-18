@@ -234,7 +234,7 @@ var (
 				Symbol:     "transactions_transaction_categories_transactions",
 				Columns:    []*schema.Column{TransactionsColumns[7]},
 				RefColumns: []*schema.Column{TransactionCategoriesColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Restrict,
 			},
 			{
 				Symbol:     "transactions_users_transactions",
