@@ -183,3 +183,5 @@ dist
 
 .env
 tmp/
+
+.idea/
