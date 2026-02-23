@@ -7,6 +7,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { commandStore } from '@/store'
 import {
   LinkOptions,
@@ -32,6 +33,7 @@ export function CommandMenu() {
   const setValue = useCallback((value: string) => {
     commandStore.setState(value)
   }, [])
+  const isMobile = useIsMobile()
 
   const open = search.command_open
   const setOpen = useCallback(
@@ -158,7 +160,9 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '.',
+                  to: isMobile
+                    ? '/household/$householdId/transactions/new'
+                    : '.',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
