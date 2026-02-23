@@ -158,7 +158,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/transactions/new',
+                  to: '.',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
