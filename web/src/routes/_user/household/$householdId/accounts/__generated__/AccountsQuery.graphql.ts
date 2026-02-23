@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<427ee800f40ac48715e6ea43c6e069f8>>
+ * @generated SignedSource<<68dab79bc7a76580e07e606f2a510c03>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -95,6 +95,7 @@ return {
                     "name": "type",
                     "storageKey": null
                   },
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -102,7 +103,6 @@ return {
                     "name": "valueInHouseholdCurrency",
                     "storageKey": null
                   },
-                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -216,12 +216,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b68c5bb65e84511544d24f6731205cf4",
+    "cacheID": "33320c5fdc14f469f81a93a1bd39d751",
     "id": null,
     "metadata": {},
     "name": "AccountsQuery",
     "operationKind": "query",
-    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50) {\n    edges {\n      node {\n        id\n        type\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

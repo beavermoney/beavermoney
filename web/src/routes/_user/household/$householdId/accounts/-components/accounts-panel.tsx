@@ -47,6 +47,7 @@ const AccountsPanelFragment = graphql`
         node {
           id
           type
+          name
           valueInHouseholdCurrency
           ...accountCardFragment
         }
@@ -188,7 +189,9 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           if (type in groupedAccounts === false) {
             return null
           }
-          const accounts = groupedAccounts[type]
+          const accounts = groupedAccounts[type].sort((a, b) =>
+            (a?.node?.name ?? '').localeCompare(b?.node?.name ?? ''),
+          )
           return (
             <AccordionItem value={type} key={type}>
               <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
