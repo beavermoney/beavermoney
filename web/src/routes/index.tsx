@@ -1,14 +1,42 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
-import { GithubIcon } from 'lucide-react'
+import {
+  GithubIcon,
+  CoinsIcon,
+  ReceiptTextIcon,
+  TrendingUpIcon,
+  BarChartIcon,
+  CodeIcon,
+  UsersIcon,
+} from 'lucide-react'
 
 export const Route = createFileRoute('/')({ component: App })
 
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <div className="border-border bg-card hover:bg-muted/50 flex flex-col items-center gap-3 rounded-lg border p-6 text-center transition-colors">
+      <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-md">
+        {icon}
+      </div>
+      <h3 className="text-foreground font-semibold">{title}</h3>
+      <p className="text-muted-foreground text-sm">{description}</p>
+    </div>
+  )
+}
+
 function App() {
   return (
-    <div className="bg-background flex min-h-svh flex-col items-center justify-center px-6 py-12">
-      <main className="flex flex-col items-center gap-12 text-center">
+    <div className="bg-background flex min-h-svh flex-col px-6 py-12">
+      <main className="flex flex-1 flex-col items-center justify-center gap-12 text-center">
         {/* Logo and Branding */}
         <div className="flex flex-col items-center gap-6">
           <Logo size={200} className="rounded-xl" />
@@ -26,10 +54,44 @@ function App() {
         <Link to="/login">
           <Button size="lg">Get Started</Button>
         </Link>
+
+        {/* Features */}
+        <div className="grid w-full max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <FeatureCard
+            icon={<UsersIcon />}
+            title="Household Management"
+            description="Track finances together with multiple people in one household"
+          />
+          <FeatureCard
+            icon={<ReceiptTextIcon />}
+            title="Transaction Logging"
+            description="Log income, expenses, transfers, and investments effortlessly"
+          />
+          <FeatureCard
+            icon={<TrendingUpIcon />}
+            title="Investment Tracking"
+            description="Monitor your portfolio with stocks and crypto support"
+          />
+          <FeatureCard
+            icon={<CoinsIcon />}
+            title="Multi-Currency"
+            description="Track finances in multiple currencies with automatic conversion"
+          />
+          <FeatureCard
+            icon={<BarChartIcon />}
+            title="Financial Insights"
+            description="Get clear reports and visualizations of your money flow"
+          />
+          <FeatureCard
+            icon={<CodeIcon />}
+            title="Open Source"
+            description="Fully open source and self-hostable for complete control"
+          />
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="absolute bottom-6 flex flex-col items-center gap-4">
+      <footer className="mt-12 flex flex-col items-center gap-4">
         {/* Social Links */}
         <div className="flex items-center gap-4">
           <a
