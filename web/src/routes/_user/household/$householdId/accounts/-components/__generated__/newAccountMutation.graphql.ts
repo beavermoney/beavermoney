@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<12e8d33109e45287deac5e8926e743c7>>
+ * @generated SignedSource<<d004123ad4d4f830dc5996a476ddd5b5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -200,6 +200,13 @@ return {
                 "kind": "ScalarField",
                 "name": "value",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "balance",
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -210,12 +217,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "61165b524099a3d0f277fa6f83673ac3",
+    "cacheID": "fdedfb6c09370da3dedcdd4022f57f4d",
     "id": null,
     "metadata": {},
     "name": "newAccountMutation",
     "operationKind": "mutation",
-    "text": "mutation newAccountMutation(\n  $input: CreateAccountInput!\n) {\n  createAccount(input: $input) {\n    node {\n      id\n      type\n      name\n      valueInHouseholdCurrency\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n}\n"
+    "text": "mutation newAccountMutation(\n  $input: CreateAccountInput!\n) {\n  createAccount(input: $input) {\n    node {\n      id\n      type\n      name\n      valueInHouseholdCurrency\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9b91375b984d68fb4bcf7dcb66ae851f>>
+ * @generated SignedSource<<d6878b1cd4e61716cdea1b3c41c2aed2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ReaderFragment } from 'relay-runtime';
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type accountCardFragment$data = {
+  readonly balance: string;
   readonly currency: {
     readonly code: string;
   };
@@ -110,6 +111,13 @@ return {
       "kind": "ScalarField",
       "name": "value",
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "balance",
+      "storageKey": null
     }
   ],
   "type": "Account",
@@ -117,6 +125,6 @@ return {
 };
 })();
 
-(node as any).hash = "596e79b6ac544e8ff54d5b71c5fc71a1";
+(node as any).hash = "ba4c73a6e7260ce562dc96aac6ba72a3";
 
 export default node;

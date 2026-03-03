@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<68dab79bc7a76580e07e606f2a510c03>>
+ * @generated SignedSource<<08c11677ee8184ca11d72976520941f9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -160,6 +160,13 @@ return {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
+                    "name": "balance",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "__typename",
                     "storageKey": null
                   }
@@ -216,12 +223,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "33320c5fdc14f469f81a93a1bd39d751",
+    "cacheID": "8e0a2024e0eb888f9d555d41ace1dee0",
     "id": null,
     "metadata": {},
     "name": "AccountsQuery",
     "operationKind": "query",
-    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c28a218bee1ca9eafed3b521144c9418>>
+ * @generated SignedSource<<c10b2d0cf6b49f8697852f057271b8e0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -191,6 +191,13 @@ return {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
+                    "name": "balance",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "__typename",
                     "storageKey": null
                   }
@@ -247,12 +254,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7e0644422dce12a56149d5d3d8e86349",
+    "cacheID": "cdd18699f0071169c179ea6185a0be36",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n) {\n  ...accountsPanelFragment_1G22uz\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n}\n\nfragment accountsPanelFragment_1G22uz on Query {\n  accounts(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n) {\n  ...accountsPanelFragment_1G22uz\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Query {\n  accounts(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
