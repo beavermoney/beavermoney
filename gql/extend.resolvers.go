@@ -7,8 +7,10 @@ package gql
 
 import (
 	"context"
+	"fmt"
 
 	"beavermoney.app/ent"
+	"beavermoney.app/gql/model"
 )
 
 // BalanceInHouseholdCurrency is the resolver for the balanceInHouseholdCurrency field.
@@ -19,6 +21,22 @@ func (r *accountResolver) BalanceInHouseholdCurrency(ctx context.Context, obj *e
 // ValueInHouseholdCurrency is the resolver for the valueInHouseholdCurrency field.
 func (r *accountResolver) ValueInHouseholdCurrency(ctx context.Context, obj *ent.Account) (string, error) {
 	return obj.Value.Mul(obj.FxRate).String(), nil
+}
+
+// FinancialReport is the resolver for the financialReport field.
+func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) (*model.FinancialReport, error) {
+	// Parse time period
+	start, end := parseTimePeriod(period)
+
+	return &model.FinancialReport{
+		StartDate: start,
+		EndDate:   end,
+	}, nil
+}
+
+// NetWorthOverTime is the resolver for the netWorthOverTime field.
+func (r *householdResolver) NetWorthOverTime(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) ([]*model.NetWorthDataPoint, error) {
+	panic(fmt.Errorf("not implemented: NetWorthOverTime - netWorthOverTime"))
 }
 
 // ValueInHouseholdCurrency is the resolver for the valueInHouseholdCurrency field.

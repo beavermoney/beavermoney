@@ -21,8 +21,10 @@ const transactionsPanelFragment = graphql`
     endDate: { type: "Time!" }
   ) {
     ...transactionsListFragment @arguments(where: $where)
-    financialReport(period: { startDate: $startDate, endDate: $endDate }) {
-      ...financialSummaryCardsFragment
+    household {
+      financialReport(period: { startDate: $startDate, endDate: $endDate }) {
+        ...financialSummaryCardsFragment
+      }
     }
   }
 `
@@ -68,7 +70,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
       <div className="fixed right-4 bottom-4 lg:absolute">
         <PlusButton />
       </div>
-      <FinancialSummaryCards fragmentRef={data.financialReport} />
+      <FinancialSummaryCards fragmentRef={data.household.financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter
         startDate={startDate}

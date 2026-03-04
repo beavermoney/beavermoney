@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f985058783aa70361142d992d266e1e6>>
+ * @generated SignedSource<<2b383cb396a92f608a5300a8703950a9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -1255,53 +1255,65 @@ return {
       },
       {
         "alias": null,
-        "args": [
-          {
-            "fields": [
-              (v3/*: any*/),
-              (v4/*: any*/)
-            ],
-            "kind": "ObjectValue",
-            "name": "period"
-          }
-        ],
-        "concreteType": "FinancialReport",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "financialReport",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
+            "args": [
+              {
+                "fields": [
+                  (v3/*: any*/),
+                  (v4/*: any*/)
+                ],
+                "kind": "ObjectValue",
+                "name": "period"
+              }
+            ],
+            "concreteType": "FinancialReport",
             "kind": "LinkedField",
-            "name": "incomeBreakdown",
+            "name": "financialReport",
             "plural": false,
-            "selections": (v13/*: any*/),
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "incomeBreakdown",
+                "plural": false,
+                "selections": (v13/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "expensesBreakdown",
+                "plural": false,
+                "selections": (v13/*: any*/),
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
-            "kind": "LinkedField",
-            "name": "expensesBreakdown",
-            "plural": false,
-            "selections": (v13/*: any*/),
-            "storageKey": null
-          }
+          (v7/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "c0b234e026cf1177a298e0e913317fb1",
+    "cacheID": "df46c7b2adf47087a888910bf9d77e3d",
     "id": null,
     "metadata": {},
     "name": "TransactionsQuery",
     "operationKind": "query",
-    "text": "query TransactionsQuery(\n  $where: TransactionWhereInput\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...transactionsPanelFragment_7P6yy\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Query {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsPanelFragment_7P6yy on Query {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    ...financialSummaryCardsFragment\n  }\n}\n"
+    "text": "query TransactionsQuery(\n  $where: TransactionWhereInput\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...transactionsPanelFragment_7P6yy\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Query {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsPanelFragment_7P6yy on Query {\n  ...transactionsListFragment_3FC4Qo\n  household {\n    financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n      ...financialSummaryCardsFragment\n    }\n    id\n  }\n}\n"
   }
 };
 })();

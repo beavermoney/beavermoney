@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bc0704a2ec6f0bb2e098108ccca25ecf>>
+ * @generated SignedSource<<d52d42db90e5e6d7a239e9b1ae7d0a81>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,18 +12,20 @@ import { ReaderFragment } from 'relay-runtime';
 export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type categoriesPanelFragment$data = {
-  readonly financialReport: {
-    readonly expensesBreakdown: {
-      readonly categoryType: TransactionCategoryType;
-      readonly total: string;
-      readonly transactionCount: number;
+  readonly household: {
+    readonly financialReport: {
+      readonly expensesBreakdown: {
+        readonly categoryType: TransactionCategoryType;
+        readonly total: string;
+        readonly transactionCount: number;
+      };
+      readonly incomeBreakdown: {
+        readonly categoryType: TransactionCategoryType;
+        readonly total: string;
+        readonly transactionCount: number;
+      };
+      readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment" | "financialSummaryCardsFragment">;
     };
-    readonly incomeBreakdown: {
-      readonly categoryType: TransactionCategoryType;
-      readonly total: string;
-      readonly transactionCount: number;
-    };
-    readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment" | "financialSummaryCardsFragment">;
   };
   readonly transactionCategories: {
     readonly edges: ReadonlyArray<{
@@ -211,58 +213,69 @@ return {
     },
     {
       "alias": null,
-      "args": [
-        {
-          "fields": [
-            {
-              "kind": "Variable",
-              "name": "endDate",
-              "variableName": "endDate"
-            },
-            {
-              "kind": "Variable",
-              "name": "startDate",
-              "variableName": "startDate"
-            }
-          ],
-          "kind": "ObjectValue",
-          "name": "period"
-        }
-      ],
-      "concreteType": "FinancialReport",
+      "args": null,
+      "concreteType": "Household",
       "kind": "LinkedField",
-      "name": "financialReport",
+      "name": "household",
       "plural": false,
       "selections": [
         {
           "alias": null,
-          "args": null,
-          "concreteType": "CategoryTypeAggregate",
+          "args": [
+            {
+              "fields": [
+                {
+                  "kind": "Variable",
+                  "name": "endDate",
+                  "variableName": "endDate"
+                },
+                {
+                  "kind": "Variable",
+                  "name": "startDate",
+                  "variableName": "startDate"
+                }
+              ],
+              "kind": "ObjectValue",
+              "name": "period"
+            }
+          ],
+          "concreteType": "FinancialReport",
           "kind": "LinkedField",
-          "name": "incomeBreakdown",
+          "name": "financialReport",
           "plural": false,
-          "selections": (v1/*: any*/),
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "concreteType": "CategoryTypeAggregate",
+              "kind": "LinkedField",
+              "name": "incomeBreakdown",
+              "plural": false,
+              "selections": (v1/*: any*/),
+              "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "concreteType": "CategoryTypeAggregate",
+              "kind": "LinkedField",
+              "name": "expensesBreakdown",
+              "plural": false,
+              "selections": (v1/*: any*/),
+              "storageKey": null
+            },
+            {
+              "args": null,
+              "kind": "FragmentSpread",
+              "name": "categoryCardFinancialReportFragment"
+            },
+            {
+              "args": null,
+              "kind": "FragmentSpread",
+              "name": "financialSummaryCardsFragment"
+            }
+          ],
           "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "CategoryTypeAggregate",
-          "kind": "LinkedField",
-          "name": "expensesBreakdown",
-          "plural": false,
-          "selections": (v1/*: any*/),
-          "storageKey": null
-        },
-        {
-          "args": null,
-          "kind": "FragmentSpread",
-          "name": "categoryCardFinancialReportFragment"
-        },
-        {
-          "args": null,
-          "kind": "FragmentSpread",
-          "name": "financialSummaryCardsFragment"
         }
       ],
       "storageKey": null
@@ -273,6 +286,6 @@ return {
 };
 })();
 
-(node as any).hash = "ab7273302aa950d86e7ac694b02ce678";
+(node as any).hash = "462c3224f639d468d9436dab5f8adaa0";
 
 export default node;

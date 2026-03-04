@@ -702,6 +702,9 @@ func (r *updateTransactionEntryInputResolver) Amount(ctx context.Context, obj *e
 // Account returns AccountResolver implementation.
 func (r *Resolver) Account() AccountResolver { return &accountResolver{r} }
 
+// Household returns HouseholdResolver implementation.
+func (r *Resolver) Household() HouseholdResolver { return &householdResolver{r} }
+
 // Investment returns InvestmentResolver implementation.
 func (r *Resolver) Investment() InvestmentResolver { return &investmentResolver{r} }
 
@@ -785,6 +788,7 @@ func (r *Resolver) UpdateTransactionEntryInput() UpdateTransactionEntryInputReso
 }
 
 type accountResolver struct{ *Resolver }
+type householdResolver struct{ *Resolver }
 type investmentResolver struct{ *Resolver }
 type investmentLotResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
