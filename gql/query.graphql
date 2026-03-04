@@ -1,11 +1,9 @@
 extend type Query {
   self: User!
+  household: Household!
   fxRate(from: String!, to: String!, datetime: Time!): String!
   stockQuote(symbol: String!): StockQuoteResult
   cryptoQuote(symbol: String!): CryptoQuoteResult
-
-  financialReport(period: TimePeriodInput!): FinancialReport!
-  netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
 }
 
 input TimePeriodInput {

@@ -7,7 +7,6 @@ package gql
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"beavermoney.app/ent"
@@ -107,6 +106,20 @@ func (r *queryResolver) Self(ctx context.Context) (*ent.User, error) {
 	return r.entClient.User.Get(ctx, userID)
 }
 
+// Household is the resolver for the household field.
+func (r *queryResolver) Household(ctx context.Context) (*ent.Household, error) {
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "queryResolver.Household",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+		),
+	)
+	defer span.End()
+
+	return r.entClient.Household.Get(ctx, householdID)
+}
+
 // FxRate is the resolver for the fxRate field.
 func (r *queryResolver) FxRate(ctx context.Context, from string, to string, datetime time.Time) (string, error) {
 	userID := contextkeys.GetUserID(ctx)
@@ -180,33 +193,6 @@ func (r *queryResolver) CryptoQuote(ctx context.Context, symbol string) (*model.
 		Currency:     cryptoQuote.Currency,
 		CurrentPrice: cryptoQuote.CurrentPrice.String(),
 	}, nil
-}
-
-// FinancialReport is the resolver for the financialReport field.
-func (r *queryResolver) FinancialReport(ctx context.Context, period model.TimePeriodInput) (*model.FinancialReport, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	_, span := r.tracer.Start(ctx, "queryResolver.FinancialReport",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	// Parse time period
-	start, end := parseTimePeriod(period)
-
-	return &model.FinancialReport{
-		StartDate: start,
-		EndDate:   end,
-	}, nil
-}
-
-// NetWorthOverTime is the resolver for the netWorthOverTime field.
-func (r *queryResolver) NetWorthOverTime(ctx context.Context, period model.TimePeriodInput) ([]*model.NetWorthDataPoint, error) {
-	panic(fmt.Errorf("not implemented: NetWorthOverTime - netWorthOverTime"))
 }
 
 // FinancialReport returns FinancialReportResolver implementation.

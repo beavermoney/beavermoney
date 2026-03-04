@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<855fc0caeff76e3752fce33535bc7c3f>>
+ * @generated SignedSource<<d8cd39fd033433720038d113c78ddbf0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -242,50 +242,62 @@ return {
       },
       {
         "alias": null,
-        "args": [
-          {
-            "fields": (v2/*: any*/),
-            "kind": "ObjectValue",
-            "name": "period"
-          }
-        ],
-        "concreteType": "FinancialReport",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "financialReport",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
+            "args": [
+              {
+                "fields": (v2/*: any*/),
+                "kind": "ObjectValue",
+                "name": "period"
+              }
+            ],
+            "concreteType": "FinancialReport",
             "kind": "LinkedField",
-            "name": "incomeBreakdown",
+            "name": "financialReport",
             "plural": false,
-            "selections": (v7/*: any*/),
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "incomeBreakdown",
+                "plural": false,
+                "selections": (v7/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "expensesBreakdown",
+                "plural": false,
+                "selections": (v7/*: any*/),
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
-            "kind": "LinkedField",
-            "name": "expensesBreakdown",
-            "plural": false,
-            "selections": (v7/*: any*/),
-            "storageKey": null
-          }
+          (v4/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "3cec02c74b3c6028da4cc144a19f8a00",
+    "cacheID": "9b1a03d0c6fdd9a79283dc2423316c39",
     "id": null,
     "metadata": {},
     "name": "CategoriesQuery",
     "operationKind": "query",
-    "text": "query CategoriesQuery(\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...categoriesPanelFragment_2Yo7Kq\n}\n\nfragment categoriesPanelFragment_2Yo7Kq on Query {\n  transactionCategories(first: 50) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    incomeBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    expensesBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    ...categoryCardFinancialReportFragment\n    ...financialSummaryCardsFragment\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
+    "text": "query CategoriesQuery(\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...categoriesPanelFragment_2Yo7Kq\n}\n\nfragment categoriesPanelFragment_2Yo7Kq on Query {\n  transactionCategories(first: 50) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  household {\n    financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n      incomeBreakdown {\n        categoryType\n        total\n        transactionCount\n      }\n      expensesBreakdown {\n        categoryType\n        total\n        transactionCount\n      }\n      ...categoryCardFinancialReportFragment\n      ...financialSummaryCardsFragment\n    }\n    id\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
   }
 };
 })();

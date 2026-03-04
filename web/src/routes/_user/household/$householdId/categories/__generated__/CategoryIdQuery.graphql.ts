@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a61162850ef95aa41b967f0633e46880>>
+ * @generated SignedSource<<df9c4ab49580367a612b2dc414587612>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -882,8 +882,10 @@ export type CategoryIdQuery$variables = {
   where?: TransactionWhereInput | null | undefined;
 };
 export type CategoryIdQuery$data = {
-  readonly financialReport: {
-    readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment">;
+  readonly household: {
+    readonly financialReport: {
+      readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment">;
+    };
   };
   readonly node: {
     readonly id?: string;
@@ -1126,16 +1128,27 @@ return {
       },
       {
         "alias": null,
-        "args": (v6/*: any*/),
-        "concreteType": "FinancialReport",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "financialReport",
+        "name": "household",
         "plural": false,
         "selections": [
           {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "categoryCardFinancialReportFragment"
+            "alias": null,
+            "args": (v6/*: any*/),
+            "concreteType": "FinancialReport",
+            "kind": "LinkedField",
+            "name": "financialReport",
+            "plural": false,
+            "selections": [
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "categoryCardFinancialReportFragment"
+              }
+            ],
+            "storageKey": null
           }
         ],
         "storageKey": null
@@ -1187,32 +1200,44 @@ return {
       },
       {
         "alias": null,
-        "args": (v6/*: any*/),
-        "concreteType": "FinancialReport",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "financialReport",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
+            "args": (v6/*: any*/),
+            "concreteType": "FinancialReport",
             "kind": "LinkedField",
-            "name": "incomeBreakdown",
+            "name": "financialReport",
             "plural": false,
-            "selections": (v12/*: any*/),
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "incomeBreakdown",
+                "plural": false,
+                "selections": (v12/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "expensesBreakdown",
+                "plural": false,
+                "selections": (v12/*: any*/),
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
-            "kind": "LinkedField",
-            "name": "expensesBreakdown",
-            "plural": false,
-            "selections": (v12/*: any*/),
-            "storageKey": null
-          }
+          (v5/*: any*/)
         ],
         "storageKey": null
       },
@@ -1416,16 +1441,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c740f0d0a0ea13cd246e86cd6f74d99b",
+    "cacheID": "bf848d32c3826623efa8a74a5501112c",
     "id": null,
     "metadata": {},
     "name": "CategoryIdQuery",
     "operationKind": "query",
-    "text": "query CategoryIdQuery(\n  $id: ID!\n  $startDate: Time!\n  $endDate: Time!\n  $where: TransactionWhereInput\n) {\n  node(id: $id) {\n    __typename\n    ... on TransactionCategory {\n      id\n      ...categoryCardCategoryFragment\n      ...editCategoryFragment\n    }\n    id\n  }\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    ...categoryCardFinancialReportFragment\n  }\n  ...transactionsListFragment_3FC4Qo\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment editCategoryFragment on TransactionCategory {\n  id\n  name\n  icon\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Query {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+    "text": "query CategoryIdQuery(\n  $id: ID!\n  $startDate: Time!\n  $endDate: Time!\n  $where: TransactionWhereInput\n) {\n  node(id: $id) {\n    __typename\n    ... on TransactionCategory {\n      id\n      ...categoryCardCategoryFragment\n      ...editCategoryFragment\n    }\n    id\n  }\n  household {\n    financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n      ...categoryCardFinancialReportFragment\n    }\n    id\n  }\n  ...transactionsListFragment_3FC4Qo\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment editCategoryFragment on TransactionCategory {\n  id\n  name\n  icon\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Query {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2692b12fbf3fa7431356d90996196310";
+(node as any).hash = "f7df1ef734e773b7d5a159d48fdf1848";
 
 export default node;

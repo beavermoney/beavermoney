@@ -50,19 +50,21 @@ const CategoriesPanelFragment = graphql`
         }
       }
     }
-    financialReport(period: { startDate: $startDate, endDate: $endDate }) {
-      incomeBreakdown {
-        categoryType
-        total
-        transactionCount
+    household {
+      financialReport(period: { startDate: $startDate, endDate: $endDate }) {
+        incomeBreakdown {
+          categoryType
+          total
+          transactionCount
+        }
+        expensesBreakdown {
+          categoryType
+          total
+          transactionCount
+        }
+        ...categoryCardFinancialReportFragment
+        ...financialSummaryCardsFragment
       }
-      expensesBreakdown {
-        categoryType
-        total
-        transactionCount
-      }
-      ...categoryCardFinancialReportFragment
-      ...financialSummaryCardsFragment
     }
   }
 `
@@ -92,25 +94,27 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
 
   const navigate = useNavigate()
 
+  const financialReport = data.household.financialReport
+
   // Build map for category type aggregates
   const categoryTypeMap = useMemo(() => {
     const typeMap = new Map<string, { total: string; count: number }>()
 
     // Process income categories
-    const incomeBreakdown = data.financialReport.incomeBreakdown
+    const incomeBreakdown = financialReport.incomeBreakdown
     typeMap.set(incomeBreakdown.categoryType, {
       total: incomeBreakdown.total,
       count: incomeBreakdown.transactionCount,
     })
 
-    const expensesBreakdown = data.financialReport.expensesBreakdown
+    const expensesBreakdown = financialReport.expensesBreakdown
     typeMap.set(expensesBreakdown.categoryType, {
       total: expensesBreakdown.total,
       count: expensesBreakdown.transactionCount,
     })
 
     return typeMap
-  }, [data.financialReport])
+  }, [financialReport])
 
   const onDateRangeChange = async (start: string, end: string) => {
     const period = parseDateRangeFromURL(start, end)
@@ -135,7 +139,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
       <div className="fixed right-4 bottom-4 lg:absolute">
         <PlusButton />
       </div>
-      <FinancialSummaryCards fragmentRef={data.financialReport} />
+      <FinancialSummaryCards fragmentRef={financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter
         startDate={startDate}
@@ -177,7 +181,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                         <ItemSeparator className="my-1" />
                         <CategoryCard
                           categoryRef={category.node}
-                          financialReportRef={data.financialReport}
+                          financialReportRef={financialReport}
                         />
                       </Fragment>
                     )

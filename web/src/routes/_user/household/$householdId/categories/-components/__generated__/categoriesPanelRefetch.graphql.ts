@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8074027f730c430cac775766525c6087>>
+ * @generated SignedSource<<8753f91f40b13367f3c5835d336e8bb7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -266,57 +266,69 @@ return {
       },
       {
         "alias": null,
-        "args": [
-          {
-            "fields": [
-              (v1/*: any*/),
-              (v2/*: any*/)
-            ],
-            "kind": "ObjectValue",
-            "name": "period"
-          }
-        ],
-        "concreteType": "FinancialReport",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "financialReport",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
+            "args": [
+              {
+                "fields": [
+                  (v1/*: any*/),
+                  (v2/*: any*/)
+                ],
+                "kind": "ObjectValue",
+                "name": "period"
+              }
+            ],
+            "concreteType": "FinancialReport",
             "kind": "LinkedField",
-            "name": "incomeBreakdown",
+            "name": "financialReport",
             "plural": false,
-            "selections": (v7/*: any*/),
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "incomeBreakdown",
+                "plural": false,
+                "selections": (v7/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "CategoryTypeAggregate",
+                "kind": "LinkedField",
+                "name": "expensesBreakdown",
+                "plural": false,
+                "selections": (v7/*: any*/),
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "CategoryTypeAggregate",
-            "kind": "LinkedField",
-            "name": "expensesBreakdown",
-            "plural": false,
-            "selections": (v7/*: any*/),
-            "storageKey": null
-          }
+          (v4/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "5365efbe0f28f30d947d055d3d920acd",
+    "cacheID": "73c99d9c52745ea3d6047858a55cca34",
     "id": null,
     "metadata": {},
     "name": "categoriesPanelRefetch",
     "operationKind": "query",
-    "text": "query categoriesPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $endDate: Time!\n  $startDate: Time!\n) {\n  ...categoriesPanelFragment_41eAbc\n}\n\nfragment categoriesPanelFragment_41eAbc on Query {\n  transactionCategories(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    incomeBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    expensesBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    ...categoryCardFinancialReportFragment\n    ...financialSummaryCardsFragment\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
+    "text": "query categoriesPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $endDate: Time!\n  $startDate: Time!\n) {\n  ...categoriesPanelFragment_41eAbc\n}\n\nfragment categoriesPanelFragment_41eAbc on Query {\n  transactionCategories(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  household {\n    financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n      incomeBreakdown {\n        categoryType\n        total\n        transactionCount\n      }\n      expensesBreakdown {\n        categoryType\n        total\n        transactionCount\n      }\n      ...categoryCardFinancialReportFragment\n      ...financialSummaryCardsFragment\n    }\n    id\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ab7273302aa950d86e7ac694b02ce678";
+(node as any).hash = "462c3224f639d468d9436dab5f8adaa0";
 
 export default node;

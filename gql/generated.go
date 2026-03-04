@@ -50,6 +50,7 @@ type Config struct {
 type ResolverRoot interface {
 	Account() AccountResolver
 	FinancialReport() FinancialReportResolver
+	Household() HouseholdResolver
 	Investment() InvestmentResolver
 	InvestmentLot() InvestmentLotResolver
 	Mutation() MutationResolver
@@ -153,11 +154,13 @@ type ComplexityRoot struct {
 		CreateTime             func(childComplexity int) int
 		Currency               func(childComplexity int) int
 		CurrencyID             func(childComplexity int) int
+		FinancialReport        func(childComplexity int, period model.TimePeriodInput) int
 		ID                     func(childComplexity int) int
 		InvestmentLots         func(childComplexity int) int
 		Investments            func(childComplexity int) int
 		Locale                 func(childComplexity int) int
 		Name                   func(childComplexity int) int
+		NetWorthOverTime       func(childComplexity int, period model.TimePeriodInput) int
 		RecurringSubscriptions func(childComplexity int) int
 		TransactionCategories  func(childComplexity int) int
 		TransactionEntries     func(childComplexity int) int
@@ -269,12 +272,11 @@ type ComplexityRoot struct {
 		Accounts               func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) int
 		CryptoQuote            func(childComplexity int, symbol string) int
 		Currencies             func(childComplexity int) int
-		FinancialReport        func(childComplexity int, period model.TimePeriodInput) int
 		FxRate                 func(childComplexity int, from string, to string, datetime time.Time) int
+		Household              func(childComplexity int) int
 		Households             func(childComplexity int) int
 		InvestmentLots         func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.InvestmentLotWhereInput) int
 		Investments            func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.InvestmentWhereInput) int
-		NetWorthOverTime       func(childComplexity int, period model.TimePeriodInput) int
 		Node                   func(childComplexity int, id int) int
 		Nodes                  func(childComplexity int, ids []int) int
 		RecurringSubscriptions func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) int
@@ -442,6 +444,10 @@ type FinancialReportResolver interface {
 	ExpensesBreakdown(ctx context.Context, obj *model.FinancialReport) (*model.CategoryTypeAggregate, error)
 	TransactionCount(ctx context.Context, obj *model.FinancialReport) (int, error)
 }
+type HouseholdResolver interface {
+	FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) (*model.FinancialReport, error)
+	NetWorthOverTime(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) ([]*model.NetWorthDataPoint, error)
+}
 type InvestmentResolver interface {
 	Amount(ctx context.Context, obj *ent.Investment) (string, error)
 	Quote(ctx context.Context, obj *ent.Investment) (string, error)
@@ -487,11 +493,10 @@ type QueryResolver interface {
 	TransactionEntries(ctx context.Context) ([]*ent.TransactionEntry, error)
 	UserHouseholds(ctx context.Context) ([]*ent.UserHousehold, error)
 	Self(ctx context.Context) (*ent.User, error)
+	Household(ctx context.Context) (*ent.Household, error)
 	FxRate(ctx context.Context, from string, to string, datetime time.Time) (string, error)
 	StockQuote(ctx context.Context, symbol string) (*model.StockQuoteResult, error)
 	CryptoQuote(ctx context.Context, symbol string) (*model.CryptoQuoteResult, error)
-	FinancialReport(ctx context.Context, period model.TimePeriodInput) (*model.FinancialReport, error)
-	NetWorthOverTime(ctx context.Context, period model.TimePeriodInput) ([]*model.NetWorthDataPoint, error)
 }
 type RecurringSubscriptionResolver interface {
 	Cost(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
@@ -972,6 +977,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Household.CurrencyID(childComplexity), true
+	case "Household.financialReport":
+		if e.complexity.Household.FinancialReport == nil {
+			break
+		}
+
+		args, err := ec.field_Household_financialReport_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Household.FinancialReport(childComplexity, args["period"].(model.TimePeriodInput)), true
 	case "Household.id":
 		if e.complexity.Household.ID == nil {
 			break
@@ -1002,6 +1018,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Household.Name(childComplexity), true
+	case "Household.netWorthOverTime":
+		if e.complexity.Household.NetWorthOverTime == nil {
+			break
+		}
+
+		args, err := ec.field_Household_netWorthOverTime_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Household.NetWorthOverTime(childComplexity, args["period"].(model.TimePeriodInput)), true
 	case "Household.recurringSubscriptions":
 		if e.complexity.Household.RecurringSubscriptions == nil {
 			break
@@ -1576,17 +1603,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Currencies(childComplexity), true
-	case "Query.financialReport":
-		if e.complexity.Query.FinancialReport == nil {
-			break
-		}
-
-		args, err := ec.field_Query_financialReport_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.FinancialReport(childComplexity, args["period"].(model.TimePeriodInput)), true
 	case "Query.fxRate":
 		if e.complexity.Query.FxRate == nil {
 			break
@@ -1598,6 +1614,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.FxRate(childComplexity, args["from"].(string), args["to"].(string), args["datetime"].(time.Time)), true
+	case "Query.household":
+		if e.complexity.Query.Household == nil {
+			break
+		}
+
+		return e.complexity.Query.Household(childComplexity), true
 	case "Query.households":
 		if e.complexity.Query.Households == nil {
 			break
@@ -1626,17 +1648,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Investments(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.InvestmentWhereInput)), true
-	case "Query.netWorthOverTime":
-		if e.complexity.Query.NetWorthOverTime == nil {
-			break
-		}
-
-		args, err := ec.field_Query_netWorthOverTime_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.NetWorthOverTime(childComplexity, args["period"].(model.TimePeriodInput)), true
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
 			break
@@ -2494,6 +2505,28 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) field_Household_financialReport_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "period", ec.unmarshalNTimePeriodInput2beavermoneyᚗappᚋgqlᚋmodelᚐTimePeriodInput)
+	if err != nil {
+		return nil, err
+	}
+	args["period"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Household_netWorthOverTime_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "period", ec.unmarshalNTimePeriodInput2beavermoneyᚗappᚋgqlᚋmodelᚐTimePeriodInput)
+	if err != nil {
+		return nil, err
+	}
+	args["period"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_buyInvestment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -2749,17 +2782,6 @@ func (ec *executionContext) field_Query_cryptoQuote_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_financialReport_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "period", ec.unmarshalNTimePeriodInput2beavermoneyᚗappᚋgqlᚋmodelᚐTimePeriodInput)
-	if err != nil {
-		return nil, err
-	}
-	args["period"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Query_fxRate_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -2840,17 +2862,6 @@ func (ec *executionContext) field_Query_investments_args(ctx context.Context, ra
 		return nil, err
 	}
 	args["where"] = arg4
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_netWorthOverTime_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "period", ec.unmarshalNTimePeriodInput2beavermoneyᚗappᚋgqlᚋmodelᚐTimePeriodInput)
-	if err != nil {
-		return nil, err
-	}
-	args["period"] = arg0
 	return args, nil
 }
 
@@ -3441,6 +3452,10 @@ func (ec *executionContext) fieldContext_Account_household(_ context.Context, fi
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -4637,6 +4652,10 @@ func (ec *executionContext) fieldContext_Currency_households(_ context.Context, 
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -5612,6 +5631,108 @@ func (ec *executionContext) fieldContext_Household_userHouseholds(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Household_financialReport(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Household_financialReport,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Household().FinancialReport(ctx, obj, fc.Args["period"].(model.TimePeriodInput))
+		},
+		nil,
+		ec.marshalNFinancialReport2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐFinancialReport,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Household_financialReport(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Household",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "incomeBreakdown":
+				return ec.fieldContext_FinancialReport_incomeBreakdown(ctx, field)
+			case "expensesBreakdown":
+				return ec.fieldContext_FinancialReport_expensesBreakdown(ctx, field)
+			case "transactionCount":
+				return ec.fieldContext_FinancialReport_transactionCount(ctx, field)
+			case "startDate":
+				return ec.fieldContext_FinancialReport_startDate(ctx, field)
+			case "endDate":
+				return ec.fieldContext_FinancialReport_endDate(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type FinancialReport", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Household_financialReport_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Household_netWorthOverTime(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Household_netWorthOverTime,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Household().NetWorthOverTime(ctx, obj, fc.Args["period"].(model.TimePeriodInput))
+		},
+		nil,
+		ec.marshalNNetWorthDataPoint2ᚕᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthDataPointᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Household_netWorthOverTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Household",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_NetWorthDataPoint_date(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_NetWorthDataPoint_netWorth(ctx, field)
+			case "breakdown":
+				return ec.fieldContext_NetWorthDataPoint_breakdown(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type NetWorthDataPoint", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Household_netWorthOverTime_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Investment_id(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -6085,6 +6206,10 @@ func (ec *executionContext) fieldContext_Investment_household(_ context.Context,
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -6706,6 +6831,10 @@ func (ec *executionContext) fieldContext_InvestmentLot_household(_ context.Conte
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -7079,6 +7208,10 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -8454,6 +8587,10 @@ func (ec *executionContext) fieldContext_Query_households(_ context.Context, fie
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -8861,6 +8998,73 @@ func (ec *executionContext) fieldContext_Query_self(_ context.Context, field gra
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_household(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_household,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().Household(ctx)
+		},
+		nil,
+		ec.marshalNHousehold2ᚖbeavermoneyᚗappᚋentᚐHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_household(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Household_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Household_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Household_updateTime(ctx, field)
+			case "name":
+				return ec.fieldContext_Household_name(ctx, field)
+			case "locale":
+				return ec.fieldContext_Household_locale(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "currency":
+				return ec.fieldContext_Household_currency(ctx, field)
+			case "users":
+				return ec.fieldContext_Household_users(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Household_accounts(ctx, field)
+			case "transactions":
+				return ec.fieldContext_Household_transactions(ctx, field)
+			case "investments":
+				return ec.fieldContext_Household_investments(ctx, field)
+			case "investmentLots":
+				return ec.fieldContext_Household_investmentLots(ctx, field)
+			case "transactionCategories":
+				return ec.fieldContext_Household_transactionCategories(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Household_transactionEntries(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_fxRate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -9002,108 +9206,6 @@ func (ec *executionContext) fieldContext_Query_cryptoQuote(ctx context.Context, 
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_cryptoQuote_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_financialReport(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Query_financialReport,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().FinancialReport(ctx, fc.Args["period"].(model.TimePeriodInput))
-		},
-		nil,
-		ec.marshalNFinancialReport2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐFinancialReport,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Query_financialReport(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "incomeBreakdown":
-				return ec.fieldContext_FinancialReport_incomeBreakdown(ctx, field)
-			case "expensesBreakdown":
-				return ec.fieldContext_FinancialReport_expensesBreakdown(ctx, field)
-			case "transactionCount":
-				return ec.fieldContext_FinancialReport_transactionCount(ctx, field)
-			case "startDate":
-				return ec.fieldContext_FinancialReport_startDate(ctx, field)
-			case "endDate":
-				return ec.fieldContext_FinancialReport_endDate(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type FinancialReport", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_financialReport_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_netWorthOverTime(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Query_netWorthOverTime,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().NetWorthOverTime(ctx, fc.Args["period"].(model.TimePeriodInput))
-		},
-		nil,
-		ec.marshalNNetWorthDataPoint2ᚕᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthDataPointᚄ,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Query_netWorthOverTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "date":
-				return ec.fieldContext_NetWorthDataPoint_date(ctx, field)
-			case "netWorth":
-				return ec.fieldContext_NetWorthDataPoint_netWorth(ctx, field)
-			case "breakdown":
-				return ec.fieldContext_NetWorthDataPoint_breakdown(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type NetWorthDataPoint", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_netWorthOverTime_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -9680,6 +9782,10 @@ func (ec *executionContext) fieldContext_RecurringSubscription_household(_ conte
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -10499,6 +10605,10 @@ func (ec *executionContext) fieldContext_Transaction_household(_ context.Context
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -10953,6 +11063,10 @@ func (ec *executionContext) fieldContext_TransactionCategory_household(_ context
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -11681,6 +11795,10 @@ func (ec *executionContext) fieldContext_TransactionEntry_household(_ context.Co
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -12064,6 +12182,10 @@ func (ec *executionContext) fieldContext_User_households(_ context.Context, fiel
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -12639,6 +12761,10 @@ func (ec *executionContext) fieldContext_UserHousehold_household(_ context.Conte
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -23272,6 +23398,78 @@ func (ec *executionContext) _Household(ctx context.Context, sel ast.SelectionSet
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "financialReport":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Household_financialReport(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "netWorthOverTime":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Household_netWorthOverTime(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -24703,6 +24901,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "household":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_household(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "fxRate":
 			field := field
 
@@ -24754,50 +24974,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_cryptoQuote(ctx, field)
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "financialReport":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_financialReport(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "netWorthOverTime":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_netWorthOverTime(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 

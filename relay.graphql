@@ -432,6 +432,8 @@ type Household implements Node {
   transactionEntries: [TransactionEntry!]
   recurringSubscriptions: [RecurringSubscription!]
   userHouseholds: [UserHousehold!]
+  financialReport(period: TimePeriodInput!): FinancialReport!
+  netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
 }
 
 """
@@ -1137,11 +1139,10 @@ type Query {
   transactionEntries: [TransactionEntry!]!
   userHouseholds: [UserHousehold!]!
   self: User!
+  household: Household!
   fxRate(from: String!, to: String!, datetime: Time!): String!
   stockQuote(symbol: String!): StockQuoteResult
   cryptoQuote(symbol: String!): CryptoQuoteResult
-  financialReport(period: TimePeriodInput!): FinancialReport!
-  netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
 }
 
 type RecurringSubscription implements Node {
