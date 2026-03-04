@@ -92,11 +92,11 @@ func (r *financialReportResolver) TransactionCount(ctx context.Context, obj *mod
 	return count, nil
 }
 
-// Self is the resolver for the self field.
-func (r *queryResolver) Self(ctx context.Context) (*ent.User, error) {
+// User is the resolver for the user field.
+func (r *queryResolver) User(ctx context.Context) (*ent.User, error) {
 	userID := contextkeys.GetUserID(ctx)
 
-	ctx, span := r.tracer.Start(ctx, "queryResolver.Self",
+	ctx, span := r.tracer.Start(ctx, "queryResolver.User",
 		trace.WithAttributes(
 			attribute.Int("userID", userID),
 		),

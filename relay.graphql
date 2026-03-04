@@ -1138,7 +1138,7 @@ type Query {
   ): TransactionCategoryConnection!
   transactionEntries: [TransactionEntry!]!
   userHouseholds: [UserHousehold!]!
-  self: User!
+  user: User!
   household: Household!
   fxRate(from: String!, to: String!, datetime: Time!): String!
   stockQuote(symbol: String!): StockQuoteResult

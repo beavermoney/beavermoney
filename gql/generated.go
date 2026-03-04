@@ -280,11 +280,11 @@ type ComplexityRoot struct {
 		Node                   func(childComplexity int, id int) int
 		Nodes                  func(childComplexity int, ids []int) int
 		RecurringSubscriptions func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) int
-		Self                   func(childComplexity int) int
 		StockQuote             func(childComplexity int, symbol string) int
 		TransactionCategories  func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) int
 		TransactionEntries     func(childComplexity int) int
 		Transactions           func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
+		User                   func(childComplexity int) int
 		UserHouseholds         func(childComplexity int) int
 	}
 
@@ -492,7 +492,7 @@ type QueryResolver interface {
 	TransactionCategories(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) (*ent.TransactionCategoryConnection, error)
 	TransactionEntries(ctx context.Context) ([]*ent.TransactionEntry, error)
 	UserHouseholds(ctx context.Context) ([]*ent.UserHousehold, error)
-	Self(ctx context.Context) (*ent.User, error)
+	User(ctx context.Context) (*ent.User, error)
 	Household(ctx context.Context) (*ent.Household, error)
 	FxRate(ctx context.Context, from string, to string, datetime time.Time) (string, error)
 	StockQuote(ctx context.Context, symbol string) (*model.StockQuoteResult, error)
@@ -1681,12 +1681,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.RecurringSubscriptions(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.RecurringSubscriptionWhereInput)), true
-	case "Query.self":
-		if e.complexity.Query.Self == nil {
-			break
-		}
-
-		return e.complexity.Query.Self(childComplexity), true
 	case "Query.stockQuote":
 		if e.complexity.Query.StockQuote == nil {
 			break
@@ -1726,6 +1720,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Transactions(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
+	case "Query.user":
+		if e.complexity.Query.User == nil {
+			break
+		}
+
+		return e.complexity.Query.User(childComplexity), true
 	case "Query.userHouseholds":
 		if e.complexity.Query.UserHouseholds == nil {
 			break
@@ -8945,14 +8945,14 @@ func (ec *executionContext) fieldContext_Query_userHouseholds(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_self(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Query_self,
+		ec.fieldContext_Query_user,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Query().Self(ctx)
+			return ec.resolvers.Query().User(ctx)
 		},
 		nil,
 		ec.marshalNUser2ᚖbeavermoneyᚗappᚋentᚐUser,
@@ -8961,7 +8961,7 @@ func (ec *executionContext) _Query_self(ctx context.Context, field graphql.Colle
 	)
 }
 
-func (ec *executionContext) fieldContext_Query_self(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -24879,7 +24879,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "self":
+		case "user":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -24888,7 +24888,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_self(ctx, field)
+				res = ec._Query_user(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
