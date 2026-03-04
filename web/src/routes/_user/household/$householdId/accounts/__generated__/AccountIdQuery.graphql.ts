@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0f8d38563627c7231e08054cceb5e89b>>
+ * @generated SignedSource<<ace0ae55d10c8172e2d46892d8e29a44>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -181,6 +181,8 @@ export type HouseholdWhereInput = {
   hasInvestmentLotsWith?: ReadonlyArray<InvestmentLotWhereInput> | null | undefined;
   hasInvestments?: boolean | null | undefined;
   hasInvestmentsWith?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
+  hasProjections?: boolean | null | undefined;
+  hasProjectionsWith?: ReadonlyArray<ProjectionWhereInput> | null | undefined;
   hasRecurringSubscriptions?: boolean | null | undefined;
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
   hasTransactionCategories?: boolean | null | undefined;
@@ -781,6 +783,54 @@ export type TransactionCategoryWhereInput = {
   typeIn?: ReadonlyArray<TransactionCategoryType> | null | undefined;
   typeNEQ?: TransactionCategoryType | null | undefined;
   typeNotIn?: ReadonlyArray<TransactionCategoryType> | null | undefined;
+  updateTime?: any | null | undefined;
+  updateTimeGT?: any | null | undefined;
+  updateTimeGTE?: any | null | undefined;
+  updateTimeIn?: ReadonlyArray<any> | null | undefined;
+  updateTimeLT?: any | null | undefined;
+  updateTimeLTE?: any | null | undefined;
+  updateTimeNEQ?: any | null | undefined;
+  updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
+};
+export type ProjectionWhereInput = {
+  and?: ReadonlyArray<ProjectionWhereInput> | null | undefined;
+  createTime?: any | null | undefined;
+  createTimeGT?: any | null | undefined;
+  createTimeGTE?: any | null | undefined;
+  createTimeIn?: ReadonlyArray<any> | null | undefined;
+  createTimeLT?: any | null | undefined;
+  createTimeLTE?: any | null | undefined;
+  createTimeNEQ?: any | null | undefined;
+  createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  hasHousehold?: boolean | null | undefined;
+  hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
+  householdID?: string | null | undefined;
+  householdIDIn?: ReadonlyArray<string> | null | undefined;
+  householdIDNEQ?: string | null | undefined;
+  householdIDNotIn?: ReadonlyArray<string> | null | undefined;
+  id?: string | null | undefined;
+  idGT?: string | null | undefined;
+  idGTE?: string | null | undefined;
+  idIn?: ReadonlyArray<string> | null | undefined;
+  idLT?: string | null | undefined;
+  idLTE?: string | null | undefined;
+  idNEQ?: string | null | undefined;
+  idNotIn?: ReadonlyArray<string> | null | undefined;
+  name?: string | null | undefined;
+  nameContains?: string | null | undefined;
+  nameContainsFold?: string | null | undefined;
+  nameEqualFold?: string | null | undefined;
+  nameGT?: string | null | undefined;
+  nameGTE?: string | null | undefined;
+  nameHasPrefix?: string | null | undefined;
+  nameHasSuffix?: string | null | undefined;
+  nameIn?: ReadonlyArray<string> | null | undefined;
+  nameLT?: string | null | undefined;
+  nameLTE?: string | null | undefined;
+  nameNEQ?: string | null | undefined;
+  nameNotIn?: ReadonlyArray<string> | null | undefined;
+  not?: ProjectionWhereInput | null | undefined;
+  or?: ReadonlyArray<ProjectionWhereInput> | null | undefined;
   updateTime?: any | null | undefined;
   updateTimeGT?: any | null | undefined;
   updateTimeGTE?: any | null | undefined;
