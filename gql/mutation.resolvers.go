@@ -252,7 +252,7 @@ func (r *mutationResolver) ArchiveAccount(ctx context.Context, id int) (bool, er
 	}
 
 	if !acc.Value.IsZero() {
-		return false, fmt.Errorf("cannot archive account with non-zero balance")
+		return false, fmt.Errorf("cannot archive account with non-zero value")
 	}
 
 	err = client.Account.UpdateOneID(id).SetArchived(true).Exec(ctx)

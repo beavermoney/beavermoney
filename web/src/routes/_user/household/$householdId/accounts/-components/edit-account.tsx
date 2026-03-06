@@ -352,7 +352,7 @@ export function EditAccount({ fragmentRef, householdId }: EditAccountProps) {
                     <AlertDialogTitle>Archive Account</AlertDialogTitle>
                     <AlertDialogDescription>
                       This will archive the account and hide it from the main
-                      list. Archive is only allowed when the account balance is
+                      list. Archive is only allowed when the account value is
                       zero.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
