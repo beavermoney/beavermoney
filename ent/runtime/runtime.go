@@ -73,6 +73,10 @@ func init() {
 	accountDescUserID := accountFields[7].Descriptor()
 	// account.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	account.UserIDValidator = accountDescUserID.Validators[0].(func(int) error)
+	// accountDescArchived is the schema descriptor for archived field.
+	accountDescArchived := accountFields[8].Descriptor()
+	// account.DefaultArchived holds the default value on creation for the archived field.
+	account.DefaultArchived = accountDescArchived.Default.(bool)
 	currencyFields := schema.Currency{}.Fields()
 	_ = currencyFields
 	// currencyDescCode is the schema descriptor for code field.

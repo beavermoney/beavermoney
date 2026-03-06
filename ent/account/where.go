@@ -106,6 +106,11 @@ func UserID(v int) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldUserID, v))
 }
 
+// Archived applies equality check predicate on the "archived" field. It's identical to ArchivedEQ.
+func Archived(v bool) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldArchived, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldCreateTime, v))
@@ -524,6 +529,16 @@ func UserIDIn(vs ...int) predicate.Account {
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
 func UserIDNotIn(vs ...int) predicate.Account {
 	return predicate.Account(sql.FieldNotIn(FieldUserID, vs...))
+}
+
+// ArchivedEQ applies the EQ predicate on the "archived" field.
+func ArchivedEQ(v bool) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldArchived, v))
+}
+
+// ArchivedNEQ applies the NEQ predicate on the "archived" field.
+func ArchivedNEQ(v bool) predicate.Account {
+	return predicate.Account(sql.FieldNEQ(FieldArchived, v))
 }
 
 // HasHousehold applies the HasEdge predicate on the "household" edge.

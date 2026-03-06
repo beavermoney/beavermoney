@@ -43,6 +43,8 @@ type Account struct {
 	CurrencyID int `json:"currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
+	// Archived holds the value of the "archived" field.
+	Archived bool `json:"archived,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AccountQuery when eager-loading is set.
 	Edges        AccountEdges `json:"edges"`
@@ -129,6 +131,8 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case account.FieldBalance, account.FieldValue, account.FieldFxRate:
 			values[i] = new(decimal.Decimal)
+		case account.FieldArchived:
+			values[i] = new(sql.NullBool)
 		case account.FieldID, account.FieldHouseholdID, account.FieldCurrencyID, account.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case account.FieldName, account.FieldType, account.FieldIcon:
@@ -221,6 +225,12 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
 				_m.UserID = int(value.Int64)
+			}
+		case account.FieldArchived:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field archived", values[i])
+			} else if value.Valid {
+				_m.Archived = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -315,6 +325,9 @@ func (_m *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))
+	builder.WriteString(", ")
+	builder.WriteString("archived=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Archived))
 	builder.WriteByte(')')
 	return builder.String()
 }

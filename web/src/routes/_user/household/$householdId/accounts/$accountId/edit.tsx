@@ -1,24 +1,23 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { graphql, ROOT_ID } from 'relay-runtime'
-import type { AccountIdLayoutQuery } from './__generated__/AccountIdLayoutQuery.graphql'
+import type { editAccountQuery } from './__generated__/editAccountQuery.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
-import { AccountDetailCard } from './-components/account-detail-card'
-import { Item } from '@/components/ui/item'
+import { EditAccount } from '../-components/edit-account'
 
 export const Route = createFileRoute(
-  '/_user/household/$householdId/accounts/$accountId',
+  '/_user/household/$householdId/accounts/$accountId/edit',
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<AccountIdLayoutQuery>(
+    return loadQuery<editAccountQuery>(
       environment,
-      AccountIdLayoutQuery,
+      editAccountQuery,
       { id: params.accountId },
       { fetchPolicy: 'store-or-network' },
     )
@@ -26,11 +25,12 @@ export const Route = createFileRoute(
   pendingComponent: PendingComponent,
 })
 
-const AccountIdLayoutQuery = graphql`
-  query AccountIdLayoutQuery($id: ID!) {
+const editAccountQuery = graphql`
+  query editAccountQuery($id: ID!) {
     node(id: $id) {
       ... on Account {
-        ...accountDetailCardFragment
+        id
+        ...editAccountFragment
       }
     }
   }
@@ -40,15 +40,12 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
-  const data = usePreloadedQuery<AccountIdLayoutQuery>(
-    AccountIdLayoutQuery,
-    queryRef,
-  )
+  const data = usePreloadedQuery<editAccountQuery>(editAccountQuery, queryRef)
 
   useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<AccountIdLayoutQuery>(
+    return loadQuery<editAccountQuery>(
       environment,
-      AccountIdLayoutQuery,
+      editAccountQuery,
       { id: params.accountId },
       { fetchPolicy: 'network-only' },
     )
@@ -59,11 +56,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <Item className="p-0">
-        <AccountDetailCard fragmentRef={data.node} />
-      </Item>
-      <Outlet />
-    </div>
+    <EditAccount
+      key={data.node.id}
+      fragmentRef={data.node}
+      householdId={params.householdId}
+    />
   )
 }

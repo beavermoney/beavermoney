@@ -134,6 +134,20 @@ func (_c *AccountCreate) SetUserID(v int) *AccountCreate {
 	return _c
 }
 
+// SetArchived sets the "archived" field.
+func (_c *AccountCreate) SetArchived(v bool) *AccountCreate {
+	_c.mutation.SetArchived(v)
+	return _c
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_c *AccountCreate) SetNillableArchived(v *bool) *AccountCreate {
+	if v != nil {
+		_c.SetArchived(*v)
+	}
+	return _c
+}
+
 // SetHousehold sets the "household" edge to the Household entity.
 func (_c *AccountCreate) SetHousehold(v *Household) *AccountCreate {
 	return _c.SetHouseholdID(v.ID)
@@ -244,6 +258,10 @@ func (_c *AccountCreate) defaults() error {
 		v := account.DefaultValue()
 		_c.mutation.SetValue(v)
 	}
+	if _, ok := _c.mutation.Archived(); !ok {
+		v := account.DefaultArchived
+		_c.mutation.SetArchived(v)
+	}
 	return nil
 }
 
@@ -298,6 +316,9 @@ func (_c *AccountCreate) check() error {
 		if err := account.UserIDValidator(v); err != nil {
 			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "Account.user_id": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.Archived(); !ok {
+		return &ValidationError{Name: "archived", err: errors.New(`ent: missing required field "Account.archived"`)}
 	}
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "Account.household"`)}
@@ -366,6 +387,10 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.FxRate(); ok {
 		_spec.SetField(account.FieldFxRate, field.TypeFloat64, value)
 		_node.FxRate = value
+	}
+	if value, ok := _c.mutation.Archived(); ok {
+		_spec.SetField(account.FieldArchived, field.TypeBool, value)
+		_node.Archived = value
 	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -562,6 +587,18 @@ func (u *AccountUpsert) AddFxRate(v decimal.Decimal) *AccountUpsert {
 	return u
 }
 
+// SetArchived sets the "archived" field.
+func (u *AccountUpsert) SetArchived(v bool) *AccountUpsert {
+	u.Set(account.FieldArchived, v)
+	return u
+}
+
+// UpdateArchived sets the "archived" field to the value that was provided on create.
+func (u *AccountUpsert) UpdateArchived() *AccountUpsert {
+	u.SetExcluded(account.FieldArchived)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -692,6 +729,20 @@ func (u *AccountUpsertOne) AddFxRate(v decimal.Decimal) *AccountUpsertOne {
 func (u *AccountUpsertOne) UpdateFxRate() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateFxRate()
+	})
+}
+
+// SetArchived sets the "archived" field.
+func (u *AccountUpsertOne) SetArchived(v bool) *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetArchived(v)
+	})
+}
+
+// UpdateArchived sets the "archived" field to the value that was provided on create.
+func (u *AccountUpsertOne) UpdateArchived() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateArchived()
 	})
 }
 
@@ -991,6 +1042,20 @@ func (u *AccountUpsertBulk) AddFxRate(v decimal.Decimal) *AccountUpsertBulk {
 func (u *AccountUpsertBulk) UpdateFxRate() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateFxRate()
+	})
+}
+
+// SetArchived sets the "archived" field.
+func (u *AccountUpsertBulk) SetArchived(v bool) *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetArchived(v)
+	})
+}
+
+// UpdateArchived sets the "archived" field to the value that was provided on create.
+func (u *AccountUpsertBulk) UpdateArchived() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateArchived()
 	})
 }
 

@@ -168,6 +168,11 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 				selectedFields = append(selectedFields, account.FieldUserID)
 				fieldSeen[account.FieldUserID] = struct{}{}
 			}
+		case "archived":
+			if _, ok := fieldSeen[account.FieldArchived]; !ok {
+				selectedFields = append(selectedFields, account.FieldArchived)
+				fieldSeen[account.FieldArchived] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:

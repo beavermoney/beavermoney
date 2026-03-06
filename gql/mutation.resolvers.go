@@ -17,6 +17,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/transactionentry"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
@@ -163,6 +164,103 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 		Node:   account,
 		Cursor: gqlutil.EncodeCursor(account.ID),
 	}, nil
+}
+
+// UpdateAccount is the resolver for the updateAccount field.
+func (r *mutationResolver) UpdateAccount(ctx context.Context, id int, input ent.UpdateAccountInput) (*ent.AccountEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateAccount",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	updated, err := client.Account.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ent.AccountEdge{
+		Node:   updated,
+		Cursor: gqlutil.EncodeCursor(updated.ID),
+	}, nil
+}
+
+// DeleteAccount is the resolver for the deleteAccount field.
+func (r *mutationResolver) DeleteAccount(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteAccount",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	hasEntries, err := client.TransactionEntry.Query().Where(transactionentry.AccountID(id)).Exist(ctx)
+	if err != nil {
+		return false, err
+	}
+	if hasEntries {
+		return false, fmt.Errorf("cannot delete account with existing transactions")
+	}
+
+	hasInvestments, err := client.Investment.Query().Where(investment.AccountID(id)).Exist(ctx)
+	if err != nil {
+		return false, err
+	}
+	if hasInvestments {
+		return false, fmt.Errorf("cannot delete account with existing investments")
+	}
+
+	err = client.Account.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// ArchiveAccount is the resolver for the archiveAccount field.
+func (r *mutationResolver) ArchiveAccount(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.ArchiveAccount",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	acc, err := client.Account.Get(ctx, id)
+	if err != nil {
+		return false, fmt.Errorf("account not found: %w", err)
+	}
+
+	if !acc.Value.IsZero() {
+		return false, fmt.Errorf("cannot archive account with non-zero balance")
+	}
+
+	err = client.Account.UpdateOneID(id).SetArchived(true).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // CreateInvestment is the resolver for the createInvestment field.
