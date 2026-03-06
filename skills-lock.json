@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "relay-fragments-patterns": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "computedHash": "6fd822390205e6d394b2ae58bf8c208447978205bfb14b3f4c14e2fdf040c3c2"
+    },
+    "relay-mutations-patterns": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "computedHash": "f3b35f90e2bc790e405ed6f0819a064535fee045963b9a6c00defe7c21ccdf83"
+    },
+    "relay-pagination": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "computedHash": "31b4e53904484ce0a36f5b289ec970b8ca3dd60784c5e43a937262af07eea093"
+    },
+    "shadcn": {
+      "source": "shadcn/ui",
+      "sourceType": "github",
+      "computedHash": "91c02eb706f046fb9d6a061efbb96496e4be751b5b14c283cf82baaa50f3a985"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "3462ec83f862abb2d532953df33a4dbf87f4616849da5d4b5cc7c13601aaf997"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+    }
+  }
+}
