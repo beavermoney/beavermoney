@@ -29,6 +29,7 @@ type Account implements Node {
   fxRate: String!
   currencyID: ID!
   userID: ID!
+  archived: Boolean!
   household: Household!
   currency: Currency!
   user: User!
@@ -217,6 +218,11 @@ input AccountWhereInput {
   userIDNEQ: ID
   userIDIn: [ID!]
   userIDNotIn: [ID!]
+  """
+  archived field predicates
+  """
+  archived: Boolean
+  archivedNEQ: Boolean
   """
   household edge predicates
   """
@@ -2228,6 +2234,9 @@ input UserWhereInput {
 type Mutation {
   createHousehold(input: CreateHouseholdInput!): Household!
   createAccount(input: CreateAccountInput!): AccountEdge!
+  updateAccount(id: ID!, input: UpdateAccountInput!): AccountEdge!
+  deleteAccount(id: ID!): Boolean!
+  archiveAccount(id: ID!): Boolean!
   createInvestment(input: CreateInvestmentInputCustom!): InvestmentEdge!
   createTransactionCategory(
     input: CreateTransactionCategoryInput!

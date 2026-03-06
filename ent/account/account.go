@@ -41,6 +41,8 @@ const (
 	FieldCurrencyID = "currency_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldArchived holds the string denoting the archived field in the database.
+	FieldArchived = "archived"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeCurrency holds the string denoting the currency edge name in mutations.
@@ -104,6 +106,7 @@ var Columns = []string{
 	FieldFxRate,
 	FieldCurrencyID,
 	FieldUserID,
+	FieldArchived,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -140,6 +143,8 @@ var (
 	CurrencyIDValidator func(int) error
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(int) error
+	// DefaultArchived holds the default value on creation for the "archived" field.
+	DefaultArchived bool
 )
 
 // Type defines the type for the "type" enum field.
@@ -229,6 +234,11 @@ func ByCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 // ByUserID orders the results by the user_id field.
 func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+}
+
+// ByArchived orders the results by the archived field.
+func ByArchived(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArchived, opts...).ToFunc()
 }
 
 // ByHouseholdField orders the results by household field.

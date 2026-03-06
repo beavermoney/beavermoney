@@ -48,6 +48,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			account.FieldFxRate:      {Type: field.TypeFloat64, Column: account.FieldFxRate},
 			account.FieldCurrencyID:  {Type: field.TypeInt, Column: account.FieldCurrencyID},
 			account.FieldUserID:      {Type: field.TypeInt, Column: account.FieldUserID},
+			account.FieldArchived:    {Type: field.TypeBool, Column: account.FieldArchived},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -969,6 +970,11 @@ func (f *AccountFilter) WhereCurrencyID(p entql.IntP) {
 // WhereUserID applies the entql int predicate on the user_id field.
 func (f *AccountFilter) WhereUserID(p entql.IntP) {
 	f.Where(p.Field(account.FieldUserID))
+}
+
+// WhereArchived applies the entql bool predicate on the archived field.
+func (f *AccountFilter) WhereArchived(p entql.BoolP) {
+	f.Where(p.Field(account.FieldArchived))
 }
 
 // WhereHasHousehold applies a predicate to check if query has an edge household.

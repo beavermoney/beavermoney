@@ -146,6 +146,10 @@ type AccountWhereInput struct {
 	UserIDIn    []int `json:"userIDIn,omitempty"`
 	UserIDNotIn []int `json:"userIDNotIn,omitempty"`
 
+	// "archived" field predicates.
+	Archived    *bool `json:"archived,omitempty"`
+	ArchivedNEQ *bool `json:"archivedNEQ,omitempty"`
+
 	// "household" edge predicates.
 	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
 	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
@@ -513,6 +517,12 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	}
 	if len(i.UserIDNotIn) > 0 {
 		predicates = append(predicates, account.UserIDNotIn(i.UserIDNotIn...))
+	}
+	if i.Archived != nil {
+		predicates = append(predicates, account.ArchivedEQ(*i.Archived))
+	}
+	if i.ArchivedNEQ != nil {
+		predicates = append(predicates, account.ArchivedNEQ(*i.ArchivedNEQ))
 	}
 
 	if i.HasHousehold != nil {

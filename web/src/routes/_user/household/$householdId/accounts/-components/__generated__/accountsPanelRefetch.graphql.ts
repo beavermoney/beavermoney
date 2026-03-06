@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c10b2d0cf6b49f8697852f057271b8e0>>
+ * @generated SignedSource<<f92de5f811201c837a051584ed66ecca>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -45,6 +45,13 @@ v1 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
+  },
+  {
+    "kind": "Literal",
+    "name": "where",
+    "value": {
+      "archived": false
+    }
   }
 ],
 v2 = {
@@ -245,7 +252,9 @@ return {
       {
         "alias": null,
         "args": (v1/*: any*/),
-        "filters": null,
+        "filters": [
+          "where"
+        ],
         "handle": "connection",
         "key": "accountsPanel_accounts",
         "kind": "LinkedHandle",
@@ -254,16 +263,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "cdd18699f0071169c179ea6185a0be36",
+    "cacheID": "f07c010f1f85830316cb15274f8e507f",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n) {\n  ...accountsPanelFragment_1G22uz\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Query {\n  accounts(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n) {\n  ...accountsPanelFragment_1G22uz\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Query {\n  accounts(first: $count, after: $cursor, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "695d29a703d52e98860355fd0e0a636b";
+(node as any).hash = "077f30f5c187fe8c506508623124818f";
 
 export default node;

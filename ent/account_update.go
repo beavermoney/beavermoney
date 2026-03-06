@@ -93,6 +93,20 @@ func (_u *AccountUpdate) AddFxRate(v decimal.Decimal) *AccountUpdate {
 	return _u
 }
 
+// SetArchived sets the "archived" field.
+func (_u *AccountUpdate) SetArchived(v bool) *AccountUpdate {
+	_u.mutation.SetArchived(v)
+	return _u
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_u *AccountUpdate) SetNillableArchived(v *bool) *AccountUpdate {
+	if v != nil {
+		_u.SetArchived(*v)
+	}
+	return _u
+}
+
 // AddTransactionEntryIDs adds the "transaction_entries" edge to the TransactionEntry entity by IDs.
 func (_u *AccountUpdate) AddTransactionEntryIDs(ids ...int) *AccountUpdate {
 	_u.mutation.AddTransactionEntryIDs(ids...)
@@ -267,6 +281,9 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedFxRate(); ok {
 		_spec.AddField(account.FieldFxRate, field.TypeFloat64, value)
 	}
+	if value, ok := _u.mutation.Archived(); ok {
+		_spec.SetField(account.FieldArchived, field.TypeBool, value)
+	}
 	if _u.mutation.TransactionEntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -437,6 +454,20 @@ func (_u *AccountUpdateOne) SetNillableFxRate(v *decimal.Decimal) *AccountUpdate
 // AddFxRate adds value to the "fx_rate" field.
 func (_u *AccountUpdateOne) AddFxRate(v decimal.Decimal) *AccountUpdateOne {
 	_u.mutation.AddFxRate(v)
+	return _u
+}
+
+// SetArchived sets the "archived" field.
+func (_u *AccountUpdateOne) SetArchived(v bool) *AccountUpdateOne {
+	_u.mutation.SetArchived(v)
+	return _u
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_u *AccountUpdateOne) SetNillableArchived(v *bool) *AccountUpdateOne {
+	if v != nil {
+		_u.SetArchived(*v)
+	}
 	return _u
 }
 
@@ -643,6 +674,9 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.AddedFxRate(); ok {
 		_spec.AddField(account.FieldFxRate, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.Archived(); ok {
+		_spec.SetField(account.FieldArchived, field.TypeBool, value)
 	}
 	if _u.mutation.TransactionEntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{

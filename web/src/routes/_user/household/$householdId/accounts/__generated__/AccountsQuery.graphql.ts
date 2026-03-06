@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<08c11677ee8184ca11d72976520941f9>>
+ * @generated SignedSource<<00204c015b59fad3286f334ee880a142>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,6 +25,13 @@ var v0 = [
     "kind": "Literal",
     "name": "first",
     "value": 50
+  },
+  {
+    "kind": "Literal",
+    "name": "where",
+    "value": {
+      "archived": false
+    }
   }
 ],
 v1 = {
@@ -209,12 +216,14 @@ return {
             "storageKey": null
           }
         ],
-        "storageKey": "accounts(first:50)"
+        "storageKey": "accounts(first:50,where:{\"archived\":false})"
       },
       {
         "alias": null,
         "args": (v0/*: any*/),
-        "filters": null,
+        "filters": [
+          "where"
+        ],
         "handle": "connection",
         "key": "accountsPanel_accounts",
         "kind": "LinkedHandle",
@@ -223,12 +232,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8e0a2024e0eb888f9d555d41ace1dee0",
+    "cacheID": "fbc0bb5cc8d291de901408a5e6b919b7",
     "id": null,
     "metadata": {},
     "name": "AccountsQuery",
     "operationKind": "query",
-    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

@@ -19,6 +19,7 @@ type Account implements Node {
   fxRate: String!
   currencyID: ID!
   userID: ID!
+  archived: Boolean!
   household: Household!
   currency: Currency!
   user: User!
@@ -201,6 +202,11 @@ input AccountWhereInput {
   userIDNEQ: ID
   userIDIn: [ID!]
   userIDNotIn: [ID!]
+  """
+  archived field predicates
+  """
+  archived: Boolean
+  archivedNEQ: Boolean
   """
   household edge predicates
   """

@@ -73,6 +73,15 @@ func (Account) Fields() []ent.Field {
 			),
 		field.Int("currency_id").Positive().Immutable(),
 		field.Int("user_id").Positive().Immutable(),
+
+		field.Bool("archived").
+			Default(false).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 	}
 }
 

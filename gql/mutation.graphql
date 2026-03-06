@@ -2,6 +2,9 @@ type Mutation {
   createHousehold(input: CreateHouseholdInput!): Household!
 
   createAccount(input: CreateAccountInput!): AccountEdge!
+  updateAccount(id: ID!, input: UpdateAccountInput!): AccountEdge!
+  deleteAccount(id: ID!): Boolean!
+  archiveAccount(id: ID!): Boolean!
 
   createInvestment(input: CreateInvestmentInputCustom!): InvestmentEdge!
 

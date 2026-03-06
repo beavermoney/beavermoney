@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9df2ca33549a302e90df302580a86946>>
+ * @generated SignedSource<<d72567493e4f540ff62a26581e1f6d4d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -76,7 +76,15 @@ return {
   "selections": [
     {
       "alias": "accounts",
-      "args": null,
+      "args": [
+        {
+          "kind": "Literal",
+          "name": "where",
+          "value": {
+            "archived": false
+          }
+        }
+      ],
       "concreteType": "AccountConnection",
       "kind": "LinkedField",
       "name": "__accountsPanel_accounts_connection",
@@ -177,7 +185,7 @@ return {
           "storageKey": null
         }
       ],
-      "storageKey": null
+      "storageKey": "__accountsPanel_accounts_connection(where:{\"archived\":false})"
     }
   ],
   "type": "Query",
@@ -185,6 +193,6 @@ return {
 };
 })();
 
-(node as any).hash = "695d29a703d52e98860355fd0e0a636b";
+(node as any).hash = "077f30f5c187fe8c506508623124818f";
 
 export default node;

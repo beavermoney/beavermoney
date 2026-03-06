@@ -3,7 +3,7 @@
   "devDependencies": {
     "@graphql-tools/load-files": "^7.0.1",
     "@graphql-tools/merge": "^9.1.7",
-    "graphql": "^16.12.0",
+    "graphql": "^16.13.1",
     "prettier": "^3.8.1"
   }
 }
