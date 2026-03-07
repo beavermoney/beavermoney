@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import {
   loadQuery,
   usePreloadedQuery,
@@ -10,6 +10,8 @@ import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 import { AccountCard } from './-components/account-card'
 import { Separator } from '@/components/ui/separator'
+import { CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -39,6 +41,7 @@ const AccountIdLayoutQuery = graphql`
 function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
+  const navigate = useNavigate()
 
   const data = usePreloadedQuery<AccountIdLayoutQuery>(
     AccountIdLayoutQuery,
@@ -60,6 +63,13 @@ function RouteComponent() {
 
   return (
     <div className="flex h-full flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+          Back
+        </Button>
+        <CardTitle>Account Detail</CardTitle>
+        <div className="grow" />
+      </div>
       <div className="bg-muted/50 rounded-md">
         <AccountCard fragmentRef={data.node} />
       </div>

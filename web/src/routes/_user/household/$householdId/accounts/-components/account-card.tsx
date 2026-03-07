@@ -1,6 +1,6 @@
 import { graphql } from 'relay-runtime'
 import { useFragment } from 'react-relay'
-import { Link } from '@tanstack/react-router'
+import { Link, LinkOptions } from '@tanstack/react-router'
 import type { accountCardFragment$key } from './__generated__/accountCardFragment.graphql'
 import { cn } from '@/lib/utils'
 import {
@@ -38,9 +38,10 @@ const accountCardFragment = graphql`
 
 type AccountCardProps = {
   fragmentRef: accountCardFragment$key
+  linkOptions?: LinkOptions
 }
 
-export function AccountCard({ fragmentRef }: AccountCardProps) {
+export function AccountCard({ fragmentRef, linkOptions }: AccountCardProps) {
   const data = useFragment(accountCardFragment, fragmentRef)
 
   const balance = currency(data.balance)
@@ -59,6 +60,7 @@ export function AccountCard({ fragmentRef }: AccountCardProps) {
             search={(prev) => ({ ...prev })}
             activeOptions={{ exact: true }}
             params={{ accountId: data.id }}
+            {...linkOptions}
           >
             {({ isActive }) => (
               <>
