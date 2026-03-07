@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8b3e918f552de8e880f5e7f417bef477>>
+ * @generated SignedSource<<d4af010c5bf20baaab491987f9608247>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type AccountIdLayoutQuery$variables = {
 };
 export type AccountIdLayoutQuery$data = {
   readonly node: {
-    readonly " $fragmentSpreads": FragmentRefs<"accountCardFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"AccountIdLayoutFragment" | "accountCardFragment">;
   } | null | undefined;
 };
 export type AccountIdLayoutQuery = {
@@ -74,6 +74,11 @@ return {
                 "args": null,
                 "kind": "FragmentSpread",
                 "name": "accountCardFragment"
+              },
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "AccountIdLayoutFragment"
               }
             ],
             "type": "Account",
@@ -178,6 +183,13 @@ return {
                 "kind": "ScalarField",
                 "name": "balance",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "archived",
+                "storageKey": null
               }
             ],
             "type": "Account",
@@ -189,16 +201,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0eaee9e0790f2c68a609e294ccad5144",
+    "cacheID": "5bd1c7aefb8d4129f1511771b844220e",
     "id": null,
     "metadata": {},
     "name": "AccountIdLayoutQuery",
     "operationKind": "query",
-    "text": "query AccountIdLayoutQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      ...accountCardFragment\n    }\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
+    "text": "query AccountIdLayoutQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      ...accountCardFragment\n      ...AccountIdLayoutFragment\n    }\n    id\n  }\n}\n\nfragment AccountIdLayoutFragment on Account {\n  id\n  archived\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();
 
-(node as any).hash = "930a7c2e1f482907ff018e9bc189400e";
+(node as any).hash = "77acaf6b7427025f70ade86fd8936b13";
 
 export default node;
