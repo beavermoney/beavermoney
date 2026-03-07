@@ -11,6 +11,7 @@ import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 import { Item } from '@/components/ui/item'
 import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
+import invariant from 'tiny-invariant'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/$subscriptionId',
@@ -58,9 +59,7 @@ function RouteComponent() {
     )
   })
 
-  if (!data.node) {
-    return <div>Subscription not found</div>
-  }
+  invariant(data.node, 'Subscription not found')
 
   return (
     <div className="flex h-full flex-col">

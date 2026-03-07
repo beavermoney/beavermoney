@@ -13,6 +13,7 @@ import { CategoryCard } from './-components/category-card'
 import { Item } from '@/components/ui/item'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { TransactionsList } from '../transactions/-components/transactions-list'
+import invariant from 'tiny-invariant'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/$categoryId',
@@ -89,9 +90,7 @@ function RouteComponent() {
     )
   })
 
-  if (!data.node) {
-    return <div>Category not found</div>
-  }
+  invariant(data.node, 'Category not found')
 
   return (
     <div className="flex h-full flex-col gap-4">
