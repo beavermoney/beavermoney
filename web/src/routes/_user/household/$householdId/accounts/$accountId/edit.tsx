@@ -9,6 +9,7 @@ import type { editAccountQuery } from './__generated__/editAccountQuery.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 import { EditAccount } from '../-components/edit-account'
+import { Item } from '@/components/ui/item'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId/edit',
@@ -56,10 +57,8 @@ function RouteComponent() {
   }
 
   return (
-    <EditAccount
-      key={data.node.id}
-      fragmentRef={data.node}
-      householdId={params.householdId}
-    />
+    <Item className="p-0">
+      <EditAccount key={data.node.id} fragmentRef={data.node} />
+    </Item>
   )
 }

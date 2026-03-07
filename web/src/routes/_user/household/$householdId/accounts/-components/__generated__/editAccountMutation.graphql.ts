@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bcc59c85b89ab720e76988996a929982>>
+ * @generated SignedSource<<cb723a489d63ea476d21fbc90cee83a3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,7 +22,6 @@ export type editAccountMutation$variables = {
 export type editAccountMutation$data = {
   readonly updateAccount: {
     readonly node: {
-      readonly archived: boolean;
       readonly icon: string | null | undefined;
       readonly id: string;
       readonly name: string;
@@ -80,13 +79,6 @@ v4 = {
   "kind": "ScalarField",
   "name": "icon",
   "storageKey": null
-},
-v5 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "archived",
-  "storageKey": null
 };
 return {
   "fragment": {
@@ -114,7 +106,6 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -155,7 +146,6 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -225,16 +215,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "85f7a7ae295cbf827a26449905455f31",
+    "cacheID": "dc054817cb8332c1a8b4bcbf65b990b7",
     "id": null,
     "metadata": {},
     "name": "editAccountMutation",
     "operationKind": "mutation",
-    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      archived\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
+    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f3af8b26885caf7c3f3f321dc66a7892";
+(node as any).hash = "df4784188b0b6c608eaaf43e2216be13";
 
 export default node;
