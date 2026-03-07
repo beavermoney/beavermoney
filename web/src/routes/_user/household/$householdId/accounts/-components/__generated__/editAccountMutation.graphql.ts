@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5020c04c021e18cd64991086e64e33fd>>
+ * @generated SignedSource<<bcc59c85b89ab720e76988996a929982>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,7 +26,7 @@ export type editAccountMutation$data = {
       readonly icon: string | null | undefined;
       readonly id: string;
       readonly name: string;
-      readonly " $fragmentSpreads": FragmentRefs<"accountCardFragment" | "accountDetailCardFragment">;
+      readonly " $fragmentSpreads": FragmentRefs<"accountCardFragment">;
     } | null | undefined;
   };
 };
@@ -118,11 +118,6 @@ return {
               {
                 "args": null,
                 "kind": "FragmentSpread",
-                "name": "accountDetailCardFragment"
-              },
-              {
-                "args": null,
-                "kind": "FragmentSpread",
                 "name": "accountCardFragment"
               }
             ],
@@ -171,6 +166,13 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "kind": "ScalarField",
+                "name": "updateTime",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "Currency",
                 "kind": "LinkedField",
                 "name": "currency",
@@ -213,20 +215,6 @@ return {
                 "kind": "ScalarField",
                 "name": "balance",
                 "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "valueInHouseholdCurrency",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "updateTime",
-                "storageKey": null
               }
             ],
             "storageKey": null
@@ -237,16 +225,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c85b56c0bfe9515135e9a13977cb42bc",
+    "cacheID": "85f7a7ae295cbf827a26449905455f31",
     "id": null,
     "metadata": {},
     "name": "editAccountMutation",
     "operationKind": "mutation",
-    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      archived\n      ...accountDetailCardFragment\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountDetailCardFragment on Account {\n  id\n  name\n  type\n  icon\n  archived\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n  valueInHouseholdCurrency\n}\n"
+    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      archived\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3299b36105375e838b4986ab6c3167bf";
+(node as any).hash = "f3af8b26885caf7c3f3f321dc66a7892";
 
 export default node;

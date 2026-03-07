@@ -8,8 +8,8 @@ import { graphql, ROOT_ID } from 'relay-runtime'
 import type { AccountIdLayoutQuery } from './__generated__/AccountIdLayoutQuery.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
-import { AccountDetailCard } from './-components/account-detail-card'
-import { Item } from '@/components/ui/item'
+import { AccountCard } from './-components/account-card'
+import { Separator } from '@/components/ui/separator'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -30,7 +30,7 @@ const AccountIdLayoutQuery = graphql`
   query AccountIdLayoutQuery($id: ID!) {
     node(id: $id) {
       ... on Account {
-        ...accountDetailCardFragment
+        ...accountCardFragment
       }
     }
   }
@@ -60,9 +60,10 @@ function RouteComponent() {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <Item className="p-0">
-        <AccountDetailCard fragmentRef={data.node} />
-      </Item>
+      <div className="bg-muted/50 rounded-md">
+        <AccountCard fragmentRef={data.node} />
+      </div>
+      <Separator />
       <Outlet />
     </div>
   )
