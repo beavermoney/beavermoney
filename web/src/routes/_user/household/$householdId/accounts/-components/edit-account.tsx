@@ -73,7 +73,6 @@ const editAccountMutation = graphql`
         name
         icon
         archived
-        ...accountDetailCardFragment
         ...accountCardFragment
       }
     }
