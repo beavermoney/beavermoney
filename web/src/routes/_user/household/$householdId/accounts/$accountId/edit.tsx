@@ -10,6 +10,7 @@ import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 import { EditAccount } from '../-components/edit-account'
 import { Item } from '@/components/ui/item'
+import invariant from 'tiny-invariant'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId/edit',
@@ -52,9 +53,7 @@ function RouteComponent() {
     )
   })
 
-  if (!data.node) {
-    return <div>Account not found</div>
-  }
+  invariant(data.node, 'Account not found')
 
   return (
     <Item className="p-0">
