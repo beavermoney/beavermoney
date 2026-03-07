@@ -180,43 +180,53 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
-          Back
-        </Button>
-        <CardTitle>Account Detail</CardTitle>
-        <div className="grow" />
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
-            <MoreHorizontalIcon className="size-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleEdit}>
-              <EditIcon className="mr-2 size-4" />
-              Edit
-            </DropdownMenuItem>
-            {!accountData.archived && (
-              <DropdownMenuItem onClick={() => setArchiveAlertOpen(true)}>
-                <ArchiveIcon className="mr-2 size-4" />
-                Archive
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={() => setDeleteAlertOpen(true)}
-              className="text-destructive focus:text-destructive"
+    <div className="flex h-full flex-col">
+      {/* Fixed header section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+            Back
+          </Button>
+          <CardTitle>Account Detail</CardTitle>
+          <div className="grow" />
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={<Button variant="ghost" size="icon" />}
             >
-              <Trash2Icon className="mr-2 size-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <MoreHorizontalIcon className="size-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleEdit}>
+                <EditIcon className="mr-2 size-4" />
+                Edit
+              </DropdownMenuItem>
+              {!accountData.archived && (
+                <DropdownMenuItem onClick={() => setArchiveAlertOpen(true)}>
+                  <ArchiveIcon className="mr-2 size-4" />
+                  Archive
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                onClick={() => setDeleteAlertOpen(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2Icon className="mr-2 size-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="bg-muted/50 rounded-md">
+          <AccountCard fragmentRef={data.node} />
+        </div>
+        <Separator />
       </div>
-      <div className="bg-muted/50 rounded-md">
-        <AccountCard fragmentRef={data.node} />
+      <div className="py-2"></div>
+
+      {/* Scrollable content area */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <Outlet />
       </div>
-      <Separator />
-      <Outlet />
 
       {/* Delete Alert Dialog */}
       <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
