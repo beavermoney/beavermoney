@@ -8,13 +8,13 @@ backend = "aqua:air-verse/air"
 "platforms.windows-x64" = { checksum = "sha256:6ce5cd2fc0bb4b26e753818d9f8a27523434f9538348b0e14397e37bfe636e4a", url = "https://github.com/air-verse/air/releases/download/v1.64.5/air_1.64.5_windows_amd64.tar.gz"}
 
 [[tools.atlas]]
-version = "1.0.0"
+version = "1.1.0"
 backend = "aqua:ariga/atlas"
-"platforms.linux-arm64" = { checksum = "sha256:69a463cf6d51a93abeffbdc906b69f969c12e7a706a6d0a4e388b4ebd713c5f9", url = "https://release.ariga.io/atlas/atlas-linux-arm64-v1.0.0"}
-"platforms.linux-x64" = { checksum = "sha256:7147245d95af96cd1e90ef5cfd57aa9e9df2a9e7ca5a735ddf0a1230f325cee2", url = "https://release.ariga.io/atlas/atlas-linux-amd64-v1.0.0"}
-"platforms.macos-arm64" = { checksum = "sha256:e7fb3098cc46cf8c2a84f5ed57f371f0ed80986d37f0f606ec464518c20518b5", url = "https://release.ariga.io/atlas/atlas-darwin-arm64-v1.0.0"}
-"platforms.macos-x64" = { checksum = "sha256:29c140e14d7b359af9cb36a91661a882fd806d4de16867b08b8b948aeba7a507", url = "https://release.ariga.io/atlas/atlas-darwin-amd64-v1.0.0"}
-"platforms.windows-x64" = { checksum = "sha256:abf36ade639454afe25f646a09eb5c46629b0b06c640b565496fc5d45e56f8ec", url = "https://release.ariga.io/atlas/atlas-windows-amd64-v1.0.0.exe"}
+"platforms.linux-arm64" = { checksum = "sha256:39fdf4975613c3f3e7f6f3ac082a72387db15119efa069caad9c1642f71b03e4", url = "https://release.ariga.io/atlas/atlas-linux-arm64-v1.1.0"}
+"platforms.linux-x64" = { checksum = "sha256:af19315d37190dd4d6af75358708c4537fc36b5720ce081e493cf4fa69452ef5", url = "https://release.ariga.io/atlas/atlas-linux-amd64-v1.1.0"}
+"platforms.macos-arm64" = { checksum = "sha256:3b3825eef961c8bc07f3bfe3da7a4d99b615b7955b1c6115a40130b1c9767727", url = "https://release.ariga.io/atlas/atlas-darwin-arm64-v1.1.0"}
+"platforms.macos-x64" = { checksum = "sha256:e009ab7931ef93109c80d0d7dc9e46e38c98426635088521c4694fdb28d0f44e", url = "https://release.ariga.io/atlas/atlas-darwin-amd64-v1.1.0"}
+"platforms.windows-x64" = { checksum = "sha256:cc984ca7d11b20bf10f5fdcc08b37db5e7714c5b2fa9f63d7dc4ba441df60d0b", url = "https://release.ariga.io/atlas/atlas-windows-amd64-v1.1.0.exe"}
 
 [[tools.docker-compose]]
 version = "5.0.2"
@@ -53,19 +53,19 @@ backend = "core:node"
 "platforms.windows-x64" = { checksum = "sha256:9c125f61ae947b52e779095830f9cac267846a043ef7192183c84016aaad2812", url = "https://nodejs.org/dist/v24.12.0/node-v24.12.0-win-x64.zip"}
 
 [[tools.pnpm]]
-version = "10.28.2"
+version = "10.30.3"
 backend = "aqua:pnpm/pnpm"
-"platforms.linux-arm64" = { checksum = "sha256:6f265c811d1aef8e817e0017cd700d0d345a1100bd8a90358db64eaab2fbff85", url = "https://github.com/pnpm/pnpm/releases/download/v10.28.2/pnpm-linux-arm64"}
-"platforms.linux-x64" = { checksum = "sha256:9f38396f660cd3b1f71e0b0af0b7ba22dd1fd446dc37840a1b6a025868557390", url = "https://github.com/pnpm/pnpm/releases/download/v10.28.2/pnpm-linux-x64"}
-"platforms.macos-arm64" = { checksum = "sha256:38a23bf53d918b5192f71ed58e6df9609da478790f89b20ca5f45c3cd46d1d2c", url = "https://github.com/pnpm/pnpm/releases/download/v10.28.2/pnpm-macos-arm64"}
-"platforms.macos-x64" = { checksum = "sha256:2b86ff518aa100701aecb1b37b84e9ba2aaf0b7c1803dcc9b3a0f7d0681bd27d", url = "https://github.com/pnpm/pnpm/releases/download/v10.28.2/pnpm-macos-x64"}
-"platforms.windows-x64" = { checksum = "sha256:cc3ee9c282e72b02d7eeb2de6bf232697e3aeddb047ef0822cbcaaf33ee8c01c", url = "https://github.com/pnpm/pnpm/releases/download/v10.28.2/pnpm-win-x64.exe"}
+"platforms.linux-arm64" = { checksum = "sha256:9488f48d6967bfa8f5ebc5c077aae297d2fe25287697b4c8edf991ff945d8af7", url = "https://github.com/pnpm/pnpm/releases/download/v10.30.3/pnpm-linux-arm64"}
+"platforms.linux-x64" = { checksum = "sha256:5dc971e801610471b5cd6729ba289531be6695bd50d5e833fe22b18896b13a06", url = "https://github.com/pnpm/pnpm/releases/download/v10.30.3/pnpm-linux-x64"}
+"platforms.macos-arm64" = { checksum = "sha256:ccfb6e54fe29d13715e2fe418ef0374cde5a7f68b95f5ed5da5f564886af9d17", url = "https://github.com/pnpm/pnpm/releases/download/v10.30.3/pnpm-macos-arm64"}
+"platforms.macos-x64" = { checksum = "sha256:d9be0fd3989c09f5abf7e52f10d8d0294f757af61bbbd59727d607c85205a788", url = "https://github.com/pnpm/pnpm/releases/download/v10.30.3/pnpm-macos-x64"}
+"platforms.windows-x64" = { checksum = "sha256:de8337a864056472542b951ab23ad54149cc63127bb2faf3175b7902b764f188", url = "https://github.com/pnpm/pnpm/releases/download/v10.30.3/pnpm-win-x64.exe"}
 
 [[tools.watchexec]]
-version = "2.3.3"
+version = "2.5.0"
 backend = "aqua:watchexec/watchexec"
-"platforms.linux-arm64" = { checksum = "sha256:45347d86979de6a9766f3cac3a3c863396a7c3cfd1853a9f2a920d4c402cbe40", url = "https://github.com/watchexec/watchexec/releases/download/v2.3.3/watchexec-2.3.3-aarch64-unknown-linux-gnu.tar.xz"}
-"platforms.linux-x64" = { checksum = "sha256:d9ac7f301dc21885b10ca3d2e428b48b6eb7c22202e206c31111f9158d6db6f0", url = "https://github.com/watchexec/watchexec/releases/download/v2.3.3/watchexec-2.3.3-x86_64-unknown-linux-gnu.tar.xz"}
-"platforms.macos-arm64" = { checksum = "sha256:ab96b0ed8bd02828222f01a003c9efbd0f80facd7b884d716547083545531c90", url = "https://github.com/watchexec/watchexec/releases/download/v2.3.3/watchexec-2.3.3-aarch64-apple-darwin.tar.xz"}
-"platforms.macos-x64" = { checksum = "sha256:d3e2fae0abdccbf8e6d6d7e4c693eef45d32bd4fb2626c763dc4fc892e97d6da", url = "https://github.com/watchexec/watchexec/releases/download/v2.3.3/watchexec-2.3.3-x86_64-apple-darwin.tar.xz"}
-"platforms.windows-x64" = { checksum = "sha256:dbb88e1000406f8158a048896cf549551dac9e7ad1ff2cd60099884f655b6e07", url = "https://github.com/watchexec/watchexec/releases/download/v2.3.3/watchexec-2.3.3-x86_64-pc-windows-msvc.zip"}
+"platforms.linux-arm64" = { checksum = "sha256:5b01f78483eb506c111a035ec3187b7ef37de3158702c50c4f85390e97d02487", url = "https://github.com/watchexec/watchexec/releases/download/v2.5.0/watchexec-2.5.0-aarch64-unknown-linux-gnu.tar.xz"}
+"platforms.linux-x64" = { checksum = "sha256:e8015bffea46d9de5cc7ff061afa2d27593e1a1914b406343ef47bb65f5f0634", url = "https://github.com/watchexec/watchexec/releases/download/v2.5.0/watchexec-2.5.0-x86_64-unknown-linux-musl.tar.xz"}
+"platforms.macos-arm64" = { checksum = "sha256:dd77ea998468c128b70c9c8a0e6a59221c9a674151a8d683b1e30055d0eeb1d2", url = "https://github.com/watchexec/watchexec/releases/download/v2.5.0/watchexec-2.5.0-aarch64-apple-darwin.tar.xz"}
+"platforms.macos-x64" = { checksum = "sha256:a494a488f51359d6bd873ee6df6dcc190c4ce1f693a8688064fbf3a26ffe3579", url = "https://github.com/watchexec/watchexec/releases/download/v2.5.0/watchexec-2.5.0-x86_64-apple-darwin.tar.xz"}
+"platforms.windows-x64" = { checksum = "sha256:ecfc8457d30f0ebe5fdc6f67fed87e9114eee551310ebb66449629a5994f843c", url = "https://github.com/watchexec/watchexec/releases/download/v2.5.0/watchexec-2.5.0-x86_64-pc-windows-msvc.zip"}
