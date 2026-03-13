@@ -10,6 +10,7 @@ import { Item } from '@/components/ui/item'
 import { logTransactionFragment$key } from './__generated__/logTransactionFragment.graphql'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useHotkey } from '@tanstack/react-hotkeys'
 
 const logTransactionFragment = graphql`
   fragment logTransactionFragment on Query {
@@ -53,6 +54,16 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
       }),
     })
   }
+
+  useHotkey('Escape', () => {
+    navigate({
+      to: '.',
+      search: (prev) => ({
+        ...prev,
+        log_type: null,
+      }),
+    })
+  })
 
   return (
     <Item className="bg-muted h-full w-full gap-0 p-0">

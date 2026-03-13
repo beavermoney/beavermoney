@@ -54,6 +54,7 @@ import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
 import { Suspense } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import Hotkeys from './-components/hotkeys'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -151,6 +152,7 @@ function RouteComponent() {
 
   return (
     <HouseholdProvider household={household}>
+      <Hotkeys />
       <CommandMenu />
       <SidebarProvider>
         <AppSidebar fragmentRef={data} />
@@ -267,31 +269,34 @@ function RouteComponent() {
             dragHandleClassName="drag-handle"
             style={{ zIndex: 50 }}
           >
-            <Item
-              className={cn(
-                'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
-                search.log_type ? 'block' : 'hidden',
-              )}
-            >
-              {/* Drag Handle Header */}
-              <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
-                <div className="flex items-center gap-2">
-                  <GripVertical className="text-muted-foreground h-5 w-5" />
-                  <span className="text-sm font-semibold">Log Transaction</span>
+            {search.log_type && (
+              <Item
+                className={cn(
+                  'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
+                )}
+              >
+                {/* Drag Handle Header */}
+                <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <GripVertical className="text-muted-foreground h-5 w-5" />
+                    <span className="text-sm font-semibold">
+                      Log Transaction
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => setLogTransactionOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => setLogTransactionOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
 
-              {/* Transaction Form */}
-              <LogTransaction fragmentRef={data} />
-            </Item>
+                {/* Transaction Form */}
+                <LogTransaction fragmentRef={data} />
+              </Item>
+            )}
           </Rnd>
         )}
       </SidebarProvider>
