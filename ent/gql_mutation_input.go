@@ -72,6 +72,52 @@ func (c *AccountUpdateOne) SetInput(i UpdateAccountInput) *AccountUpdateOne {
 	return c
 }
 
+// CreateCheckpointInput represents a mutation input for creating checkpoints.
+type CreateCheckpointInput struct {
+	Note *string
+}
+
+// Mutate applies the CreateCheckpointInput on the CheckpointMutation builder.
+func (i *CreateCheckpointInput) Mutate(m *CheckpointMutation) {
+	if v := i.Note; v != nil {
+		m.SetNote(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateCheckpointInput on the CheckpointCreate builder.
+func (c *CheckpointCreate) SetInput(i CreateCheckpointInput) *CheckpointCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateCheckpointInput represents a mutation input for updating checkpoints.
+type UpdateCheckpointInput struct {
+	ClearNote bool
+	Note      *string
+}
+
+// Mutate applies the UpdateCheckpointInput on the CheckpointMutation builder.
+func (i *UpdateCheckpointInput) Mutate(m *CheckpointMutation) {
+	if i.ClearNote {
+		m.ClearNote()
+	}
+	if v := i.Note; v != nil {
+		m.SetNote(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateCheckpointInput on the CheckpointUpdate builder.
+func (c *CheckpointUpdate) SetInput(i UpdateCheckpointInput) *CheckpointUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateCheckpointInput on the CheckpointUpdateOne builder.
+func (c *CheckpointUpdateOne) SetInput(i UpdateCheckpointInput) *CheckpointUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateHouseholdInput represents a mutation input for creating households.
 type CreateHouseholdInput struct {
 	Name       string

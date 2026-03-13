@@ -12,6 +12,7 @@ import (
 	"beavermoney.app/ent/migrate"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -36,6 +37,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
+	// Checkpoint is the client for interacting with the Checkpoint builders.
+	Checkpoint *CheckpointClient
 	// Currency is the client for interacting with the Currency builders.
 	Currency *CurrencyClient
 	// Household is the client for interacting with the Household builders.
@@ -70,6 +73,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
+	c.Checkpoint = NewCheckpointClient(c.config)
 	c.Currency = NewCurrencyClient(c.config)
 	c.Household = NewHouseholdClient(c.config)
 	c.Investment = NewInvestmentClient(c.config)
@@ -174,6 +178,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                   ctx,
 		config:                cfg,
 		Account:               NewAccountClient(cfg),
+		Checkpoint:            NewCheckpointClient(cfg),
 		Currency:              NewCurrencyClient(cfg),
 		Household:             NewHouseholdClient(cfg),
 		Investment:            NewInvestmentClient(cfg),
@@ -205,6 +210,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                   ctx,
 		config:                cfg,
 		Account:               NewAccountClient(cfg),
+		Checkpoint:            NewCheckpointClient(cfg),
 		Currency:              NewCurrencyClient(cfg),
 		Household:             NewHouseholdClient(cfg),
 		Investment:            NewInvestmentClient(cfg),
@@ -245,7 +251,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Account, c.Currency, c.Household, c.Investment, c.InvestmentLot,
+		c.Account, c.Checkpoint, c.Currency, c.Household, c.Investment, c.InvestmentLot,
 		c.RecurringSubscription, c.Transaction, c.TransactionCategory,
 		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
 	} {
@@ -257,7 +263,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Account, c.Currency, c.Household, c.Investment, c.InvestmentLot,
+		c.Account, c.Checkpoint, c.Currency, c.Household, c.Investment, c.InvestmentLot,
 		c.RecurringSubscription, c.Transaction, c.TransactionCategory,
 		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
 	} {
@@ -270,6 +276,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AccountMutation:
 		return c.Account.mutate(ctx, m)
+	case *CheckpointMutation:
+		return c.Checkpoint.mutate(ctx, m)
 	case *CurrencyMutation:
 		return c.Currency.mutate(ctx, m)
 	case *HouseholdMutation:
@@ -511,6 +519,172 @@ func (c *AccountClient) mutate(ctx context.Context, m *AccountMutation) (Value, 
 	}
 }
 
+// CheckpointClient is a client for the Checkpoint schema.
+type CheckpointClient struct {
+	config
+}
+
+// NewCheckpointClient returns a client for the Checkpoint from the given config.
+func NewCheckpointClient(c config) *CheckpointClient {
+	return &CheckpointClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `checkpoint.Hooks(f(g(h())))`.
+func (c *CheckpointClient) Use(hooks ...Hook) {
+	c.hooks.Checkpoint = append(c.hooks.Checkpoint, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `checkpoint.Intercept(f(g(h())))`.
+func (c *CheckpointClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Checkpoint = append(c.inters.Checkpoint, interceptors...)
+}
+
+// Create returns a builder for creating a Checkpoint entity.
+func (c *CheckpointClient) Create() *CheckpointCreate {
+	mutation := newCheckpointMutation(c.config, OpCreate)
+	return &CheckpointCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Checkpoint entities.
+func (c *CheckpointClient) CreateBulk(builders ...*CheckpointCreate) *CheckpointCreateBulk {
+	return &CheckpointCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CheckpointClient) MapCreateBulk(slice any, setFunc func(*CheckpointCreate, int)) *CheckpointCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CheckpointCreateBulk{err: fmt.Errorf("calling to CheckpointClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CheckpointCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CheckpointCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Checkpoint.
+func (c *CheckpointClient) Update() *CheckpointUpdate {
+	mutation := newCheckpointMutation(c.config, OpUpdate)
+	return &CheckpointUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CheckpointClient) UpdateOne(_m *Checkpoint) *CheckpointUpdateOne {
+	mutation := newCheckpointMutation(c.config, OpUpdateOne, withCheckpoint(_m))
+	return &CheckpointUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CheckpointClient) UpdateOneID(id int) *CheckpointUpdateOne {
+	mutation := newCheckpointMutation(c.config, OpUpdateOne, withCheckpointID(id))
+	return &CheckpointUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Checkpoint.
+func (c *CheckpointClient) Delete() *CheckpointDelete {
+	mutation := newCheckpointMutation(c.config, OpDelete)
+	return &CheckpointDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CheckpointClient) DeleteOne(_m *Checkpoint) *CheckpointDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CheckpointClient) DeleteOneID(id int) *CheckpointDeleteOne {
+	builder := c.Delete().Where(checkpoint.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CheckpointDeleteOne{builder}
+}
+
+// Query returns a query builder for Checkpoint.
+func (c *CheckpointClient) Query() *CheckpointQuery {
+	return &CheckpointQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCheckpoint},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Checkpoint entity by its id.
+func (c *CheckpointClient) Get(ctx context.Context, id int) (*Checkpoint, error) {
+	return c.Query().Where(checkpoint.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CheckpointClient) GetX(ctx context.Context, id int) *Checkpoint {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryHousehold queries the household edge of a Checkpoint.
+func (c *CheckpointClient) QueryHousehold(_m *Checkpoint) *HouseholdQuery {
+	query := (&HouseholdClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(checkpoint.Table, checkpoint.FieldID, id),
+			sqlgraph.To(household.Table, household.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, checkpoint.HouseholdTable, checkpoint.HouseholdColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCurrency queries the currency edge of a Checkpoint.
+func (c *CheckpointClient) QueryCurrency(_m *Checkpoint) *CurrencyQuery {
+	query := (&CurrencyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(checkpoint.Table, checkpoint.FieldID, id),
+			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, checkpoint.CurrencyTable, checkpoint.CurrencyColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CheckpointClient) Hooks() []Hook {
+	hooks := c.hooks.Checkpoint
+	return append(hooks[:len(hooks):len(hooks)], checkpoint.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *CheckpointClient) Interceptors() []Interceptor {
+	return c.inters.Checkpoint
+}
+
+func (c *CheckpointClient) mutate(ctx context.Context, m *CheckpointMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CheckpointCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CheckpointUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CheckpointUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CheckpointDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Checkpoint mutation op: %q", m.Op())
+	}
+}
+
 // CurrencyClient is a client for the Currency schema.
 type CurrencyClient struct {
 	config
@@ -692,6 +866,22 @@ func (c *CurrencyClient) QueryRecurringSubscriptions(_m *Currency) *RecurringSub
 			sqlgraph.From(currency.Table, currency.FieldID, id),
 			sqlgraph.To(recurringsubscription.Table, recurringsubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, currency.RecurringSubscriptionsTable, currency.RecurringSubscriptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCheckpoints queries the checkpoints edge of a Currency.
+func (c *CurrencyClient) QueryCheckpoints(_m *Currency) *CheckpointQuery {
+	query := (&CheckpointClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(currency.Table, currency.FieldID, id),
+			sqlgraph.To(checkpoint.Table, checkpoint.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, currency.CheckpointsTable, currency.CheckpointsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -969,6 +1159,22 @@ func (c *HouseholdClient) QueryRecurringSubscriptions(_m *Household) *RecurringS
 			sqlgraph.From(household.Table, household.FieldID, id),
 			sqlgraph.To(recurringsubscription.Table, recurringsubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, household.RecurringSubscriptionsTable, household.RecurringSubscriptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCheckpoints queries the checkpoints edge of a Household.
+func (c *HouseholdClient) QueryCheckpoints(_m *Household) *CheckpointQuery {
+	query := (&CheckpointClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, id),
+			sqlgraph.To(checkpoint.Table, checkpoint.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.CheckpointsTable, household.CheckpointsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2707,13 +2913,13 @@ func (c *UserKeyClient) mutate(ctx context.Context, m *UserKeyMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Account, Currency, Household, Investment, InvestmentLot, RecurringSubscription,
-		Transaction, TransactionCategory, TransactionEntry, User, UserHousehold,
-		UserKey []ent.Hook
+		Account, Checkpoint, Currency, Household, Investment, InvestmentLot,
+		RecurringSubscription, Transaction, TransactionCategory, TransactionEntry,
+		User, UserHousehold, UserKey []ent.Hook
 	}
 	inters struct {
-		Account, Currency, Household, Investment, InvestmentLot, RecurringSubscription,
-		Transaction, TransactionCategory, TransactionEntry, User, UserHousehold,
-		UserKey []ent.Interceptor
+		Account, Checkpoint, Currency, Household, Investment, InvestmentLot,
+		RecurringSubscription, Transaction, TransactionCategory, TransactionEntry,
+		User, UserHousehold, UserKey []ent.Interceptor
 	}
 )

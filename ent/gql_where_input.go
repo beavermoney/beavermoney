@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -625,6 +626,544 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	}
 }
 
+// CheckpointWhereInput represents a where input for filtering Checkpoint queries.
+type CheckpointWhereInput struct {
+	Predicates []predicate.Checkpoint  `json:"-"`
+	Not        *CheckpointWhereInput   `json:"not,omitempty"`
+	Or         []*CheckpointWhereInput `json:"or,omitempty"`
+	And        []*CheckpointWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "net_worth" field predicates.
+	NetWorth      *decimal.Decimal  `json:"netWorth,omitempty"`
+	NetWorthNEQ   *decimal.Decimal  `json:"netWorthNEQ,omitempty"`
+	NetWorthIn    []decimal.Decimal `json:"netWorthIn,omitempty"`
+	NetWorthNotIn []decimal.Decimal `json:"netWorthNotIn,omitempty"`
+	NetWorthGT    *decimal.Decimal  `json:"netWorthGT,omitempty"`
+	NetWorthGTE   *decimal.Decimal  `json:"netWorthGTE,omitempty"`
+	NetWorthLT    *decimal.Decimal  `json:"netWorthLT,omitempty"`
+	NetWorthLTE   *decimal.Decimal  `json:"netWorthLTE,omitempty"`
+
+	// "liquidity" field predicates.
+	Liquidity      *decimal.Decimal  `json:"liquidity,omitempty"`
+	LiquidityNEQ   *decimal.Decimal  `json:"liquidityNEQ,omitempty"`
+	LiquidityIn    []decimal.Decimal `json:"liquidityIn,omitempty"`
+	LiquidityNotIn []decimal.Decimal `json:"liquidityNotIn,omitempty"`
+	LiquidityGT    *decimal.Decimal  `json:"liquidityGT,omitempty"`
+	LiquidityGTE   *decimal.Decimal  `json:"liquidityGTE,omitempty"`
+	LiquidityLT    *decimal.Decimal  `json:"liquidityLT,omitempty"`
+	LiquidityLTE   *decimal.Decimal  `json:"liquidityLTE,omitempty"`
+
+	// "investment" field predicates.
+	Investment      *decimal.Decimal  `json:"investment,omitempty"`
+	InvestmentNEQ   *decimal.Decimal  `json:"investmentNEQ,omitempty"`
+	InvestmentIn    []decimal.Decimal `json:"investmentIn,omitempty"`
+	InvestmentNotIn []decimal.Decimal `json:"investmentNotIn,omitempty"`
+	InvestmentGT    *decimal.Decimal  `json:"investmentGT,omitempty"`
+	InvestmentGTE   *decimal.Decimal  `json:"investmentGTE,omitempty"`
+	InvestmentLT    *decimal.Decimal  `json:"investmentLT,omitempty"`
+	InvestmentLTE   *decimal.Decimal  `json:"investmentLTE,omitempty"`
+
+	// "property" field predicates.
+	Property      *decimal.Decimal  `json:"property,omitempty"`
+	PropertyNEQ   *decimal.Decimal  `json:"propertyNEQ,omitempty"`
+	PropertyIn    []decimal.Decimal `json:"propertyIn,omitempty"`
+	PropertyNotIn []decimal.Decimal `json:"propertyNotIn,omitempty"`
+	PropertyGT    *decimal.Decimal  `json:"propertyGT,omitempty"`
+	PropertyGTE   *decimal.Decimal  `json:"propertyGTE,omitempty"`
+	PropertyLT    *decimal.Decimal  `json:"propertyLT,omitempty"`
+	PropertyLTE   *decimal.Decimal  `json:"propertyLTE,omitempty"`
+
+	// "receivable" field predicates.
+	Receivable      *decimal.Decimal  `json:"receivable,omitempty"`
+	ReceivableNEQ   *decimal.Decimal  `json:"receivableNEQ,omitempty"`
+	ReceivableIn    []decimal.Decimal `json:"receivableIn,omitempty"`
+	ReceivableNotIn []decimal.Decimal `json:"receivableNotIn,omitempty"`
+	ReceivableGT    *decimal.Decimal  `json:"receivableGT,omitempty"`
+	ReceivableGTE   *decimal.Decimal  `json:"receivableGTE,omitempty"`
+	ReceivableLT    *decimal.Decimal  `json:"receivableLT,omitempty"`
+	ReceivableLTE   *decimal.Decimal  `json:"receivableLTE,omitempty"`
+
+	// "liability" field predicates.
+	Liability      *decimal.Decimal  `json:"liability,omitempty"`
+	LiabilityNEQ   *decimal.Decimal  `json:"liabilityNEQ,omitempty"`
+	LiabilityIn    []decimal.Decimal `json:"liabilityIn,omitempty"`
+	LiabilityNotIn []decimal.Decimal `json:"liabilityNotIn,omitempty"`
+	LiabilityGT    *decimal.Decimal  `json:"liabilityGT,omitempty"`
+	LiabilityGTE   *decimal.Decimal  `json:"liabilityGTE,omitempty"`
+	LiabilityLT    *decimal.Decimal  `json:"liabilityLT,omitempty"`
+	LiabilityLTE   *decimal.Decimal  `json:"liabilityLTE,omitempty"`
+
+	// "currency_id" field predicates.
+	CurrencyID      *int  `json:"currencyID,omitempty"`
+	CurrencyIDNEQ   *int  `json:"currencyIDNEQ,omitempty"`
+	CurrencyIDIn    []int `json:"currencyIDIn,omitempty"`
+	CurrencyIDNotIn []int `json:"currencyIDNotIn,omitempty"`
+
+	// "note" field predicates.
+	Note             *string  `json:"note,omitempty"`
+	NoteNEQ          *string  `json:"noteNEQ,omitempty"`
+	NoteIn           []string `json:"noteIn,omitempty"`
+	NoteNotIn        []string `json:"noteNotIn,omitempty"`
+	NoteGT           *string  `json:"noteGT,omitempty"`
+	NoteGTE          *string  `json:"noteGTE,omitempty"`
+	NoteLT           *string  `json:"noteLT,omitempty"`
+	NoteLTE          *string  `json:"noteLTE,omitempty"`
+	NoteContains     *string  `json:"noteContains,omitempty"`
+	NoteHasPrefix    *string  `json:"noteHasPrefix,omitempty"`
+	NoteHasSuffix    *string  `json:"noteHasSuffix,omitempty"`
+	NoteIsNil        bool     `json:"noteIsNil,omitempty"`
+	NoteNotNil       bool     `json:"noteNotNil,omitempty"`
+	NoteEqualFold    *string  `json:"noteEqualFold,omitempty"`
+	NoteContainsFold *string  `json:"noteContainsFold,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "currency" edge predicates.
+	HasCurrency     *bool                 `json:"hasCurrency,omitempty"`
+	HasCurrencyWith []*CurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *CheckpointWhereInput) AddPredicates(predicates ...predicate.Checkpoint) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the CheckpointWhereInput filter on the CheckpointQuery builder.
+func (i *CheckpointWhereInput) Filter(q *CheckpointQuery) (*CheckpointQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyCheckpointWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyCheckpointWhereInput is returned in case the CheckpointWhereInput is empty.
+var ErrEmptyCheckpointWhereInput = errors.New("ent: empty predicate CheckpointWhereInput")
+
+// P returns a predicate for filtering checkpoints.
+// An error is returned if the input is empty or invalid.
+func (i *CheckpointWhereInput) P() (predicate.Checkpoint, error) {
+	var predicates []predicate.Checkpoint
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, checkpoint.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Checkpoint, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, checkpoint.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Checkpoint, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, checkpoint.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, checkpoint.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, checkpoint.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, checkpoint.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, checkpoint.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, checkpoint.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, checkpoint.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, checkpoint.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, checkpoint.IDLTE(*i.IDLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, checkpoint.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, checkpoint.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, checkpoint.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, checkpoint.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, checkpoint.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, checkpoint.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, checkpoint.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, checkpoint.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, checkpoint.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, checkpoint.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, checkpoint.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, checkpoint.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, checkpoint.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, checkpoint.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, checkpoint.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, checkpoint.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, checkpoint.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, checkpoint.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, checkpoint.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, checkpoint.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.NetWorth != nil {
+		predicates = append(predicates, checkpoint.NetWorthEQ(*i.NetWorth))
+	}
+	if i.NetWorthNEQ != nil {
+		predicates = append(predicates, checkpoint.NetWorthNEQ(*i.NetWorthNEQ))
+	}
+	if len(i.NetWorthIn) > 0 {
+		predicates = append(predicates, checkpoint.NetWorthIn(i.NetWorthIn...))
+	}
+	if len(i.NetWorthNotIn) > 0 {
+		predicates = append(predicates, checkpoint.NetWorthNotIn(i.NetWorthNotIn...))
+	}
+	if i.NetWorthGT != nil {
+		predicates = append(predicates, checkpoint.NetWorthGT(*i.NetWorthGT))
+	}
+	if i.NetWorthGTE != nil {
+		predicates = append(predicates, checkpoint.NetWorthGTE(*i.NetWorthGTE))
+	}
+	if i.NetWorthLT != nil {
+		predicates = append(predicates, checkpoint.NetWorthLT(*i.NetWorthLT))
+	}
+	if i.NetWorthLTE != nil {
+		predicates = append(predicates, checkpoint.NetWorthLTE(*i.NetWorthLTE))
+	}
+	if i.Liquidity != nil {
+		predicates = append(predicates, checkpoint.LiquidityEQ(*i.Liquidity))
+	}
+	if i.LiquidityNEQ != nil {
+		predicates = append(predicates, checkpoint.LiquidityNEQ(*i.LiquidityNEQ))
+	}
+	if len(i.LiquidityIn) > 0 {
+		predicates = append(predicates, checkpoint.LiquidityIn(i.LiquidityIn...))
+	}
+	if len(i.LiquidityNotIn) > 0 {
+		predicates = append(predicates, checkpoint.LiquidityNotIn(i.LiquidityNotIn...))
+	}
+	if i.LiquidityGT != nil {
+		predicates = append(predicates, checkpoint.LiquidityGT(*i.LiquidityGT))
+	}
+	if i.LiquidityGTE != nil {
+		predicates = append(predicates, checkpoint.LiquidityGTE(*i.LiquidityGTE))
+	}
+	if i.LiquidityLT != nil {
+		predicates = append(predicates, checkpoint.LiquidityLT(*i.LiquidityLT))
+	}
+	if i.LiquidityLTE != nil {
+		predicates = append(predicates, checkpoint.LiquidityLTE(*i.LiquidityLTE))
+	}
+	if i.Investment != nil {
+		predicates = append(predicates, checkpoint.InvestmentEQ(*i.Investment))
+	}
+	if i.InvestmentNEQ != nil {
+		predicates = append(predicates, checkpoint.InvestmentNEQ(*i.InvestmentNEQ))
+	}
+	if len(i.InvestmentIn) > 0 {
+		predicates = append(predicates, checkpoint.InvestmentIn(i.InvestmentIn...))
+	}
+	if len(i.InvestmentNotIn) > 0 {
+		predicates = append(predicates, checkpoint.InvestmentNotIn(i.InvestmentNotIn...))
+	}
+	if i.InvestmentGT != nil {
+		predicates = append(predicates, checkpoint.InvestmentGT(*i.InvestmentGT))
+	}
+	if i.InvestmentGTE != nil {
+		predicates = append(predicates, checkpoint.InvestmentGTE(*i.InvestmentGTE))
+	}
+	if i.InvestmentLT != nil {
+		predicates = append(predicates, checkpoint.InvestmentLT(*i.InvestmentLT))
+	}
+	if i.InvestmentLTE != nil {
+		predicates = append(predicates, checkpoint.InvestmentLTE(*i.InvestmentLTE))
+	}
+	if i.Property != nil {
+		predicates = append(predicates, checkpoint.PropertyEQ(*i.Property))
+	}
+	if i.PropertyNEQ != nil {
+		predicates = append(predicates, checkpoint.PropertyNEQ(*i.PropertyNEQ))
+	}
+	if len(i.PropertyIn) > 0 {
+		predicates = append(predicates, checkpoint.PropertyIn(i.PropertyIn...))
+	}
+	if len(i.PropertyNotIn) > 0 {
+		predicates = append(predicates, checkpoint.PropertyNotIn(i.PropertyNotIn...))
+	}
+	if i.PropertyGT != nil {
+		predicates = append(predicates, checkpoint.PropertyGT(*i.PropertyGT))
+	}
+	if i.PropertyGTE != nil {
+		predicates = append(predicates, checkpoint.PropertyGTE(*i.PropertyGTE))
+	}
+	if i.PropertyLT != nil {
+		predicates = append(predicates, checkpoint.PropertyLT(*i.PropertyLT))
+	}
+	if i.PropertyLTE != nil {
+		predicates = append(predicates, checkpoint.PropertyLTE(*i.PropertyLTE))
+	}
+	if i.Receivable != nil {
+		predicates = append(predicates, checkpoint.ReceivableEQ(*i.Receivable))
+	}
+	if i.ReceivableNEQ != nil {
+		predicates = append(predicates, checkpoint.ReceivableNEQ(*i.ReceivableNEQ))
+	}
+	if len(i.ReceivableIn) > 0 {
+		predicates = append(predicates, checkpoint.ReceivableIn(i.ReceivableIn...))
+	}
+	if len(i.ReceivableNotIn) > 0 {
+		predicates = append(predicates, checkpoint.ReceivableNotIn(i.ReceivableNotIn...))
+	}
+	if i.ReceivableGT != nil {
+		predicates = append(predicates, checkpoint.ReceivableGT(*i.ReceivableGT))
+	}
+	if i.ReceivableGTE != nil {
+		predicates = append(predicates, checkpoint.ReceivableGTE(*i.ReceivableGTE))
+	}
+	if i.ReceivableLT != nil {
+		predicates = append(predicates, checkpoint.ReceivableLT(*i.ReceivableLT))
+	}
+	if i.ReceivableLTE != nil {
+		predicates = append(predicates, checkpoint.ReceivableLTE(*i.ReceivableLTE))
+	}
+	if i.Liability != nil {
+		predicates = append(predicates, checkpoint.LiabilityEQ(*i.Liability))
+	}
+	if i.LiabilityNEQ != nil {
+		predicates = append(predicates, checkpoint.LiabilityNEQ(*i.LiabilityNEQ))
+	}
+	if len(i.LiabilityIn) > 0 {
+		predicates = append(predicates, checkpoint.LiabilityIn(i.LiabilityIn...))
+	}
+	if len(i.LiabilityNotIn) > 0 {
+		predicates = append(predicates, checkpoint.LiabilityNotIn(i.LiabilityNotIn...))
+	}
+	if i.LiabilityGT != nil {
+		predicates = append(predicates, checkpoint.LiabilityGT(*i.LiabilityGT))
+	}
+	if i.LiabilityGTE != nil {
+		predicates = append(predicates, checkpoint.LiabilityGTE(*i.LiabilityGTE))
+	}
+	if i.LiabilityLT != nil {
+		predicates = append(predicates, checkpoint.LiabilityLT(*i.LiabilityLT))
+	}
+	if i.LiabilityLTE != nil {
+		predicates = append(predicates, checkpoint.LiabilityLTE(*i.LiabilityLTE))
+	}
+	if i.CurrencyID != nil {
+		predicates = append(predicates, checkpoint.CurrencyIDEQ(*i.CurrencyID))
+	}
+	if i.CurrencyIDNEQ != nil {
+		predicates = append(predicates, checkpoint.CurrencyIDNEQ(*i.CurrencyIDNEQ))
+	}
+	if len(i.CurrencyIDIn) > 0 {
+		predicates = append(predicates, checkpoint.CurrencyIDIn(i.CurrencyIDIn...))
+	}
+	if len(i.CurrencyIDNotIn) > 0 {
+		predicates = append(predicates, checkpoint.CurrencyIDNotIn(i.CurrencyIDNotIn...))
+	}
+	if i.Note != nil {
+		predicates = append(predicates, checkpoint.NoteEQ(*i.Note))
+	}
+	if i.NoteNEQ != nil {
+		predicates = append(predicates, checkpoint.NoteNEQ(*i.NoteNEQ))
+	}
+	if len(i.NoteIn) > 0 {
+		predicates = append(predicates, checkpoint.NoteIn(i.NoteIn...))
+	}
+	if len(i.NoteNotIn) > 0 {
+		predicates = append(predicates, checkpoint.NoteNotIn(i.NoteNotIn...))
+	}
+	if i.NoteGT != nil {
+		predicates = append(predicates, checkpoint.NoteGT(*i.NoteGT))
+	}
+	if i.NoteGTE != nil {
+		predicates = append(predicates, checkpoint.NoteGTE(*i.NoteGTE))
+	}
+	if i.NoteLT != nil {
+		predicates = append(predicates, checkpoint.NoteLT(*i.NoteLT))
+	}
+	if i.NoteLTE != nil {
+		predicates = append(predicates, checkpoint.NoteLTE(*i.NoteLTE))
+	}
+	if i.NoteContains != nil {
+		predicates = append(predicates, checkpoint.NoteContains(*i.NoteContains))
+	}
+	if i.NoteHasPrefix != nil {
+		predicates = append(predicates, checkpoint.NoteHasPrefix(*i.NoteHasPrefix))
+	}
+	if i.NoteHasSuffix != nil {
+		predicates = append(predicates, checkpoint.NoteHasSuffix(*i.NoteHasSuffix))
+	}
+	if i.NoteIsNil {
+		predicates = append(predicates, checkpoint.NoteIsNil())
+	}
+	if i.NoteNotNil {
+		predicates = append(predicates, checkpoint.NoteNotNil())
+	}
+	if i.NoteEqualFold != nil {
+		predicates = append(predicates, checkpoint.NoteEqualFold(*i.NoteEqualFold))
+	}
+	if i.NoteContainsFold != nil {
+		predicates = append(predicates, checkpoint.NoteContainsFold(*i.NoteContainsFold))
+	}
+
+	if i.HasHousehold != nil {
+		p := checkpoint.HasHousehold()
+		if !*i.HasHousehold {
+			p = checkpoint.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, checkpoint.HasHouseholdWith(with...))
+	}
+	if i.HasCurrency != nil {
+		p := checkpoint.HasCurrency()
+		if !*i.HasCurrency {
+			p = checkpoint.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasCurrencyWith))
+		for _, w := range i.HasCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, checkpoint.HasCurrencyWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyCheckpointWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return checkpoint.And(predicates...), nil
+	}
+}
+
 // CurrencyWhereInput represents a where input for filtering Currency queries.
 type CurrencyWhereInput struct {
 	Predicates []predicate.Currency  `json:"-"`
@@ -676,6 +1215,10 @@ type CurrencyWhereInput struct {
 	// "recurring_subscriptions" edge predicates.
 	HasRecurringSubscriptions     *bool                              `json:"hasRecurringSubscriptions,omitempty"`
 	HasRecurringSubscriptionsWith []*RecurringSubscriptionWhereInput `json:"hasRecurringSubscriptionsWith,omitempty"`
+
+	// "checkpoints" edge predicates.
+	HasCheckpoints     *bool                   `json:"hasCheckpoints,omitempty"`
+	HasCheckpointsWith []*CheckpointWhereInput `json:"hasCheckpointsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -903,6 +1446,24 @@ func (i *CurrencyWhereInput) P() (predicate.Currency, error) {
 		}
 		predicates = append(predicates, currency.HasRecurringSubscriptionsWith(with...))
 	}
+	if i.HasCheckpoints != nil {
+		p := currency.HasCheckpoints()
+		if !*i.HasCheckpoints {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasCheckpointsWith) > 0 {
+		with := make([]predicate.Checkpoint, 0, len(i.HasCheckpointsWith))
+		for _, w := range i.HasCheckpointsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasCheckpointsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasCheckpointsWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyCurrencyWhereInput
@@ -1021,6 +1582,10 @@ type HouseholdWhereInput struct {
 	// "recurring_subscriptions" edge predicates.
 	HasRecurringSubscriptions     *bool                              `json:"hasRecurringSubscriptions,omitempty"`
 	HasRecurringSubscriptionsWith []*RecurringSubscriptionWhereInput `json:"hasRecurringSubscriptionsWith,omitempty"`
+
+	// "checkpoints" edge predicates.
+	HasCheckpoints     *bool                   `json:"hasCheckpoints,omitempty"`
+	HasCheckpointsWith []*CheckpointWhereInput `json:"hasCheckpointsWith,omitempty"`
 
 	// "user_households" edge predicates.
 	HasUserHouseholds     *bool                      `json:"hasUserHouseholds,omitempty"`
@@ -1422,6 +1987,24 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, household.HasRecurringSubscriptionsWith(with...))
+	}
+	if i.HasCheckpoints != nil {
+		p := household.HasCheckpoints()
+		if !*i.HasCheckpoints {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasCheckpointsWith) > 0 {
+		with := make([]predicate.Checkpoint, 0, len(i.HasCheckpointsWith))
+		for _, w := range i.HasCheckpointsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasCheckpointsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasCheckpointsWith(with...))
 	}
 	if i.HasUserHouseholds != nil {
 		p := household.HasUserHouseholds()

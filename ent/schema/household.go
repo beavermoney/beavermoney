@@ -92,6 +92,13 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
+		edge.To("checkpoints", Checkpoint.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 	}
 }
 

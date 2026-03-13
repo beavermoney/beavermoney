@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -353,6 +354,255 @@ func (_m *Account) ToEdge(order *AccountOrder) *AccountEdge {
 		order = DefaultAccountOrder
 	}
 	return &AccountEdge{
+		Node:   _m,
+		Cursor: order.Field.toCursor(_m),
+	}
+}
+
+// CheckpointEdge is the edge representation of Checkpoint.
+type CheckpointEdge struct {
+	Node   *Checkpoint `json:"node"`
+	Cursor Cursor      `json:"cursor"`
+}
+
+// CheckpointConnection is the connection containing edges to Checkpoint.
+type CheckpointConnection struct {
+	Edges      []*CheckpointEdge `json:"edges"`
+	PageInfo   PageInfo          `json:"pageInfo"`
+	TotalCount int               `json:"totalCount"`
+}
+
+func (c *CheckpointConnection) build(nodes []*Checkpoint, pager *checkpointPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Checkpoint
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Checkpoint {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Checkpoint {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*CheckpointEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &CheckpointEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// CheckpointPaginateOption enables pagination customization.
+type CheckpointPaginateOption func(*checkpointPager) error
+
+// WithCheckpointOrder configures pagination ordering.
+func WithCheckpointOrder(order *CheckpointOrder) CheckpointPaginateOption {
+	if order == nil {
+		order = DefaultCheckpointOrder
+	}
+	o := *order
+	return func(pager *checkpointPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultCheckpointOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithCheckpointFilter configures pagination filter.
+func WithCheckpointFilter(filter func(*CheckpointQuery) (*CheckpointQuery, error)) CheckpointPaginateOption {
+	return func(pager *checkpointPager) error {
+		if filter == nil {
+			return errors.New("CheckpointQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type checkpointPager struct {
+	reverse bool
+	order   *CheckpointOrder
+	filter  func(*CheckpointQuery) (*CheckpointQuery, error)
+}
+
+func newCheckpointPager(opts []CheckpointPaginateOption, reverse bool) (*checkpointPager, error) {
+	pager := &checkpointPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultCheckpointOrder
+	}
+	return pager, nil
+}
+
+func (p *checkpointPager) applyFilter(query *CheckpointQuery) (*CheckpointQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *checkpointPager) toCursor(_m *Checkpoint) Cursor {
+	return p.order.Field.toCursor(_m)
+}
+
+func (p *checkpointPager) applyCursors(query *CheckpointQuery, after, before *Cursor) (*CheckpointQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultCheckpointOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *checkpointPager) applyOrder(query *CheckpointQuery) *CheckpointQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultCheckpointOrder.Field {
+		query = query.Order(DefaultCheckpointOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *checkpointPager) orderExpr(query *CheckpointQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultCheckpointOrder.Field {
+			b.Comma().Ident(DefaultCheckpointOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Checkpoint.
+func (_m *CheckpointQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...CheckpointPaginateOption,
+) (*CheckpointConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newCheckpointPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if _m, err = pager.applyFilter(_m); err != nil {
+		return nil, err
+	}
+	conn := &CheckpointConnection{Edges: []*CheckpointEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := _m.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if _m, err = pager.applyCursors(_m, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		_m.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := _m.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	_m = pager.applyOrder(_m)
+	nodes, err := _m.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+// CheckpointOrderField defines the ordering field of Checkpoint.
+type CheckpointOrderField struct {
+	// Value extracts the ordering value from the given Checkpoint.
+	Value    func(*Checkpoint) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) checkpoint.OrderOption
+	toCursor func(*Checkpoint) Cursor
+}
+
+// CheckpointOrder defines the ordering of Checkpoint.
+type CheckpointOrder struct {
+	Direction OrderDirection        `json:"direction"`
+	Field     *CheckpointOrderField `json:"field"`
+}
+
+// DefaultCheckpointOrder is the default ordering of Checkpoint.
+var DefaultCheckpointOrder = &CheckpointOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &CheckpointOrderField{
+		Value: func(_m *Checkpoint) (ent.Value, error) {
+			return _m.ID, nil
+		},
+		column: checkpoint.FieldID,
+		toTerm: checkpoint.ByID,
+		toCursor: func(_m *Checkpoint) Cursor {
+			return Cursor{ID: _m.ID}
+		},
+	},
+}
+
+// ToEdge converts Checkpoint into CheckpointEdge.
+func (_m *Checkpoint) ToEdge(order *CheckpointOrder) *CheckpointEdge {
+	if order == nil {
+		order = DefaultCheckpointOrder
+	}
+	return &CheckpointEdge{
 		Node:   _m,
 		Cursor: order.Field.toCursor(_m),
 	}

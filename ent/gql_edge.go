@@ -56,6 +56,22 @@ func (_m *Account) Investments(ctx context.Context) (result []*Investment, err e
 	return result, err
 }
 
+func (_m *Checkpoint) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *Checkpoint) Currency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.CurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryCurrency().Only(ctx)
+	}
+	return result, err
+}
+
 func (_m *Currency) Accounts(ctx context.Context) (result []*Account, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
@@ -112,6 +128,18 @@ func (_m *Currency) RecurringSubscriptions(ctx context.Context) (result []*Recur
 	}
 	if IsNotLoaded(err) {
 		result, err = _m.QueryRecurringSubscriptions().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) Checkpoints(ctx context.Context) (result []*Checkpoint, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedCheckpoints(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.CheckpointsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryCheckpoints().All(ctx)
 	}
 	return result, err
 }
@@ -216,6 +244,18 @@ func (_m *Household) RecurringSubscriptions(ctx context.Context) (result []*Recu
 	}
 	if IsNotLoaded(err) {
 		result, err = _m.QueryRecurringSubscriptions().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Household) Checkpoints(ctx context.Context) (result []*Checkpoint, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedCheckpoints(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.CheckpointsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryCheckpoints().All(ctx)
 	}
 	return result, err
 }

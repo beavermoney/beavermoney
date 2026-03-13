@@ -29,6 +29,36 @@ func (r *accountResolver) FxRate(ctx context.Context, obj *ent.Account) (string,
 	return obj.FxRate.String(), nil
 }
 
+// NetWorth is the resolver for the netWorth field.
+func (r *checkpointResolver) NetWorth(ctx context.Context, obj *ent.Checkpoint) (string, error) {
+	panic(fmt.Errorf("not implemented: NetWorth - netWorth"))
+}
+
+// Liquidity is the resolver for the liquidity field.
+func (r *checkpointResolver) Liquidity(ctx context.Context, obj *ent.Checkpoint) (string, error) {
+	panic(fmt.Errorf("not implemented: Liquidity - liquidity"))
+}
+
+// Investment is the resolver for the investment field.
+func (r *checkpointResolver) Investment(ctx context.Context, obj *ent.Checkpoint) (string, error) {
+	panic(fmt.Errorf("not implemented: Investment - investment"))
+}
+
+// Property is the resolver for the property field.
+func (r *checkpointResolver) Property(ctx context.Context, obj *ent.Checkpoint) (string, error) {
+	panic(fmt.Errorf("not implemented: Property - property"))
+}
+
+// Receivable is the resolver for the receivable field.
+func (r *checkpointResolver) Receivable(ctx context.Context, obj *ent.Checkpoint) (string, error) {
+	panic(fmt.Errorf("not implemented: Receivable - receivable"))
+}
+
+// Liability is the resolver for the liability field.
+func (r *checkpointResolver) Liability(ctx context.Context, obj *ent.Checkpoint) (string, error) {
+	panic(fmt.Errorf("not implemented: Liability - liability"))
+}
+
 // Amount is the resolver for the amount field.
 func (r *investmentResolver) Amount(ctx context.Context, obj *ent.Investment) (string, error) {
 	return obj.Amount.String(), nil
@@ -67,6 +97,11 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []int) ([]ent.Noder, erro
 // Accounts is the resolver for the accounts field.
 func (r *queryResolver) Accounts(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) (*ent.AccountConnection, error) {
 	return r.entClient.Account.Query().Paginate(ctx, after, first, before, last, ent.WithAccountFilter(where.Filter))
+}
+
+// Checkpoints is the resolver for the checkpoints field.
+func (r *queryResolver) Checkpoints(ctx context.Context) ([]*ent.Checkpoint, error) {
+	panic(fmt.Errorf("not implemented: Checkpoints - checkpoints"))
 }
 
 // Currencies is the resolver for the currencies field.
@@ -257,6 +292,246 @@ func (r *accountWhereInputResolver) FxRateLt(ctx context.Context, obj *ent.Accou
 // FxRateLte is the resolver for the fxRateLTE field.
 func (r *accountWhereInputResolver) FxRateLte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
 	panic(fmt.Errorf("not implemented: FxRateLte - fxRateLTE"))
+}
+
+// NetWorth is the resolver for the netWorth field.
+func (r *checkpointWhereInputResolver) NetWorth(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: NetWorth - netWorth"))
+}
+
+// NetWorthNeq is the resolver for the netWorthNEQ field.
+func (r *checkpointWhereInputResolver) NetWorthNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: NetWorthNeq - netWorthNEQ"))
+}
+
+// NetWorthIn is the resolver for the netWorthIn field.
+func (r *checkpointWhereInputResolver) NetWorthIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: NetWorthIn - netWorthIn"))
+}
+
+// NetWorthNotIn is the resolver for the netWorthNotIn field.
+func (r *checkpointWhereInputResolver) NetWorthNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: NetWorthNotIn - netWorthNotIn"))
+}
+
+// NetWorthGt is the resolver for the netWorthGT field.
+func (r *checkpointWhereInputResolver) NetWorthGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: NetWorthGt - netWorthGT"))
+}
+
+// NetWorthGte is the resolver for the netWorthGTE field.
+func (r *checkpointWhereInputResolver) NetWorthGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: NetWorthGte - netWorthGTE"))
+}
+
+// NetWorthLt is the resolver for the netWorthLT field.
+func (r *checkpointWhereInputResolver) NetWorthLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: NetWorthLt - netWorthLT"))
+}
+
+// NetWorthLte is the resolver for the netWorthLTE field.
+func (r *checkpointWhereInputResolver) NetWorthLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: NetWorthLte - netWorthLTE"))
+}
+
+// Liquidity is the resolver for the liquidity field.
+func (r *checkpointWhereInputResolver) Liquidity(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Liquidity - liquidity"))
+}
+
+// LiquidityNeq is the resolver for the liquidityNEQ field.
+func (r *checkpointWhereInputResolver) LiquidityNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityNeq - liquidityNEQ"))
+}
+
+// LiquidityIn is the resolver for the liquidityIn field.
+func (r *checkpointWhereInputResolver) LiquidityIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiquidityIn - liquidityIn"))
+}
+
+// LiquidityNotIn is the resolver for the liquidityNotIn field.
+func (r *checkpointWhereInputResolver) LiquidityNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiquidityNotIn - liquidityNotIn"))
+}
+
+// LiquidityGt is the resolver for the liquidityGT field.
+func (r *checkpointWhereInputResolver) LiquidityGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityGt - liquidityGT"))
+}
+
+// LiquidityGte is the resolver for the liquidityGTE field.
+func (r *checkpointWhereInputResolver) LiquidityGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityGte - liquidityGTE"))
+}
+
+// LiquidityLt is the resolver for the liquidityLT field.
+func (r *checkpointWhereInputResolver) LiquidityLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityLt - liquidityLT"))
+}
+
+// LiquidityLte is the resolver for the liquidityLTE field.
+func (r *checkpointWhereInputResolver) LiquidityLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityLte - liquidityLTE"))
+}
+
+// Investment is the resolver for the investment field.
+func (r *checkpointWhereInputResolver) Investment(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Investment - investment"))
+}
+
+// InvestmentNeq is the resolver for the investmentNEQ field.
+func (r *checkpointWhereInputResolver) InvestmentNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentNeq - investmentNEQ"))
+}
+
+// InvestmentIn is the resolver for the investmentIn field.
+func (r *checkpointWhereInputResolver) InvestmentIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: InvestmentIn - investmentIn"))
+}
+
+// InvestmentNotIn is the resolver for the investmentNotIn field.
+func (r *checkpointWhereInputResolver) InvestmentNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: InvestmentNotIn - investmentNotIn"))
+}
+
+// InvestmentGt is the resolver for the investmentGT field.
+func (r *checkpointWhereInputResolver) InvestmentGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentGt - investmentGT"))
+}
+
+// InvestmentGte is the resolver for the investmentGTE field.
+func (r *checkpointWhereInputResolver) InvestmentGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentGte - investmentGTE"))
+}
+
+// InvestmentLt is the resolver for the investmentLT field.
+func (r *checkpointWhereInputResolver) InvestmentLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentLt - investmentLT"))
+}
+
+// InvestmentLte is the resolver for the investmentLTE field.
+func (r *checkpointWhereInputResolver) InvestmentLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentLte - investmentLTE"))
+}
+
+// Property is the resolver for the property field.
+func (r *checkpointWhereInputResolver) Property(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Property - property"))
+}
+
+// PropertyNeq is the resolver for the propertyNEQ field.
+func (r *checkpointWhereInputResolver) PropertyNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyNeq - propertyNEQ"))
+}
+
+// PropertyIn is the resolver for the propertyIn field.
+func (r *checkpointWhereInputResolver) PropertyIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: PropertyIn - propertyIn"))
+}
+
+// PropertyNotIn is the resolver for the propertyNotIn field.
+func (r *checkpointWhereInputResolver) PropertyNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: PropertyNotIn - propertyNotIn"))
+}
+
+// PropertyGt is the resolver for the propertyGT field.
+func (r *checkpointWhereInputResolver) PropertyGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyGt - propertyGT"))
+}
+
+// PropertyGte is the resolver for the propertyGTE field.
+func (r *checkpointWhereInputResolver) PropertyGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyGte - propertyGTE"))
+}
+
+// PropertyLt is the resolver for the propertyLT field.
+func (r *checkpointWhereInputResolver) PropertyLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyLt - propertyLT"))
+}
+
+// PropertyLte is the resolver for the propertyLTE field.
+func (r *checkpointWhereInputResolver) PropertyLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyLte - propertyLTE"))
+}
+
+// Receivable is the resolver for the receivable field.
+func (r *checkpointWhereInputResolver) Receivable(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Receivable - receivable"))
+}
+
+// ReceivableNeq is the resolver for the receivableNEQ field.
+func (r *checkpointWhereInputResolver) ReceivableNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableNeq - receivableNEQ"))
+}
+
+// ReceivableIn is the resolver for the receivableIn field.
+func (r *checkpointWhereInputResolver) ReceivableIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: ReceivableIn - receivableIn"))
+}
+
+// ReceivableNotIn is the resolver for the receivableNotIn field.
+func (r *checkpointWhereInputResolver) ReceivableNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: ReceivableNotIn - receivableNotIn"))
+}
+
+// ReceivableGt is the resolver for the receivableGT field.
+func (r *checkpointWhereInputResolver) ReceivableGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableGt - receivableGT"))
+}
+
+// ReceivableGte is the resolver for the receivableGTE field.
+func (r *checkpointWhereInputResolver) ReceivableGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableGte - receivableGTE"))
+}
+
+// ReceivableLt is the resolver for the receivableLT field.
+func (r *checkpointWhereInputResolver) ReceivableLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableLt - receivableLT"))
+}
+
+// ReceivableLte is the resolver for the receivableLTE field.
+func (r *checkpointWhereInputResolver) ReceivableLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableLte - receivableLTE"))
+}
+
+// Liability is the resolver for the liability field.
+func (r *checkpointWhereInputResolver) Liability(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Liability - liability"))
+}
+
+// LiabilityNeq is the resolver for the liabilityNEQ field.
+func (r *checkpointWhereInputResolver) LiabilityNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityNeq - liabilityNEQ"))
+}
+
+// LiabilityIn is the resolver for the liabilityIn field.
+func (r *checkpointWhereInputResolver) LiabilityIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiabilityIn - liabilityIn"))
+}
+
+// LiabilityNotIn is the resolver for the liabilityNotIn field.
+func (r *checkpointWhereInputResolver) LiabilityNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiabilityNotIn - liabilityNotIn"))
+}
+
+// LiabilityGt is the resolver for the liabilityGT field.
+func (r *checkpointWhereInputResolver) LiabilityGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityGt - liabilityGT"))
+}
+
+// LiabilityGte is the resolver for the liabilityGTE field.
+func (r *checkpointWhereInputResolver) LiabilityGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityGte - liabilityGTE"))
+}
+
+// LiabilityLt is the resolver for the liabilityLT field.
+func (r *checkpointWhereInputResolver) LiabilityLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityLt - liabilityLT"))
+}
+
+// LiabilityLte is the resolver for the liabilityLTE field.
+func (r *checkpointWhereInputResolver) LiabilityLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityLte - liabilityLTE"))
 }
 
 // Balance is the resolver for the balance field.
@@ -702,6 +977,9 @@ func (r *updateTransactionEntryInputResolver) Amount(ctx context.Context, obj *e
 // Account returns AccountResolver implementation.
 func (r *Resolver) Account() AccountResolver { return &accountResolver{r} }
 
+// Checkpoint returns CheckpointResolver implementation.
+func (r *Resolver) Checkpoint() CheckpointResolver { return &checkpointResolver{r} }
+
 // Household returns HouseholdResolver implementation.
 func (r *Resolver) Household() HouseholdResolver { return &householdResolver{r} }
 
@@ -725,6 +1003,11 @@ func (r *Resolver) TransactionEntry() TransactionEntryResolver { return &transac
 // AccountWhereInput returns AccountWhereInputResolver implementation.
 func (r *Resolver) AccountWhereInput() AccountWhereInputResolver {
 	return &accountWhereInputResolver{r}
+}
+
+// CheckpointWhereInput returns CheckpointWhereInputResolver implementation.
+func (r *Resolver) CheckpointWhereInput() CheckpointWhereInputResolver {
+	return &checkpointWhereInputResolver{r}
 }
 
 // CreateAccountInput returns CreateAccountInputResolver implementation.
@@ -788,6 +1071,7 @@ func (r *Resolver) UpdateTransactionEntryInput() UpdateTransactionEntryInputReso
 }
 
 type accountResolver struct{ *Resolver }
+type checkpointResolver struct{ *Resolver }
 type householdResolver struct{ *Resolver }
 type investmentResolver struct{ *Resolver }
 type investmentLotResolver struct{ *Resolver }
@@ -795,6 +1079,7 @@ type queryResolver struct{ *Resolver }
 type recurringSubscriptionResolver struct{ *Resolver }
 type transactionEntryResolver struct{ *Resolver }
 type accountWhereInputResolver struct{ *Resolver }
+type checkpointWhereInputResolver struct{ *Resolver }
 type createAccountInputResolver struct{ *Resolver }
 type createInvestmentInputResolver struct{ *Resolver }
 type createInvestmentLotInputResolver struct{ *Resolver }

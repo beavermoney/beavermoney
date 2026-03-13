@@ -39,17 +39,20 @@ type CurrencyEdges struct {
 	Households []*Household `json:"households,omitempty"`
 	// RecurringSubscriptions holds the value of the recurring_subscriptions edge.
 	RecurringSubscriptions []*RecurringSubscription `json:"recurring_subscriptions,omitempty"`
+	// Checkpoints holds the value of the checkpoints edge.
+	Checkpoints []*Checkpoint `json:"checkpoints,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 	// totalCount holds the count of the edges above.
-	totalCount [5]map[string]int
+	totalCount [6]map[string]int
 
 	namedAccounts               map[string][]*Account
 	namedInvestments            map[string][]*Investment
 	namedTransactionEntries     map[string][]*TransactionEntry
 	namedHouseholds             map[string][]*Household
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
+	namedCheckpoints            map[string][]*Checkpoint
 }
 
 // AccountsOrErr returns the Accounts value or an error if the edge
@@ -95,6 +98,15 @@ func (e CurrencyEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription, 
 		return e.RecurringSubscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
+}
+
+// CheckpointsOrErr returns the Checkpoints value or an error if the edge
+// was not loaded in eager-loading.
+func (e CurrencyEdges) CheckpointsOrErr() ([]*Checkpoint, error) {
+	if e.loadedTypes[5] {
+		return e.Checkpoints, nil
+	}
+	return nil, &NotLoadedError{edge: "checkpoints"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -179,6 +191,11 @@ func (_m *Currency) QueryHouseholds() *HouseholdQuery {
 // QueryRecurringSubscriptions queries the "recurring_subscriptions" edge of the Currency entity.
 func (_m *Currency) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
 	return NewCurrencyClient(_m.config).QueryRecurringSubscriptions(_m)
+}
+
+// QueryCheckpoints queries the "checkpoints" edge of the Currency entity.
+func (_m *Currency) QueryCheckpoints() *CheckpointQuery {
+	return NewCurrencyClient(_m.config).QueryCheckpoints(_m)
 }
 
 // Update returns a builder for updating this Currency.
@@ -330,6 +347,30 @@ func (_m *Currency) appendNamedRecurringSubscriptions(name string, edges ...*Rec
 		_m.Edges.namedRecurringSubscriptions[name] = []*RecurringSubscription{}
 	} else {
 		_m.Edges.namedRecurringSubscriptions[name] = append(_m.Edges.namedRecurringSubscriptions[name], edges...)
+	}
+}
+
+// NamedCheckpoints returns the Checkpoints named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Currency) NamedCheckpoints(name string) ([]*Checkpoint, error) {
+	if _m.Edges.namedCheckpoints == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedCheckpoints[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Currency) appendNamedCheckpoints(name string, edges ...*Checkpoint) {
+	if _m.Edges.namedCheckpoints == nil {
+		_m.Edges.namedCheckpoints = make(map[string][]*Checkpoint)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedCheckpoints[name] = []*Checkpoint{}
+	} else {
+		_m.Edges.namedCheckpoints[name] = append(_m.Edges.namedCheckpoints[name], edges...)
 	}
 }
 
