@@ -49,6 +49,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Account() AccountResolver
+	Checkpoint() CheckpointResolver
 	FinancialReport() FinancialReportResolver
 	Household() HouseholdResolver
 	Investment() InvestmentResolver
@@ -58,6 +59,7 @@ type ResolverRoot interface {
 	RecurringSubscription() RecurringSubscriptionResolver
 	TransactionEntry() TransactionEntryResolver
 	AccountWhereInput() AccountWhereInputResolver
+	CheckpointWhereInput() CheckpointWhereInputResolver
 	CreateAccountInput() CreateAccountInputResolver
 	CreateInvestmentInput() CreateInvestmentInputResolver
 	CreateInvestmentLotInput() CreateInvestmentLotInputResolver
@@ -123,6 +125,23 @@ type ComplexityRoot struct {
 		TransactionCount func(childComplexity int) int
 	}
 
+	Checkpoint struct {
+		CreateTime  func(childComplexity int) int
+		Currency    func(childComplexity int) int
+		CurrencyID  func(childComplexity int) int
+		Household   func(childComplexity int) int
+		HouseholdID func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Investment  func(childComplexity int) int
+		Liability   func(childComplexity int) int
+		Liquidity   func(childComplexity int) int
+		NetWorth    func(childComplexity int) int
+		Note        func(childComplexity int) int
+		Property    func(childComplexity int) int
+		Receivable  func(childComplexity int) int
+		UpdateTime  func(childComplexity int) int
+	}
+
 	CryptoQuoteResult struct {
 		Currency     func(childComplexity int) int
 		CurrentPrice func(childComplexity int) int
@@ -133,6 +152,7 @@ type ComplexityRoot struct {
 
 	Currency struct {
 		Accounts               func(childComplexity int) int
+		Checkpoints            func(childComplexity int) int
 		Code                   func(childComplexity int) int
 		Households             func(childComplexity int) int
 		ID                     func(childComplexity int) int
@@ -152,6 +172,7 @@ type ComplexityRoot struct {
 
 	Household struct {
 		Accounts               func(childComplexity int) int
+		Checkpoints            func(childComplexity int) int
 		CreateTime             func(childComplexity int) int
 		Currency               func(childComplexity int) int
 		CurrencyID             func(childComplexity int) int
@@ -274,6 +295,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Accounts               func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) int
+		Checkpoints            func(childComplexity int) int
 		CryptoQuote            func(childComplexity int, symbol string) int
 		Currencies             func(childComplexity int) int
 		FxRate                 func(childComplexity int, from string, to string, datetime time.Time) int
@@ -443,6 +465,14 @@ type AccountResolver interface {
 	BalanceInHouseholdCurrency(ctx context.Context, obj *ent.Account) (string, error)
 	ValueInHouseholdCurrency(ctx context.Context, obj *ent.Account) (string, error)
 }
+type CheckpointResolver interface {
+	NetWorth(ctx context.Context, obj *ent.Checkpoint) (string, error)
+	Liquidity(ctx context.Context, obj *ent.Checkpoint) (string, error)
+	Investment(ctx context.Context, obj *ent.Checkpoint) (string, error)
+	Property(ctx context.Context, obj *ent.Checkpoint) (string, error)
+	Receivable(ctx context.Context, obj *ent.Checkpoint) (string, error)
+	Liability(ctx context.Context, obj *ent.Checkpoint) (string, error)
+}
 type FinancialReportResolver interface {
 	IncomeBreakdown(ctx context.Context, obj *model.FinancialReport) (*model.CategoryTypeAggregate, error)
 	ExpensesBreakdown(ctx context.Context, obj *model.FinancialReport) (*model.CategoryTypeAggregate, error)
@@ -490,6 +520,7 @@ type QueryResolver interface {
 	Node(ctx context.Context, id int) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []int) ([]ent.Noder, error)
 	Accounts(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) (*ent.AccountConnection, error)
+	Checkpoints(ctx context.Context) ([]*ent.Checkpoint, error)
 	Currencies(ctx context.Context) ([]*ent.Currency, error)
 	Households(ctx context.Context) ([]*ent.Household, error)
 	Investments(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.InvestmentWhereInput) (*ent.InvestmentConnection, error)
@@ -539,6 +570,56 @@ type AccountWhereInputResolver interface {
 	FxRateGte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error
 	FxRateLt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error
 	FxRateLte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error
+}
+type CheckpointWhereInputResolver interface {
+	NetWorth(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	NetWorthNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	NetWorthIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	NetWorthNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	NetWorthGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	NetWorthGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	NetWorthLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	NetWorthLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	Liquidity(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiquidityNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiquidityIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	LiquidityNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	LiquidityGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiquidityGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiquidityLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiquidityLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	Investment(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	InvestmentNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	InvestmentIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	InvestmentNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	InvestmentGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	InvestmentGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	InvestmentLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	InvestmentLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	Property(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	PropertyNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	PropertyIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	PropertyNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	PropertyGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	PropertyGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	PropertyLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	PropertyLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	Receivable(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	ReceivableNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	ReceivableIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	ReceivableNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	ReceivableGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	ReceivableGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	ReceivableLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	ReceivableLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	Liability(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiabilityNeq(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiabilityIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	LiabilityNotIn(ctx context.Context, obj *ent.CheckpointWhereInput, data []string) error
+	LiabilityGt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiabilityGte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiabilityLt(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
+	LiabilityLte(ctx context.Context, obj *ent.CheckpointWhereInput, data *string) error
 }
 type CreateAccountInputResolver interface {
 	Balance(ctx context.Context, obj *ent.CreateAccountInput, data *string) error
@@ -855,6 +936,91 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.CategoryTypeAggregate.TransactionCount(childComplexity), true
 
+	case "Checkpoint.createTime":
+		if e.complexity.Checkpoint.CreateTime == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.CreateTime(childComplexity), true
+	case "Checkpoint.currency":
+		if e.complexity.Checkpoint.Currency == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Currency(childComplexity), true
+	case "Checkpoint.currencyID":
+		if e.complexity.Checkpoint.CurrencyID == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.CurrencyID(childComplexity), true
+	case "Checkpoint.household":
+		if e.complexity.Checkpoint.Household == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Household(childComplexity), true
+	case "Checkpoint.householdID":
+		if e.complexity.Checkpoint.HouseholdID == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.HouseholdID(childComplexity), true
+	case "Checkpoint.id":
+		if e.complexity.Checkpoint.ID == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.ID(childComplexity), true
+	case "Checkpoint.investment":
+		if e.complexity.Checkpoint.Investment == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Investment(childComplexity), true
+	case "Checkpoint.liability":
+		if e.complexity.Checkpoint.Liability == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Liability(childComplexity), true
+	case "Checkpoint.liquidity":
+		if e.complexity.Checkpoint.Liquidity == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Liquidity(childComplexity), true
+	case "Checkpoint.netWorth":
+		if e.complexity.Checkpoint.NetWorth == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.NetWorth(childComplexity), true
+	case "Checkpoint.note":
+		if e.complexity.Checkpoint.Note == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Note(childComplexity), true
+	case "Checkpoint.property":
+		if e.complexity.Checkpoint.Property == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Property(childComplexity), true
+	case "Checkpoint.receivable":
+		if e.complexity.Checkpoint.Receivable == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.Receivable(childComplexity), true
+	case "Checkpoint.updateTime":
+		if e.complexity.Checkpoint.UpdateTime == nil {
+			break
+		}
+
+		return e.complexity.Checkpoint.UpdateTime(childComplexity), true
+
 	case "CryptoQuoteResult.currency":
 		if e.complexity.CryptoQuoteResult.Currency == nil {
 			break
@@ -892,6 +1058,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Currency.Accounts(childComplexity), true
+	case "Currency.checkpoints":
+		if e.complexity.Currency.Checkpoints == nil {
+			break
+		}
+
+		return e.complexity.Currency.Checkpoints(childComplexity), true
 	case "Currency.code":
 		if e.complexity.Currency.Code == nil {
 			break
@@ -972,6 +1144,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Household.Accounts(childComplexity), true
+	case "Household.checkpoints":
+		if e.complexity.Household.Checkpoints == nil {
+			break
+		}
+
+		return e.complexity.Household.Checkpoints(childComplexity), true
 	case "Household.createTime":
 		if e.complexity.Household.CreateTime == nil {
 			break
@@ -1632,6 +1810,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.Accounts(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.AccountWhereInput)), true
+	case "Query.checkpoints":
+		if e.complexity.Query.Checkpoints == nil {
+			break
+		}
+
+		return e.complexity.Query.Checkpoints(childComplexity), true
 	case "Query.cryptoQuote":
 		if e.complexity.Query.CryptoQuote == nil {
 			break
@@ -2397,7 +2581,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAccountWhereInput,
 		ec.unmarshalInputBuyInvestmentInputCustom,
+		ec.unmarshalInputCheckpointWhereInput,
 		ec.unmarshalInputCreateAccountInput,
+		ec.unmarshalInputCreateCheckpointInput,
 		ec.unmarshalInputCreateExpenseInputCustom,
 		ec.unmarshalInputCreateHouseholdInput,
 		ec.unmarshalInputCreateIncomeInputCustom,
@@ -2422,6 +2608,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputTransactionOrder,
 		ec.unmarshalInputTransactionWhereInput,
 		ec.unmarshalInputUpdateAccountInput,
+		ec.unmarshalInputUpdateCheckpointInput,
 		ec.unmarshalInputUpdateHouseholdInput,
 		ec.unmarshalInputUpdateInvestmentInput,
 		ec.unmarshalInputUpdateInvestmentLotInput,
@@ -3563,6 +3750,8 @@ func (ec *executionContext) fieldContext_Account_household(_ context.Context, fi
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -3616,6 +3805,8 @@ func (ec *executionContext) fieldContext_Account_currency(_ context.Context, fie
 				return ec.fieldContext_Currency_households(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -4290,6 +4481,472 @@ func (ec *executionContext) fieldContext_CategoryTypeAggregate_categories(_ cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Checkpoint_id(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_householdID(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_householdID,
+		func(ctx context.Context) (any, error) {
+			return obj.HouseholdID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_householdID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_createTime(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_createTime,
+		func(ctx context.Context) (any, error) {
+			return obj.CreateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_createTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_updateTime(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_updateTime,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_updateTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_netWorth(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_netWorth,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Checkpoint().NetWorth(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_netWorth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_liquidity(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_liquidity,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Checkpoint().Liquidity(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_liquidity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_investment(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_investment,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Checkpoint().Investment(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_investment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_property(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_property,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Checkpoint().Property(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_property(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_receivable(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_receivable,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Checkpoint().Receivable(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_receivable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_liability(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_liability,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Checkpoint().Liability(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_liability(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_currencyID(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_currencyID,
+		func(ctx context.Context) (any, error) {
+			return obj.CurrencyID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_currencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_note(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_note,
+		func(ctx context.Context) (any, error) {
+			return obj.Note, nil
+		},
+		nil,
+		ec.marshalOString2string,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_note(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_household(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_household,
+		func(ctx context.Context) (any, error) {
+			return obj.Household(ctx)
+		},
+		nil,
+		ec.marshalNHousehold2ᚖbeavermoneyᚗappᚋentᚐHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_household(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Household_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Household_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Household_updateTime(ctx, field)
+			case "name":
+				return ec.fieldContext_Household_name(ctx, field)
+			case "locale":
+				return ec.fieldContext_Household_locale(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "currency":
+				return ec.fieldContext_Household_currency(ctx, field)
+			case "users":
+				return ec.fieldContext_Household_users(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Household_accounts(ctx, field)
+			case "transactions":
+				return ec.fieldContext_Household_transactions(ctx, field)
+			case "investments":
+				return ec.fieldContext_Household_investments(ctx, field)
+			case "investmentLots":
+				return ec.fieldContext_Household_investmentLots(ctx, field)
+			case "transactionCategories":
+				return ec.fieldContext_Household_transactionCategories(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Household_transactionEntries(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Checkpoint_currency(ctx context.Context, field graphql.CollectedField, obj *ent.Checkpoint) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Checkpoint_currency,
+		func(ctx context.Context) (any, error) {
+			return obj.Currency(ctx)
+		},
+		nil,
+		ec.marshalNCurrency2ᚖbeavermoneyᚗappᚋentᚐCurrency,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Checkpoint_currency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Checkpoint",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Currency_id(ctx, field)
+			case "code":
+				return ec.fieldContext_Currency_code(ctx, field)
+			case "locales":
+				return ec.fieldContext_Currency_locales(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Currency_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_Currency_investments(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Currency_transactionEntries(ctx, field)
+			case "households":
+				return ec.fieldContext_Currency_households(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CryptoQuoteResult_symbol(ctx context.Context, field graphql.CollectedField, obj *model.CryptoQuoteResult) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4767,6 +5424,8 @@ func (ec *executionContext) fieldContext_Currency_households(_ context.Context, 
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -4840,6 +5499,65 @@ func (ec *executionContext) fieldContext_Currency_recurringSubscriptions(_ conte
 				return ec.fieldContext_RecurringSubscription_user(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscription", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Currency_checkpoints(ctx context.Context, field graphql.CollectedField, obj *ent.Currency) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Currency_checkpoints,
+		func(ctx context.Context) (any, error) {
+			return obj.Checkpoints(ctx)
+		},
+		nil,
+		ec.marshalOCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Currency_checkpoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Currency",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Checkpoint_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Checkpoint_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Checkpoint_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Checkpoint_updateTime(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_Checkpoint_netWorth(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_Checkpoint_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_Checkpoint_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_Checkpoint_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_Checkpoint_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_Checkpoint_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Checkpoint_currencyID(ctx, field)
+			case "note":
+				return ec.fieldContext_Checkpoint_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Checkpoint_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_Checkpoint_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Checkpoint", field.Name)
 		},
 	}
 	return fc, nil
@@ -5224,6 +5942,8 @@ func (ec *executionContext) fieldContext_Household_currency(_ context.Context, f
 				return ec.fieldContext_Currency_households(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -5698,6 +6418,65 @@ func (ec *executionContext) fieldContext_Household_recurringSubscriptions(_ cont
 				return ec.fieldContext_RecurringSubscription_user(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscription", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Household_checkpoints(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Household_checkpoints,
+		func(ctx context.Context) (any, error) {
+			return obj.Checkpoints(ctx)
+		},
+		nil,
+		ec.marshalOCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Household_checkpoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Household",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Checkpoint_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Checkpoint_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Checkpoint_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Checkpoint_updateTime(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_Checkpoint_netWorth(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_Checkpoint_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_Checkpoint_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_Checkpoint_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_Checkpoint_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_Checkpoint_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Checkpoint_currencyID(ctx, field)
+			case "note":
+				return ec.fieldContext_Checkpoint_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Checkpoint_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_Checkpoint_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Checkpoint", field.Name)
 		},
 	}
 	return fc, nil
@@ -6325,6 +7104,8 @@ func (ec *executionContext) fieldContext_Investment_household(_ context.Context,
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -6378,6 +7159,8 @@ func (ec *executionContext) fieldContext_Investment_currency(_ context.Context, 
 				return ec.fieldContext_Currency_households(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -6950,6 +7733,8 @@ func (ec *executionContext) fieldContext_InvestmentLot_household(_ context.Conte
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -7327,6 +8112,8 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -8734,6 +9521,65 @@ func (ec *executionContext) fieldContext_Query_accounts(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_checkpoints(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_checkpoints,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().Checkpoints(ctx)
+		},
+		nil,
+		ec.marshalNCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_checkpoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Checkpoint_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Checkpoint_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Checkpoint_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Checkpoint_updateTime(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_Checkpoint_netWorth(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_Checkpoint_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_Checkpoint_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_Checkpoint_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_Checkpoint_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_Checkpoint_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Checkpoint_currencyID(ctx, field)
+			case "note":
+				return ec.fieldContext_Checkpoint_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Checkpoint_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_Checkpoint_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Checkpoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_currencies(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -8774,6 +9620,8 @@ func (ec *executionContext) fieldContext_Query_currencies(_ context.Context, fie
 				return ec.fieldContext_Currency_households(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -8835,6 +9683,8 @@ func (ec *executionContext) fieldContext_Query_households(_ context.Context, fie
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -9302,6 +10152,8 @@ func (ec *executionContext) fieldContext_Query_household(_ context.Context, fiel
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -10030,6 +10882,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_household(_ conte
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -10083,6 +10937,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_currency(_ contex
 				return ec.fieldContext_Currency_households(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -10853,6 +11709,8 @@ func (ec *executionContext) fieldContext_Transaction_household(_ context.Context
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -11311,6 +12169,8 @@ func (ec *executionContext) fieldContext_TransactionCategory_household(_ context
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -12043,6 +12903,8 @@ func (ec *executionContext) fieldContext_TransactionEntry_household(_ context.Co
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -12167,6 +13029,8 @@ func (ec *executionContext) fieldContext_TransactionEntry_currency(_ context.Con
 				return ec.fieldContext_Currency_households(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -12432,6 +13296,8 @@ func (ec *executionContext) fieldContext_User_households(_ context.Context, fiel
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -13013,6 +13879,8 @@ func (ec *executionContext) fieldContext_UserHousehold_household(_ context.Conte
 				return ec.fieldContext_Household_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -15568,6 +16436,836 @@ func (ec *executionContext) unmarshalInputBuyInvestmentInputCustom(ctx context.C
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCheckpointWhereInput(ctx context.Context, obj any) (ent.CheckpointWhereInput, error) {
+	var it ent.CheckpointWhereInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "netWorth", "netWorthNEQ", "netWorthIn", "netWorthNotIn", "netWorthGT", "netWorthGTE", "netWorthLT", "netWorthLTE", "liquidity", "liquidityNEQ", "liquidityIn", "liquidityNotIn", "liquidityGT", "liquidityGTE", "liquidityLT", "liquidityLTE", "investment", "investmentNEQ", "investmentIn", "investmentNotIn", "investmentGT", "investmentGTE", "investmentLT", "investmentLTE", "property", "propertyNEQ", "propertyIn", "propertyNotIn", "propertyGT", "propertyGTE", "propertyLT", "propertyLTE", "receivable", "receivableNEQ", "receivableIn", "receivableNotIn", "receivableGT", "receivableGTE", "receivableLT", "receivableLTE", "liability", "liabilityNEQ", "liabilityIn", "liabilityNotIn", "liabilityGT", "liabilityGTE", "liabilityLT", "liabilityLTE", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "note", "noteNEQ", "noteIn", "noteNotIn", "noteGT", "noteGTE", "noteLT", "noteLTE", "noteContains", "noteHasPrefix", "noteHasSuffix", "noteIsNil", "noteNotNil", "noteEqualFold", "noteContainsFold", "hasHousehold", "hasHouseholdWith", "hasCurrency", "hasCurrencyWith"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOCheckpointWhereInput2ᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
+		case "and":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			data, err := ec.unmarshalOCheckpointWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.And = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOCheckpointWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "idNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNEQ = data
+		case "idIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDIn = data
+		case "idNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNotIn = data
+		case "idGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGT = data
+		case "idGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGTE = data
+		case "idLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLT = data
+		case "idLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLTE = data
+		case "householdID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdID = data
+		case "householdIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDNEQ = data
+		case "householdIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDIn = data
+		case "householdIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDNotIn = data
+		case "createTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTime = data
+		case "createTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNEQ = data
+		case "createTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeIn = data
+		case "createTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNotIn = data
+		case "createTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGT = data
+		case "createTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGTE = data
+		case "createTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLT = data
+		case "createTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLTE = data
+		case "updateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTime = data
+		case "updateTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNEQ = data
+		case "updateTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeIn = data
+		case "updateTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNotIn = data
+		case "updateTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGT = data
+		case "updateTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGTE = data
+		case "updateTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLT = data
+		case "updateTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLTE = data
+		case "netWorth":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorth"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorth(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "netWorthLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("netWorthLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().NetWorthLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidity":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidity"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().Liquidity(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiquidityLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investment":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investment"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().Investment(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().InvestmentLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "property":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("property"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().Property(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().PropertyLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivable":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivable"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().Receivable(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().ReceivableLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liability":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liability"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().Liability(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CheckpointWhereInput().LiabilityLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "currencyID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyID = data
+		case "currencyIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyIDNEQ = data
+		case "currencyIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyIDIn = data
+		case "currencyIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyIDNotIn = data
+		case "note":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("note"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Note = data
+		case "noteNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteNEQ = data
+		case "noteIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteIn = data
+		case "noteNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteNotIn = data
+		case "noteGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteGT = data
+		case "noteGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteGTE = data
+		case "noteLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteLT = data
+		case "noteLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteLTE = data
+		case "noteContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteContains = data
+		case "noteHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteHasPrefix = data
+		case "noteHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteHasSuffix = data
+		case "noteIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteIsNil = data
+		case "noteNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteNotNil = data
+		case "noteEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteEqualFold = data
+		case "noteContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteContainsFold = data
+		case "hasHousehold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHousehold"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasHousehold = data
+		case "hasHouseholdWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHouseholdWith"))
+			data, err := ec.unmarshalOHouseholdWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐHouseholdWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasHouseholdWith = data
+		case "hasCurrency":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCurrency"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCurrency = data
+		case "hasCurrencyWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCurrencyWith"))
+			data, err := ec.unmarshalOCurrencyWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCurrencyWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCurrencyWith = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context, obj any) (ent.CreateAccountInput, error) {
 	var it ent.CreateAccountInput
 	asMap := map[string]any{}
@@ -15619,6 +17317,33 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 				return it, err
 			}
 			it.CurrencyID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateCheckpointInput(ctx context.Context, obj any) (ent.CreateCheckpointInput, error) {
+	var it ent.CreateCheckpointInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"note"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "note":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("note"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Note = data
 		}
 	}
 
@@ -16147,7 +17872,7 @@ func (ec *executionContext) unmarshalInputCurrencyWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasHouseholds", "hasHouseholdsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasHouseholds", "hasHouseholdsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16392,6 +18117,20 @@ func (ec *executionContext) unmarshalInputCurrencyWhereInput(ctx context.Context
 				return it, err
 			}
 			it.HasRecurringSubscriptionsWith = data
+		case "hasCheckpoints":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCheckpoints"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCheckpoints = data
+		case "hasCheckpointsWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCheckpointsWith"))
+			data, err := ec.unmarshalOCheckpointWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCheckpointsWith = data
 		}
 	}
 
@@ -16405,7 +18144,7 @@ func (ec *executionContext) unmarshalInputHouseholdWhereInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "locale", "localeNEQ", "localeIn", "localeNotIn", "localeGT", "localeGTE", "localeLT", "localeLTE", "localeContains", "localeHasPrefix", "localeHasSuffix", "localeEqualFold", "localeContainsFold", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "hasCurrency", "hasCurrencyWith", "hasUsers", "hasUsersWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasInvestments", "hasInvestmentsWith", "hasInvestmentLots", "hasInvestmentLotsWith", "hasTransactionCategories", "hasTransactionCategoriesWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "locale", "localeNEQ", "localeIn", "localeNotIn", "localeGT", "localeGTE", "localeLT", "localeLTE", "localeContains", "localeHasPrefix", "localeHasSuffix", "localeEqualFold", "localeContainsFold", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "hasCurrency", "hasCurrencyWith", "hasUsers", "hasUsersWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasInvestments", "hasInvestmentsWith", "hasInvestmentLots", "hasInvestmentLotsWith", "hasTransactionCategories", "hasTransactionCategoriesWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16937,6 +18676,20 @@ func (ec *executionContext) unmarshalInputHouseholdWhereInput(ctx context.Contex
 				return it, err
 			}
 			it.HasRecurringSubscriptionsWith = data
+		case "hasCheckpoints":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCheckpoints"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCheckpoints = data
+		case "hasCheckpointsWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCheckpointsWith"))
+			data, err := ec.unmarshalOCheckpointWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCheckpointsWith = data
 		case "hasUserHouseholds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUserHouseholds"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -20726,6 +22479,40 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateCheckpointInput(ctx context.Context, obj any) (ent.UpdateCheckpointInput, error) {
+	var it ent.UpdateCheckpointInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"note", "clearNote"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "note":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("note"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Note = data
+		case "clearNote":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearNote"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearNote = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateHouseholdInput(ctx context.Context, obj any) (ent.UpdateHouseholdInput, error) {
 	var it ent.UpdateHouseholdInput
 	asMap := map[string]any{}
@@ -22229,6 +24016,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Currency(ctx, sel, obj)
+	case *ent.Checkpoint:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Checkpoint(ctx, sel, obj)
 	case *ent.Account:
 		if obj == nil {
 			return graphql.Null
@@ -22872,6 +24664,355 @@ func (ec *executionContext) _CategoryTypeAggregate(ctx context.Context, sel ast.
 	return out
 }
 
+var checkpointImplementors = []string{"Checkpoint", "Node"}
+
+func (ec *executionContext) _Checkpoint(ctx context.Context, sel ast.SelectionSet, obj *ent.Checkpoint) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, checkpointImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Checkpoint")
+		case "id":
+			out.Values[i] = ec._Checkpoint_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "householdID":
+			out.Values[i] = ec._Checkpoint_householdID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createTime":
+			out.Values[i] = ec._Checkpoint_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updateTime":
+			out.Values[i] = ec._Checkpoint_updateTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "netWorth":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_netWorth(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "liquidity":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_liquidity(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "investment":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_investment(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "property":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_property(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "receivable":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_receivable(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "liability":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_liability(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currencyID":
+			out.Values[i] = ec._Checkpoint_currencyID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "note":
+			out.Values[i] = ec._Checkpoint_note(ctx, field, obj)
+		case "household":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_household(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currency":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Checkpoint_currency(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var cryptoQuoteResultImplementors = []string{"CryptoQuoteResult"}
 
 func (ec *executionContext) _CryptoQuoteResult(ctx context.Context, sel ast.SelectionSet, obj *model.CryptoQuoteResult) graphql.Marshaler {
@@ -23099,6 +25240,39 @@ func (ec *executionContext) _Currency(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Currency_recurringSubscriptions(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "checkpoints":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Currency_checkpoints(ctx, field, obj)
 				return res
 			}
 
@@ -23615,6 +25789,39 @@ func (ec *executionContext) _Household(ctx context.Context, sel ast.SelectionSet
 					}
 				}()
 				res = ec._Household_recurringSubscriptions(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "checkpoints":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Household_checkpoints(ctx, field, obj)
 				return res
 			}
 
@@ -24963,6 +27170,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_accounts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "checkpoints":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_checkpoints(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -27511,6 +29740,65 @@ func (ec *executionContext) marshalNCategoryTypeAggregate2ᚖbeavermoneyᚗapp�
 	return ec._CategoryTypeAggregate(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Checkpoint) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint(ctx context.Context, sel ast.SelectionSet, v *ent.Checkpoint) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Checkpoint(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCheckpointWhereInput2ᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInput(ctx context.Context, v any) (*ent.CheckpointWhereInput, error) {
+	res, err := ec.unmarshalInputCheckpointWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateAccountInput2beavermoneyᚗappᚋentᚐCreateAccountInput(ctx context.Context, v any) (ent.CreateAccountInput, error) {
 	res, err := ec.unmarshalInputCreateAccountInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -28931,6 +31219,79 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	_ = ctx
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Checkpoint) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOCheckpointWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInputᚄ(ctx context.Context, v any) ([]*ent.CheckpointWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*ent.CheckpointWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNCheckpointWhereInput2ᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOCheckpointWhereInput2ᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInput(ctx context.Context, v any) (*ent.CheckpointWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCheckpointWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOCryptoQuoteResult2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐCryptoQuoteResult(ctx context.Context, sel ast.SelectionSet, v *model.CryptoQuoteResult) graphql.Marshaler {

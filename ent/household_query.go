@@ -10,6 +10,7 @@ import (
 	"math"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -43,6 +44,7 @@ type HouseholdQuery struct {
 	withTransactionCategories       *TransactionCategoryQuery
 	withTransactionEntries          *TransactionEntryQuery
 	withRecurringSubscriptions      *RecurringSubscriptionQuery
+	withCheckpoints                 *CheckpointQuery
 	withUserHouseholds              *UserHouseholdQuery
 	loadTotal                       []func(context.Context, []*Household) error
 	modifiers                       []func(*sql.Selector)
@@ -54,6 +56,7 @@ type HouseholdQuery struct {
 	withNamedTransactionCategories  map[string]*TransactionCategoryQuery
 	withNamedTransactionEntries     map[string]*TransactionEntryQuery
 	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
+	withNamedCheckpoints            map[string]*CheckpointQuery
 	withNamedUserHouseholds         map[string]*UserHouseholdQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -289,6 +292,28 @@ func (_q *HouseholdQuery) QueryRecurringSubscriptions() *RecurringSubscriptionQu
 	return query
 }
 
+// QueryCheckpoints chains the current query on the "checkpoints" edge.
+func (_q *HouseholdQuery) QueryCheckpoints() *CheckpointQuery {
+	query := (&CheckpointClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, selector),
+			sqlgraph.To(checkpoint.Table, checkpoint.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.CheckpointsTable, household.CheckpointsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryUserHouseholds chains the current query on the "user_households" edge.
 func (_q *HouseholdQuery) QueryUserHouseholds() *UserHouseholdQuery {
 	query := (&UserHouseholdClient{config: _q.config}).Query()
@@ -512,6 +537,7 @@ func (_q *HouseholdQuery) Clone() *HouseholdQuery {
 		withTransactionCategories:  _q.withTransactionCategories.Clone(),
 		withTransactionEntries:     _q.withTransactionEntries.Clone(),
 		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
+		withCheckpoints:            _q.withCheckpoints.Clone(),
 		withUserHouseholds:         _q.withUserHouseholds.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -619,6 +645,17 @@ func (_q *HouseholdQuery) WithRecurringSubscriptions(opts ...func(*RecurringSubs
 	return _q
 }
 
+// WithCheckpoints tells the query-builder to eager-load the nodes that are connected to
+// the "checkpoints" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithCheckpoints(opts ...func(*CheckpointQuery)) *HouseholdQuery {
+	query := (&CheckpointClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCheckpoints = query
+	return _q
+}
+
 // WithUserHouseholds tells the query-builder to eager-load the nodes that are connected to
 // the "user_households" edge. The optional arguments are used to configure the query builder of the edge.
 func (_q *HouseholdQuery) WithUserHouseholds(opts ...func(*UserHouseholdQuery)) *HouseholdQuery {
@@ -714,7 +751,7 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	var (
 		nodes       = []*Household{}
 		_spec       = _q.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			_q.withCurrency != nil,
 			_q.withUsers != nil,
 			_q.withAccounts != nil,
@@ -724,6 +761,7 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 			_q.withTransactionCategories != nil,
 			_q.withTransactionEntries != nil,
 			_q.withRecurringSubscriptions != nil,
+			_q.withCheckpoints != nil,
 			_q.withUserHouseholds != nil,
 		}
 	)
@@ -816,6 +854,13 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 			return nil, err
 		}
 	}
+	if query := _q.withCheckpoints; query != nil {
+		if err := _q.loadCheckpoints(ctx, query, nodes,
+			func(n *Household) { n.Edges.Checkpoints = []*Checkpoint{} },
+			func(n *Household, e *Checkpoint) { n.Edges.Checkpoints = append(n.Edges.Checkpoints, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withUserHouseholds; query != nil {
 		if err := _q.loadUserHouseholds(ctx, query, nodes,
 			func(n *Household) { n.Edges.UserHouseholds = []*UserHousehold{} },
@@ -876,6 +921,13 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 		if err := _q.loadRecurringSubscriptions(ctx, query, nodes,
 			func(n *Household) { n.appendNamedRecurringSubscriptions(name) },
 			func(n *Household, e *RecurringSubscription) { n.appendNamedRecurringSubscriptions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedCheckpoints {
+		if err := _q.loadCheckpoints(ctx, query, nodes,
+			func(n *Household) { n.appendNamedCheckpoints(name) },
+			func(n *Household, e *Checkpoint) { n.appendNamedCheckpoints(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1194,6 +1246,36 @@ func (_q *HouseholdQuery) loadRecurringSubscriptions(ctx context.Context, query 
 	}
 	return nil
 }
+func (_q *HouseholdQuery) loadCheckpoints(ctx context.Context, query *CheckpointQuery, nodes []*Household, init func(*Household), assign func(*Household, *Checkpoint)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Household)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(checkpoint.FieldHouseholdID)
+	}
+	query.Where(predicate.Checkpoint(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(household.CheckpointsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (_q *HouseholdQuery) loadUserHouseholds(ctx context.Context, query *UserHouseholdQuery, nodes []*Household, init func(*Household), assign func(*Household, *UserHousehold)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Household)
@@ -1430,6 +1512,20 @@ func (_q *HouseholdQuery) WithNamedRecurringSubscriptions(name string, opts ...f
 		_q.withNamedRecurringSubscriptions = make(map[string]*RecurringSubscriptionQuery)
 	}
 	_q.withNamedRecurringSubscriptions[name] = query
+	return _q
+}
+
+// WithNamedCheckpoints tells the query-builder to eager-load the nodes that are connected to the "checkpoints"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithNamedCheckpoints(name string, opts ...func(*CheckpointQuery)) *HouseholdQuery {
+	query := (&CheckpointClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedCheckpoints == nil {
+		_q.withNamedCheckpoints = make(map[string]*CheckpointQuery)
+	}
+	_q.withNamedCheckpoints[name] = query
 	return _q
 }
 

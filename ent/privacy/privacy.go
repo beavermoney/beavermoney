@@ -135,6 +135,30 @@ func (f AccountMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AccountMutation", m)
 }
 
+// The CheckpointQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type CheckpointQueryRuleFunc func(context.Context, *ent.CheckpointQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f CheckpointQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CheckpointQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CheckpointQuery", q)
+}
+
+// The CheckpointMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type CheckpointMutationRuleFunc func(context.Context, *ent.CheckpointMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f CheckpointMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.CheckpointMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CheckpointMutation", m)
+}
+
 // The CurrencyQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type CurrencyQueryRuleFunc func(context.Context, *ent.CurrencyQuery) error
@@ -436,6 +460,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
 	case *ent.AccountQuery:
 		return q.Filter(), nil
+	case *ent.CheckpointQuery:
+		return q.Filter(), nil
 	case *ent.CurrencyQuery:
 		return q.Filter(), nil
 	case *ent.HouseholdQuery:
@@ -466,6 +492,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
 	case *ent.AccountMutation:
+		return m.Filter(), nil
+	case *ent.CheckpointMutation:
 		return m.Filter(), nil
 	case *ent.CurrencyMutation:
 		return m.Filter(), nil

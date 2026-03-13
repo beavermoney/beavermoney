@@ -54,13 +54,15 @@ type HouseholdEdges struct {
 	TransactionEntries []*TransactionEntry `json:"transaction_entries,omitempty"`
 	// RecurringSubscriptions holds the value of the recurring_subscriptions edge.
 	RecurringSubscriptions []*RecurringSubscription `json:"recurring_subscriptions,omitempty"`
+	// Checkpoints holds the value of the checkpoints edge.
+	Checkpoints []*Checkpoint `json:"checkpoints,omitempty"`
 	// UserHouseholds holds the value of the user_households edge.
 	UserHouseholds []*UserHousehold `json:"user_households,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [11]bool
 	// totalCount holds the count of the edges above.
-	totalCount [10]map[string]int
+	totalCount [11]map[string]int
 
 	namedUsers                  map[string][]*User
 	namedAccounts               map[string][]*Account
@@ -70,6 +72,7 @@ type HouseholdEdges struct {
 	namedTransactionCategories  map[string][]*TransactionCategory
 	namedTransactionEntries     map[string][]*TransactionEntry
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
+	namedCheckpoints            map[string][]*Checkpoint
 	namedUserHouseholds         map[string][]*UserHousehold
 }
 
@@ -156,10 +159,19 @@ func (e HouseholdEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription,
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
 }
 
+// CheckpointsOrErr returns the Checkpoints value or an error if the edge
+// was not loaded in eager-loading.
+func (e HouseholdEdges) CheckpointsOrErr() ([]*Checkpoint, error) {
+	if e.loadedTypes[9] {
+		return e.Checkpoints, nil
+	}
+	return nil, &NotLoadedError{edge: "checkpoints"}
+}
+
 // UserHouseholdsOrErr returns the UserHouseholds value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UserHouseholdsOrErr() ([]*UserHousehold, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.UserHouseholds, nil
 	}
 	return nil, &NotLoadedError{edge: "user_households"}
@@ -283,6 +295,11 @@ func (_m *Household) QueryTransactionEntries() *TransactionEntryQuery {
 // QueryRecurringSubscriptions queries the "recurring_subscriptions" edge of the Household entity.
 func (_m *Household) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
 	return NewHouseholdClient(_m.config).QueryRecurringSubscriptions(_m)
+}
+
+// QueryCheckpoints queries the "checkpoints" edge of the Household entity.
+func (_m *Household) QueryCheckpoints() *CheckpointQuery {
+	return NewHouseholdClient(_m.config).QueryCheckpoints(_m)
 }
 
 // QueryUserHouseholds queries the "user_households" edge of the Household entity.
@@ -520,6 +537,30 @@ func (_m *Household) appendNamedRecurringSubscriptions(name string, edges ...*Re
 		_m.Edges.namedRecurringSubscriptions[name] = []*RecurringSubscription{}
 	} else {
 		_m.Edges.namedRecurringSubscriptions[name] = append(_m.Edges.namedRecurringSubscriptions[name], edges...)
+	}
+}
+
+// NamedCheckpoints returns the Checkpoints named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Household) NamedCheckpoints(name string) ([]*Checkpoint, error) {
+	if _m.Edges.namedCheckpoints == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedCheckpoints[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Household) appendNamedCheckpoints(name string, edges ...*Checkpoint) {
+	if _m.Edges.namedCheckpoints == nil {
+		_m.Edges.namedCheckpoints = make(map[string][]*Checkpoint)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedCheckpoints[name] = []*Checkpoint{}
+	} else {
+		_m.Edges.namedCheckpoints[name] = append(_m.Edges.namedCheckpoints[name], edges...)
 	}
 }
 

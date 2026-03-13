@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -37,6 +38,7 @@ const (
 
 	// Node types.
 	TypeAccount               = "Account"
+	TypeCheckpoint            = "Checkpoint"
 	TypeCurrency              = "Currency"
 	TypeHousehold             = "Household"
 	TypeInvestment            = "Investment"
@@ -1408,6 +1410,1195 @@ func (m *AccountMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Account edge %s", name)
 }
 
+// CheckpointMutation represents an operation that mutates the Checkpoint nodes in the graph.
+type CheckpointMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *int
+	create_time      *time.Time
+	update_time      *time.Time
+	net_worth        *decimal.Decimal
+	addnet_worth     *decimal.Decimal
+	liquidity        *decimal.Decimal
+	addliquidity     *decimal.Decimal
+	investment       *decimal.Decimal
+	addinvestment    *decimal.Decimal
+	property         *decimal.Decimal
+	addproperty      *decimal.Decimal
+	receivable       *decimal.Decimal
+	addreceivable    *decimal.Decimal
+	liability        *decimal.Decimal
+	addliability     *decimal.Decimal
+	note             *string
+	clearedFields    map[string]struct{}
+	household        *int
+	clearedhousehold bool
+	currency         *int
+	clearedcurrency  bool
+	done             bool
+	oldValue         func(context.Context) (*Checkpoint, error)
+	predicates       []predicate.Checkpoint
+}
+
+var _ ent.Mutation = (*CheckpointMutation)(nil)
+
+// checkpointOption allows management of the mutation configuration using functional options.
+type checkpointOption func(*CheckpointMutation)
+
+// newCheckpointMutation creates new mutation for the Checkpoint entity.
+func newCheckpointMutation(c config, op Op, opts ...checkpointOption) *CheckpointMutation {
+	m := &CheckpointMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCheckpoint,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCheckpointID sets the ID field of the mutation.
+func withCheckpointID(id int) checkpointOption {
+	return func(m *CheckpointMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Checkpoint
+		)
+		m.oldValue = func(ctx context.Context) (*Checkpoint, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Checkpoint.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCheckpoint sets the old Checkpoint of the mutation.
+func withCheckpoint(node *Checkpoint) checkpointOption {
+	return func(m *CheckpointMutation) {
+		m.oldValue = func(context.Context) (*Checkpoint, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CheckpointMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CheckpointMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CheckpointMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CheckpointMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Checkpoint.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetHouseholdID sets the "household_id" field.
+func (m *CheckpointMutation) SetHouseholdID(i int) {
+	m.household = &i
+}
+
+// HouseholdID returns the value of the "household_id" field in the mutation.
+func (m *CheckpointMutation) HouseholdID() (r int, exists bool) {
+	v := m.household
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHouseholdID returns the old "household_id" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldHouseholdID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHouseholdID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHouseholdID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHouseholdID: %w", err)
+	}
+	return oldValue.HouseholdID, nil
+}
+
+// ResetHouseholdID resets all changes to the "household_id" field.
+func (m *CheckpointMutation) ResetHouseholdID() {
+	m.household = nil
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *CheckpointMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *CheckpointMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *CheckpointMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *CheckpointMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *CheckpointMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *CheckpointMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetNetWorth sets the "net_worth" field.
+func (m *CheckpointMutation) SetNetWorth(d decimal.Decimal) {
+	m.net_worth = &d
+	m.addnet_worth = nil
+}
+
+// NetWorth returns the value of the "net_worth" field in the mutation.
+func (m *CheckpointMutation) NetWorth() (r decimal.Decimal, exists bool) {
+	v := m.net_worth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNetWorth returns the old "net_worth" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldNetWorth(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNetWorth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNetWorth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNetWorth: %w", err)
+	}
+	return oldValue.NetWorth, nil
+}
+
+// AddNetWorth adds d to the "net_worth" field.
+func (m *CheckpointMutation) AddNetWorth(d decimal.Decimal) {
+	if m.addnet_worth != nil {
+		*m.addnet_worth = m.addnet_worth.Add(d)
+	} else {
+		m.addnet_worth = &d
+	}
+}
+
+// AddedNetWorth returns the value that was added to the "net_worth" field in this mutation.
+func (m *CheckpointMutation) AddedNetWorth() (r decimal.Decimal, exists bool) {
+	v := m.addnet_worth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNetWorth resets all changes to the "net_worth" field.
+func (m *CheckpointMutation) ResetNetWorth() {
+	m.net_worth = nil
+	m.addnet_worth = nil
+}
+
+// SetLiquidity sets the "liquidity" field.
+func (m *CheckpointMutation) SetLiquidity(d decimal.Decimal) {
+	m.liquidity = &d
+	m.addliquidity = nil
+}
+
+// Liquidity returns the value of the "liquidity" field in the mutation.
+func (m *CheckpointMutation) Liquidity() (r decimal.Decimal, exists bool) {
+	v := m.liquidity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLiquidity returns the old "liquidity" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldLiquidity(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLiquidity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLiquidity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLiquidity: %w", err)
+	}
+	return oldValue.Liquidity, nil
+}
+
+// AddLiquidity adds d to the "liquidity" field.
+func (m *CheckpointMutation) AddLiquidity(d decimal.Decimal) {
+	if m.addliquidity != nil {
+		*m.addliquidity = m.addliquidity.Add(d)
+	} else {
+		m.addliquidity = &d
+	}
+}
+
+// AddedLiquidity returns the value that was added to the "liquidity" field in this mutation.
+func (m *CheckpointMutation) AddedLiquidity() (r decimal.Decimal, exists bool) {
+	v := m.addliquidity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLiquidity resets all changes to the "liquidity" field.
+func (m *CheckpointMutation) ResetLiquidity() {
+	m.liquidity = nil
+	m.addliquidity = nil
+}
+
+// SetInvestment sets the "investment" field.
+func (m *CheckpointMutation) SetInvestment(d decimal.Decimal) {
+	m.investment = &d
+	m.addinvestment = nil
+}
+
+// Investment returns the value of the "investment" field in the mutation.
+func (m *CheckpointMutation) Investment() (r decimal.Decimal, exists bool) {
+	v := m.investment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInvestment returns the old "investment" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldInvestment(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInvestment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInvestment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInvestment: %w", err)
+	}
+	return oldValue.Investment, nil
+}
+
+// AddInvestment adds d to the "investment" field.
+func (m *CheckpointMutation) AddInvestment(d decimal.Decimal) {
+	if m.addinvestment != nil {
+		*m.addinvestment = m.addinvestment.Add(d)
+	} else {
+		m.addinvestment = &d
+	}
+}
+
+// AddedInvestment returns the value that was added to the "investment" field in this mutation.
+func (m *CheckpointMutation) AddedInvestment() (r decimal.Decimal, exists bool) {
+	v := m.addinvestment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetInvestment resets all changes to the "investment" field.
+func (m *CheckpointMutation) ResetInvestment() {
+	m.investment = nil
+	m.addinvestment = nil
+}
+
+// SetProperty sets the "property" field.
+func (m *CheckpointMutation) SetProperty(d decimal.Decimal) {
+	m.property = &d
+	m.addproperty = nil
+}
+
+// Property returns the value of the "property" field in the mutation.
+func (m *CheckpointMutation) Property() (r decimal.Decimal, exists bool) {
+	v := m.property
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProperty returns the old "property" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldProperty(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProperty is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProperty requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProperty: %w", err)
+	}
+	return oldValue.Property, nil
+}
+
+// AddProperty adds d to the "property" field.
+func (m *CheckpointMutation) AddProperty(d decimal.Decimal) {
+	if m.addproperty != nil {
+		*m.addproperty = m.addproperty.Add(d)
+	} else {
+		m.addproperty = &d
+	}
+}
+
+// AddedProperty returns the value that was added to the "property" field in this mutation.
+func (m *CheckpointMutation) AddedProperty() (r decimal.Decimal, exists bool) {
+	v := m.addproperty
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetProperty resets all changes to the "property" field.
+func (m *CheckpointMutation) ResetProperty() {
+	m.property = nil
+	m.addproperty = nil
+}
+
+// SetReceivable sets the "receivable" field.
+func (m *CheckpointMutation) SetReceivable(d decimal.Decimal) {
+	m.receivable = &d
+	m.addreceivable = nil
+}
+
+// Receivable returns the value of the "receivable" field in the mutation.
+func (m *CheckpointMutation) Receivable() (r decimal.Decimal, exists bool) {
+	v := m.receivable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceivable returns the old "receivable" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldReceivable(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceivable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceivable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceivable: %w", err)
+	}
+	return oldValue.Receivable, nil
+}
+
+// AddReceivable adds d to the "receivable" field.
+func (m *CheckpointMutation) AddReceivable(d decimal.Decimal) {
+	if m.addreceivable != nil {
+		*m.addreceivable = m.addreceivable.Add(d)
+	} else {
+		m.addreceivable = &d
+	}
+}
+
+// AddedReceivable returns the value that was added to the "receivable" field in this mutation.
+func (m *CheckpointMutation) AddedReceivable() (r decimal.Decimal, exists bool) {
+	v := m.addreceivable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetReceivable resets all changes to the "receivable" field.
+func (m *CheckpointMutation) ResetReceivable() {
+	m.receivable = nil
+	m.addreceivable = nil
+}
+
+// SetLiability sets the "liability" field.
+func (m *CheckpointMutation) SetLiability(d decimal.Decimal) {
+	m.liability = &d
+	m.addliability = nil
+}
+
+// Liability returns the value of the "liability" field in the mutation.
+func (m *CheckpointMutation) Liability() (r decimal.Decimal, exists bool) {
+	v := m.liability
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLiability returns the old "liability" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldLiability(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLiability is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLiability requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLiability: %w", err)
+	}
+	return oldValue.Liability, nil
+}
+
+// AddLiability adds d to the "liability" field.
+func (m *CheckpointMutation) AddLiability(d decimal.Decimal) {
+	if m.addliability != nil {
+		*m.addliability = m.addliability.Add(d)
+	} else {
+		m.addliability = &d
+	}
+}
+
+// AddedLiability returns the value that was added to the "liability" field in this mutation.
+func (m *CheckpointMutation) AddedLiability() (r decimal.Decimal, exists bool) {
+	v := m.addliability
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLiability resets all changes to the "liability" field.
+func (m *CheckpointMutation) ResetLiability() {
+	m.liability = nil
+	m.addliability = nil
+}
+
+// SetCurrencyID sets the "currency_id" field.
+func (m *CheckpointMutation) SetCurrencyID(i int) {
+	m.currency = &i
+}
+
+// CurrencyID returns the value of the "currency_id" field in the mutation.
+func (m *CheckpointMutation) CurrencyID() (r int, exists bool) {
+	v := m.currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrencyID returns the old "currency_id" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldCurrencyID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrencyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrencyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrencyID: %w", err)
+	}
+	return oldValue.CurrencyID, nil
+}
+
+// ResetCurrencyID resets all changes to the "currency_id" field.
+func (m *CheckpointMutation) ResetCurrencyID() {
+	m.currency = nil
+}
+
+// SetNote sets the "note" field.
+func (m *CheckpointMutation) SetNote(s string) {
+	m.note = &s
+}
+
+// Note returns the value of the "note" field in the mutation.
+func (m *CheckpointMutation) Note() (r string, exists bool) {
+	v := m.note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNote returns the old "note" field's value of the Checkpoint entity.
+// If the Checkpoint object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckpointMutation) OldNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNote: %w", err)
+	}
+	return oldValue.Note, nil
+}
+
+// ClearNote clears the value of the "note" field.
+func (m *CheckpointMutation) ClearNote() {
+	m.note = nil
+	m.clearedFields[checkpoint.FieldNote] = struct{}{}
+}
+
+// NoteCleared returns if the "note" field was cleared in this mutation.
+func (m *CheckpointMutation) NoteCleared() bool {
+	_, ok := m.clearedFields[checkpoint.FieldNote]
+	return ok
+}
+
+// ResetNote resets all changes to the "note" field.
+func (m *CheckpointMutation) ResetNote() {
+	m.note = nil
+	delete(m.clearedFields, checkpoint.FieldNote)
+}
+
+// ClearHousehold clears the "household" edge to the Household entity.
+func (m *CheckpointMutation) ClearHousehold() {
+	m.clearedhousehold = true
+	m.clearedFields[checkpoint.FieldHouseholdID] = struct{}{}
+}
+
+// HouseholdCleared reports if the "household" edge to the Household entity was cleared.
+func (m *CheckpointMutation) HouseholdCleared() bool {
+	return m.clearedhousehold
+}
+
+// HouseholdIDs returns the "household" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// HouseholdID instead. It exists only for internal usage by the builders.
+func (m *CheckpointMutation) HouseholdIDs() (ids []int) {
+	if id := m.household; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetHousehold resets all changes to the "household" edge.
+func (m *CheckpointMutation) ResetHousehold() {
+	m.household = nil
+	m.clearedhousehold = false
+}
+
+// ClearCurrency clears the "currency" edge to the Currency entity.
+func (m *CheckpointMutation) ClearCurrency() {
+	m.clearedcurrency = true
+	m.clearedFields[checkpoint.FieldCurrencyID] = struct{}{}
+}
+
+// CurrencyCleared reports if the "currency" edge to the Currency entity was cleared.
+func (m *CheckpointMutation) CurrencyCleared() bool {
+	return m.clearedcurrency
+}
+
+// CurrencyIDs returns the "currency" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CurrencyID instead. It exists only for internal usage by the builders.
+func (m *CheckpointMutation) CurrencyIDs() (ids []int) {
+	if id := m.currency; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCurrency resets all changes to the "currency" edge.
+func (m *CheckpointMutation) ResetCurrency() {
+	m.currency = nil
+	m.clearedcurrency = false
+}
+
+// Where appends a list predicates to the CheckpointMutation builder.
+func (m *CheckpointMutation) Where(ps ...predicate.Checkpoint) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CheckpointMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CheckpointMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Checkpoint, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CheckpointMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CheckpointMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Checkpoint).
+func (m *CheckpointMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CheckpointMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.household != nil {
+		fields = append(fields, checkpoint.FieldHouseholdID)
+	}
+	if m.create_time != nil {
+		fields = append(fields, checkpoint.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, checkpoint.FieldUpdateTime)
+	}
+	if m.net_worth != nil {
+		fields = append(fields, checkpoint.FieldNetWorth)
+	}
+	if m.liquidity != nil {
+		fields = append(fields, checkpoint.FieldLiquidity)
+	}
+	if m.investment != nil {
+		fields = append(fields, checkpoint.FieldInvestment)
+	}
+	if m.property != nil {
+		fields = append(fields, checkpoint.FieldProperty)
+	}
+	if m.receivable != nil {
+		fields = append(fields, checkpoint.FieldReceivable)
+	}
+	if m.liability != nil {
+		fields = append(fields, checkpoint.FieldLiability)
+	}
+	if m.currency != nil {
+		fields = append(fields, checkpoint.FieldCurrencyID)
+	}
+	if m.note != nil {
+		fields = append(fields, checkpoint.FieldNote)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CheckpointMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case checkpoint.FieldHouseholdID:
+		return m.HouseholdID()
+	case checkpoint.FieldCreateTime:
+		return m.CreateTime()
+	case checkpoint.FieldUpdateTime:
+		return m.UpdateTime()
+	case checkpoint.FieldNetWorth:
+		return m.NetWorth()
+	case checkpoint.FieldLiquidity:
+		return m.Liquidity()
+	case checkpoint.FieldInvestment:
+		return m.Investment()
+	case checkpoint.FieldProperty:
+		return m.Property()
+	case checkpoint.FieldReceivable:
+		return m.Receivable()
+	case checkpoint.FieldLiability:
+		return m.Liability()
+	case checkpoint.FieldCurrencyID:
+		return m.CurrencyID()
+	case checkpoint.FieldNote:
+		return m.Note()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CheckpointMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case checkpoint.FieldHouseholdID:
+		return m.OldHouseholdID(ctx)
+	case checkpoint.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case checkpoint.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case checkpoint.FieldNetWorth:
+		return m.OldNetWorth(ctx)
+	case checkpoint.FieldLiquidity:
+		return m.OldLiquidity(ctx)
+	case checkpoint.FieldInvestment:
+		return m.OldInvestment(ctx)
+	case checkpoint.FieldProperty:
+		return m.OldProperty(ctx)
+	case checkpoint.FieldReceivable:
+		return m.OldReceivable(ctx)
+	case checkpoint.FieldLiability:
+		return m.OldLiability(ctx)
+	case checkpoint.FieldCurrencyID:
+		return m.OldCurrencyID(ctx)
+	case checkpoint.FieldNote:
+		return m.OldNote(ctx)
+	}
+	return nil, fmt.Errorf("unknown Checkpoint field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CheckpointMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case checkpoint.FieldHouseholdID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHouseholdID(v)
+		return nil
+	case checkpoint.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case checkpoint.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case checkpoint.FieldNetWorth:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNetWorth(v)
+		return nil
+	case checkpoint.FieldLiquidity:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLiquidity(v)
+		return nil
+	case checkpoint.FieldInvestment:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInvestment(v)
+		return nil
+	case checkpoint.FieldProperty:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProperty(v)
+		return nil
+	case checkpoint.FieldReceivable:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceivable(v)
+		return nil
+	case checkpoint.FieldLiability:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLiability(v)
+		return nil
+	case checkpoint.FieldCurrencyID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrencyID(v)
+		return nil
+	case checkpoint.FieldNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNote(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Checkpoint field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CheckpointMutation) AddedFields() []string {
+	var fields []string
+	if m.addnet_worth != nil {
+		fields = append(fields, checkpoint.FieldNetWorth)
+	}
+	if m.addliquidity != nil {
+		fields = append(fields, checkpoint.FieldLiquidity)
+	}
+	if m.addinvestment != nil {
+		fields = append(fields, checkpoint.FieldInvestment)
+	}
+	if m.addproperty != nil {
+		fields = append(fields, checkpoint.FieldProperty)
+	}
+	if m.addreceivable != nil {
+		fields = append(fields, checkpoint.FieldReceivable)
+	}
+	if m.addliability != nil {
+		fields = append(fields, checkpoint.FieldLiability)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CheckpointMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case checkpoint.FieldNetWorth:
+		return m.AddedNetWorth()
+	case checkpoint.FieldLiquidity:
+		return m.AddedLiquidity()
+	case checkpoint.FieldInvestment:
+		return m.AddedInvestment()
+	case checkpoint.FieldProperty:
+		return m.AddedProperty()
+	case checkpoint.FieldReceivable:
+		return m.AddedReceivable()
+	case checkpoint.FieldLiability:
+		return m.AddedLiability()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CheckpointMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case checkpoint.FieldNetWorth:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNetWorth(v)
+		return nil
+	case checkpoint.FieldLiquidity:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLiquidity(v)
+		return nil
+	case checkpoint.FieldInvestment:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInvestment(v)
+		return nil
+	case checkpoint.FieldProperty:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddProperty(v)
+		return nil
+	case checkpoint.FieldReceivable:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReceivable(v)
+		return nil
+	case checkpoint.FieldLiability:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLiability(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Checkpoint numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CheckpointMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(checkpoint.FieldNote) {
+		fields = append(fields, checkpoint.FieldNote)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CheckpointMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CheckpointMutation) ClearField(name string) error {
+	switch name {
+	case checkpoint.FieldNote:
+		m.ClearNote()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkpoint nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CheckpointMutation) ResetField(name string) error {
+	switch name {
+	case checkpoint.FieldHouseholdID:
+		m.ResetHouseholdID()
+		return nil
+	case checkpoint.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case checkpoint.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case checkpoint.FieldNetWorth:
+		m.ResetNetWorth()
+		return nil
+	case checkpoint.FieldLiquidity:
+		m.ResetLiquidity()
+		return nil
+	case checkpoint.FieldInvestment:
+		m.ResetInvestment()
+		return nil
+	case checkpoint.FieldProperty:
+		m.ResetProperty()
+		return nil
+	case checkpoint.FieldReceivable:
+		m.ResetReceivable()
+		return nil
+	case checkpoint.FieldLiability:
+		m.ResetLiability()
+		return nil
+	case checkpoint.FieldCurrencyID:
+		m.ResetCurrencyID()
+		return nil
+	case checkpoint.FieldNote:
+		m.ResetNote()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkpoint field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CheckpointMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.household != nil {
+		edges = append(edges, checkpoint.EdgeHousehold)
+	}
+	if m.currency != nil {
+		edges = append(edges, checkpoint.EdgeCurrency)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CheckpointMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case checkpoint.EdgeHousehold:
+		if id := m.household; id != nil {
+			return []ent.Value{*id}
+		}
+	case checkpoint.EdgeCurrency:
+		if id := m.currency; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CheckpointMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CheckpointMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CheckpointMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedhousehold {
+		edges = append(edges, checkpoint.EdgeHousehold)
+	}
+	if m.clearedcurrency {
+		edges = append(edges, checkpoint.EdgeCurrency)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CheckpointMutation) EdgeCleared(name string) bool {
+	switch name {
+	case checkpoint.EdgeHousehold:
+		return m.clearedhousehold
+	case checkpoint.EdgeCurrency:
+		return m.clearedcurrency
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CheckpointMutation) ClearEdge(name string) error {
+	switch name {
+	case checkpoint.EdgeHousehold:
+		m.ClearHousehold()
+		return nil
+	case checkpoint.EdgeCurrency:
+		m.ClearCurrency()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkpoint unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CheckpointMutation) ResetEdge(name string) error {
+	switch name {
+	case checkpoint.EdgeHousehold:
+		m.ResetHousehold()
+		return nil
+	case checkpoint.EdgeCurrency:
+		m.ResetCurrency()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkpoint edge %s", name)
+}
+
 // CurrencyMutation represents an operation that mutates the Currency nodes in the graph.
 type CurrencyMutation struct {
 	config
@@ -1433,6 +2624,9 @@ type CurrencyMutation struct {
 	recurring_subscriptions        map[int]struct{}
 	removedrecurring_subscriptions map[int]struct{}
 	clearedrecurring_subscriptions bool
+	checkpoints                    map[int]struct{}
+	removedcheckpoints             map[int]struct{}
+	clearedcheckpoints             bool
 	done                           bool
 	oldValue                       func(context.Context) (*Currency, error)
 	predicates                     []predicate.Currency
@@ -1893,6 +3087,60 @@ func (m *CurrencyMutation) ResetRecurringSubscriptions() {
 	m.removedrecurring_subscriptions = nil
 }
 
+// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by ids.
+func (m *CurrencyMutation) AddCheckpointIDs(ids ...int) {
+	if m.checkpoints == nil {
+		m.checkpoints = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.checkpoints[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCheckpoints clears the "checkpoints" edge to the Checkpoint entity.
+func (m *CurrencyMutation) ClearCheckpoints() {
+	m.clearedcheckpoints = true
+}
+
+// CheckpointsCleared reports if the "checkpoints" edge to the Checkpoint entity was cleared.
+func (m *CurrencyMutation) CheckpointsCleared() bool {
+	return m.clearedcheckpoints
+}
+
+// RemoveCheckpointIDs removes the "checkpoints" edge to the Checkpoint entity by IDs.
+func (m *CurrencyMutation) RemoveCheckpointIDs(ids ...int) {
+	if m.removedcheckpoints == nil {
+		m.removedcheckpoints = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.checkpoints, ids[i])
+		m.removedcheckpoints[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCheckpoints returns the removed IDs of the "checkpoints" edge to the Checkpoint entity.
+func (m *CurrencyMutation) RemovedCheckpointsIDs() (ids []int) {
+	for id := range m.removedcheckpoints {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CheckpointsIDs returns the "checkpoints" edge IDs in the mutation.
+func (m *CurrencyMutation) CheckpointsIDs() (ids []int) {
+	for id := range m.checkpoints {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCheckpoints resets all changes to the "checkpoints" edge.
+func (m *CurrencyMutation) ResetCheckpoints() {
+	m.checkpoints = nil
+	m.clearedcheckpoints = false
+	m.removedcheckpoints = nil
+}
+
 // Where appends a list predicates to the CurrencyMutation builder.
 func (m *CurrencyMutation) Where(ps ...predicate.Currency) {
 	m.predicates = append(m.predicates, ps...)
@@ -2043,7 +3291,7 @@ func (m *CurrencyMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CurrencyMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.accounts != nil {
 		edges = append(edges, currency.EdgeAccounts)
 	}
@@ -2058,6 +3306,9 @@ func (m *CurrencyMutation) AddedEdges() []string {
 	}
 	if m.recurring_subscriptions != nil {
 		edges = append(edges, currency.EdgeRecurringSubscriptions)
+	}
+	if m.checkpoints != nil {
+		edges = append(edges, currency.EdgeCheckpoints)
 	}
 	return edges
 }
@@ -2096,13 +3347,19 @@ func (m *CurrencyMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case currency.EdgeCheckpoints:
+		ids := make([]ent.Value, 0, len(m.checkpoints))
+		for id := range m.checkpoints {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CurrencyMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedaccounts != nil {
 		edges = append(edges, currency.EdgeAccounts)
 	}
@@ -2117,6 +3374,9 @@ func (m *CurrencyMutation) RemovedEdges() []string {
 	}
 	if m.removedrecurring_subscriptions != nil {
 		edges = append(edges, currency.EdgeRecurringSubscriptions)
+	}
+	if m.removedcheckpoints != nil {
+		edges = append(edges, currency.EdgeCheckpoints)
 	}
 	return edges
 }
@@ -2155,13 +3415,19 @@ func (m *CurrencyMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case currency.EdgeCheckpoints:
+		ids := make([]ent.Value, 0, len(m.removedcheckpoints))
+		for id := range m.removedcheckpoints {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CurrencyMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedaccounts {
 		edges = append(edges, currency.EdgeAccounts)
 	}
@@ -2176,6 +3442,9 @@ func (m *CurrencyMutation) ClearedEdges() []string {
 	}
 	if m.clearedrecurring_subscriptions {
 		edges = append(edges, currency.EdgeRecurringSubscriptions)
+	}
+	if m.clearedcheckpoints {
+		edges = append(edges, currency.EdgeCheckpoints)
 	}
 	return edges
 }
@@ -2194,6 +3463,8 @@ func (m *CurrencyMutation) EdgeCleared(name string) bool {
 		return m.clearedhouseholds
 	case currency.EdgeRecurringSubscriptions:
 		return m.clearedrecurring_subscriptions
+	case currency.EdgeCheckpoints:
+		return m.clearedcheckpoints
 	}
 	return false
 }
@@ -2224,6 +3495,9 @@ func (m *CurrencyMutation) ResetEdge(name string) error {
 		return nil
 	case currency.EdgeRecurringSubscriptions:
 		m.ResetRecurringSubscriptions()
+		return nil
+	case currency.EdgeCheckpoints:
+		m.ResetCheckpoints()
 		return nil
 	}
 	return fmt.Errorf("unknown Currency edge %s", name)
@@ -2266,6 +3540,9 @@ type HouseholdMutation struct {
 	recurring_subscriptions        map[int]struct{}
 	removedrecurring_subscriptions map[int]struct{}
 	clearedrecurring_subscriptions bool
+	checkpoints                    map[int]struct{}
+	removedcheckpoints             map[int]struct{}
+	clearedcheckpoints             bool
 	user_households                map[int]struct{}
 	removeduser_households         map[int]struct{}
 	cleareduser_households         bool
@@ -3011,6 +4288,60 @@ func (m *HouseholdMutation) ResetRecurringSubscriptions() {
 	m.removedrecurring_subscriptions = nil
 }
 
+// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by ids.
+func (m *HouseholdMutation) AddCheckpointIDs(ids ...int) {
+	if m.checkpoints == nil {
+		m.checkpoints = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.checkpoints[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCheckpoints clears the "checkpoints" edge to the Checkpoint entity.
+func (m *HouseholdMutation) ClearCheckpoints() {
+	m.clearedcheckpoints = true
+}
+
+// CheckpointsCleared reports if the "checkpoints" edge to the Checkpoint entity was cleared.
+func (m *HouseholdMutation) CheckpointsCleared() bool {
+	return m.clearedcheckpoints
+}
+
+// RemoveCheckpointIDs removes the "checkpoints" edge to the Checkpoint entity by IDs.
+func (m *HouseholdMutation) RemoveCheckpointIDs(ids ...int) {
+	if m.removedcheckpoints == nil {
+		m.removedcheckpoints = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.checkpoints, ids[i])
+		m.removedcheckpoints[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCheckpoints returns the removed IDs of the "checkpoints" edge to the Checkpoint entity.
+func (m *HouseholdMutation) RemovedCheckpointsIDs() (ids []int) {
+	for id := range m.removedcheckpoints {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CheckpointsIDs returns the "checkpoints" edge IDs in the mutation.
+func (m *HouseholdMutation) CheckpointsIDs() (ids []int) {
+	for id := range m.checkpoints {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCheckpoints resets all changes to the "checkpoints" edge.
+func (m *HouseholdMutation) ResetCheckpoints() {
+	m.checkpoints = nil
+	m.clearedcheckpoints = false
+	m.removedcheckpoints = nil
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by ids.
 func (m *HouseholdMutation) AddUserHouseholdIDs(ids ...int) {
 	if m.user_households == nil {
@@ -3269,7 +4600,7 @@ func (m *HouseholdMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *HouseholdMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.currency != nil {
 		edges = append(edges, household.EdgeCurrency)
 	}
@@ -3296,6 +4627,9 @@ func (m *HouseholdMutation) AddedEdges() []string {
 	}
 	if m.recurring_subscriptions != nil {
 		edges = append(edges, household.EdgeRecurringSubscriptions)
+	}
+	if m.checkpoints != nil {
+		edges = append(edges, household.EdgeCheckpoints)
 	}
 	if m.user_households != nil {
 		edges = append(edges, household.EdgeUserHouseholds)
@@ -3359,6 +4693,12 @@ func (m *HouseholdMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case household.EdgeCheckpoints:
+		ids := make([]ent.Value, 0, len(m.checkpoints))
+		for id := range m.checkpoints {
+			ids = append(ids, id)
+		}
+		return ids
 	case household.EdgeUserHouseholds:
 		ids := make([]ent.Value, 0, len(m.user_households))
 		for id := range m.user_households {
@@ -3371,7 +4711,7 @@ func (m *HouseholdMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *HouseholdMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedusers != nil {
 		edges = append(edges, household.EdgeUsers)
 	}
@@ -3395,6 +4735,9 @@ func (m *HouseholdMutation) RemovedEdges() []string {
 	}
 	if m.removedrecurring_subscriptions != nil {
 		edges = append(edges, household.EdgeRecurringSubscriptions)
+	}
+	if m.removedcheckpoints != nil {
+		edges = append(edges, household.EdgeCheckpoints)
 	}
 	if m.removeduser_households != nil {
 		edges = append(edges, household.EdgeUserHouseholds)
@@ -3454,6 +4797,12 @@ func (m *HouseholdMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case household.EdgeCheckpoints:
+		ids := make([]ent.Value, 0, len(m.removedcheckpoints))
+		for id := range m.removedcheckpoints {
+			ids = append(ids, id)
+		}
+		return ids
 	case household.EdgeUserHouseholds:
 		ids := make([]ent.Value, 0, len(m.removeduser_households))
 		for id := range m.removeduser_households {
@@ -3466,7 +4815,7 @@ func (m *HouseholdMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *HouseholdMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedcurrency {
 		edges = append(edges, household.EdgeCurrency)
 	}
@@ -3493,6 +4842,9 @@ func (m *HouseholdMutation) ClearedEdges() []string {
 	}
 	if m.clearedrecurring_subscriptions {
 		edges = append(edges, household.EdgeRecurringSubscriptions)
+	}
+	if m.clearedcheckpoints {
+		edges = append(edges, household.EdgeCheckpoints)
 	}
 	if m.cleareduser_households {
 		edges = append(edges, household.EdgeUserHouseholds)
@@ -3522,6 +4874,8 @@ func (m *HouseholdMutation) EdgeCleared(name string) bool {
 		return m.clearedtransaction_entries
 	case household.EdgeRecurringSubscriptions:
 		return m.clearedrecurring_subscriptions
+	case household.EdgeCheckpoints:
+		return m.clearedcheckpoints
 	case household.EdgeUserHouseholds:
 		return m.cleareduser_households
 	}
@@ -3569,6 +4923,9 @@ func (m *HouseholdMutation) ResetEdge(name string) error {
 		return nil
 	case household.EdgeRecurringSubscriptions:
 		m.ResetRecurringSubscriptions()
+		return nil
+	case household.EdgeCheckpoints:
+		m.ResetCheckpoints()
 		return nil
 	case household.EdgeUserHouseholds:
 		m.ResetUserHouseholds()

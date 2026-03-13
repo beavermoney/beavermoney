@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -77,6 +78,34 @@ func init() {
 	accountDescArchived := accountFields[8].Descriptor()
 	// account.DefaultArchived holds the default value on creation for the archived field.
 	account.DefaultArchived = accountDescArchived.Default.(bool)
+	checkpointMixin := schema.Checkpoint{}.Mixin()
+	checkpoint.Policy = privacy.NewPolicies(checkpointMixin[0], schema.Checkpoint{})
+	checkpoint.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := checkpoint.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	checkpointMixinFields1 := checkpointMixin[1].Fields()
+	_ = checkpointMixinFields1
+	checkpointFields := schema.Checkpoint{}.Fields()
+	_ = checkpointFields
+	// checkpointDescCreateTime is the schema descriptor for create_time field.
+	checkpointDescCreateTime := checkpointMixinFields1[0].Descriptor()
+	// checkpoint.DefaultCreateTime holds the default value on creation for the create_time field.
+	checkpoint.DefaultCreateTime = checkpointDescCreateTime.Default.(func() time.Time)
+	// checkpointDescUpdateTime is the schema descriptor for update_time field.
+	checkpointDescUpdateTime := checkpointMixinFields1[1].Descriptor()
+	// checkpoint.DefaultUpdateTime holds the default value on creation for the update_time field.
+	checkpoint.DefaultUpdateTime = checkpointDescUpdateTime.Default.(func() time.Time)
+	// checkpoint.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	checkpoint.UpdateDefaultUpdateTime = checkpointDescUpdateTime.UpdateDefault.(func() time.Time)
+	// checkpointDescCurrencyID is the schema descriptor for currency_id field.
+	checkpointDescCurrencyID := checkpointFields[6].Descriptor()
+	// checkpoint.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
+	checkpoint.CurrencyIDValidator = checkpointDescCurrencyID.Validators[0].(func(int) error)
 	currencyFields := schema.Currency{}.Fields()
 	_ = currencyFields
 	// currencyDescCode is the schema descriptor for code field.

@@ -51,6 +51,48 @@ var (
 			},
 		},
 	}
+	// CheckpointsColumns holds the columns for the "checkpoints" table.
+	CheckpointsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "net_worth", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "liquidity", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "investment", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "property", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "receivable", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "liability", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "note", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "currency_id", Type: field.TypeInt},
+		{Name: "household_id", Type: field.TypeInt},
+	}
+	// CheckpointsTable holds the schema information for the "checkpoints" table.
+	CheckpointsTable = &schema.Table{
+		Name:       "checkpoints",
+		Columns:    CheckpointsColumns,
+		PrimaryKey: []*schema.Column{CheckpointsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "checkpoints_currencies_checkpoints",
+				Columns:    []*schema.Column{CheckpointsColumns[10]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "checkpoints_households_checkpoints",
+				Columns:    []*schema.Column{CheckpointsColumns[11]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "checkpoint_household_id_create_time",
+				Unique:  false,
+				Columns: []*schema.Column{CheckpointsColumns[11], CheckpointsColumns[1]},
+			},
+		},
+	}
 	// CurrenciesColumns holds the columns for the "currencies" table.
 	CurrenciesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -410,6 +452,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
+		CheckpointsTable,
 		CurrenciesTable,
 		HouseholdsTable,
 		InvestmentsTable,
@@ -430,6 +473,11 @@ func init() {
 	AccountsTable.ForeignKeys[2].RefTable = UsersTable
 	AccountsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(0),
+	}
+	CheckpointsTable.ForeignKeys[0].RefTable = CurrenciesTable
+	CheckpointsTable.ForeignKeys[1].RefTable = HouseholdsTable
+	CheckpointsTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(55834574848),
 	}
 	CurrenciesTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(4294967296),

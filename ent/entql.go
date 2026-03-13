@@ -4,6 +4,7 @@ package ent
 
 import (
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -25,7 +26,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 12)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 13)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   account.Table,
@@ -53,6 +54,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   checkpoint.Table,
+			Columns: checkpoint.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeInt,
+				Column: checkpoint.FieldID,
+			},
+		},
+		Type: "Checkpoint",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			checkpoint.FieldHouseholdID: {Type: field.TypeInt, Column: checkpoint.FieldHouseholdID},
+			checkpoint.FieldCreateTime:  {Type: field.TypeTime, Column: checkpoint.FieldCreateTime},
+			checkpoint.FieldUpdateTime:  {Type: field.TypeTime, Column: checkpoint.FieldUpdateTime},
+			checkpoint.FieldNetWorth:    {Type: field.TypeFloat64, Column: checkpoint.FieldNetWorth},
+			checkpoint.FieldLiquidity:   {Type: field.TypeFloat64, Column: checkpoint.FieldLiquidity},
+			checkpoint.FieldInvestment:  {Type: field.TypeFloat64, Column: checkpoint.FieldInvestment},
+			checkpoint.FieldProperty:    {Type: field.TypeFloat64, Column: checkpoint.FieldProperty},
+			checkpoint.FieldReceivable:  {Type: field.TypeFloat64, Column: checkpoint.FieldReceivable},
+			checkpoint.FieldLiability:   {Type: field.TypeFloat64, Column: checkpoint.FieldLiability},
+			checkpoint.FieldCurrencyID:  {Type: field.TypeInt, Column: checkpoint.FieldCurrencyID},
+			checkpoint.FieldNote:        {Type: field.TypeString, Column: checkpoint.FieldNote},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   currency.Table,
 			Columns: currency.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -66,7 +91,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			currency.FieldLocales: {Type: field.TypeJSON, Column: currency.FieldLocales},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   household.Table,
 			Columns: household.Columns,
@@ -84,7 +109,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			household.FieldCurrencyID: {Type: field.TypeInt, Column: household.FieldCurrencyID},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   investment.Table,
 			Columns: investment.Columns,
@@ -108,7 +133,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			investment.FieldCurrencyID:  {Type: field.TypeInt, Column: investment.FieldCurrencyID},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   investmentlot.Table,
 			Columns: investmentlot.Columns,
@@ -128,7 +153,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			investmentlot.FieldTransactionID: {Type: field.TypeInt, Column: investmentlot.FieldTransactionID},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   recurringsubscription.Table,
 			Columns: recurringsubscription.Columns,
@@ -154,7 +179,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			recurringsubscription.FieldUserID:        {Type: field.TypeInt, Column: recurringsubscription.FieldUserID},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transaction.Table,
 			Columns: transaction.Columns,
@@ -175,7 +200,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transaction.FieldExcludeFromReports: {Type: field.TypeBool, Column: transaction.FieldExcludeFromReports},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactioncategory.Table,
 			Columns: transactioncategory.Columns,
@@ -195,7 +220,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactioncategory.FieldIsImmutable: {Type: field.TypeBool, Column: transactioncategory.FieldIsImmutable},
 		},
 	}
-	graph.Nodes[8] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactionentry.Table,
 			Columns: transactionentry.Columns,
@@ -215,7 +240,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactionentry.FieldTransactionID: {Type: field.TypeInt, Column: transactionentry.FieldTransactionID},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -232,7 +257,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldName:       {Type: field.TypeString, Column: user.FieldName},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userhousehold.Table,
 			Columns: userhousehold.Columns,
@@ -250,7 +275,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userhousehold.FieldRole:        {Type: field.TypeEnum, Column: userhousehold.FieldRole},
 		},
 	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userkey.Table,
 			Columns: userkey.Columns,
@@ -329,6 +354,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Investment",
 	)
 	graph.MustAddE(
+		"household",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   checkpoint.HouseholdTable,
+			Columns: []string{checkpoint.HouseholdColumn},
+			Bidi:    false,
+		},
+		"Checkpoint",
+		"Household",
+	)
+	graph.MustAddE(
+		"currency",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   checkpoint.CurrencyTable,
+			Columns: []string{checkpoint.CurrencyColumn},
+			Bidi:    false,
+		},
+		"Checkpoint",
+		"Currency",
+	)
+	graph.MustAddE(
 		"accounts",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -387,6 +436,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Currency",
 		"RecurringSubscription",
+	)
+	graph.MustAddE(
+		"checkpoints",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.CheckpointsTable,
+			Columns: []string{currency.CheckpointsColumn},
+			Bidi:    false,
+		},
+		"Currency",
+		"Checkpoint",
 	)
 	graph.MustAddE(
 		"currency",
@@ -495,6 +556,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Household",
 		"RecurringSubscription",
+	)
+	graph.MustAddE(
+		"checkpoints",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.CheckpointsTable,
+			Columns: []string{household.CheckpointsColumn},
+			Bidi:    false,
+		},
+		"Household",
+		"Checkpoint",
 	)
 	graph.MustAddE(
 		"user_households",
@@ -1048,6 +1121,129 @@ func (f *AccountFilter) WhereHasInvestmentsWith(preds ...predicate.Investment) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (_q *CheckpointQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the CheckpointQuery builder.
+func (_q *CheckpointQuery) Filter() *CheckpointFilter {
+	return &CheckpointFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *CheckpointMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the CheckpointMutation builder.
+func (m *CheckpointMutation) Filter() *CheckpointFilter {
+	return &CheckpointFilter{config: m.config, predicateAdder: m}
+}
+
+// CheckpointFilter provides a generic filtering capability at runtime for CheckpointQuery.
+type CheckpointFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *CheckpointFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql int predicate on the id field.
+func (f *CheckpointFilter) WhereID(p entql.IntP) {
+	f.Where(p.Field(checkpoint.FieldID))
+}
+
+// WhereHouseholdID applies the entql int predicate on the household_id field.
+func (f *CheckpointFilter) WhereHouseholdID(p entql.IntP) {
+	f.Where(p.Field(checkpoint.FieldHouseholdID))
+}
+
+// WhereCreateTime applies the entql time.Time predicate on the create_time field.
+func (f *CheckpointFilter) WhereCreateTime(p entql.TimeP) {
+	f.Where(p.Field(checkpoint.FieldCreateTime))
+}
+
+// WhereUpdateTime applies the entql time.Time predicate on the update_time field.
+func (f *CheckpointFilter) WhereUpdateTime(p entql.TimeP) {
+	f.Where(p.Field(checkpoint.FieldUpdateTime))
+}
+
+// WhereNetWorth applies the entql float64 predicate on the net_worth field.
+func (f *CheckpointFilter) WhereNetWorth(p entql.Float64P) {
+	f.Where(p.Field(checkpoint.FieldNetWorth))
+}
+
+// WhereLiquidity applies the entql float64 predicate on the liquidity field.
+func (f *CheckpointFilter) WhereLiquidity(p entql.Float64P) {
+	f.Where(p.Field(checkpoint.FieldLiquidity))
+}
+
+// WhereInvestment applies the entql float64 predicate on the investment field.
+func (f *CheckpointFilter) WhereInvestment(p entql.Float64P) {
+	f.Where(p.Field(checkpoint.FieldInvestment))
+}
+
+// WhereProperty applies the entql float64 predicate on the property field.
+func (f *CheckpointFilter) WhereProperty(p entql.Float64P) {
+	f.Where(p.Field(checkpoint.FieldProperty))
+}
+
+// WhereReceivable applies the entql float64 predicate on the receivable field.
+func (f *CheckpointFilter) WhereReceivable(p entql.Float64P) {
+	f.Where(p.Field(checkpoint.FieldReceivable))
+}
+
+// WhereLiability applies the entql float64 predicate on the liability field.
+func (f *CheckpointFilter) WhereLiability(p entql.Float64P) {
+	f.Where(p.Field(checkpoint.FieldLiability))
+}
+
+// WhereCurrencyID applies the entql int predicate on the currency_id field.
+func (f *CheckpointFilter) WhereCurrencyID(p entql.IntP) {
+	f.Where(p.Field(checkpoint.FieldCurrencyID))
+}
+
+// WhereNote applies the entql string predicate on the note field.
+func (f *CheckpointFilter) WhereNote(p entql.StringP) {
+	f.Where(p.Field(checkpoint.FieldNote))
+}
+
+// WhereHasHousehold applies a predicate to check if query has an edge household.
+func (f *CheckpointFilter) WhereHasHousehold() {
+	f.Where(entql.HasEdge("household"))
+}
+
+// WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
+func (f *CheckpointFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
+	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCurrency applies a predicate to check if query has an edge currency.
+func (f *CheckpointFilter) WhereHasCurrency() {
+	f.Where(entql.HasEdge("currency"))
+}
+
+// WhereHasCurrencyWith applies a predicate to check if query has an edge currency with a given conditions (other predicates).
+func (f *CheckpointFilter) WhereHasCurrencyWith(preds ...predicate.Currency) {
+	f.Where(entql.HasEdgeWith("currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (_q *CurrencyQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -1076,7 +1272,7 @@ type CurrencyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CurrencyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1167,6 +1363,20 @@ func (f *CurrencyFilter) WhereHasRecurringSubscriptionsWith(preds ...predicate.R
 	})))
 }
 
+// WhereHasCheckpoints applies a predicate to check if query has an edge checkpoints.
+func (f *CurrencyFilter) WhereHasCheckpoints() {
+	f.Where(entql.HasEdge("checkpoints"))
+}
+
+// WhereHasCheckpointsWith applies a predicate to check if query has an edge checkpoints with a given conditions (other predicates).
+func (f *CurrencyFilter) WhereHasCheckpointsWith(preds ...predicate.Checkpoint) {
+	f.Where(entql.HasEdgeWith("checkpoints", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (_q *HouseholdQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
@@ -1196,7 +1406,7 @@ type HouseholdFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *HouseholdFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1358,6 +1568,20 @@ func (f *HouseholdFilter) WhereHasRecurringSubscriptionsWith(preds ...predicate.
 	})))
 }
 
+// WhereHasCheckpoints applies a predicate to check if query has an edge checkpoints.
+func (f *HouseholdFilter) WhereHasCheckpoints() {
+	f.Where(entql.HasEdge("checkpoints"))
+}
+
+// WhereHasCheckpointsWith applies a predicate to check if query has an edge checkpoints with a given conditions (other predicates).
+func (f *HouseholdFilter) WhereHasCheckpointsWith(preds ...predicate.Checkpoint) {
+	f.Where(entql.HasEdgeWith("checkpoints", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // WhereHasUserHouseholds applies a predicate to check if query has an edge user_households.
 func (f *HouseholdFilter) WhereHasUserHouseholds() {
 	f.Where(entql.HasEdge("user_households"))
@@ -1401,7 +1625,7 @@ type InvestmentFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InvestmentFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1552,7 +1776,7 @@ type InvestmentLotFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InvestmentLotFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1669,7 +1893,7 @@ type RecurringSubscriptionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RecurringSubscriptionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1816,7 +2040,7 @@ type TransactionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1966,7 +2190,7 @@ type TransactionCategoryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionCategoryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2069,7 +2293,7 @@ type TransactionEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2200,7 +2424,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2344,7 +2568,7 @@ type UserHouseholdFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserHouseholdFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2437,7 +2661,7 @@ type UserKeyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserKeyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
