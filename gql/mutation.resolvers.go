@@ -68,7 +68,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 		return nil, fmt.Errorf("failed to create user-household relationship: %w", err)
 	}
 
-	householdCtx := context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), household.ID)
+	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), household.ID)
 
 	// Seed default transaction categories for the new household
 	if err := seed.SeedHouseholdCategories(householdCtx, client, household.ID); err != nil {
