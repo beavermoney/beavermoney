@@ -191,6 +191,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
             <div className="px-3 pt-2.5 pb-1">
               <Skeleton className="h-5 w-48" />
             </div>
+            <div className="py-1"></div>
             <Skeleton className="mx-3 h-36 rounded-md" />
             <div className="flex justify-end px-3 pt-1 pb-2.5">
               <Skeleton className="h-5 w-32" />
