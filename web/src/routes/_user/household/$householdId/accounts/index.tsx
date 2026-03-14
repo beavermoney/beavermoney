@@ -11,6 +11,7 @@ import { accountsQuery } from './-accounts-query'
 import { AccountsQuery } from './__generated__/AccountsQuery.graphql'
 import { ROOT_ID } from 'relay-runtime'
 import { environment } from '@/environment'
+import { Item } from '@/components/ui/item'
 
 export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
   {
@@ -40,10 +41,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1">
+    <div className="flex max-h-full w-full">
+      <Item className="flex p-0">
         <AccountsPanel fragmentRef={data} />
-      </div>
+      </Item>
     </div>
   )
 }

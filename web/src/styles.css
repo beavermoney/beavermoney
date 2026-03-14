@@ -34,7 +34,8 @@
   --chart-investment: oklch(0.78 0.17 55);
   --chart-property: oklch(0.65 0.22 340);
   --chart-receivable: oklch(0.7 0.18 200);
-  --chart-liability: oklch(0.72 0.19 80);
+  --chart-liability: oklch(0.65 0.22 25);
+  --chart-asset: oklch(0.72 0.17 300);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -75,7 +76,8 @@
   --chart-investment: oklch(0.82 0.17 55);
   --chart-property: oklch(0.68 0.22 340);
   --chart-receivable: oklch(0.73 0.18 200);
-  --chart-liability: oklch(0.75 0.19 80);
+  --chart-liability: oklch(0.68 0.22 25);
+  --chart-asset: oklch(0.75 0.17 300);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.77 0.16 70);
@@ -97,6 +99,7 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --color-chart-liability: var(--chart-liability);
+  --color-chart-asset: var(--chart-asset);
   --color-chart-receivable: var(--chart-receivable);
   --color-chart-property: var(--chart-property);
   --color-chart-investment: var(--chart-investment);
