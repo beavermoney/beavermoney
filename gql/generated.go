@@ -274,6 +274,7 @@ type ComplexityRoot struct {
 		CreateTransfer              func(childComplexity int, input model.CreateTransferInputCustom) int
 		DeleteAccount               func(childComplexity int, id int) int
 		DeleteCheckpoint            func(childComplexity int, id int) int
+		DeleteHousehold             func(childComplexity int, id int) int
 		DeleteRecurringSubscription func(childComplexity int, id int) int
 		DeleteTransaction           func(childComplexity int, id int) int
 		DeleteTransactionCategory   func(childComplexity int, id int) int
@@ -510,6 +511,7 @@ type InvestmentLotResolver interface {
 }
 type MutationResolver interface {
 	CreateHousehold(ctx context.Context, input ent.CreateHouseholdInput) (*ent.Household, error)
+	DeleteHousehold(ctx context.Context, id int) (bool, error)
 	CreateAccount(ctx context.Context, input ent.CreateAccountInput) (*ent.AccountEdge, error)
 	UpdateAccount(ctx context.Context, id int, input ent.UpdateAccountInput) (*ent.AccountEdge, error)
 	DeleteAccount(ctx context.Context, id int) (bool, error)
@@ -1696,6 +1698,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteCheckpoint(childComplexity, args["id"].(int)), true
+	case "Mutation.deleteHousehold":
+		if e.complexity.Mutation.DeleteHousehold == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteHousehold_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteHousehold(childComplexity, args["id"].(int)), true
 	case "Mutation.deleteRecurringSubscription":
 		if e.complexity.Mutation.DeleteRecurringSubscription == nil {
 			break
@@ -2987,6 +3000,17 @@ func (ec *executionContext) field_Mutation_deleteAccount_args(ctx context.Contex
 }
 
 func (ec *executionContext) field_Mutation_deleteCheckpoint_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteHousehold_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
@@ -8527,6 +8551,47 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createHousehold_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteHousehold(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_deleteHousehold,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().DeleteHousehold(ctx, fc.Args["id"].(int))
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteHousehold(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteHousehold_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -27426,6 +27491,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createHousehold":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createHousehold(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteHousehold":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteHousehold(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++

@@ -13,10 +13,13 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
 	"beavermoney.app/ent/userhousehold"
@@ -92,6 +95,130 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 	}
 
 	return household, nil
+}
+
+// DeleteHousehold is the resolver for the deleteHousehold field.
+func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteHousehold",
+		trace.WithAttributes(
+			attribute.Int("householdID", id),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	// Verify the caller is an admin of this household.
+	isMember, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(userID),
+			userhousehold.HouseholdIDEQ(id),
+			userhousehold.RoleEQ(userhousehold.RoleAdmin),
+		).
+		Exist(ctx)
+	if err != nil {
+		r.logger.Error("Failed to verify household membership", "error", err)
+		return false, err
+	}
+	if !isMember {
+		return false, fmt.Errorf("not authorized to delete this household")
+	}
+
+	// Deletion order matters — children with FK restrictions must go before parents.
+	//
+	// 1. TransactionEntry — must go before Account (account delete is restricted by entries)
+	//    and before Transaction (cascade would handle it, but explicit is safer)
+	_, err = client.TransactionEntry.Delete().
+		Where(transactionentry.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete transaction entries", "error", err)
+		return false, err
+	}
+
+	// 2. InvestmentLot — must go before Investment and Transaction
+	_, err = client.InvestmentLot.Delete().
+		Where(investmentlot.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete investment lots", "error", err)
+		return false, err
+	}
+
+	// 3. Investment — must go before Account (account delete is restricted by investments)
+	_, err = client.Investment.Delete().
+		Where(investment.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete investments", "error", err)
+		return false, err
+	}
+
+	// 4. Transaction — entries and lots are already gone
+	_, err = client.Transaction.Delete().
+		Where(transaction.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete transactions", "error", err)
+		return false, err
+	}
+
+	// 5. TransactionCategory — restricted by Transaction; transactions are now deleted
+	_, err = client.TransactionCategory.Delete().
+		Where(transactioncategory.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete transaction categories", "error", err)
+		return false, err
+	}
+
+	// 6. RecurringSubscription
+	_, err = client.RecurringSubscription.Delete().
+		Where(recurringsubscription.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete recurring subscriptions", "error", err)
+		return false, err
+	}
+
+	// 7. Checkpoint
+	_, err = client.Checkpoint.Delete().
+		Where(checkpoint.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete checkpoints", "error", err)
+		return false, err
+	}
+
+	// 8. Account — entries and investments are already gone
+	_, err = client.Account.Delete().
+		Where(account.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete accounts", "error", err)
+		return false, err
+	}
+
+	// 9. UserHousehold memberships
+	_, err = client.UserHousehold.Delete().
+		Where(userhousehold.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete user household memberships", "error", err)
+		return false, err
+	}
+
+	// 10. Household itself
+	err = client.Household.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete household", "error", err)
+		return false, err
+	}
+
+	return true, nil
 }
 
 // CreateAccount is the resolver for the createAccount field.
