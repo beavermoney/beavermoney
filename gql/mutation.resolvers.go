@@ -1438,7 +1438,7 @@ func (r *mutationResolver) CreateCheckpoint(ctx context.Context, input ent.Creat
 		SetProperty(property).
 		SetReceivable(receivable).
 		SetLiability(liability).
-		SetNillableNote(input.Note).
+		SetInput(input).
 		Save(ctx)
 	if err != nil {
 		r.logger.Error("Failed to create checkpoint", "error", err)
