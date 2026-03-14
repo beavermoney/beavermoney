@@ -326,7 +326,15 @@ func SeedDemoHousehold(
 		return fmt.Errorf("failed to get categories: %w", err)
 	}
 
-	// Fetch and create investments
+	// Pre-fetch 6-month daily historical prices for all symbols before creating investments.
+	// This gives us accurate per-week prices for lot purchases and checkpoint valuation.
+	allSymbols := append([]string{config.etfSymbol}, config.stockSymbols...)
+	historicalPrices, err := fetchHistoricalPrices(ctx, marketClient, allSymbols, startDate, time.Now())
+	if err != nil {
+		return fmt.Errorf("failed to fetch historical prices: %w", err)
+	}
+
+	// Fetch and create investments (initial quote = price at startDate)
 	investments, err := fetchAndCreateInvestments(
 		ctx,
 		client,
@@ -335,6 +343,7 @@ func SeedDemoHousehold(
 		householdCurrency,
 		config,
 		marketClient,
+		historicalPrices,
 		startDate,
 	)
 	if err != nil {
@@ -374,9 +383,10 @@ func SeedDemoHousehold(
 			)
 		}
 
-		// Investment purchases (every 3 weeks)
+		// Investment purchases (every 3 weeks) — use real historical price at purchase date
 		if weekNumber%3 == 0 {
-			if err := buyInvestmentShares(ctx, client, weekStart.AddDate(0, 0, 3), investments, categories.buy, household, userID, weekNumber); err != nil {
+			purchaseDate := weekStart.AddDate(0, 0, 3)
+			if err := buyInvestmentShares(ctx, client, purchaseDate, investments, categories.buy, household, userID, weekNumber, historicalPrices); err != nil {
 				return fmt.Errorf(
 					"failed to buy investments for week %d: %w",
 					weekNumber,
@@ -385,8 +395,18 @@ func SeedDemoHousehold(
 			}
 		}
 
-		// Create checkpoint at end of week
+		// Update all investment quotes to their real historical price at week-end so the
+		// DB trigger recalculates Account.Value before we snapshot the checkpoint.
 		checkpointDate := weekEnd.Add(-1 * time.Hour)
+		if err := updateInvestmentQuotesToHistorical(ctx, client, investments, historicalPrices, checkpointDate); err != nil {
+			return fmt.Errorf(
+				"failed to update investment quotes for week %d: %w",
+				weekNumber,
+				err,
+			)
+		}
+
+		// Create checkpoint at end of week
 		if err := createCheckpointAtDate(ctx, client, household, householdCurrency, checkpointDate); err != nil {
 			return fmt.Errorf(
 				"failed to create checkpoint for week %d: %w",
@@ -568,6 +588,44 @@ type investmentSet struct {
 	stocks []*ent.Investment
 }
 
+// historicalPriceMap maps symbol -> sorted slice of HistoricalDataPoint (ascending by date).
+type historicalPriceMap map[string][]market.HistoricalDataPoint
+
+// priceAt returns the closest available price for a symbol on or before the given date.
+// Falls back to the earliest available price if the date precedes all data.
+func (m historicalPriceMap) priceAt(symbol string, date time.Time) (decimal.Decimal, bool) {
+	points, ok := m[symbol]
+	if !ok || len(points) == 0 {
+		return decimal.Zero, false
+	}
+	// Walk backwards to find the last point on or before date
+	for i := len(points) - 1; i >= 0; i-- {
+		if !points[i].Date.After(date) {
+			return points[i].Close, true
+		}
+	}
+	// date is before all data — use earliest
+	return points[0].Close, true
+}
+
+// fetchHistoricalPrices pre-fetches daily historical data for all symbols over [from, to].
+func fetchHistoricalPrices(
+	ctx context.Context,
+	marketClient *market.Client,
+	symbols []string,
+	from, to time.Time,
+) (historicalPriceMap, error) {
+	result := make(historicalPriceMap, len(symbols))
+	for _, symbol := range symbols {
+		hist, err := marketClient.StockHistoricalQuote(ctx, symbol, "d", from, to)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch historical data for %s: %w", symbol, err)
+		}
+		result[symbol] = hist.Data
+	}
+	return result, nil
+}
+
 func fetchAndCreateInvestments(
 	ctx context.Context,
 	client *ent.Client,
@@ -576,23 +634,31 @@ func fetchAndCreateInvestments(
 	householdCurrency *ent.Currency,
 	config demoConfig,
 	marketClient *market.Client,
+	prices historicalPriceMap,
 	createdAt time.Time,
 ) (*investmentSet, error) {
-	// Fetch ETF quote
-	etfQuote, err := marketClient.StockQuote(ctx, config.etfSymbol)
+	// Use historical price at createdAt as the initial quote; fall back to live quote.
+	initialPrice := func(symbol string) (decimal.Decimal, error) {
+		if p, ok := prices.priceAt(symbol, createdAt); ok && !p.IsZero() {
+			return p, nil
+		}
+		quote, err := marketClient.StockQuote(ctx, symbol)
+		if err != nil {
+			return decimal.Zero, fmt.Errorf("failed to fetch quote for %s: %w", symbol, err)
+		}
+		return quote.CurrentPrice, nil
+	}
+
+	etfPrice, err := initialPrice(config.etfSymbol)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"failed to fetch ETF quote for %s: %w",
-			config.etfSymbol,
-			err,
-		)
+		return nil, err
 	}
 
 	etf, err := client.Investment.Create().
 		SetHouseholdID(household.ID).
 		SetSymbol(config.etfSymbol).
 		SetName(config.etfSymbol).
-		SetQuote(etfQuote.CurrentPrice).
+		SetQuote(etfPrice).
 		SetCurrency(householdCurrency).
 		SetType(investment.TypeStock).
 		SetAccount(investmentAccount).
@@ -605,20 +671,16 @@ func fetchAndCreateInvestments(
 	// Fetch and create stock investments
 	stocks := make([]*ent.Investment, 0, len(config.stockSymbols))
 	for _, symbol := range config.stockSymbols {
-		quote, err := marketClient.StockQuote(ctx, symbol)
+		price, err := initialPrice(symbol)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"failed to fetch stock quote for %s: %w",
-				symbol,
-				err,
-			)
+			return nil, err
 		}
 
 		stock, err := client.Investment.Create().
 			SetHouseholdID(household.ID).
 			SetSymbol(symbol).
 			SetName(symbol).
-			SetQuote(quote.CurrentPrice).
+			SetQuote(price).
 			SetCurrency(householdCurrency).
 			SetType(investment.TypeStock).
 			SetAccount(investmentAccount).
@@ -639,6 +701,34 @@ func fetchAndCreateInvestments(
 		etf:    etf,
 		stocks: stocks,
 	}, nil
+}
+
+// updateInvestmentQuotesToHistorical sets each investment's Quote to its real
+// historical price at the given date so the DB trigger recalculates Account.Value
+// before the checkpoint is snapshotted.
+func updateInvestmentQuotesToHistorical(
+	ctx context.Context,
+	client *ent.Client,
+	investments *investmentSet,
+	prices historicalPriceMap,
+	date time.Time,
+) error {
+	all := append([]*ent.Investment{investments.etf}, investments.stocks...)
+	for _, inv := range all {
+		price, ok := prices.priceAt(inv.Symbol, date)
+		if !ok || price.IsZero() {
+			continue // no data — leave current quote unchanged
+		}
+		updated, err := client.Investment.UpdateOneID(inv.ID).
+			SetQuote(price).
+			Save(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to update quote for %s: %w", inv.Symbol, err)
+		}
+		// Keep in-memory quote in sync for lot price lookups
+		inv.Quote = updated.Quote
+	}
+	return nil
 }
 
 // createTransaction creates a transaction with backdated timestamp
@@ -745,7 +835,15 @@ func buyInvestmentShares(
 	household *ent.Household,
 	userID int,
 	weekNumber int,
+	prices historicalPriceMap,
 ) error {
+	priceFor := func(inv *ent.Investment) decimal.Decimal {
+		if p, ok := prices.priceAt(inv.Symbol, date); ok && !p.IsZero() {
+			return p
+		}
+		return inv.Quote
+	}
+
 	// Alternate between ETF and stock purchases
 	switch weekNumber % 9 {
 	case 0:
@@ -759,7 +857,7 @@ func buyInvestmentShares(
 			household,
 			userID,
 			decimal.NewFromInt(50),
-			0.95,
+			priceFor(investments.etf),
 		)
 	case 3:
 		// Buy first stock
@@ -773,7 +871,7 @@ func buyInvestmentShares(
 				household,
 				userID,
 				decimal.NewFromInt(5),
-				0.92,
+				priceFor(investments.stocks[0]),
 			)
 		}
 	case 6:
@@ -788,7 +886,7 @@ func buyInvestmentShares(
 				household,
 				userID,
 				decimal.NewFromInt(8),
-				0.88,
+				priceFor(investments.stocks[1]),
 			)
 		}
 	case 9:
@@ -803,14 +901,14 @@ func buyInvestmentShares(
 				household,
 				userID,
 				decimal.NewFromInt(3),
-				0.90,
+				priceFor(investments.stocks[2]),
 			)
 		}
 	}
 	return nil
 }
 
-// buyShares creates an investment lot purchase
+// buyShares creates an investment lot purchase at the given price
 func buyShares(
 	ctx context.Context,
 	client *ent.Client,
@@ -820,7 +918,7 @@ func buyShares(
 	household *ent.Household,
 	userID int,
 	shares decimal.Decimal,
-	priceMultiplier float64,
+	price decimal.Decimal,
 ) error {
 	tx, err := client.Transaction.Create().
 		SetUserID(userID).
@@ -832,8 +930,6 @@ func buyShares(
 	if err != nil {
 		return fmt.Errorf("failed to create buy transaction: %w", err)
 	}
-
-	price := investment.Quote.Mul(decimal.NewFromFloat(priceMultiplier))
 
 	_, err = client.InvestmentLot.Create().
 		SetInvestment(investment).

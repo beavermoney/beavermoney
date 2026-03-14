@@ -3,8 +3,11 @@ package market
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
+	"github.com/beavermoney/finance-go/chart"
+	"github.com/beavermoney/finance-go/datetime"
 	"github.com/beavermoney/finance-go/equity"
 	"github.com/shopspring/decimal"
 )
@@ -122,7 +125,21 @@ func (p *YahooProvider) CryptoQuotes(
 	return results, nil
 }
 
-// StockHistoricalQuote is not supported by Yahoo provider.
+// periodToInterval maps the period string ('d', 'w', 'm') to a chart interval.
+func periodToInterval(period string) (datetime.Interval, error) {
+	switch period {
+	case "d":
+		return datetime.OneDay, nil
+	case "w":
+		return datetime.FiveDay, nil
+	case "m":
+		return datetime.OneMonth, nil
+	default:
+		return "", fmt.Errorf("unsupported period %q: use 'd', 'w', or 'm'", period)
+	}
+}
+
+// StockHistoricalQuote fetches historical OHLCV bars from Yahoo Finance.
 func (p *YahooProvider) StockHistoricalQuote(
 	ctx context.Context,
 	symbol string,
@@ -130,10 +147,10 @@ func (p *YahooProvider) StockHistoricalQuote(
 	from time.Time,
 	to time.Time,
 ) (*HistoricalQuoteResult, error) {
-	return nil, errors.New("historical quotes not supported by Yahoo provider")
+	return p.fetchHistorical(ctx, symbol, period, from, to)
 }
 
-// CryptoHistoricalQuote is not supported by Yahoo provider.
+// CryptoHistoricalQuote fetches historical OHLCV bars from Yahoo Finance.
 func (p *YahooProvider) CryptoHistoricalQuote(
 	ctx context.Context,
 	symbol string,
@@ -141,5 +158,60 @@ func (p *YahooProvider) CryptoHistoricalQuote(
 	from time.Time,
 	to time.Time,
 ) (*HistoricalQuoteResult, error) {
-	return nil, errors.New("historical quotes not supported by Yahoo provider")
+	return p.fetchHistorical(ctx, symbol, period, from, to)
+}
+
+func (p *YahooProvider) fetchHistorical(
+	ctx context.Context,
+	symbol string,
+	period string,
+	from time.Time,
+	to time.Time,
+) (*HistoricalQuoteResult, error) {
+	interval, err := periodToInterval(period)
+	if err != nil {
+		return nil, err
+	}
+
+	params := &chart.Params{
+		Symbol:   symbol,
+		Start:    datetime.New(&from),
+		End:      datetime.New(&to),
+		Interval: interval,
+	}
+	params.Context = &ctx
+
+	iter := chart.Get(params)
+
+	result := &HistoricalQuoteResult{
+		Symbol: symbol,
+		Period: period,
+	}
+
+	meta := iter.Meta()
+	result.Metadata.Name = meta.Symbol
+	result.Metadata.Exchange = meta.ExchangeName
+	result.Metadata.Currency = meta.Currency
+
+	for iter.Next() {
+		bar := iter.Bar()
+		if bar == nil {
+			continue
+		}
+		close := bar.AdjClose
+		if close.IsZero() {
+			close = bar.Close
+		}
+		t := time.Unix(int64(bar.Timestamp), 0).UTC()
+		result.Data = append(result.Data, HistoricalDataPoint{
+			Date:  t,
+			Close: close,
+		})
+	}
+
+	if err := iter.Err(); err != nil {
+		return nil, fmt.Errorf("chart fetch failed for %s: %w", symbol, err)
+	}
+
+	return result, nil
 }
