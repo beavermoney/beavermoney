@@ -25,6 +25,8 @@ const (
 	FieldLocale = "locale"
 	// FieldCurrencyID holds the string denoting the currency_id field in the database.
 	FieldCurrencyID = "currency_id"
+	// FieldIsDemo holds the string denoting the is_demo field in the database.
+	FieldIsDemo = "is_demo"
 	// EdgeCurrency holds the string denoting the currency edge name in mutations.
 	EdgeCurrency = "currency"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
@@ -134,6 +136,7 @@ var Columns = []string{
 	FieldName,
 	FieldLocale,
 	FieldCurrencyID,
+	FieldIsDemo,
 }
 
 var (
@@ -172,6 +175,8 @@ var (
 	LocaleValidator func(string) error
 	// CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
 	CurrencyIDValidator func(int) error
+	// DefaultIsDemo holds the default value on creation for the "is_demo" field.
+	DefaultIsDemo bool
 )
 
 // OrderOption defines the ordering options for the Household queries.
@@ -205,6 +210,11 @@ func ByLocale(opts ...sql.OrderTermOption) OrderOption {
 // ByCurrencyID orders the results by the currency_id field.
 func ByCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCurrencyID, opts...).ToFunc()
+}
+
+// ByIsDemo orders the results by the is_demo field.
+func ByIsDemo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsDemo, opts...).ToFunc()
 }
 
 // ByCurrencyField orders the results by currency field.

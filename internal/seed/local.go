@@ -2,6 +2,7 @@ package seed
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"beavermoney.app/internal/contextkeys"
 	"beavermoney.app/internal/fxrate"
 	"beavermoney.app/internal/market"
+	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 )
 
@@ -283,6 +285,567 @@ func Seed(
 	}
 
 	return nil
+}
+
+// SeedDemoHousehold creates realistic demo data for a new household with weekly checkpoints.
+// Data is built incrementally over 6 months (26 weeks) with accurate checkpoints after each week.
+func SeedDemoHousehold(
+	ctx context.Context,
+	client *ent.Client,
+	household *ent.Household,
+	userID int,
+	fxrateClient *fxrate.Client,
+	marketClient *market.Client,
+) error {
+	// Load household currency
+	householdCurrency, err := household.QueryCurrency().Only(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to load household currency: %w", err)
+	}
+
+	// Demo household is always CAD / Canada
+	config := getDemoConfig()
+
+	// Create accounts (backdated to 6 months ago)
+	startDate := time.Now().AddDate(0, -6, 0).UTC()
+	accounts, err := createDemoAccounts(ctx, client, household, userID, householdCurrency, config, startDate)
+	if err != nil {
+		return fmt.Errorf("failed to create demo accounts: %w", err)
+	}
+
+	// Get categories
+	categories, err := getCategories(ctx, client)
+	if err != nil {
+		return fmt.Errorf("failed to get categories: %w", err)
+	}
+
+	// Fetch and create investments
+	investments, err := fetchAndCreateInvestments(ctx, client, household, accounts.investment, householdCurrency, config, marketClient, startDate)
+	if err != nil {
+		return fmt.Errorf("failed to create investments: %w", err)
+	}
+
+	// Build data week by week with checkpoints
+	currentDate := startDate
+	for weekNumber := 0; weekNumber < 26; weekNumber++ {
+		weekStart := currentDate
+		weekEnd := weekStart.AddDate(0, 0, 7)
+
+		// First week: initial salary
+		if weekNumber == 0 {
+			if err := createTransaction(ctx, client, weekStart, accounts.checking, categories.salary, config.monthlySalary, household, userID); err != nil {
+				return fmt.Errorf("failed to create initial salary: %w", err)
+			}
+		}
+
+		// Monthly salary (every ~4 weeks)
+		if weekNumber%4 == 0 && weekNumber > 0 {
+			if err := createTransaction(ctx, client, weekStart, accounts.checking, categories.salary, config.monthlySalary, household, userID); err != nil {
+				return fmt.Errorf("failed to create salary for week %d: %w", weekNumber, err)
+			}
+		}
+
+		// Weekly expenses
+		if err := createWeeklyExpenses(ctx, client, weekStart, weekEnd, accounts.creditCard, categories, household, userID, weekNumber); err != nil {
+			return fmt.Errorf("failed to create expenses for week %d: %w", weekNumber, err)
+		}
+
+		// Investment purchases (every 3 weeks)
+		if weekNumber%3 == 0 {
+			if err := buyInvestmentShares(ctx, client, weekStart.AddDate(0, 0, 3), investments, categories.buy, household, userID, weekNumber); err != nil {
+				return fmt.Errorf("failed to buy investments for week %d: %w", weekNumber, err)
+			}
+		}
+
+		// Create checkpoint at end of week
+		checkpointDate := weekEnd.Add(-1 * time.Hour)
+		if err := createCheckpointAtDate(ctx, client, household, householdCurrency, fxrateClient, checkpointDate); err != nil {
+			return fmt.Errorf("failed to create checkpoint for week %d: %w", weekNumber, err)
+		}
+
+		currentDate = weekEnd
+	}
+
+	return nil
+}
+
+// demoConfig holds configuration for the demo household (CAD / Canada).
+type demoConfig struct {
+	checkingName   string
+	creditCardName string
+	investmentName string
+	etfSymbol      string
+	stockSymbols   []string
+	monthlySalary  decimal.Decimal
+}
+
+func getDemoConfig() demoConfig {
+	return demoConfig{
+		checkingName:   "TD Chequing Account",
+		creditCardName: "Wealthsimple Visa Infinite",
+		investmentName: "Webull",
+		etfSymbol:      "VFV.TO",
+		stockSymbols:   []string{"SHOP.TO", "META", "TD.TO"},
+		monthlySalary:  decimal.NewFromInt(6500),
+	}
+}
+
+// demoAccounts holds the created accounts
+type demoAccounts struct {
+	checking   *ent.Account
+	creditCard *ent.Account
+	investment *ent.Account
+}
+
+func createDemoAccounts(
+	ctx context.Context,
+	client *ent.Client,
+	household *ent.Household,
+	userID int,
+	householdCurrency *ent.Currency,
+	config demoConfig,
+	createdAt time.Time,
+) (*demoAccounts, error) {
+	checking, err := client.Account.Create().
+		SetName(config.checkingName).
+		SetCurrency(householdCurrency).
+		SetFxRate(decimal.NewFromInt(1)).
+		SetUserID(userID).
+		SetHouseholdID(household.ID).
+		SetType(account.TypeLiquidity).
+		SetCreateTime(createdAt).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create checking account: %w", err)
+	}
+	checking.Edges.Currency = householdCurrency
+
+	creditCard, err := client.Account.Create().
+		SetName(config.creditCardName).
+		SetCurrency(householdCurrency).
+		SetFxRate(decimal.NewFromInt(1)).
+		SetUserID(userID).
+		SetHouseholdID(household.ID).
+		SetType(account.TypeLiability).
+		SetCreateTime(createdAt).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create credit card account: %w", err)
+	}
+	creditCard.Edges.Currency = householdCurrency
+
+	investmentAccount, err := client.Account.Create().
+		SetName(config.investmentName).
+		SetCurrency(householdCurrency).
+		SetFxRate(decimal.NewFromInt(1)).
+		SetUserID(userID).
+		SetHouseholdID(household.ID).
+		SetType(account.TypeInvestment).
+		SetCreateTime(createdAt).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create investment account: %w", err)
+	}
+	investmentAccount.Edges.Currency = householdCurrency
+
+	return &demoAccounts{
+		checking:   checking,
+		creditCard: creditCard,
+		investment: investmentAccount,
+	}, nil
+}
+
+// categorySet holds commonly used categories
+type categorySet struct {
+	restaurant     *ent.TransactionCategory
+	grocery        *ent.TransactionCategory
+	transportation *ent.TransactionCategory
+	subscription   *ent.TransactionCategory
+	salary         *ent.TransactionCategory
+	buy            *ent.TransactionCategory
+}
+
+func getCategories(ctx context.Context, client *ent.Client) (*categorySet, error) {
+	restaurant, err := client.TransactionCategory.Query().
+		Where(transactioncategory.NameEQ("Restaurant")).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get restaurant category: %w", err)
+	}
+
+	grocery, err := client.TransactionCategory.Query().
+		Where(transactioncategory.NameEQ("Grocery")).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get grocery category: %w", err)
+	}
+
+	transportation, err := client.TransactionCategory.Query().
+		Where(transactioncategory.NameEQ("Transportation")).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get transportation category: %w", err)
+	}
+
+	subscription, err := client.TransactionCategory.Query().
+		Where(transactioncategory.NameEQ("Subscription")).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get subscription category: %w", err)
+	}
+
+	salary, err := client.TransactionCategory.Query().
+		Where(transactioncategory.NameEQ("Salary")).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get salary category: %w", err)
+	}
+
+	buy, err := client.TransactionCategory.Query().
+		Where(transactioncategory.NameEQ("Buy")).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get buy category: %w", err)
+	}
+
+	return &categorySet{
+		restaurant:     restaurant,
+		grocery:        grocery,
+		transportation: transportation,
+		subscription:   subscription,
+		salary:         salary,
+		buy:            buy,
+	}, nil
+}
+
+// investmentSet holds created investments
+type investmentSet struct {
+	etf    *ent.Investment
+	stocks []*ent.Investment
+}
+
+func fetchAndCreateInvestments(
+	ctx context.Context,
+	client *ent.Client,
+	household *ent.Household,
+	investmentAccount *ent.Account,
+	householdCurrency *ent.Currency,
+	config demoConfig,
+	marketClient *market.Client,
+	createdAt time.Time,
+) (*investmentSet, error) {
+	// Fetch ETF quote
+	etfQuote, err := marketClient.StockQuote(ctx, config.etfSymbol)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch ETF quote for %s: %w", config.etfSymbol, err)
+	}
+
+	etf, err := client.Investment.Create().
+		SetHouseholdID(household.ID).
+		SetSymbol(config.etfSymbol).
+		SetName(config.etfSymbol).
+		SetQuote(etfQuote.CurrentPrice).
+		SetCurrency(householdCurrency).
+		SetType(investment.TypeStock).
+		SetAccount(investmentAccount).
+		SetCreateTime(createdAt).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ETF investment: %w", err)
+	}
+
+	// Fetch and create stock investments
+	stocks := make([]*ent.Investment, 0, len(config.stockSymbols))
+	for _, symbol := range config.stockSymbols {
+		quote, err := marketClient.StockQuote(ctx, symbol)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch stock quote for %s: %w", symbol, err)
+		}
+
+		stock, err := client.Investment.Create().
+			SetHouseholdID(household.ID).
+			SetSymbol(symbol).
+			SetName(symbol).
+			SetQuote(quote.CurrentPrice).
+			SetCurrency(householdCurrency).
+			SetType(investment.TypeStock).
+			SetAccount(investmentAccount).
+			SetCreateTime(createdAt).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create stock investment %s: %w", symbol, err)
+		}
+
+		stocks = append(stocks, stock)
+	}
+
+	return &investmentSet{
+		etf:    etf,
+		stocks: stocks,
+	}, nil
+}
+
+// createTransaction creates a transaction with backdated timestamp
+func createTransaction(
+	ctx context.Context,
+	client *ent.Client,
+	date time.Time,
+	account *ent.Account,
+	category *ent.TransactionCategory,
+	amount decimal.Decimal,
+	household *ent.Household,
+	userID int,
+) error {
+	tx, err := client.Transaction.Create().
+		SetUserID(userID).
+		SetHouseholdID(household.ID).
+		SetCategory(category).
+		SetDatetime(date).
+		SetCreateTime(date).
+		Save(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create transaction: %w", err)
+	}
+
+	_, err = client.TransactionEntry.Create().
+		SetAccount(account).
+		SetHouseholdID(household.ID).
+		SetTransaction(tx).
+		SetCurrency(account.Edges.Currency).
+		SetAmount(amount).
+		SetCreateTime(date).
+		Save(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create transaction entry: %w", err)
+	}
+
+	return nil
+}
+
+// createWeeklyExpenses creates realistic expenses for a week
+func createWeeklyExpenses(
+	ctx context.Context,
+	client *ent.Client,
+	weekStart, weekEnd time.Time,
+	creditCard *ent.Account,
+	categories *categorySet,
+	household *ent.Household,
+	userID int,
+	weekNumber int,
+) error {
+	// 2-3 restaurant visits per week
+	for i := 0; i < 2+rand.Intn(2); i++ {
+		day := rand.Intn(7)
+		date := weekStart.AddDate(0, 0, day).Add(time.Duration(8+rand.Intn(12)) * time.Hour)
+		if err := createTransaction(ctx, client, date, creditCard, categories.restaurant, genRandomRestaurantAmount(), household, userID); err != nil {
+			return err
+		}
+	}
+
+	// 1 grocery trip per week
+	groceryDay := 2 + rand.Intn(5)
+	groceryDate := weekStart.AddDate(0, 0, groceryDay).Add(time.Duration(10+rand.Intn(8)) * time.Hour)
+	if err := createTransaction(ctx, client, groceryDate, creditCard, categories.grocery, genRandomGroceryAmount(), household, userID); err != nil {
+		return err
+	}
+
+	// 1-2 transportation expenses per week
+	for i := 0; i < 1+rand.Intn(2); i++ {
+		day := rand.Intn(7)
+		date := weekStart.AddDate(0, 0, day).Add(time.Duration(7+rand.Intn(10)) * time.Hour)
+		if err := createTransaction(ctx, client, date, creditCard, categories.transportation, genRandomTransportationAmount(), household, userID); err != nil {
+			return err
+		}
+	}
+
+	// Subscriptions at start of month (week 0, 4, 8, 12, 16, 20, 24)
+	if weekNumber%4 == 0 {
+		subscriptions := []decimal.Decimal{
+			decimal.NewFromFloat(-9.99),  // Netflix
+			decimal.NewFromFloat(-19.99), // Gym
+			decimal.NewFromFloat(-5.99),  // Cloud storage
+		}
+		for i, amount := range subscriptions {
+			date := weekStart.AddDate(0, 0, i).Add(time.Duration(9) * time.Hour)
+			if err := createTransaction(ctx, client, date, creditCard, categories.subscription, amount, household, userID); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// buyInvestmentShares purchases investment shares at different intervals
+func buyInvestmentShares(
+	ctx context.Context,
+	client *ent.Client,
+	date time.Time,
+	investments *investmentSet,
+	buyCategory *ent.TransactionCategory,
+	household *ent.Household,
+	userID int,
+	weekNumber int,
+) error {
+	// Alternate between ETF and stock purchases
+	switch weekNumber % 9 {
+	case 0:
+		// Buy ETF
+		return buyShares(ctx, client, date, investments.etf, buyCategory, household, userID, decimal.NewFromInt(50), 0.95)
+	case 3:
+		// Buy first stock
+		if len(investments.stocks) > 0 {
+			return buyShares(ctx, client, date, investments.stocks[0], buyCategory, household, userID, decimal.NewFromInt(5), 0.92)
+		}
+	case 6:
+		// Buy second stock
+		if len(investments.stocks) > 1 {
+			return buyShares(ctx, client, date, investments.stocks[1], buyCategory, household, userID, decimal.NewFromInt(8), 0.88)
+		}
+	case 9:
+		// Buy third stock
+		if len(investments.stocks) > 2 {
+			return buyShares(ctx, client, date, investments.stocks[2], buyCategory, household, userID, decimal.NewFromInt(3), 0.90)
+		}
+	}
+	return nil
+}
+
+// buyShares creates an investment lot purchase
+func buyShares(
+	ctx context.Context,
+	client *ent.Client,
+	date time.Time,
+	investment *ent.Investment,
+	buyCategory *ent.TransactionCategory,
+	household *ent.Household,
+	userID int,
+	shares decimal.Decimal,
+	priceMultiplier float64,
+) error {
+	tx, err := client.Transaction.Create().
+		SetUserID(userID).
+		SetHouseholdID(household.ID).
+		SetCategory(buyCategory).
+		SetDatetime(date).
+		SetCreateTime(date).
+		Save(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create buy transaction: %w", err)
+	}
+
+	price := investment.Quote.Mul(decimal.NewFromFloat(priceMultiplier))
+
+	_, err = client.InvestmentLot.Create().
+		SetInvestment(investment).
+		SetTransaction(tx).
+		SetHouseholdID(household.ID).
+		SetAmount(shares).
+		SetPrice(price).
+		SetCreateTime(date).
+		Save(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create investment lot: %w", err)
+	}
+
+	return nil
+}
+
+// createCheckpointAtDate creates a checkpoint at a specific historical date
+func createCheckpointAtDate(
+	ctx context.Context,
+	client *ent.Client,
+	household *ent.Household,
+	householdCurrency *ent.Currency,
+	fxrateClient *fxrate.Client,
+	checkpointDate time.Time,
+) error {
+	// Query all accounts
+	accounts, err := client.Account.Query().
+		Where(account.HouseholdIDEQ(household.ID)).
+		WithCurrency().
+		All(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to query accounts: %w", err)
+	}
+
+	// Calculate totals by account type
+	zero := decimal.NewFromInt(0)
+	liquidity := zero
+	investment := zero
+	property := zero
+	receivable := zero
+	liability := zero
+
+	// Group by currency
+	currencyToAccounts := lo.GroupBy(accounts, func(a *ent.Account) string {
+		return a.Edges.Currency.Code
+	})
+
+	for currencyCode, accts := range currencyToAccounts {
+		fxRate := decimal.NewFromInt(1)
+
+		if currencyCode != householdCurrency.Code {
+			rate, err := fxrateClient.GetRate(ctx, currencyCode, householdCurrency.Code, checkpointDate)
+			if err != nil {
+				return fmt.Errorf("failed to get FX rate: %w", err)
+			}
+			fxRate = rate
+		}
+
+		for _, acc := range accts {
+			convertedValue := acc.Value.Mul(fxRate)
+
+			switch acc.Type {
+			case account.TypeLiquidity:
+				liquidity = liquidity.Add(convertedValue)
+			case account.TypeInvestment:
+				investment = investment.Add(convertedValue)
+			case account.TypeProperty:
+				property = property.Add(convertedValue)
+			case account.TypeReceivable:
+				receivable = receivable.Add(convertedValue)
+			case account.TypeLiability:
+				liability = liability.Add(convertedValue)
+			}
+		}
+	}
+
+	netWorth := liquidity.Add(investment).Add(property).Add(receivable).Add(liability)
+
+	// Create checkpoint with backdated timestamp
+	_, err = client.Checkpoint.Create().
+		SetHouseholdID(household.ID).
+		SetCurrencyID(householdCurrency.ID).
+		SetNetWorth(netWorth).
+		SetLiquidity(liquidity).
+		SetInvestment(investment).
+		SetProperty(property).
+		SetReceivable(receivable).
+		SetLiability(liability).
+		SetCreateTime(checkpointDate).
+		Save(ctx)
+
+	return err
+}
+
+// Helper functions for realistic amounts
+func genRandomRestaurantAmount() decimal.Decimal {
+	min, max := 15.0, 75.0
+	amount := min + rand.Float64()*(max-min)
+	return decimal.NewFromFloat(-amount).Round(2)
+}
+
+func genRandomGroceryAmount() decimal.Decimal {
+	min, max := 30.0, 150.0
+	amount := min + rand.Float64()*(max-min)
+	return decimal.NewFromFloat(-amount).Round(2)
+}
+
+func genRandomTransportationAmount() decimal.Decimal {
+	min, max := 5.0, 60.0
+	amount := min + rand.Float64()*(max-min)
+	return decimal.NewFromFloat(-amount).Round(2)
 }
 
 func genRandomAmount() decimal.Decimal {

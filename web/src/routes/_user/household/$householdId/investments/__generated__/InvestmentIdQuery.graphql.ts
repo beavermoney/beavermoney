@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<511ad9a5985ae3dfc21a72ce977c02da>>
+ * @generated SignedSource<<e7622d2df1a6007beb6b7817b45c2453>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -203,6 +203,8 @@ export type HouseholdWhereInput = {
   idLTE?: string | null | undefined;
   idNEQ?: string | null | undefined;
   idNotIn?: ReadonlyArray<string> | null | undefined;
+  isDemo?: boolean | null | undefined;
+  isDemoNEQ?: boolean | null | undefined;
   locale?: string | null | undefined;
   localeContains?: string | null | undefined;
   localeContainsFold?: string | null | undefined;

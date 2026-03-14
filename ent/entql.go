@@ -107,6 +107,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			household.FieldName:       {Type: field.TypeString, Column: household.FieldName},
 			household.FieldLocale:     {Type: field.TypeString, Column: household.FieldLocale},
 			household.FieldCurrencyID: {Type: field.TypeInt, Column: household.FieldCurrencyID},
+			household.FieldIsDemo:     {Type: field.TypeBool, Column: household.FieldIsDemo},
 		},
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
@@ -1440,6 +1441,11 @@ func (f *HouseholdFilter) WhereLocale(p entql.StringP) {
 // WhereCurrencyID applies the entql int predicate on the currency_id field.
 func (f *HouseholdFilter) WhereCurrencyID(p entql.IntP) {
 	f.Where(p.Field(household.FieldCurrencyID))
+}
+
+// WhereIsDemo applies the entql bool predicate on the is_demo field.
+func (f *HouseholdFilter) WhereIsDemo(p entql.BoolP) {
+	f.Where(p.Field(household.FieldIsDemo))
 }
 
 // WhereHasCurrency applies a predicate to check if query has an edge currency.

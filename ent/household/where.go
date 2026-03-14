@@ -80,6 +80,11 @@ func CurrencyID(v int) predicate.Household {
 	return predicate.Household(sql.FieldEQ(FieldCurrencyID, v))
 }
 
+// IsDemo applies equality check predicate on the "is_demo" field. It's identical to IsDemoEQ.
+func IsDemo(v bool) predicate.Household {
+	return predicate.Household(sql.FieldEQ(FieldIsDemo, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Household {
 	return predicate.Household(sql.FieldEQ(FieldCreateTime, v))
@@ -308,6 +313,16 @@ func CurrencyIDIn(vs ...int) predicate.Household {
 // CurrencyIDNotIn applies the NotIn predicate on the "currency_id" field.
 func CurrencyIDNotIn(vs ...int) predicate.Household {
 	return predicate.Household(sql.FieldNotIn(FieldCurrencyID, vs...))
+}
+
+// IsDemoEQ applies the EQ predicate on the "is_demo" field.
+func IsDemoEQ(v bool) predicate.Household {
+	return predicate.Household(sql.FieldEQ(FieldIsDemo, v))
+}
+
+// IsDemoNEQ applies the NEQ predicate on the "is_demo" field.
+func IsDemoNEQ(v bool) predicate.Household {
+	return predicate.Household(sql.FieldNEQ(FieldIsDemo, v))
 }
 
 // HasCurrency applies the HasEdge predicate on the "currency" edge.

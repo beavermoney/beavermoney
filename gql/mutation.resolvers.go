@@ -43,10 +43,12 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 
 	client := ent.FromContext(ctx)
 
-	// Create the household with a privacy bypass context since the user doesn't have
-	// a household context yet
+	// Create the household with a privacy bypass context since the user doesn't have a
+	// household context yet. The GQL middleware wraps this mutation in a transaction via
+	// entgql.Transactioner, so we use client directly — no nested tx needed.
 	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
 
+	// Create household
 	household, err := client.Household.Create().
 		SetInput(input).
 		Save(bypassCtx)
@@ -66,11 +68,27 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 		return nil, fmt.Errorf("failed to create user-household relationship: %w", err)
 	}
 
-	ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), household.ID)
+	householdCtx := context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), household.ID)
+
 	// Seed default transaction categories for the new household
-	if err := seed.SeedHouseholdCategories(ctx, client, household.ID); err != nil {
+	if err := seed.SeedHouseholdCategories(householdCtx, client, household.ID); err != nil {
 		r.logger.Error("Failed to seed household categories", "error", err)
 		return nil, fmt.Errorf("failed to seed household categories: %w", err)
+	}
+
+	// Seed demo data if requested
+	if input.IsDemo != nil && *input.IsDemo {
+		if err := seed.SeedDemoHousehold(
+			householdCtx,
+			client,
+			household,
+			userID,
+			r.fxrateClient,
+			r.marketClient,
+		); err != nil {
+			r.logger.Error("Failed to seed demo household data", "error", err)
+			return nil, fmt.Errorf("failed to seed demo household data: %w", err)
+		}
 	}
 
 	return household, nil

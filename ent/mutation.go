@@ -3513,6 +3513,7 @@ type HouseholdMutation struct {
 	update_time                    *time.Time
 	name                           *string
 	locale                         *string
+	is_demo                        *bool
 	clearedFields                  map[string]struct{}
 	currency                       *int
 	clearedcurrency                bool
@@ -3827,6 +3828,42 @@ func (m *HouseholdMutation) OldCurrencyID(ctx context.Context) (v int, err error
 // ResetCurrencyID resets all changes to the "currency_id" field.
 func (m *HouseholdMutation) ResetCurrencyID() {
 	m.currency = nil
+}
+
+// SetIsDemo sets the "is_demo" field.
+func (m *HouseholdMutation) SetIsDemo(b bool) {
+	m.is_demo = &b
+}
+
+// IsDemo returns the value of the "is_demo" field in the mutation.
+func (m *HouseholdMutation) IsDemo() (r bool, exists bool) {
+	v := m.is_demo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsDemo returns the old "is_demo" field's value of the Household entity.
+// If the Household object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HouseholdMutation) OldIsDemo(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsDemo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsDemo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsDemo: %w", err)
+	}
+	return oldValue.IsDemo, nil
+}
+
+// ResetIsDemo resets all changes to the "is_demo" field.
+func (m *HouseholdMutation) ResetIsDemo() {
+	m.is_demo = nil
 }
 
 // ClearCurrency clears the "currency" edge to the Currency entity.
@@ -4430,7 +4467,7 @@ func (m *HouseholdMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *HouseholdMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.create_time != nil {
 		fields = append(fields, household.FieldCreateTime)
 	}
@@ -4445,6 +4482,9 @@ func (m *HouseholdMutation) Fields() []string {
 	}
 	if m.currency != nil {
 		fields = append(fields, household.FieldCurrencyID)
+	}
+	if m.is_demo != nil {
+		fields = append(fields, household.FieldIsDemo)
 	}
 	return fields
 }
@@ -4464,6 +4504,8 @@ func (m *HouseholdMutation) Field(name string) (ent.Value, bool) {
 		return m.Locale()
 	case household.FieldCurrencyID:
 		return m.CurrencyID()
+	case household.FieldIsDemo:
+		return m.IsDemo()
 	}
 	return nil, false
 }
@@ -4483,6 +4525,8 @@ func (m *HouseholdMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldLocale(ctx)
 	case household.FieldCurrencyID:
 		return m.OldCurrencyID(ctx)
+	case household.FieldIsDemo:
+		return m.OldIsDemo(ctx)
 	}
 	return nil, fmt.Errorf("unknown Household field %s", name)
 }
@@ -4526,6 +4570,13 @@ func (m *HouseholdMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCurrencyID(v)
+		return nil
+	case household.FieldIsDemo:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsDemo(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Household field %s", name)
@@ -4593,6 +4644,9 @@ func (m *HouseholdMutation) ResetField(name string) error {
 		return nil
 	case household.FieldCurrencyID:
 		m.ResetCurrencyID()
+		return nil
+	case household.FieldIsDemo:
+		m.ResetIsDemo()
 		return nil
 	}
 	return fmt.Errorf("unknown Household field %s", name)

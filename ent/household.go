@@ -28,6 +28,8 @@ type Household struct {
 	Locale string `json:"locale,omitempty"`
 	// CurrencyID holds the value of the "currency_id" field.
 	CurrencyID int `json:"currency_id,omitempty"`
+	// IsDemo holds the value of the "is_demo" field.
+	IsDemo bool `json:"is_demo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the HouseholdQuery when eager-loading is set.
 	Edges        HouseholdEdges `json:"edges"`
@@ -182,6 +184,8 @@ func (*Household) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case household.FieldIsDemo:
+			values[i] = new(sql.NullBool)
 		case household.FieldID, household.FieldCurrencyID:
 			values[i] = new(sql.NullInt64)
 		case household.FieldName, household.FieldLocale:
@@ -238,6 +242,12 @@ func (_m *Household) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field currency_id", values[i])
 			} else if value.Valid {
 				_m.CurrencyID = int(value.Int64)
+			}
+		case household.FieldIsDemo:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_demo", values[i])
+			} else if value.Valid {
+				_m.IsDemo = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -344,6 +354,9 @@ func (_m *Household) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))
+	builder.WriteString(", ")
+	builder.WriteString("is_demo=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsDemo))
 	builder.WriteByte(')')
 	return builder.String()
 }

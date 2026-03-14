@@ -703,6 +703,11 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				selectedFields = append(selectedFields, household.FieldCurrencyID)
 				fieldSeen[household.FieldCurrencyID] = struct{}{}
 			}
+		case "isDemo":
+			if _, ok := fieldSeen[household.FieldIsDemo]; !ok {
+				selectedFields = append(selectedFields, household.FieldIsDemo)
+				fieldSeen[household.FieldIsDemo] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:

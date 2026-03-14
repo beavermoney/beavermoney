@@ -79,6 +79,20 @@ func (_c *HouseholdCreate) SetCurrencyID(v int) *HouseholdCreate {
 	return _c
 }
 
+// SetIsDemo sets the "is_demo" field.
+func (_c *HouseholdCreate) SetIsDemo(v bool) *HouseholdCreate {
+	_c.mutation.SetIsDemo(v)
+	return _c
+}
+
+// SetNillableIsDemo sets the "is_demo" field if the given value is not nil.
+func (_c *HouseholdCreate) SetNillableIsDemo(v *bool) *HouseholdCreate {
+	if v != nil {
+		_c.SetIsDemo(*v)
+	}
+	return _c
+}
+
 // SetCurrency sets the "currency" edge to the Currency entity.
 func (_c *HouseholdCreate) SetCurrency(v *Currency) *HouseholdCreate {
 	return _c.SetCurrencyID(v.ID)
@@ -285,6 +299,10 @@ func (_c *HouseholdCreate) defaults() error {
 		v := household.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
+	if _, ok := _c.mutation.IsDemo(); !ok {
+		v := household.DefaultIsDemo
+		_c.mutation.SetIsDemo(v)
+	}
 	return nil
 }
 
@@ -319,6 +337,9 @@ func (_c *HouseholdCreate) check() error {
 		if err := household.CurrencyIDValidator(v); err != nil {
 			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "Household.currency_id": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.IsDemo(); !ok {
+		return &ValidationError{Name: "is_demo", err: errors.New(`ent: missing required field "Household.is_demo"`)}
 	}
 	if len(_c.mutation.CurrencyIDs()) == 0 {
 		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "Household.currency"`)}
@@ -365,6 +386,10 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
 		_node.Locale = value
+	}
+	if value, ok := _c.mutation.IsDemo(); ok {
+		_spec.SetField(household.FieldIsDemo, field.TypeBool, value)
+		_node.IsDemo = value
 	}
 	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -661,6 +686,9 @@ func (u *HouseholdUpsertOne) UpdateNewValues() *HouseholdUpsertOne {
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(household.FieldCreateTime)
 		}
+		if _, exists := u.create.mutation.IsDemo(); exists {
+			s.SetIgnore(household.FieldIsDemo)
+		}
 	}))
 	return u
 }
@@ -926,6 +954,9 @@ func (u *HouseholdUpsertBulk) UpdateNewValues() *HouseholdUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(household.FieldCreateTime)
+			}
+			if _, exists := b.mutation.IsDemo(); exists {
+				s.SetIgnore(household.FieldIsDemo)
 			}
 		}
 	}))

@@ -112,6 +112,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "locale", Type: field.TypeString},
+		{Name: "is_demo", Type: field.TypeBool, Default: false},
 		{Name: "currency_id", Type: field.TypeInt},
 	}
 	// HouseholdsTable holds the schema information for the "households" table.
@@ -122,7 +123,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "households_currencies_households",
-				Columns:    []*schema.Column{HouseholdsColumns[5]},
+				Columns:    []*schema.Column{HouseholdsColumns[6]},
 				RefColumns: []*schema.Column{CurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

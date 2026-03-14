@@ -1547,6 +1547,10 @@ type HouseholdWhereInput struct {
 	CurrencyIDIn    []int `json:"currencyIDIn,omitempty"`
 	CurrencyIDNotIn []int `json:"currencyIDNotIn,omitempty"`
 
+	// "is_demo" field predicates.
+	IsDemo    *bool `json:"isDemo,omitempty"`
+	IsDemoNEQ *bool `json:"isDemoNEQ,omitempty"`
+
 	// "currency" edge predicates.
 	HasCurrency     *bool                 `json:"hasCurrency,omitempty"`
 	HasCurrencyWith []*CurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
@@ -1824,6 +1828,12 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 	}
 	if len(i.CurrencyIDNotIn) > 0 {
 		predicates = append(predicates, household.CurrencyIDNotIn(i.CurrencyIDNotIn...))
+	}
+	if i.IsDemo != nil {
+		predicates = append(predicates, household.IsDemoEQ(*i.IsDemo))
+	}
+	if i.IsDemoNEQ != nil {
+		predicates = append(predicates, household.IsDemoNEQ(*i.IsDemoNEQ))
 	}
 
 	if i.HasCurrency != nil {

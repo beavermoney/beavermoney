@@ -122,6 +122,7 @@ func (c *CheckpointUpdateOne) SetInput(i UpdateCheckpointInput) *CheckpointUpdat
 type CreateHouseholdInput struct {
 	Name       string
 	Locale     string
+	IsDemo     *bool
 	CurrencyID int
 }
 
@@ -129,6 +130,9 @@ type CreateHouseholdInput struct {
 func (i *CreateHouseholdInput) Mutate(m *HouseholdMutation) {
 	m.SetName(i.Name)
 	m.SetLocale(i.Locale)
+	if v := i.IsDemo; v != nil {
+		m.SetIsDemo(*v)
+	}
 	m.SetCurrencyID(i.CurrencyID)
 }
 
