@@ -31,32 +31,32 @@ func (r *accountResolver) FxRate(ctx context.Context, obj *ent.Account) (string,
 
 // NetWorth is the resolver for the netWorth field.
 func (r *checkpointResolver) NetWorth(ctx context.Context, obj *ent.Checkpoint) (string, error) {
-	panic(fmt.Errorf("not implemented: NetWorth - netWorth"))
+	return obj.NetWorth.String(), nil
 }
 
 // Liquidity is the resolver for the liquidity field.
 func (r *checkpointResolver) Liquidity(ctx context.Context, obj *ent.Checkpoint) (string, error) {
-	panic(fmt.Errorf("not implemented: Liquidity - liquidity"))
+	return obj.Liquidity.String(), nil
 }
 
 // Investment is the resolver for the investment field.
 func (r *checkpointResolver) Investment(ctx context.Context, obj *ent.Checkpoint) (string, error) {
-	panic(fmt.Errorf("not implemented: Investment - investment"))
+	return obj.Investment.String(), nil
 }
 
 // Property is the resolver for the property field.
 func (r *checkpointResolver) Property(ctx context.Context, obj *ent.Checkpoint) (string, error) {
-	panic(fmt.Errorf("not implemented: Property - property"))
+	return obj.Property.String(), nil
 }
 
 // Receivable is the resolver for the receivable field.
 func (r *checkpointResolver) Receivable(ctx context.Context, obj *ent.Checkpoint) (string, error) {
-	panic(fmt.Errorf("not implemented: Receivable - receivable"))
+	return obj.Receivable.String(), nil
 }
 
 // Liability is the resolver for the liability field.
 func (r *checkpointResolver) Liability(ctx context.Context, obj *ent.Checkpoint) (string, error) {
-	panic(fmt.Errorf("not implemented: Liability - liability"))
+	return obj.Liability.String(), nil
 }
 
 // Amount is the resolver for the amount field.
@@ -100,8 +100,8 @@ func (r *queryResolver) Accounts(ctx context.Context, after *entgql.Cursor[int],
 }
 
 // Checkpoints is the resolver for the checkpoints field.
-func (r *queryResolver) Checkpoints(ctx context.Context) ([]*ent.Checkpoint, error) {
-	panic(fmt.Errorf("not implemented: Checkpoints - checkpoints"))
+func (r *queryResolver) Checkpoints(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.CheckpointWhereInput) (*ent.CheckpointConnection, error) {
+	return r.entClient.Checkpoint.Query().Paginate(ctx, after, first, before, last, ent.WithCheckpointFilter(where.Filter))
 }
 
 // Currencies is the resolver for the currencies field.

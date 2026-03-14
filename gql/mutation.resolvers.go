@@ -1347,6 +1347,164 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool,
 	return true, nil
 }
 
+// CreateCheckpoint is the resolver for the createCheckpoint field.
+func (r *mutationResolver) CreateCheckpoint(ctx context.Context) (*ent.CheckpointEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.CreateCheckpoint",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	// Get household with currency
+	household, err := client.Household.Query().
+		Where(household.IDEQ(householdID)).
+		WithCurrency().
+		Only(ctx)
+	if err != nil {
+		r.logger.Error("Failed to fetch household", "error", err)
+		return nil, err
+	}
+
+	householdCurrencyCode := household.Edges.Currency.Code
+
+	// Fetch all non-archived accounts for the household with their currencies
+	accounts, err := client.Account.Query().
+		Where(account.ArchivedEQ(false)).
+		WithCurrency().
+		All(ctx)
+	if err != nil {
+		r.logger.Error("Failed to fetch accounts", "error", err)
+		return nil, err
+	}
+
+	// Initialize totals for each account type
+	zero := decimal.NewFromInt(0)
+	liquidity := zero
+	investment := zero
+	property := zero
+	receivable := zero
+	liability := zero
+
+	// Group accounts by currency to minimize FX rate API calls
+	currencyToAccounts := lo.GroupBy(accounts, func(account *ent.Account) string {
+		return account.Edges.Currency.Code
+	})
+
+	// Convert each account's value to household currency
+	for currencyCode, accts := range currencyToAccounts {
+		fxRate := decimal.NewFromInt(1)
+
+		if currencyCode != householdCurrencyCode {
+			rate, err := r.fxrateClient.GetRate(ctx, currencyCode, householdCurrencyCode, time.Now())
+			if err != nil {
+				r.logger.Error("Failed to get FX rate", "error", err, "from", currencyCode, "to", householdCurrencyCode)
+				return nil, err
+			}
+			fxRate = rate
+		}
+
+		// Sum up values by account type
+		for _, acc := range accts {
+			convertedValue := acc.Value.Mul(fxRate)
+
+			switch acc.Type {
+			case account.TypeLiquidity:
+				liquidity = liquidity.Add(convertedValue)
+			case account.TypeInvestment:
+				investment = investment.Add(convertedValue)
+			case account.TypeProperty:
+				property = property.Add(convertedValue)
+			case account.TypeReceivable:
+				receivable = receivable.Add(convertedValue)
+			case account.TypeLiability:
+				liability = liability.Add(convertedValue)
+			}
+		}
+	}
+
+	// Calculate net worth (liabilities are already negative)
+	netWorth := liquidity.Add(investment).Add(property).Add(receivable).Add(liability)
+
+	// Create the checkpoint
+	checkpoint, err := client.Checkpoint.Create().
+		SetHouseholdID(householdID).
+		SetCurrencyID(household.Edges.Currency.ID).
+		SetNetWorth(netWorth).
+		SetLiquidity(liquidity).
+		SetInvestment(investment).
+		SetProperty(property).
+		SetReceivable(receivable).
+		SetLiability(liability).
+		Save(ctx)
+	if err != nil {
+		r.logger.Error("Failed to create checkpoint", "error", err)
+		return nil, err
+	}
+
+	return &ent.CheckpointEdge{
+		Node:   checkpoint,
+		Cursor: gqlutil.EncodeCursor(checkpoint.ID),
+	}, nil
+}
+
+// UpdateCheckpoint is the resolver for the updateCheckpoint field.
+func (r *mutationResolver) UpdateCheckpoint(ctx context.Context, id int, input ent.UpdateCheckpointInput) (*ent.CheckpointEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateCheckpoint",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	updated, err := client.Checkpoint.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		r.logger.Error("Failed to update checkpoint", "error", err)
+		return nil, err
+	}
+
+	return &ent.CheckpointEdge{
+		Node:   updated,
+		Cursor: gqlutil.EncodeCursor(updated.ID),
+	}, nil
+}
+
+// DeleteCheckpoint is the resolver for the deleteCheckpoint field.
+func (r *mutationResolver) DeleteCheckpoint(ctx context.Context, id int) (bool, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteCheckpoint",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	err := client.Checkpoint.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete checkpoint", "error", err)
+		return false, err
+	}
+
+	return true, nil
+}
+
 // Refresh is the resolver for the refresh field.
 func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 	userID := contextkeys.GetUserID(ctx)
