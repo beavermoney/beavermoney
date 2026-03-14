@@ -305,8 +305,8 @@ func SeedDemoHousehold(
 	// Demo household is always CAD / Canada
 	config := getDemoConfig()
 
-	// Create accounts (backdated to 6 months ago)
-	startDate := time.Now().AddDate(0, -6, 0).UTC()
+	// Start exactly 26 weeks ago so the final week-end lands on now.
+	startDate := time.Now().UTC().AddDate(0, 0, -26*7)
 	accounts, err := createDemoAccounts(
 		ctx,
 		client,
@@ -397,7 +397,7 @@ func SeedDemoHousehold(
 
 		// Update all investment quotes to their real historical price at week-end so the
 		// DB trigger recalculates Account.Value before we snapshot the checkpoint.
-		checkpointDate := weekEnd.Add(-1 * time.Hour)
+		checkpointDate := weekEnd
 		if err := updateInvestmentQuotesToHistorical(ctx, client, investments, historicalPrices, checkpointDate); err != nil {
 			return fmt.Errorf(
 				"failed to update investment quotes for week %d: %w",
