@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
 import { capitalize, groupBy, map } from 'lodash-es'
-import { Fragment } from 'react/jsx-runtime'
+import { Fragment, Suspense } from 'react'
 import { useMemo, useState } from 'react'
 import currency from 'currency.js'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -34,6 +34,7 @@ import { useHousehold } from '@/hooks/use-household'
 import { Button } from '@/components/ui/button'
 import { ACCOUNT_TYPE_LIST } from '@/constant'
 import { PlusButton } from '@/components/plus-button'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const AccountsPanelFragment = graphql`
   fragment accountsPanelFragment on Query
@@ -54,7 +55,6 @@ const AccountsPanelFragment = graphql`
         }
       }
     }
-    ...netWorthChartFragment
   }
 `
 
@@ -182,9 +182,24 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         </ItemContent>
       </Item>
       <div className="py-1"></div>
-      <Item className="p-0">
-        <NetWorthChart fragmentRef={data} />
-      </Item>
+      <Suspense
+        fallback={
+          <Item
+            variant="outline"
+            className="w-full flex-col items-stretch gap-0 px-0 py-0"
+          >
+            <div className="px-3 pt-2.5 pb-1">
+              <Skeleton className="h-5 w-48" />
+            </div>
+            <Skeleton className="mx-3 h-36 rounded-md" />
+            <div className="flex justify-end px-3 pt-1 pb-2.5">
+              <Skeleton className="h-5 w-32" />
+            </div>
+          </Item>
+        }
+      >
+        <NetWorthChart />
+      </Suspense>
       <div className="py-1"></div>
       <Accordion
         multiple

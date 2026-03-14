@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<953f320e72684773753c5897898735ad>>
+ * @generated SignedSource<<00204c015b59fad3286f334ee880a142>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -47,63 +47,7 @@ v2 = {
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "__typename",
-  "storageKey": null
-},
-v4 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "cursor",
-  "storageKey": null
-},
-v5 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "PageInfo",
-  "kind": "LinkedField",
-  "name": "pageInfo",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "endCursor",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "hasNextPage",
-      "storageKey": null
-    }
-  ],
-  "storageKey": null
-},
-v6 = [
-  "where"
-],
-v7 = [
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 500
-  },
-  {
-    "kind": "Literal",
-    "name": "where",
-    "value": {
-      "createTimeGTE": "2020-01-01T00:00:00Z"
-    }
-  }
-];
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -226,131 +170,74 @@ return {
                     "name": "balance",
                     "storageKey": null
                   },
-                  (v3/*: any*/)
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__typename",
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
               },
-              (v4/*: any*/)
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "cursor",
+                "storageKey": null
+              }
             ],
             "storageKey": null
           },
-          (v5/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "PageInfo",
+            "kind": "LinkedField",
+            "name": "pageInfo",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "endCursor",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "hasNextPage",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": "accounts(first:50,where:{\"archived\":false})"
       },
       {
         "alias": null,
         "args": (v0/*: any*/),
-        "filters": (v6/*: any*/),
+        "filters": [
+          "where"
+        ],
         "handle": "connection",
         "key": "accountsPanel_accounts",
         "kind": "LinkedHandle",
         "name": "accounts"
-      },
-      {
-        "alias": null,
-        "args": (v7/*: any*/),
-        "concreteType": "CheckpointConnection",
-        "kind": "LinkedField",
-        "name": "checkpoints",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "CheckpointEdge",
-            "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "Checkpoint",
-                "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "createTime",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "netWorth",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "liquidity",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "investment",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "property",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "receivable",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "liability",
-                    "storageKey": null
-                  },
-                  (v1/*: any*/),
-                  (v3/*: any*/)
-                ],
-                "storageKey": null
-              },
-              (v4/*: any*/)
-            ],
-            "storageKey": null
-          },
-          (v5/*: any*/)
-        ],
-        "storageKey": "checkpoints(first:500,where:{\"createTimeGTE\":\"2020-01-01T00:00:00Z\"})"
-      },
-      {
-        "alias": null,
-        "args": (v7/*: any*/),
-        "filters": (v6/*: any*/),
-        "handle": "connection",
-        "key": "netWorthChart_checkpoints",
-        "kind": "LinkedHandle",
-        "name": "checkpoints"
       }
     ]
   },
   "params": {
-    "cacheID": "6177d10373a69c0023496f1cba2f728d",
+    "cacheID": "fbc0bb5cc8d291de901408a5e6b919b7",
     "id": null,
     "metadata": {},
     "name": "AccountsQuery",
     "operationKind": "query",
-    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...netWorthChartFragment\n}\n\nfragment netWorthChartFragment on Query {\n  checkpoints(first: 500, where: {createTimeGTE: \"2020-01-01T00:00:00Z\"}) {\n    edges {\n      node {\n        createTime\n        netWorth\n        liquidity\n        investment\n        property\n        receivable\n        liability\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query AccountsQuery {\n  ...accountsPanelFragment\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Query {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
