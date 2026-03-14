@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<00e49dc1a43db2175b0aeca82813a07a>>
+ * @generated SignedSource<<bce6789924510d55fc7ee2909547969b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,8 +9,11 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from 'relay-runtime';
-export type checkpointDialogMutation$variables = {
+export type CreateCheckpointInput = {
   note?: string | null | undefined;
+};
+export type checkpointDialogMutation$variables = {
+  input: CreateCheckpointInput;
 };
 export type checkpointDialogMutation$data = {
   readonly createCheckpoint: {
@@ -36,7 +39,7 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "note"
+    "name": "input"
   }
 ],
 v1 = [
@@ -45,8 +48,8 @@ v1 = [
     "args": [
       {
         "kind": "Variable",
-        "name": "note",
-        "variableName": "note"
+        "name": "input",
+        "variableName": "input"
       }
     ],
     "concreteType": "CheckpointEdge",
@@ -143,16 +146,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "3a23a51bb9c9295c3f8536dbc242802e",
+    "cacheID": "ae021fa0e05bcdf18d069b00fb260dc3",
     "id": null,
     "metadata": {},
     "name": "checkpointDialogMutation",
     "operationKind": "mutation",
-    "text": "mutation checkpointDialogMutation(\n  $note: String\n) {\n  createCheckpoint(note: $note) {\n    node {\n      id\n      netWorth\n      liquidity\n      investment\n      property\n      receivable\n      liability\n      createTime\n    }\n  }\n}\n"
+    "text": "mutation checkpointDialogMutation(\n  $input: CreateCheckpointInput!\n) {\n  createCheckpoint(input: $input) {\n    node {\n      id\n      netWorth\n      liquidity\n      investment\n      property\n      receivable\n      liability\n      createTime\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3408b858a6071d57ef825df71559b73e";
+(node as any).hash = "9ff365af260081fd7e3cfd468339c701";
 
 export default node;

@@ -1366,7 +1366,7 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool,
 }
 
 // CreateCheckpoint is the resolver for the createCheckpoint field.
-func (r *mutationResolver) CreateCheckpoint(ctx context.Context, note *string) (*ent.CheckpointEdge, error) {
+func (r *mutationResolver) CreateCheckpoint(ctx context.Context, input ent.CreateCheckpointInput) (*ent.CheckpointEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -1390,12 +1390,9 @@ func (r *mutationResolver) CreateCheckpoint(ctx context.Context, note *string) (
 		return nil, err
 	}
 
-	householdCurrencyCode := household.Edges.Currency.Code
-
-	// Fetch all non-archived accounts for the household with their currencies
+	// Fetch all non-archived accounts for the household
 	accounts, err := client.Account.Query().
 		Where(account.ArchivedEQ(false)).
-		WithCurrency().
 		All(ctx)
 	if err != nil {
 		r.logger.Error("Failed to fetch accounts", "error", err)
@@ -1410,40 +1407,21 @@ func (r *mutationResolver) CreateCheckpoint(ctx context.Context, note *string) (
 	receivable := zero
 	liability := zero
 
-	// Group accounts by currency to minimize FX rate API calls
-	currencyToAccounts := lo.GroupBy(accounts, func(account *ent.Account) string {
-		return account.Edges.Currency.Code
-	})
+	// Convert each account's value to household currency using the stored FX rate
+	for _, acc := range accounts {
+		convertedValue := acc.Value.Mul(acc.FxRate)
 
-	// Convert each account's value to household currency
-	for currencyCode, accts := range currencyToAccounts {
-		fxRate := decimal.NewFromInt(1)
-
-		if currencyCode != householdCurrencyCode {
-			rate, err := r.fxrateClient.GetRate(ctx, currencyCode, householdCurrencyCode, time.Now())
-			if err != nil {
-				r.logger.Error("Failed to get FX rate", "error", err, "from", currencyCode, "to", householdCurrencyCode)
-				return nil, err
-			}
-			fxRate = rate
-		}
-
-		// Sum up values by account type
-		for _, acc := range accts {
-			convertedValue := acc.Value.Mul(fxRate)
-
-			switch acc.Type {
-			case account.TypeLiquidity:
-				liquidity = liquidity.Add(convertedValue)
-			case account.TypeInvestment:
-				investment = investment.Add(convertedValue)
-			case account.TypeProperty:
-				property = property.Add(convertedValue)
-			case account.TypeReceivable:
-				receivable = receivable.Add(convertedValue)
-			case account.TypeLiability:
-				liability = liability.Add(convertedValue)
-			}
+		switch acc.Type {
+		case account.TypeLiquidity:
+			liquidity = liquidity.Add(convertedValue)
+		case account.TypeInvestment:
+			investment = investment.Add(convertedValue)
+		case account.TypeProperty:
+			property = property.Add(convertedValue)
+		case account.TypeReceivable:
+			receivable = receivable.Add(convertedValue)
+		case account.TypeLiability:
+			liability = liability.Add(convertedValue)
 		}
 	}
 
@@ -1460,7 +1438,7 @@ func (r *mutationResolver) CreateCheckpoint(ctx context.Context, note *string) (
 		SetProperty(property).
 		SetReceivable(receivable).
 		SetLiability(liability).
-		SetNillableNote(note).
+		SetNillableNote(input.Note).
 		Save(ctx)
 	if err != nil {
 		r.logger.Error("Failed to create checkpoint", "error", err)

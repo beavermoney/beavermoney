@@ -2547,7 +2547,7 @@ type Mutation {
   moveInvestment(input: MoveInvestmentInputCustom!): TransactionEdge!
   updateTransaction(id: ID!, input: UpdateTransactionInput!): TransactionEdge!
   deleteTransaction(id: ID!): Boolean!
-  createCheckpoint(note: String): CheckpointEdge!
+  createCheckpoint(input: CreateCheckpointInput!): CheckpointEdge!
   updateCheckpoint(id: ID!, input: UpdateCheckpointInput!): CheckpointEdge!
   deleteCheckpoint(id: ID!): Boolean!
   refresh: Boolean!

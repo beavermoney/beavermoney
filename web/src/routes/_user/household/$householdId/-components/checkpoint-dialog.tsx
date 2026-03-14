@@ -38,8 +38,8 @@ const CheckpointDialogFragment = graphql`
 `
 
 const CheckpointDialogMutation = graphql`
-  mutation checkpointDialogMutation($note: String) {
-    createCheckpoint(note: $note) {
+  mutation checkpointDialogMutation($input: CreateCheckpointInput!) {
+    createCheckpoint(input: $input) {
       node {
         id
         netWorth
@@ -100,7 +100,7 @@ export function CheckpointDialog({ fragmentRef }: CheckpointDialogProps) {
   const handleCheckpoint = async () => {
     const result = await commitMutationResult<checkpointDialogMutation>(
       commitMutation,
-      { variables: { note: note.trim() || null } },
+      { variables: { input: { note: note.trim() || null } } },
     )
 
     match(result)
