@@ -1,6 +1,5 @@
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
-import { useState } from 'react'
+import { graphql, useLazyLoadQuery } from 'react-relay'
+import { useState, useTransition } from 'react'
 import currency from 'currency.js'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts'
 import {
@@ -13,13 +12,13 @@ import { useHousehold } from '@/hooks/use-household'
 import { useCurrency } from '@/hooks/use-currency'
 import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
-import type { netWorthChartFragment$key } from './__generated__/netWorthChartFragment.graphql'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Spinner } from '@/components/ui/spinner'
+import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.graphql'
 
-const NetWorthChartFragment = graphql`
-  fragment netWorthChartFragment on Query {
-    checkpoints(first: 500, where: { createTimeGTE: "2020-01-01T00:00:00Z" })
-      @connection(key: "netWorthChart_checkpoints") {
+const NetWorthChartQuery = graphql`
+  query netWorthChartQuery($createTimeGTE: Time) {
+    checkpoints(first: 500, where: { createTimeGTE: $createTimeGTE }) {
       edges {
         node {
           createTime
@@ -39,16 +38,33 @@ type Duration = '1M' | '3M' | '6M' | '1Y' | 'All'
 
 const DURATIONS: Duration[] = ['1M', '3M', '6M', '1Y', 'All']
 
-function durationToMonths(d: Duration): number | null {
+function durationToDate(d: Duration): string | null {
+  const now = new Date()
   switch (d) {
     case '1M':
-      return 1
+      return new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate(),
+      ).toISOString()
     case '3M':
-      return 3
+      return new Date(
+        now.getFullYear(),
+        now.getMonth() - 3,
+        now.getDate(),
+      ).toISOString()
     case '6M':
-      return 6
+      return new Date(
+        now.getFullYear(),
+        now.getMonth() - 6,
+        now.getDate(),
+      ).toISOString()
     case '1Y':
-      return 12
+      return new Date(
+        now.getFullYear() - 1,
+        now.getMonth(),
+        now.getDate(),
+      ).toISOString()
     case 'All':
       return null
   }
@@ -83,34 +99,24 @@ const chartConfig = {
   liability: { label: 'Liability', color: 'var(--chart-liability)' },
 } satisfies ChartConfig
 
-type NetWorthChartProps = {
-  fragmentRef: netWorthChartFragment$key
-}
-
-export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
-  const data = useFragment(NetWorthChartFragment, fragmentRef)
+export function NetWorthChart() {
   const { household } = useHousehold()
   const { formatCurrency } = useCurrency()
 
   const [duration, setDuration] = useState<Duration>('3M')
+  const [isPending, startTransition] = useTransition()
   const [activeSeries, setActiveSeries] = useState<Set<SeriesKey>>(
     new Set(['netWorth']),
   )
 
-  const now = new Date()
+  const createTimeGTE = durationToDate(duration)
 
-  const months = durationToMonths(duration)
-  const cutoff =
-    months !== null
-      ? new Date(now.getTime() - months * 30.44 * 24 * 60 * 60 * 1000)
-      : null
+  const data = useLazyLoadQuery<netWorthChartQuery>(NetWorthChartQuery, {
+    createTimeGTE,
+  })
 
   const chartData = (data.checkpoints.edges ?? [])
-    .filter((edge) => {
-      if (!edge?.node) return false
-      if (!cutoff) return true
-      return new Date(edge.node.createTime) >= cutoff
-    })
+    .filter((edge) => !!edge?.node)
     .map((edge) => {
       const node = edge!.node!
       const liquidity = currency(node.liquidity, { precision: 8 }).value
@@ -185,7 +191,10 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
           })}
         </div>
       </ScrollArea>
-      <ChartContainer config={chartConfig} className="h-36 w-full">
+      <ChartContainer
+        config={chartConfig}
+        className={`h-36 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
+      >
         <AreaChart
           data={chartData}
           margin={{ top: 4, right: 36, left: 0, bottom: 0 }}
@@ -286,13 +295,14 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
         </AreaChart>
       </ChartContainer>
       <div className="flex items-center justify-end gap-0.5 px-3 pt-1 pb-2.5">
+        {isPending && <Spinner className="text-muted-foreground size-3" />}
         {DURATIONS.map((d) => (
           <Button
             key={d}
             variant={duration === d ? 'default' : 'ghost'}
             size="sm"
             className="h-5 px-1.5 text-xs"
-            onClick={() => setDuration(d)}
+            onClick={() => startTransition(() => setDuration(d))}
           >
             {d}
           </Button>
