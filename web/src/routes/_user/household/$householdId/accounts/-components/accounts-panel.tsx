@@ -181,7 +181,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           </ItemTitle>
         </ItemContent>
       </Item>
-      <div className="py-1"></div>
+      <div className="py-2"></div>
       <Suspense
         fallback={
           <Item
@@ -200,7 +200,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       >
         <NetWorthChart />
       </Suspense>
-      <div className="py-1"></div>
+      <div className="py-2"></div>
       <Accordion
         multiple
         className="w-full"
