@@ -191,6 +191,7 @@ type ComplexityRoot struct {
 		ID                     func(childComplexity int) int
 		InvestmentLots         func(childComplexity int) int
 		Investments            func(childComplexity int) int
+		IsDemo                 func(childComplexity int) int
 		Locale                 func(childComplexity int) int
 		Name                   func(childComplexity int) int
 		NetWorthOverTime       func(childComplexity int, period model.TimePeriodInput) int
@@ -1246,6 +1247,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Household.Investments(childComplexity), true
+	case "Household.isDemo":
+		if e.complexity.Household.IsDemo == nil {
+			break
+		}
+
+		return e.complexity.Household.IsDemo(childComplexity), true
 	case "Household.locale":
 		if e.complexity.Household.Locale == nil {
 			break
@@ -3872,6 +3879,8 @@ func (ec *executionContext) fieldContext_Account_household(_ context.Context, fi
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -5005,6 +5014,8 @@ func (ec *executionContext) fieldContext_Checkpoint_household(_ context.Context,
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -5737,6 +5748,8 @@ func (ec *executionContext) fieldContext_Currency_households(_ context.Context, 
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -6228,6 +6241,35 @@ func (ec *executionContext) fieldContext_Household_currencyID(_ context.Context,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Household_isDemo(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Household_isDemo,
+		func(ctx context.Context) (any, error) {
+			return obj.IsDemo, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Household_isDemo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Household",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7417,6 +7459,8 @@ func (ec *executionContext) fieldContext_Investment_household(_ context.Context,
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -8046,6 +8090,8 @@ func (ec *executionContext) fieldContext_InvestmentLot_household(_ context.Conte
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -8425,6 +8471,8 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -10109,6 +10157,8 @@ func (ec *executionContext) fieldContext_Query_households(_ context.Context, fie
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -10578,6 +10628,8 @@ func (ec *executionContext) fieldContext_Query_household(_ context.Context, fiel
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -11308,6 +11360,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_household(_ conte
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -12135,6 +12189,8 @@ func (ec *executionContext) fieldContext_Transaction_household(_ context.Context
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -12595,6 +12651,8 @@ func (ec *executionContext) fieldContext_TransactionCategory_household(_ context
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -13329,6 +13387,8 @@ func (ec *executionContext) fieldContext_TransactionEntry_household(_ context.Co
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -13722,6 +13782,8 @@ func (ec *executionContext) fieldContext_User_households(_ context.Context, fiel
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -14305,6 +14367,8 @@ func (ec *executionContext) fieldContext_UserHousehold_household(_ context.Conte
 				return ec.fieldContext_Household_locale(ctx, field)
 			case "currencyID":
 				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
 			case "currency":
 				return ec.fieldContext_Household_currency(ctx, field)
 			case "users":
@@ -17846,7 +17910,7 @@ func (ec *executionContext) unmarshalInputCreateHouseholdInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "locale", "currencyID"}
+	fieldsInOrder := [...]string{"name", "locale", "isDemo", "currencyID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17867,6 +17931,13 @@ func (ec *executionContext) unmarshalInputCreateHouseholdInput(ctx context.Conte
 				return it, err
 			}
 			it.Locale = data
+		case "isDemo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDemo"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsDemo = data
 		case "currencyID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyID"))
 			data, err := ec.unmarshalNID2int(ctx, v)
@@ -18588,7 +18659,7 @@ func (ec *executionContext) unmarshalInputHouseholdWhereInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "locale", "localeNEQ", "localeIn", "localeNotIn", "localeGT", "localeGTE", "localeLT", "localeLTE", "localeContains", "localeHasPrefix", "localeHasSuffix", "localeEqualFold", "localeContainsFold", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "hasCurrency", "hasCurrencyWith", "hasUsers", "hasUsersWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasInvestments", "hasInvestmentsWith", "hasInvestmentLots", "hasInvestmentLotsWith", "hasTransactionCategories", "hasTransactionCategoriesWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "locale", "localeNEQ", "localeIn", "localeNotIn", "localeGT", "localeGTE", "localeLT", "localeLTE", "localeContains", "localeHasPrefix", "localeHasSuffix", "localeEqualFold", "localeContainsFold", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "isDemo", "isDemoNEQ", "hasCurrency", "hasCurrencyWith", "hasUsers", "hasUsersWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasInvestments", "hasInvestmentsWith", "hasInvestmentLots", "hasInvestmentLotsWith", "hasTransactionCategories", "hasTransactionCategoriesWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18994,6 +19065,20 @@ func (ec *executionContext) unmarshalInputHouseholdWhereInput(ctx context.Contex
 				return it, err
 			}
 			it.CurrencyIDNotIn = data
+		case "isDemo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDemo"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsDemo = data
+		case "isDemoNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDemoNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsDemoNEQ = data
 		case "hasCurrency":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCurrency"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -26040,6 +26125,11 @@ func (ec *executionContext) _Household(ctx context.Context, sel ast.SelectionSet
 			}
 		case "currencyID":
 			out.Values[i] = ec._Household_currencyID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "isDemo":
+			out.Values[i] = ec._Household_isDemo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

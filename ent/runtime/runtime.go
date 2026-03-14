@@ -148,6 +148,10 @@ func init() {
 	householdDescCurrencyID := householdFields[2].Descriptor()
 	// household.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
 	household.CurrencyIDValidator = householdDescCurrencyID.Validators[0].(func(int) error)
+	// householdDescIsDemo is the schema descriptor for is_demo field.
+	householdDescIsDemo := householdFields[3].Descriptor()
+	// household.DefaultIsDemo holds the default value on creation for the is_demo field.
+	household.DefaultIsDemo = householdDescIsDemo.Default.(bool)
 	investmentMixin := schema.Investment{}.Mixin()
 	investment.Policy = privacy.NewPolicies(investmentMixin[1], schema.Investment{})
 	investment.Hooks[0] = func(next ent.Mutator) ent.Mutator {

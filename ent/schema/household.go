@@ -22,6 +22,7 @@ func (Household) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("locale").NotEmpty(),
 		field.Int("currency_id").Positive(),
+		field.Bool("is_demo").Default(false).Immutable(),
 	}
 }
 
