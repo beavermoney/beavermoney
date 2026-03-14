@@ -308,7 +308,15 @@ func SeedDemoHousehold(
 
 	// Create accounts (backdated to 6 months ago)
 	startDate := time.Now().AddDate(0, -6, 0).UTC()
-	accounts, err := createDemoAccounts(ctx, client, household, userID, householdCurrency, config, startDate)
+	accounts, err := createDemoAccounts(
+		ctx,
+		client,
+		household,
+		userID,
+		householdCurrency,
+		config,
+		startDate,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create demo accounts: %w", err)
 	}
@@ -320,7 +328,16 @@ func SeedDemoHousehold(
 	}
 
 	// Fetch and create investments
-	investments, err := fetchAndCreateInvestments(ctx, client, household, accounts.investment, householdCurrency, config, marketClient, startDate)
+	investments, err := fetchAndCreateInvestments(
+		ctx,
+		client,
+		household,
+		accounts.investment,
+		householdCurrency,
+		config,
+		marketClient,
+		startDate,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create investments: %w", err)
 	}
@@ -341,26 +358,42 @@ func SeedDemoHousehold(
 		// Monthly salary (every ~4 weeks)
 		if weekNumber%4 == 0 && weekNumber > 0 {
 			if err := createTransaction(ctx, client, weekStart, accounts.checking, categories.salary, config.monthlySalary, household, userID); err != nil {
-				return fmt.Errorf("failed to create salary for week %d: %w", weekNumber, err)
+				return fmt.Errorf(
+					"failed to create salary for week %d: %w",
+					weekNumber,
+					err,
+				)
 			}
 		}
 
 		// Weekly expenses
 		if err := createWeeklyExpenses(ctx, client, weekStart, weekEnd, accounts.creditCard, categories, household, userID, weekNumber); err != nil {
-			return fmt.Errorf("failed to create expenses for week %d: %w", weekNumber, err)
+			return fmt.Errorf(
+				"failed to create expenses for week %d: %w",
+				weekNumber,
+				err,
+			)
 		}
 
 		// Investment purchases (every 3 weeks)
 		if weekNumber%3 == 0 {
 			if err := buyInvestmentShares(ctx, client, weekStart.AddDate(0, 0, 3), investments, categories.buy, household, userID, weekNumber); err != nil {
-				return fmt.Errorf("failed to buy investments for week %d: %w", weekNumber, err)
+				return fmt.Errorf(
+					"failed to buy investments for week %d: %w",
+					weekNumber,
+					err,
+				)
 			}
 		}
 
 		// Create checkpoint at end of week
 		checkpointDate := weekEnd.Add(-1 * time.Hour)
 		if err := createCheckpointAtDate(ctx, client, household, householdCurrency, fxrateClient, checkpointDate); err != nil {
-			return fmt.Errorf("failed to create checkpoint for week %d: %w", weekNumber, err)
+			return fmt.Errorf(
+				"failed to create checkpoint for week %d: %w",
+				weekNumber,
+				err,
+			)
 		}
 
 		currentDate = weekEnd
@@ -465,7 +498,10 @@ type categorySet struct {
 	buy            *ent.TransactionCategory
 }
 
-func getCategories(ctx context.Context, client *ent.Client) (*categorySet, error) {
+func getCategories(
+	ctx context.Context,
+	client *ent.Client,
+) (*categorySet, error) {
 	restaurant, err := client.TransactionCategory.Query().
 		Where(transactioncategory.NameEQ("Restaurant")).
 		Only(ctx)
@@ -537,7 +573,11 @@ func fetchAndCreateInvestments(
 	// Fetch ETF quote
 	etfQuote, err := marketClient.StockQuote(ctx, config.etfSymbol)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch ETF quote for %s: %w", config.etfSymbol, err)
+		return nil, fmt.Errorf(
+			"failed to fetch ETF quote for %s: %w",
+			config.etfSymbol,
+			err,
+		)
 	}
 
 	etf, err := client.Investment.Create().
@@ -559,7 +599,11 @@ func fetchAndCreateInvestments(
 	for _, symbol := range config.stockSymbols {
 		quote, err := marketClient.StockQuote(ctx, symbol)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch stock quote for %s: %w", symbol, err)
+			return nil, fmt.Errorf(
+				"failed to fetch stock quote for %s: %w",
+				symbol,
+				err,
+			)
 		}
 
 		stock, err := client.Investment.Create().
@@ -573,7 +617,11 @@ func fetchAndCreateInvestments(
 			SetCreateTime(createdAt).
 			Save(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create stock investment %s: %w", symbol, err)
+			return nil, fmt.Errorf(
+				"failed to create stock investment %s: %w",
+				symbol,
+				err,
+			)
 		}
 
 		stocks = append(stocks, stock)
@@ -636,7 +684,8 @@ func createWeeklyExpenses(
 	// 2-3 restaurant visits per week
 	for i := 0; i < 2+rand.Intn(2); i++ {
 		day := rand.Intn(7)
-		date := weekStart.AddDate(0, 0, day).Add(time.Duration(8+rand.Intn(12)) * time.Hour)
+		date := weekStart.AddDate(0, 0, day).
+			Add(time.Duration(8+rand.Intn(12)) * time.Hour)
 		if err := createTransaction(ctx, client, date, creditCard, categories.restaurant, genRandomRestaurantAmount(), household, userID); err != nil {
 			return err
 		}
@@ -644,7 +693,8 @@ func createWeeklyExpenses(
 
 	// 1 grocery trip per week
 	groceryDay := 2 + rand.Intn(5)
-	groceryDate := weekStart.AddDate(0, 0, groceryDay).Add(time.Duration(10+rand.Intn(8)) * time.Hour)
+	groceryDate := weekStart.AddDate(0, 0, groceryDay).
+		Add(time.Duration(10+rand.Intn(8)) * time.Hour)
 	if err := createTransaction(ctx, client, groceryDate, creditCard, categories.grocery, genRandomGroceryAmount(), household, userID); err != nil {
 		return err
 	}
@@ -652,7 +702,8 @@ func createWeeklyExpenses(
 	// 1-2 transportation expenses per week
 	for i := 0; i < 1+rand.Intn(2); i++ {
 		day := rand.Intn(7)
-		date := weekStart.AddDate(0, 0, day).Add(time.Duration(7+rand.Intn(10)) * time.Hour)
+		date := weekStart.AddDate(0, 0, day).
+			Add(time.Duration(7+rand.Intn(10)) * time.Hour)
 		if err := createTransaction(ctx, client, date, creditCard, categories.transportation, genRandomTransportationAmount(), household, userID); err != nil {
 			return err
 		}
@@ -691,21 +742,61 @@ func buyInvestmentShares(
 	switch weekNumber % 9 {
 	case 0:
 		// Buy ETF
-		return buyShares(ctx, client, date, investments.etf, buyCategory, household, userID, decimal.NewFromInt(50), 0.95)
+		return buyShares(
+			ctx,
+			client,
+			date,
+			investments.etf,
+			buyCategory,
+			household,
+			userID,
+			decimal.NewFromInt(50),
+			0.95,
+		)
 	case 3:
 		// Buy first stock
 		if len(investments.stocks) > 0 {
-			return buyShares(ctx, client, date, investments.stocks[0], buyCategory, household, userID, decimal.NewFromInt(5), 0.92)
+			return buyShares(
+				ctx,
+				client,
+				date,
+				investments.stocks[0],
+				buyCategory,
+				household,
+				userID,
+				decimal.NewFromInt(5),
+				0.92,
+			)
 		}
 	case 6:
 		// Buy second stock
 		if len(investments.stocks) > 1 {
-			return buyShares(ctx, client, date, investments.stocks[1], buyCategory, household, userID, decimal.NewFromInt(8), 0.88)
+			return buyShares(
+				ctx,
+				client,
+				date,
+				investments.stocks[1],
+				buyCategory,
+				household,
+				userID,
+				decimal.NewFromInt(8),
+				0.88,
+			)
 		}
 	case 9:
 		// Buy third stock
 		if len(investments.stocks) > 2 {
-			return buyShares(ctx, client, date, investments.stocks[2], buyCategory, household, userID, decimal.NewFromInt(3), 0.90)
+			return buyShares(
+				ctx,
+				client,
+				date,
+				investments.stocks[2],
+				buyCategory,
+				household,
+				userID,
+				decimal.NewFromInt(3),
+				0.90,
+			)
 		}
 	}
 	return nil
@@ -786,7 +877,12 @@ func createCheckpointAtDate(
 		fxRate := decimal.NewFromInt(1)
 
 		if currencyCode != householdCurrency.Code {
-			rate, err := fxrateClient.GetRate(ctx, currencyCode, householdCurrency.Code, checkpointDate)
+			rate, err := fxrateClient.GetRate(
+				ctx,
+				currencyCode,
+				householdCurrency.Code,
+				checkpointDate,
+			)
 			if err != nil {
 				return fmt.Errorf("failed to get FX rate: %w", err)
 			}
@@ -811,7 +907,10 @@ func createCheckpointAtDate(
 		}
 	}
 
-	netWorth := liquidity.Add(investment).Add(property).Add(receivable).Add(liability)
+	netWorth := liquidity.Add(investment).
+		Add(property).
+		Add(receivable).
+		Add(liability)
 
 	// Create checkpoint with backdated timestamp
 	_, err = client.Checkpoint.Create().
