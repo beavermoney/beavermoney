@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e550f275fa4225dd15eec79e52c116d6>>
+ * @generated SignedSource<<8d72e5a701266f0ef89e4142d612145a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -316,6 +316,41 @@ return {
                     "name": "netWorth",
                     "storageKey": null
                   },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "liquidity",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "investment",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "property",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "receivable",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "liability",
+                    "storageKey": null
+                  },
                   (v2/*: any*/),
                   (v4/*: any*/)
                 ],
@@ -341,12 +376,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0526e5aa3d9820a2a245add994da575d",
+    "cacheID": "241123ebf1912ab57b685d436321f02c",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n) {\n  ...accountsPanelFragment_1G22uz\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Query {\n  accounts(first: $count, after: $cursor, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...netWorthChartFragment\n}\n\nfragment netWorthChartFragment on Query {\n  checkpoints(first: 500, where: {createTimeGTE: \"2020-01-01T00:00:00Z\"}) {\n    edges {\n      node {\n        createTime\n        netWorth\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n) {\n  ...accountsPanelFragment_1G22uz\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Query {\n  accounts(first: $count, after: $cursor, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  ...netWorthChartFragment\n}\n\nfragment netWorthChartFragment on Query {\n  checkpoints(first: 500, where: {createTimeGTE: \"2020-01-01T00:00:00Z\"}) {\n    edges {\n      node {\n        createTime\n        netWorth\n        liquidity\n        investment\n        property\n        receivable\n        liability\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

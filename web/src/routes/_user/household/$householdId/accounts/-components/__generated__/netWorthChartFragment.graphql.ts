@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<710d67d5c15df5f9a330e50fddb64795>>
+ * @generated SignedSource<<aa489aeeaae9a90434004cad7a8cbd6b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,12 @@ export type netWorthChartFragment$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly createTime: any;
+        readonly investment: string;
+        readonly liability: string;
+        readonly liquidity: string;
         readonly netWorth: string;
+        readonly property: string;
+        readonly receivable: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -93,6 +98,41 @@ const node: ReaderFragment = {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
+                  "name": "liquidity",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "investment",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "property",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "receivable",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "liability",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
                   "name": "__typename",
                   "storageKey": null
                 }
@@ -142,6 +182,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "91a12be7f37756fcd67e94cdbf9212cf";
+(node as any).hash = "b61565e37e99ff3868436e78545d7d33";
 
 export default node;

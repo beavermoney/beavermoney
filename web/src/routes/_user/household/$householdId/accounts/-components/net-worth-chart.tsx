@@ -23,6 +23,11 @@ const NetWorthChartFragment = graphql`
         node {
           createTime
           netWorth
+          liquidity
+          investment
+          property
+          receivable
+          liability
         }
       }
     }
@@ -48,11 +53,30 @@ function durationToMonths(d: Duration): number | null {
   }
 }
 
+type SeriesKey =
+  | 'netWorth'
+  | 'liquidity'
+  | 'investment'
+  | 'property'
+  | 'receivable'
+  | 'liability'
+
+const SERIES: { key: SeriesKey; label: string; color: string }[] = [
+  { key: 'netWorth', label: 'Net Worth', color: 'var(--chart-net-worth)' },
+  { key: 'liquidity', label: 'Liquidity', color: 'var(--chart-liquidity)' },
+  { key: 'investment', label: 'Investment', color: 'var(--chart-investment)' },
+  { key: 'property', label: 'Property', color: 'var(--chart-property)' },
+  { key: 'receivable', label: 'Receivable', color: 'var(--chart-receivable)' },
+  { key: 'liability', label: 'Liability', color: 'var(--chart-liability)' },
+]
+
 const chartConfig = {
-  netWorth: {
-    label: 'Net Worth',
-    color: 'var(--chart-1)',
-  },
+  netWorth: { label: 'Net Worth', color: 'var(--chart-net-worth)' },
+  liquidity: { label: 'Liquidity', color: 'var(--chart-liquidity)' },
+  investment: { label: 'Investment', color: 'var(--chart-investment)' },
+  property: { label: 'Property', color: 'var(--chart-property)' },
+  receivable: { label: 'Receivable', color: 'var(--chart-receivable)' },
+  liability: { label: 'Liability', color: 'var(--chart-liability)' },
 } satisfies ChartConfig
 
 type NetWorthChartProps = {
@@ -65,6 +89,9 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
   const { formatCurrency } = useCurrency()
 
   const [duration, setDuration] = useState<Duration>('3M')
+  const [activeSeries, setActiveSeries] = useState<Set<SeriesKey>>(
+    new Set(['netWorth']),
+  )
 
   const now = new Date()
 
@@ -83,16 +110,33 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
     .map((edge) => {
       const node = edge!.node!
       return {
-        date: node.createTime,
+        date: new Date(node.createTime).getTime(),
         netWorth: currency(node.netWorth, { precision: 8 }).value,
+        liquidity: currency(node.liquidity, { precision: 8 }).value,
+        investment: currency(node.investment, { precision: 8 }).value,
+        property: currency(node.property, { precision: 8 }).value,
+        receivable: currency(node.receivable, { precision: 8 }).value,
+        liability: currency(node.liability, { precision: 8 }).value,
       }
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort((a, b) => a.date - b.date)
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(household.locale, {
+  const formatDate = (ts: number) => {
+    return new Date(ts).toLocaleDateString(household.locale, {
       month: 'short',
       day: 'numeric',
+    })
+  }
+
+  const toggleSeries = (key: SeriesKey) => {
+    setActiveSeries((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) {
+        if (next.size > 1) next.delete(key)
+      } else {
+        next.add(key)
+      }
+      return next
     })
   }
 
@@ -103,9 +147,31 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
   return (
     <Item variant="outline" className="flex-col items-stretch gap-0 px-0 py-0">
       <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-        <span className="text-muted-foreground text-xs font-medium">
-          Net Worth
-        </span>
+        <div className="flex flex-wrap gap-0.5">
+          {SERIES.map((s) => {
+            const active = activeSeries.has(s.key)
+            return (
+              <Button
+                key={s.key}
+                variant="outline"
+                size="sm"
+                className="h-5 px-1.5 text-xs transition-colors"
+                style={
+                  active
+                    ? {
+                        borderColor: s.color,
+                        color: s.color,
+                        backgroundColor: `color-mix(in srgb, ${s.color} 12%, transparent)`,
+                      }
+                    : { color: 'var(--muted-foreground)' }
+                }
+                onClick={() => toggleSeries(s.key)}
+              >
+                {s.label}
+              </Button>
+            )
+          })}
+        </div>
         <div className="flex gap-0.5">
           {DURATIONS.map((d) => (
             <Button
@@ -126,28 +192,39 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
           margin={{ top: 4, right: 36, left: 0, bottom: 0 }}
         >
           <defs>
-            <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="var(--color-netWorth)"
-                stopOpacity={0.3}
-              />
-              <stop
-                offset="95%"
-                stopColor="var(--color-netWorth)"
-                stopOpacity={0}
-              />
-            </linearGradient>
+            {SERIES.map((s) => (
+              <linearGradient
+                key={s.key}
+                id={`${s.key}Gradient`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor={`var(--color-${s.key})`}
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={`var(--color-${s.key})`}
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            ))}
           </defs>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis
             dataKey="date"
+            type="number"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
             tickLine={false}
             axisLine={false}
             tickMargin={8}
             tick={{ fontSize: 10 }}
             tickFormatter={formatDate}
-            // interval="preserveStartEnd"
           />
           <YAxis
             tickLine={false}
@@ -168,32 +245,45 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
             content={
               <ChartTooltipContent
                 labelFormatter={(_, payload) => {
-                  const d = payload?.[0]?.payload?.date
-                  return d
-                    ? new Date(d).toLocaleDateString(household.locale, {
+                  const ts = payload?.[0]?.payload?.date
+                  return typeof ts === 'number'
+                    ? new Date(ts).toLocaleDateString(household.locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
                       })
                     : ''
                 }}
-                formatter={(value) => [
-                  formatCurrency({
-                    value: currency(value as number),
-                    currencyCode: household.currency.code,
-                  }),
-                ]}
+                formatter={(value, name, item) => (
+                  <>
+                    <div
+                      className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-muted-foreground">
+                      {chartConfig[name as SeriesKey]?.label ?? name}
+                    </span>
+                    <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
+                      {formatCurrency({
+                        value: currency(value as number),
+                        currencyCode: household.currency.code,
+                      })}
+                    </span>
+                  </>
+                )}
               />
             }
           />
-          <Area
-            type="monotone"
-            dataKey="netWorth"
-            stroke="var(--color-netWorth)"
-            strokeWidth={2}
-            fill="url(#netWorthGradient)"
-            dot={false}
-          />
+          {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
+            <Area
+              key={s.key}
+              type="monotone"
+              dataKey={s.key}
+              stroke={`var(--color-${s.key})`}
+              strokeWidth={2}
+              fill={`url(#${s.key}Gradient)`}
+            />
+          ))}
         </AreaChart>
       </ChartContainer>
     </Item>
