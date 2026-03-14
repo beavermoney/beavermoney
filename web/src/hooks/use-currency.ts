@@ -6,6 +6,8 @@ type FormatCurrencyArgs = {
   value: string | currency
   currencyCode: string
   liability?: boolean
+  numberFormatOptions?: Omit<Intl.NumberFormatOptions, 'currency' | 'style'>
+  privacyMaskLength?: number
 }
 
 export function useCurrency() {
@@ -17,6 +19,7 @@ export function useCurrency() {
     value,
     currencyCode,
     liability,
+    numberFormatOptions,
   }: FormatCurrencyArgs) => {
     const curr =
       typeof value === 'string' ? currency(value, { precision: 8 }) : value
@@ -24,14 +27,18 @@ export function useCurrency() {
     const formatted = Intl.NumberFormat(household.locale, {
       currency: currencyCode,
       style: 'currency',
+      ...numberFormatOptions,
     }).format(liability ? -curr.value : curr.value)
 
     return formatted
   }
 
-  const formatCurrencyWithPrivacyMode = (args: FormatCurrencyArgs) => {
+  const formatCurrencyWithPrivacyMode = ({
+    privacyMaskLength = 7,
+    ...args
+  }: FormatCurrencyArgs) => {
     if (isPrivacyModeEnabled) {
-      return '•••••••'
+      return '•'.repeat(privacyMaskLength)
     }
 
     return formatCurrency(args)

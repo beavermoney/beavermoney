@@ -102,7 +102,7 @@ const chartConfig = {
 
 export function NetWorthChart() {
   const { household } = useHousehold()
-  const { formatCurrency } = useCurrency()
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const [duration, setDuration] = useState<Duration>('3M')
   const [isPending, startTransition] = useTransition()
@@ -243,12 +243,15 @@ export function NetWorthChart() {
             width={56}
             tick={{ fontSize: 10 }}
             tickFormatter={(value: number) =>
-              Intl.NumberFormat(household.locale, {
-                currency: household.currency.code,
-                style: 'currency',
-                notation: 'compact',
-                maximumFractionDigits: 1,
-              }).format(value)
+              formatCurrencyWithPrivacyMode({
+                value: currency(value),
+                currencyCode: household.currency.code,
+                numberFormatOptions: {
+                  notation: 'compact',
+                  maximumFractionDigits: 1,
+                },
+                privacyMaskLength: 5,
+              })
             }
           />
           <ChartTooltip
@@ -279,7 +282,7 @@ export function NetWorthChart() {
                         {chartConfig[name as SeriesKey]?.label ?? name}
                       </span>
                       <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
-                        {formatCurrency({
+                        {formatCurrencyWithPrivacyMode({
                           value: currency(value),
                           currencyCode: household.currency.code,
                         })}
