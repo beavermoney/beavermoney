@@ -18,10 +18,10 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
 import { useHousehold } from '@/hooks/use-household'
 import { useCurrency } from '@/hooks/use-currency'
 import { commitMutationResult } from '@/lib/relay'
+import { ItemTitle } from '@/components/ui/item'
 
 const CheckpointDialogFragment = graphql`
   fragment checkpointDialogFragment on Query {
@@ -61,6 +61,14 @@ const CATEGORIES = [
   'receivable',
   'liability',
 ] as const
+
+const CATEGORY_COLORS: Record<(typeof CATEGORIES)[number], string> = {
+  liquidity: 'var(--chart-liquidity)',
+  investment: 'var(--chart-investment)',
+  property: 'var(--chart-property)',
+  receivable: 'var(--chart-receivable)',
+  liability: 'var(--chart-liability)',
+}
 
 type CheckpointDialogProps = {
   fragmentRef: checkpointDialogFragment$key
@@ -124,30 +132,39 @@ export function CheckpointDialog({ fragmentRef }: CheckpointDialogProps) {
           </Button>
         }
       />
-      <DialogContent>
+      <DialogContent className="gap-3">
         <DialogHeader>
-          <DialogTitle>Save Checkpoint</DialogTitle>
+          <DialogTitle>Checkpoint</DialogTitle>
         </DialogHeader>
 
-        {/* Net worth summary */}
-        <div className="flex items-baseline justify-between">
-          <span className="text-muted-foreground">Net Worth</span>
-          <span className="font-mono text-sm font-semibold tabular-nums">
+        {/* Net worth hero */}
+        <div className="bg-muted/50 rounded-lg px-3 py-2.5">
+          <p className="text-muted-foreground mb-0.5 text-xs">Net Worth</p>
+          <ItemTitle className="text-xl tabular-nums">
             {formatCurrencyWithPrivacyMode({
               value: netWorth,
               currencyCode: household.currency.code,
             })}
-          </span>
+          </ItemTitle>
         </div>
 
-        <Separator />
-
         {/* Category breakdown */}
-        <div className="flex flex-col gap-1.5">
-          {CATEGORIES.map((type) => (
-            <div key={type} className="flex items-center justify-between">
-              <span className="text-muted-foreground">{capitalize(type)}</span>
-              <span className="font-mono tabular-nums">
+        <div className="flex flex-col gap-0">
+          {CATEGORIES.map((type, i) => (
+            <div
+              key={type}
+              className={`flex items-center justify-between py-1.5 ${i < CATEGORIES.length - 1 ? 'border-border/50 border-b' : ''}`}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="size-1.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: CATEGORY_COLORS[type] }}
+                />
+                <span className="text-muted-foreground">
+                  {capitalize(type)}
+                </span>
+              </div>
+              <span className="tabular-nums">
                 {formatCurrencyWithPrivacyMode({
                   value: breakdown[type],
                   currencyCode: household.currency.code,
@@ -158,19 +175,17 @@ export function CheckpointDialog({ fragmentRef }: CheckpointDialogProps) {
           ))}
         </div>
 
-        <Separator />
-
         {/* Note */}
         <Textarea
           placeholder="Add a note (optional)"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="min-h-20 resize-none"
+          className="min-h-16 resize-none"
         />
 
         <DialogFooter showCloseButton>
           <Button onClick={handleCheckpoint} disabled={isMutationInFlight}>
-            {isMutationInFlight ? 'Saving...' : 'Save checkpoint'}
+            {isMutationInFlight ? 'Saving...' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
