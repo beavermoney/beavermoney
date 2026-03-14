@@ -1,5 +1,6 @@
 import { graphql, useLazyLoadQuery } from 'react-relay'
 import { useState, useTransition } from 'react'
+import invariant from 'tiny-invariant'
 import currency from 'currency.js'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts'
 import {
@@ -116,9 +117,9 @@ export function NetWorthChart() {
   })
 
   const chartData = (data.checkpoints.edges ?? [])
-    .filter((edge) => !!edge?.node)
     .map((edge) => {
-      const node = edge!.node!
+      invariant(edge?.node, 'checkpoint edge node must exist')
+      const node = edge.node
       const liquidity = currency(node.liquidity, { precision: 8 }).value
       const investment = currency(node.investment, { precision: 8 }).value
       const property = currency(node.property, { precision: 8 }).value
@@ -262,23 +263,29 @@ export function NetWorthChart() {
                       })
                     : ''
                 }}
-                formatter={(value, name, item) => (
-                  <>
-                    <div
-                      className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-muted-foreground">
-                      {chartConfig[name as SeriesKey]?.label ?? name}
-                    </span>
-                    <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
-                      {formatCurrency({
-                        value: currency(value as number),
-                        currencyCode: household.currency.code,
-                      })}
-                    </span>
-                  </>
-                )}
+                formatter={(value, name, item) => {
+                  invariant(
+                    typeof value === 'number',
+                    'chart value must be a number',
+                  )
+                  return (
+                    <>
+                      <div
+                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="text-muted-foreground">
+                        {chartConfig[name as SeriesKey]?.label ?? name}
+                      </span>
+                      <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
+                        {formatCurrency({
+                          value: currency(value),
+                          currencyCode: household.currency.code,
+                        })}
+                      </span>
+                    </>
+                  )
+                }}
               />
             }
           />
