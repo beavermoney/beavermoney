@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d72567493e4f540ff62a26581e1f6d4d>>
+ * @generated SignedSource<<5c5944e1ef4e973e606a9cc7ee4040ed>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,6 +23,7 @@ export type accountsPanelFragment$data = {
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
+  readonly " $fragmentSpreads": FragmentRefs<"netWorthChartFragment">;
   readonly " $fragmentType": "accountsPanelFragment";
 };
 export type accountsPanelFragment$key = {
@@ -186,6 +187,11 @@ return {
         }
       ],
       "storageKey": "__accountsPanel_accounts_connection(where:{\"archived\":false})"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "netWorthChartFragment"
     }
   ],
   "type": "Query",
@@ -193,6 +199,6 @@ return {
 };
 })();
 
-(node as any).hash = "077f30f5c187fe8c506508623124818f";
+(node as any).hash = "de5d51ef26f0fb54c65943317f162992";
 
 export default node;

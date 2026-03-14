@@ -12,6 +12,7 @@ import { RefreshCwIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { match } from 'ts-pattern'
 import { AccountCard } from './account-card'
+import { NetWorthChart } from './net-worth-chart'
 import type { accountsPanelRefreshMutation } from './__generated__/accountsPanelRefreshMutation.graphql'
 import type { accountsPanelFragment$key } from './__generated__/accountsPanelFragment.graphql'
 import {
@@ -53,6 +54,7 @@ const AccountsPanelFragment = graphql`
         }
       }
     }
+    ...netWorthChartFragment
   }
 `
 
@@ -179,6 +181,8 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           </ItemTitle>
         </ItemContent>
       </Item>
+      <div className="py-2"></div>
+      <NetWorthChart fragmentRef={data} />
       <div className="py-2"></div>
       <Accordion
         multiple
