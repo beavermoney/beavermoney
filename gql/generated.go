@@ -264,7 +264,7 @@ type ComplexityRoot struct {
 		ArchiveAccount              func(childComplexity int, id int) int
 		BuyInvestment               func(childComplexity int, input model.BuyInvestmentInputCustom) int
 		CreateAccount               func(childComplexity int, input ent.CreateAccountInput) int
-		CreateCheckpoint            func(childComplexity int) int
+		CreateCheckpoint            func(childComplexity int, note *string) int
 		CreateExpense               func(childComplexity int, input model.CreateExpenseInputCustom) int
 		CreateHousehold             func(childComplexity int, input ent.CreateHouseholdInput) int
 		CreateIncome                func(childComplexity int, input model.CreateIncomeInputCustom) int
@@ -529,7 +529,7 @@ type MutationResolver interface {
 	MoveInvestment(ctx context.Context, input model.MoveInvestmentInputCustom) (*ent.TransactionEdge, error)
 	UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput) (*ent.TransactionEdge, error)
 	DeleteTransaction(ctx context.Context, id int) (bool, error)
-	CreateCheckpoint(ctx context.Context) (*ent.CheckpointEdge, error)
+	CreateCheckpoint(ctx context.Context, note *string) (*ent.CheckpointEdge, error)
 	UpdateCheckpoint(ctx context.Context, id int, input ent.UpdateCheckpointInput) (*ent.CheckpointEdge, error)
 	DeleteCheckpoint(ctx context.Context, id int) (bool, error)
 	Refresh(ctx context.Context) (bool, error)
@@ -1591,7 +1591,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Mutation.CreateCheckpoint(childComplexity), true
+		args, err := ec.field_Mutation_createCheckpoint_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateCheckpoint(childComplexity, args["note"].(*string)), true
 	case "Mutation.createExpense":
 		if e.complexity.Mutation.CreateExpense == nil {
 			break
@@ -2879,6 +2884,17 @@ func (ec *executionContext) field_Mutation_createAccount_args(ctx context.Contex
 		return nil, err
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createCheckpoint_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "note", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["note"] = arg0
 	return args, nil
 }
 
@@ -9387,7 +9403,8 @@ func (ec *executionContext) _Mutation_createCheckpoint(ctx context.Context, fiel
 		field,
 		ec.fieldContext_Mutation_createCheckpoint,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Mutation().CreateCheckpoint(ctx)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().CreateCheckpoint(ctx, fc.Args["note"].(*string))
 		},
 		nil,
 		ec.marshalNCheckpointEdge2ᚖbeavermoneyᚗappᚋentᚐCheckpointEdge,
@@ -9396,7 +9413,7 @@ func (ec *executionContext) _Mutation_createCheckpoint(ctx context.Context, fiel
 	)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createCheckpoint(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_createCheckpoint(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -9411,6 +9428,17 @@ func (ec *executionContext) fieldContext_Mutation_createCheckpoint(_ context.Con
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CheckpointEdge", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createCheckpoint_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
