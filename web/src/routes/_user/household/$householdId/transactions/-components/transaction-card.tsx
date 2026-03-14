@@ -87,6 +87,7 @@ export function TransactionCard({ fragmentRef }: TransactionCardProps) {
   return (
     <Link
       to="."
+      resetScroll={false}
       search={(search) => ({ ...search, edit_transaction_id: data.id })}
       className="border-border [a]:hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center rounded-md border text-xs/relaxed transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors"
     >

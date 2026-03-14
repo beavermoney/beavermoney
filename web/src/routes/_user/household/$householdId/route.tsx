@@ -232,6 +232,7 @@ function RouteComponent() {
             onOpenChange={() =>
               navigate({
                 to: '.',
+                resetScroll: false,
                 search: (prev) => ({ ...prev, edit_transaction_id: null }),
               })
             }
