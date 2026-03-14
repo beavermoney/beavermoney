@@ -1366,7 +1366,7 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool,
 }
 
 // CreateCheckpoint is the resolver for the createCheckpoint field.
-func (r *mutationResolver) CreateCheckpoint(ctx context.Context) (*ent.CheckpointEdge, error) {
+func (r *mutationResolver) CreateCheckpoint(ctx context.Context, note *string) (*ent.CheckpointEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -1460,6 +1460,7 @@ func (r *mutationResolver) CreateCheckpoint(ctx context.Context) (*ent.Checkpoin
 		SetProperty(property).
 		SetReceivable(receivable).
 		SetLiability(liability).
+		SetNillableNote(note).
 		Save(ctx)
 	if err != nil {
 		r.logger.Error("Failed to create checkpoint", "error", err)
