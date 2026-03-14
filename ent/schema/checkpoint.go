@@ -160,6 +160,7 @@ func (Checkpoint) Indexes() []ent.Index {
 func (Checkpoint) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.QueryField(),
+		entgql.RelayConnection(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

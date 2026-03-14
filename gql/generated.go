@@ -142,6 +142,17 @@ type ComplexityRoot struct {
 		UpdateTime  func(childComplexity int) int
 	}
 
+	CheckpointConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	CheckpointEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	CryptoQuoteResult struct {
 		Currency     func(childComplexity int) int
 		CurrentPrice func(childComplexity int) int
@@ -252,6 +263,7 @@ type ComplexityRoot struct {
 		ArchiveAccount              func(childComplexity int, id int) int
 		BuyInvestment               func(childComplexity int, input model.BuyInvestmentInputCustom) int
 		CreateAccount               func(childComplexity int, input ent.CreateAccountInput) int
+		CreateCheckpoint            func(childComplexity int) int
 		CreateExpense               func(childComplexity int, input model.CreateExpenseInputCustom) int
 		CreateHousehold             func(childComplexity int, input ent.CreateHouseholdInput) int
 		CreateIncome                func(childComplexity int, input model.CreateIncomeInputCustom) int
@@ -260,6 +272,7 @@ type ComplexityRoot struct {
 		CreateTransactionCategory   func(childComplexity int, input ent.CreateTransactionCategoryInput) int
 		CreateTransfer              func(childComplexity int, input model.CreateTransferInputCustom) int
 		DeleteAccount               func(childComplexity int, id int) int
+		DeleteCheckpoint            func(childComplexity int, id int) int
 		DeleteRecurringSubscription func(childComplexity int, id int) int
 		DeleteTransaction           func(childComplexity int, id int) int
 		DeleteTransactionCategory   func(childComplexity int, id int) int
@@ -267,6 +280,7 @@ type ComplexityRoot struct {
 		Refresh                     func(childComplexity int) int
 		SellInvestment              func(childComplexity int, input model.SellInvestmentInputCustom) int
 		UpdateAccount               func(childComplexity int, id int, input ent.UpdateAccountInput) int
+		UpdateCheckpoint            func(childComplexity int, id int, input ent.UpdateCheckpointInput) int
 		UpdateRecurringSubscription func(childComplexity int, id int, input ent.UpdateRecurringSubscriptionInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
 		UpdateTransactionCategory   func(childComplexity int, id int, input ent.UpdateTransactionCategoryInput) int
@@ -295,7 +309,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Accounts               func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) int
-		Checkpoints            func(childComplexity int) int
+		Checkpoints            func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.CheckpointWhereInput) int
 		CryptoQuote            func(childComplexity int, symbol string) int
 		Currencies             func(childComplexity int) int
 		FxRate                 func(childComplexity int, from string, to string, datetime time.Time) int
@@ -514,13 +528,16 @@ type MutationResolver interface {
 	MoveInvestment(ctx context.Context, input model.MoveInvestmentInputCustom) (*ent.TransactionEdge, error)
 	UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput) (*ent.TransactionEdge, error)
 	DeleteTransaction(ctx context.Context, id int) (bool, error)
+	CreateCheckpoint(ctx context.Context) (*ent.CheckpointEdge, error)
+	UpdateCheckpoint(ctx context.Context, id int, input ent.UpdateCheckpointInput) (*ent.CheckpointEdge, error)
+	DeleteCheckpoint(ctx context.Context, id int) (bool, error)
 	Refresh(ctx context.Context) (bool, error)
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id int) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []int) ([]ent.Noder, error)
 	Accounts(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) (*ent.AccountConnection, error)
-	Checkpoints(ctx context.Context) ([]*ent.Checkpoint, error)
+	Checkpoints(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.CheckpointWhereInput) (*ent.CheckpointConnection, error)
 	Currencies(ctx context.Context) ([]*ent.Currency, error)
 	Households(ctx context.Context) ([]*ent.Household, error)
 	Investments(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.InvestmentWhereInput) (*ent.InvestmentConnection, error)
@@ -1020,6 +1037,38 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Checkpoint.UpdateTime(childComplexity), true
+
+	case "CheckpointConnection.edges":
+		if e.complexity.CheckpointConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.CheckpointConnection.Edges(childComplexity), true
+	case "CheckpointConnection.pageInfo":
+		if e.complexity.CheckpointConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.CheckpointConnection.PageInfo(childComplexity), true
+	case "CheckpointConnection.totalCount":
+		if e.complexity.CheckpointConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.CheckpointConnection.TotalCount(childComplexity), true
+
+	case "CheckpointEdge.cursor":
+		if e.complexity.CheckpointEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.CheckpointEdge.Cursor(childComplexity), true
+	case "CheckpointEdge.node":
+		if e.complexity.CheckpointEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.CheckpointEdge.Node(childComplexity), true
 
 	case "CryptoQuoteResult.currency":
 		if e.complexity.CryptoQuoteResult.Currency == nil {
@@ -1530,6 +1579,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.CreateAccount(childComplexity, args["input"].(ent.CreateAccountInput)), true
+	case "Mutation.createCheckpoint":
+		if e.complexity.Mutation.CreateCheckpoint == nil {
+			break
+		}
+
+		return e.complexity.Mutation.CreateCheckpoint(childComplexity), true
 	case "Mutation.createExpense":
 		if e.complexity.Mutation.CreateExpense == nil {
 			break
@@ -1618,6 +1673,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteAccount(childComplexity, args["id"].(int)), true
+	case "Mutation.deleteCheckpoint":
+		if e.complexity.Mutation.DeleteCheckpoint == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCheckpoint_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCheckpoint(childComplexity, args["id"].(int)), true
 	case "Mutation.deleteRecurringSubscription":
 		if e.complexity.Mutation.DeleteRecurringSubscription == nil {
 			break
@@ -1690,6 +1756,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateAccount(childComplexity, args["id"].(int), args["input"].(ent.UpdateAccountInput)), true
+	case "Mutation.updateCheckpoint":
+		if e.complexity.Mutation.UpdateCheckpoint == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCheckpoint_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCheckpoint(childComplexity, args["id"].(int), args["input"].(ent.UpdateCheckpointInput)), true
 	case "Mutation.updateRecurringSubscription":
 		if e.complexity.Mutation.UpdateRecurringSubscription == nil {
 			break
@@ -1815,7 +1892,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Query.Checkpoints(childComplexity), true
+		args, err := ec.field_Query_checkpoints_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Checkpoints(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.CheckpointWhereInput)), true
 	case "Query.cryptoQuote":
 		if e.complexity.Query.CryptoQuote == nil {
 			break
@@ -2881,6 +2963,17 @@ func (ec *executionContext) field_Mutation_deleteAccount_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteCheckpoint_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteRecurringSubscription_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -2945,6 +3038,22 @@ func (ec *executionContext) field_Mutation_updateAccount_args(ctx context.Contex
 	}
 	args["id"] = arg0
 	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateAccountInput2beavermoneyᚗappᚋentᚐUpdateAccountInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCheckpoint_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateCheckpointInput2beavermoneyᚗappᚋentᚐUpdateCheckpointInput)
 	if err != nil {
 		return nil, err
 	}
@@ -3035,6 +3144,37 @@ func (ec *executionContext) field_Query_accounts_args(ctx context.Context, rawAr
 	}
 	args["last"] = arg3
 	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOAccountWhereInput2ᚖbeavermoneyᚗappᚋentᚐAccountWhereInput)
+	if err != nil {
+		return nil, err
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_checkpoints_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "before", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "last", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOCheckpointWhereInput2ᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInput)
 	if err != nil {
 		return nil, err
 	}
@@ -4942,6 +5082,197 @@ func (ec *executionContext) fieldContext_Checkpoint_currency(_ context.Context, 
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CheckpointConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.CheckpointConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CheckpointConnection_edges,
+		func(ctx context.Context) (any, error) {
+			return obj.Edges, nil
+		},
+		nil,
+		ec.marshalOCheckpointEdge2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointEdge,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_CheckpointConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CheckpointConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_CheckpointEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_CheckpointEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CheckpointEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CheckpointConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.CheckpointConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CheckpointConnection_pageInfo,
+		func(ctx context.Context) (any, error) {
+			return obj.PageInfo, nil
+		},
+		nil,
+		ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CheckpointConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CheckpointConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CheckpointConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.CheckpointConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CheckpointConnection_totalCount,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalCount, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CheckpointConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CheckpointConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CheckpointEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.CheckpointEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CheckpointEdge_node,
+		func(ctx context.Context) (any, error) {
+			return obj.Node, nil
+		},
+		nil,
+		ec.marshalOCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_CheckpointEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CheckpointEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Checkpoint_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Checkpoint_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Checkpoint_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Checkpoint_updateTime(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_Checkpoint_netWorth(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_Checkpoint_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_Checkpoint_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_Checkpoint_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_Checkpoint_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_Checkpoint_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Checkpoint_currencyID(ctx, field)
+			case "note":
+				return ec.fieldContext_Checkpoint_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Checkpoint_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_Checkpoint_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Checkpoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CheckpointEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.CheckpointEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CheckpointEdge_cursor,
+		func(ctx context.Context) (any, error) {
+			return obj.Cursor, nil
+		},
+		nil,
+		ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CheckpointEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CheckpointEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Cursor does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9001,6 +9332,129 @@ func (ec *executionContext) fieldContext_Mutation_deleteTransaction(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createCheckpoint(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createCheckpoint,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Mutation().CreateCheckpoint(ctx)
+		},
+		nil,
+		ec.marshalNCheckpointEdge2ᚖbeavermoneyᚗappᚋentᚐCheckpointEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createCheckpoint(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_CheckpointEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_CheckpointEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CheckpointEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateCheckpoint(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateCheckpoint,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateCheckpoint(ctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateCheckpointInput))
+		},
+		nil,
+		ec.marshalNCheckpointEdge2ᚖbeavermoneyᚗappᚋentᚐCheckpointEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateCheckpoint(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_CheckpointEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_CheckpointEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CheckpointEdge", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateCheckpoint_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteCheckpoint(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_deleteCheckpoint,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().DeleteCheckpoint(ctx, fc.Args["id"].(int))
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCheckpoint(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCheckpoint_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_refresh(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -9528,16 +9982,17 @@ func (ec *executionContext) _Query_checkpoints(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Query_checkpoints,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Query().Checkpoints(ctx)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().Checkpoints(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["where"].(*ent.CheckpointWhereInput))
 		},
 		nil,
-		ec.marshalNCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ,
+		ec.marshalNCheckpointConnection2ᚖbeavermoneyᚗappᚋentᚐCheckpointConnection,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_Query_checkpoints(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_checkpoints(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -9545,37 +10000,26 @@ func (ec *executionContext) fieldContext_Query_checkpoints(_ context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Checkpoint_id(ctx, field)
-			case "householdID":
-				return ec.fieldContext_Checkpoint_householdID(ctx, field)
-			case "createTime":
-				return ec.fieldContext_Checkpoint_createTime(ctx, field)
-			case "updateTime":
-				return ec.fieldContext_Checkpoint_updateTime(ctx, field)
-			case "netWorth":
-				return ec.fieldContext_Checkpoint_netWorth(ctx, field)
-			case "liquidity":
-				return ec.fieldContext_Checkpoint_liquidity(ctx, field)
-			case "investment":
-				return ec.fieldContext_Checkpoint_investment(ctx, field)
-			case "property":
-				return ec.fieldContext_Checkpoint_property(ctx, field)
-			case "receivable":
-				return ec.fieldContext_Checkpoint_receivable(ctx, field)
-			case "liability":
-				return ec.fieldContext_Checkpoint_liability(ctx, field)
-			case "currencyID":
-				return ec.fieldContext_Checkpoint_currencyID(ctx, field)
-			case "note":
-				return ec.fieldContext_Checkpoint_note(ctx, field)
-			case "household":
-				return ec.fieldContext_Checkpoint_household(ctx, field)
-			case "currency":
-				return ec.fieldContext_Checkpoint_currency(ctx, field)
+			case "edges":
+				return ec.fieldContext_CheckpointConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_CheckpointConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_CheckpointConnection_totalCount(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Checkpoint", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CheckpointConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_checkpoints_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -25013,6 +25457,93 @@ func (ec *executionContext) _Checkpoint(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
+var checkpointConnectionImplementors = []string{"CheckpointConnection"}
+
+func (ec *executionContext) _CheckpointConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.CheckpointConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, checkpointConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CheckpointConnection")
+		case "edges":
+			out.Values[i] = ec._CheckpointConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._CheckpointConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._CheckpointConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var checkpointEdgeImplementors = []string{"CheckpointEdge"}
+
+func (ec *executionContext) _CheckpointEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.CheckpointEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, checkpointEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CheckpointEdge")
+		case "node":
+			out.Values[i] = ec._CheckpointEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._CheckpointEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var cryptoQuoteResultImplementors = []string{"CryptoQuoteResult"}
 
 func (ec *executionContext) _CryptoQuoteResult(ctx context.Context, sel ast.SelectionSet, obj *model.CryptoQuoteResult) graphql.Marshaler {
@@ -26910,6 +27441,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteTransaction":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteTransaction(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createCheckpoint":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createCheckpoint(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateCheckpoint":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateCheckpoint(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteCheckpoint":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCheckpoint(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -29740,50 +30292,6 @@ func (ec *executionContext) marshalNCategoryTypeAggregate2ᚖbeavermoneyᚗapp�
 	return ec._CategoryTypeAggregate(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Checkpoint) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalNCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint(ctx context.Context, sel ast.SelectionSet, v *ent.Checkpoint) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -29792,6 +30300,34 @@ func (ec *executionContext) marshalNCheckpoint2ᚖbeavermoneyᚗappᚋentᚐChec
 		return graphql.Null
 	}
 	return ec._Checkpoint(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCheckpointConnection2beavermoneyᚗappᚋentᚐCheckpointConnection(ctx context.Context, sel ast.SelectionSet, v ent.CheckpointConnection) graphql.Marshaler {
+	return ec._CheckpointConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCheckpointConnection2ᚖbeavermoneyᚗappᚋentᚐCheckpointConnection(ctx context.Context, sel ast.SelectionSet, v *ent.CheckpointConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CheckpointConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCheckpointEdge2beavermoneyᚗappᚋentᚐCheckpointEdge(ctx context.Context, sel ast.SelectionSet, v ent.CheckpointEdge) graphql.Marshaler {
+	return ec._CheckpointEdge(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCheckpointEdge2ᚖbeavermoneyᚗappᚋentᚐCheckpointEdge(ctx context.Context, sel ast.SelectionSet, v *ent.CheckpointEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CheckpointEdge(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNCheckpointWhereInput2ᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInput(ctx context.Context, v any) (*ent.CheckpointWhereInput, error) {
@@ -30601,6 +31137,11 @@ func (ec *executionContext) unmarshalNUpdateAccountInput2beavermoneyᚗappᚋent
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNUpdateCheckpointInput2beavermoneyᚗappᚋentᚐUpdateCheckpointInput(ctx context.Context, v any) (ent.UpdateCheckpointInput, error) {
+	res, err := ec.unmarshalInputUpdateCheckpointInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateRecurringSubscriptionInput2beavermoneyᚗappᚋentᚐUpdateRecurringSubscriptionInput(ctx context.Context, v any) (ent.UpdateRecurringSubscriptionInput, error) {
 	res, err := ec.unmarshalInputUpdateRecurringSubscriptionInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -31266,6 +31807,61 @@ func (ec *executionContext) marshalOCheckpoint2ᚕᚖbeavermoneyᚗappᚋentᚐC
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOCheckpoint2ᚖbeavermoneyᚗappᚋentᚐCheckpoint(ctx context.Context, sel ast.SelectionSet, v *ent.Checkpoint) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Checkpoint(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCheckpointEdge2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.CheckpointEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCheckpointEdge2ᚖbeavermoneyᚗappᚋentᚐCheckpointEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCheckpointEdge2ᚖbeavermoneyᚗappᚋentᚐCheckpointEdge(ctx context.Context, sel ast.SelectionSet, v *ent.CheckpointEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CheckpointEdge(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOCheckpointWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCheckpointWhereInputᚄ(ctx context.Context, v any) ([]*ent.CheckpointWhereInput, error) {

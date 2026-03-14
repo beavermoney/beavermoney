@@ -36,6 +36,10 @@ type Mutation {
   updateTransaction(id: ID!, input: UpdateTransactionInput!): TransactionEdge!
   deleteTransaction(id: ID!): Boolean!
 
+  createCheckpoint: CheckpointEdge!
+  updateCheckpoint(id: ID!, input: UpdateCheckpointInput!): CheckpointEdge!
+  deleteCheckpoint(id: ID!): Boolean!
+
   refresh: Boolean!
 }
 
