@@ -16,7 +16,6 @@ import (
 	"beavermoney.app/internal/contextkeys"
 	"beavermoney.app/internal/fxrate"
 	"beavermoney.app/internal/market"
-	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 )
 
@@ -388,7 +387,7 @@ func SeedDemoHousehold(
 
 		// Create checkpoint at end of week
 		checkpointDate := weekEnd.Add(-1 * time.Hour)
-		if err := createCheckpointAtDate(ctx, client, household, householdCurrency, fxrateClient, checkpointDate); err != nil {
+		if err := createCheckpointAtDate(ctx, client, household, householdCurrency, checkpointDate); err != nil {
 			return fmt.Errorf(
 				"failed to create checkpoint for week %d: %w",
 				weekNumber,
@@ -405,8 +404,11 @@ func SeedDemoHousehold(
 // demoConfig holds configuration for the demo household (CAD / Canada).
 type demoConfig struct {
 	checkingName   string
+	checkingIcon   string
 	creditCardName string
+	creditCardIcon string
 	investmentName string
+	investmentIcon string
 	etfSymbol      string
 	stockSymbols   []string
 	monthlySalary  decimal.Decimal
@@ -415,8 +417,11 @@ type demoConfig struct {
 func getDemoConfig() demoConfig {
 	return demoConfig{
 		checkingName:   "TD Chequing Account",
+		checkingIcon:   "td.com",
 		creditCardName: "Wealthsimple Visa Infinite",
+		creditCardIcon: "wealthsimple.com",
 		investmentName: "Webull",
+		investmentIcon: "webull.ca",
 		etfSymbol:      "VFV.TO",
 		stockSymbols:   []string{"SHOP.TO", "META", "TD.TO"},
 		monthlySalary:  decimal.NewFromInt(6500),
@@ -441,6 +446,7 @@ func createDemoAccounts(
 ) (*demoAccounts, error) {
 	checking, err := client.Account.Create().
 		SetName(config.checkingName).
+		SetIcon(config.checkingIcon).
 		SetCurrency(householdCurrency).
 		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
@@ -455,6 +461,7 @@ func createDemoAccounts(
 
 	creditCard, err := client.Account.Create().
 		SetName(config.creditCardName).
+		SetIcon(config.creditCardIcon).
 		SetCurrency(householdCurrency).
 		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
@@ -469,6 +476,7 @@ func createDemoAccounts(
 
 	investmentAccount, err := client.Account.Create().
 		SetName(config.investmentName).
+		SetIcon(config.investmentIcon).
 		SetCurrency(householdCurrency).
 		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
@@ -848,13 +856,11 @@ func createCheckpointAtDate(
 	client *ent.Client,
 	household *ent.Household,
 	householdCurrency *ent.Currency,
-	fxrateClient *fxrate.Client,
 	checkpointDate time.Time,
 ) error {
-	// Query all accounts
+	// Query all accounts — FxRate is already stored on each account
 	accounts, err := client.Account.Query().
 		Where(account.HouseholdIDEQ(household.ID)).
-		WithCurrency().
 		All(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to query accounts: %w", err)
@@ -868,42 +874,20 @@ func createCheckpointAtDate(
 	receivable := zero
 	liability := zero
 
-	// Group by currency
-	currencyToAccounts := lo.GroupBy(accounts, func(a *ent.Account) string {
-		return a.Edges.Currency.Code
-	})
+	for _, acc := range accounts {
+		convertedValue := acc.Value.Mul(acc.FxRate)
 
-	for currencyCode, accts := range currencyToAccounts {
-		fxRate := decimal.NewFromInt(1)
-
-		if currencyCode != householdCurrency.Code {
-			rate, err := fxrateClient.GetRate(
-				ctx,
-				currencyCode,
-				householdCurrency.Code,
-				checkpointDate,
-			)
-			if err != nil {
-				return fmt.Errorf("failed to get FX rate: %w", err)
-			}
-			fxRate = rate
-		}
-
-		for _, acc := range accts {
-			convertedValue := acc.Value.Mul(fxRate)
-
-			switch acc.Type {
-			case account.TypeLiquidity:
-				liquidity = liquidity.Add(convertedValue)
-			case account.TypeInvestment:
-				investment = investment.Add(convertedValue)
-			case account.TypeProperty:
-				property = property.Add(convertedValue)
-			case account.TypeReceivable:
-				receivable = receivable.Add(convertedValue)
-			case account.TypeLiability:
-				liability = liability.Add(convertedValue)
-			}
+		switch acc.Type {
+		case account.TypeLiquidity:
+			liquidity = liquidity.Add(convertedValue)
+		case account.TypeInvestment:
+			investment = investment.Add(convertedValue)
+		case account.TypeProperty:
+			property = property.Add(convertedValue)
+		case account.TypeReceivable:
+			receivable = receivable.Add(convertedValue)
+		case account.TypeLiability:
+			liability = liability.Add(convertedValue)
 		}
 	}
 
