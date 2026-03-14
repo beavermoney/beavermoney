@@ -181,9 +181,11 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           </ItemTitle>
         </ItemContent>
       </Item>
-      <div className="py-2"></div>
-      <NetWorthChart fragmentRef={data} />
-      <div className="py-2"></div>
+      <div className="py-1"></div>
+      <Item className="p-0">
+        <NetWorthChart fragmentRef={data} />
+      </Item>
+      <div className="py-1"></div>
       <Accordion
         multiple
         className="w-full"

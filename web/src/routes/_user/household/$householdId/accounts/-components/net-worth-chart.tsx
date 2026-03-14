@@ -14,6 +14,7 @@ import { useCurrency } from '@/hooks/use-currency'
 import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import type { netWorthChartFragment$key } from './__generated__/netWorthChartFragment.graphql'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const NetWorthChartFragment = graphql`
   fragment netWorthChartFragment on Query {
@@ -60,9 +61,11 @@ type SeriesKey =
   | 'property'
   | 'receivable'
   | 'liability'
+  | 'asset'
 
 const SERIES: { key: SeriesKey; label: string; color: string }[] = [
   { key: 'netWorth', label: 'Net Worth', color: 'var(--chart-net-worth)' },
+  { key: 'asset', label: 'Asset', color: 'var(--chart-asset)' },
   { key: 'liquidity', label: 'Liquidity', color: 'var(--chart-liquidity)' },
   { key: 'investment', label: 'Investment', color: 'var(--chart-investment)' },
   { key: 'property', label: 'Property', color: 'var(--chart-property)' },
@@ -72,6 +75,7 @@ const SERIES: { key: SeriesKey; label: string; color: string }[] = [
 
 const chartConfig = {
   netWorth: { label: 'Net Worth', color: 'var(--chart-net-worth)' },
+  asset: { label: 'Asset', color: 'var(--chart-asset)' },
   liquidity: { label: 'Liquidity', color: 'var(--chart-liquidity)' },
   investment: { label: 'Investment', color: 'var(--chart-investment)' },
   property: { label: 'Property', color: 'var(--chart-property)' },
@@ -109,13 +113,18 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
     })
     .map((edge) => {
       const node = edge!.node!
+      const liquidity = currency(node.liquidity, { precision: 8 }).value
+      const investment = currency(node.investment, { precision: 8 }).value
+      const property = currency(node.property, { precision: 8 }).value
+      const receivable = currency(node.receivable, { precision: 8 }).value
       return {
         date: new Date(node.createTime).getTime(),
         netWorth: currency(node.netWorth, { precision: 8 }).value,
-        liquidity: currency(node.liquidity, { precision: 8 }).value,
-        investment: currency(node.investment, { precision: 8 }).value,
-        property: currency(node.property, { precision: 8 }).value,
-        receivable: currency(node.receivable, { precision: 8 }).value,
+        asset: liquidity + investment + property + receivable,
+        liquidity,
+        investment,
+        property,
+        receivable,
         liability: currency(node.liability, { precision: 8 }).value,
       }
     })
@@ -145,9 +154,12 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
   }
 
   return (
-    <Item variant="outline" className="flex-col items-stretch gap-0 px-0 py-0">
-      <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-        <div className="flex flex-wrap gap-0.5">
+    <Item
+      variant="outline"
+      className="w-full flex-col items-stretch gap-0 px-0 py-0"
+    >
+      <ScrollArea className="w-full">
+        <div className="flex gap-1 px-3 pt-2.5 pb-1">
           {SERIES.map((s) => {
             const active = activeSeries.has(s.key)
             return (
@@ -172,20 +184,7 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
             )
           })}
         </div>
-        <div className="flex gap-0.5">
-          {DURATIONS.map((d) => (
-            <Button
-              key={d}
-              variant={duration === d ? 'default' : 'ghost'}
-              size="sm"
-              className="h-5 px-1.5 text-xs"
-              onClick={() => setDuration(d)}
-            >
-              {d}
-            </Button>
-          ))}
-        </div>
-      </div>
+      </ScrollArea>
       <ChartContainer config={chartConfig} className="h-36 w-full">
         <AreaChart
           data={chartData}
@@ -286,6 +285,19 @@ export function NetWorthChart({ fragmentRef }: NetWorthChartProps) {
           ))}
         </AreaChart>
       </ChartContainer>
+      <div className="flex items-center justify-end gap-0.5 px-3 pt-1 pb-2.5">
+        {DURATIONS.map((d) => (
+          <Button
+            key={d}
+            variant={duration === d ? 'default' : 'ghost'}
+            size="sm"
+            className="h-5 px-1.5 text-xs"
+            onClick={() => setDuration(d)}
+          >
+            {d}
+          </Button>
+        ))}
+      </div>
     </Item>
   )
 }
