@@ -192,6 +192,7 @@ export function NetWorthChart() {
           })}
         </div>
       </ScrollArea>
+      <div className="py-1"></div>
       <ChartContainer
         config={chartConfig}
         className={`h-36 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
@@ -289,6 +290,7 @@ export function NetWorthChart() {
               />
             }
           />
+
           {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
             <Area
               key={s.key}
