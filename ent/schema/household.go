@@ -117,6 +117,7 @@ func (Household) Policy() ent.Policy {
 			rules.FilterMemberHousehold(),
 		},
 		Mutation: privacy.MutationPolicy{
+			rules.AllowPrivacyBypass(),
 			privacy.OnMutationOperation(
 				privacy.AlwaysAllowRule(),
 				ent.OpCreate,

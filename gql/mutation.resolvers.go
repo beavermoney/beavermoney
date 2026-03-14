@@ -127,6 +127,10 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		return false, fmt.Errorf("not authorized to delete this household")
 	}
 
+	// Scope all subsequent operations to the target household so the privacy
+	// filter (which reads householdID from context) doesn't reject them.
+	ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), id)
+
 	// Deletion order matters — children with FK restrictions must go before parents.
 	//
 	// 1. TransactionEntry — must go before Account (account delete is restricted by entries)
@@ -211,8 +215,10 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		return false, err
 	}
 
-	// 10. Household itself
-	err = client.Household.DeleteOneID(id).Exec(ctx)
+	// 10. Household itself — use privacy bypass because FilterMemberHousehold
+	//     checks the join table, which is now empty.
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+	err = client.Household.DeleteOneID(id).Exec(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to delete household", "error", err)
 		return false, err
