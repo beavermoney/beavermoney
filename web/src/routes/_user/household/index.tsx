@@ -56,6 +56,7 @@ function RouteComponent() {
   }
 
   if (data.households.length > 0) {
+    localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, data.households[0].id)
     return (
       <Navigate
         to={'/household/$householdId'}
