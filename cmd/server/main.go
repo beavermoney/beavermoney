@@ -168,9 +168,10 @@ func main() {
 		r.Use(jwtauth.Authenticator(tokenAuth))
 		r.Use(auth.Middleware(entClient))
 
-		r.Handle("/", playground.Handler("GraphQL playground", "/query"))
 		r.Handle("/query", gqlHandler)
 	})
+
+	r.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
 	// Setup Auth routes
 	r.Get(
