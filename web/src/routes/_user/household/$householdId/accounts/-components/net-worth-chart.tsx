@@ -1,5 +1,5 @@
 import { graphql, useLazyLoadQuery } from 'react-relay'
-import { useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import invariant from 'tiny-invariant'
 import currency from 'currency.js'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts'
@@ -137,6 +137,27 @@ export function NetWorthChart() {
     })
     .sort((a, b) => a.date - b.date)
 
+  const yDomain = useMemo((): [number, number] => {
+    const values = chartData
+      .flatMap((point) => [...activeSeries].map((series) => point[series]))
+      .filter((value) => Number.isFinite(value))
+
+    if (values.length === 0) {
+      return [0, 1]
+    }
+
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+
+    if (min === max) {
+      const padding = Math.max(Math.abs(min) * 0.05, 1)
+      return [min - padding, max + padding]
+    }
+
+    const padding = (max - min) * 0.08
+    return [min - padding, max + padding]
+  }, [chartData, activeSeries])
+
   const formatDate = (ts: number) => {
     return new Date(ts).toLocaleDateString(household.locale, {
       month: 'short',
@@ -241,6 +262,7 @@ export function NetWorthChart() {
             axisLine={false}
             tickMargin={4}
             width={56}
+            domain={yDomain}
             tick={{ fontSize: 10 }}
             tickFormatter={(value: number) =>
               formatCurrencyWithPrivacyMode({
