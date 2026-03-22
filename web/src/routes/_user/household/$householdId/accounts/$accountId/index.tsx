@@ -7,6 +7,7 @@ import {
 import { graphql, ROOT_ID } from 'relay-runtime'
 import { TransactionsList } from '../../transactions/-components/transactions-list'
 import type { AccountIdTransactionsQuery } from './__generated__/AccountIdTransactionsQuery.graphql'
+import type { TransactionWhereInput } from '../../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 
@@ -56,6 +57,23 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
+  const where: TransactionWhereInput = {
+    or: [
+      {
+        hasTransactionEntriesWith: [
+          { hasAccountWith: [{ id: params.accountId }] },
+        ],
+      },
+      {
+        hasInvestmentLotsWith: [
+          {
+            hasInvestmentWith: [{ hasAccountWith: [{ id: params.accountId }] }],
+          },
+        ],
+      },
+    ],
+  }
+
   const data = usePreloadedQuery<AccountIdTransactionsQuery>(
     AccountIdTransactionsQuery,
     queryRef,
@@ -91,5 +109,5 @@ function RouteComponent() {
     )
   })
 
-  return <TransactionsList fragmentRef={data} />
+  return <TransactionsList fragmentRef={data} where={where} />
 }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d585c476f85930cbcea26e12be04c3e8>>
+ * @generated SignedSource<<ace341b9ca2a062a5f9aa17370c7e0c5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,10 +10,13 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type editTransactionDialogDeleteMutation$variables = {
+  connections: ReadonlyArray<string>;
   id: string;
 };
 export type editTransactionDialogDeleteMutation$data = {
-  readonly deleteTransaction: boolean;
+  readonly deleteTransaction: {
+    readonly deletedTransactionId: string;
+  };
 };
 export type editTransactionDialogDeleteMutation = {
   response: editTransactionDialogDeleteMutation$data;
@@ -21,56 +24,106 @@ export type editTransactionDialogDeleteMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v2 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "id"
   }
 ],
-v1 = [
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "id",
-        "variableName": "id"
-      }
-    ],
-    "kind": "ScalarField",
-    "name": "deleteTransaction",
-    "storageKey": null
-  }
-];
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "deletedTransactionId",
+  "storageKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "editTransactionDialogDeleteMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteTransactionPayload",
+        "kind": "LinkedField",
+        "name": "deleteTransaction",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "editTransactionDialogDeleteMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteTransactionPayload",
+        "kind": "LinkedField",
+        "name": "deleteTransaction",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "filters": null,
+            "handle": "deleteEdge",
+            "key": "",
+            "kind": "ScalarHandle",
+            "name": "deletedTransactionId",
+            "handleArgs": [
+              {
+                "kind": "Variable",
+                "name": "connections",
+                "variableName": "connections"
+              }
+            ]
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "2e944903016d7287b0e2955a607dccc1",
+    "cacheID": "a974540f0924c8a4506dac864c8ba98b",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogDeleteMutation",
     "operationKind": "mutation",
-    "text": "mutation editTransactionDialogDeleteMutation(\n  $id: ID!\n) {\n  deleteTransaction(id: $id)\n}\n"
+    "text": "mutation editTransactionDialogDeleteMutation(\n  $id: ID!\n) {\n  deleteTransaction(id: $id) {\n    deletedTransactionId\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1a663851eab3fd20944ed4dccc93992a";
+(node as any).hash = "180be433465437a5bf5155914b8ea6cd";
 
 export default node;

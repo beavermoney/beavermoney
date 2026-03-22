@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9cbd03907696b1ccae08e722ef8bf5db>>
+ * @generated SignedSource<<f63eb6700acbd14da995676db0eb98df>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,9 @@ export type editSubscriptionDeleteMutation$variables = {
   id: string;
 };
 export type editSubscriptionDeleteMutation$data = {
-  readonly deleteRecurringSubscription: boolean;
+  readonly deleteRecurringSubscription: {
+    readonly deletedRecurringSubscriptionId: string;
+  };
 };
 export type editSubscriptionDeleteMutation = {
   response: editSubscriptionDeleteMutation$data;
@@ -38,8 +40,19 @@ v1 = [
         "variableName": "id"
       }
     ],
-    "kind": "ScalarField",
+    "concreteType": "DeleteRecurringSubscriptionPayload",
+    "kind": "LinkedField",
     "name": "deleteRecurringSubscription",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "deletedRecurringSubscriptionId",
+        "storageKey": null
+      }
+    ],
     "storageKey": null
   }
 ];
@@ -61,16 +74,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "df6c6b48086da8c1705ab80ad07d5dc9",
+    "cacheID": "62a0d96875336fd1c088ee7bb962ccd6",
     "id": null,
     "metadata": {},
     "name": "editSubscriptionDeleteMutation",
     "operationKind": "mutation",
-    "text": "mutation editSubscriptionDeleteMutation(\n  $id: ID!\n) {\n  deleteRecurringSubscription(id: $id)\n}\n"
+    "text": "mutation editSubscriptionDeleteMutation(\n  $id: ID!\n) {\n  deleteRecurringSubscription(id: $id) {\n    deletedRecurringSubscriptionId\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2e7aa522adee4a3e70c811bdbadc974c";
+(node as any).hash = "beec3bb3685184163e81a119e8d12e08";
 
 export default node;

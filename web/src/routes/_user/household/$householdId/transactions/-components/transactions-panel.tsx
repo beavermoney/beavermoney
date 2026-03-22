@@ -1,7 +1,6 @@
 import { fetchQuery, graphql } from 'relay-runtime'
 import { useFragment } from 'react-relay'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { parseISO } from 'date-fns'
 import { TransactionsList } from './transactions-list'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
 import { DateRangeFilter } from '../../categories/-components/date-range-filter'
@@ -12,6 +11,7 @@ import { transactionsQuery } from '../-transactions-query'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { Fragment } from 'react/jsx-runtime'
 import { PlusButton } from '@/components/plus-button'
+import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
 const transactionsPanelFragment = graphql`
   fragment transactionsPanelFragment on Query
@@ -37,11 +37,16 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const search = useSearch({
     from: '/_user/household/$householdId/transactions',
   })
-  const startDate = parseISO(search.start).toISOString()
-  const endDate = parseISO(search.end).toISOString()
+  const period = parseDateRangeFromURL(search.start, search.end)
+  const startDate = period.startDate
+  const endDate = period.endDate
   const navigate = useNavigate()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
+  const where: TransactionWhereInput = {
+    datetimeGTE: startDate,
+    datetimeLT: endDate,
+  }
 
   const onDateRangeChange = async (start: string, end: string) => {
     const period = parseDateRangeFromURL(start, end)
@@ -78,7 +83,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         onDateRangeChange={onDateRangeChange}
       />
       <div className="py-2"></div>
-      <TransactionsList fragmentRef={data} />
+      <TransactionsList fragmentRef={data} where={where} />
     </Fragment>
   )
 }

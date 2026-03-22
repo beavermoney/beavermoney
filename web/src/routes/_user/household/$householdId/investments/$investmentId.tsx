@@ -7,6 +7,7 @@ import {
 import { graphql, ROOT_ID } from 'relay-runtime'
 import { TransactionsList } from '../transactions/-components/transactions-list'
 import type { InvestmentIdQuery } from './__generated__/InvestmentIdQuery.graphql'
+import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 
@@ -41,6 +42,12 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
+  const where: TransactionWhereInput = {
+    hasInvestmentLotsWith: [
+      { hasInvestmentWith: [{ id: params.investmentId }] },
+    ],
+  }
+
   const data = usePreloadedQuery<InvestmentIdQuery>(InvestmentIdQuery, queryRef)
 
   useSubscribeToInvalidationState([ROOT_ID], () => {
@@ -60,7 +67,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <TransactionsList fragmentRef={data} />
+      <TransactionsList fragmentRef={data} where={where} />
     </div>
   )
 }

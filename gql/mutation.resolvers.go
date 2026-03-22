@@ -98,7 +98,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 }
 
 // DeleteHousehold is the resolver for the deleteHousehold field.
-func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, error) {
+func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.DeleteHouseholdPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
 
 	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteHousehold",
@@ -121,10 +121,10 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exist(ctx)
 	if err != nil {
 		r.logger.Error("Failed to verify household membership", "error", err)
-		return false, err
+		return nil, err
 	}
 	if !isMember {
-		return false, fmt.Errorf("not authorized to delete this household")
+		return nil, fmt.Errorf("not authorized to delete this household")
 	}
 
 	// Scope all subsequent operations to the target household so the privacy
@@ -140,7 +140,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete transaction entries", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 2. InvestmentLot — must go before Investment and Transaction
@@ -149,7 +149,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete investment lots", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 3. Investment — must go before Account (account delete is restricted by investments)
@@ -158,7 +158,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete investments", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 4. Transaction — entries and lots are already gone
@@ -167,7 +167,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete transactions", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 5. TransactionCategory — restricted by Transaction; transactions are now deleted
@@ -176,7 +176,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete transaction categories", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 6. RecurringSubscription
@@ -185,7 +185,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete recurring subscriptions", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 7. Checkpoint
@@ -194,7 +194,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete checkpoints", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 8. Account — entries and investments are already gone
@@ -203,7 +203,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete accounts", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 9. UserHousehold memberships
@@ -212,7 +212,7 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete user household memberships", "error", err)
-		return false, err
+		return nil, err
 	}
 
 	// 10. Household itself — use privacy bypass because FilterMemberHousehold
@@ -221,10 +221,10 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (bool, e
 	err = client.Household.DeleteOneID(id).Exec(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to delete household", "error", err)
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &model.DeleteHouseholdPayload{DeletedHouseholdID: id}, nil
 }
 
 // CreateAccount is the resolver for the createAccount field.
@@ -344,7 +344,7 @@ func (r *mutationResolver) UpdateAccount(ctx context.Context, id int, input ent.
 }
 
 // DeleteAccount is the resolver for the deleteAccount field.
-func (r *mutationResolver) DeleteAccount(ctx context.Context, id int) (bool, error) {
+func (r *mutationResolver) DeleteAccount(ctx context.Context, id int) (*model.DeleteAccountPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -360,26 +360,26 @@ func (r *mutationResolver) DeleteAccount(ctx context.Context, id int) (bool, err
 
 	hasEntries, err := client.TransactionEntry.Query().Where(transactionentry.AccountID(id)).Exist(ctx)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	if hasEntries {
-		return false, fmt.Errorf("cannot delete account with existing transactions")
+		return nil, fmt.Errorf("cannot delete account with existing transactions")
 	}
 
 	hasInvestments, err := client.Investment.Query().Where(investment.AccountID(id)).Exist(ctx)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	if hasInvestments {
-		return false, fmt.Errorf("cannot delete account with existing investments")
+		return nil, fmt.Errorf("cannot delete account with existing investments")
 	}
 
 	err = client.Account.DeleteOneID(id).Exec(ctx)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &model.DeleteAccountPayload{DeletedAccountID: id}, nil
 }
 
 // ArchiveAccount is the resolver for the archiveAccount field.
@@ -584,7 +584,7 @@ func (r *mutationResolver) UpdateTransactionCategory(ctx context.Context, id int
 }
 
 // DeleteTransactionCategory is the resolver for the deleteTransactionCategory field.
-func (r *mutationResolver) DeleteTransactionCategory(ctx context.Context, id int) (bool, error) {
+func (r *mutationResolver) DeleteTransactionCategory(ctx context.Context, id int) (*model.DeleteTransactionCategoryPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -603,13 +603,13 @@ func (r *mutationResolver) DeleteTransactionCategory(ctx context.Context, id int
 		// Check if this is a foreign key constraint violation
 		if ent.IsConstraintError(err) {
 			r.logger.Error("Cannot delete transaction category with existing transactions", "error", err)
-			return false, fmt.Errorf("cannot delete category: it has existing transactions. Please reassign or delete those transactions first")
+			return nil, fmt.Errorf("cannot delete category: it has existing transactions. Please reassign or delete those transactions first")
 		}
 		r.logger.Error("Failed to delete transaction category", "error", err)
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &model.DeleteTransactionCategoryPayload{DeletedTransactionCategoryID: id}, nil
 }
 
 // CreateRecurringSubscription is the resolver for the createRecurringSubscription field.
@@ -719,7 +719,7 @@ func (r *mutationResolver) UpdateRecurringSubscription(ctx context.Context, id i
 }
 
 // DeleteRecurringSubscription is the resolver for the deleteRecurringSubscription field.
-func (r *mutationResolver) DeleteRecurringSubscription(ctx context.Context, id int) (bool, error) {
+func (r *mutationResolver) DeleteRecurringSubscription(ctx context.Context, id int) (*model.DeleteRecurringSubscriptionPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -735,10 +735,10 @@ func (r *mutationResolver) DeleteRecurringSubscription(ctx context.Context, id i
 
 	err := client.RecurringSubscription.DeleteOneID(id).Exec(ctx)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &model.DeleteRecurringSubscriptionPayload{DeletedRecurringSubscriptionID: id}, nil
 }
 
 // CreateExpense is the resolver for the createExpense field.
@@ -1476,7 +1476,7 @@ func (r *mutationResolver) UpdateTransaction(ctx context.Context, id int, input 
 }
 
 // DeleteTransaction is the resolver for the deleteTransaction field.
-func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool, error) {
+func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (*model.DeleteTransactionPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -1492,10 +1492,10 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (bool,
 
 	err := client.Transaction.DeleteOneID(id).Exec(ctx)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &model.DeleteTransactionPayload{DeletedTransactionID: id}, nil
 }
 
 // CreateCheckpoint is the resolver for the createCheckpoint field.
@@ -1612,7 +1612,7 @@ func (r *mutationResolver) UpdateCheckpoint(ctx context.Context, id int, input e
 }
 
 // DeleteCheckpoint is the resolver for the deleteCheckpoint field.
-func (r *mutationResolver) DeleteCheckpoint(ctx context.Context, id int) (bool, error) {
+func (r *mutationResolver) DeleteCheckpoint(ctx context.Context, id int) (*model.DeleteCheckpointPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -1629,10 +1629,10 @@ func (r *mutationResolver) DeleteCheckpoint(ctx context.Context, id int) (bool, 
 	err := client.Checkpoint.DeleteOneID(id).Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete checkpoint", "error", err)
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &model.DeleteCheckpointPayload{DeletedCheckpointID: id}, nil
 }
 
 // Refresh is the resolver for the refresh field.
