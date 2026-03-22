@@ -78,7 +78,9 @@ const editCategoryMutation = graphql`
 
 const editCategoryDeleteMutation = graphql`
   mutation editCategoryDeleteMutation($id: ID!) {
-    deleteTransactionCategory(id: $id)
+    deleteTransactionCategory(id: $id) {
+      deletedTransactionCategoryId
+    }
   }
 `
 

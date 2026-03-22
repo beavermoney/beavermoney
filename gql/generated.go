@@ -173,6 +173,30 @@ type ComplexityRoot struct {
 		TransactionEntries     func(childComplexity int) int
 	}
 
+	DeleteAccountPayload struct {
+		DeletedAccountID func(childComplexity int) int
+	}
+
+	DeleteCheckpointPayload struct {
+		DeletedCheckpointID func(childComplexity int) int
+	}
+
+	DeleteHouseholdPayload struct {
+		DeletedHouseholdID func(childComplexity int) int
+	}
+
+	DeleteRecurringSubscriptionPayload struct {
+		DeletedRecurringSubscriptionID func(childComplexity int) int
+	}
+
+	DeleteTransactionCategoryPayload struct {
+		DeletedTransactionCategoryID func(childComplexity int) int
+	}
+
+	DeleteTransactionPayload struct {
+		DeletedTransactionID func(childComplexity int) int
+	}
+
 	FinancialReport struct {
 		EndDate           func(childComplexity int) int
 		ExpensesBreakdown func(childComplexity int) int
@@ -511,18 +535,18 @@ type InvestmentLotResolver interface {
 }
 type MutationResolver interface {
 	CreateHousehold(ctx context.Context, input ent.CreateHouseholdInput) (*ent.Household, error)
-	DeleteHousehold(ctx context.Context, id int) (bool, error)
+	DeleteHousehold(ctx context.Context, id int) (*model.DeleteHouseholdPayload, error)
 	CreateAccount(ctx context.Context, input ent.CreateAccountInput) (*ent.AccountEdge, error)
 	UpdateAccount(ctx context.Context, id int, input ent.UpdateAccountInput) (*ent.AccountEdge, error)
-	DeleteAccount(ctx context.Context, id int) (bool, error)
+	DeleteAccount(ctx context.Context, id int) (*model.DeleteAccountPayload, error)
 	ArchiveAccount(ctx context.Context, id int) (bool, error)
 	CreateInvestment(ctx context.Context, input model.CreateInvestmentInputCustom) (*ent.InvestmentEdge, error)
 	CreateTransactionCategory(ctx context.Context, input ent.CreateTransactionCategoryInput) (*ent.TransactionCategoryEdge, error)
 	UpdateTransactionCategory(ctx context.Context, id int, input ent.UpdateTransactionCategoryInput) (*ent.TransactionCategoryEdge, error)
-	DeleteTransactionCategory(ctx context.Context, id int) (bool, error)
+	DeleteTransactionCategory(ctx context.Context, id int) (*model.DeleteTransactionCategoryPayload, error)
 	CreateRecurringSubscription(ctx context.Context, input ent.CreateRecurringSubscriptionInput) (*ent.RecurringSubscriptionEdge, error)
 	UpdateRecurringSubscription(ctx context.Context, id int, input ent.UpdateRecurringSubscriptionInput) (*ent.RecurringSubscriptionEdge, error)
-	DeleteRecurringSubscription(ctx context.Context, id int) (bool, error)
+	DeleteRecurringSubscription(ctx context.Context, id int) (*model.DeleteRecurringSubscriptionPayload, error)
 	CreateExpense(ctx context.Context, input model.CreateExpenseInputCustom) (*ent.TransactionEdge, error)
 	CreateIncome(ctx context.Context, input model.CreateIncomeInputCustom) (*ent.TransactionEdge, error)
 	CreateTransfer(ctx context.Context, input model.CreateTransferInputCustom) (*ent.TransactionEdge, error)
@@ -530,10 +554,10 @@ type MutationResolver interface {
 	SellInvestment(ctx context.Context, input model.SellInvestmentInputCustom) (*ent.TransactionEdge, error)
 	MoveInvestment(ctx context.Context, input model.MoveInvestmentInputCustom) (*ent.TransactionEdge, error)
 	UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput) (*ent.TransactionEdge, error)
-	DeleteTransaction(ctx context.Context, id int) (bool, error)
+	DeleteTransaction(ctx context.Context, id int) (*model.DeleteTransactionPayload, error)
 	CreateCheckpoint(ctx context.Context, input ent.CreateCheckpointInput) (*ent.CheckpointEdge, error)
 	UpdateCheckpoint(ctx context.Context, id int, input ent.UpdateCheckpointInput) (*ent.CheckpointEdge, error)
-	DeleteCheckpoint(ctx context.Context, id int) (bool, error)
+	DeleteCheckpoint(ctx context.Context, id int) (*model.DeleteCheckpointPayload, error)
 	Refresh(ctx context.Context) (bool, error)
 }
 type QueryResolver interface {
@@ -1158,6 +1182,48 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Currency.TransactionEntries(childComplexity), true
+
+	case "DeleteAccountPayload.deletedAccountId":
+		if e.complexity.DeleteAccountPayload.DeletedAccountID == nil {
+			break
+		}
+
+		return e.complexity.DeleteAccountPayload.DeletedAccountID(childComplexity), true
+
+	case "DeleteCheckpointPayload.deletedCheckpointId":
+		if e.complexity.DeleteCheckpointPayload.DeletedCheckpointID == nil {
+			break
+		}
+
+		return e.complexity.DeleteCheckpointPayload.DeletedCheckpointID(childComplexity), true
+
+	case "DeleteHouseholdPayload.deletedHouseholdId":
+		if e.complexity.DeleteHouseholdPayload.DeletedHouseholdID == nil {
+			break
+		}
+
+		return e.complexity.DeleteHouseholdPayload.DeletedHouseholdID(childComplexity), true
+
+	case "DeleteRecurringSubscriptionPayload.deletedRecurringSubscriptionId":
+		if e.complexity.DeleteRecurringSubscriptionPayload.DeletedRecurringSubscriptionID == nil {
+			break
+		}
+
+		return e.complexity.DeleteRecurringSubscriptionPayload.DeletedRecurringSubscriptionID(childComplexity), true
+
+	case "DeleteTransactionCategoryPayload.deletedTransactionCategoryId":
+		if e.complexity.DeleteTransactionCategoryPayload.DeletedTransactionCategoryID == nil {
+			break
+		}
+
+		return e.complexity.DeleteTransactionCategoryPayload.DeletedTransactionCategoryID(childComplexity), true
+
+	case "DeleteTransactionPayload.deletedTransactionId":
+		if e.complexity.DeleteTransactionPayload.DeletedTransactionID == nil {
+			break
+		}
+
+		return e.complexity.DeleteTransactionPayload.DeletedTransactionID(childComplexity), true
 
 	case "FinancialReport.endDate":
 		if e.complexity.FinancialReport.EndDate == nil {
@@ -5947,6 +6013,180 @@ func (ec *executionContext) fieldContext_Currency_checkpoints(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _DeleteAccountPayload_deletedAccountId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteAccountPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteAccountPayload_deletedAccountId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedAccountID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteAccountPayload_deletedAccountId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteCheckpointPayload_deletedCheckpointId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteCheckpointPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteCheckpointPayload_deletedCheckpointId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedCheckpointID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteCheckpointPayload_deletedCheckpointId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteCheckpointPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteHouseholdPayload_deletedHouseholdId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteHouseholdPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteHouseholdPayload_deletedHouseholdId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedHouseholdID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteHouseholdPayload_deletedHouseholdId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteHouseholdPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteRecurringSubscriptionPayload_deletedRecurringSubscriptionId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteRecurringSubscriptionPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteRecurringSubscriptionPayload_deletedRecurringSubscriptionId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedRecurringSubscriptionID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteRecurringSubscriptionPayload_deletedRecurringSubscriptionId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteRecurringSubscriptionPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteTransactionCategoryPayload_deletedTransactionCategoryId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTransactionCategoryPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteTransactionCategoryPayload_deletedTransactionCategoryId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedTransactionCategoryID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteTransactionCategoryPayload_deletedTransactionCategoryId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteTransactionCategoryPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteTransactionPayload_deletedTransactionId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTransactionPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteTransactionPayload_deletedTransactionId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedTransactionID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteTransactionPayload_deletedTransactionId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteTransactionPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _FinancialReport_incomeBreakdown(ctx context.Context, field graphql.CollectedField, obj *model.FinancialReport) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -8568,7 +8808,7 @@ func (ec *executionContext) _Mutation_deleteHousehold(ctx context.Context, field
 			return ec.resolvers.Mutation().DeleteHousehold(ctx, fc.Args["id"].(int))
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNDeleteHouseholdPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteHouseholdPayload,
 		true,
 		true,
 	)
@@ -8581,7 +8821,11 @@ func (ec *executionContext) fieldContext_Mutation_deleteHousehold(ctx context.Co
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "deletedHouseholdId":
+				return ec.fieldContext_DeleteHouseholdPayload_deletedHouseholdId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteHouseholdPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -8703,7 +8947,7 @@ func (ec *executionContext) _Mutation_deleteAccount(ctx context.Context, field g
 			return ec.resolvers.Mutation().DeleteAccount(ctx, fc.Args["id"].(int))
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNDeleteAccountPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteAccountPayload,
 		true,
 		true,
 	)
@@ -8716,7 +8960,11 @@ func (ec *executionContext) fieldContext_Mutation_deleteAccount(ctx context.Cont
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "deletedAccountId":
+				return ec.fieldContext_DeleteAccountPayload_deletedAccountId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteAccountPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -8926,7 +9174,7 @@ func (ec *executionContext) _Mutation_deleteTransactionCategory(ctx context.Cont
 			return ec.resolvers.Mutation().DeleteTransactionCategory(ctx, fc.Args["id"].(int))
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNDeleteTransactionCategoryPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionCategoryPayload,
 		true,
 		true,
 	)
@@ -8939,7 +9187,11 @@ func (ec *executionContext) fieldContext_Mutation_deleteTransactionCategory(ctx 
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "deletedTransactionCategoryId":
+				return ec.fieldContext_DeleteTransactionCategoryPayload_deletedTransactionCategoryId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteTransactionCategoryPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -9061,7 +9313,7 @@ func (ec *executionContext) _Mutation_deleteRecurringSubscription(ctx context.Co
 			return ec.resolvers.Mutation().DeleteRecurringSubscription(ctx, fc.Args["id"].(int))
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNDeleteRecurringSubscriptionPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteRecurringSubscriptionPayload,
 		true,
 		true,
 	)
@@ -9074,7 +9326,11 @@ func (ec *executionContext) fieldContext_Mutation_deleteRecurringSubscription(ct
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "deletedRecurringSubscriptionId":
+				return ec.fieldContext_DeleteRecurringSubscriptionPayload_deletedRecurringSubscriptionId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteRecurringSubscriptionPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -9431,7 +9687,7 @@ func (ec *executionContext) _Mutation_deleteTransaction(ctx context.Context, fie
 			return ec.resolvers.Mutation().DeleteTransaction(ctx, fc.Args["id"].(int))
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNDeleteTransactionPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionPayload,
 		true,
 		true,
 	)
@@ -9444,7 +9700,11 @@ func (ec *executionContext) fieldContext_Mutation_deleteTransaction(ctx context.
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "deletedTransactionId":
+				return ec.fieldContext_DeleteTransactionPayload_deletedTransactionId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteTransactionPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -9566,7 +9826,7 @@ func (ec *executionContext) _Mutation_deleteCheckpoint(ctx context.Context, fiel
 			return ec.resolvers.Mutation().DeleteCheckpoint(ctx, fc.Args["id"].(int))
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNDeleteCheckpointPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteCheckpointPayload,
 		true,
 		true,
 	)
@@ -9579,7 +9839,11 @@ func (ec *executionContext) fieldContext_Mutation_deleteCheckpoint(ctx context.C
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "deletedCheckpointId":
+				return ec.fieldContext_DeleteCheckpointPayload_deletedCheckpointId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteCheckpointPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -26028,6 +26292,240 @@ func (ec *executionContext) _Currency(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var deleteAccountPayloadImplementors = []string{"DeleteAccountPayload"}
+
+func (ec *executionContext) _DeleteAccountPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteAccountPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteAccountPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteAccountPayload")
+		case "deletedAccountId":
+			out.Values[i] = ec._DeleteAccountPayload_deletedAccountId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteCheckpointPayloadImplementors = []string{"DeleteCheckpointPayload"}
+
+func (ec *executionContext) _DeleteCheckpointPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteCheckpointPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteCheckpointPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteCheckpointPayload")
+		case "deletedCheckpointId":
+			out.Values[i] = ec._DeleteCheckpointPayload_deletedCheckpointId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteHouseholdPayloadImplementors = []string{"DeleteHouseholdPayload"}
+
+func (ec *executionContext) _DeleteHouseholdPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteHouseholdPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteHouseholdPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteHouseholdPayload")
+		case "deletedHouseholdId":
+			out.Values[i] = ec._DeleteHouseholdPayload_deletedHouseholdId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteRecurringSubscriptionPayloadImplementors = []string{"DeleteRecurringSubscriptionPayload"}
+
+func (ec *executionContext) _DeleteRecurringSubscriptionPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteRecurringSubscriptionPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteRecurringSubscriptionPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteRecurringSubscriptionPayload")
+		case "deletedRecurringSubscriptionId":
+			out.Values[i] = ec._DeleteRecurringSubscriptionPayload_deletedRecurringSubscriptionId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteTransactionCategoryPayloadImplementors = []string{"DeleteTransactionCategoryPayload"}
+
+func (ec *executionContext) _DeleteTransactionCategoryPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteTransactionCategoryPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteTransactionCategoryPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteTransactionCategoryPayload")
+		case "deletedTransactionCategoryId":
+			out.Values[i] = ec._DeleteTransactionCategoryPayload_deletedTransactionCategoryId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var deleteTransactionPayloadImplementors = []string{"DeleteTransactionPayload"}
+
+func (ec *executionContext) _DeleteTransactionPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteTransactionPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteTransactionPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteTransactionPayload")
+		case "deletedTransactionId":
+			out.Values[i] = ec._DeleteTransactionPayload_deletedTransactionId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var financialReportImplementors = []string{"FinancialReport"}
 
 func (ec *executionContext) _FinancialReport(ctx context.Context, sel ast.SelectionSet, obj *model.FinancialReport) graphql.Marshaler {
@@ -30687,6 +31185,90 @@ func (ec *executionContext) unmarshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCur
 
 func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v entgql.Cursor[int]) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalNDeleteAccountPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteAccountPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteAccountPayload) graphql.Marshaler {
+	return ec._DeleteAccountPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteAccountPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteAccountPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteAccountPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteAccountPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDeleteCheckpointPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteCheckpointPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteCheckpointPayload) graphql.Marshaler {
+	return ec._DeleteCheckpointPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteCheckpointPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteCheckpointPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteCheckpointPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteCheckpointPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDeleteHouseholdPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteHouseholdPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteHouseholdPayload) graphql.Marshaler {
+	return ec._DeleteHouseholdPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteHouseholdPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteHouseholdPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteHouseholdPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteHouseholdPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDeleteRecurringSubscriptionPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteRecurringSubscriptionPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteRecurringSubscriptionPayload) graphql.Marshaler {
+	return ec._DeleteRecurringSubscriptionPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteRecurringSubscriptionPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteRecurringSubscriptionPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteRecurringSubscriptionPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteRecurringSubscriptionPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDeleteTransactionCategoryPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionCategoryPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteTransactionCategoryPayload) graphql.Marshaler {
+	return ec._DeleteTransactionCategoryPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteTransactionCategoryPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionCategoryPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteTransactionCategoryPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteTransactionCategoryPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDeleteTransactionPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteTransactionPayload) graphql.Marshaler {
+	return ec._DeleteTransactionPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteTransactionPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteTransactionPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteTransactionPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNFinancialReport2beavermoneyᚗappᚋgqlᚋmodelᚐFinancialReport(ctx context.Context, sel ast.SelectionSet, v model.FinancialReport) graphql.Marshaler {

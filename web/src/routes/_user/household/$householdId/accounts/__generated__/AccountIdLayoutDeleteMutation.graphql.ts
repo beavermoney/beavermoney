@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f8dc71b839f26333cde502a3bc8ff4b1>>
+ * @generated SignedSource<<d724411a1d7c2c548d645a5c748386f0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,9 @@ export type AccountIdLayoutDeleteMutation$variables = {
   id: string;
 };
 export type AccountIdLayoutDeleteMutation$data = {
-  readonly deleteAccount: boolean;
+  readonly deleteAccount: {
+    readonly deletedAccountId: string;
+  };
 };
 export type AccountIdLayoutDeleteMutation = {
   response: AccountIdLayoutDeleteMutation$data;
@@ -38,8 +40,19 @@ v1 = [
         "variableName": "id"
       }
     ],
-    "kind": "ScalarField",
+    "concreteType": "DeleteAccountPayload",
+    "kind": "LinkedField",
     "name": "deleteAccount",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "deletedAccountId",
+        "storageKey": null
+      }
+    ],
     "storageKey": null
   }
 ];
@@ -61,16 +74,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "fa26630a436f39e305ed43ea316cae1c",
+    "cacheID": "0b5b6380872a5468ed1baab27c34747f",
     "id": null,
     "metadata": {},
     "name": "AccountIdLayoutDeleteMutation",
     "operationKind": "mutation",
-    "text": "mutation AccountIdLayoutDeleteMutation(\n  $id: ID!\n) {\n  deleteAccount(id: $id)\n}\n"
+    "text": "mutation AccountIdLayoutDeleteMutation(\n  $id: ID!\n) {\n  deleteAccount(id: $id) {\n    deletedAccountId\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6bba7d745ea00791389cafa39178a047";
+(node as any).hash = "805c18f55c5145b758b614f7934457a5";
 
 export default node;

@@ -1,4 +1,4 @@
-import { graphql } from 'relay-runtime'
+import { graphql, ROOT_ID } from 'relay-runtime'
 
 import { usePaginationFragment } from 'react-relay'
 import { useInView } from 'react-intersection-observer'
@@ -6,7 +6,9 @@ import { Fragment } from 'react/jsx-runtime'
 import { useEffect } from 'react'
 import { TransactionCard } from './transaction-card'
 import type { transactionsListFragment$key } from './__generated__/transactionsListFragment.graphql'
+import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 import { ItemGroup } from '@/components/ui/item'
+import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const transactionsListFragment = graphql`
   fragment transactionsListFragment on Query
@@ -38,12 +40,26 @@ const transactionsListFragment = graphql`
 
 type TransactionsListProps = {
   fragmentRef: transactionsListFragment$key
+  where?: TransactionWhereInput
 }
 
-export function TransactionsList({ fragmentRef }: TransactionsListProps) {
+export function TransactionsList({
+  fragmentRef,
+  where,
+}: TransactionsListProps) {
   const { data, loadNext, hasNext, isLoadingNext } = usePaginationFragment(
     transactionsListFragment,
     fragmentRef,
+  )
+
+  useRegisterConnection(
+    ROOT_ID,
+    ConnectionKeys[NodeType.Transaction][0],
+    NodeType.Transaction,
+    {
+      orderBy: { field: 'DATETIME', direction: 'DESC' },
+      where,
+    },
   )
 
   const [ref, inView] = useInView()

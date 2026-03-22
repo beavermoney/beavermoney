@@ -60,6 +60,30 @@ type CryptoQuoteResult struct {
 	CurrentPrice string `json:"currentPrice"`
 }
 
+type DeleteAccountPayload struct {
+	DeletedAccountID int `json:"deletedAccountId"`
+}
+
+type DeleteCheckpointPayload struct {
+	DeletedCheckpointID int `json:"deletedCheckpointId"`
+}
+
+type DeleteHouseholdPayload struct {
+	DeletedHouseholdID int `json:"deletedHouseholdId"`
+}
+
+type DeleteRecurringSubscriptionPayload struct {
+	DeletedRecurringSubscriptionID int `json:"deletedRecurringSubscriptionId"`
+}
+
+type DeleteTransactionCategoryPayload struct {
+	DeletedTransactionCategoryID int `json:"deletedTransactionCategoryId"`
+}
+
+type DeleteTransactionPayload struct {
+	DeletedTransactionID int `json:"deletedTransactionId"`
+}
+
 type FinancialReport struct {
 	IncomeBreakdown   *CategoryTypeAggregate `json:"incomeBreakdown"`
 	ExpensesBreakdown *CategoryTypeAggregate `json:"expensesBreakdown"`

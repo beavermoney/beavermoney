@@ -62,6 +62,7 @@ import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { Separator } from '@/components/ui/separator'
 import { identity } from 'lodash-es'
+import { NodeType, useDeleteNode } from '@/relay'
 
 const EditTransactionDialogQuery = graphql`
   query editTransactionDialogQuery($transactionId: ID!) {
@@ -127,8 +128,10 @@ const editTransactionDialogUpdateMutation = graphql`
 `
 
 const editTransactionDialogDeleteMutation = graphql`
-  mutation editTransactionDialogDeleteMutation($id: ID!) {
-    deleteTransaction(id: $id)
+  mutation editTransactionDialogDeleteMutation($id: ID!, $connections: [ID!]!) {
+    deleteTransaction(id: $id) {
+      deletedTransactionId @deleteEdge(connections: $connections)
+    }
   }
 `
 const formSchema = z.object({
@@ -173,6 +176,8 @@ export function EditTransactionDialog({
     useMutation<editTransactionDialogDeleteMutation>(
       editTransactionDialogDeleteMutation,
     )
+
+  const deleteNode = useDeleteNode(NodeType.Transaction)
 
   // Get all categories
   const allCategories =
@@ -228,15 +233,15 @@ export function EditTransactionDialog({
   })
 
   const handleDelete = async () => {
-    const result =
-      await commitMutationResult<editTransactionDialogDeleteMutation>(
-        commitDelete,
-        {
-          variables: {
-            id: transaction.id,
-          },
+    const result = await deleteNode((connections) =>
+      commitMutationResult<editTransactionDialogDeleteMutation>(commitDelete, {
+        variables: {
+          id: transaction.id,
+          connections,
         },
-      )
+        updater: identity,
+      }),
+    )
 
     match(result)
       .with({ status: 'success' }, () => {
@@ -244,7 +249,7 @@ export function EditTransactionDialog({
         navigate({
           to: '.',
           search: (old) => ({ ...old, edit_transaction_id: null }),
-          replace: true,
+          resetScroll: false,
         })
         setDeleteAlertOpen(false)
       })

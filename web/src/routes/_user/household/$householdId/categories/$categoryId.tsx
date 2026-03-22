@@ -14,6 +14,7 @@ import { Item } from '@/components/ui/item'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { TransactionsList } from '../transactions/-components/transactions-list'
 import invariant from 'tiny-invariant'
+import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/$categoryId',
@@ -68,6 +69,13 @@ function RouteComponent() {
   const params = Route.useParams()
   const search = Route.useSearch()
   const queryRef = Route.useLoaderData()
+  const period = parseDateRangeFromURL(search.start, search.end)
+
+  const where: TransactionWhereInput = {
+    hasCategoryWith: [{ id: params.categoryId }],
+    datetimeGTE: period.startDate,
+    datetimeLT: period.endDate,
+  }
 
   const data = usePreloadedQuery<CategoryIdQuery>(CategoryIdQuery, queryRef)
 
@@ -101,7 +109,7 @@ function RouteComponent() {
         />
         <EditCategory key={data.node.id} fragmentRef={data.node} />
       </Item>
-      <TransactionsList fragmentRef={data} />
+      <TransactionsList fragmentRef={data} where={where} />
     </div>
   )
 }

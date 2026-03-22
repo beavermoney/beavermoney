@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bb2576f9c7c498859f11e4862fd614a1>>
+ * @generated SignedSource<<44c07b1772a8911b61da9df3c704ff3d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,9 @@ export type editCategoryDeleteMutation$variables = {
   id: string;
 };
 export type editCategoryDeleteMutation$data = {
-  readonly deleteTransactionCategory: boolean;
+  readonly deleteTransactionCategory: {
+    readonly deletedTransactionCategoryId: string;
+  };
 };
 export type editCategoryDeleteMutation = {
   response: editCategoryDeleteMutation$data;
@@ -38,8 +40,19 @@ v1 = [
         "variableName": "id"
       }
     ],
-    "kind": "ScalarField",
+    "concreteType": "DeleteTransactionCategoryPayload",
+    "kind": "LinkedField",
     "name": "deleteTransactionCategory",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "deletedTransactionCategoryId",
+        "storageKey": null
+      }
+    ],
     "storageKey": null
   }
 ];
@@ -61,16 +74,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "f2d76d403e35f9a9d9500a8e7f3664a1",
+    "cacheID": "e3aff2291ea4d571c68f8c25f02de38d",
     "id": null,
     "metadata": {},
     "name": "editCategoryDeleteMutation",
     "operationKind": "mutation",
-    "text": "mutation editCategoryDeleteMutation(\n  $id: ID!\n) {\n  deleteTransactionCategory(id: $id)\n}\n"
+    "text": "mutation editCategoryDeleteMutation(\n  $id: ID!\n) {\n  deleteTransactionCategory(id: $id) {\n    deletedTransactionCategoryId\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e6546f7d5eb9034af70446e7a7ba483f";
+(node as any).hash = "64786638a9d1a3f225fd9e9ef267b48f";
 
 export default node;

@@ -81,7 +81,9 @@ const accountIdLayoutFragment = graphql`
 
 const accountIdLayoutDeleteMutation = graphql`
   mutation AccountIdLayoutDeleteMutation($id: ID!) {
-    deleteAccount(id: $id)
+    deleteAccount(id: $id) {
+      deletedAccountId
+    }
   }
 `
 

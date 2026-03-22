@@ -142,7 +142,9 @@ const editSubscriptionMutation = graphql`
 
 const editSubscriptionDeleteMutation = graphql`
   mutation editSubscriptionDeleteMutation($id: ID!) {
-    deleteRecurringSubscription(id: $id)
+    deleteRecurringSubscription(id: $id) {
+      deletedRecurringSubscriptionId
+    }
   }
 `
 
