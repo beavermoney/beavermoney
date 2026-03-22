@@ -61,6 +61,7 @@ import { editTransactionDialogQuery } from './__generated__/editTransactionDialo
 import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { Separator } from '@/components/ui/separator'
+import { identity } from 'lodash-es'
 
 const EditTransactionDialogQuery = graphql`
   query editTransactionDialogQuery($transactionId: ID!) {
@@ -211,6 +212,7 @@ export function EditTransactionDialog({
                 excludeFromReports: formData.excludeFromReports,
               },
             },
+            updater: identity,
           },
         )
 

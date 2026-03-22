@@ -12,6 +12,9 @@ export function commitMutationResult<T extends MutationParameters>(
 ): Promise<MutationResult<T['response']>> {
   return new Promise((resolve) => {
     mutation({
+      updater: (store) => {
+        store.invalidateStore()
+      },
       ...config,
       onCompleted: (response, errors) => {
         if (errors) {
@@ -23,9 +26,6 @@ export function commitMutationResult<T extends MutationParameters>(
       },
       onError: (err) => {
         resolve({ status: 'error', error: err })
-      },
-      updater: (store) => {
-        store.invalidateStore()
       },
     })
   })
