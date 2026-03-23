@@ -1,12 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  fetchQuery,
-  usePreloadedQuery,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
+import { usePreloadedQuery } from 'react-relay'
 
 import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
 import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
@@ -22,22 +17,12 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const params = Route.useParams()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<SubscriptionsQuery>(
     subscriptionsQuery,
     queryRef,
   )
-
-  useSubscribeToInvalidationState([params.householdId], () => {
-    fetchQuery(
-      environment,
-      subscriptionsQuery,
-      {},
-      { fetchPolicy: 'network-only' },
-    ).subscribe({})
-  })
 
   const duelPaneDisplay = useDualPaneDisplay()
 
