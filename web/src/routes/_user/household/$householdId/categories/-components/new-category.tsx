@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/combobox'
 import { commitMutationResult } from '@/lib/relay'
 import { IconPicker, type IconName } from '@/components/ui/icon-picker'
+import { useHousehold } from '@/hooks/use-household'
 
 const CATEGORY_TYPES = ['expense', 'income'] as const
 
@@ -67,6 +68,7 @@ const newCategoryMutation = graphql`
 export function NewCategory() {
   const navigate = useNavigate()
 
+  const { household } = useHousehold()
   const [commitMutation, isMutationInFlight] =
     useMutation<newCategoryMutation>(newCategoryMutation)
 
@@ -91,6 +93,10 @@ export function NewCategory() {
               icon: formData.icon,
               type: formData.type,
             },
+          },
+
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
           },
         },
       )
