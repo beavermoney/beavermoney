@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4c7939affeccdbf007ccc136855bb563>>
+ * @generated SignedSource<<0a8325bbaa98fb3ac449c647c314157a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,18 +13,20 @@ export type netWorthChartQuery$variables = {
   createTimeGTE?: any | null | undefined;
 };
 export type netWorthChartQuery$data = {
-  readonly checkpoints: {
-    readonly edges: ReadonlyArray<{
-      readonly node: {
-        readonly createTime: any;
-        readonly investment: string;
-        readonly liability: string;
-        readonly liquidity: string;
-        readonly netWorth: string;
-        readonly property: string;
-        readonly receivable: string;
-      } | null | undefined;
-    } | null | undefined> | null | undefined;
+  readonly household: {
+    readonly checkpoints: {
+      readonly edges: ReadonlyArray<{
+        readonly node: {
+          readonly createTime: any;
+          readonly investment: string;
+          readonly liability: string;
+          readonly liquidity: string;
+          readonly netWorth: string;
+          readonly property: string;
+          readonly receivable: string;
+        } | null | undefined;
+      } | null | undefined> | null | undefined;
+    };
   };
 };
 export type netWorthChartQuery = {
@@ -106,6 +108,13 @@ v8 = {
   "kind": "ScalarField",
   "name": "liability",
   "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -116,35 +125,46 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "CheckpointConnection",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "checkpoints",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "CheckpointEdge",
+            "args": (v1/*: any*/),
+            "concreteType": "CheckpointConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "checkpoints",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Checkpoint",
+                "concreteType": "CheckpointEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v2/*: any*/),
-                  (v3/*: any*/),
-                  (v4/*: any*/),
-                  (v5/*: any*/),
-                  (v6/*: any*/),
-                  (v7/*: any*/),
-                  (v8/*: any*/)
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Checkpoint",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v2/*: any*/),
+                      (v3/*: any*/),
+                      (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
               }
@@ -166,40 +186,45 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "CheckpointConnection",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "checkpoints",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "CheckpointEdge",
+            "args": (v1/*: any*/),
+            "concreteType": "CheckpointConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "checkpoints",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Checkpoint",
+                "concreteType": "CheckpointEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v2/*: any*/),
-                  (v3/*: any*/),
-                  (v4/*: any*/),
-                  (v5/*: any*/),
-                  (v6/*: any*/),
-                  (v7/*: any*/),
-                  (v8/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "id",
+                    "concreteType": "Checkpoint",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v2/*: any*/),
+                      (v3/*: any*/),
+                      (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/),
+                      (v9/*: any*/)
+                    ],
                     "storageKey": null
                   }
                 ],
@@ -207,23 +232,24 @@ return {
               }
             ],
             "storageKey": null
-          }
+          },
+          (v9/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "1071cd44d89b933140e58cf5cc27a265",
+    "cacheID": "8535e6534df462075aad7304f2b9680c",
     "id": null,
     "metadata": {},
     "name": "netWorthChartQuery",
     "operationKind": "query",
-    "text": "query netWorthChartQuery(\n  $createTimeGTE: Time\n) {\n  checkpoints(first: 500, where: {createTimeGTE: $createTimeGTE}) {\n    edges {\n      node {\n        createTime\n        netWorth\n        liquidity\n        investment\n        property\n        receivable\n        liability\n        id\n      }\n    }\n  }\n}\n"
+    "text": "query netWorthChartQuery(\n  $createTimeGTE: Time\n) {\n  household {\n    checkpoints(first: 500, where: {createTimeGTE: $createTimeGTE}) {\n      edges {\n        node {\n          createTime\n          netWorth\n          liquidity\n          investment\n          property\n          receivable\n          liability\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "274041d134585ff0f3c10e95e2704cc4";
+(node as any).hash = "21900782eb972dab7b6ea0eacd3b8919";
 
 export default node;

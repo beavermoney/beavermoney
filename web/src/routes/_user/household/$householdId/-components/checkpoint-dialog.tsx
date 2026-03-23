@@ -108,7 +108,12 @@ export function CheckpointDialog({ fragmentRef }: CheckpointDialogProps) {
   const handleCheckpoint = async () => {
     const result = await commitMutationResult<checkpointDialogMutation>(
       commitMutation,
-      { variables: { input: { note: note.trim() || null } } },
+      {
+        variables: { input: { note: note.trim() || null } },
+        updater: (store) => {
+          store.get(household.id)?.invalidateRecord()
+        },
+      },
     )
 
     match(result)
