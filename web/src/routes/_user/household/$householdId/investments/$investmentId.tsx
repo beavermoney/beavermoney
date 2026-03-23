@@ -4,7 +4,7 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
+import { graphql } from 'relay-runtime'
 import { TransactionsList } from '../transactions/-components/transactions-list'
 import type { InvestmentIdQuery } from './__generated__/InvestmentIdQuery.graphql'
 import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
@@ -52,7 +52,7 @@ function RouteComponent() {
 
   const data = usePreloadedQuery<InvestmentIdQuery>(InvestmentIdQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     return loadQuery<InvestmentIdQuery>(
       environment,
       InvestmentIdQuery,

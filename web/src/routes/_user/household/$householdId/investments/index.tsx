@@ -9,7 +9,6 @@ import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 import { PendingComponent } from '@/components/pending-component'
 import { investmentsQuery } from './-investments-query'
 import { InvestmentsQuery } from './__generated__/InvestmentsQuery.graphql'
-import { ROOT_ID } from 'relay-runtime'
 import { environment } from '@/environment'
 
 export const Route = createFileRoute(
@@ -20,11 +19,12 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<InvestmentsQuery>(investmentsQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     return loadQuery<InvestmentsQuery>(
       environment,
       investmentsQuery,

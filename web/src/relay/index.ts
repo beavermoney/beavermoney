@@ -1,4 +1,5 @@
 export { ConnectionKeys } from './connection-keys'
+export { commitMutationResult } from './commit-mutation-result'
 export { connectionRegistry } from './connection-registry'
 export { NodeType } from './node-types'
 export type { NodeType as NodeTypeType } from './node-types'

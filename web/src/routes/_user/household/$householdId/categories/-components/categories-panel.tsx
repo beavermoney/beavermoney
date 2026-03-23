@@ -99,7 +99,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
 
   const navigate = useNavigate()
 
-  const financialReport = data.household.financialReport
+  const financialReport = data.financialReport
 
   // Build map for category type aggregates
   const categoryTypeMap = useMemo(() => {

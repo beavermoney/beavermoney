@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { NewInvestment } from './-components/new-investment'
 import { Item } from '@/components/ui/item'
 import {
+  fetchQuery,
   graphql,
   loadQuery,
   usePreloadedQuery,
@@ -10,7 +11,6 @@ import {
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { type newInvestmentQuery } from './__generated__/newInvestmentQuery.graphql'
-import { ROOT_ID } from 'relay-runtime'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/investments/new',
@@ -36,6 +36,7 @@ const newInvestmentQuery = graphql`
 `
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
   const data = usePreloadedQuery<newInvestmentQuery>(
@@ -43,13 +44,13 @@ function RouteComponent() {
     queryRef,
   )
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<newInvestmentQuery>(
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
       environment,
       newInvestmentQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   return (

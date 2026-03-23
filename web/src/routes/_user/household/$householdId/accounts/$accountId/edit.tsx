@@ -4,7 +4,7 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
+import { graphql } from 'relay-runtime'
 import type { editAccountQuery } from './__generated__/editAccountQuery.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
@@ -44,7 +44,7 @@ function RouteComponent() {
 
   const data = usePreloadedQuery<editAccountQuery>(editAccountQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     return loadQuery<editAccountQuery>(
       environment,
       editAccountQuery,

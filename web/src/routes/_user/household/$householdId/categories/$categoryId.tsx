@@ -4,7 +4,7 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
+import { fetchQuery, graphql } from 'relay-runtime'
 import type { CategoryIdQuery } from './__generated__/CategoryIdQuery.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
@@ -79,9 +79,9 @@ function RouteComponent() {
 
   const data = usePreloadedQuery<CategoryIdQuery>(CategoryIdQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
-    return loadQuery<CategoryIdQuery>(
+    fetchQuery(
       environment,
       CategoryIdQuery,
       {
@@ -95,7 +95,7 @@ function RouteComponent() {
         },
       },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   invariant(data.node, 'Category not found')

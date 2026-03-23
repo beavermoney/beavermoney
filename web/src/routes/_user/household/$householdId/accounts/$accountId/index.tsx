@@ -4,7 +4,7 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
+import { fetchQuery, graphql } from 'relay-runtime'
 import { TransactionsList } from '../../transactions/-components/transactions-list'
 import type { AccountIdTransactionsQuery } from './__generated__/AccountIdTransactionsQuery.graphql'
 import type { TransactionWhereInput } from '../../transactions/-components/__generated__/transactionsListRefetch.graphql'
@@ -81,34 +81,15 @@ function RouteComponent() {
     queryRef,
   )
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<AccountIdTransactionsQuery>(
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
       environment,
       AccountIdTransactionsQuery,
       {
-        where: {
-          or: [
-            {
-              hasTransactionEntriesWith: [
-                { hasAccountWith: [{ id: params.accountId }] },
-              ],
-            },
-            {
-              hasInvestmentLotsWith: [
-                {
-                  hasInvestmentWith: [
-                    {
-                      hasAccountWith: [{ id: params.accountId }],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        where,
       },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   return <TransactionsList fragmentRef={data.household} where={where} />

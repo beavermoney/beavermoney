@@ -185,6 +185,10 @@ export function NewSell({ fragmentRef }: NewSellProps) {
               fees: [],
             },
           },
+
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 

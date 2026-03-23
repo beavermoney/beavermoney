@@ -197,6 +197,10 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               fees: [],
             },
           },
+
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 

@@ -4,7 +4,7 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
+import { fetchQuery, graphql } from 'relay-runtime'
 import { useState } from 'react'
 import {
   EditIcon,
@@ -44,8 +44,7 @@ import { AccountIdLayoutDeleteMutation } from './__generated__/AccountIdLayoutDe
 import { AccountIdLayoutArchiveMutation } from './__generated__/AccountIdLayoutArchiveMutation.graphql'
 import invariant from 'tiny-invariant'
 import { AccountIdLayoutFragment$key } from './__generated__/AccountIdLayoutFragment.graphql'
-import { NodeType, useDeleteNode } from '@/relay'
-import { commitMutationResult } from '@/lib/relay'
+import { NodeType, commitMutationResult, useDeleteNode } from '@/relay'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -115,13 +114,13 @@ function RouteComponent() {
 
   const deleteNode = useDeleteNode(NodeType.Account)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<AccountIdLayoutQuery>(
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
       environment,
       accountIdLayoutQuery,
       { id: params.accountId },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   invariant(data.node, 'Account not found')

@@ -198,6 +198,10 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
               fees: [],
             },
           },
+
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 
