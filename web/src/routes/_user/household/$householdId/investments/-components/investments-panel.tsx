@@ -1,4 +1,4 @@
-import { commitLocalUpdate, graphql } from 'relay-runtime'
+import { commitLocalUpdate, ConnectionHandler, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -113,8 +113,10 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     )
 
   useRegisterConnection(
-    household.id,
-    ConnectionKeys[NodeType.Investment][0],
+    ConnectionHandler.getConnectionID(
+      data.id,
+      ConnectionKeys[NodeType.Investment][0],
+    ),
     NodeType.Investment,
   )
 

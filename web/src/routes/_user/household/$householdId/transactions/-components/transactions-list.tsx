@@ -1,4 +1,4 @@
-import { graphql } from 'relay-runtime'
+import { ConnectionHandler, graphql } from 'relay-runtime'
 
 import { usePaginationFragment } from 'react-relay'
 import { useInView } from 'react-intersection-observer'
@@ -9,7 +9,6 @@ import type { transactionsListFragment$key } from './__generated__/transactionsL
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 import { ItemGroup } from '@/components/ui/item'
 import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
-import { useHousehold } from '@/hooks/use-household'
 
 const transactionsListFragment = graphql`
   fragment transactionsListFragment on Household
@@ -52,16 +51,17 @@ export function TransactionsList({
     transactionsListFragment,
     fragmentRef,
   )
-  const { household } = useHousehold()
 
   useRegisterConnection(
-    household.id,
-    ConnectionKeys[NodeType.Transaction][0],
+    ConnectionHandler.getConnectionID(
+      data.id,
+      ConnectionKeys[NodeType.Transaction][0],
+      {
+        orderBy: { field: 'DATETIME', direction: 'DESC' },
+        where,
+      },
+    ),
     NodeType.Transaction,
-    {
-      orderBy: { field: 'DATETIME', direction: 'DESC' },
-      where,
-    },
   )
 
   const [ref, inView] = useInView()
