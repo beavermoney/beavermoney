@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -45,12 +46,12 @@ function RouteComponent() {
   const data = usePreloadedQuery<editAccountQuery>(editAccountQuery, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
-    return loadQuery<editAccountQuery>(
+    fetchQuery(
       environment,
       editAccountQuery,
       { id: params.accountId },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   invariant(data.node, 'Account not found')

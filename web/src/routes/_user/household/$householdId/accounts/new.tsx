@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { graphql } from 'relay-runtime'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -39,12 +40,12 @@ function RouteComponent() {
   const data = usePreloadedQuery<newAccountQuery>(newAccountQuery, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
-    return loadQuery<newAccountQuery>(
+    fetchQuery(
       environment,
       newAccountQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   return (

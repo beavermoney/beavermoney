@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -45,12 +46,12 @@ function RouteComponent() {
   const data = usePreloadedQuery<InvestmentsQuery>(investmentsQuery, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
-    return loadQuery<InvestmentsQuery>(
+    fetchQuery(
       environment,
       investmentsQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   const duelPaneDisplay = useDualPaneDisplay()

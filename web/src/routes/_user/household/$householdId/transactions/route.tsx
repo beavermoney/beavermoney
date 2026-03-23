@@ -66,7 +66,6 @@ function RouteComponent() {
 
   useSubscribeToInvalidationState([household.id], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
-    console.log('invalidating transactions query for period', period)
 
     fetchQuery(
       environment,

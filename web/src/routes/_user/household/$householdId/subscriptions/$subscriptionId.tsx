@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { graphql } from 'relay-runtime'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -51,12 +52,12 @@ function RouteComponent() {
   )
 
   useSubscribeToInvalidationState([params.householdId], () => {
-    return loadQuery<SubscriptionIdQuery>(
+    fetchQuery(
       environment,
       subscriptionIdQuery,
       { id: params.subscriptionId },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   invariant(data.node, 'Subscription not found')

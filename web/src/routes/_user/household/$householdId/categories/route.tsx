@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -62,9 +63,9 @@ function RouteComponent() {
   useSubscribeToInvalidationState([params.householdId], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
-    return loadQuery<CategoriesQuery>(environment, categoriesQuery, period, {
+    fetchQuery(environment, categoriesQuery, period, {
       fetchPolicy: 'network-only',
-    })
+    }).subscribe({})
   })
 
   const duelPaneDisplay = useDualPaneDisplay()
