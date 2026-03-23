@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d724411a1d7c2c548d645a5c748386f0>>
+ * @generated SignedSource<<7bc4bfdbfa9d82a707e31e142c539c36>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type AccountIdLayoutDeleteMutation$variables = {
+  connections: ReadonlyArray<string>;
   id: string;
 };
 export type AccountIdLayoutDeleteMutation$data = {
@@ -23,55 +24,94 @@ export type AccountIdLayoutDeleteMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v2 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "id"
   }
 ],
-v1 = [
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "id",
-        "variableName": "id"
-      }
-    ],
-    "concreteType": "DeleteAccountPayload",
-    "kind": "LinkedField",
-    "name": "deleteAccount",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "deletedAccountId",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "deletedAccountId",
+  "storageKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "AccountIdLayoutDeleteMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteAccountPayload",
+        "kind": "LinkedField",
+        "name": "deleteAccount",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "AccountIdLayoutDeleteMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteAccountPayload",
+        "kind": "LinkedField",
+        "name": "deleteAccount",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "filters": null,
+            "handle": "deleteEdge",
+            "key": "",
+            "kind": "ScalarHandle",
+            "name": "deletedAccountId",
+            "handleArgs": [
+              {
+                "kind": "Variable",
+                "name": "connections",
+                "variableName": "connections"
+              }
+            ]
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
     "cacheID": "0b5b6380872a5468ed1baab27c34747f",
@@ -84,6 +124,6 @@ return {
 };
 })();
 
-(node as any).hash = "805c18f55c5145b758b614f7934457a5";
+(node as any).hash = "7a594f559c748e474cdfa577392a9f70";
 
 export default node;

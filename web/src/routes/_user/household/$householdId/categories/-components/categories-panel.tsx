@@ -1,4 +1,4 @@
-import { fetchQuery, graphql } from 'relay-runtime'
+import { fetchQuery, graphql, ROOT_ID } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment } from 'react-relay'
@@ -30,6 +30,7 @@ import { environment } from '@/environment'
 import { categoriesQuery } from '../-categories-query'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { PlusButton } from '@/components/plus-button'
+import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const CategoriesPanelFragment = graphql`
   fragment categoriesPanelFragment on Query
@@ -78,6 +79,12 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const startDate = parseISO(search.start).toISOString()
   const endDate = parseISO(search.end).toISOString()
   const data = useFragment(CategoriesPanelFragment, fragmentRef)
+
+  useRegisterConnection(
+    ROOT_ID,
+    ConnectionKeys[NodeType.TransactionCategory][0],
+    NodeType.TransactionCategory,
+  )
 
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 

@@ -1,4 +1,4 @@
-import { commitLocalUpdate, graphql } from 'relay-runtime'
+import { commitLocalUpdate, graphql, ROOT_ID } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -35,6 +35,7 @@ import { Button } from '@/components/ui/button'
 import { ACCOUNT_TYPE_LIST } from '@/constant'
 import { PlusButton } from '@/components/plus-button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const AccountsPanelFragment = graphql`
   fragment accountsPanelFragment on Query
@@ -71,6 +72,13 @@ type AccountsListPageProps = {
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const environment = useRelayEnvironment()
+
+  useRegisterConnection(
+    ROOT_ID,
+    ConnectionKeys[NodeType.Account][0],
+    NodeType.Account,
+    { where: { archived: false } },
+  )
 
   const [commitRefreshMutation, isRefreshInFlight] =
     useMutation<accountsPanelRefreshMutation>(AccountsPanelRefreshMutation)

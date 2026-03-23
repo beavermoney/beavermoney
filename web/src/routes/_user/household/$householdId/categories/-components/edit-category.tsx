@@ -38,10 +38,11 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 import { IconPicker, type IconName } from '@/components/ui/icon-picker'
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
+import { NodeType, useDeleteNode } from '@/relay'
 
 const formSchema = z.object({
   name: z
@@ -77,9 +78,9 @@ const editCategoryMutation = graphql`
 `
 
 const editCategoryDeleteMutation = graphql`
-  mutation editCategoryDeleteMutation($id: ID!) {
+  mutation editCategoryDeleteMutation($id: ID!, $connections: [ID!]!) {
     deleteTransactionCategory(id: $id) {
-      deletedTransactionCategoryId
+      deletedTransactionCategoryId @deleteEdge(connections: $connections)
     }
   }
 `
@@ -99,6 +100,8 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
 
   const [commitDeleteMutation, isDeleteMutationInFlight] =
     useMutation<editCategoryDeleteMutation>(editCategoryDeleteMutation)
+
+  const deleteNode = useDeleteNode(NodeType.TransactionCategory)
 
   const form = useForm({
     defaultValues: {
@@ -144,13 +147,13 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
   })
 
   const handleDelete = async () => {
-    const result = await commitMutationResult<editCategoryDeleteMutation>(
-      commitDeleteMutation,
-      {
+    const result = await deleteNode((connections) =>
+      commitMutationResult<editCategoryDeleteMutation>(commitDeleteMutation, {
         variables: {
           id: data.id,
+          connections,
         },
-      },
+      }),
     )
 
     match(result)
