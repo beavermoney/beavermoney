@@ -1,4 +1,4 @@
-import { commitLocalUpdate, graphql } from 'relay-runtime'
+import { commitLocalUpdate, ConnectionHandler, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -75,10 +75,12 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const { household } = useHousehold()
 
   useRegisterConnection(
-    household.id,
-    ConnectionKeys[NodeType.Account][0],
+    ConnectionHandler.getConnectionID(
+      data.id,
+      ConnectionKeys[NodeType.Account][0],
+      { where: { archived: false } },
+    ),
     NodeType.Account,
-    { where: { archived: false } },
   )
 
   const [commitRefreshMutation, isRefreshInFlight] =

@@ -239,7 +239,9 @@ export function EditTransactionDialog({
           id: transaction.id,
           connections,
         },
-        updater: identity,
+        // updater: (store) => {
+        //   store.invalidateStore()
+        // },
       }),
     )
 

@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { graphql, useFragment } from 'react-relay'
+import { graphql, usePaginationFragment } from 'react-relay'
 import invariant from 'tiny-invariant'
 
 import {
@@ -29,7 +29,6 @@ import { SubscriptionCard } from './subscription-card'
 
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import { PlusButton } from '@/components/plus-button'
-import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Household
@@ -74,7 +73,10 @@ type SortOption = keyof typeof SORT_OPTIONS
 type SummaryDisplay = 'monthly' | 'yearly' | 'count'
 
 export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
-  const data = useFragment(SubscriptionsPanelFragment, fragmentRef)
+  const { data } = usePaginationFragment(
+    SubscriptionsPanelFragment,
+    fragmentRef,
+  )
   const { household } = useHousehold()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
@@ -87,12 +89,6 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
 
   const [summaryDisplay, setSummaryDisplay] =
     useState<SummaryDisplay>('monthly')
-
-  useRegisterConnection(
-    household.id,
-    ConnectionKeys[NodeType.RecurringSubscription][0],
-    NodeType.RecurringSubscription,
-  )
 
   const handleSummaryClick = () => {
     setSummaryDisplay((prev) => {

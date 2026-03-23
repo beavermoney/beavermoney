@@ -3,17 +3,48 @@ import { NodeType } from './node-types'
 type ConnectionEntry = {
   connectionId: string
   nodeType: NodeType
+  count: number
 }
 
 class ConnectionRegistry {
   private connections = new Map<string, ConnectionEntry>()
 
-  register(key: string, entry: ConnectionEntry): void {
-    this.connections.set(key, entry)
+  register(connectionId: string, nodeType: NodeType): void {
+    const key = `${nodeType}:${connectionId}`
+    const existing = this.connections.get(key)
+
+    if (existing) {
+      this.connections.set(key, {
+        ...existing,
+        count: existing.count + 1,
+      })
+      return
+    }
+
+    this.connections.set(key, {
+      connectionId,
+      nodeType,
+      count: 1,
+    })
   }
 
-  unregister(key: string): void {
-    this.connections.delete(key)
+  unregister(connectionId: string, nodeType: NodeType): void {
+    const key = `${nodeType}:${connectionId}`
+    const existing = this.connections.get(key)
+
+    if (!existing) {
+      return
+    }
+
+    if (existing.count <= 1) {
+      this.connections.delete(key)
+      return
+    }
+
+    this.connections.set(key, {
+      ...existing,
+      count: existing.count - 1,
+    })
   }
 
   getByType(nodeType: NodeType): string[] {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3573f2dace2f4753b279f41a36833e0b>>
+ * @generated SignedSource<<860fcf31bfcc4eb6684fc130eefb4347>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type SubscriptionsQuery$variables = Record<PropertyKey, never>;
 export type SubscriptionsQuery$data = {
   readonly household: {
+    readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"subscriptionsPanelFragment">;
   };
 };
@@ -22,20 +23,20 @@ export type SubscriptionsQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 50
-  }
-],
-v1 = {
+var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
-};
+},
+v1 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 50
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -51,6 +52,7 @@ return {
         "name": "household",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -77,9 +79,10 @@ return {
         "name": "household",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "alias": null,
-            "args": (v0/*: any*/),
+            "args": (v1/*: any*/),
             "concreteType": "RecurringSubscriptionConnection",
             "kind": "LinkedField",
             "name": "recurringSubscriptions",
@@ -101,7 +104,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v1/*: any*/),
+                      (v0/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -173,7 +176,7 @@ return {
                             "name": "code",
                             "storageKey": null
                           },
-                          (v1/*: any*/)
+                          (v0/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -227,30 +230,29 @@ return {
           },
           {
             "alias": null,
-            "args": (v0/*: any*/),
+            "args": (v1/*: any*/),
             "filters": null,
             "handle": "connection",
             "key": "subscriptionsPanel_recurringSubscriptions",
             "kind": "LinkedHandle",
             "name": "recurringSubscriptions"
-          },
-          (v1/*: any*/)
+          }
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "358563d43b374fbd1910b76ae22bd16c",
+    "cacheID": "ea73144ffcff8013fd53549e01d21dd8",
     "id": null,
     "metadata": {},
     "name": "SubscriptionsQuery",
     "operationKind": "query",
-    "text": "query SubscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        fxRate\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query SubscriptionsQuery {\n  household {\n    id\n    ...subscriptionsPanelFragment\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        fxRate\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "5493bae0167c666c47a81dc5aa983597";
+(node as any).hash = "5b5c8a404c74d5658773b06717e1741d";
 
 export default node;

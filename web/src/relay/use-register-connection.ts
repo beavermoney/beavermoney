@@ -1,37 +1,16 @@
-import { useEffect, useMemo } from 'react'
-import { ConnectionHandler } from 'react-relay'
+import { useEffect } from 'react'
 import { connectionRegistry } from './connection-registry'
 import { NodeType } from './node-types'
 
-export function useRegisterConnection<TFilters extends object>(
-  parentId: string,
-  connectionKey: string,
+export function useRegisterConnection(
+  connectionId: string,
   nodeType: NodeType,
-  filters?: TFilters,
 ): void {
-  const filtersKey = useMemo(() => JSON.stringify(filters), [filters])
-
-  const registryKey = useMemo(
-    () => `${parentId}-${connectionKey}-${filtersKey}`,
-    [parentId, connectionKey, filtersKey],
-  )
-
   useEffect(() => {
-    const parsedFilters: TFilters | undefined =
-      filtersKey === undefined
-        ? undefined
-        : (JSON.parse(filtersKey) as TFilters)
-
-    const connectionId = ConnectionHandler.getConnectionID(
-      parentId,
-      connectionKey,
-      parsedFilters,
-    )
-
-    connectionRegistry.register(registryKey, { connectionId, nodeType })
+    connectionRegistry.register(connectionId, nodeType)
 
     return () => {
-      connectionRegistry.unregister(registryKey)
+      connectionRegistry.unregister(connectionId, nodeType)
     }
-  }, [parentId, connectionKey, nodeType, filtersKey, registryKey])
+  }, [connectionId, nodeType])
 }
