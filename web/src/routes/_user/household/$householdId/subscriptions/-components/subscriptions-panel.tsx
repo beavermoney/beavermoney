@@ -1,11 +1,9 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { RefreshCwIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { graphql, useFragment, useMutation } from 'react-relay'
+import { graphql, useFragment } from 'react-relay'
 import invariant from 'tiny-invariant'
 
-import { Button } from '@/components/ui/button'
 import {
   Item,
   ItemContent,
@@ -30,7 +28,6 @@ import currency from 'currency.js'
 import { SubscriptionCard } from './subscription-card'
 
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
-import type { subscriptionsPanelRefreshMutation } from './__generated__/subscriptionsPanelRefreshMutation.graphql'
 import { PlusButton } from '@/components/plus-button'
 import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
@@ -57,12 +54,6 @@ const SubscriptionsPanelFragment = graphql`
         }
       }
     }
-  }
-`
-
-const SubscriptionsPanelRefreshMutation = graphql`
-  mutation subscriptionsPanelRefreshMutation {
-    refresh
   }
 `
 
@@ -97,25 +88,11 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   const [summaryDisplay, setSummaryDisplay] =
     useState<SummaryDisplay>('monthly')
 
-  const [commitRefresh, isRefreshing] =
-    useMutation<subscriptionsPanelRefreshMutation>(
-      SubscriptionsPanelRefreshMutation,
-    )
-
   useRegisterConnection(
     household.id,
     ConnectionKeys[NodeType.RecurringSubscription][0],
     NodeType.RecurringSubscription,
   )
-
-  const handleRefresh = () => {
-    commitRefresh({
-      variables: {},
-      onCompleted: () => {
-        // Mutation will trigger refetch automatically
-      },
-    })
-  }
 
   const handleSummaryClick = () => {
     setSummaryDisplay((prev) => {
@@ -255,16 +232,6 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
-        <Button
-          variant="outline"
-          nativeButton={true}
-          size="icon-xl"
-          className="bg-background dark:bg-card rounded-full"
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-        >
-          <RefreshCwIcon className={isRefreshing ? 'animate-spin' : ''} />
-        </Button>
         <PlusButton />
       </div>
 

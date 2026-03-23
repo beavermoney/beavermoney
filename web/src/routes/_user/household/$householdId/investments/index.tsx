@@ -1,15 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  fetchQuery,
-  usePreloadedQuery,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
+import { usePreloadedQuery } from 'react-relay'
 import { InvestmentsPanel } from './-components/investments-panel'
 import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 import { PendingComponent } from '@/components/pending-component'
 import { investmentsQuery } from './-investments-query'
 import { InvestmentsQuery } from './__generated__/InvestmentsQuery.graphql'
-import { environment } from '@/environment'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/investments/',
@@ -19,19 +14,9 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const params = Route.useParams()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<InvestmentsQuery>(investmentsQuery, queryRef)
-
-  useSubscribeToInvalidationState([params.householdId], () => {
-    fetchQuery(
-      environment,
-      investmentsQuery,
-      {},
-      { fetchPolicy: 'network-only' },
-    ).subscribe({})
-  })
 
   const duelPaneDisplay = useDualPaneDisplay()
 

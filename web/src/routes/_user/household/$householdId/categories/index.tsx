@@ -1,16 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  fetchQuery,
-  usePreloadedQuery,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
+import { usePreloadedQuery } from 'react-relay'
 import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 import { PendingComponent } from '@/components/pending-component'
 import { categoriesQuery } from './-categories-query'
 import { CategoriesQuery } from './__generated__/CategoriesQuery.graphql'
 import { CategoriesPanel } from './-components/categories-panel'
-import { environment } from '@/environment'
-import { parseDateRangeFromURL } from '@/lib/date-range'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/',
@@ -20,19 +14,9 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const params = Route.useParams()
-  const search = Route.useSearch()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<CategoriesQuery>(categoriesQuery, queryRef)
-
-  useSubscribeToInvalidationState([params.householdId], () => {
-    const period = parseDateRangeFromURL(search.start, search.end)
-
-    fetchQuery(environment, categoriesQuery, period, {
-      fetchPolicy: 'network-only',
-    }).subscribe({})
-  })
 
   const duelPaneDisplay = useDualPaneDisplay()
 

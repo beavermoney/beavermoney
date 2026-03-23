@@ -97,6 +97,7 @@ const newSubscriptionMutation = graphql`
           code
         }
         active
+        ...subscriptionCardFragment
       }
     }
   }
@@ -169,8 +170,7 @@ export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
 
           form.reset()
           navigate({
-            from: '/household/$householdId/subscriptions/new',
-            to: '/household/$householdId/subscriptions',
+            to: '..',
             search: (prev) => ({ ...prev }),
           })
           toast.success(
