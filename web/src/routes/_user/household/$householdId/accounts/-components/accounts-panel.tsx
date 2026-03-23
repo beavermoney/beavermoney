@@ -1,4 +1,4 @@
-import { commitLocalUpdate, graphql, ROOT_ID } from 'relay-runtime'
+import { commitLocalUpdate, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -72,9 +72,10 @@ type AccountsListPageProps = {
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const environment = useRelayEnvironment()
+  const { household } = useHousehold()
 
   useRegisterConnection(
-    ROOT_ID,
+    household.id,
     ConnectionKeys[NodeType.Account][0],
     NodeType.Account,
     { where: { archived: false } },
@@ -121,8 +122,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       }),
     [data.accounts],
   )
-
-  const { household } = useHousehold()
 
   const displayOptions = useMemo(() => {
     const assets = (data.accounts.edges ?? [])

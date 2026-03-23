@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { graphql, useFragment, useMutation } from 'react-relay'
 import invariant from 'tiny-invariant'
-import { ROOT_ID } from 'relay-runtime'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -104,7 +103,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     )
 
   useRegisterConnection(
-    ROOT_ID,
+    household.id,
     ConnectionKeys[NodeType.RecurringSubscription][0],
     NodeType.RecurringSubscription,
   )

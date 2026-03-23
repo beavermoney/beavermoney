@@ -1,4 +1,4 @@
-import { fetchQuery, graphql, ROOT_ID } from 'relay-runtime'
+import { fetchQuery, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment } from 'react-relay'
@@ -77,9 +77,10 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const startDate = parseISO(search.start).toISOString()
   const endDate = parseISO(search.end).toISOString()
   const data = useFragment(CategoriesPanelFragment, fragmentRef)
+  const { household } = useHousehold()
 
   useRegisterConnection(
-    ROOT_ID,
+    household.id,
     ConnectionKeys[NodeType.TransactionCategory][0],
     NodeType.TransactionCategory,
   )
@@ -94,8 +95,6 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
       }),
     [data.transactionCategories],
   )
-
-  const { household } = useHousehold()
 
   const navigate = useNavigate()
 
