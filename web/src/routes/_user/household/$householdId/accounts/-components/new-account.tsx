@@ -39,7 +39,7 @@ import {
 import { ACCOUNT_TYPE_DESCRIPTION, ACCOUNT_TYPE_LIST } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 

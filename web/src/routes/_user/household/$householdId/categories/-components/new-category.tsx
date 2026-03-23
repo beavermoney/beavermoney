@@ -33,7 +33,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 import { IconPicker, type IconName } from '@/components/ui/icon-picker'
 import { useHousehold } from '@/hooks/use-household'
 

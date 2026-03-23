@@ -62,7 +62,7 @@ import { editSubscriptionCurrenciesFragment$key } from './__generated__/editSubs
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { NodeType, useDeleteNode } from '@/relay'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
