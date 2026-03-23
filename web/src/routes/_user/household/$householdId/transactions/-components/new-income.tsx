@@ -63,7 +63,7 @@ const formSchema = z.object({
 })
 
 const newIncomeFragment = graphql`
-  fragment newIncomeFragment on Query {
+  fragment newIncomeFragment on Household {
     accounts {
       edges {
         node {

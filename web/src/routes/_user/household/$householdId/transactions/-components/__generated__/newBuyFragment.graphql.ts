@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0944e0dcb82118929c74576900dd701e>>
+ * @generated SignedSource<<78d06b8adef3ec90a5f5fefd4472fc7e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -204,11 +204,11 @@ return {
       "storageKey": null
     }
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "51d5b0af45956c6691b9df2faff47ce4";
+(node as any).hash = "cbd4390a15155fa665fed7055c535631";
 
 export default node;

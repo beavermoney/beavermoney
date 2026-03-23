@@ -62,7 +62,7 @@ const formSchema = z.object({
 })
 
 const newTransferFragment = graphql`
-  fragment newTransferFragment on Query {
+  fragment newTransferFragment on Household {
     accounts {
       edges {
         node {

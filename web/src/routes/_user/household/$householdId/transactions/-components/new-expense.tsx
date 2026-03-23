@@ -63,7 +63,7 @@ const formSchema = z.object({
 })
 
 const newExpenseFragment = graphql`
-  fragment newExpenseFragment on Query {
+  fragment newExpenseFragment on Household {
     accounts {
       edges {
         node {
@@ -122,14 +122,14 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
 
   // Filter accounts - show all non-investment accounts
   const availableAccounts =
-    data.accounts.edges?.map((account) => {
+    data.household.accounts.edges?.map((account) => {
       invariant(account?.node, 'Account node is null')
       return account.node
     }) ?? []
 
   // Filter categories - only expense categories
   const expenseCategories =
-    data.transactionCategories.edges
+    data.household.transactionCategories.edges
       ?.map((category) => {
         invariant(category?.node, 'Category node is null')
         return category.node

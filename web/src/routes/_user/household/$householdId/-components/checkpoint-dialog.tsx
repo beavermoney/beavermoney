@@ -24,7 +24,7 @@ import { commitMutationResult } from '@/relay'
 import { ItemTitle } from '@/components/ui/item'
 
 const CheckpointDialogFragment = graphql`
-  fragment checkpointDialogFragment on Query {
+  fragment checkpointDialogFragment on Household {
     accounts {
       edges {
         node {

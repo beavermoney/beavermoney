@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c2545ed725836e1e92249e6b3ca6d06b>>
+ * @generated SignedSource<<ef620898d4765dfd2302d440525ba3d5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,10 @@ import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type newInvestmentQuery$variables = Record<PropertyKey, never>;
 export type newInvestmentQuery$data = {
-  readonly " $fragmentSpreads": FragmentRefs<"newInvestmentCryptoQuoteFragment" | "newInvestmentFragment" | "newInvestmentStockQuoteFragment">;
+  readonly household: {
+    readonly " $fragmentSpreads": FragmentRefs<"newInvestmentFragment">;
+  };
+  readonly " $fragmentSpreads": FragmentRefs<"newInvestmentCryptoQuoteFragment" | "newInvestmentStockQuoteFragment">;
 };
 export type newInvestmentQuery = {
   response: newInvestmentQuery$data;
@@ -80,9 +83,20 @@ return {
     "name": "newInvestmentQuery",
     "selections": [
       {
+        "alias": null,
         "args": null,
-        "kind": "FragmentSpread",
-        "name": "newInvestmentFragment"
+        "concreteType": "Household",
+        "kind": "LinkedField",
+        "name": "household",
+        "plural": false,
+        "selections": [
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "newInvestmentFragment"
+          }
+        ],
+        "storageKey": null
       },
       {
         "args": null,
@@ -107,66 +121,77 @@ return {
       {
         "alias": null,
         "args": null,
-        "concreteType": "AccountConnection",
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "accounts",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "AccountEdge",
+            "concreteType": "AccountConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "accounts",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Account",
+                "concreteType": "AccountEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v0/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "type",
-                    "storageKey": null
-                  },
-                  (v1/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "icon",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "value",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Currency",
+                    "concreteType": "Account",
                     "kind": "LinkedField",
-                    "name": "currency",
+                    "name": "node",
                     "plural": false,
                     "selections": [
+                      (v0/*: any*/),
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "code",
+                        "name": "type",
                         "storageKey": null
                       },
-                      (v0/*: any*/)
+                      (v1/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "icon",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "value",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Currency",
+                        "kind": "LinkedField",
+                        "name": "currency",
+                        "plural": false,
+                        "selections": [
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "code",
+                            "storageKey": null
+                          },
+                          (v0/*: any*/)
+                        ],
+                        "storageKey": null
+                      }
                     ],
                     "storageKey": null
                   }
@@ -175,7 +200,8 @@ return {
               }
             ],
             "storageKey": null
-          }
+          },
+          (v0/*: any*/)
         ],
         "storageKey": null
       },
@@ -202,16 +228,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1c30c15f5537ed030d2e90dbd58c7c65",
+    "cacheID": "97532da2f0f8e3d703db237c84edb5cc",
     "id": null,
     "metadata": {},
     "name": "newInvestmentQuery",
     "operationKind": "query",
-    "text": "query newInvestmentQuery {\n  ...newInvestmentFragment\n  ...newInvestmentStockQuoteFragment\n  ...newInvestmentCryptoQuoteFragment\n}\n\nfragment newInvestmentCryptoQuoteFragment on Query {\n  cryptoQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n\nfragment newInvestmentFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        type\n        name\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment newInvestmentStockQuoteFragment on Query {\n  stockQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
+    "text": "query newInvestmentQuery {\n  household {\n    ...newInvestmentFragment\n    id\n  }\n  ...newInvestmentStockQuoteFragment\n  ...newInvestmentCryptoQuoteFragment\n}\n\nfragment newInvestmentCryptoQuoteFragment on Query {\n  cryptoQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n\nfragment newInvestmentFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        type\n        name\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment newInvestmentStockQuoteFragment on Query {\n  stockQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2233c2654a08ec13a086ee8e60ae1c2d";
+(node as any).hash = "a767ce92434925fc02e70d5833890286";
 
 export default node;
