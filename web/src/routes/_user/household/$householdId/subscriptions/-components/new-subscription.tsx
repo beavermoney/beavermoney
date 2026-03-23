@@ -153,6 +153,9 @@ export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
               active: formData.active,
             },
           },
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 

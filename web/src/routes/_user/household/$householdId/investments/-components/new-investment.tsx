@@ -210,6 +210,9 @@ export function NewInvestment({
               costBasis: formData.costBasis.toString(),
             },
           },
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 

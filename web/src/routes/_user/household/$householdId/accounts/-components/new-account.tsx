@@ -132,6 +132,9 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
               icon: formData.icon || null,
             },
           },
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 
