@@ -13,7 +13,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useHotkey } from '@tanstack/react-hotkeys'
 
 const logTransactionFragment = graphql`
-  fragment logTransactionFragment on Query {
+  fragment logTransactionFragment on Household {
     ...newExpenseFragment
     ...newIncomeFragment
     ...newTransferFragment

@@ -72,8 +72,10 @@ const routeHouseholdIdQuery = graphql`
       }
     }
     ...appSidebarFragment
-    ...logTransactionFragment
-    ...checkpointDialogFragment
+    household {
+      ...logTransactionFragment
+      ...checkpointDialogFragment
+    }
   }
 `
 
@@ -180,7 +182,7 @@ function RouteComponent() {
             </div>
             <div className="grow"></div>
 
-            <CheckpointDialog fragmentRef={data} />
+            <CheckpointDialog fragmentRef={data.household} />
             <Button
               className="cursor-pointer"
               variant="outline"

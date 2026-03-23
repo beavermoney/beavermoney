@@ -31,7 +31,9 @@ export const Route = createFileRoute(
 
 const newTransactionQuery = graphql`
   query newTransactionQuery {
-    ...logTransactionFragment
+    household {
+      ...logTransactionFragment
+    }
   }
 `
 

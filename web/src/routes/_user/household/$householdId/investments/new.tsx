@@ -29,7 +29,9 @@ export const Route = createFileRoute(
 
 const newInvestmentQuery = graphql`
   query newInvestmentQuery {
-    ...newInvestmentFragment
+    household {
+      ...newInvestmentFragment
+    }
     ...newInvestmentStockQuoteFragment
     ...newInvestmentCryptoQuoteFragment
   }
@@ -58,7 +60,7 @@ function RouteComponent() {
       <div className="flex-1">
         <Item className="p-0">
           <NewInvestment
-            newInvestmentFragmentRef={data}
+            newInvestmentFragmentRef={data.household}
             newInvestmentStockQuoteFragmentRef={data}
             newInvestmentCryptoQuoteFragmentRef={data}
           />

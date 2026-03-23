@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<10cbb9ebe04e50c5cf73636275a8f59c>>
+ * @generated SignedSource<<c45cd7c7bbe1b3d62cc181a1932c0f4f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,9 @@ import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type routeHouseholdIdQuery$variables = Record<PropertyKey, never>;
 export type routeHouseholdIdQuery$data = {
+  readonly household: {
+    readonly " $fragmentSpreads": FragmentRefs<"checkpointDialogFragment" | "logTransactionFragment">;
+  };
   readonly households: ReadonlyArray<{
     readonly currency: {
       readonly code: string;
@@ -21,7 +24,7 @@ export type routeHouseholdIdQuery$data = {
     readonly locale: string;
     readonly name: string;
   }>;
-  readonly " $fragmentSpreads": FragmentRefs<"appSidebarFragment" | "checkpointDialogFragment" | "logTransactionFragment">;
+  readonly " $fragmentSpreads": FragmentRefs<"appSidebarFragment">;
 };
 export type routeHouseholdIdQuery = {
   response: routeHouseholdIdQuery$data;
@@ -104,14 +107,25 @@ return {
         "name": "appSidebarFragment"
       },
       {
+        "alias": null,
         "args": null,
-        "kind": "FragmentSpread",
-        "name": "logTransactionFragment"
-      },
-      {
-        "args": null,
-        "kind": "FragmentSpread",
-        "name": "checkpointDialogFragment"
+        "concreteType": "Household",
+        "kind": "LinkedField",
+        "name": "household",
+        "plural": false,
+        "selections": [
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "logTransactionFragment"
+          },
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "checkpointDialogFragment"
+          }
+        ],
+        "storageKey": null
       }
     ],
     "type": "Query",
@@ -147,90 +161,101 @@ return {
       {
         "alias": null,
         "args": null,
-        "concreteType": "AccountConnection",
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "accounts",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "AccountEdge",
+            "concreteType": "AccountConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "accounts",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Account",
+                "concreteType": "AccountEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v0/*: any*/),
-                  (v1/*: any*/),
-                  (v4/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "icon",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "value",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Currency",
+                    "concreteType": "Account",
                     "kind": "LinkedField",
-                    "name": "currency",
+                    "name": "node",
                     "plural": false,
-                    "selections": [
-                      (v2/*: any*/),
-                      (v0/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Investment",
-                    "kind": "LinkedField",
-                    "name": "investments",
-                    "plural": true,
                     "selections": [
                       (v0/*: any*/),
                       (v1/*: any*/),
+                      (v4/*: any*/),
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "symbol",
+                        "name": "icon",
                         "storageKey": null
                       },
-                      (v4/*: any*/)
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "value",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Currency",
+                        "kind": "LinkedField",
+                        "name": "currency",
+                        "plural": false,
+                        "selections": [
+                          (v2/*: any*/),
+                          (v0/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Investment",
+                        "kind": "LinkedField",
+                        "name": "investments",
+                        "plural": true,
+                        "selections": [
+                          (v0/*: any*/),
+                          (v1/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "symbol",
+                            "storageKey": null
+                          },
+                          (v4/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "archived",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "valueInHouseholdCurrency",
+                        "storageKey": null
+                      }
                     ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "archived",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "valueInHouseholdCurrency",
                     "storageKey": null
                   }
                 ],
@@ -238,59 +263,60 @@ return {
               }
             ],
             "storageKey": null
-          }
-        ],
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "TransactionCategoryConnection",
-        "kind": "LinkedField",
-        "name": "transactionCategories",
-        "plural": false,
-        "selections": [
+          },
           {
             "alias": null,
             "args": null,
-            "concreteType": "TransactionCategoryEdge",
+            "concreteType": "TransactionCategoryConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "transactionCategories",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "TransactionCategory",
+                "concreteType": "TransactionCategoryEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v0/*: any*/),
-                  (v1/*: any*/),
-                  (v4/*: any*/)
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "TransactionCategory",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v0/*: any*/),
+                      (v1/*: any*/),
+                      (v4/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
               }
             ],
             "storageKey": null
-          }
+          },
+          (v0/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "781fa4f5de149447cdd4e4a01cd69f31",
+    "cacheID": "d4908bb5e3db30b9a046e8d2f5e74ef7",
     "id": null,
     "metadata": {},
     "name": "routeHouseholdIdQuery",
     "operationKind": "query",
-    "text": "query routeHouseholdIdQuery {\n  households {\n    id\n    name\n    locale\n    currency {\n      id\n      code\n    }\n  }\n  ...appSidebarFragment\n  ...logTransactionFragment\n  ...checkpointDialogFragment\n}\n\nfragment appSidebarFragment on Query {\n  ...householdSwitcherFragment\n  ...navUserFragment\n}\n\nfragment checkpointDialogFragment on Query {\n  accounts {\n    edges {\n      node {\n        type\n        archived\n        valueInHouseholdCurrency\n        id\n      }\n    }\n  }\n}\n\nfragment householdSwitcherFragment on Query {\n  households {\n    id\n    name\n  }\n}\n\nfragment logTransactionFragment on Query {\n  ...newExpenseFragment\n  ...newIncomeFragment\n  ...newTransferFragment\n  ...newBuyFragment\n  ...newSellFragment\n  ...newMoveFragment\n}\n\nfragment navUserFragment on Query {\n  user {\n    name\n    email\n    id\n  }\n}\n\nfragment newBuyFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newExpenseFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newIncomeFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newMoveFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        value\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newSellFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newTransferFragment on Query {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n"
+    "text": "query routeHouseholdIdQuery {\n  households {\n    id\n    name\n    locale\n    currency {\n      id\n      code\n    }\n  }\n  ...appSidebarFragment\n  household {\n    ...logTransactionFragment\n    ...checkpointDialogFragment\n    id\n  }\n}\n\nfragment appSidebarFragment on Query {\n  ...householdSwitcherFragment\n  ...navUserFragment\n}\n\nfragment checkpointDialogFragment on Household {\n  accounts {\n    edges {\n      node {\n        type\n        archived\n        valueInHouseholdCurrency\n        id\n      }\n    }\n  }\n}\n\nfragment householdSwitcherFragment on Query {\n  households {\n    id\n    name\n  }\n}\n\nfragment logTransactionFragment on Household {\n  ...newExpenseFragment\n  ...newIncomeFragment\n  ...newTransferFragment\n  ...newBuyFragment\n  ...newSellFragment\n  ...newMoveFragment\n}\n\nfragment navUserFragment on Query {\n  user {\n    name\n    email\n    id\n  }\n}\n\nfragment newBuyFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newExpenseFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newIncomeFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newMoveFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        value\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newSellFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newTransferFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3f5118cf6f95d8789f7b4d3a0db6760d";
+(node as any).hash = "edcc01c52ccf63498ee891ec42c2a80d";
 
 export default node;
