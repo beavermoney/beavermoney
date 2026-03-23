@@ -172,6 +172,10 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
               fees: [],
             },
           },
+
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 

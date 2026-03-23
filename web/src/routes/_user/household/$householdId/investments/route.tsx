@@ -5,7 +5,6 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { Fragment } from 'react/jsx-runtime'
-import { ROOT_ID } from 'relay-runtime'
 import { z } from 'zod'
 
 import { PendingComponent } from '@/components/pending-component'
@@ -40,11 +39,12 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<InvestmentsQuery>(investmentsQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     return loadQuery<InvestmentsQuery>(
       environment,
       investmentsQuery,

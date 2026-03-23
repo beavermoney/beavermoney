@@ -3,11 +3,12 @@ import { Item } from '@/components/ui/item'
 import { environment } from '@/environment'
 import { createFileRoute, Navigate } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
+import { graphql } from 'relay-runtime'
 import { LogTransaction } from './-components/log-transaction'
 import { type newTransactionQuery } from './__generated__/newTransactionQuery.graphql'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -35,6 +36,7 @@ const newTransactionQuery = graphql`
 `
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
   const data = usePreloadedQuery<newTransactionQuery>(
@@ -42,13 +44,13 @@ function RouteComponent() {
     queryRef,
   )
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<newTransactionQuery>(
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
       environment,
       newTransactionQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   const isMobile = useIsMobile()

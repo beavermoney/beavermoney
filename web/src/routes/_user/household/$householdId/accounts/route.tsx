@@ -7,7 +7,6 @@ import {
 } from 'react-relay'
 import { Fragment } from 'react/jsx-runtime'
 import { AccountsPanel } from './-components/accounts-panel'
-import type { routeAccountsQuery } from './__generated__/routeAccountsQuery.graphql'
 import { Separator } from '@/components/ui/separator'
 import { environment } from '@/environment'
 import { useDualPaneDisplay } from '@/hooks/use-screen-size'
@@ -15,7 +14,6 @@ import { PendingComponent } from '@/components/pending-component'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { accountsQuery } from './-accounts-query'
 import { AccountsQuery } from './__generated__/AccountsQuery.graphql'
-import { ROOT_ID } from 'relay-runtime'
 
 export const Route = createFileRoute('/_user/household/$householdId/accounts')({
   component: RouteComponent,
@@ -31,11 +29,12 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts')({
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useRouteContext()
 
-  const data = usePreloadedQuery<routeAccountsQuery>(accountsQuery, queryRef)
+  const data = usePreloadedQuery<AccountsQuery>(accountsQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     return loadQuery<AccountsQuery>(
       environment,
       accountsQuery,
@@ -51,7 +50,7 @@ function RouteComponent() {
       {duelPaneDisplay ? (
         <div className="flex h-[calc(100vh-48px)]">
           <ScrollArea className="flex-1 overflow-y-auto p-4">
-            <AccountsPanel fragmentRef={data} />
+            <AccountsPanel fragmentRef={data.household} />
           </ScrollArea>
           <Separator orientation="vertical" className="w-px" />
           <ScrollArea

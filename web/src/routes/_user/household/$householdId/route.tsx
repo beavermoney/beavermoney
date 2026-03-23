@@ -14,7 +14,7 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
-import { commitLocalUpdate, fetchQuery, graphql, ROOT_ID } from 'relay-runtime'
+import { commitLocalUpdate, fetchQuery, graphql } from 'relay-runtime'
 import {
   loadQuery,
   usePreloadedQuery,
@@ -118,6 +118,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useLoaderData()
   const data = usePreloadedQuery<routeHouseholdIdQuery>(
     routeHouseholdIdQuery,
@@ -127,16 +128,16 @@ function RouteComponent() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<routeHouseholdIdQuery>(
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
       environment,
       routeHouseholdIdQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
-  const { householdId } = Route.useParams()
+  const { householdId } = params
 
   const household = data.households.find((h) => h.id === householdId)
   invariant(household, 'Household not found')

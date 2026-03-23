@@ -20,7 +20,6 @@ import {
   parseDateRangeFromURL,
 } from '@/lib/date-range'
 import { format } from 'date-fns'
-import { ROOT_ID } from 'relay-runtime'
 
 // Get default "This Month" dates
 const getDefaultDates = () => {
@@ -54,12 +53,13 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const search = Route.useSearch()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<CategoriesQuery>(categoriesQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
     return loadQuery<CategoriesQuery>(environment, categoriesQuery, period, {

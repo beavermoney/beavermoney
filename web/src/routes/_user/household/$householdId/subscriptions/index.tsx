@@ -4,7 +4,6 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { ROOT_ID } from 'relay-runtime'
 
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
@@ -23,6 +22,7 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const queryRef = Route.useRouteContext()
 
   const data = usePreloadedQuery<SubscriptionsQuery>(
@@ -30,7 +30,7 @@ function RouteComponent() {
     queryRef,
   )
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([params.householdId], () => {
     return loadQuery<SubscriptionsQuery>(
       environment,
       subscriptionsQuery,
