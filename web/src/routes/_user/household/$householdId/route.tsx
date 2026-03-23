@@ -301,7 +301,7 @@ function RouteComponent() {
                 </div>
 
                 {/* Transaction Form */}
-                <LogTransaction fragmentRef={data} />
+                <LogTransaction fragmentRef={data.household} />
               </Item>
             )}
           </Rnd>
