@@ -24,9 +24,9 @@ import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.grap
 import { environment } from '@/environment'
 
 const NetWorthChartQuery = graphql`
-  query netWorthChartQuery($createTimeGTE: Time) {
+  query netWorthChartQuery($where: CheckpointWhereInput) {
     household {
-      checkpoints(first: 500, where: { createTimeGTE: $createTimeGTE }) {
+      checkpoints(first: 500, where: $where) {
         edges {
           node {
             createTime
@@ -121,14 +121,16 @@ export function NetWorthChart() {
   const createTimeGTE = durationToDate(duration)
 
   const data = useLazyLoadQuery<netWorthChartQuery>(NetWorthChartQuery, {
-    createTimeGTE,
+    where: {
+      createTimeGTE,
+    },
   })
 
   useSubscribeToInvalidationState([household.id], () => {
-    fetchQuery(
+    fetchQuery<netWorthChartQuery>(
       environment,
       NetWorthChartQuery,
-      { createTimeGTE },
+      { where: { createTimeGTE } },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })
