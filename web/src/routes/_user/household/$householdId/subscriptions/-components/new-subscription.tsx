@@ -170,7 +170,11 @@ export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
 
           form.reset()
           navigate({
-            to: '..',
+            from: '/household/$householdId/subscriptions/new',
+            to: '/household/$householdId/subscriptions/$subscriptionId',
+            params: {
+              subscriptionId: resultData.createRecurringSubscription.node.id,
+            },
             search: (prev) => ({ ...prev }),
           })
           toast.success(
