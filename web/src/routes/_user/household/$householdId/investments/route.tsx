@@ -60,7 +60,7 @@ function RouteComponent() {
       {duelPaneDisplay ? (
         <div className="flex h-[calc(100vh-48px)]">
           <ScrollArea className="flex-1 overflow-y-auto p-4">
-            <InvestmentsPanel fragmentRef={data} />
+            <InvestmentsPanel fragmentRef={data.household} />
           </ScrollArea>
           <Separator orientation="vertical" className="w-px" />
           <ScrollArea

@@ -55,7 +55,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Calendar } from '@/components/ui/calendar'
 import { useHousehold } from '@/hooks/use-household'
-import { commitMutationResult } from '@/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { CurrencyInput } from '@/components/currency-input'
@@ -63,6 +62,7 @@ import { editSubscriptionCurrenciesFragment$key } from './__generated__/editSubs
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { NodeType, useDeleteNode } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 

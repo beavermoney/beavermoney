@@ -140,8 +140,8 @@ func (r *queryResolver) TransactionCategories(ctx context.Context, after *entgql
 }
 
 // TransactionEntries is the resolver for the transactionEntries field.
-func (r *queryResolver) TransactionEntries(ctx context.Context) ([]*ent.TransactionEntry, error) {
-	return r.entClient.TransactionEntry.Query().All(ctx)
+func (r *queryResolver) TransactionEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionEntryWhereInput) (*ent.TransactionEntryConnection, error) {
+	return r.entClient.TransactionEntry.Query().Paginate(ctx, after, first, before, last, ent.WithTransactionEntryFilter(where.Filter))
 }
 
 // UserHouseholds is the resolver for the userHouseholds field.

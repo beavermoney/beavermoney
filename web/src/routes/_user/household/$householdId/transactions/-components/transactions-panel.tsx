@@ -14,17 +14,15 @@ import { PlusButton } from '@/components/plus-button'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
 const transactionsPanelFragment = graphql`
-  fragment transactionsPanelFragment on Query
+  fragment transactionsPanelFragment on Household
   @argumentDefinitions(
     where: { type: "TransactionWhereInput" }
     startDate: { type: "Time!" }
     endDate: { type: "Time!" }
   ) {
     ...transactionsListFragment @arguments(where: $where)
-    household {
-      financialReport(period: { startDate: $startDate, endDate: $endDate }) {
-        ...financialSummaryCardsFragment
-      }
+    financialReport(period: { startDate: $startDate, endDate: $endDate }) {
+      ...financialSummaryCardsFragment
     }
   }
 `
@@ -75,7 +73,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
       <div className="fixed right-4 bottom-4 lg:absolute">
         <PlusButton />
       </div>
-      <FinancialSummaryCards fragmentRef={data.household.financialReport} />
+      <FinancialSummaryCards fragmentRef={data.financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter
         startDate={startDate}

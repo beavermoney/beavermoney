@@ -6,8 +6,10 @@ export const transactionsQuery = graphql`
     $startDate: Time!
     $endDate: Time!
   ) {
-    # eslint-disable-next-line relay/must-colocate-fragment-spreads
-    ...transactionsPanelFragment
-      @arguments(where: $where, startDate: $startDate, endDate: $endDate)
+    household {
+      # eslint-disable-next-line relay/must-colocate-fragment-spreads
+      ...transactionsPanelFragment
+        @arguments(where: $where, startDate: $startDate, endDate: $endDate)
+    }
   }
 `

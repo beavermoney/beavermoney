@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {
-  loadQuery,
+  fetchQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -9,9 +9,9 @@ import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 import { PendingComponent } from '@/components/pending-component'
 import { transactionsQuery } from './-transactions-query'
 import { type TransactionsQuery } from './__generated__/TransactionsQuery.graphql'
-import { ROOT_ID } from 'relay-runtime'
 import { environment } from '@/environment'
 import { parseDateRangeFromURL } from '@/lib/date-range'
+import { useHousehold } from '@/hooks/use-household'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/',
@@ -23,13 +23,14 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const search = Route.useSearch()
   const queryRef = Route.useRouteContext()
+  const { household } = useHousehold()
 
   const data = usePreloadedQuery<TransactionsQuery>(transactionsQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([household.id], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
-    return loadQuery<TransactionsQuery>(
+    fetchQuery(
       environment,
       transactionsQuery,
       {
@@ -41,7 +42,7 @@ function RouteComponent() {
         endDate: period.endDate,
       },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   const duelPaneDisplay = useDualPaneDisplay()
@@ -53,7 +54,7 @@ function RouteComponent() {
   return (
     <div className="flex h-full">
       <div className="flex-1">
-        <TransactionsPanel fragmentRef={data} />
+        <TransactionsPanel fragmentRef={data.household} />
       </div>
     </div>
   )

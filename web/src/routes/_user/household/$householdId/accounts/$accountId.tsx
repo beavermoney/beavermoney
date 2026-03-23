@@ -39,13 +39,13 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { commitMutationResult } from '@/relay'
 import { AccountIdLayoutQuery } from './__generated__/AccountIdLayoutQuery.graphql'
 import { AccountIdLayoutDeleteMutation } from './__generated__/AccountIdLayoutDeleteMutation.graphql'
 import { AccountIdLayoutArchiveMutation } from './__generated__/AccountIdLayoutArchiveMutation.graphql'
 import invariant from 'tiny-invariant'
 import { AccountIdLayoutFragment$key } from './__generated__/AccountIdLayoutFragment.graphql'
 import { NodeType, useDeleteNode } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',

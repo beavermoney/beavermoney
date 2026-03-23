@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3bc7fcd48124986fc2b36163e5779716>>
+ * @generated SignedSource<<1a50c52b4786877b8c8df35303b8bd82>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ReaderFragment } from 'relay-runtime';
 export type RecurringSubscriptionInterval = "month" | "week" | "year" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type subscriptionsPanelFragment$data = {
+  readonly id: string;
   readonly recurringSubscriptions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -39,7 +40,14 @@ import subscriptionsPanelRefetch_graphql from './subscriptionsPanelRefetch.graph
 const node: ReaderFragment = (function(){
 var v0 = [
   "recurringSubscriptions"
-];
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "argumentDefinitions": [
     {
@@ -72,8 +80,14 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": subscriptionsPanelRefetch_graphql
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": subscriptionsPanelRefetch_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "subscriptionsPanelFragment",
@@ -102,13 +116,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v1/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -210,13 +218,14 @@ return {
         }
       ],
       "storageKey": null
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "f5eb5ca12beac748ac54a9ad4e8e0862";
+(node as any).hash = "92d62dc2e219bb22e1ee863bfd133024";
 
 export default node;

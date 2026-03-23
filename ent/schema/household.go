@@ -50,6 +50,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("transactions", Transaction.Type).
 			Annotations(
@@ -57,6 +58,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("investments", Investment.Type).
 			Annotations(
@@ -64,6 +66,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("investment_lots", InvestmentLot.Type).
 			Annotations(
@@ -71,6 +74,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("transaction_categories", TransactionCategory.Type).
 			Annotations(
@@ -78,6 +82,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("transaction_entries", TransactionEntry.Type).
 			Annotations(
@@ -85,6 +90,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("recurring_subscriptions", RecurringSubscription.Type).
 			Annotations(
@@ -92,6 +98,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 		edge.To("checkpoints", Checkpoint.Type).
 			Annotations(
@@ -99,6 +106,7 @@ func (Household) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entgql.RelayConnection(),
 			),
 	}
 }

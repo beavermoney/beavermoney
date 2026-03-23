@@ -36,7 +36,7 @@ import { PlusButton } from '@/components/plus-button'
 import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const SubscriptionsPanelFragment = graphql`
-  fragment subscriptionsPanelFragment on Query
+  fragment subscriptionsPanelFragment on Household
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }

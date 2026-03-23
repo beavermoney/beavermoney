@@ -43,7 +43,7 @@ function RouteComponent() {
   return (
     <div className="flex max-h-full w-full">
       <Item className="flex p-0">
-        <AccountsPanel fragmentRef={data} />
+        <AccountsPanel fragmentRef={data.household} />
       </Item>
     </div>
   )

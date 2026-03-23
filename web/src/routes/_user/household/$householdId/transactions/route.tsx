@@ -4,6 +4,7 @@ import {
   stripSearchParams,
 } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -19,7 +20,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { transactionsQuery } from './-transactions-query'
 import { type TransactionsQuery } from './__generated__/TransactionsQuery.graphql'
 import { parseDateRangeFromURL, getDefaultDates } from '@/lib/date-range'
-import { ROOT_ID } from 'relay-runtime'
+import { useHousehold } from '@/hooks/use-household'
 
 const defaults = getDefaultDates()
 
@@ -59,13 +60,15 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const search = Route.useSearch()
   const queryRef = Route.useRouteContext()
+  const { household } = useHousehold()
 
   const data = usePreloadedQuery<TransactionsQuery>(transactionsQuery, queryRef)
 
-  useSubscribeToInvalidationState([ROOT_ID], () => {
+  useSubscribeToInvalidationState([household.id], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
+    console.log('invalidating transactions query for period', period)
 
-    return loadQuery<TransactionsQuery>(
+    fetchQuery(
       environment,
       transactionsQuery,
       {
@@ -77,7 +80,7 @@ function RouteComponent() {
         endDate: period.endDate,
       },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   const duelPaneDisplay = useDualPaneDisplay()
@@ -87,7 +90,7 @@ function RouteComponent() {
       {duelPaneDisplay ? (
         <div className="flex h-[calc(100vh-48px)]">
           <ScrollArea className="flex-1 overflow-y-auto p-4">
-            <TransactionsPanel fragmentRef={data} />
+            <TransactionsPanel fragmentRef={data.household} />
           </ScrollArea>
           <Separator orientation="vertical" className="w-px" />
           <ScrollArea className="flex-1 overflow-y-auto p-4">

@@ -670,14 +670,186 @@ type Household implements Node {
   isDemo: Boolean!
   currency: Currency!
   users: [User!]
-  accounts: [Account!]
-  transactions: [Transaction!]
-  investments: [Investment!]
-  investmentLots: [InvestmentLot!]
-  transactionCategories: [TransactionCategory!]
-  transactionEntries: [TransactionEntry!]
-  recurringSubscriptions: [RecurringSubscription!]
-  checkpoints: [Checkpoint!]
+  accounts(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for Accounts returned from the connection.
+    """
+    where: AccountWhereInput
+  ): AccountConnection!
+  transactions(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Ordering options for Transactions returned from the connection.
+    """
+    orderBy: TransactionOrder
+    """
+    Filtering options for Transactions returned from the connection.
+    """
+    where: TransactionWhereInput
+  ): TransactionConnection!
+  investments(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for Investments returned from the connection.
+    """
+    where: InvestmentWhereInput
+  ): InvestmentConnection!
+  investmentLots(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for InvestmentLots returned from the connection.
+    """
+    where: InvestmentLotWhereInput
+  ): InvestmentLotConnection!
+  transactionCategories(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for TransactionCategories returned from the connection.
+    """
+    where: TransactionCategoryWhereInput
+  ): TransactionCategoryConnection!
+  transactionEntries(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for TransactionEntries returned from the connection.
+    """
+    where: TransactionEntryWhereInput
+  ): TransactionEntryConnection!
+  recurringSubscriptions(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for RecurringSubscriptions returned from the connection.
+    """
+    where: RecurringSubscriptionWhereInput
+  ): RecurringSubscriptionConnection!
+  checkpoints(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for Checkpoints returned from the connection.
+    """
+    where: CheckpointWhereInput
+  ): CheckpointConnection!
   userHouseholds: [UserHousehold!]
   financialReport(period: TimePeriodInput!): FinancialReport!
   netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
@@ -1415,7 +1587,28 @@ type Query {
     """
     where: TransactionCategoryWhereInput
   ): TransactionCategoryConnection!
-  transactionEntries: [TransactionEntry!]!
+  transactionEntries(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for TransactionEntries returned from the connection.
+    """
+    where: TransactionEntryWhereInput
+  ): TransactionEntryConnection!
   userHouseholds: [UserHousehold!]!
   user: User!
   household: Household!
@@ -1883,6 +2076,38 @@ type TransactionEntry implements Node {
   account: Account!
   currency: Currency!
   transaction: Transaction!
+}
+
+"""
+A connection to a list of items.
+"""
+type TransactionEntryConnection {
+  """
+  A list of edges.
+  """
+  edges: [TransactionEntryEdge]
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  Identifies the total count of items in the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+An edge in a connection.
+"""
+type TransactionEntryEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: TransactionEntry
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor!
 }
 
 """

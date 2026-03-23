@@ -60,8 +60,8 @@ const CategoryIdQuery = graphql`
       financialReport(period: { startDate: $startDate, endDate: $endDate }) {
         ...categoryCardFinancialReportFragment
       }
+      ...transactionsListFragment @arguments(where: $where)
     }
-    ...transactionsListFragment @arguments(where: $where)
   }
 `
 
@@ -109,7 +109,7 @@ function RouteComponent() {
         />
         <EditCategory key={data.node.id} fragmentRef={data.node} />
       </Item>
-      <TransactionsList fragmentRef={data} where={where} />
+      <TransactionsList fragmentRef={data.household} where={where} />
     </div>
   )
 }

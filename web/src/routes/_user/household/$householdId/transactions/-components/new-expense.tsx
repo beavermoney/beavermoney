@@ -172,6 +172,9 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
               fees: [],
             },
           },
+          updater: (store) => {
+            store.get(household.id)?.invalidateRecord()
+          },
         },
       )
 

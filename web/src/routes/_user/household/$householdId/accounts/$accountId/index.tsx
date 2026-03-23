@@ -49,7 +49,9 @@ export const Route = createFileRoute(
 
 const AccountIdTransactionsQuery = graphql`
   query AccountIdTransactionsQuery($where: TransactionWhereInput) {
-    ...transactionsListFragment @arguments(where: $where)
+    household {
+      ...transactionsListFragment @arguments(where: $where)
+    }
   }
 `
 
@@ -109,5 +111,5 @@ function RouteComponent() {
     )
   })
 
-  return <TransactionsList fragmentRef={data} where={where} />
+  return <TransactionsList fragmentRef={data.household} where={where} />
 }

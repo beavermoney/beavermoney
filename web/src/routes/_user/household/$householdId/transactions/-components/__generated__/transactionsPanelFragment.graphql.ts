@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c13ed9ec73543f60db171d01766afd0d>>
+ * @generated SignedSource<<dbb10c62024bef9cf9ec8fa3a7f77a19>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,10 +11,8 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type transactionsPanelFragment$data = {
-  readonly household: {
-    readonly financialReport: {
-      readonly " $fragmentSpreads": FragmentRefs<"financialSummaryCardsFragment">;
-    };
+  readonly financialReport: {
+    readonly " $fragmentSpreads": FragmentRefs<"financialSummaryCardsFragment">;
   };
   readonly " $fragmentSpreads": FragmentRefs<"transactionsListFragment">;
   readonly " $fragmentType": "transactionsPanelFragment";
@@ -59,53 +57,42 @@ const node: ReaderFragment = {
     },
     {
       "alias": null,
-      "args": null,
-      "concreteType": "Household",
+      "args": [
+        {
+          "fields": [
+            {
+              "kind": "Variable",
+              "name": "endDate",
+              "variableName": "endDate"
+            },
+            {
+              "kind": "Variable",
+              "name": "startDate",
+              "variableName": "startDate"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "period"
+        }
+      ],
+      "concreteType": "FinancialReport",
       "kind": "LinkedField",
-      "name": "household",
+      "name": "financialReport",
       "plural": false,
       "selections": [
         {
-          "alias": null,
-          "args": [
-            {
-              "fields": [
-                {
-                  "kind": "Variable",
-                  "name": "endDate",
-                  "variableName": "endDate"
-                },
-                {
-                  "kind": "Variable",
-                  "name": "startDate",
-                  "variableName": "startDate"
-                }
-              ],
-              "kind": "ObjectValue",
-              "name": "period"
-            }
-          ],
-          "concreteType": "FinancialReport",
-          "kind": "LinkedField",
-          "name": "financialReport",
-          "plural": false,
-          "selections": [
-            {
-              "args": null,
-              "kind": "FragmentSpread",
-              "name": "financialSummaryCardsFragment"
-            }
-          ],
-          "storageKey": null
+          "args": null,
+          "kind": "FragmentSpread",
+          "name": "financialSummaryCardsFragment"
         }
       ],
       "storageKey": null
     }
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 
-(node as any).hash = "550b21ae67fbad006199693cf6077f36";
+(node as any).hash = "16b36874db741ebcc6f18ef674d19164";
 
 export default node;
