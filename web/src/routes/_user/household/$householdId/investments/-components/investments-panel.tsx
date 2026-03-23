@@ -1,4 +1,4 @@
-import { commitLocalUpdate, graphql, ROOT_ID } from 'relay-runtime'
+import { commitLocalUpdate, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -35,8 +35,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useCurrency } from '@/hooks/use-currency'
-import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { RefreshCwIcon } from 'lucide-react'
@@ -87,6 +87,7 @@ type InvestmentsPanelProps = {
 
 export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const data = useFragment(InvestmentsPanelFragment, fragmentRef)
+  const { household } = useHousehold()
   const environment = useRelayEnvironment()
   const navigate = useNavigate()
 
@@ -112,7 +113,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     )
 
   useRegisterConnection(
-    ROOT_ID,
+    household.id,
     ConnectionKeys[NodeType.Investment][0],
     NodeType.Investment,
   )
@@ -156,8 +157,6 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
       }),
     [data.investments, groupByOption],
   )
-
-  const { household } = useHousehold()
 
   const totalInvestment = useMemo(() => {
     return (data.investments.edges ?? [])
