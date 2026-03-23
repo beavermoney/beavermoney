@@ -1,4 +1,4 @@
-import { commitLocalUpdate, graphql } from 'relay-runtime'
+import { commitLocalUpdate, graphql, ROOT_ID } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -41,6 +41,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { RefreshCwIcon } from 'lucide-react'
 import { PlusButton } from '@/components/plus-button'
+import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const GROUP_BY_OPTIONS = {
   account: 'By Account',
@@ -109,6 +110,12 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     useMutation<investmentsPanelRefreshMutation>(
       InvestmentsPanelRefreshMutation,
     )
+
+  useRegisterConnection(
+    ROOT_ID,
+    ConnectionKeys[NodeType.Investment][0],
+    NodeType.Investment,
+  )
 
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 

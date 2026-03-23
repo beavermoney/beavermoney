@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<44c07b1772a8911b61da9df3c704ff3d>>
+ * @generated SignedSource<<78ef84ef0dc976165941e853dd595ec1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type editCategoryDeleteMutation$variables = {
+  connections: ReadonlyArray<string>;
   id: string;
 };
 export type editCategoryDeleteMutation$data = {
@@ -23,55 +24,94 @@ export type editCategoryDeleteMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v2 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "id"
   }
 ],
-v1 = [
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "id",
-        "variableName": "id"
-      }
-    ],
-    "concreteType": "DeleteTransactionCategoryPayload",
-    "kind": "LinkedField",
-    "name": "deleteTransactionCategory",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "deletedTransactionCategoryId",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "deletedTransactionCategoryId",
+  "storageKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "editCategoryDeleteMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteTransactionCategoryPayload",
+        "kind": "LinkedField",
+        "name": "deleteTransactionCategory",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "editCategoryDeleteMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteTransactionCategoryPayload",
+        "kind": "LinkedField",
+        "name": "deleteTransactionCategory",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "filters": null,
+            "handle": "deleteEdge",
+            "key": "",
+            "kind": "ScalarHandle",
+            "name": "deletedTransactionCategoryId",
+            "handleArgs": [
+              {
+                "kind": "Variable",
+                "name": "connections",
+                "variableName": "connections"
+              }
+            ]
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
     "cacheID": "e3aff2291ea4d571c68f8c25f02de38d",
@@ -84,6 +124,6 @@ return {
 };
 })();
 
-(node as any).hash = "64786638a9d1a3f225fd9e9ef267b48f";
+(node as any).hash = "84c02679b56af266c3936ae7b534aaf7";
 
 export default node;

@@ -55,13 +55,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Calendar } from '@/components/ui/calendar'
 import { useHousehold } from '@/hooks/use-household'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { CurrencyInput } from '@/components/currency-input'
 import { editSubscriptionCurrenciesFragment$key } from './__generated__/editSubscriptionCurrenciesFragment.graphql'
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
+import { NodeType, useDeleteNode } from '@/relay'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -141,9 +142,9 @@ const editSubscriptionMutation = graphql`
 `
 
 const editSubscriptionDeleteMutation = graphql`
-  mutation editSubscriptionDeleteMutation($id: ID!) {
+  mutation editSubscriptionDeleteMutation($id: ID!, $connections: [ID!]!) {
     deleteRecurringSubscription(id: $id) {
-      deletedRecurringSubscriptionId
+      deletedRecurringSubscriptionId @deleteEdge(connections: $connections)
     }
   }
 `
@@ -171,6 +172,8 @@ export function EditSubscription({
 
   const [commitDeleteMutation, isDeleteMutationInFlight] =
     useMutation<editSubscriptionDeleteMutation>(editSubscriptionDeleteMutation)
+
+  const deleteNode = useDeleteNode(NodeType.RecurringSubscription)
 
   const { household } = useHousehold()
 
@@ -236,13 +239,16 @@ export function EditSubscription({
   })
 
   const handleDelete = async () => {
-    const result = await commitMutationResult<editSubscriptionDeleteMutation>(
-      commitDeleteMutation,
-      {
-        variables: {
-          id: data.id,
+    const result = await deleteNode((connections) =>
+      commitMutationResult<editSubscriptionDeleteMutation>(
+        commitDeleteMutation,
+        {
+          variables: {
+            id: data.id,
+            connections,
+          },
         },
-      },
+      ),
     )
 
     match(result)

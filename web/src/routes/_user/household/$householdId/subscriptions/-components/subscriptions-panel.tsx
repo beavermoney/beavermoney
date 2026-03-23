@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { graphql, useFragment, useMutation } from 'react-relay'
 import invariant from 'tiny-invariant'
+import { ROOT_ID } from 'relay-runtime'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -32,6 +33,7 @@ import { SubscriptionCard } from './subscription-card'
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import type { subscriptionsPanelRefreshMutation } from './__generated__/subscriptionsPanelRefreshMutation.graphql'
 import { PlusButton } from '@/components/plus-button'
+import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Query
@@ -100,6 +102,12 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     useMutation<subscriptionsPanelRefreshMutation>(
       SubscriptionsPanelRefreshMutation,
     )
+
+  useRegisterConnection(
+    ROOT_ID,
+    ConnectionKeys[NodeType.RecurringSubscription][0],
+    NodeType.RecurringSubscription,
+  )
 
   const handleRefresh = () => {
     commitRefresh({

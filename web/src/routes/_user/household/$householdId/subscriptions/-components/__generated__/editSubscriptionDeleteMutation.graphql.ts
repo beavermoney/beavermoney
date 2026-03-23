@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f63eb6700acbd14da995676db0eb98df>>
+ * @generated SignedSource<<e756047a7225544c6a6184b3b1ded2dd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type editSubscriptionDeleteMutation$variables = {
+  connections: ReadonlyArray<string>;
   id: string;
 };
 export type editSubscriptionDeleteMutation$data = {
@@ -23,55 +24,94 @@ export type editSubscriptionDeleteMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v2 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "id"
   }
 ],
-v1 = [
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "id",
-        "variableName": "id"
-      }
-    ],
-    "concreteType": "DeleteRecurringSubscriptionPayload",
-    "kind": "LinkedField",
-    "name": "deleteRecurringSubscription",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "deletedRecurringSubscriptionId",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "deletedRecurringSubscriptionId",
+  "storageKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "editSubscriptionDeleteMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteRecurringSubscriptionPayload",
+        "kind": "LinkedField",
+        "name": "deleteRecurringSubscription",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "editSubscriptionDeleteMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": "DeleteRecurringSubscriptionPayload",
+        "kind": "LinkedField",
+        "name": "deleteRecurringSubscription",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "filters": null,
+            "handle": "deleteEdge",
+            "key": "",
+            "kind": "ScalarHandle",
+            "name": "deletedRecurringSubscriptionId",
+            "handleArgs": [
+              {
+                "kind": "Variable",
+                "name": "connections",
+                "variableName": "connections"
+              }
+            ]
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
     "cacheID": "62a0d96875336fd1c088ee7bb962ccd6",
@@ -84,6 +124,6 @@ return {
 };
 })();
 
-(node as any).hash = "beec3bb3685184163e81a119e8d12e08";
+(node as any).hash = "575045f72946ac9879c8cb36fc9c3da8";
 
 export default node;

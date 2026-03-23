@@ -39,12 +39,13 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 import { AccountIdLayoutQuery } from './__generated__/AccountIdLayoutQuery.graphql'
 import { AccountIdLayoutDeleteMutation } from './__generated__/AccountIdLayoutDeleteMutation.graphql'
 import { AccountIdLayoutArchiveMutation } from './__generated__/AccountIdLayoutArchiveMutation.graphql'
 import invariant from 'tiny-invariant'
 import { AccountIdLayoutFragment$key } from './__generated__/AccountIdLayoutFragment.graphql'
+import { NodeType, useDeleteNode } from '@/relay'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -80,9 +81,9 @@ const accountIdLayoutFragment = graphql`
 `
 
 const accountIdLayoutDeleteMutation = graphql`
-  mutation AccountIdLayoutDeleteMutation($id: ID!) {
+  mutation AccountIdLayoutDeleteMutation($id: ID!, $connections: [ID!]!) {
     deleteAccount(id: $id) {
-      deletedAccountId
+      deletedAccountId @deleteEdge(connections: $connections)
     }
   }
 `
@@ -112,6 +113,8 @@ function RouteComponent() {
   const [commitArchiveMutation, isArchiveMutationInFlight] =
     useMutation<AccountIdLayoutArchiveMutation>(accountIdLayoutArchiveMutation)
 
+  const deleteNode = useDeleteNode(NodeType.Account)
+
   useSubscribeToInvalidationState([ROOT_ID], () => {
     return loadQuery<AccountIdLayoutQuery>(
       environment,
@@ -136,11 +139,13 @@ function RouteComponent() {
   }
 
   const handleDelete = async () => {
-    const result = await commitMutationResult<AccountIdLayoutDeleteMutation>(
-      commitDeleteMutation,
-      {
-        variables: { id: accountData.id },
-      },
+    const result = await deleteNode((connections) =>
+      commitMutationResult<AccountIdLayoutDeleteMutation>(
+        commitDeleteMutation,
+        {
+          variables: { id: accountData.id, connections },
+        },
+      ),
     )
 
     match(result)
