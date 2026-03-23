@@ -4,6 +4,7 @@ import {
   stripSearchParams,
 } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -62,12 +63,12 @@ function RouteComponent() {
   )
 
   useSubscribeToInvalidationState([params.householdId], () => {
-    return loadQuery<SubscriptionsQuery>(
+    fetchQuery(
       environment,
       subscriptionsQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   const duelPaneDisplay = useDualPaneDisplay()

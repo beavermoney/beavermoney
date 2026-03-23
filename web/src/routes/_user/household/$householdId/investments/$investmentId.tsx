@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {
+  fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -53,7 +54,7 @@ function RouteComponent() {
   const data = usePreloadedQuery<InvestmentIdQuery>(InvestmentIdQuery, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
-    return loadQuery<InvestmentIdQuery>(
+    fetchQuery(
       environment,
       InvestmentIdQuery,
       {
@@ -64,7 +65,7 @@ function RouteComponent() {
         },
       },
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   return (

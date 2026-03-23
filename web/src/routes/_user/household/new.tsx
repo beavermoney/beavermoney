@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import * as z from 'zod'
 import { graphql, ROOT_ID } from 'relay-runtime'
 import {
+  fetchQuery,
   loadQuery,
   useFragment,
   useMutation,
@@ -40,7 +41,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
-import { commitMutationResult } from '@/lib/relay'
+import { commitMutationResult } from '@/relay'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 
@@ -119,12 +120,12 @@ function RouteComponent() {
   const data = usePreloadedQuery<newHouseholdQuery>(newHouseholdQuery, queryRef)
 
   useSubscribeToInvalidationState([ROOT_ID], () => {
-    return loadQuery<newHouseholdQuery>(
+    fetchQuery(
       environment,
       newHouseholdQuery,
       {},
       { fetchPolicy: 'network-only' },
-    )
+    ).subscribe({})
   })
 
   return (
