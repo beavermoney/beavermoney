@@ -33,7 +33,7 @@ import { PlusButton } from '@/components/plus-button'
 import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const CategoriesPanelFragment = graphql`
-  fragment categoriesPanelFragment on Query
+  fragment categoriesPanelFragment on Household
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }
@@ -51,21 +51,19 @@ const CategoriesPanelFragment = graphql`
         }
       }
     }
-    household {
-      financialReport(period: { startDate: $startDate, endDate: $endDate }) {
-        incomeBreakdown {
-          categoryType
-          total
-          transactionCount
-        }
-        expensesBreakdown {
-          categoryType
-          total
-          transactionCount
-        }
-        ...categoryCardFinancialReportFragment
-        ...financialSummaryCardsFragment
+    financialReport(period: { startDate: $startDate, endDate: $endDate }) {
+      incomeBreakdown {
+        categoryType
+        total
+        transactionCount
       }
+      expensesBreakdown {
+        categoryType
+        total
+        transactionCount
+      }
+      ...categoryCardFinancialReportFragment
+      ...financialSummaryCardsFragment
     }
   }
 `

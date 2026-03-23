@@ -164,100 +164,165 @@ func (_m *Household) Users(ctx context.Context) (result []*User, err error) {
 	return result, err
 }
 
-func (_m *Household) Accounts(ctx context.Context) (result []*Account, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.AccountsOrErr()
+func (_m *Household) Accounts(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *AccountWhereInput,
+) (*AccountConnection, error) {
+	opts := []AccountPaginateOption{
+		WithAccountFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryAccounts().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[2][alias]
+	if nodes, err := _m.NamedAccounts(alias); err == nil || hasTotalCount {
+		pager, err := newAccountPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AccountConnection{Edges: []*AccountEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryAccounts().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) Transactions(ctx context.Context) (result []*Transaction, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.TransactionsOrErr()
+func (_m *Household) Transactions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryTransactions().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[3][alias]
+	if nodes, err := _m.NamedTransactions(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) Investments(ctx context.Context) (result []*Investment, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedInvestments(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.InvestmentsOrErr()
+func (_m *Household) Investments(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *InvestmentWhereInput,
+) (*InvestmentConnection, error) {
+	opts := []InvestmentPaginateOption{
+		WithInvestmentFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryInvestments().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[4][alias]
+	if nodes, err := _m.NamedInvestments(alias); err == nil || hasTotalCount {
+		pager, err := newInvestmentPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &InvestmentConnection{Edges: []*InvestmentEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryInvestments().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) InvestmentLots(ctx context.Context) (result []*InvestmentLot, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedInvestmentLots(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.InvestmentLotsOrErr()
+func (_m *Household) InvestmentLots(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *InvestmentLotWhereInput,
+) (*InvestmentLotConnection, error) {
+	opts := []InvestmentLotPaginateOption{
+		WithInvestmentLotFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryInvestmentLots().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[5][alias]
+	if nodes, err := _m.NamedInvestmentLots(alias); err == nil || hasTotalCount {
+		pager, err := newInvestmentLotPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &InvestmentLotConnection{Edges: []*InvestmentLotEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryInvestmentLots().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) TransactionCategories(ctx context.Context) (result []*TransactionCategory, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedTransactionCategories(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.TransactionCategoriesOrErr()
+func (_m *Household) TransactionCategories(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *TransactionCategoryWhereInput,
+) (*TransactionCategoryConnection, error) {
+	opts := []TransactionCategoryPaginateOption{
+		WithTransactionCategoryFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryTransactionCategories().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[6][alias]
+	if nodes, err := _m.NamedTransactionCategories(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionCategoryPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionCategoryConnection{Edges: []*TransactionCategoryEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryTransactionCategories().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) TransactionEntries(ctx context.Context) (result []*TransactionEntry, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedTransactionEntries(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.TransactionEntriesOrErr()
+func (_m *Household) TransactionEntries(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *TransactionEntryWhereInput,
+) (*TransactionEntryConnection, error) {
+	opts := []TransactionEntryPaginateOption{
+		WithTransactionEntryFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryTransactionEntries().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[7][alias]
+	if nodes, err := _m.NamedTransactionEntries(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionEntryPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionEntryConnection{Edges: []*TransactionEntryEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryTransactionEntries().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) RecurringSubscriptions(ctx context.Context) (result []*RecurringSubscription, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedRecurringSubscriptions(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.RecurringSubscriptionsOrErr()
+func (_m *Household) RecurringSubscriptions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *RecurringSubscriptionWhereInput,
+) (*RecurringSubscriptionConnection, error) {
+	opts := []RecurringSubscriptionPaginateOption{
+		WithRecurringSubscriptionFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryRecurringSubscriptions().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[8][alias]
+	if nodes, err := _m.NamedRecurringSubscriptions(alias); err == nil || hasTotalCount {
+		pager, err := newRecurringSubscriptionPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &RecurringSubscriptionConnection{Edges: []*RecurringSubscriptionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryRecurringSubscriptions().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) Checkpoints(ctx context.Context) (result []*Checkpoint, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedCheckpoints(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.CheckpointsOrErr()
+func (_m *Household) Checkpoints(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *CheckpointWhereInput,
+) (*CheckpointConnection, error) {
+	opts := []CheckpointPaginateOption{
+		WithCheckpointFilter(where.Filter),
 	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryCheckpoints().All(ctx)
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
+	if nodes, err := _m.NamedCheckpoints(alias); err == nil || hasTotalCount {
+		pager, err := newCheckpointPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &CheckpointConnection{Edges: []*CheckpointEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
 	}
-	return result, err
+	return _m.QueryCheckpoints().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (_m *Household) UserHouseholds(ctx context.Context) (result []*UserHousehold, err error) {

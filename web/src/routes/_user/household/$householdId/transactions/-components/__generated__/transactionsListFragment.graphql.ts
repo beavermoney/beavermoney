@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3b3e1ed46b69ee4f14d951dc23387cb7>>
+ * @generated SignedSource<<f0d82ad3456702064a4fe26068e4295d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,6 +11,7 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type transactionsListFragment$data = {
+  readonly id: string;
   readonly transactions: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -35,7 +36,14 @@ import transactionsListRefetch_graphql from './transactionsListRefetch.graphql';
 const node: ReaderFragment = (function(){
 var v0 = [
   "transactions"
-];
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "argumentDefinitions": [
     {
@@ -73,8 +81,14 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": transactionsListRefetch_graphql
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": transactionsListRefetch_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "transactionsListFragment",
@@ -117,13 +131,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v1/*: any*/),
                 {
                   "args": null,
                   "kind": "FragmentSpread",
@@ -176,13 +184,14 @@ return {
         }
       ],
       "storageKey": null
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "77764bae328c28c1bce6d5bb6b63050b";
+(node as any).hash = "0d3112c2e5296d568b2809b09cf9a730";
 
 export default node;

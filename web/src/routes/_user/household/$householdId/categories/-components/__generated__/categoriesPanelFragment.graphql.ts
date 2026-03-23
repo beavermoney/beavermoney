@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d52d42db90e5e6d7a239e9b1ae7d0a81>>
+ * @generated SignedSource<<5c1a194580f118e89214bb83a7c87f0d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,21 +12,20 @@ import { ReaderFragment } from 'relay-runtime';
 export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type categoriesPanelFragment$data = {
-  readonly household: {
-    readonly financialReport: {
-      readonly expensesBreakdown: {
-        readonly categoryType: TransactionCategoryType;
-        readonly total: string;
-        readonly transactionCount: number;
-      };
-      readonly incomeBreakdown: {
-        readonly categoryType: TransactionCategoryType;
-        readonly total: string;
-        readonly transactionCount: number;
-      };
-      readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment" | "financialSummaryCardsFragment">;
+  readonly financialReport: {
+    readonly expensesBreakdown: {
+      readonly categoryType: TransactionCategoryType;
+      readonly total: string;
+      readonly transactionCount: number;
     };
+    readonly incomeBreakdown: {
+      readonly categoryType: TransactionCategoryType;
+      readonly total: string;
+      readonly transactionCount: number;
+    };
+    readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment" | "financialSummaryCardsFragment">;
   };
+  readonly id: string;
   readonly transactionCategories: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -49,7 +48,14 @@ const node: ReaderFragment = (function(){
 var v0 = [
   "transactionCategories"
 ],
-v1 = [
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = [
   {
     "alias": null,
     "args": null,
@@ -114,8 +120,14 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": categoriesPanelRefetch_graphql
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": categoriesPanelRefetch_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "categoriesPanelFragment",
@@ -144,13 +156,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v1/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -213,79 +219,69 @@ return {
     },
     {
       "alias": null,
-      "args": null,
-      "concreteType": "Household",
+      "args": [
+        {
+          "fields": [
+            {
+              "kind": "Variable",
+              "name": "endDate",
+              "variableName": "endDate"
+            },
+            {
+              "kind": "Variable",
+              "name": "startDate",
+              "variableName": "startDate"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "period"
+        }
+      ],
+      "concreteType": "FinancialReport",
       "kind": "LinkedField",
-      "name": "household",
+      "name": "financialReport",
       "plural": false,
       "selections": [
         {
           "alias": null,
-          "args": [
-            {
-              "fields": [
-                {
-                  "kind": "Variable",
-                  "name": "endDate",
-                  "variableName": "endDate"
-                },
-                {
-                  "kind": "Variable",
-                  "name": "startDate",
-                  "variableName": "startDate"
-                }
-              ],
-              "kind": "ObjectValue",
-              "name": "period"
-            }
-          ],
-          "concreteType": "FinancialReport",
+          "args": null,
+          "concreteType": "CategoryTypeAggregate",
           "kind": "LinkedField",
-          "name": "financialReport",
+          "name": "incomeBreakdown",
           "plural": false,
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "concreteType": "CategoryTypeAggregate",
-              "kind": "LinkedField",
-              "name": "incomeBreakdown",
-              "plural": false,
-              "selections": (v1/*: any*/),
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "concreteType": "CategoryTypeAggregate",
-              "kind": "LinkedField",
-              "name": "expensesBreakdown",
-              "plural": false,
-              "selections": (v1/*: any*/),
-              "storageKey": null
-            },
-            {
-              "args": null,
-              "kind": "FragmentSpread",
-              "name": "categoryCardFinancialReportFragment"
-            },
-            {
-              "args": null,
-              "kind": "FragmentSpread",
-              "name": "financialSummaryCardsFragment"
-            }
-          ],
+          "selections": (v2/*: any*/),
           "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "CategoryTypeAggregate",
+          "kind": "LinkedField",
+          "name": "expensesBreakdown",
+          "plural": false,
+          "selections": (v2/*: any*/),
+          "storageKey": null
+        },
+        {
+          "args": null,
+          "kind": "FragmentSpread",
+          "name": "categoryCardFinancialReportFragment"
+        },
+        {
+          "args": null,
+          "kind": "FragmentSpread",
+          "name": "financialSummaryCardsFragment"
         }
       ],
       "storageKey": null
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "462c3224f639d468d9436dab5f8adaa0";
+(node as any).hash = "898545577cae756c75b0fbc2df060cab";
 
 export default node;

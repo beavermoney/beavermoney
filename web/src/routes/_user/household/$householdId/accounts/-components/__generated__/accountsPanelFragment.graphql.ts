@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d72567493e4f540ff62a26581e1f6d4d>>
+ * @generated SignedSource<<a7cf7fc9d166c253db3caae3f86dce36>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,6 +23,7 @@ export type accountsPanelFragment$data = {
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
+  readonly id: string;
   readonly " $fragmentType": "accountsPanelFragment";
 };
 export type accountsPanelFragment$key = {
@@ -35,7 +36,14 @@ import accountsPanelRefetch_graphql from './accountsPanelRefetch.graphql';
 const node: ReaderFragment = (function(){
 var v0 = [
   "accounts"
-];
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "argumentDefinitions": [
     {
@@ -68,8 +76,14 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": accountsPanelRefetch_graphql
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": accountsPanelRefetch_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "accountsPanelFragment",
@@ -106,13 +120,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v1/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -186,13 +194,14 @@ return {
         }
       ],
       "storageKey": "__accountsPanel_accounts_connection(where:{\"archived\":false})"
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "077f30f5c187fe8c506508623124818f";
+(node as any).hash = "9207e7e99180c57a69853c48cf010d17";
 
 export default node;

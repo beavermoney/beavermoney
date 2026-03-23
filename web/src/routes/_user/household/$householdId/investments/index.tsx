@@ -42,7 +42,7 @@ function RouteComponent() {
   return (
     <div className="flex h-full">
       <div className="flex-1">
-        <InvestmentsPanel fragmentRef={data} />
+        <InvestmentsPanel fragmentRef={data.household} />
       </div>
     </div>
   )

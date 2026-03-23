@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5e7689ddf69051c805ad3005f417aaa2>>
+ * @generated SignedSource<<3c37d3759411b4b00f0f2c55ec7c8a67>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,6 +11,7 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type investmentsPanelFragment$data = {
+  readonly id: string;
   readonly investments: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -84,8 +85,14 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": investmentsPanelRefetch_graphql
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": investmentsPanelRefetch_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
     }
   },
   "name": "investmentsPanelFragment",
@@ -188,13 +195,14 @@ return {
         }
       ],
       "storageKey": null
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "Household",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "75ee1f24d33590ff77a0a1d18db1fd07";
+(node as any).hash = "d80f6d479ec262123b56933759845122";
 
 export default node;

@@ -38,7 +38,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const AccountsPanelFragment = graphql`
-  fragment accountsPanelFragment on Query
+  fragment accountsPanelFragment on Household
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }

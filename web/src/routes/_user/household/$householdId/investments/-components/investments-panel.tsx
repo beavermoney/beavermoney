@@ -51,7 +51,7 @@ const GROUP_BY_OPTIONS = {
 type GroupByOption = keyof typeof GROUP_BY_OPTIONS
 
 const InvestmentsPanelFragment = graphql`
-  fragment investmentsPanelFragment on Query
+  fragment investmentsPanelFragment on Household
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }

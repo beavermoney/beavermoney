@@ -11,7 +11,7 @@ import { ItemGroup } from '@/components/ui/item'
 import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 const transactionsListFragment = graphql`
-  fragment transactionsListFragment on Query
+  fragment transactionsListFragment on Household
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 20 }
     cursor: { type: "Cursor" }

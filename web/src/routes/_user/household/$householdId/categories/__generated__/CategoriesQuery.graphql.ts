@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d8cd39fd033433720038d113c78ddbf0>>
+ * @generated SignedSource<<4b320cef176ff67e3d514a51f2f5ec80>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,9 @@ export type CategoriesQuery$variables = {
   startDate: any;
 };
 export type CategoriesQuery$data = {
-  readonly " $fragmentSpreads": FragmentRefs<"categoriesPanelFragment">;
+  readonly household: {
+    readonly " $fragmentSpreads": FragmentRefs<"categoriesPanelFragment">;
+  };
 };
 export type CategoriesQuery = {
   response: CategoriesQuery$data;
@@ -120,9 +122,20 @@ return {
     "name": "CategoriesQuery",
     "selections": [
       {
-        "args": (v2/*: any*/),
-        "kind": "FragmentSpread",
-        "name": "categoriesPanelFragment"
+        "alias": null,
+        "args": null,
+        "concreteType": "Household",
+        "kind": "LinkedField",
+        "name": "household",
+        "plural": false,
+        "selections": [
+          {
+            "args": (v2/*: any*/),
+            "kind": "FragmentSpread",
+            "name": "categoriesPanelFragment"
+          }
+        ],
+        "storageKey": null
       }
     ],
     "type": "Query",
@@ -139,55 +152,73 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v3/*: any*/),
-        "concreteType": "TransactionCategoryConnection",
+        "args": null,
+        "concreteType": "Household",
         "kind": "LinkedField",
-        "name": "transactionCategories",
+        "name": "household",
         "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": null,
-            "concreteType": "TransactionCategoryEdge",
+            "args": (v3/*: any*/),
+            "concreteType": "TransactionCategoryConnection",
             "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
+            "name": "transactionCategories",
+            "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "TransactionCategory",
+                "concreteType": "TransactionCategoryEdge",
                 "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v4/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "type",
+                    "concreteType": "TransactionCategory",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v4/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "type",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "name",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "icon",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "__typename",
+                        "storageKey": null
+                      }
+                    ],
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "name",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "icon",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "__typename",
+                    "name": "cursor",
                     "storageKey": null
                   }
                 ],
@@ -196,58 +227,40 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "cursor",
+                "concreteType": "PageInfo",
+                "kind": "LinkedField",
+                "name": "pageInfo",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "endCursor",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "hasNextPage",
+                    "storageKey": null
+                  }
+                ],
                 "storageKey": null
               }
             ],
-            "storageKey": null
+            "storageKey": "transactionCategories(first:50)"
           },
           {
             "alias": null,
-            "args": null,
-            "concreteType": "PageInfo",
-            "kind": "LinkedField",
-            "name": "pageInfo",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "endCursor",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "hasNextPage",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": "transactionCategories(first:50)"
-      },
-      {
-        "alias": null,
-        "args": (v3/*: any*/),
-        "filters": null,
-        "handle": "connection",
-        "key": "categoriesPanel_transactionCategories",
-        "kind": "LinkedHandle",
-        "name": "transactionCategories"
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "Household",
-        "kind": "LinkedField",
-        "name": "household",
-        "plural": false,
-        "selections": [
+            "args": (v3/*: any*/),
+            "filters": null,
+            "handle": "connection",
+            "key": "categoriesPanel_transactionCategories",
+            "kind": "LinkedHandle",
+            "name": "transactionCategories"
+          },
           {
             "alias": null,
             "args": [
@@ -292,16 +305,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "9b1a03d0c6fdd9a79283dc2423316c39",
+    "cacheID": "1caa99405a1fd98eccacd0f1159a6ddf",
     "id": null,
     "metadata": {},
     "name": "CategoriesQuery",
     "operationKind": "query",
-    "text": "query CategoriesQuery(\n  $startDate: Time!\n  $endDate: Time!\n) {\n  ...categoriesPanelFragment_2Yo7Kq\n}\n\nfragment categoriesPanelFragment_2Yo7Kq on Query {\n  transactionCategories(first: 50) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  household {\n    financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n      incomeBreakdown {\n        categoryType\n        total\n        transactionCount\n      }\n      expensesBreakdown {\n        categoryType\n        total\n        transactionCount\n      }\n      ...categoryCardFinancialReportFragment\n      ...financialSummaryCardsFragment\n    }\n    id\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
+    "text": "query CategoriesQuery(\n  $startDate: Time!\n  $endDate: Time!\n) {\n  household {\n    ...categoriesPanelFragment_2Yo7Kq\n    id\n  }\n}\n\nfragment categoriesPanelFragment_2Yo7Kq on Household {\n  transactionCategories(first: 50) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    incomeBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    expensesBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    ...categoryCardFinancialReportFragment\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b3a5afb0279215b5e1cba3b1bbeefe21";
+(node as any).hash = "0eb9b75d3555195458c9318078735a69";
 
 export default node;
