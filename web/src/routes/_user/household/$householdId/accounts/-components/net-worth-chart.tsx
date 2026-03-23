@@ -1,4 +1,9 @@
-import { graphql, useLazyLoadQuery } from 'react-relay'
+import {
+  fetchQuery,
+  graphql,
+  useLazyLoadQuery,
+  useSubscribeToInvalidationState,
+} from 'react-relay'
 import { useMemo, useState, useTransition } from 'react'
 import invariant from 'tiny-invariant'
 import currency from 'currency.js'
@@ -16,19 +21,22 @@ import { Item } from '@/components/ui/item'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Spinner } from '@/components/ui/spinner'
 import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.graphql'
+import { environment } from '@/environment'
 
 const NetWorthChartQuery = graphql`
   query netWorthChartQuery($createTimeGTE: Time) {
-    checkpoints(first: 500, where: { createTimeGTE: $createTimeGTE }) {
-      edges {
-        node {
-          createTime
-          netWorth
-          liquidity
-          investment
-          property
-          receivable
-          liability
+    household {
+      checkpoints(first: 500, where: { createTimeGTE: $createTimeGTE }) {
+        edges {
+          node {
+            createTime
+            netWorth
+            liquidity
+            investment
+            property
+            receivable
+            liability
+          }
         }
       }
     }
@@ -116,7 +124,16 @@ export function NetWorthChart() {
     createTimeGTE,
   })
 
-  const chartData = (data.checkpoints.edges ?? [])
+  useSubscribeToInvalidationState([household.id], () => {
+    fetchQuery(
+      environment,
+      NetWorthChartQuery,
+      { createTimeGTE },
+      { fetchPolicy: 'network-only' },
+    ).subscribe({})
+  })
+
+  const chartData = (data.household.checkpoints.edges ?? [])
     .map((edge) => {
       invariant(edge?.node, 'checkpoint edge node must exist')
       const node = edge.node
