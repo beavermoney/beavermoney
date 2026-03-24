@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { usePreloadedQuery } from 'react-relay'
 import { AccountsPanel } from './-components/accounts-panel'
-import { useDualPaneDisplay } from '@/hooks/use-screen-size'
+import { HouseholdMobileOnly } from '@/components/layouts/household-mobile-only'
 import { PendingComponent } from '@/components/pending-component'
 import { accountsQuery } from './-accounts-query'
 import { AccountsQuery } from './__generated__/AccountsQuery.graphql'
@@ -19,17 +19,11 @@ function RouteComponent() {
 
   const data = usePreloadedQuery<AccountsQuery>(accountsQuery, queryRef)
 
-  const duelPaneDisplay = useDualPaneDisplay()
-
-  if (duelPaneDisplay) {
-    return null
-  }
-
   return (
-    <div className="flex max-h-full w-full">
+    <HouseholdMobileOnly className="flex max-h-full w-full">
       <Item className="flex p-0">
         <AccountsPanel fragmentRef={data.household} />
       </Item>
-    </div>
+    </HouseholdMobileOnly>
   )
 }

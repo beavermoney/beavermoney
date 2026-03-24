@@ -9,14 +9,11 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { Fragment } from 'react/jsx-runtime'
 import { z } from 'zod'
 
+import { HouseholdSplitPaneLayout } from '@/components/layouts/household-split-pane-layout'
 import { PendingComponent } from '@/components/pending-component'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 import { environment } from '@/environment'
-import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
 import { subscriptionsQuery } from './-subscriptions-query'
@@ -71,28 +68,11 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  const duelPaneDisplay = useDualPaneDisplay()
-
   return (
-    <Fragment>
-      {duelPaneDisplay ? (
-        <div className="flex h-[calc(100vh-48px)]">
-          <ScrollArea className="flex-1 overflow-y-auto p-4">
-            <SubscriptionsPanel fragmentRef={data.household} />
-          </ScrollArea>
-          <Separator orientation="vertical" className="w-px" />
-          <ScrollArea
-            className="flex-1 overflow-y-auto p-4"
-            key={location.pathname}
-          >
-            <Outlet />
-          </ScrollArea>
-        </div>
-      ) : (
-        <div className="flex-1 p-4">
-          <Outlet />
-        </div>
-      )}
-    </Fragment>
+    <HouseholdSplitPaneLayout
+      left={<SubscriptionsPanel fragmentRef={data.household} />}
+      right={<Outlet />}
+      rightKey={location.pathname}
+    />
   )
 }
