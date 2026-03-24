@@ -53,9 +53,11 @@ import { CheckpointDialog } from './-components/checkpoint-dialog'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
+import { EditTransactionDialogQuery } from './transactions/-components/edit-transaction-dialog-query'
 import { Suspense } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import Hotkeys from './-components/hotkeys'
+import type { editTransactionDialogQuery } from './transactions/-components/__generated__/editTransactionDialogQuery.graphql'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -98,16 +100,28 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   component: RouteComponent,
   validateSearch: searchSchema,
   staleTime: Infinity,
+  loaderDeps: ({ search }) => ({
+    editTransactionId: search.edit_transaction_id,
+  }),
   search: {
     middlewares: [stripSearchParams(defaultValues)],
   },
-  loader: async ({ params }) => {
+  loader: async ({ params, deps }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
     await fetchQuery<routeHouseholdIdQuery>(
       environment,
       routeHouseholdIdQuery,
       {},
     ).toPromise()
+
+    if (deps.editTransactionId) {
+      await fetchQuery<editTransactionDialogQuery>(
+        environment,
+        EditTransactionDialogQuery,
+        { transactionId: deps.editTransactionId },
+        { fetchPolicy: 'store-or-network' },
+      ).toPromise()
+    }
 
     return loadQuery<routeHouseholdIdQuery>(
       environment,

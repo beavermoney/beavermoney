@@ -58,51 +58,12 @@ import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
 import { useHousehold } from '@/hooks/use-household'
 import { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
+import { EditTransactionDialogQuery } from './edit-transaction-dialog-query'
 import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { Separator } from '@/components/ui/separator'
 import { identity } from 'lodash-es'
 import { NodeType, useDeleteNode } from '@/lib/relay'
-
-const EditTransactionDialogQuery = graphql`
-  query editTransactionDialogQuery($transactionId: ID!) {
-    node(id: $transactionId) {
-      __typename
-      ... on Transaction {
-        id
-        description
-        datetime
-        categoryID
-        excludeFromReports
-        category {
-          id
-          name
-          type
-        }
-        investmentLots {
-          ...investmentLotCardFragment
-          id
-          amount
-        }
-        transactionEntries {
-          ...transactionEntryCardFragment
-          id
-          amount
-        }
-      }
-    }
-
-    transactionCategories {
-      edges {
-        node {
-          id
-          name
-          type
-        }
-      }
-    }
-  }
-`
 
 const editTransactionDialogUpdateMutation = graphql`
   mutation editTransactionDialogUpdateMutation(
