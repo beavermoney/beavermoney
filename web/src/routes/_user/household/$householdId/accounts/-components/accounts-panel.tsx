@@ -35,7 +35,7 @@ import { Button } from '@/components/ui/button'
 import { ACCOUNT_TYPE_LIST } from '@/constant'
 import { PlusButton } from '@/components/plus-button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 const AccountsPanelFragment = graphql`
   fragment accountsPanelFragment on Household

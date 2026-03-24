@@ -29,7 +29,7 @@ import { SubscriptionCard } from './subscription-card'
 
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import { PlusButton } from '@/components/plus-button'
-import { NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Household

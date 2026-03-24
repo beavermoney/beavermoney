@@ -53,7 +53,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
 import { useHousehold } from '@/hooks/use-household'
@@ -62,7 +62,7 @@ import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { Separator } from '@/components/ui/separator'
 import { identity } from 'lodash-es'
-import { NodeType, useDeleteNode } from '@/relay'
+import { NodeType, useDeleteNode } from '@/lib/relay'
 
 const EditTransactionDialogQuery = graphql`
   query editTransactionDialogQuery($transactionId: ID!) {

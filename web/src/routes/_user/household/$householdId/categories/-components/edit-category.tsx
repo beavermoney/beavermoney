@@ -38,11 +38,11 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { IconPicker, type IconName } from '@/components/ui/icon-picker'
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
-import { NodeType, useDeleteNode } from '@/relay'
+import { NodeType, useDeleteNode } from '@/lib/relay'
 
 const formSchema = z.object({
   name: z

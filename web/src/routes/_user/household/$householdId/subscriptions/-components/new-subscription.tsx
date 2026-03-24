@@ -43,7 +43,7 @@ import {
 import { Calendar } from '@/components/ui/calendar'
 import { useHousehold } from '@/hooks/use-household'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 

@@ -41,7 +41,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 
