@@ -63,7 +63,7 @@ function RouteComponent() {
   return (
     <div className="flex max-h-full w-full">
       <Item className="p-0">
-        <LogTransaction fragmentRef={data} />
+        <LogTransaction fragmentRef={data.household} />
       </Item>
     </div>
   )
