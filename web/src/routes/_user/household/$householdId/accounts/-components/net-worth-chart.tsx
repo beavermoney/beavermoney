@@ -20,7 +20,10 @@ import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Spinner } from '@/components/ui/spinner'
-import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.graphql'
+import type {
+  CheckpointWhereInput,
+  netWorthChartQuery,
+} from './__generated__/netWorthChartQuery.graphql'
 import { environment } from '@/environment'
 
 const NetWorthChartQuery = graphql`
@@ -120,17 +123,19 @@ export function NetWorthChart() {
 
   const createTimeGTE = durationToDate(duration)
 
+  const where: CheckpointWhereInput = {
+    createTimeGTE,
+  }
+
   const data = useLazyLoadQuery<netWorthChartQuery>(NetWorthChartQuery, {
-    where: {
-      createTimeGTE,
-    },
+    where,
   })
 
   useSubscribeToInvalidationState([household.id], () => {
     fetchQuery<netWorthChartQuery>(
       environment,
       NetWorthChartQuery,
-      { where: { createTimeGTE } },
+      { where },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })
