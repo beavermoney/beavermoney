@@ -88,11 +88,7 @@ function RouteComponent() {
         id: params.categoryId,
         startDate: period.startDate,
         endDate: period.endDate,
-        where: {
-          hasCategoryWith: [{ id: params.categoryId }],
-          datetimeGTE: period.startDate,
-          datetimeLT: period.endDate,
-        },
+        where,
       },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
@@ -109,7 +105,7 @@ function RouteComponent() {
         />
         <EditCategory key={data.node.id} fragmentRef={data.node} />
       </Item>
-      <TransactionsList fragmentRef={data.household} where={where} />
+      <TransactionsList fragmentRef={data.household} />
     </div>
   )
 }

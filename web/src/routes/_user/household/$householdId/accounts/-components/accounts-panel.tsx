@@ -1,4 +1,4 @@
-import { commitLocalUpdate, ConnectionHandler, graphql } from 'relay-runtime'
+import { commitLocalUpdate, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -35,7 +35,7 @@ import { Button } from '@/components/ui/button'
 import { ACCOUNT_TYPE_LIST } from '@/constant'
 import { PlusButton } from '@/components/plus-button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/relay'
 
 const AccountsPanelFragment = graphql`
   fragment accountsPanelFragment on Household
@@ -46,6 +46,7 @@ const AccountsPanelFragment = graphql`
   @refetchable(queryName: "accountsPanelRefetch") {
     accounts(first: $count, after: $cursor, where: { archived: false })
       @connection(key: "accountsPanel_accounts") {
+      __id
       edges {
         node {
           id
@@ -74,14 +75,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
 
-  useRegisterConnection(
-    ConnectionHandler.getConnectionID(
-      data.id,
-      ConnectionKeys[NodeType.Account][0],
-      { where: { archived: false } },
-    ),
-    NodeType.Account,
-  )
+  useRegisterConnection(data.accounts.__id, NodeType.Account)
 
   const [commitRefreshMutation, isRefreshInFlight] =
     useMutation<accountsPanelRefreshMutation>(AccountsPanelRefreshMutation)

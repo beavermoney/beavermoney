@@ -1,4 +1,4 @@
-import { ConnectionHandler, fetchQuery, graphql } from 'relay-runtime'
+import { fetchQuery, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment } from 'react-relay'
@@ -30,7 +30,7 @@ import { environment } from '@/environment'
 import { categoriesQuery } from '../-categories-query'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { PlusButton } from '@/components/plus-button'
-import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/relay'
 
 const CategoriesPanelFragment = graphql`
   fragment categoriesPanelFragment on Household
@@ -43,6 +43,7 @@ const CategoriesPanelFragment = graphql`
   @refetchable(queryName: "categoriesPanelRefetch") {
     transactionCategories(first: $count, after: $cursor)
       @connection(key: "categoriesPanel_transactionCategories") {
+      __id
       edges {
         node {
           id
@@ -80,10 +81,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const { household } = useHousehold()
 
   useRegisterConnection(
-    ConnectionHandler.getConnectionID(
-      data.id,
-      ConnectionKeys[NodeType.TransactionCategory][0],
-    ),
+    data.transactionCategories.__id,
     NodeType.TransactionCategory,
   )
 

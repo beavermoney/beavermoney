@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<860fcf31bfcc4eb6684fc130eefb4347>>
+ * @generated SignedSource<<10e64e60964e233f45e8c5ba092af907>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -224,6 +224,18 @@ return {
                   }
                 ],
                 "storageKey": null
+              },
+              {
+                "kind": "ClientExtension",
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__id",
+                    "storageKey": null
+                  }
+                ]
               }
             ],
             "storageKey": "recurringSubscriptions(first:50)"

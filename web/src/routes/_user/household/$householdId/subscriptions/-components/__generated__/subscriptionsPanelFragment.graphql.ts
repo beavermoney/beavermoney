@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1a50c52b4786877b8c8df35303b8bd82>>
+ * @generated SignedSource<<d50da8c7b904e4720fb68571d291484a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ import { FragmentRefs } from "relay-runtime";
 export type subscriptionsPanelFragment$data = {
   readonly id: string;
   readonly recurringSubscriptions: {
+    readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly active: boolean;
@@ -215,6 +216,18 @@ return {
             }
           ],
           "storageKey": null
+        },
+        {
+          "kind": "ClientExtension",
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "__id",
+              "storageKey": null
+            }
+          ]
         }
       ],
       "storageKey": null
@@ -226,6 +239,6 @@ return {
 };
 })();
 
-(node as any).hash = "92d62dc2e219bb22e1ee863bfd133024";
+(node as any).hash = "892abbd46395340dc4663d6dc0c54737";
 
 export default node;

@@ -49,10 +49,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const onDateRangeChange = async (start: string, end: string) => {
     const period = parseDateRangeFromURL(start, end)
     await fetchQuery<TransactionsQuery>(environment, transactionsQuery, {
-      where: {
-        datetimeGTE: period.startDate,
-        datetimeLT: period.endDate,
-      },
+      where,
       startDate: period.startDate,
       endDate: period.endDate,
     }).toPromise()
@@ -81,7 +78,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         onDateRangeChange={onDateRangeChange}
       />
       <div className="py-2"></div>
-      <TransactionsList fragmentRef={data} where={where} />
+      <TransactionsList fragmentRef={data} />
     </Fragment>
   )
 }

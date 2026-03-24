@@ -29,6 +29,7 @@ import { SubscriptionCard } from './subscription-card'
 
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import { PlusButton } from '@/components/plus-button'
+import { NodeType, useRegisterConnection } from '@/relay'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Household
@@ -39,6 +40,7 @@ const SubscriptionsPanelFragment = graphql`
   @refetchable(queryName: "subscriptionsPanelRefetch") {
     recurringSubscriptions(first: $count, after: $cursor)
       @connection(key: "subscriptionsPanel_recurringSubscriptions") {
+      __id
       edges {
         node {
           id
@@ -80,6 +82,11 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   const { household } = useHousehold()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
+
+  useRegisterConnection(
+    data.recurringSubscriptions.__id,
+    NodeType.RecurringSubscription,
+  )
 
   // Read sort_by from URL
   const search = useSearch({

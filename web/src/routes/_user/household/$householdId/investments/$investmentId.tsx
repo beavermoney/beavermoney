@@ -58,11 +58,7 @@ function RouteComponent() {
       environment,
       InvestmentIdQuery,
       {
-        where: {
-          hasInvestmentLotsWith: [
-            { hasInvestmentWith: [{ id: params.investmentId }] },
-          ],
-        },
+        where,
       },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
@@ -70,7 +66,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <TransactionsList fragmentRef={data.household} where={where} />
+      <TransactionsList fragmentRef={data.household} />
     </div>
   )
 }

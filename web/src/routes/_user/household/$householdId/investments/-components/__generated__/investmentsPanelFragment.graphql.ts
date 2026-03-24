@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3c37d3759411b4b00f0f2c55ec7c8a67>>
+ * @generated SignedSource<<cf2700bff35ee1a4de5da83061f9bb5d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type investmentsPanelFragment$data = {
   readonly id: string;
   readonly investments: {
+    readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly account: {
@@ -192,6 +193,18 @@ return {
             }
           ],
           "storageKey": null
+        },
+        {
+          "kind": "ClientExtension",
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "__id",
+              "storageKey": null
+            }
+          ]
         }
       ],
       "storageKey": null
@@ -203,6 +216,6 @@ return {
 };
 })();
 
-(node as any).hash = "d80f6d479ec262123b56933759845122";
+(node as any).hash = "2c5be1f88a647696a585681fa6a7bb3a";
 
 export default node;
