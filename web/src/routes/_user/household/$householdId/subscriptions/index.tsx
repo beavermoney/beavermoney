@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { usePreloadedQuery } from 'react-relay'
 
+import { HouseholdMobileOnly } from '@/components/layouts/household-mobile-only'
 import { PendingComponent } from '@/components/pending-component'
-import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
 import { subscriptionsQuery } from './-subscriptions-query'
@@ -24,17 +24,11 @@ function RouteComponent() {
     queryRef,
   )
 
-  const duelPaneDisplay = useDualPaneDisplay()
-
-  if (duelPaneDisplay) {
-    return null
-  }
-
   return (
-    <div className="flex h-full">
+    <HouseholdMobileOnly className="flex h-full">
       <div className="flex-1">
         <SubscriptionsPanel fragmentRef={data.household} />
       </div>
-    </div>
+    </HouseholdMobileOnly>
   )
 }
