@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b18c27917cac66484b93dfedb6752f7e>>
+ * @generated SignedSource<<6c0319f6f6d2b2b12e44990a660b2223>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -235,6 +235,18 @@ return {
                   }
                 ],
                 "storageKey": null
+              },
+              {
+                "kind": "ClientExtension",
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__id",
+                    "storageKey": null
+                  }
+                ]
               }
             ],
             "storageKey": "accounts(first:50,where:{\"archived\":false})"

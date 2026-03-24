@@ -92,5 +92,5 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  return <TransactionsList fragmentRef={data.household} where={where} />
+  return <TransactionsList fragmentRef={data.household} />
 }

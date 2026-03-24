@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0d8b2df526aa9798f4be5a873e14c56d>>
+ * @generated SignedSource<<dcc0fd56c1c4893e915346dbdeda71bc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -228,6 +228,18 @@ return {
                   }
                 ],
                 "storageKey": null
+              },
+              {
+                "kind": "ClientExtension",
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__id",
+                    "storageKey": null
+                  }
+                ]
               }
             ],
             "storageKey": "investments(first:50)"

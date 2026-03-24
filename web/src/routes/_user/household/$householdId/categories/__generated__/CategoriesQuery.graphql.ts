@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4b320cef176ff67e3d514a51f2f5ec80>>
+ * @generated SignedSource<<19d4631605ad242f06db204cb78d31b5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -248,6 +248,18 @@ return {
                   }
                 ],
                 "storageKey": null
+              },
+              {
+                "kind": "ClientExtension",
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__id",
+                    "storageKey": null
+                  }
+                ]
               }
             ],
             "storageKey": "transactionCategories(first:50)"

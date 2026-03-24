@@ -1,4 +1,4 @@
-import { commitLocalUpdate, ConnectionHandler, graphql } from 'relay-runtime'
+import { commitLocalUpdate, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 import { useFragment, useMutation, useRelayEnvironment } from 'react-relay'
@@ -41,7 +41,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { RefreshCwIcon } from 'lucide-react'
 import { PlusButton } from '@/components/plus-button'
-import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/relay'
 
 const GROUP_BY_OPTIONS = {
   account: 'By Account',
@@ -59,6 +59,7 @@ const InvestmentsPanelFragment = graphql`
   @refetchable(queryName: "investmentsPanelRefetch") {
     investments(first: $count, after: $cursor)
       @connection(key: "investmentsPanel_investments") {
+      __id
       edges {
         node {
           id
@@ -112,13 +113,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
       InvestmentsPanelRefreshMutation,
     )
 
-  useRegisterConnection(
-    ConnectionHandler.getConnectionID(
-      data.id,
-      ConnectionKeys[NodeType.Investment][0],
-    ),
-    NodeType.Investment,
-  )
+  useRegisterConnection(data.investments.__id, NodeType.Investment)
 
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 

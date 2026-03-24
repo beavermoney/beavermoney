@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5c1a194580f118e89214bb83a7c87f0d>>
+ * @generated SignedSource<<ba2c2e8dd0703aa01b3ac7cb4c09d007>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,6 +27,7 @@ export type categoriesPanelFragment$data = {
   };
   readonly id: string;
   readonly transactionCategories: {
+    readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
@@ -213,6 +214,18 @@ return {
             }
           ],
           "storageKey": null
+        },
+        {
+          "kind": "ClientExtension",
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "__id",
+              "storageKey": null
+            }
+          ]
         }
       ],
       "storageKey": null
@@ -282,6 +295,6 @@ return {
 };
 })();
 
-(node as any).hash = "898545577cae756c75b0fbc2df060cab";
+(node as any).hash = "5753fdd94d7919b772f5b83e5c035ad9";
 
 export default node;

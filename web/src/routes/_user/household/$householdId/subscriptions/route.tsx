@@ -9,7 +9,6 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { ConnectionHandler } from 'relay-runtime'
 import { Fragment } from 'react/jsx-runtime'
 import { z } from 'zod'
 
@@ -21,7 +20,6 @@ import { useDualPaneDisplay } from '@/hooks/use-screen-size'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
 import { subscriptionsQuery } from './-subscriptions-query'
-import { ConnectionKeys, NodeType, useRegisterConnection } from '@/relay'
 
 import type { SubscriptionsQuery } from './__generated__/SubscriptionsQuery.graphql'
 
@@ -62,14 +60,6 @@ function RouteComponent() {
   const data = usePreloadedQuery<SubscriptionsQuery>(
     subscriptionsQuery,
     queryRef,
-  )
-
-  useRegisterConnection(
-    ConnectionHandler.getConnectionID(
-      data.household.id,
-      ConnectionKeys[NodeType.RecurringSubscription][0],
-    ),
-    NodeType.RecurringSubscription,
   )
 
   useSubscribeToInvalidationState([params.householdId], () => {
