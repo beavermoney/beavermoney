@@ -41,7 +41,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { RefreshCwIcon } from 'lucide-react'
 import { PlusButton } from '@/components/plus-button'
-import { NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 const GROUP_BY_OPTIONS = {
   account: 'By Account',

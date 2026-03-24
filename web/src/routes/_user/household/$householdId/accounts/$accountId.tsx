@@ -44,7 +44,7 @@ import { AccountIdLayoutDeleteMutation } from './__generated__/AccountIdLayoutDe
 import { AccountIdLayoutArchiveMutation } from './__generated__/AccountIdLayoutArchiveMutation.graphql'
 import invariant from 'tiny-invariant'
 import { AccountIdLayoutFragment$key } from './__generated__/AccountIdLayoutFragment.graphql'
-import { NodeType, commitMutationResult, useDeleteNode } from '@/relay'
+import { NodeType, commitMutationResult, useDeleteNode } from '@/lib/relay'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',

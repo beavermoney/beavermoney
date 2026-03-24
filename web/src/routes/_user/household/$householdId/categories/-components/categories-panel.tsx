@@ -30,7 +30,7 @@ import { environment } from '@/environment'
 import { categoriesQuery } from '../-categories-query'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { PlusButton } from '@/components/plus-button'
-import { NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 const CategoriesPanelFragment = graphql`
   fragment categoriesPanelFragment on Household

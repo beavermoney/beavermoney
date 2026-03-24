@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { TransactionCard } from './transaction-card'
 import type { transactionsListFragment$key } from './__generated__/transactionsListFragment.graphql'
 import { ItemGroup } from '@/components/ui/item'
-import { NodeType, useRegisterConnection } from '@/relay'
+import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 const transactionsListFragment = graphql`
   fragment transactionsListFragment on Household

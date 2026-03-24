@@ -36,7 +36,7 @@ import {
 import { INVESTMENT_TYPE_LIST } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
 import { newInvestmentFragment$key } from './__generated__/newInvestmentFragment.graphql'
 import {

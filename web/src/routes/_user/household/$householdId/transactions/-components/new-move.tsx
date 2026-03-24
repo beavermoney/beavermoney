@@ -41,7 +41,7 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { Calendar } from '@/components/ui/calendar'
 
 const formSchema = z.object({

@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useHousehold } from '@/hooks/use-household'
 import { useCurrency } from '@/hooks/use-currency'
-import { commitMutationResult } from '@/relay'
+import { commitMutationResult } from '@/lib/relay'
 import { ItemTitle } from '@/components/ui/item'
 
 const CheckpointDialogFragment = graphql`
