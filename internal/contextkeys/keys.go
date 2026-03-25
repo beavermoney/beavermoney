@@ -8,15 +8,15 @@ type (
 	privacyBypassKey struct{}
 )
 
-func HouseholdIDKey() interface{} {
+func HouseholdIDKey() any {
 	return householdIDKey{}
 }
 
-func UserIDKey() interface{} {
+func UserIDKey() any {
 	return userIDKey{}
 }
 
-func PrivacyBypassKey() interface{} {
+func PrivacyBypassKey() any {
 	return privacyBypassKey{}
 }
 
