@@ -332,6 +332,14 @@ func (r *mutationResolver) UpdateAccount(ctx context.Context, id int, input ent.
 
 	client := ent.FromContext(ctx)
 
+	acc, err := client.Account.Get(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("account not found: %w", err)
+	}
+	if acc.Archived {
+		return nil, fmt.Errorf("cannot update archived account")
+	}
+
 	updated, err := client.Account.UpdateOneID(id).SetInput(input).Save(ctx)
 	if err != nil {
 		return nil, err
@@ -438,6 +446,9 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 
 	if account.HouseholdID != householdID {
 		return nil, fmt.Errorf("account does not belong to household")
+	}
+	if account.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
 	// Uppercase the symbol before querying
@@ -760,6 +771,9 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 	if err != nil {
 		return nil, fmt.Errorf("account not found: %w", err)
 	}
+	if account.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
+	}
 
 	// Get currency for the account
 	accountCurrency, err := account.QueryCurrency().Only(ctx)
@@ -800,6 +814,9 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 		feeAccount, err := client.Account.Get(ctx, fee.AccountID)
 		if err != nil {
 			return nil, fmt.Errorf("fee account not found: %w", err)
+		}
+		if feeAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
 		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
@@ -851,6 +868,9 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 	if err != nil {
 		return nil, fmt.Errorf("account not found: %w", err)
 	}
+	if account.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
+	}
 
 	// Get currency for the account
 	accountCurrency, err := account.QueryCurrency().Only(ctx)
@@ -894,6 +914,9 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 		}
 		if feeAccount.HouseholdID != householdID {
 			return nil, fmt.Errorf("fee account does not belong to household")
+		}
+		if feeAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
 		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
@@ -959,6 +982,17 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 		}
 	}
 
+	// Validate no account is archived
+	for _, entry := range input.TransactionEntries {
+		entryAccount, err := client.Account.Get(ctx, entry.AccountID)
+		if err != nil {
+			return nil, fmt.Errorf("account not found: %w", err)
+		}
+		if entryAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
+		}
+	}
+
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
@@ -1001,6 +1035,9 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 		}
 		if feeAccount.HouseholdID != householdID {
 			return nil, fmt.Errorf("fee account does not belong to household")
+		}
+		if feeAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
 		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
@@ -1051,6 +1088,9 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 	account, err := client.Account.Get(ctx, input.TransactionEntry.AccountID)
 	if err != nil {
 		return nil, fmt.Errorf("account not found: %w", err)
+	}
+	if account.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
 	// Validate investment belongs to the account
@@ -1122,6 +1162,9 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 		if feeAccount.HouseholdID != householdID {
 			return nil, fmt.Errorf("fee account does not belong to household")
 		}
+		if feeAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
+		}
 
 		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
 		if err != nil {
@@ -1171,6 +1214,9 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 	account, err := client.Account.Get(ctx, input.TransactionEntry.AccountID)
 	if err != nil {
 		return nil, fmt.Errorf("account not found: %w", err)
+	}
+	if account.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
 	// Validate investment belongs to the account
@@ -1241,6 +1287,9 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 		}
 		if feeAccount.HouseholdID != householdID {
 			return nil, fmt.Errorf("fee account does not belong to household")
+		}
+		if feeAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
 		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
@@ -1335,6 +1384,9 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	if fromAccount.HouseholdID != householdID {
 		return nil, fmt.Errorf("from investment does not belong to household")
 	}
+	if fromAccount.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
+	}
 
 	toAccount, err := toInvestment.QueryAccount().Only(ctx)
 	if err != nil {
@@ -1342,6 +1394,9 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	}
 	if toAccount.HouseholdID != householdID {
 		return nil, fmt.Errorf("to investment does not belong to household")
+	}
+	if toAccount.Archived {
+		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
 	// Validate same symbol
@@ -1418,6 +1473,9 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 		}
 		if feeAccount.HouseholdID != householdID {
 			return nil, fmt.Errorf("fee account does not belong to household")
+		}
+		if feeAccount.Archived {
+			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
 		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
