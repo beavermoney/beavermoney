@@ -418,10 +418,7 @@ export function NetWorthChart() {
                 'text-red-600 dark:text-red-400',
             )}
           >
-            <span className="sm:hidden">
-              {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)}
-            </span>
-            <span className="hidden sm:inline">
+            <span className="">
               {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)} (
               {isPrivacyModeEnabled
                 ? '•••'
