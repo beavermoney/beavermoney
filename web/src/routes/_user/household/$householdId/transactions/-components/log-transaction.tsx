@@ -5,12 +5,14 @@ import { NewTransfer } from './new-transfer'
 import { NewBuy } from './new-buy'
 import { NewSell } from './new-sell'
 import { NewMove } from './new-move'
+import { useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { logTransactionFragment$key } from './__generated__/logTransactionFragment.graphql'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useHotkey } from '@tanstack/react-hotkeys'
+import invariant from 'tiny-invariant'
 
 const logTransactionFragment = graphql`
   fragment logTransactionFragment on Household {
@@ -37,6 +39,7 @@ type NewTransactionProps = {
 
 export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   const data = useFragment(logTransactionFragment, fragmentRef)
+  const panelRef = useRef<HTMLDivElement>(null)
   const search = useSearch({
     from: '/_user/household/$householdId',
     select: (s) => ({
@@ -45,6 +48,10 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   })
   const navigate = useNavigate()
   const selectedType = search.logType
+  invariant(
+    selectedType,
+    'selectedType should be defined when rendering LogTransaction',
+  )
   const setSelectedType = (type: TransactionType) => {
     navigate({
       to: '.',
@@ -56,6 +63,13 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   }
 
   useHotkey('Escape', () => {
+    const activeElement = document.activeElement as HTMLElement | null
+
+    if (activeElement && activeElement !== document.body) {
+      activeElement.blur()
+      return
+    }
+
     navigate({
       to: '.',
       search: (prev) => ({
@@ -65,8 +79,20 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
     })
   })
 
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const firstInput = panelRef.current?.querySelector<HTMLElement>(
+        'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), [contenteditable="true"]',
+      )
+
+      firstInput?.focus()
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [selectedType])
+
   return (
-    <Item className="bg-muted h-full w-full gap-0 p-0">
+    <Item ref={panelRef} className="bg-muted h-full w-full gap-0 p-0">
       <ScrollArea className="w-full">
         <div className="flex gap-2 p-4">
           <Button
