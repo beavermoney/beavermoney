@@ -1,4 +1,5 @@
 import { LinkOptions } from '@tanstack/react-router'
+import type { HotkeySequence } from '@tanstack/react-hotkeys'
 import {
   AppWindowMacIcon,
   CreditCardIcon,
@@ -45,6 +46,7 @@ export const NAV: Array<{
   name: string
   link: LinkOptions
   icon: LucideIcon
+  shortcut: HotkeySequence
 }> = [
   {
     name: 'Transactions',
@@ -59,6 +61,7 @@ export const NAV: Array<{
       }),
     },
     icon: ReceiptIcon,
+    shortcut: ['G', 'T'],
   },
   {
     name: 'Accounts',
@@ -73,6 +76,7 @@ export const NAV: Array<{
       }),
     },
     icon: CreditCardIcon,
+    shortcut: ['G', 'A'],
   },
   {
     name: 'Investments',
@@ -87,6 +91,7 @@ export const NAV: Array<{
       }),
     },
     icon: TrendingUpIcon,
+    shortcut: ['G', 'I'],
   },
   {
     name: 'Categories',
@@ -101,6 +106,7 @@ export const NAV: Array<{
       }),
     },
     icon: TagIcon,
+    shortcut: ['G', 'C'],
   },
   {
     name: 'Subscriptions',
@@ -115,5 +121,6 @@ export const NAV: Array<{
       }),
     },
     icon: AppWindowMacIcon,
+    shortcut: ['G', 'S'],
   },
 ]

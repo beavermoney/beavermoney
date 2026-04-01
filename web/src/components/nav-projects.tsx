@@ -1,6 +1,7 @@
 // import { Folder, Forward, MoreHorizontal, Trash2 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import type { LinkOptions } from '@tanstack/react-router'
+import type { HotkeySequence } from '@tanstack/react-hotkeys'
 import type { LucideIcon } from 'lucide-react'
 
 // import {
@@ -20,6 +21,7 @@ import {
   useSidebar,
   // useSidebar,
 } from '@/components/ui/sidebar'
+import { Kbd, KbdGroup } from './ui/kbd'
 
 export function NavProjects({
   projects,
@@ -28,6 +30,7 @@ export function NavProjects({
     name: string
     link: LinkOptions
     icon: LucideIcon
+    shortcut: HotkeySequence
   }>
 }) {
   const { isMobile, setOpenMobile } = useSidebar()
@@ -47,10 +50,18 @@ export function NavProjects({
               render={
                 <Link
                   {...item.link}
+                  className="group/nav-link"
                   activeProps={{ className: 'font-semibold' }}
                 >
                   <item.icon />
                   <span>{item.name}</span>
+
+                  <span className="grow"></span>
+                  <KbdGroup className="hidden group-hover/nav-link:inline-flex">
+                    {item.shortcut.map((key) => (
+                      <Kbd key={`${item.name}-${key}`}>{key}</Kbd>
+                    ))}
+                  </KbdGroup>
                 </Link>
               }
             ></SidebarMenuButton>
