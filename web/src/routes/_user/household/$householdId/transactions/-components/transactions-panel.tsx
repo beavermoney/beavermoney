@@ -11,8 +11,8 @@ import { transactionsQuery } from '../-transactions-query'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { Fragment } from 'react/jsx-runtime'
 import { PlusButton } from '@/components/plus-button'
-import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 import { parseISO } from 'date-fns'
+import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
 const transactionsPanelFragment = graphql`
   fragment transactionsPanelFragment on Household
@@ -41,15 +41,16 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const navigate = useNavigate()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
-  const where: TransactionWhereInput = {
-    datetimeGTE: startDate,
-    datetimeLT: endDate,
-  }
 
   const onDateRangeChange = async (start: string, end: string) => {
     const period = parseDateRangeFromURL(start, end)
+    const nextWhere: TransactionWhereInput = {
+      datetimeGTE: period.startDate,
+      datetimeLT: period.endDate,
+    }
+
     await fetchQuery<TransactionsQuery>(environment, transactionsQuery, {
-      where,
+      where: nextWhere,
       startDate: period.startDate,
       endDate: period.endDate,
     }).toPromise()
