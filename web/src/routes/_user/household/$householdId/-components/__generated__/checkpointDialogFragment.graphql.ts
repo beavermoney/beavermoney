@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fb7599aa8abaf8d75d439208c2760d01>>
+ * @generated SignedSource<<94b1a5933163664f6cbf8f5a84d1136d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,6 @@ export type checkpointDialogFragment$data = {
   readonly accounts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly archived: boolean;
         readonly type: AccountType;
         readonly valueInHouseholdCurrency: string;
       } | null | undefined;
@@ -36,7 +35,15 @@ const node: ReaderFragment = {
   "selections": [
     {
       "alias": null,
-      "args": null,
+      "args": [
+        {
+          "kind": "Literal",
+          "name": "where",
+          "value": {
+            "archived": false
+          }
+        }
+      ],
       "concreteType": "AccountConnection",
       "kind": "LinkedField",
       "name": "accounts",
@@ -69,13 +76,6 @@ const node: ReaderFragment = {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "archived",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
                   "name": "valueInHouseholdCurrency",
                   "storageKey": null
                 }
@@ -86,13 +86,13 @@ const node: ReaderFragment = {
           "storageKey": null
         }
       ],
-      "storageKey": null
+      "storageKey": "accounts(where:{\"archived\":false})"
     }
   ],
   "type": "Household",
   "abstractKey": null
 };
 
-(node as any).hash = "c0039876c6c897da0a6e1b948a8e0116";
+(node as any).hash = "31a13c3b74c38ed00c3b9dd49f2ef8bf";
 
 export default node;

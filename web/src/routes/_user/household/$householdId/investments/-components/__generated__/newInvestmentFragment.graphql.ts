@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<032597231c7ed16e2065599bc440cf45>>
+ * @generated SignedSource<<2758215dcbe8f2573e778c314d0ceab7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -41,7 +41,15 @@ const node: ReaderFragment = {
   "selections": [
     {
       "alias": null,
-      "args": null,
+      "args": [
+        {
+          "kind": "Literal",
+          "name": "where",
+          "value": {
+            "archived": false
+          }
+        }
+      ],
       "concreteType": "AccountConnection",
       "kind": "LinkedField",
       "name": "accounts",
@@ -123,13 +131,13 @@ const node: ReaderFragment = {
           "storageKey": null
         }
       ],
-      "storageKey": null
+      "storageKey": "accounts(where:{\"archived\":false})"
     }
   ],
   "type": "Household",
   "abstractKey": null
 };
 
-(node as any).hash = "fec07b51c948e36087ec023a230636cc";
+(node as any).hash = "8209e3802f84beca4ce1e51dcf0c8dd8";
 
 export default node;

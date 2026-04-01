@@ -25,11 +25,10 @@ import { ItemTitle } from '@/components/ui/item'
 
 const CheckpointDialogFragment = graphql`
   fragment checkpointDialogFragment on Household {
-    accounts {
+    accounts(where: { archived: false }) {
       edges {
         node {
           type
-          archived
           valueInHouseholdCurrency
         }
       }
@@ -85,11 +84,11 @@ export function CheckpointDialog({ fragmentRef }: CheckpointDialogProps) {
   const [commitMutation, isMutationInFlight] =
     useMutation<checkpointDialogMutation>(CheckpointDialogMutation)
 
-  // Compute breakdown from live account values (exclude archived)
+  // Compute breakdown from live account values (archived accounts excluded by query filter)
   const breakdown = CATEGORIES.reduce(
     (acc, type) => {
       const total = (data.accounts.edges ?? [])
-        .filter((e) => e?.node?.type === type && !e.node.archived)
+        .filter((e) => e?.node?.type === type)
         .reduce(
           (sum, e) => sum.add(currency(e!.node!.valueInHouseholdCurrency)),
           currency(0),
