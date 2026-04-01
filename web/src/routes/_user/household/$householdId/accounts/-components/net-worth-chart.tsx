@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart'
+import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { useCurrency } from '@/hooks/use-currency'
 import { Button } from '@/components/ui/button'
@@ -202,6 +203,48 @@ export function NetWorthChart() {
   }
 
   const hasActiveSeries = activeSeries.size > 0
+  const selectedSeries = activeSeries.size === 1 ? [...activeSeries][0] : null
+
+  const singleSeriesStats = useMemo(() => {
+    if (!selectedSeries || chartData.length === 0) {
+      return null
+    }
+
+    const first = chartData[0][selectedSeries]
+    const last = chartData[chartData.length - 1][selectedSeries]
+
+    if (!Number.isFinite(first) || !Number.isFinite(last)) {
+      return null
+    }
+
+    const absoluteChange = last - first
+    const percentChange =
+      first === 0 ? null : (absoluteChange / Math.abs(first)) * 100
+
+    return { absoluteChange, percentChange }
+  }, [selectedSeries, chartData])
+
+  const formatSignedCurrencyShort = (value: number) => {
+    const formatted = formatCurrencyWithPrivacyMode({
+      value: currency(value),
+      currencyCode: household.currency.code,
+      numberFormatOptions: {
+        notation: 'compact',
+        maximumFractionDigits: 1,
+      },
+    })
+
+    return value > 0 ? `+${formatted}` : formatted
+  }
+
+  const formatSignedPercent = (value: number | null) => {
+    if (value === null) {
+      return 'N/A'
+    }
+
+    const formatted = `${Math.abs(value).toFixed(2)}%`
+    return value > 0 ? `+${formatted}` : value < 0 ? `-${formatted}` : formatted
+  }
 
   if (chartData.length === 0) {
     return null
@@ -362,19 +405,41 @@ export function NetWorthChart() {
           Select at least one series to view chart
         </div>
       )}
-      <div className="flex items-center justify-end gap-0.5 px-3 pt-1 pb-2.5">
-        {isPending && <Spinner className="text-muted-foreground size-3" />}
-        {DURATIONS.map((d) => (
-          <Button
-            key={d}
-            variant={duration === d ? 'default' : 'ghost'}
-            size="sm"
-            className="h-5 px-1.5 text-xs"
-            onClick={() => startTransition(() => setDuration(d))}
+      <div className="flex items-center gap-2 px-3 pt-1 pb-2.5">
+        {singleSeriesStats && (
+          <div
+            className={cn(
+              'text-muted-foreground min-w-0 text-xs tabular-nums',
+              singleSeriesStats.absoluteChange > 0 &&
+                'text-emerald-600 dark:text-emerald-400',
+              singleSeriesStats.absoluteChange < 0 &&
+                'text-red-600 dark:text-red-400',
+            )}
           >
-            {d}
-          </Button>
-        ))}
+            <span className="sm:hidden">
+              {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)}
+            </span>
+            <span className="hidden sm:inline">
+              {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)} (
+              {formatSignedPercent(singleSeriesStats.percentChange)})
+            </span>
+          </div>
+        )}
+        <div className="grow"></div>
+        <div className="flex items-center justify-end gap-0.5">
+          {isPending && <Spinner className="text-muted-foreground size-3" />}
+          {DURATIONS.map((d) => (
+            <Button
+              key={d}
+              variant={duration === d ? 'default' : 'ghost'}
+              size="sm"
+              className="h-5 px-1.5 text-xs"
+              onClick={() => startTransition(() => setDuration(d))}
+            >
+              {d}
+            </Button>
+          ))}
+        </div>
       </div>
     </Item>
   )
