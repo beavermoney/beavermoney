@@ -86,7 +86,7 @@ type SeriesKey =
   | 'netWorth'
   | 'liquidity'
   | 'investment'
-  | 'property'
+  // | 'property'
   | 'receivable'
   | 'liability'
   | 'asset'
@@ -96,7 +96,7 @@ const SERIES: { key: SeriesKey; label: string; color: string }[] = [
   { key: 'asset', label: 'Asset', color: 'var(--chart-asset)' },
   { key: 'liquidity', label: 'Liquidity', color: 'var(--chart-liquidity)' },
   { key: 'investment', label: 'Investment', color: 'var(--chart-investment)' },
-  { key: 'property', label: 'Property', color: 'var(--chart-property)' },
+  // { key: 'property', label: 'Property', color: 'var(--chart-property)' },
   { key: 'receivable', label: 'Receivable', color: 'var(--chart-receivable)' },
   { key: 'liability', label: 'Liability', color: 'var(--chart-liability)' },
 ]
