@@ -11,6 +11,7 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import type { financialSummaryCardsFragment$key } from './__generated__/financialSummaryCardsFragment.graphql'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 
 const FinancialSummaryCardsFragment = graphql`
   fragment financialSummaryCardsFragment on FinancialReport {
@@ -33,6 +34,8 @@ export function FinancialSummaryCards({
   const data = useFragment(FinancialSummaryCardsFragment, fragmentRef)
   const { household } = useHousehold()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
+
+  const { isPrivacyModeEnabled } = usePrivacyMode()
 
   const { totalIncome, totalExpenses, net, savingRate } = useMemo(() => {
     const income = currency(data.incomeBreakdown.total)
@@ -88,7 +91,9 @@ export function FinancialSummaryCards({
       <Item variant="outline" className="">
         <ItemContent>
           <ItemDescription>Saving Rate</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">{savingRate}</ItemTitle>
+          <ItemTitle className="text-xl tabular-nums">
+            {isPrivacyModeEnabled ? '•••••••' : savingRate}
+          </ItemTitle>
         </ItemContent>
       </Item>
     </div>

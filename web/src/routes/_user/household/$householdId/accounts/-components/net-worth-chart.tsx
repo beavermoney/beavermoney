@@ -17,6 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { useCurrency } from '@/hooks/use-currency'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -115,6 +116,7 @@ const chartConfig = {
 export function NetWorthChart() {
   const { household } = useHousehold()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
+  const { isPrivacyModeEnabled } = usePrivacyMode()
 
   const [duration, setDuration] = useState<Duration>('3M')
   const [isPending, startTransition] = useTransition()
@@ -421,7 +423,10 @@ export function NetWorthChart() {
             </span>
             <span className="hidden sm:inline">
               {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)} (
-              {formatSignedPercent(singleSeriesStats.percentChange)})
+              {isPrivacyModeEnabled
+                ? '•••'
+                : formatSignedPercent(singleSeriesStats.percentChange)}
+              )
             </span>
           </div>
         )}
