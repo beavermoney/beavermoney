@@ -12,6 +12,7 @@ import { parseDateRangeFromURL } from '@/lib/date-range'
 import { Fragment } from 'react/jsx-runtime'
 import { PlusButton } from '@/components/plus-button'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
+import { parseISO } from 'date-fns'
 
 const transactionsPanelFragment = graphql`
   fragment transactionsPanelFragment on Household
@@ -35,9 +36,8 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const search = useSearch({
     from: '/_user/household/$householdId/transactions',
   })
-  const period = parseDateRangeFromURL(search.start, search.end)
-  const startDate = period.startDate
-  const endDate = period.endDate
+  const startDate = parseISO(search.start).toISOString()
+  const endDate = parseISO(search.end).toISOString()
   const navigate = useNavigate()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
