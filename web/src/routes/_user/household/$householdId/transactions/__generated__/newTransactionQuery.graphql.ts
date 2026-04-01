@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<db7d27e28e829e01dab36b2d0ff005c2>>
+ * @generated SignedSource<<7c773f2c6e4ac48fb77fa7fa474279c5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -86,7 +86,15 @@ return {
         "selections": [
           {
             "alias": null,
-            "args": null,
+            "args": [
+              {
+                "kind": "Literal",
+                "name": "where",
+                "value": {
+                  "archived": false
+                }
+              }
+            ],
             "concreteType": "AccountConnection",
             "kind": "LinkedField",
             "name": "accounts",
@@ -172,7 +180,7 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": null
+            "storageKey": "accounts(where:{\"archived\":false})"
           },
           {
             "alias": null,
@@ -217,12 +225,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d2e9f14207a015fea0e6fe0f9bf9a9c9",
+    "cacheID": "2865881b9eca9e85cef932011ae14ead",
     "id": null,
     "metadata": {},
     "name": "newTransactionQuery",
     "operationKind": "query",
-    "text": "query newTransactionQuery {\n  household {\n    ...logTransactionFragment\n    id\n  }\n}\n\nfragment logTransactionFragment on Household {\n  ...newExpenseFragment\n  ...newIncomeFragment\n  ...newTransferFragment\n  ...newBuyFragment\n  ...newSellFragment\n  ...newMoveFragment\n}\n\nfragment newBuyFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newExpenseFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newIncomeFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newMoveFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        value\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newSellFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newTransferFragment on Household {\n  accounts {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n"
+    "text": "query newTransactionQuery {\n  household {\n    ...logTransactionFragment\n    id\n  }\n}\n\nfragment logTransactionFragment on Household {\n  ...newExpenseFragment\n  ...newIncomeFragment\n  ...newTransferFragment\n  ...newBuyFragment\n  ...newSellFragment\n  ...newMoveFragment\n}\n\nfragment newBuyFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newExpenseFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newIncomeFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newMoveFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        value\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newSellFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newTransferFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n"
   }
 };
 })();
