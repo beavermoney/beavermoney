@@ -193,13 +193,15 @@ export function NetWorthChart() {
     setActiveSeries((prev) => {
       const next = new Set(prev)
       if (next.has(key)) {
-        if (next.size > 1) next.delete(key)
+        next.delete(key)
       } else {
         next.add(key)
       }
       return next
     })
   }
+
+  const hasActiveSeries = activeSeries.size > 0
 
   if (chartData.length === 0) {
     return null
@@ -238,120 +240,128 @@ export function NetWorthChart() {
         </div>
       </ScrollArea>
       <div className="py-1"></div>
-      <ChartContainer
-        config={chartConfig}
-        className={`h-36 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
-      >
-        <AreaChart
-          data={chartData}
-          margin={{ top: 4, right: 36, left: 0, bottom: 0 }}
+      {hasActiveSeries ? (
+        <ChartContainer
+          config={chartConfig}
+          className={`h-36 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
         >
-          <defs>
-            {SERIES.map((s) => (
-              <linearGradient
-                key={s.key}
-                id={`${s.key}Gradient`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop
-                  offset="5%"
-                  stopColor={`var(--color-${s.key})`}
-                  stopOpacity={0.3}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={`var(--color-${s.key})`}
-                  stopOpacity={0}
-                />
-              </linearGradient>
-            ))}
-          </defs>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis
-            dataKey="date"
-            type="number"
-            scale="time"
-            domain={['dataMin', 'dataMax']}
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            tick={{ fontSize: 10 }}
-            tickFormatter={formatDate}
-          />
-          <YAxis
-            tickLine={false}
-            axisLine={false}
-            tickMargin={4}
-            width={56}
-            domain={yDomain}
-            tick={{ fontSize: 10 }}
-            tickFormatter={(value: number) =>
-              formatCurrencyWithPrivacyMode({
-                value: currency(value),
-                currencyCode: household.currency.code,
-                numberFormatOptions: {
-                  notation: 'compact',
-                  maximumFractionDigits: 1,
-                },
-                privacyMaskLength: 5,
-              })
-            }
-          />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                labelFormatter={(_, payload) => {
-                  const ts = payload?.[0]?.payload?.date
-                  return typeof ts === 'number'
-                    ? new Date(ts).toLocaleDateString(household.locale, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })
-                    : ''
-                }}
-                formatter={(value, name, item) => {
-                  invariant(
-                    typeof value === 'number',
-                    'chart value must be a number',
-                  )
-                  return (
-                    <>
-                      <div
-                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="text-muted-foreground">
-                        {chartConfig[name as SeriesKey]?.label ?? name}
-                      </span>
-                      <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
-                        {formatCurrencyWithPrivacyMode({
-                          value: currency(value),
-                          currencyCode: household.currency.code,
-                        })}
-                      </span>
-                    </>
-                  )
-                }}
-              />
-            }
-          />
-
-          {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
-            <Area
-              key={s.key}
-              type="monotone"
-              dataKey={s.key}
-              stroke={`var(--color-${s.key})`}
-              strokeWidth={2}
-              fill={`url(#${s.key}Gradient)`}
+          <AreaChart
+            data={chartData}
+            margin={{ top: 4, right: 36, left: 0, bottom: 0 }}
+          >
+            <defs>
+              {SERIES.map((s) => (
+                <linearGradient
+                  key={s.key}
+                  id={`${s.key}Gradient`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor={`var(--color-${s.key})`}
+                    stopOpacity={0.3}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={`var(--color-${s.key})`}
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              type="number"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tick={{ fontSize: 10 }}
+              tickFormatter={formatDate}
             />
-          ))}
-        </AreaChart>
-      </ChartContainer>
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={4}
+              width={56}
+              domain={yDomain}
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value: number) =>
+                formatCurrencyWithPrivacyMode({
+                  value: currency(value),
+                  currencyCode: household.currency.code,
+                  numberFormatOptions: {
+                    notation: 'compact',
+                    maximumFractionDigits: 1,
+                  },
+                  privacyMaskLength: 5,
+                })
+              }
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(_, payload) => {
+                    const ts = payload?.[0]?.payload?.date
+                    return typeof ts === 'number'
+                      ? new Date(ts).toLocaleDateString(household.locale, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })
+                      : ''
+                  }}
+                  formatter={(value, name, item) => {
+                    invariant(
+                      typeof value === 'number',
+                      'chart value must be a number',
+                    )
+                    return (
+                      <>
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="text-muted-foreground">
+                          {chartConfig[name as SeriesKey]?.label ?? name}
+                        </span>
+                        <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
+                          {formatCurrencyWithPrivacyMode({
+                            value: currency(value),
+                            currencyCode: household.currency.code,
+                          })}
+                        </span>
+                      </>
+                    )
+                  }}
+                />
+              }
+            />
+
+            {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
+              <Area
+                key={s.key}
+                type="monotone"
+                dataKey={s.key}
+                stroke={`var(--color-${s.key})`}
+                strokeWidth={2}
+                fill={`url(#${s.key}Gradient)`}
+              />
+            ))}
+          </AreaChart>
+        </ChartContainer>
+      ) : (
+        <div
+          className={`text-muted-foreground flex h-36 w-full items-center justify-center text-xs transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
+        >
+          Select at least one series to view chart
+        </div>
+      )}
       <div className="flex items-center justify-end gap-0.5 px-3 pt-1 pb-2.5">
         {isPending && <Spinner className="text-muted-foreground size-3" />}
         {DURATIONS.map((d) => (
