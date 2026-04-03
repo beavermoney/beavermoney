@@ -1,54 +1,18 @@
 import { Navigate, createFileRoute } from '@tanstack/react-router'
-import {
-  fetchQuery,
-  loadQuery,
-  usePreloadedQuery,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
-import { graphql, ROOT_ID } from 'relay-runtime'
-import type { householdIdQuery } from './__generated__/householdIdQuery.graphql'
-import { environment } from '@/environment'
+import { usePreloadedQuery } from 'react-relay'
 import { PendingComponent } from '@/components/pending-component'
 import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
+import { HouseholdQuery } from './__generated__/HouseholdQuery.graphql'
+import { householdQuery } from './-household-query'
 
 export const Route = createFileRoute('/_user/household/')({
   component: RouteComponent,
-  loader: async () => {
-    await fetchQuery<householdIdQuery>(
-      environment,
-      householdIdQuery,
-      {},
-    ).toPromise()
-    return loadQuery<householdIdQuery>(
-      environment,
-      householdIdQuery,
-      {},
-      { fetchPolicy: 'store-only' },
-    )
-  },
   pendingComponent: PendingComponent,
 })
 
-const householdIdQuery = graphql`
-  query householdIdQuery {
-    households {
-      id
-    }
-  }
-`
-
 function RouteComponent() {
-  const queryRef = Route.useLoaderData()
-  const data = usePreloadedQuery<householdIdQuery>(householdIdQuery, queryRef)
-
-  useSubscribeToInvalidationState([ROOT_ID], () => {
-    fetchQuery(
-      environment,
-      householdIdQuery,
-      {},
-      { fetchPolicy: 'network-only' },
-    ).subscribe({})
-  })
+  const queryRef = Route.useRouteContext()
+  const data = usePreloadedQuery<HouseholdQuery>(householdQuery, queryRef)
 
   const householdId = localStorage.getItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
 

@@ -4,7 +4,8 @@ import {
   LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
   LOCAL_STORAGE_TOKEN_KEY,
 } from './constant'
-import type { FetchFunction } from 'relay-runtime'
+import type { FetchFunction, GraphQLResponse } from 'relay-runtime'
+import ky from 'ky'
 
 const HTTP_ENDPOINT = env.VITE_SERVER_URL
 
@@ -12,20 +13,17 @@ const fetchGraphQL: FetchFunction = async (request, variables) => {
   const token = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY)
   const householdId = localStorage.getItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
 
-  const resp = await fetch(HTTP_ENDPOINT + '/query', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(householdId ? { 'X-Household-ID': householdId } : {}),
-    },
-    body: JSON.stringify({ query: request.text, variables }),
-  })
-  if (!resp.ok) {
-    console.error('GraphQL Error:', await resp.text())
-    throw new Error('Response failed.')
-  }
-  return await resp.json()
+  const resp = await ky
+    .post(HTTP_ENDPOINT + '/query', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(householdId ? { 'X-Household-ID': householdId } : {}),
+      },
+      json: { query: request.text, variables },
+    })
+    .json<GraphQLResponse>()
+  return resp
 }
 
 export const environment = new Environment({

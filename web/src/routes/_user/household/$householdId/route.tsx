@@ -7,6 +7,7 @@ import {
   X,
   RefreshCwIcon,
 } from 'lucide-react'
+
 import {
   Outlet,
   createFileRoute,
@@ -58,6 +59,7 @@ import { Suspense } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import Hotkeys from './-components/hotkeys'
 import type { editTransactionDialogQuery } from './transactions/-components/__generated__/editTransactionDialogQuery.graphql'
+import { NotFoundError } from '@/components/not-found-error'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -96,10 +98,15 @@ const defaultValues = {
   edit_transaction_id: null,
 }
 
+function ErrorComponent() {
+  return <NotFoundError />
+}
+
 export const Route = createFileRoute('/_user/household/$householdId')({
   component: RouteComponent,
   validateSearch: searchSchema,
   staleTime: Infinity,
+  errorComponent: ErrorComponent,
   loaderDeps: ({ search }) => ({
     editTransactionId: search.edit_transaction_id,
   }),
