@@ -24,6 +24,7 @@ import {
 import invariant from 'tiny-invariant'
 import { Rnd } from 'react-rnd'
 import { z } from 'zod'
+import { useState } from 'react'
 import type { routeHouseholdIdQuery } from './__generated__/routeHouseholdIdQuery.graphql'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileFabNav } from '@/components/mobile-fab-nav'
@@ -44,7 +45,10 @@ import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { HouseholdProvider } from '@/hooks/use-household'
-import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
+import {
+  LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
+  SESSION_STORAGE_PRIVACY_DIALOG_KEY,
+} from '@/constant'
 import { useTheme } from '@/components/theme-provider'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
@@ -60,6 +64,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import Hotkeys from './-components/hotkeys'
 import type { editTransactionDialogQuery } from './transactions/-components/__generated__/editTransactionDialogQuery.graphql'
 import { NotFoundError } from '@/components/not-found-error'
+import { PrivacyAlertDialog } from '@/components/privacy-alert-dialog'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -150,6 +155,17 @@ function RouteComponent() {
   const search = Route.useSearch()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const { isPrivacyModeEnabled, togglePrivacyMode } = usePrivacyMode()
+  const { setTheme } = useTheme()
+  const router = useRouter()
+
+  // Check if this is a fresh session (no dialog shown yet)
+  const shouldShowDialog =
+    typeof window !== 'undefined' &&
+    !sessionStorage.getItem(SESSION_STORAGE_PRIVACY_DIALOG_KEY)
+
+  // Privacy dialog state for fresh sessions
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(shouldShowDialog)
 
   useSubscribeToInvalidationState([params.householdId], () => {
     fetchQuery(
@@ -160,13 +176,25 @@ function RouteComponent() {
     ).subscribe({})
   })
 
+  const handlePrivacyChoice = (enablePrivacy: boolean) => {
+    // Set privacy mode based on user choice
+    if (enablePrivacy !== isPrivacyModeEnabled) {
+      togglePrivacyMode()
+    }
+
+    // Mark dialog as shown for this session
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(SESSION_STORAGE_PRIVACY_DIALOG_KEY, 'true')
+    }
+
+    // Hide dialog
+    setShowPrivacyDialog(false)
+  }
+
   const { householdId } = params
 
   const household = data.households.find((h) => h.id === householdId)
   invariant(household, 'Household not found')
-
-  const { isPrivacyModeEnabled, togglePrivacyMode } = usePrivacyMode()
-  const { setTheme } = useTheme()
 
   const setLogTransactionOpen = (open: boolean) => {
     navigate({
@@ -174,7 +202,15 @@ function RouteComponent() {
       search: (prev) => ({ ...prev, log_type: open ? 'expense' : null }),
     })
   }
-  const router = useRouter()
+
+  if (showPrivacyDialog) {
+    return (
+      <PrivacyAlertDialog
+        open={showPrivacyDialog}
+        onPrivacyChoice={handlePrivacyChoice}
+      />
+    )
+  }
 
   return (
     <HouseholdProvider household={household}>

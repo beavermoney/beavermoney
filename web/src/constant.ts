@@ -15,6 +15,8 @@ export const LOCAL_STORAGE_PRIVACY_MODE_KEY = 'privacyMode'
 export const LOCAL_STORAGE_THEME_KEY = 'theme'
 export const LOCAL_STORAGE_RND_POSITION_KEY = 'rndPosition'
 
+export const SESSION_STORAGE_PRIVACY_DIALOG_KEY = 'privacyDialogShown'
+
 export const ACCOUNT_TYPE_LIST = [
   'liquidity',
   'investment',
