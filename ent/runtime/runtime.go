@@ -63,19 +63,19 @@ func init() {
 	// account.DefaultBalance holds the default value on creation for the balance field.
 	account.DefaultBalance = accountDescBalance.Default.(func() decimal.Decimal)
 	// accountDescValue is the schema descriptor for value field.
-	accountDescValue := accountFields[4].Descriptor()
+	accountDescValue := accountFields[5].Descriptor()
 	// account.DefaultValue holds the default value on creation for the value field.
 	account.DefaultValue = accountDescValue.Default.(func() decimal.Decimal)
 	// accountDescCurrencyID is the schema descriptor for currency_id field.
-	accountDescCurrencyID := accountFields[6].Descriptor()
+	accountDescCurrencyID := accountFields[7].Descriptor()
 	// account.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
 	account.CurrencyIDValidator = accountDescCurrencyID.Validators[0].(func(int) error)
 	// accountDescUserID is the schema descriptor for user_id field.
-	accountDescUserID := accountFields[7].Descriptor()
+	accountDescUserID := accountFields[8].Descriptor()
 	// account.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	account.UserIDValidator = accountDescUserID.Validators[0].(func(int) error)
 	// accountDescArchived is the schema descriptor for archived field.
-	accountDescArchived := accountFields[8].Descriptor()
+	accountDescArchived := accountFields[9].Descriptor()
 	// account.DefaultArchived holds the default value on creation for the archived field.
 	account.DefaultArchived = accountDescArchived.Default.(bool)
 	checkpointMixin := schema.Checkpoint{}.Mixin()

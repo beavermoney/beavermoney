@@ -82,6 +82,7 @@ type ComplexityRoot struct {
 		Archived                   func(childComplexity int) int
 		Balance                    func(childComplexity int) int
 		BalanceInHouseholdCurrency func(childComplexity int) int
+		Category                   func(childComplexity int) int
 		CreateTime                 func(childComplexity int) int
 		Currency                   func(childComplexity int) int
 		CurrencyID                 func(childComplexity int) int
@@ -812,6 +813,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Account.BalanceInHouseholdCurrency(childComplexity), true
+	case "Account.category":
+		if e.complexity.Account.Category == nil {
+			break
+		}
+
+		return e.complexity.Account.Category(childComplexity), true
 	case "Account.createTime":
 		if e.complexity.Account.CreateTime == nil {
 			break
@@ -4147,6 +4154,35 @@ func (ec *executionContext) fieldContext_Account_balance(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Account_category(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Account_category,
+		func(ctx context.Context) (any, error) {
+			return obj.Category, nil
+		},
+		nil,
+		ec.marshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Account_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Account",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AccountCategory does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Account_icon(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4813,6 +4849,8 @@ func (ec *executionContext) fieldContext_AccountEdge_node(_ context.Context, fie
 				return ec.fieldContext_Account_type(ctx, field)
 			case "balance":
 				return ec.fieldContext_Account_balance(ctx, field)
+			case "category":
+				return ec.fieldContext_Account_category(ctx, field)
 			case "icon":
 				return ec.fieldContext_Account_icon(ctx, field)
 			case "value":
@@ -6037,6 +6075,8 @@ func (ec *executionContext) fieldContext_Currency_accounts(_ context.Context, fi
 				return ec.fieldContext_Account_type(ctx, field)
 			case "balance":
 				return ec.fieldContext_Account_balance(ctx, field)
+			case "category":
+				return ec.fieldContext_Account_category(ctx, field)
 			case "icon":
 				return ec.fieldContext_Account_icon(ctx, field)
 			case "value":
@@ -7956,6 +7996,8 @@ func (ec *executionContext) fieldContext_Investment_account(_ context.Context, f
 				return ec.fieldContext_Account_type(ctx, field)
 			case "balance":
 				return ec.fieldContext_Account_balance(ctx, field)
+			case "category":
+				return ec.fieldContext_Account_category(ctx, field)
 			case "icon":
 				return ec.fieldContext_Account_icon(ctx, field)
 			case "value":
@@ -14097,6 +14139,8 @@ func (ec *executionContext) fieldContext_TransactionEntry_account(_ context.Cont
 				return ec.fieldContext_Account_type(ctx, field)
 			case "balance":
 				return ec.fieldContext_Account_balance(ctx, field)
+			case "category":
+				return ec.fieldContext_Account_category(ctx, field)
 			case "icon":
 				return ec.fieldContext_Account_icon(ctx, field)
 			case "value":
@@ -14679,6 +14723,8 @@ func (ec *executionContext) fieldContext_User_accounts(_ context.Context, field 
 				return ec.fieldContext_Account_type(ctx, field)
 			case "balance":
 				return ec.fieldContext_Account_balance(ctx, field)
+			case "category":
+				return ec.fieldContext_Account_category(ctx, field)
 			case "icon":
 				return ec.fieldContext_Account_icon(ctx, field)
 			case "value":
@@ -16906,7 +16952,7 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "balance", "balanceNEQ", "balanceIn", "balanceNotIn", "balanceGT", "balanceGTE", "balanceLT", "balanceLTE", "icon", "iconNEQ", "iconIn", "iconNotIn", "iconGT", "iconGTE", "iconLT", "iconLTE", "iconContains", "iconHasPrefix", "iconHasSuffix", "iconIsNil", "iconNotNil", "iconEqualFold", "iconContainsFold", "value", "valueNEQ", "valueIn", "valueNotIn", "valueGT", "valueGTE", "valueLT", "valueLTE", "fxRate", "fxRateNEQ", "fxRateIn", "fxRateNotIn", "fxRateGT", "fxRateGTE", "fxRateLT", "fxRateLTE", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "archived", "archivedNEQ", "hasHousehold", "hasHouseholdWith", "hasCurrency", "hasCurrencyWith", "hasUser", "hasUserWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasInvestments", "hasInvestmentsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "balance", "balanceNEQ", "balanceIn", "balanceNotIn", "balanceGT", "balanceGTE", "balanceLT", "balanceLTE", "category", "categoryNEQ", "categoryIn", "categoryNotIn", "categoryIsNil", "categoryNotNil", "icon", "iconNEQ", "iconIn", "iconNotIn", "iconGT", "iconGTE", "iconLT", "iconLTE", "iconContains", "iconHasPrefix", "iconHasSuffix", "iconIsNil", "iconNotNil", "iconEqualFold", "iconContainsFold", "value", "valueNEQ", "valueIn", "valueNotIn", "valueGT", "valueGTE", "valueLT", "valueLTE", "fxRate", "fxRateNEQ", "fxRateIn", "fxRateNotIn", "fxRateGT", "fxRateGTE", "fxRateLT", "fxRateLTE", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "archived", "archivedNEQ", "hasHousehold", "hasHouseholdWith", "hasCurrency", "hasCurrencyWith", "hasUser", "hasUserWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasInvestments", "hasInvestmentsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17321,6 +17367,48 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 			if err = ec.resolvers.AccountWhereInput().BalanceLte(ctx, &it, data); err != nil {
 				return it, err
 			}
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
+		case "categoryNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryNEQ"))
+			data, err := ec.unmarshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CategoryNEQ = data
+		case "categoryIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryIn"))
+			data, err := ec.unmarshalOAccountCategory2ᚕbeavermoneyᚗappᚋentᚋaccountᚐCategoryᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CategoryIn = data
+		case "categoryNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryNotIn"))
+			data, err := ec.unmarshalOAccountCategory2ᚕbeavermoneyᚗappᚋentᚋaccountᚐCategoryᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CategoryNotIn = data
+		case "categoryIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CategoryIsNil = data
+		case "categoryNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CategoryNotNil = data
 		case "icon":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -18605,7 +18693,7 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "type", "balance", "icon", "currencyID"}
+	fieldsInOrder := [...]string{"name", "type", "balance", "category", "icon", "currencyID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18635,6 +18723,13 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 			if err = ec.resolvers.CreateAccountInput().Balance(ctx, &it, data); err != nil {
 				return it, err
 			}
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
 		case "icon":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -23798,7 +23893,7 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "icon", "clearIcon"}
+	fieldsInOrder := [...]string{"name", "category", "clearCategory", "icon", "clearIcon"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23812,6 +23907,20 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 				return it, err
 			}
 			it.Name = data
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
+		case "clearCategory":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearCategory"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearCategory = data
 		case "icon":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -25469,6 +25578,8 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "category":
+			out.Values[i] = ec._Account_category(ctx, field, obj)
 		case "icon":
 			out.Values[i] = ec._Account_icon(ctx, field, obj)
 		case "value":
@@ -31426,6 +31537,16 @@ func (ec *executionContext) marshalNAccount2ᚖbeavermoneyᚗappᚋentᚐAccount
 	return ec._Account(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNAccountCategory2beavermoneyᚗappᚋentᚋaccountᚐCategory(ctx context.Context, v any) (account.Category, error) {
+	var res account.Category
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAccountCategory2beavermoneyᚗappᚋentᚋaccountᚐCategory(ctx context.Context, sel ast.SelectionSet, v account.Category) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) marshalNAccountConnection2beavermoneyᚗappᚋentᚐAccountConnection(ctx context.Context, sel ast.SelectionSet, v ent.AccountConnection) graphql.Marshaler {
 	return ec._AccountConnection(ctx, sel, &v)
 }
@@ -32900,6 +33021,87 @@ func (ec *executionContext) marshalOAccount2ᚖbeavermoneyᚗappᚋentᚐAccount
 		return graphql.Null
 	}
 	return ec._Account(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOAccountCategory2ᚕbeavermoneyᚗappᚋentᚋaccountᚐCategoryᚄ(ctx context.Context, v any) ([]account.Category, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]account.Category, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNAccountCategory2beavermoneyᚗappᚋentᚋaccountᚐCategory(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOAccountCategory2ᚕbeavermoneyᚗappᚋentᚋaccountᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []account.Category) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAccountCategory2beavermoneyᚗappᚋentᚋaccountᚐCategory(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory(ctx context.Context, v any) (*account.Category, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(account.Category)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOAccountCategory2ᚖbeavermoneyᚗappᚋentᚋaccountᚐCategory(ctx context.Context, sel ast.SelectionSet, v *account.Category) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalOAccountEdge2ᚕᚖbeavermoneyᚗappᚋentᚐAccountEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.AccountEdge) graphql.Marshaler {

@@ -8,7 +8,10 @@ import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { useNavigate } from '@tanstack/react-router'
-import type { newAccountMutation } from './__generated__/newAccountMutation.graphql'
+import type {
+  newAccountMutation,
+  AccountCategory,
+} from './__generated__/newAccountMutation.graphql'
 import type { newAccountFragment$key } from './__generated__/newAccountFragment.graphql'
 
 import { Button } from '@/components/ui/button'
@@ -36,7 +39,12 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
-import { ACCOUNT_TYPE_DESCRIPTION, ACCOUNT_TYPE_LIST } from '@/constant'
+import {
+  ACCOUNT_TYPE_DESCRIPTION,
+  ACCOUNT_TYPE_LIST,
+  ACCOUNT_CATEGORY_OPTIONS,
+  ACCOUNT_CATEGORY_APPLICABLE_TYPES,
+} from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
@@ -57,6 +65,7 @@ const formSchema = z.object({
     'receivable',
     'liability',
   ]),
+  category: z.string(),
   balance: z.number(),
 })
 
@@ -101,6 +110,7 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
       name: '',
       icon: '',
       type: '',
+      category: '',
       currencyCode: household.currency.code,
       balance: undefined as unknown as number,
     },
@@ -127,6 +137,7 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
             input: {
               name: formData.name,
               type: formData.type,
+              category: (formData.category || null) as AccountCategory | null,
               currencyID: currencyID,
               balance: balance.toString(),
               icon: formData.icon || null,
@@ -167,6 +178,9 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
   const currencyCode = useStore(form.store, (state) => {
     return state.values.currencyCode || household.currency.code
   })
+
+  const accountType = useStore(form.store, (state) => state.values.type)
+  const showCategory = ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(accountType)
 
   return (
     <Card className="w-full">
@@ -304,6 +318,54 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
                 )
               }}
             />
+            {showCategory && (
+              <form.Field
+                name="category"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  const selectedItem =
+                    ACCOUNT_CATEGORY_OPTIONS.find(
+                      (o) => o.value === field.state.value,
+                    ) ?? null
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>
+                        Category (optional)
+                      </FieldLabel>
+                      <Combobox
+                        items={ACCOUNT_CATEGORY_OPTIONS}
+                        value={selectedItem}
+                        onValueChange={(item) =>
+                          field.handleChange(item?.value ?? '')
+                        }
+                      >
+                        <ComboboxInput
+                          id={field.name}
+                          name={field.name}
+                          placeholder="None (Taxable)"
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                        />
+                        <ComboboxContent>
+                          <ComboboxEmpty>No items found.</ComboboxEmpty>
+                          <ComboboxList>
+                            {(item: { value: string; label: string }) => (
+                              <ComboboxItem key={item.value} value={item}>
+                                {item.label}
+                              </ComboboxItem>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
             <form.Field
               name="currencyCode"
               children={(field) => {

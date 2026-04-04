@@ -41,6 +41,19 @@ func (Account) Fields() []ent.Field {
 				return decimal.NewFromInt(0)
 			}),
 
+		field.Enum("category").
+			Values(
+				// Canada
+				"tfsa", "rrsp", "rrif", "resp", "fhsa", "lira", "rdsp",
+				// US
+				"ira_traditional", "ira_roth",
+				"plan_401k", "roth_401k", "plan_403b", "plan_457b",
+				"sep_ira", "simple_ira",
+				"hsa", "plan_529",
+			).
+			Optional().
+			Nillable(),
+
 		field.String("icon").Optional(),
 
 		field.Float("value").GoType(decimal.Decimal{}).

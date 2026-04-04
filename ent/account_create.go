@@ -88,6 +88,20 @@ func (_c *AccountCreate) SetNillableBalance(v *decimal.Decimal) *AccountCreate {
 	return _c
 }
 
+// SetCategory sets the "category" field.
+func (_c *AccountCreate) SetCategory(v account.Category) *AccountCreate {
+	_c.mutation.SetCategory(v)
+	return _c
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (_c *AccountCreate) SetNillableCategory(v *account.Category) *AccountCreate {
+	if v != nil {
+		_c.SetCategory(*v)
+	}
+	return _c
+}
+
 // SetIcon sets the "icon" field.
 func (_c *AccountCreate) SetIcon(v string) *AccountCreate {
 	_c.mutation.SetIcon(v)
@@ -295,6 +309,11 @@ func (_c *AccountCreate) check() error {
 	if _, ok := _c.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Account.balance"`)}
 	}
+	if v, ok := _c.mutation.Category(); ok {
+		if err := account.CategoryValidator(v); err != nil {
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Account.category": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Value(); !ok {
 		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "Account.value"`)}
 	}
@@ -375,6 +394,10 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Balance(); ok {
 		_spec.SetField(account.FieldBalance, field.TypeFloat64, value)
 		_node.Balance = value
+	}
+	if value, ok := _c.mutation.Category(); ok {
+		_spec.SetField(account.FieldCategory, field.TypeEnum, value)
+		_node.Category = &value
 	}
 	if value, ok := _c.mutation.Icon(); ok {
 		_spec.SetField(account.FieldIcon, field.TypeString, value)
@@ -551,6 +574,24 @@ func (u *AccountUpsert) UpdateName() *AccountUpsert {
 	return u
 }
 
+// SetCategory sets the "category" field.
+func (u *AccountUpsert) SetCategory(v account.Category) *AccountUpsert {
+	u.Set(account.FieldCategory, v)
+	return u
+}
+
+// UpdateCategory sets the "category" field to the value that was provided on create.
+func (u *AccountUpsert) UpdateCategory() *AccountUpsert {
+	u.SetExcluded(account.FieldCategory)
+	return u
+}
+
+// ClearCategory clears the value of the "category" field.
+func (u *AccountUpsert) ClearCategory() *AccountUpsert {
+	u.SetNull(account.FieldCategory)
+	return u
+}
+
 // SetIcon sets the "icon" field.
 func (u *AccountUpsert) SetIcon(v string) *AccountUpsert {
 	u.Set(account.FieldIcon, v)
@@ -687,6 +728,27 @@ func (u *AccountUpsertOne) SetName(v string) *AccountUpsertOne {
 func (u *AccountUpsertOne) UpdateName() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetCategory sets the "category" field.
+func (u *AccountUpsertOne) SetCategory(v account.Category) *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetCategory(v)
+	})
+}
+
+// UpdateCategory sets the "category" field to the value that was provided on create.
+func (u *AccountUpsertOne) UpdateCategory() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateCategory()
+	})
+}
+
+// ClearCategory clears the value of the "category" field.
+func (u *AccountUpsertOne) ClearCategory() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.ClearCategory()
 	})
 }
 
@@ -1000,6 +1062,27 @@ func (u *AccountUpsertBulk) SetName(v string) *AccountUpsertBulk {
 func (u *AccountUpsertBulk) UpdateName() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetCategory sets the "category" field.
+func (u *AccountUpsertBulk) SetCategory(v account.Category) *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetCategory(v)
+	})
+}
+
+// UpdateCategory sets the "category" field to the value that was provided on create.
+func (u *AccountUpsertBulk) UpdateCategory() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateCategory()
+	})
+}
+
+// ClearCategory clears the value of the "category" field.
+func (u *AccountUpsertBulk) ClearCategory() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.ClearCategory()
 	})
 }
 

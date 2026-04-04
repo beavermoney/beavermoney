@@ -17,6 +17,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"liquidity", "investment", "property", "receivable", "liability"}},
 		{Name: "balance", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "category", Type: field.TypeEnum, Nullable: true, Enums: []string{"tfsa", "rrsp", "rrif", "resp", "fhsa", "lira", "rdsp", "ira_traditional", "ira_roth", "plan_401k", "roth_401k", "plan_403b", "plan_457b", "sep_ira", "simple_ira", "hsa", "plan_529"}},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "value", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "fx_rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
@@ -33,19 +34,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "accounts_currencies_accounts",
-				Columns:    []*schema.Column{AccountsColumns[10]},
+				Columns:    []*schema.Column{AccountsColumns[11]},
 				RefColumns: []*schema.Column{CurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "accounts_households_accounts",
-				Columns:    []*schema.Column{AccountsColumns[11]},
+				Columns:    []*schema.Column{AccountsColumns[12]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "accounts_users_accounts",
-				Columns:    []*schema.Column{AccountsColumns[12]},
+				Columns:    []*schema.Column{AccountsColumns[13]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

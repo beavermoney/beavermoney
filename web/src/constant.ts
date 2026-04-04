@@ -44,6 +44,56 @@ export const ACCOUNT_TYPE_DESCRIPTION: Record<string, string> = {
     'Debts or obligations you owe to others, such as credit cards or loans',
 }
 
+export const ACCOUNT_CATEGORY_LIST = [
+  'tfsa',
+  'rrsp',
+  'rrif',
+  'resp',
+  'fhsa',
+  'lira',
+  'rdsp',
+  'ira_traditional',
+  'ira_roth',
+  'plan_401k',
+  'roth_401k',
+  'plan_403b',
+  'plan_457b',
+  'sep_ira',
+  'simple_ira',
+  'hsa',
+  'plan_529',
+] as const
+
+export const ACCOUNT_CATEGORY_LABEL: Record<string, string> = {
+  tfsa: 'TFSA',
+  rrsp: 'RRSP',
+  rrif: 'RRIF',
+  resp: 'RESP',
+  fhsa: 'FHSA',
+  lira: 'LIRA',
+  rdsp: 'RDSP',
+  ira_traditional: 'Traditional IRA',
+  ira_roth: 'Roth IRA',
+  plan_401k: '401(k)',
+  roth_401k: 'Roth 401(k)',
+  plan_403b: '403(b)',
+  plan_457b: '457(b)',
+  sep_ira: 'SEP IRA',
+  simple_ira: 'SIMPLE IRA',
+  hsa: 'HSA',
+  plan_529: '529 Plan',
+}
+
+export const ACCOUNT_CATEGORY_OPTIONS = ACCOUNT_CATEGORY_LIST.map((value) => ({
+  value,
+  label: ACCOUNT_CATEGORY_LABEL[value] ?? value,
+}))
+
+export const ACCOUNT_CATEGORY_APPLICABLE_TYPES = new Set([
+  'liquidity',
+  'investment',
+])
+
 export const NAV: Array<{
   name: string
   link: LinkOptions

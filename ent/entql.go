@@ -44,6 +44,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			account.FieldName:        {Type: field.TypeString, Column: account.FieldName},
 			account.FieldType:        {Type: field.TypeEnum, Column: account.FieldType},
 			account.FieldBalance:     {Type: field.TypeFloat64, Column: account.FieldBalance},
+			account.FieldCategory:    {Type: field.TypeEnum, Column: account.FieldCategory},
 			account.FieldIcon:        {Type: field.TypeString, Column: account.FieldIcon},
 			account.FieldValue:       {Type: field.TypeFloat64, Column: account.FieldValue},
 			account.FieldFxRate:      {Type: field.TypeFloat64, Column: account.FieldFxRate},
@@ -1019,6 +1020,11 @@ func (f *AccountFilter) WhereType(p entql.StringP) {
 // WhereBalance applies the entql float64 predicate on the balance field.
 func (f *AccountFilter) WhereBalance(p entql.Float64P) {
 	f.Where(p.Field(account.FieldBalance))
+}
+
+// WhereCategory applies the entql string predicate on the category field.
+func (f *AccountFilter) WhereCategory(p entql.StringP) {
+	f.Where(p.Field(account.FieldCategory))
 }
 
 // WhereIcon applies the entql string predicate on the icon field.

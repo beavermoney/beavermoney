@@ -64,6 +64,7 @@ type AccountMutation struct {
 	_type                      *account.Type
 	balance                    *decimal.Decimal
 	addbalance                 *decimal.Decimal
+	category                   *account.Category
 	icon                       *string
 	value                      *decimal.Decimal
 	addvalue                   *decimal.Decimal
@@ -420,6 +421,55 @@ func (m *AccountMutation) AddedBalance() (r decimal.Decimal, exists bool) {
 func (m *AccountMutation) ResetBalance() {
 	m.balance = nil
 	m.addbalance = nil
+}
+
+// SetCategory sets the "category" field.
+func (m *AccountMutation) SetCategory(a account.Category) {
+	m.category = &a
+}
+
+// Category returns the value of the "category" field in the mutation.
+func (m *AccountMutation) Category() (r account.Category, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategory returns the old "category" field's value of the Account entity.
+// If the Account object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountMutation) OldCategory(ctx context.Context) (v *account.Category, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategory is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategory requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategory: %w", err)
+	}
+	return oldValue.Category, nil
+}
+
+// ClearCategory clears the value of the "category" field.
+func (m *AccountMutation) ClearCategory() {
+	m.category = nil
+	m.clearedFields[account.FieldCategory] = struct{}{}
+}
+
+// CategoryCleared returns if the "category" field was cleared in this mutation.
+func (m *AccountMutation) CategoryCleared() bool {
+	_, ok := m.clearedFields[account.FieldCategory]
+	return ok
+}
+
+// ResetCategory resets all changes to the "category" field.
+func (m *AccountMutation) ResetCategory() {
+	m.category = nil
+	delete(m.clearedFields, account.FieldCategory)
 }
 
 // SetIcon sets the "icon" field.
@@ -914,7 +964,7 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.create_time != nil {
 		fields = append(fields, account.FieldCreateTime)
 	}
@@ -932,6 +982,9 @@ func (m *AccountMutation) Fields() []string {
 	}
 	if m.balance != nil {
 		fields = append(fields, account.FieldBalance)
+	}
+	if m.category != nil {
+		fields = append(fields, account.FieldCategory)
 	}
 	if m.icon != nil {
 		fields = append(fields, account.FieldIcon)
@@ -971,6 +1024,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case account.FieldBalance:
 		return m.Balance()
+	case account.FieldCategory:
+		return m.Category()
 	case account.FieldIcon:
 		return m.Icon()
 	case account.FieldValue:
@@ -1004,6 +1059,8 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldType(ctx)
 	case account.FieldBalance:
 		return m.OldBalance(ctx)
+	case account.FieldCategory:
+		return m.OldCategory(ctx)
 	case account.FieldIcon:
 		return m.OldIcon(ctx)
 	case account.FieldValue:
@@ -1066,6 +1123,13 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBalance(v)
+		return nil
+	case account.FieldCategory:
+		v, ok := value.(account.Category)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategory(v)
 		return nil
 	case account.FieldIcon:
 		v, ok := value.(string)
@@ -1178,6 +1242,9 @@ func (m *AccountMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *AccountMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(account.FieldCategory) {
+		fields = append(fields, account.FieldCategory)
+	}
 	if m.FieldCleared(account.FieldIcon) {
 		fields = append(fields, account.FieldIcon)
 	}
@@ -1195,6 +1262,9 @@ func (m *AccountMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *AccountMutation) ClearField(name string) error {
 	switch name {
+	case account.FieldCategory:
+		m.ClearCategory()
+		return nil
 	case account.FieldIcon:
 		m.ClearIcon()
 		return nil
@@ -1223,6 +1293,9 @@ func (m *AccountMutation) ResetField(name string) error {
 		return nil
 	case account.FieldBalance:
 		m.ResetBalance()
+		return nil
+	case account.FieldCategory:
+		m.ResetCategory()
 		return nil
 	case account.FieldIcon:
 		m.ResetIcon()

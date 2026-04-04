@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1a4ceaf89d09262905ad6b5894b48cd8>>
+ * @generated SignedSource<<7a25c39828c3ba6e3cc9bd3aee3a1dea>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
+export type AccountCategory = "fhsa" | "hsa" | "ira_roth" | "ira_traditional" | "lira" | "plan_401k" | "plan_403b" | "plan_457b" | "plan_529" | "rdsp" | "resp" | "roth_401k" | "rrif" | "rrsp" | "sep_ira" | "simple_ira" | "tfsa" | "%future added value";
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
 export type InvestmentType = "crypto" | "stock" | "%future added value";
 export type RecurringSubscriptionInterval = "month" | "week" | "year" | "%future added value";
@@ -292,6 +293,12 @@ export type AccountWhereInput = {
   balanceLTE?: string | null | undefined;
   balanceNEQ?: string | null | undefined;
   balanceNotIn?: ReadonlyArray<string> | null | undefined;
+  category?: AccountCategory | null | undefined;
+  categoryIn?: ReadonlyArray<AccountCategory> | null | undefined;
+  categoryIsNil?: boolean | null | undefined;
+  categoryNEQ?: AccountCategory | null | undefined;
+  categoryNotIn?: ReadonlyArray<AccountCategory> | null | undefined;
+  categoryNotNil?: boolean | null | undefined;
   createTime?: any | null | undefined;
   createTimeGT?: any | null | undefined;
   createTimeGTE?: any | null | undefined;

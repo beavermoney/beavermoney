@@ -31,6 +31,8 @@ const (
 	FieldType = "type"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
+	// FieldCategory holds the string denoting the category field in the database.
+	FieldCategory = "category"
 	// FieldIcon holds the string denoting the icon field in the database.
 	FieldIcon = "icon"
 	// FieldValue holds the string denoting the value field in the database.
@@ -101,6 +103,7 @@ var Columns = []string{
 	FieldName,
 	FieldType,
 	FieldBalance,
+	FieldCategory,
 	FieldIcon,
 	FieldValue,
 	FieldFxRate,
@@ -173,6 +176,44 @@ func TypeValidator(_type Type) error {
 	}
 }
 
+// Category defines the type for the "category" enum field.
+type Category string
+
+// Category values.
+const (
+	CategoryTfsa           Category = "tfsa"
+	CategoryRrsp           Category = "rrsp"
+	CategoryRrif           Category = "rrif"
+	CategoryResp           Category = "resp"
+	CategoryFhsa           Category = "fhsa"
+	CategoryLira           Category = "lira"
+	CategoryRdsp           Category = "rdsp"
+	CategoryIraTraditional Category = "ira_traditional"
+	CategoryIraRoth        Category = "ira_roth"
+	CategoryPlan401k       Category = "plan_401k"
+	CategoryRoth401k       Category = "roth_401k"
+	CategoryPlan403b       Category = "plan_403b"
+	CategoryPlan457b       Category = "plan_457b"
+	CategorySepIra         Category = "sep_ira"
+	CategorySimpleIra      Category = "simple_ira"
+	CategoryHsa            Category = "hsa"
+	CategoryPlan529        Category = "plan_529"
+)
+
+func (c Category) String() string {
+	return string(c)
+}
+
+// CategoryValidator is a validator for the "category" field enum values. It is called by the builders before save.
+func CategoryValidator(c Category) error {
+	switch c {
+	case CategoryTfsa, CategoryRrsp, CategoryRrif, CategoryResp, CategoryFhsa, CategoryLira, CategoryRdsp, CategoryIraTraditional, CategoryIraRoth, CategoryPlan401k, CategoryRoth401k, CategoryPlan403b, CategoryPlan457b, CategorySepIra, CategorySimpleIra, CategoryHsa, CategoryPlan529:
+		return nil
+	default:
+		return fmt.Errorf("account: invalid enum value for category field: %q", c)
+	}
+}
+
 // OrderOption defines the ordering options for the Account queries.
 type OrderOption func(*sql.Selector)
 
@@ -209,6 +250,11 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 // ByBalance orders the results by the balance field.
 func ByBalance(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBalance, opts...).ToFunc()
+}
+
+// ByCategory orders the results by the category field.
+func ByCategory(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCategory, opts...).ToFunc()
 }
 
 // ByIcon orders the results by the icon field.
@@ -339,6 +385,24 @@ func (e *Type) UnmarshalGQL(val interface{}) error {
 	*e = Type(str)
 	if err := TypeValidator(*e); err != nil {
 		return fmt.Errorf("%s is not a valid Type", str)
+	}
+	return nil
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (e Category) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(e.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (e *Category) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("enum %T must be a string", val)
+	}
+	*e = Category(str)
+	if err := CategoryValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Category", str)
 	}
 	return nil
 }

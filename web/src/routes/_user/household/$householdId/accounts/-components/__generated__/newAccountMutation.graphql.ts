@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d004123ad4d4f830dc5996a476ddd5b5>>
+ * @generated SignedSource<<f5e9f9a5742d5e27c9e8f8551dbce78a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,9 +10,11 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
+export type AccountCategory = "fhsa" | "hsa" | "ira_roth" | "ira_traditional" | "lira" | "plan_401k" | "plan_403b" | "plan_457b" | "plan_529" | "rdsp" | "resp" | "roth_401k" | "rrif" | "rrsp" | "sep_ira" | "simple_ira" | "tfsa" | "%future added value";
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
 export type CreateAccountInput = {
   balance?: string | null | undefined;
+  category?: AccountCategory | null | undefined;
   currencyID: string;
   icon?: string | null | undefined;
   name: string;
