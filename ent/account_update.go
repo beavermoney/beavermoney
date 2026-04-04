@@ -52,6 +52,26 @@ func (_u *AccountUpdate) SetNillableName(v *string) *AccountUpdate {
 	return _u
 }
 
+// SetCategory sets the "category" field.
+func (_u *AccountUpdate) SetCategory(v account.Category) *AccountUpdate {
+	_u.mutation.SetCategory(v)
+	return _u
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (_u *AccountUpdate) SetNillableCategory(v *account.Category) *AccountUpdate {
+	if v != nil {
+		_u.SetCategory(*v)
+	}
+	return _u
+}
+
+// ClearCategory clears the value of the "category" field.
+func (_u *AccountUpdate) ClearCategory() *AccountUpdate {
+	_u.mutation.ClearCategory()
+	return _u
+}
+
 // SetIcon sets the "icon" field.
 func (_u *AccountUpdate) SetIcon(v string) *AccountUpdate {
 	_u.mutation.SetIcon(v)
@@ -233,6 +253,11 @@ func (_u *AccountUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Category(); ok {
+		if err := account.CategoryValidator(v); err != nil {
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Account.category": %w`, err)}
+		}
+	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.household"`)
 	}
@@ -268,6 +293,12 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(account.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Category(); ok {
+		_spec.SetField(account.FieldCategory, field.TypeEnum, value)
+	}
+	if _u.mutation.CategoryCleared() {
+		_spec.ClearField(account.FieldCategory, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Icon(); ok {
 		_spec.SetField(account.FieldIcon, field.TypeString, value)
@@ -413,6 +444,26 @@ func (_u *AccountUpdateOne) SetNillableName(v *string) *AccountUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetCategory sets the "category" field.
+func (_u *AccountUpdateOne) SetCategory(v account.Category) *AccountUpdateOne {
+	_u.mutation.SetCategory(v)
+	return _u
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (_u *AccountUpdateOne) SetNillableCategory(v *account.Category) *AccountUpdateOne {
+	if v != nil {
+		_u.SetCategory(*v)
+	}
+	return _u
+}
+
+// ClearCategory clears the value of the "category" field.
+func (_u *AccountUpdateOne) ClearCategory() *AccountUpdateOne {
+	_u.mutation.ClearCategory()
 	return _u
 }
 
@@ -610,6 +661,11 @@ func (_u *AccountUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Category(); ok {
+		if err := account.CategoryValidator(v); err != nil {
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Account.category": %w`, err)}
+		}
+	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.household"`)
 	}
@@ -662,6 +718,12 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(account.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Category(); ok {
+		_spec.SetField(account.FieldCategory, field.TypeEnum, value)
+	}
+	if _u.mutation.CategoryCleared() {
+		_spec.ClearField(account.FieldCategory, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Icon(); ok {
 		_spec.SetField(account.FieldIcon, field.TypeString, value)

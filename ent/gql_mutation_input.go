@@ -17,6 +17,7 @@ type CreateAccountInput struct {
 	Name       string
 	Type       account.Type
 	Balance    *decimal.Decimal
+	Category   *account.Category
 	Icon       *string
 	CurrencyID int
 }
@@ -27,6 +28,9 @@ func (i *CreateAccountInput) Mutate(m *AccountMutation) {
 	m.SetType(i.Type)
 	if v := i.Balance; v != nil {
 		m.SetBalance(*v)
+	}
+	if v := i.Category; v != nil {
+		m.SetCategory(*v)
 	}
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
@@ -42,15 +46,23 @@ func (c *AccountCreate) SetInput(i CreateAccountInput) *AccountCreate {
 
 // UpdateAccountInput represents a mutation input for updating accounts.
 type UpdateAccountInput struct {
-	Name      *string
-	ClearIcon bool
-	Icon      *string
+	Name          *string
+	ClearCategory bool
+	Category      *account.Category
+	ClearIcon     bool
+	Icon          *string
 }
 
 // Mutate applies the UpdateAccountInput on the AccountMutation builder.
 func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
 	if v := i.Name; v != nil {
 		m.SetName(*v)
+	}
+	if i.ClearCategory {
+		m.ClearCategory()
+	}
+	if v := i.Category; v != nil {
+		m.SetCategory(*v)
 	}
 	if i.ClearIcon {
 		m.ClearIcon()

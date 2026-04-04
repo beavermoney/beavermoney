@@ -336,6 +336,36 @@ func BalanceLTE(v decimal.Decimal) predicate.Account {
 	return predicate.Account(sql.FieldLTE(FieldBalance, v))
 }
 
+// CategoryEQ applies the EQ predicate on the "category" field.
+func CategoryEQ(v Category) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldCategory, v))
+}
+
+// CategoryNEQ applies the NEQ predicate on the "category" field.
+func CategoryNEQ(v Category) predicate.Account {
+	return predicate.Account(sql.FieldNEQ(FieldCategory, v))
+}
+
+// CategoryIn applies the In predicate on the "category" field.
+func CategoryIn(vs ...Category) predicate.Account {
+	return predicate.Account(sql.FieldIn(FieldCategory, vs...))
+}
+
+// CategoryNotIn applies the NotIn predicate on the "category" field.
+func CategoryNotIn(vs ...Category) predicate.Account {
+	return predicate.Account(sql.FieldNotIn(FieldCategory, vs...))
+}
+
+// CategoryIsNil applies the IsNil predicate on the "category" field.
+func CategoryIsNil() predicate.Account {
+	return predicate.Account(sql.FieldIsNull(FieldCategory))
+}
+
+// CategoryNotNil applies the NotNil predicate on the "category" field.
+func CategoryNotNil() predicate.Account {
+	return predicate.Account(sql.FieldNotNull(FieldCategory))
+}
+
 // IconEQ applies the EQ predicate on the "icon" field.
 func IconEQ(v string) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldIcon, v))

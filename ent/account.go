@@ -33,6 +33,8 @@ type Account struct {
 	Type account.Type `json:"type,omitempty"`
 	// Balance is only the cash portion of the account excluding investments
 	Balance decimal.Decimal `json:"balance,omitempty"`
+	// Category holds the value of the "category" field.
+	Category *account.Category `json:"category,omitempty"`
 	// Icon holds the value of the "icon" field.
 	Icon string `json:"icon,omitempty"`
 	// Value is the total value of the account including investments
@@ -135,7 +137,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case account.FieldID, account.FieldHouseholdID, account.FieldCurrencyID, account.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case account.FieldName, account.FieldType, account.FieldIcon:
+		case account.FieldName, account.FieldType, account.FieldCategory, account.FieldIcon:
 			values[i] = new(sql.NullString)
 		case account.FieldCreateTime, account.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -195,6 +197,13 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field balance", values[i])
 			} else if value != nil {
 				_m.Balance = *value
+			}
+		case account.FieldCategory:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field category", values[i])
+			} else if value.Valid {
+				_m.Category = new(account.Category)
+				*_m.Category = account.Category(value.String)
 			}
 		case account.FieldIcon:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -310,6 +319,11 @@ func (_m *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("balance=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Balance))
+	builder.WriteString(", ")
+	if v := _m.Category; v != nil {
+		builder.WriteString("category=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("icon=")
 	builder.WriteString(_m.Icon)

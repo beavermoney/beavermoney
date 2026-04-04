@@ -98,6 +98,14 @@ type AccountWhereInput struct {
 	BalanceLT    *decimal.Decimal  `json:"balanceLT,omitempty"`
 	BalanceLTE   *decimal.Decimal  `json:"balanceLTE,omitempty"`
 
+	// "category" field predicates.
+	Category       *account.Category  `json:"category,omitempty"`
+	CategoryNEQ    *account.Category  `json:"categoryNEQ,omitempty"`
+	CategoryIn     []account.Category `json:"categoryIn,omitempty"`
+	CategoryNotIn  []account.Category `json:"categoryNotIn,omitempty"`
+	CategoryIsNil  bool               `json:"categoryIsNil,omitempty"`
+	CategoryNotNil bool               `json:"categoryNotNil,omitempty"`
+
 	// "icon" field predicates.
 	Icon             *string  `json:"icon,omitempty"`
 	IconNEQ          *string  `json:"iconNEQ,omitempty"`
@@ -401,6 +409,24 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	}
 	if i.BalanceLTE != nil {
 		predicates = append(predicates, account.BalanceLTE(*i.BalanceLTE))
+	}
+	if i.Category != nil {
+		predicates = append(predicates, account.CategoryEQ(*i.Category))
+	}
+	if i.CategoryNEQ != nil {
+		predicates = append(predicates, account.CategoryNEQ(*i.CategoryNEQ))
+	}
+	if len(i.CategoryIn) > 0 {
+		predicates = append(predicates, account.CategoryIn(i.CategoryIn...))
+	}
+	if len(i.CategoryNotIn) > 0 {
+		predicates = append(predicates, account.CategoryNotIn(i.CategoryNotIn...))
+	}
+	if i.CategoryIsNil {
+		predicates = append(predicates, account.CategoryIsNil())
+	}
+	if i.CategoryNotNil {
+		predicates = append(predicates, account.CategoryNotNil())
 	}
 	if i.Icon != nil {
 		predicates = append(predicates, account.IconEQ(*i.Icon))

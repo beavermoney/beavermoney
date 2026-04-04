@@ -7,7 +7,10 @@ import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 
 import type { editAccountFragment$key } from './__generated__/editAccountFragment.graphql'
-import type { editAccountMutation } from './__generated__/editAccountMutation.graphql'
+import type {
+  editAccountMutation,
+  AccountCategory,
+} from './__generated__/editAccountMutation.graphql'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -25,6 +28,18 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
+import {
+  ACCOUNT_CATEGORY_OPTIONS,
+  ACCOUNT_CATEGORY_APPLICABLE_TYPES,
+} from '@/constant'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
@@ -35,6 +50,7 @@ const formSchema = z.object({
     .min(1, 'Account name must be at least 1 character.')
     .max(64, 'Account name must be at most 64 characters.'),
   icon: z.string(),
+  category: z.string(),
 })
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -43,6 +59,8 @@ export const editAccountFragment = graphql`
     id
     name
     icon
+    type
+    category
   }
 `
 
@@ -53,6 +71,7 @@ const editAccountMutation = graphql`
         id
         name
         icon
+        category
         ...accountCardFragment
       }
     }
@@ -73,6 +92,7 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
     defaultValues: {
       name: data.name,
       icon: data.icon || '',
+      category: data.category || '',
     },
     validators: {
       onSubmit: formSchema,
@@ -89,6 +109,8 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
               name: formData.name,
               icon: formData.icon || null,
               clearIcon: !formData.icon,
+              category: (formData.category || null) as AccountCategory | null,
+              clearCategory: !formData.category,
             },
           },
         },
@@ -134,6 +156,54 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
           }}
         >
           <FieldGroup>
+            {ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(data.type) && (
+              <form.Field
+                name="category"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  const selectedItem =
+                    ACCOUNT_CATEGORY_OPTIONS.find(
+                      (o) => o.value === field.state.value,
+                    ) ?? null
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>
+                        Category (optional)
+                      </FieldLabel>
+                      <Combobox
+                        items={ACCOUNT_CATEGORY_OPTIONS}
+                        value={selectedItem}
+                        onValueChange={(item) =>
+                          field.handleChange(item?.value ?? '')
+                        }
+                      >
+                        <ComboboxInput
+                          id={field.name}
+                          name={field.name}
+                          placeholder="None (Taxable)"
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                        />
+                        <ComboboxContent>
+                          <ComboboxEmpty>No items found.</ComboboxEmpty>
+                          <ComboboxList>
+                            {(item: { value: string; label: string }) => (
+                              <ComboboxItem key={item.value} value={item}>
+                                {item.label}
+                              </ComboboxItem>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
             <form.Field
               name="name"
               children={(field) => {

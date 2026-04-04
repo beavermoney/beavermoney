@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cb723a489d63ea476d21fbc90cee83a3>>
+ * @generated SignedSource<<a52d9ec77ec475d3c0e560f83dfda905>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,10 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
+export type AccountCategory = "fhsa" | "hsa" | "ira_roth" | "ira_traditional" | "lira" | "plan_401k" | "plan_403b" | "plan_457b" | "plan_529" | "rdsp" | "resp" | "roth_401k" | "rrif" | "rrsp" | "sep_ira" | "simple_ira" | "tfsa" | "%future added value";
 export type UpdateAccountInput = {
+  category?: AccountCategory | null | undefined;
+  clearCategory?: boolean | null | undefined;
   clearIcon?: boolean | null | undefined;
   icon?: string | null | undefined;
   name?: string | null | undefined;
@@ -22,6 +25,7 @@ export type editAccountMutation$variables = {
 export type editAccountMutation$data = {
   readonly updateAccount: {
     readonly node: {
+      readonly category: AccountCategory | null | undefined;
       readonly icon: string | null | undefined;
       readonly id: string;
       readonly name: string;
@@ -79,6 +83,13 @@ v4 = {
   "kind": "ScalarField",
   "name": "icon",
   "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "category",
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -106,6 +117,7 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -146,6 +158,7 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -215,16 +228,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "dc054817cb8332c1a8b4bcbf65b990b7",
+    "cacheID": "1f7835da47ae6d1621a072cff91bf7ad",
     "id": null,
     "metadata": {},
     "name": "editAccountMutation",
     "operationKind": "mutation",
-    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
+    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      category\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();
 
-(node as any).hash = "df4784188b0b6c608eaaf43e2216be13";
+(node as any).hash = "10e7c14de477d352dd6bd5559f103bb7";
 
 export default node;

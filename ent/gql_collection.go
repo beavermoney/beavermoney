@@ -147,6 +147,11 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 				selectedFields = append(selectedFields, account.FieldBalance)
 				fieldSeen[account.FieldBalance] = struct{}{}
 			}
+		case "category":
+			if _, ok := fieldSeen[account.FieldCategory]; !ok {
+				selectedFields = append(selectedFields, account.FieldCategory)
+				fieldSeen[account.FieldCategory] = struct{}{}
+			}
 		case "icon":
 			if _, ok := fieldSeen[account.FieldIcon]; !ok {
 				selectedFields = append(selectedFields, account.FieldIcon)
