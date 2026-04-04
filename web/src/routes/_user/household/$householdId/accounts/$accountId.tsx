@@ -152,7 +152,9 @@ function RouteComponent() {
         navigate({
           to: '/household/$householdId/accounts',
           params: { householdId: params.householdId },
-          search: (prev) => ({ ...prev }),
+          search: (prev) => ({
+            group_by: prev.group_by as 'type' | 'category' | undefined,
+          }),
         })
         toast.success('Account deleted!')
       })
@@ -175,7 +177,9 @@ function RouteComponent() {
         navigate({
           to: '/household/$householdId/accounts',
           params: { householdId: params.householdId },
-          search: (prev) => ({ ...prev }),
+          search: (prev) => ({
+            group_by: prev.group_by as 'type' | 'category' | undefined,
+          }),
         })
         toast.success('Account archived!')
       })
