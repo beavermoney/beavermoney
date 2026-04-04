@@ -8,6 +8,7 @@ import { useHousehold } from '@/hooks/use-household'
 import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import type { categoriesSankeyFragment$key } from './__generated__/categoriesSankeyFragment.graphql'
+import { InfoIcon } from 'lucide-react'
 
 const CategoriesSankeyFragment = graphql`
   fragment categoriesSankeyFragment on FinancialReport {
@@ -284,7 +285,17 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
     [nodeColors, data.incomeBreakdown, data.expensesBreakdown],
   )
 
-  if (!sankeyData) return null
+  if (!sankeyData) {
+    return (
+      <Item
+        variant="outline"
+        className="flex items-center gap-2 overflow-x-auto"
+      >
+        <InfoIcon size="16" />
+        Log some transactions to see the Sankey chart
+      </Item>
+    )
+  }
 
   const formatAmount = (amount: number) =>
     formatCurrencyWithPrivacyMode({
