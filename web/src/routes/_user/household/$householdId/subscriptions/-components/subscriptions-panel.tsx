@@ -30,6 +30,7 @@ import { SubscriptionCard } from './subscription-card'
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import { PlusButton } from '@/components/plus-button'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
+import { Card } from '@/components/ui/card'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Household
@@ -289,14 +290,16 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
       <div className="py-2"></div>
 
       {/* Subscriptions List */}
-      <ItemGroup className="gap-0">
-        {sortedSubscriptions.map((subscription, index) => (
-          <Fragment key={subscription.id}>
-            {index > 0 && <ItemSeparator className="my-1" />}
-            <SubscriptionCard fragmentRef={subscription} />
-          </Fragment>
-        ))}
-      </ItemGroup>
+      <Card className="bg-muted/50 p-2">
+        <ItemGroup className="gap-0">
+          {sortedSubscriptions.map((subscription, index) => (
+            <Fragment key={subscription.id}>
+              {index > 0 && <ItemSeparator className="my-1" />}
+              <SubscriptionCard fragmentRef={subscription} />
+            </Fragment>
+          ))}
+        </ItemGroup>
+      </Card>
     </Fragment>
   )
 }
