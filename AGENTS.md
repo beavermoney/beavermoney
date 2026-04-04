@@ -86,22 +86,24 @@ just migrate-hash          # Hash migrations for Atlas
 **Philosophy**: Client calculates all date ranges and sends UTC timestamps. Server is timezone-agnostic.
 
 **Frontend** (`lib/date-range.ts`):
+
 ```typescript
-import { getDateRangeForPreset, dateRangeToISO } from '@/lib/date-range'
+import { getDateRangeForPreset, dateRangeToISO } from "@/lib/date-range";
 
 // User selects "THIS_MONTH" preset in their local timezone
-const dateRange = getDateRangeForPreset('THIS_MONTH')
+const dateRange = getDateRangeForPreset("THIS_MONTH");
 // Returns: { startDate: Date, endDate: Date } in local time
 
 // Convert to ISO UTC strings for GraphQL
-const period = dateRangeToISO(dateRange)
+const period = dateRangeToISO(dateRange);
 // Returns: { startDate: "2024-01-01T05:00:00Z", endDate: "2024-01-15T20:00:00Z" }
 
 // Query with UTC timestamps
-query({ startDate: period.startDate, endDate: period.endDate })
+query({ startDate: period.startDate, endDate: period.endDate });
 ```
 
 **Backend** (`beavermoney.helpers.go`):
+
 ```go
 func parseTimePeriod(period TimePeriodInput) (time.Time, time.Time) {
     // Just use the provided UTC dates directly
@@ -113,6 +115,7 @@ func parseTimePeriod(period TimePeriodInput) (time.Time, time.Time) {
 ```
 
 **Why this approach:**
+
 - ✅ Server doesn't need timezone parsing or preset logic
 - ✅ Client has full context (user's timezone, current time)
 - ✅ Simpler GraphQL schema - no `TimePeriodPreset` enum
@@ -261,6 +264,7 @@ export function FinancialSummaryCards({ fragmentRef }: GoodProps) {
 ```
 
 **Why this pattern:**
+
 - ✅ Component declares its own data requirements via fragments
 - ✅ Uses React hooks for context (useHousehold, useCurrency) instead of prop drilling
 - ✅ Computes all derived values internally - no prop drilling computed data
@@ -303,6 +307,38 @@ Follow the accounts panel/card pattern for list views:
 - `web/relay.config.json` - Relay compiler configuration
 - `justfile` - Task runner commands
 - `web/src/routes/` - File-based routing with TanStack Router
+
+## Design Context
+
+### Users
+
+Beaver Money serves individuals, couples, and families managing personal finances. Users interact with the app to log transactions, track accounts and investments, monitor spending by category, and understand their financial health across a shared household. The app supports multi-user households where partners or family members contribute to a unified financial picture. Users range from financially casual (wanting a clear snapshot) to power users who track every dollar. The privacy mode suggests the app is used in contexts where others might see the screen.
+
+### Brand Personality
+
+**Clever, Playful, Professional.** Beaver Money is the smart friend who's surprisingly good with money. The beaver mascot holding a gold coin sets the tone: industrious and wealth-building, but never stuffy. The tagline "Log your transactions. Build your dam." captures it perfectly — financial discipline framed as something constructive and even fun, not punitive. The app takes your money seriously without taking itself too seriously.
+
+### Aesthetic Direction
+
+**Visual tone**: Information-dense but breathable. Compact text (`text-xs/relaxed`) and tight spacing keep data accessible without overwhelming. The warm golden primary color (OKLCH hue ~58) evokes wealth and trust, grounding the neutral gray UI with warmth. Dark mode is a first-class citizen with carefully calibrated OKLCH values for contrast.
+
+**References**: Linear (keyboard-driven density, professional polish, fast interactions) and Copilot Money (clean financial data presentation, approachable charts). The goal is Linear's efficiency married to Copilot Money's warmth.
+
+**Anti-references**: Old-school banking apps — no stale corporate blue, no heavy table borders, no serif fonts, no institutional coldness. Beaver Money should feel like a modern tool, not a bank portal.
+
+**Theme**: Light and dark modes with system preference detection. White/near-black backgrounds. The golden primary adds personality without dominating. Charts use a purposeful palette with distinct hues per asset class (green for net worth, blue for liquidity, amber for investments, red-orange for liabilities).
+
+### Design Principles
+
+1. **Data density with clarity** — Show maximum useful information in minimum space. Use `tabular-nums` for financial alignment, compact Item/ItemGroup patterns for lists, and Accordion grouping to let users expand what matters. Never sacrifice readability for density.
+
+2. **Warmth in utility** — Financial tools can feel cold. The golden primary, playful mascot, and conversational copy (":(" for zero savings rate) inject personality without undermining trust. Every interaction should feel like progress ("Build your dam"), not burden.
+
+3. **Fragment-driven composition** — Components declare their own data needs via Relay fragments and fetch context via hooks (`useHousehold`, `useCurrency`). No prop drilling. This keeps components self-contained, easy to move, and lets Relay optimize data fetching automatically.
+
+4. **Privacy as a feature** — Financial data is sensitive. Privacy mode masks values with `•••••••` across the entire UI. All financial displays must support this toggle. Design for the reality that users open this app around other people.
+
+5. **Keyboard-first, touch-ready** — Following Linear's lead, support keyboard shortcuts (`G+T` for transactions, `G+A` for accounts) and command palette navigation. But also provide mobile FAB navigation and standalone PWA support. Both interaction modes are first-class.
 
 ## Resources
 
