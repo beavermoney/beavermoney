@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ba2c2e8dd0703aa01b3ac7cb4c09d007>>
+ * @generated SignedSource<<4e3f76378f1971c734e8a76b7e357b85>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,7 +23,7 @@ export type categoriesPanelFragment$data = {
       readonly total: string;
       readonly transactionCount: number;
     };
-    readonly " $fragmentSpreads": FragmentRefs<"categoryCardFinancialReportFragment" | "financialSummaryCardsFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"categoriesSankeyFragment" | "categoryCardFinancialReportFragment" | "financialSummaryCardsFragment">;
   };
   readonly id: string;
   readonly transactionCategories: {
@@ -284,6 +284,11 @@ return {
           "args": null,
           "kind": "FragmentSpread",
           "name": "financialSummaryCardsFragment"
+        },
+        {
+          "args": null,
+          "kind": "FragmentSpread",
+          "name": "categoriesSankeyFragment"
         }
       ],
       "storageKey": null
@@ -295,6 +300,6 @@ return {
 };
 })();
 
-(node as any).hash = "5753fdd94d7919b772f5b83e5c035ad9";
+(node as any).hash = "4542361f4a318cda6960c06a509e8ab4";
 
 export default node;

@@ -22,6 +22,7 @@ import { useHousehold } from '@/hooks/use-household'
 import { CATEGORY_TYPE_LIST } from '@/constant'
 import { useNavigate } from '@tanstack/react-router'
 import { DateRangeFilter } from './date-range-filter'
+import { CategoriesSankey } from './categories-sankey'
 import { useSearch } from '@tanstack/react-router'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
 import { parseISO } from 'date-fns'
@@ -65,6 +66,7 @@ const CategoriesPanelFragment = graphql`
       }
       ...categoryCardFinancialReportFragment
       ...financialSummaryCardsFragment
+      ...categoriesSankeyFragment
     }
   }
 `
@@ -150,6 +152,8 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
         endDate={endDate}
         onDateRangeChange={onDateRangeChange}
       />
+      <div className="py-2"></div>
+      <CategoriesSankey fragmentRef={financialReport} />
       <div className="py-2"></div>
       <Accordion
         multiple
