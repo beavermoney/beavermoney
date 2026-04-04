@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import {
   fetchQuery,
   loadQuery,
@@ -11,6 +11,7 @@ import type { InvestmentIdQuery } from './__generated__/InvestmentIdQuery.graphq
 import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
+import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/investments/$investmentId',
@@ -64,8 +65,15 @@ function RouteComponent() {
     ).subscribe({})
   })
 
+  const navigate = useNavigate()
+
   return (
-    <div>
+    <div className="flex flex-col gap-4">
+      <div>
+        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+          Back
+        </Button>
+      </div>
       <TransactionsList fragmentRef={data.household} />
     </div>
   )

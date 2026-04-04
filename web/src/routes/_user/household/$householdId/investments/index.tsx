@@ -1,8 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { usePreloadedQuery } from 'react-relay'
+import {
+  fetchQuery,
+  loadQuery,
+  usePreloadedQuery,
+  useSubscribeToInvalidationState,
+} from 'react-relay'
 import { InvestmentsPanel } from './-components/investments-panel'
-import { HouseholdMobileOnly } from '@/components/layouts/household-mobile-only'
 import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
 import { investmentsQuery } from './-investments-query'
 import { InvestmentsQuery } from './__generated__/InvestmentsQuery.graphql'
 
@@ -11,18 +16,30 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
+  loader: () => {
+    return loadQuery<InvestmentsQuery>(
+      environment,
+      investmentsQuery,
+      {},
+      { fetchPolicy: 'store-or-network' },
+    )
+  },
 })
 
 function RouteComponent() {
-  const queryRef = Route.useRouteContext()
+  const params = Route.useParams()
+  const queryRef = Route.useLoaderData()
 
   const data = usePreloadedQuery<InvestmentsQuery>(investmentsQuery, queryRef)
 
-  return (
-    <HouseholdMobileOnly className="flex h-full">
-      <div className="flex-1">
-        <InvestmentsPanel fragmentRef={data.household} />
-      </div>
-    </HouseholdMobileOnly>
-  )
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
+      environment,
+      investmentsQuery,
+      {},
+      { fetchPolicy: 'network-only' },
+    ).subscribe({})
+  })
+
+  return <InvestmentsPanel fragmentRef={data.household} />
 }

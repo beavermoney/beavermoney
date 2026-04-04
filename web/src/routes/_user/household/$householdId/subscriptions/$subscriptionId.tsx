@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { graphql } from 'relay-runtime'
 import {
   fetchQuery,
@@ -11,6 +11,7 @@ import { SubscriptionCard } from './-components/subscription-card'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
 import { Item } from '@/components/ui/item'
+import { Button } from '@/components/ui/button'
 import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
 import invariant from 'tiny-invariant'
 
@@ -60,10 +61,17 @@ function RouteComponent() {
     ).subscribe({})
   })
 
+  const navigate = useNavigate()
+
   invariant(data.node, 'Subscription not found')
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col gap-4">
+      <div>
+        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+          Back
+        </Button>
+      </div>
       <Item className="p-0">
         <SubscriptionCard fragmentRef={data.node} />
         <EditSubscription

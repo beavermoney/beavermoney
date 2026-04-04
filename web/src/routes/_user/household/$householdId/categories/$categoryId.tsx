@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import {
   loadQuery,
   usePreloadedQuery,
@@ -11,6 +11,7 @@ import { PendingComponent } from '@/components/pending-component'
 import { EditCategory } from './-components/edit-category'
 import { CategoryCard } from './-components/category-card'
 import { Item } from '@/components/ui/item'
+import { Button } from '@/components/ui/button'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { TransactionsList } from '../transactions/-components/transactions-list'
 import invariant from 'tiny-invariant'
@@ -96,8 +97,15 @@ function RouteComponent() {
 
   invariant(data.node, 'Category not found')
 
+  const navigate = useNavigate()
+
   return (
     <div className="flex h-full flex-col gap-4">
+      <div>
+        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+          Back
+        </Button>
+      </div>
       <Item className="p-0">
         <CategoryCard
           categoryRef={data.node}

@@ -1,8 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { usePreloadedQuery } from 'react-relay'
+import {
+  fetchQuery,
+  loadQuery,
+  usePreloadedQuery,
+  useSubscribeToInvalidationState,
+} from 'react-relay'
 
-import { HouseholdMobileOnly } from '@/components/layouts/household-mobile-only'
 import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
 import { subscriptionsQuery } from './-subscriptions-query'
@@ -14,21 +19,33 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
+  loader: () => {
+    return loadQuery<SubscriptionsQuery>(
+      environment,
+      subscriptionsQuery,
+      {},
+      { fetchPolicy: 'store-or-network' },
+    )
+  },
 })
 
 function RouteComponent() {
-  const queryRef = Route.useRouteContext()
+  const params = Route.useParams()
+  const queryRef = Route.useLoaderData()
 
   const data = usePreloadedQuery<SubscriptionsQuery>(
     subscriptionsQuery,
     queryRef,
   )
 
-  return (
-    <HouseholdMobileOnly className="flex h-full">
-      <div className="flex-1">
-        <SubscriptionsPanel fragmentRef={data.household} />
-      </div>
-    </HouseholdMobileOnly>
-  )
+  useSubscribeToInvalidationState([params.householdId], () => {
+    fetchQuery(
+      environment,
+      subscriptionsQuery,
+      {},
+      { fetchPolicy: 'network-only' },
+    ).subscribe({})
+  })
+
+  return <SubscriptionsPanel fragmentRef={data.household} />
 }
