@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a33fe82cf43c6b83e74117f6ed36ecc6>>
+ * @generated SignedSource<<16d3176d647c1ad074e45e842a94847f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,6 +9,7 @@
 // @ts-nocheck
 
 import { ReaderFragment } from 'relay-runtime';
+export type AccountCategory = "fhsa" | "hsa" | "ira_roth" | "ira_traditional" | "lira" | "plan_401k" | "plan_403b" | "plan_457b" | "plan_529" | "rdsp" | "resp" | "roth_401k" | "rrif" | "rrsp" | "sep_ira" | "simple_ira" | "tfsa" | "%future added value";
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type accountsPanelFragment$data = {
@@ -16,6 +17,7 @@ export type accountsPanelFragment$data = {
     readonly __id: string;
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly category: AccountCategory | null | undefined;
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
@@ -133,6 +135,13 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
+                  "name": "category",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
                   "name": "name",
                   "storageKey": null
                 },
@@ -215,6 +224,6 @@ return {
 };
 })();
 
-(node as any).hash = "fbe1100bed82d96d8872aa1b39022cb5";
+(node as any).hash = "98ea9da7ae3a175d17eb576cdeff3c7d";
 
 export default node;

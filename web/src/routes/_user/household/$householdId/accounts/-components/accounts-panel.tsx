@@ -31,8 +31,21 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { ACCOUNT_TYPE_LIST } from '@/constant'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+import {
+  ACCOUNT_TYPE_LIST,
+  ACCOUNT_CATEGORY_LABEL,
+  ACCOUNT_CATEGORY_APPLICABLE_TYPES,
+} from '@/constant'
 import { PlusButton } from '@/components/plus-button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
@@ -51,6 +64,7 @@ const AccountsPanelFragment = graphql`
         node {
           id
           type
+          category
           name
           valueInHouseholdCurrency
           ...accountCardFragment
@@ -70,10 +84,34 @@ type AccountsListPageProps = {
   fragmentRef: accountsPanelFragment$key
 }
 
+const GROUP_BY_OPTIONS = {
+  type: 'By Type',
+  category: 'By Category',
+} as const
+
+type GroupByOption = keyof typeof GROUP_BY_OPTIONS
+
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
+  const navigate = useNavigate()
+
+  const search = useSearch({
+    from: '/_user/household/$householdId/accounts',
+  })
+  const groupByOption = search.group_by as GroupByOption
+
+  const handleGroupByChange = (newGroupBy: string | null) => {
+    if (!newGroupBy) return
+    navigate({
+      to: '.',
+      search: (prev) => ({
+        ...prev,
+        group_by: newGroupBy as GroupByOption,
+      }),
+    })
+  }
 
   useRegisterConnection(data.accounts.__id, NodeType.Account)
 
@@ -110,14 +148,40 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     })
   }
 
-  const groupedAccounts = useMemo(
-    () =>
-      groupBy(data.accounts.edges, (edge) => {
+  const groupedAccounts = useMemo(() => {
+    if (groupByOption === 'category') {
+      const eligible = (data.accounts.edges ?? []).filter((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return edge.node.type
-      }),
-    [data.accounts],
-  )
+        return ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(edge.node.type)
+      })
+      return groupBy(eligible, (edge) => {
+        invariant(edge?.node, 'Account node is null')
+        return edge.node.category ?? 'taxable'
+      })
+    }
+    return groupBy(data.accounts.edges, (edge) => {
+      invariant(edge?.node, 'Account node is null')
+      return edge.node.type
+    })
+  }, [data.accounts, groupByOption])
+
+  const groupKeys = useMemo(() => {
+    if (groupByOption === 'category') {
+      const keys = Object.keys(groupedAccounts)
+      const categorized = keys.filter((k) => k !== 'taxable').sort()
+      const taxable = keys.includes('taxable') ? ['taxable'] : []
+      return [...categorized, ...taxable]
+    }
+    return ACCOUNT_TYPE_LIST.filter((t) => t in groupedAccounts)
+  }, [groupedAccounts, groupByOption])
+
+  const getGroupLabel = (key: string) => {
+    if (groupByOption === 'category') {
+      if (key === 'taxable') return 'Taxable'
+      return ACCOUNT_CATEGORY_LABEL[key] ?? capitalize(key)
+    }
+    return capitalize(key)
+  }
 
   const displayOptions = useMemo(() => {
     const assets = (data.accounts.edges ?? [])
@@ -205,22 +269,45 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <NetWorthChart />
       </Suspense>
       <div className="py-2"></div>
+      <div className="flex items-center justify-end p-0">
+        <Select
+          name="group-accounts"
+          value={groupByOption}
+          onValueChange={handleGroupByChange}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue>{GROUP_BY_OPTIONS[groupByOption]}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {(
+                Object.entries(GROUP_BY_OPTIONS) as [GroupByOption, string][]
+              ).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="py-2"></div>
       <Accordion
+        key={groupByOption}
         multiple
         className="w-full"
-        defaultValue={[...ACCOUNT_TYPE_LIST]}
+        defaultValue={[...groupKeys]}
       >
-        {map(ACCOUNT_TYPE_LIST, (type) => {
-          if (type in groupedAccounts === false) {
-            return null
-          }
-          const accounts = groupedAccounts[type].sort((a, b) =>
+        {map(groupKeys, (key) => {
+          const accounts = groupedAccounts[key].sort((a, b) =>
             (a?.node?.name ?? '').localeCompare(b?.node?.name ?? ''),
           )
+          const isLiabilityGroup =
+            groupByOption === 'type' && key === 'liability'
           return (
-            <AccordionItem value={type} key={type}>
+            <AccordionItem value={key} key={key}>
               <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
-                <span>{capitalize(type)}</span>
+                <span>{getGroupLabel(key)}</span>
                 <span className="grow"></span>
                 <span className="text-md mr-3 tracking-wide tabular-nums">
                   {formatCurrencyWithPrivacyMode({
@@ -230,8 +317,8 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                         return currency(account.node.valueInHouseholdCurrency)
                       })
                       .reduce((a, b) => a.add(b), currency(0)),
-                    currencyCode: 'CAD',
-                    liability: type === 'liability',
+                    currencyCode: household.currency.code,
+                    liability: isLiabilityGroup,
                   })}
                 </span>
               </AccordionTrigger>

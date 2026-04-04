@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6c0319f6f6d2b2b12e44990a660b2223>>
+ * @generated SignedSource<<5ad0fd81a1d03402f4a80cc00beac417>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -121,6 +121,13 @@ return {
                         "args": null,
                         "kind": "ScalarField",
                         "name": "type",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "category",
                         "storageKey": null
                       },
                       (v2/*: any*/),
@@ -269,12 +276,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "be5fab4db506a3f02ef1c5d62dbfb7db",
+    "cacheID": "96c8abc974c2892589a73b8d0db7f1e2",
     "id": null,
     "metadata": {},
     "name": "AccountsQuery",
     "operationKind": "query",
-    "text": "query AccountsQuery {\n  household {\n    ...accountsPanelFragment\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Household {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query AccountsQuery {\n  household {\n    ...accountsPanelFragment\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Household {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
