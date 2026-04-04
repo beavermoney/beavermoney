@@ -100,7 +100,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const search = useSearch({
     from: '/_user/household/$householdId/accounts',
   })
-  const groupByOption = search.group_by as GroupByOption
+  const groupByOption = search.accounts_group_by as GroupByOption
 
   const handleGroupByChange = (newGroupBy: string | null) => {
     if (!newGroupBy) return
@@ -108,7 +108,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       to: '.',
       search: (prev) => ({
         ...prev,
-        group_by: newGroupBy as GroupByOption,
+        accounts_group_by: newGroupBy as GroupByOption,
       }),
     })
   }

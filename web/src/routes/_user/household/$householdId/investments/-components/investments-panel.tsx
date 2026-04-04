@@ -95,7 +95,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const search = useSearch({
     from: '/_user/household/$householdId/investments',
   })
-  const groupByOption = search.group_by
+  const groupByOption = search.investments_group_by
 
   const handleGroupByChange = (newGroupBy: string | null) => {
     if (!newGroupBy) return
@@ -103,7 +103,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
       to: '.',
       search: (prev) => ({
         ...prev,
-        group_by: newGroupBy as GroupByOption,
+        investments_group_by: newGroupBy as GroupByOption,
       }),
     })
   }

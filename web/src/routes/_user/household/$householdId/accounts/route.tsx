@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const SearchSchema = z.object({
-  group_by: z.enum(['type', 'category']).optional().default('type'),
+  accounts_group_by: z.enum(['type', 'category']).optional().default('type'),
 })
 
 export const Route = createFileRoute('/_user/household/$householdId/accounts')({
