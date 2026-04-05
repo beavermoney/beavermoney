@@ -252,14 +252,27 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       <div className="py-2"></div>
       <Suspense
         fallback={
-          <div className="flex w-full flex-col items-stretch gap-0">
-            <div className="">
-              <Skeleton className="h-5 w-48" />
+          <div className="flex w-full flex-col items-stretch gap-0 rounded-md border border-transparent">
+            <div className="flex gap-1">
+              <Skeleton className="h-5 w-16 rounded-md" />
+              <Skeleton className="h-5 w-12 rounded-md" />
+              <Skeleton className="h-5 w-16 rounded-md" />
+              <Skeleton className="h-5 w-20 rounded-md" />
+              <Skeleton className="h-5 w-18 rounded-md" />
+              <Skeleton className="h-5 w-14 rounded-md" />
             </div>
             <div className="py-1"></div>
-            <Skeleton className="h-44 rounded-md" />
-            <div className="flex justify-end pt-1 pb-2.5">
-              <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-44 w-full rounded-md" />
+            <div className="flex items-center gap-2 pt-1 pb-2.5">
+              <Skeleton className="h-4 w-28" />
+              <div className="grow"></div>
+              <div className="flex gap-0.5">
+                <Skeleton className="h-5 w-7 rounded-md" />
+                <Skeleton className="h-5 w-7 rounded-md" />
+                <Skeleton className="h-5 w-7 rounded-md" />
+                <Skeleton className="h-5 w-7 rounded-md" />
+                <Skeleton className="h-5 w-7 rounded-md" />
+              </div>
             </div>
           </div>
         }
