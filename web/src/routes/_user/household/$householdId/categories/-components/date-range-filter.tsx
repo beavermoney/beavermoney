@@ -414,12 +414,12 @@ export function DateRangeFilter({
         value={showCustomPicker ? 'CUSTOM' : groupBy}
         onValueChange={handleGroupByChange}
       >
-        <SelectTrigger className="w-24">
+        <SelectTrigger className="w-32">
           <SelectValue>
             {GROUP_BY_LABELS[showCustomPicker ? 'CUSTOM' : groupBy]}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="">
           <SelectGroup>
             {Object.entries(GROUP_BY_LABELS).map(([value, label]) => (
               <SelectItem key={value} value={value}>
