@@ -42,6 +42,7 @@ export function NavProjects({
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton
+              className="hover:text-primary!"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobile(false)
@@ -50,8 +51,10 @@ export function NavProjects({
               render={
                 <Link
                   {...item.link}
-                  className="group/nav-link"
-                  activeProps={{ className: 'font-semibold' }}
+                  className="group/nav-link hover:text-primary"
+                  activeProps={{
+                    className: 'font-semibold text-primary',
+                  }}
                 >
                   <item.icon />
                   <span>{item.name}</span>

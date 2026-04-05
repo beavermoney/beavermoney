@@ -1,5 +1,6 @@
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
+import { Logo } from '@/components/logo'
 import { graphql, useFragment } from 'react-relay'
 import { useNavigate } from '@tanstack/react-router'
 import type { householdSwitcherFragment$key } from './__generated__/householdSwitcherFragment.graphql'
@@ -50,8 +51,8 @@ export function HouseholdSwitcher({ fragmentRef }: HouseholdSwitcherProps) {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Logo size="large" name={activeHousehold.name} />
+                <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
+                  <Logo size={32} />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
@@ -87,8 +88,8 @@ export function HouseholdSwitcher({ fragmentRef }: HouseholdSwitcherProps) {
                     })
                   }
                 >
-                  <div className="flex size-6 items-center justify-center rounded-md border">
-                    <Logo size="small" name={household.name} />
+                  <div className="flex size-6 items-center justify-center rounded-md border text-sm">
+                    {household.name[0]}
                   </div>
                   {household.name}
                   <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
@@ -111,16 +112,5 @@ export function HouseholdSwitcher({ fragmentRef }: HouseholdSwitcherProps) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
-}
-
-type LogoProps = {
-  name: string
-  size: 'small' | 'large'
-}
-
-function Logo({ name, size }: LogoProps) {
-  return (
-    <div className={size === 'small' ? 'text-sm' : 'text-lg'}>{name[0]}</div>
   )
 }
