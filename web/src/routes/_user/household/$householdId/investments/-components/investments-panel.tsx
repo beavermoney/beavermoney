@@ -18,14 +18,7 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemSeparator,
-  ItemTitle,
-} from '@/components/ui/item'
+import { ItemGroup } from '@/components/ui/item'
 import {
   Select,
   SelectContent,
@@ -179,21 +172,21 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         </Button>
         <PlusButton />
       </div>
-      <Item variant="outline" className="">
-        <ItemContent>
-          <ItemDescription>Total Investment</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: totalInvestment,
-              currencyCode: household.currency.code,
-            })}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+      <div className="flex flex-col gap-1">
+        <span className="text-primary text-[0.6875rem] font-medium tracking-wider uppercase">
+          Total Investment
+        </span>
+        <div className="text-3xl font-semibold tracking-tight tabular-nums">
+          {formatCurrencyWithPrivacyMode({
+            value: totalInvestment,
+            currencyCode: household.currency.code,
+          })}
+        </div>
+      </div>
       <div className="py-2"></div>
 
       {/* Group By Dropdown */}
-      <div className="flex items-center justify-end p-0">
+      <div className="flex items-center justify-end">
         <Select
           name="group-investments"
           value={groupByOption}
@@ -240,27 +233,34 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
           const percentage = (value.value / totalInvestment.value) * 100
 
           return (
-            <AccordionItem value={groupKey} key={groupKey}>
-              <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
+            <AccordionItem
+              value={groupKey}
+              key={groupKey}
+              className="data-open:bg-transparent"
+            >
+              <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{groupLabel}</span>
                 <span className="grow"></span>
-                <span className="tabular-nums">({percentage.toFixed(2)}%)</span>
-                <span className="mr-3 tabular-nums">
+                <span className="text-muted-foreground tabular-nums">
+                  ({percentage.toFixed(2)}%)
+                </span>
+                <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
                   {formatCurrencyWithPrivacyMode({
                     value,
                     currencyCode: household.currency.code,
                   })}
                 </span>
               </AccordionTrigger>
-              <AccordionContent className="pb-1">
+              <AccordionContent className="-mx-2 pb-0">
                 <ItemGroup className="gap-0">
                   {investments.map((investment) => {
                     invariant(investment?.node, 'Investment node is null')
                     return (
-                      <Fragment key={investment.node.id}>
-                        <ItemSeparator className="my-1" />
-                        <InvestmentCard fragmentRef={investment.node} />
-                      </Fragment>
+                      <InvestmentCard
+                        key={investment.node.id}
+                        fragmentRef={investment.node}
+                        className="rounded-none"
+                      />
                     )
                   })}
                 </ItemGroup>
@@ -283,7 +283,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-xs/relaxed font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
+          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-sm/relaxed font-semibold transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
           className,
         )}
         {...props}

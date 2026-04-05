@@ -1,17 +1,10 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { graphql, usePaginationFragment } from 'react-relay'
 import invariant from 'tiny-invariant'
 
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemSeparator,
-  ItemTitle,
-} from '@/components/ui/item'
+import { ItemGroup } from '@/components/ui/item'
 import {
   Select,
   SelectContent,
@@ -30,7 +23,6 @@ import { SubscriptionCard } from './subscription-card'
 import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import { PlusButton } from '@/components/plus-button'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
-import { Card } from '@/components/ui/card'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Household
@@ -73,8 +65,6 @@ const SORT_OPTIONS = {
 
 type SortOption = keyof typeof SORT_OPTIONS
 
-type SummaryDisplay = 'monthly' | 'yearly' | 'count'
-
 export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   const { data } = usePaginationFragment(
     SubscriptionsPanelFragment,
@@ -89,22 +79,10 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     NodeType.RecurringSubscription,
   )
 
-  // Read sort_by from URL
   const search = useSearch({
     from: '/_user/household/$householdId/subscriptions',
   })
   const sortBy = search.sort_by
-
-  const [summaryDisplay, setSummaryDisplay] =
-    useState<SummaryDisplay>('monthly')
-
-  const handleSummaryClick = () => {
-    setSummaryDisplay((prev) => {
-      if (prev === 'monthly') return 'yearly'
-      if (prev === 'yearly') return 'count'
-      return 'monthly'
-    })
-  }
 
   const handleSortChange = (newSortBy: string | null) => {
     if (!newSortBy) return
@@ -124,7 +102,6 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
 
   const { monthlyAverage, yearlyAverage, activeCount, sortedSubscriptions } =
     useMemo(() => {
-      // Filter active subscriptions and remove nulls
       const edges = data.recurringSubscriptions.edges ?? []
       const activeSubscriptions = edges
         .filter((edge) => {
@@ -152,14 +129,13 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
             invariant(false, `unexpected interval type: ${sub.interval}`)
         }
       }
-      // Calculate total yearly cost first, then divide for monthly
+
       const yearlyTotal = activeSubscriptions.reduce((total, sub) => {
         return total.add(getYearlyEquivalent(sub))
       }, currency(0))
 
       const totalMonthly = yearlyTotal.divide(12)
 
-      // Sort subscriptions
       const subscriptionsToSort = [...activeSubscriptions]
 
       subscriptionsToSort.sort((a, b) => {
@@ -200,70 +176,42 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
       }
     }, [data, sortBy])
 
-  const summaryContent = useMemo(() => {
-    switch (summaryDisplay) {
-      case 'monthly':
-        return {
-          label: 'Average Monthly Spend',
-          value: formatCurrencyWithPrivacyMode({
-            value: monthlyAverage,
-            currencyCode: household.currency.code,
-          }),
-        }
-      case 'yearly':
-        return {
-          label: 'Average Yearly Spend',
-          value: formatCurrencyWithPrivacyMode({
-            value: yearlyAverage,
-            currencyCode: household.currency.code,
-          }),
-        }
-      case 'count':
-        return {
-          label: 'Active Subscriptions',
-          value: activeCount.toString(),
-        }
-    }
-  }, [
-    summaryDisplay,
-    monthlyAverage,
-    yearlyAverage,
-    activeCount,
-    formatCurrencyWithPrivacyMode,
-    household.currency.code,
-  ])
-
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
         <PlusButton />
       </div>
 
-      {/* Summary Card */}
-      <Item
-        variant="outline"
-        className="cursor-pointer"
-        onClick={handleSummaryClick}
-      >
-        <ItemContent>
-          <ItemDescription>{summaryContent.label}</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {summaryContent.value}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+      <div className="flex flex-col gap-1">
+        <span className="text-primary text-[0.6875rem] font-medium tracking-wider uppercase">
+          Monthly Spend
+        </span>
+        <div className="text-3xl font-semibold tracking-tight tabular-nums">
+          {formatCurrencyWithPrivacyMode({
+            value: monthlyAverage,
+            currencyCode: household.currency.code,
+          })}
+        </div>
+        <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums">
+          <span>
+            {formatCurrencyWithPrivacyMode({
+              value: yearlyAverage,
+              currencyCode: household.currency.code,
+            })}{' '}
+            <span className="text-muted-foreground/60">yearly</span>
+          </span>
+          <span>
+            {activeCount}{' '}
+            <span className="text-muted-foreground/60">
+              {activeCount === 1 ? 'subscription' : 'subscriptions'}
+            </span>
+          </span>
+        </div>
+      </div>
 
       <div className="py-2"></div>
 
-      {/* Sort Dropdown */}
-      <div className="flex items-center p-0">
-        <Item size="xs" className="py-0">
-          <ItemTitle>
-            {activeCount <= 1
-              ? `${activeCount.toString()} subscription`
-              : `${activeCount.toString()} subscriptions`}
-          </ItemTitle>
-        </Item>
+      <div className="flex items-center">
         <div className="grow"></div>
         <Select
           name="sort-subscriptions"
@@ -289,17 +237,17 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
 
       <div className="py-2"></div>
 
-      {/* Subscriptions List */}
-      <Card className="bg-muted/50 p-2">
+      <div className="overflow-hidden rounded-md border">
         <ItemGroup className="gap-0">
-          {sortedSubscriptions.map((subscription, index) => (
-            <Fragment key={subscription.id}>
-              {index > 0 && <ItemSeparator className="my-1" />}
-              <SubscriptionCard fragmentRef={subscription} />
-            </Fragment>
+          {sortedSubscriptions.map((subscription) => (
+            <SubscriptionCard
+              key={subscription.id}
+              fragmentRef={subscription}
+              className="rounded-none"
+            />
           ))}
         </ItemGroup>
-      </Card>
+      </div>
     </Fragment>
   )
 }

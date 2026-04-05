@@ -39,9 +39,14 @@ const accountCardFragment = graphql`
 type AccountCardProps = {
   fragmentRef: accountCardFragment$key
   linkOptions?: LinkOptions
+  className?: string
 }
 
-export function AccountCard({ fragmentRef, linkOptions }: AccountCardProps) {
+export function AccountCard({
+  fragmentRef,
+  linkOptions,
+  className,
+}: AccountCardProps) {
   const data = useFragment(accountCardFragment, fragmentRef)
 
   const balance = currency(data.balance)
@@ -52,6 +57,7 @@ export function AccountCard({ fragmentRef, linkOptions }: AccountCardProps) {
   return (
     <>
       <Item
+        className={cn(className)}
         render={
           <Link
             className="no-underline!"
@@ -81,7 +87,7 @@ export function AccountCard({ fragmentRef, linkOptions }: AccountCardProps) {
                 </ItemContent>
                 <ItemContent className="items-end gap-px">
                   <ItemTitle className="">
-                    <span className="tabular-nums">
+                    <span className="font-semibold tabular-nums">
                       {formatCurrencyWithPrivacyMode({
                         value: data.value,
                         currencyCode: data.currency.code,
@@ -100,6 +106,7 @@ export function AccountCard({ fragmentRef, linkOptions }: AccountCardProps) {
       />
       {data.type === 'investment' && balance.value != 0 && value.value != 0 && (
         <Item
+          className={cn(className)}
           render={
             <Link
               className="no-underline!"

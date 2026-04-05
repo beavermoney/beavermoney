@@ -87,7 +87,7 @@ export function InvestmentLotCard({
       </ItemContent>
       <ItemContent className="items-end gap-px">
         <ItemTitle className="">
-          <span className="tabular-nums">
+          <span className="font-semibold tabular-nums">
             {formatCurrency({
               value: currency(data.price, { precision: 8 }).multiply(
                 currency(data.amount, { precision: 8 }),

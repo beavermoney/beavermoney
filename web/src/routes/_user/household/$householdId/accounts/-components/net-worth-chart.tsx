@@ -253,12 +253,9 @@ export function NetWorthChart() {
   }
 
   return (
-    <Item
-      variant="outline"
-      className="w-full flex-col items-stretch gap-0 px-0 py-0"
-    >
+    <Item className="w-full flex-col items-stretch gap-0 p-0">
       <ScrollArea className="w-full">
-        <div className="flex gap-1 px-3 pt-2.5 pb-1">
+        <div className="flex gap-1">
           {SERIES.map((s) => {
             const active = activeSeries.has(s.key)
             return (
@@ -288,7 +285,7 @@ export function NetWorthChart() {
       {hasActiveSeries ? (
         <ChartContainer
           config={chartConfig}
-          className={`h-36 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
+          className={`h-44 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
         >
           <AreaChart
             data={chartData}
@@ -402,12 +399,12 @@ export function NetWorthChart() {
         </ChartContainer>
       ) : (
         <div
-          className={`text-muted-foreground flex h-36 w-full items-center justify-center text-xs transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
+          className={`text-muted-foreground flex h-44 w-full items-center justify-center text-xs transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
         >
           Select at least one series to view chart
         </div>
       )}
-      <div className="flex items-center gap-2 px-3 pt-1 pb-2.5">
+      <div className="flex items-center gap-2 pt-1 pb-2.5">
         {singleSeriesStats && (
           <div
             className={cn(

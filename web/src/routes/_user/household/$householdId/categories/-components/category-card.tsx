@@ -62,11 +62,13 @@ const categoryCardFinancialReportFragment = graphql`
 type CategoryCardProps = {
   categoryRef: categoryCardCategoryFragment$key
   financialReportRef: categoryCardFinancialReportFragment$key
+  className?: string
 }
 
 export function CategoryCard({
   categoryRef,
   financialReportRef,
+  className,
 }: CategoryCardProps) {
   const category = useFragment(categoryCardCategoryFragment, categoryRef)
   const financialReport = useFragment(
@@ -95,6 +97,7 @@ export function CategoryCard({
 
   return (
     <Item
+      className={cn(className)}
       render={
         <Link
           className="no-underline!"
@@ -120,7 +123,7 @@ export function CategoryCard({
               {total && (
                 <ItemContent className="items-end gap-px">
                   <ItemTitle className="tabular-nums">
-                    <span>
+                    <span className="font-semibold">
                       {formatCurrencyWithPrivacyMode({
                         value: currency(total),
                         currencyCode: household.currency.code,

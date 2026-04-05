@@ -20,14 +20,7 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemSeparator,
-  ItemTitle,
-} from '@/components/ui/item'
+import { ItemGroup } from '@/components/ui/item'
 import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
@@ -215,10 +208,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     ]
   }, [data.accounts])
 
-  const cycleDisplay = () => {
-    setDisplayIndex((prev) => (prev + 1) % displayOptions.length)
-  }
-
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
@@ -234,42 +223,51 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         </Button>
         <PlusButton />
       </div>
-      <Item variant="outline" className="cursor-pointer" onClick={cycleDisplay}>
-        <ItemContent>
-          <ItemDescription>
-            {displayOptions[displayIndex].label}
-          </ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: displayOptions[displayIndex].value,
-              currencyCode: household.currency.code,
-              liability: displayIndex === 2, // Show liability formatting for Total Liabilities
-            })}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+      <div className="flex flex-col gap-1">
+        <div className="flex gap-3">
+          {displayOptions.map((option, index) => (
+            <button
+              key={option.label}
+              type="button"
+              onClick={() => setDisplayIndex(index)}
+              className={cn(
+                'cursor-pointer text-[0.6875rem] font-medium tracking-wider uppercase transition-colors',
+                index === displayIndex
+                  ? 'text-primary'
+                  : 'text-muted-foreground/40 hover:text-muted-foreground',
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <div className="text-3xl font-semibold tracking-tight tabular-nums">
+          {formatCurrencyWithPrivacyMode({
+            value: displayOptions[displayIndex].value,
+            currencyCode: household.currency.code,
+            liability: displayIndex === 2, // Show liability formatting for Total Liabilities
+          })}
+        </div>
+      </div>
       <div className="py-2"></div>
       <Suspense
         fallback={
-          <Item
-            variant="outline"
-            className="w-full flex-col items-stretch gap-0 px-0 py-0"
-          >
-            <div className="px-3 pt-2.5 pb-1">
+          <div className="flex w-full flex-col items-stretch gap-0">
+            <div className="">
               <Skeleton className="h-5 w-48" />
             </div>
             <div className="py-1"></div>
-            <Skeleton className="mx-3 h-36 rounded-md" />
-            <div className="flex justify-end px-3 pt-1 pb-2.5">
+            <Skeleton className="h-44 rounded-md" />
+            <div className="flex justify-end pt-1 pb-2.5">
               <Skeleton className="h-5 w-32" />
             </div>
-          </Item>
+          </div>
         }
       >
         <NetWorthChart />
       </Suspense>
       <div className="py-2"></div>
-      <div className="flex items-center justify-end p-0">
+      <div className="flex items-center justify-end">
         <Select
           name="group-accounts"
           value={groupByOption}
@@ -305,11 +303,15 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           const isLiabilityGroup =
             groupByOption === 'type' && key === 'liability'
           return (
-            <AccordionItem value={key} key={key}>
-              <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
+            <AccordionItem
+              value={key}
+              key={key}
+              className="data-open:bg-transparent"
+            >
+              <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{getGroupLabel(key)}</span>
                 <span className="grow"></span>
-                <span className="text-md mr-3 tracking-wide tabular-nums">
+                <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
                   {formatCurrencyWithPrivacyMode({
                     value: accounts
                       .map((account) => {
@@ -322,15 +324,16 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                   })}
                 </span>
               </AccordionTrigger>
-              <AccordionContent className="pb-1">
+              <AccordionContent className="-mx-2 pb-0">
                 <ItemGroup className="gap-0">
                   {accounts.map((account) => {
                     invariant(account?.node, 'Account node is null')
                     return (
-                      <Fragment key={account.node.id}>
-                        <ItemSeparator className="my-1" />
-                        <AccountCard fragmentRef={account.node} />
-                      </Fragment>
+                      <AccountCard
+                        key={account.node.id}
+                        fragmentRef={account.node}
+                        className="rounded-none"
+                      />
                     )
                   })}
                 </ItemGroup>
@@ -353,7 +356,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-xs/relaxed font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
+          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-sm/relaxed font-semibold transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
           className,
         )}
         {...props}

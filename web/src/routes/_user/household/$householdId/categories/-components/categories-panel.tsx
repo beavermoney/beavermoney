@@ -15,7 +15,7 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion'
-import { ItemGroup, ItemSeparator } from '@/components/ui/item'
+import { ItemGroup } from '@/components/ui/item'
 import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
@@ -167,12 +167,16 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
           const categories = groupedCategories[type]
           const typeAggregate = categoryTypeMap.get(type)
           return (
-            <AccordionItem value={type} key={type}>
-              <AccordionTrigger className="cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
+            <AccordionItem
+              value={type}
+              key={type}
+              className="data-open:bg-transparent"
+            >
+              <AccordionTrigger className="bg-muted/60 cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{capitalize(type)}</span>
                 <span className="grow"></span>
                 {typeAggregate && (
-                  <span className="mr-3 tabular-nums">
+                  <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
                     {formatCurrencyWithPrivacyMode({
                       value: currency(typeAggregate.total),
                       currencyCode: household.currency.code,
@@ -180,18 +184,17 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                   </span>
                 )}
               </AccordionTrigger>
-              <AccordionContent className="pb-1">
+              <AccordionContent className="-mx-2 pb-0">
                 <ItemGroup className="gap-0">
                   {categories.map((category) => {
                     invariant(category?.node, 'Category node is null')
                     return (
-                      <Fragment key={category.node.id}>
-                        <ItemSeparator className="my-1" />
-                        <CategoryCard
-                          categoryRef={category.node}
-                          financialReportRef={financialReport}
-                        />
-                      </Fragment>
+                      <CategoryCard
+                        key={category.node.id}
+                        categoryRef={category.node}
+                        financialReportRef={financialReport}
+                        className="rounded-none"
+                      />
                     )
                   })}
                 </ItemGroup>
@@ -214,7 +217,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-xs/relaxed font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
+          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-sm/relaxed font-semibold transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
           className,
         )}
         {...props}

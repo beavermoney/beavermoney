@@ -39,9 +39,13 @@ const SubscriptionCardFragment = graphql`
 
 type SubscriptionCardProps = {
   fragmentRef: subscriptionCardFragment$key
+  className?: string
 }
 
-export function SubscriptionCard({ fragmentRef }: SubscriptionCardProps) {
+export function SubscriptionCard({
+  fragmentRef,
+  className,
+}: SubscriptionCardProps) {
   const data = useFragment(SubscriptionCardFragment, fragmentRef)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
@@ -79,6 +83,7 @@ export function SubscriptionCard({ fragmentRef }: SubscriptionCardProps) {
 
   return (
     <Item
+      className={cn(className)}
       render={
         <Link
           className="no-underline!"
@@ -106,7 +111,7 @@ export function SubscriptionCard({ fragmentRef }: SubscriptionCardProps) {
                 <ItemDescription>{intervalText}</ItemDescription>
               </ItemContent>
               <ItemContent className="items-end gap-px">
-                <ItemTitle className="tabular-nums">
+                <ItemTitle className="font-semibold tabular-nums">
                   {formatCurrencyWithPrivacyMode({
                     value: data.cost,
                     currencyCode: data.currency.code,

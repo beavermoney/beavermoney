@@ -2,12 +2,6 @@ import currency from 'currency.js'
 import { graphql } from 'relay-runtime'
 import { useFragment } from 'react-relay'
 import { useMemo } from 'react'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from '@/components/ui/item'
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import type { financialSummaryCardsFragment$key } from './__generated__/financialSummaryCardsFragment.graphql'
@@ -54,48 +48,36 @@ export function FinancialSummaryCards({
   }, [data.incomeBreakdown, data.expensesBreakdown])
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <Item variant="outline" className="">
-        <ItemContent>
-          <ItemDescription>Total Income</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: totalIncome,
-              currencyCode: household.currency.code,
-            })}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
-      <Item variant="outline" className="">
-        <ItemContent>
-          <ItemDescription>Total Expenses</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: totalExpenses,
-              currencyCode: household.currency.code,
-            })}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
-      <Item variant="outline" className="">
-        <ItemContent>
-          <ItemDescription>Net</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: net,
-              currencyCode: household.currency.code,
-            })}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
-      <Item variant="outline" className="">
-        <ItemContent>
-          <ItemDescription>Saving Rate</ItemDescription>
-          <ItemTitle className="text-xl tabular-nums">
-            {isPrivacyModeEnabled ? '•••••••' : savingRate}
-          </ItemTitle>
-        </ItemContent>
-      </Item>
+    <div className="flex flex-col gap-1">
+      <span className="text-primary text-[0.6875rem] font-medium tracking-wider uppercase">
+        Cash Flow
+      </span>
+      <div className="text-3xl font-semibold tracking-tight tabular-nums">
+        {formatCurrencyWithPrivacyMode({
+          value: net,
+          currencyCode: household.currency.code,
+        })}
+      </div>
+      <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums">
+        <span>
+          {formatCurrencyWithPrivacyMode({
+            value: totalIncome,
+            currencyCode: household.currency.code,
+          })}{' '}
+          <span className="text-muted-foreground/60">income</span>
+        </span>
+        <span>
+          {formatCurrencyWithPrivacyMode({
+            value: totalExpenses,
+            currencyCode: household.currency.code,
+          })}{' '}
+          <span className="text-muted-foreground/60">expenses</span>
+        </span>
+        <span>
+          {isPrivacyModeEnabled ? '•••••••' : savingRate}{' '}
+          <span className="text-muted-foreground/60">saving rate</span>
+        </span>
+      </div>
     </div>
   )
 }
