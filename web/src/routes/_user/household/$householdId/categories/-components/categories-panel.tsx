@@ -172,7 +172,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
               key={type}
               className="data-open:bg-transparent"
             >
-              <AccordionTrigger className="bg-muted/60 cursor-pointer justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
+              <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{capitalize(type)}</span>
                 <span className="grow"></span>
                 {typeAggregate && (
