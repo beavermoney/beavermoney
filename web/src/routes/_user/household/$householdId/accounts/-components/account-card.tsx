@@ -3,19 +3,13 @@ import { useFragment } from 'react-relay'
 import { Link, LinkOptions } from '@tanstack/react-router'
 import type { accountCardFragment$key } from './__generated__/accountCardFragment.graphql'
 import { cn } from '@/lib/utils'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
+
 import { useCurrency } from '@/hooks/use-currency'
 import { getPrettyTime } from '@/lib/time'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import currency from 'currency.js'
-import { Field, FieldLabel } from '@/components/ui/field'
+
 import { Progress } from '@/components/ui/progress'
 
 const accountCardFragment = graphql`
@@ -54,105 +48,67 @@ export function AccountCard({
 
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
+  const showProgress =
+    data.type === 'investment' && balance.value != 0 && value.value != 0
+
+  const investmentPercentage =
+    showProgress && value.value !== 0
+      ? Number(((1 - balance.value / value.value) * 100).toFixed(2))
+      : 0
+
   return (
-    <>
-      <Item
-        className={cn(className)}
-        render={
-          <Link
-            className="no-underline!"
-            from="/household/$householdId/"
-            to="/household/$householdId/accounts/$accountId"
-            search={(prev) => ({ ...prev })}
-            activeOptions={{ exact: true }}
-            params={{ accountId: data.id }}
-            {...linkOptions}
-          >
-            {({ isActive }) => (
-              <>
-                <ItemMedia variant="image">
-                  <Avatar className="">
-                    <AvatarImage
-                      src={getLogoDomainURL(data.icon || '')}
-                      alt={data.icon || 'unknown logo'}
-                    />
-                    <AvatarFallback>{data.name}</AvatarFallback>
-                  </Avatar>
-                </ItemMedia>
-                <ItemContent className="gap-px">
-                  <ItemTitle className={cn(isActive && 'font-semibold')}>
-                    {data.name}
-                  </ItemTitle>
-                  <ItemDescription>{data.user.name}</ItemDescription>
-                </ItemContent>
-                <ItemContent className="items-end gap-px">
-                  <ItemTitle className="">
-                    <span className="font-semibold tabular-nums">
-                      {formatCurrencyWithPrivacyMode({
-                        value: data.value,
-                        currencyCode: data.currency.code,
-                        liability: data.type === 'liability',
-                      })}
-                    </span>
-                  </ItemTitle>
-                  <ItemDescription className="">
-                    <span>{getPrettyTime(new Date(data.updateTime))}</span>
-                  </ItemDescription>
-                </ItemContent>
-              </>
-            )}
-          </Link>
-        }
-      />
-      {data.type === 'investment' && balance.value != 0 && value.value != 0 && (
-        <Item
-          className={cn(className)}
-          render={
-            <Link
-              className="no-underline!"
-              from="/household/$householdId/"
-              to="/household/$householdId/accounts/$accountId"
-              search={(prev) => ({ ...prev })}
-              activeOptions={{ exact: true }}
-              params={{ accountId: data.id }}
-            >
-              {() => {
-                const total = value.value
-                const cash = balance.value
-
-                const cashPercentage = total === 0 ? 0 : (cash / total) * 100
-
-                const investmentPercentage = 100 - cashPercentage
-
-                const cashPercentageDisplay = Number(cashPercentage.toFixed(2))
-                const investmentPercentageDisplay = Number(
-                  investmentPercentage.toFixed(2),
-                )
-
-                return (
-                  <Field className="w-full">
-                    <FieldLabel htmlFor="progress-upload">
-                      <span>Investment {investmentPercentageDisplay}%</span>
-                      <span className="ml-auto">
-                        Cash {cashPercentageDisplay}% (
-                        <span className="tabular-nums">
-                          {formatCurrencyWithPrivacyMode({
-                            value: data.balance,
-                            currencyCode: data.currency.code,
-                            liability: data.type === 'liability',
-                          })}
-                        </span>
-                        )
-                      </span>
-                    </FieldLabel>
-                    <Progress value={investmentPercentage} />
-                  </Field>
-                )
-              }}
-            </Link>
-          }
-        />
+    <Link
+      className={cn(
+        'hover:bg-muted flex flex-col gap-1.5 rounded-md border border-transparent p-3 text-xs/relaxed no-underline! transition-colors',
+        className,
       )}
-    </>
+      from="/household/$householdId/"
+      to="/household/$householdId/accounts/$accountId"
+      search={(prev) => ({ ...prev })}
+      activeOptions={{ exact: true }}
+      activeProps={{ className: 'border-border' }}
+      params={{ accountId: data.id }}
+      {...linkOptions}
+    >
+      <div className="flex items-center gap-2">
+        <Avatar className="size-6 text-[0.5rem]">
+          <AvatarImage
+            src={getLogoDomainURL(data.icon || '')}
+            alt={data.icon || 'unknown logo'}
+          />
+          <AvatarFallback>{data.name.slice(0, 2)}</AvatarFallback>
+        </Avatar>
+        <span className="min-w-0 font-medium">{data.name}</span>
+      </div>
+      <div className="flex items-baseline gap-2">
+        <span className="text-sm font-semibold tabular-nums">
+          {formatCurrencyWithPrivacyMode({
+            value: data.value,
+            currencyCode: data.currency.code,
+            liability: data.type === 'liability',
+          })}
+        </span>
+      </div>
+      <div className="text-muted-foreground flex items-center gap-1.5 text-[0.6875rem]">
+        <span>{data.user.name}</span>
+        <span className="text-muted-foreground/40">·</span>
+        <span>{getPrettyTime(new Date(data.updateTime))}</span>
+      </div>
+      {showProgress && (
+        <div className="mt-0.5 flex flex-col gap-1">
+          <Progress value={investmentPercentage} className="h-1.5" />
+          <div className="text-muted-foreground flex justify-between text-[0.625rem]">
+            <span>Invested {investmentPercentage}%</span>
+            <span className="tabular-nums">
+              {formatCurrencyWithPrivacyMode({
+                value: data.balance,
+                currencyCode: data.currency.code,
+              })}{' '}
+              cash
+            </span>
+          </div>
+        </div>
+      )}
+    </Link>
   )
 }
