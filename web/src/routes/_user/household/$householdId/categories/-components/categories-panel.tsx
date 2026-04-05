@@ -15,7 +15,7 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion'
-import { ItemGroup } from '@/components/ui/item'
+
 import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
@@ -185,19 +185,19 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                 )}
               </AccordionTrigger>
               <AccordionContent className="-mx-2 pb-0">
-                <ItemGroup className="gap-0">
+                <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {categories.map((category) => {
                     invariant(category?.node, 'Category node is null')
                     return (
                       <CategoryCard
+                        className="rounded-none"
                         key={category.node.id}
                         categoryRef={category.node}
                         financialReportRef={financialReport}
-                        className="rounded-none"
                       />
                     )
                   })}
-                </ItemGroup>
+                </div>
               </AccordionContent>
             </AccordionItem>
           )

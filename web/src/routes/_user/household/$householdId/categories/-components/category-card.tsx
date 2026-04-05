@@ -14,13 +14,7 @@ import currency from 'currency.js'
 import { useMemo } from 'react'
 import type { TransactionCategoryType } from './__generated__/categoryCardFragment.graphql'
 import { cn } from '@/lib/utils'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
+
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { categoryCardCategoryFragment$key } from './__generated__/categoryCardCategoryFragment.graphql'
@@ -96,57 +90,45 @@ export function CategoryCard({
   }, [financialReport, category.id])
 
   return (
-    <Item
-      className={cn(className)}
-      render={
-        <Link
-          className="no-underline!"
-          from="/household/$householdId/"
-          to="/household/$householdId/categories/$categoryId"
-          search={identity}
-          activeOptions={{ exact: true }}
-          params={{ categoryId: category.id }}
-        >
-          {({ isActive }) => (
-            <>
-              <ItemMedia variant="image" className="rounded-full">
-                {getCategoryTypeIcon({
-                  type: category.type,
-                  icon: category.icon,
-                })}
-              </ItemMedia>
-              <ItemContent className="gap-px">
-                <ItemTitle className={cn(isActive && 'font-semibold')}>
-                  {category.name}
-                </ItemTitle>
-              </ItemContent>
-              {total && (
-                <ItemContent className="items-end gap-px">
-                  <ItemTitle className="tabular-nums">
-                    <span className="font-semibold">
-                      {formatCurrencyWithPrivacyMode({
-                        value: currency(total),
-                        currencyCode: household.currency.code,
-                      })}
-                    </span>
-                  </ItemTitle>
-                  {transactionCount !== undefined && (
-                    <ItemDescription>
-                      <span>
-                        {transactionCount}{' '}
-                        {transactionCount === 1
-                          ? 'transaction'
-                          : 'transactions'}
-                      </span>
-                    </ItemDescription>
-                  )}
-                </ItemContent>
-              )}
-            </>
-          )}
-        </Link>
-      }
-    ></Item>
+    <Link
+      className={cn(
+        'hover:bg-muted flex flex-col gap-1 rounded-md border border-transparent p-3 text-xs/relaxed no-underline! transition-colors',
+        className,
+      )}
+      from="/household/$householdId/"
+      to="/household/$householdId/categories/$categoryId"
+      search={identity}
+      activeOptions={{ exact: true }}
+      activeProps={{ className: 'border-border' }}
+      params={{ categoryId: category.id }}
+    >
+      <div className="flex items-center gap-2">
+        <div className="shrink-0 overflow-hidden rounded-full [&>svg]:size-6 [&>svg]:p-1">
+          {getCategoryTypeIcon({
+            type: category.type,
+            icon: category.icon,
+          })}
+        </div>
+        <span className="min-w-0 truncate font-medium">{category.name}</span>
+      </div>
+      <div className="flex items-baseline gap-2">
+        {total ? (
+          <span className="text-sm font-semibold tabular-nums">
+            {formatCurrencyWithPrivacyMode({
+              value: currency(total),
+              currencyCode: household.currency.code,
+            })}
+          </span>
+        ) : (
+          <span className="text-muted-foreground/40 text-[0.6875rem]">—</span>
+        )}
+        {transactionCount !== undefined && transactionCount > 0 && (
+          <span className="text-muted-foreground text-[0.6875rem] tabular-nums">
+            {transactionCount} txn{transactionCount !== 1 && 's'}
+          </span>
+        )}
+      </div>
+    </Link>
   )
 }
 
