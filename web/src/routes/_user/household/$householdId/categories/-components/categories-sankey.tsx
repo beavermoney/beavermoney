@@ -387,9 +387,10 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
           nodeSpacing={32}
           nodeBorderWidth={0}
           nodeBorderRadius={2}
-          linkOpacity={0.15}
-          linkHoverOpacity={0.15}
+          linkOpacity={0.4}
+          linkHoverOpacity={0.4}
           linkContract={2}
+          linkBlendMode="normal"
           enableLinkGradient
           enableLabels={false}
           isInteractive={false}
