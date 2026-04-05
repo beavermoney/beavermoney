@@ -16,14 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
@@ -242,12 +235,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Move Investment</CardTitle>
-        <CardDescription>
-          Move shares between investment accounts
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <form
           id="new-move-form"

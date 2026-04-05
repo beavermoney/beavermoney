@@ -16,14 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
@@ -239,10 +232,6 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Buy Investment</CardTitle>
-        <CardDescription>Record buying shares of an investment</CardDescription>
-      </CardHeader>
       <CardContent>
         <form
           id="new-buy-form"
@@ -331,7 +320,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
+                                <span className="text-muted-foreground tabular-nums">
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,

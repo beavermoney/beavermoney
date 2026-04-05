@@ -6,7 +6,6 @@ import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-// import { useNavigate } from '@tanstack/react-router'
 import type { newExpenseMutation } from './__generated__/newExpenseMutation.graphql'
 import type { newExpenseFragment$key } from './__generated__/newExpenseFragment.graphql'
 
@@ -16,14 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
@@ -112,7 +104,6 @@ type NewExpenseProps = {
 
 export function NewExpense({ fragmentRef }: NewExpenseProps) {
   const data = useFragment(newExpenseFragment, fragmentRef)
-  // const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newExpenseMutation>(newExpenseMutation)
@@ -185,11 +176,6 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
             'No data returned from mutation',
           )
 
-          // form.reset()
-          // navigate({
-          //   from: '/household/$householdId/transactions/new',
-          //   to: '/household/$householdId/transactions',
-          // })
           toast.success('Expense created successfully!')
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -210,10 +196,6 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Expense</CardTitle>
-        <CardDescription>Record a new expense transaction</CardDescription>
-      </CardHeader>
       <CardContent>
         <form
           id="new-expense-form"
@@ -347,7 +329,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
+                                <span className="text-muted-foreground tabular-nums">
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,

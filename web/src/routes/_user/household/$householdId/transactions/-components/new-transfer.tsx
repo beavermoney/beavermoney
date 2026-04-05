@@ -6,7 +6,6 @@ import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-// import { useNavigate } from '@tanstack/react-router'
 import type { newTransferMutation } from './__generated__/newTransferMutation.graphql'
 import type { newTransferFragment$key } from './__generated__/newTransferFragment.graphql'
 
@@ -16,14 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
@@ -111,7 +103,6 @@ type NewTransferProps = {
 
 export function NewTransfer({ fragmentRef }: NewTransferProps) {
   const data = useFragment(newTransferFragment, fragmentRef)
-  // const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newTransferMutation>(newTransferMutation)
@@ -212,11 +203,6 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             'No data returned from mutation',
           )
 
-          // form.reset()
-          // navigate({
-          //   from: '/household/$householdId/transactions/new',
-          //   to: '/household/$householdId/transactions',
-          // })
           toast.success('Transfer created successfully!')
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -243,10 +229,6 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Transfer</CardTitle>
-        <CardDescription>Transfer money between accounts</CardDescription>
-      </CardHeader>
       <CardContent>
         <form
           id="new-transfer-form"
@@ -396,7 +378,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
+                                <span className="text-muted-foreground tabular-nums">
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
@@ -483,7 +465,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
+                                <span className="text-muted-foreground tabular-nums">
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,

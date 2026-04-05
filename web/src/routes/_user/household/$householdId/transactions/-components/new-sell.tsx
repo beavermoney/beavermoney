@@ -16,14 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
@@ -242,12 +235,6 @@ export function NewSell({ fragmentRef }: NewSellProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Sell Investment</CardTitle>
-        <CardDescription>
-          Record selling shares of an investment
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <form
           id="new-sell-form"
@@ -336,7 +323,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
+                                <span className="text-muted-foreground tabular-nums">
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,

@@ -6,7 +6,6 @@ import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-// import { useNavigate } from '@tanstack/react-router'
 import type { newIncomeMutation } from './__generated__/newIncomeMutation.graphql'
 import type { newIncomeFragment$key } from './__generated__/newIncomeFragment.graphql'
 
@@ -16,14 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
@@ -112,7 +104,6 @@ type NewIncomeProps = {
 
 export function NewIncome({ fragmentRef }: NewIncomeProps) {
   const data = useFragment(newIncomeFragment, fragmentRef)
-  // const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newIncomeMutation>(newIncomeMutation)
@@ -206,10 +197,6 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Income</CardTitle>
-        <CardDescription>Record a new income transaction</CardDescription>
-      </CardHeader>
       <CardContent>
         <form
           id="new-income-form"
@@ -343,7 +330,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
+                                <span className="text-muted-foreground tabular-nums">
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
