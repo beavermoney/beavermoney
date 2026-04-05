@@ -41,6 +41,8 @@ import {
 } from '@/constant'
 import { PlusButton } from '@/components/plus-button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
+import { SearchIcon } from 'lucide-react'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 const AccountsPanelFragment = graphql`
@@ -112,6 +114,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     useMutation<accountsPanelRefreshMutation>(AccountsPanelRefreshMutation)
 
   const [displayIndex, setDisplayIndex] = useState(0)
+  const [searchFilter, setSearchFilter] = useState('')
 
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
@@ -280,13 +283,22 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <NetWorthChart />
       </Suspense>
       <div className="py-2"></div>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <SearchIcon className="text-muted-foreground/50 absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
+          <Input
+            placeholder="Filter accounts..."
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            className="max-w-64 pl-8 text-xs"
+          />
+        </div>
         <Select
           name="group-accounts"
           value={groupByOption}
           onValueChange={handleGroupByChange}
         >
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="h-7 w-32">
             <SelectValue>{GROUP_BY_OPTIONS[groupByOption]}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -310,9 +322,18 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         defaultValue={[...groupKeys]}
       >
         {map(groupKeys, (key) => {
-          const accounts = groupedAccounts[key].sort((a, b) =>
-            (a?.node?.name ?? '').localeCompare(b?.node?.name ?? ''),
-          )
+          const filterLower = searchFilter.toLowerCase()
+          const accounts = groupedAccounts[key]
+            .filter((account) => {
+              if (!filterLower) return true
+              invariant(account?.node, 'Account node is null')
+              return account.node.name.toLowerCase().includes(filterLower)
+            })
+            .sort((a, b) =>
+              (a?.node?.name ?? '').localeCompare(b?.node?.name ?? ''),
+            )
+
+          if (accounts.length === 0) return null
           const isLiabilityGroup =
             groupByOption === 'type' && key === 'liability'
           return (
