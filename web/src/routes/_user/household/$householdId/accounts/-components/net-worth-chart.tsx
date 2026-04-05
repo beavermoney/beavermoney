@@ -289,7 +289,7 @@ export function NetWorthChart() {
         >
           <AreaChart
             data={chartData}
-            margin={{ top: 4, right: 36, left: 0, bottom: 0 }}
+            margin={{ top: 4, right: 24, left: 0, bottom: 0 }}
           >
             <defs>
               {SERIES.map((s) => (
