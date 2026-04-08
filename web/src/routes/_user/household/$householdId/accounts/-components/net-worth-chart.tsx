@@ -125,7 +125,7 @@ export function NetWorthChart() {
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
 
-  const [duration, setDuration] = useState<Duration>('3M')
+  const [duration, setDuration] = useState<Duration>('1M')
   const [isPending, startTransition] = useTransition()
   const [activeSeries, setActiveSeries] = useState<Set<SeriesKey>>(
     new Set(['netWorth']),
