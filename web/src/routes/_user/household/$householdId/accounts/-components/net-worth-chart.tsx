@@ -28,20 +28,11 @@ import type {
 } from './__generated__/netWorthChartQuery.graphql'
 import { environment } from '@/environment'
 
-/** Round down to a "nice" value for chart axis boundaries */
-function niceFloor(value: number): number {
-  if (value === 0) return 0
-  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(value))))
-  const step = magnitude / 2
-  return Math.floor(value / step) * step
-}
-
-/** Round up to a "nice" value for chart axis boundaries */
-function niceCeil(value: number): number {
-  if (value === 0) return 0
-  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(value))))
-  const step = magnitude / 2
-  return Math.ceil(value / step) * step
+function niceStep(rawStep: number): number {
+  const exponent = Math.floor(Math.log10(rawStep))
+  const fraction = rawStep / Math.pow(10, exponent)
+  const nice = fraction < 1.5 ? 1 : fraction < 3 ? 2 : fraction < 7 ? 5 : 10
+  return nice * Math.pow(10, exponent)
 }
 
 const NetWorthChartQuery = graphql`
@@ -180,43 +171,19 @@ export function NetWorthChart() {
     })
     .sort((a, b) => a.date - b.date)
 
-  const { yDomain, yTicks } = useMemo(() => {
-    const TICK_COUNT = 5
+  const yDomain = useMemo((): [number, number] => {
     const values = chartData
       .flatMap((point) => [...activeSeries].map((series) => point[series]))
       .filter((value) => Number.isFinite(value))
 
-    if (values.length === 0) {
-      return {
-        yDomain: [0, 1] as [number, number],
-        yTicks: [0, 0.25, 0.5, 0.75, 1],
-      }
-    }
+    if (values.length === 0) return [0, 1]
 
-    const min = Math.min(...values)
-    const max = Math.max(...values)
-
-    const domainMin = niceFloor(
-      min === max
-        ? min - Math.max(Math.abs(min) * 0.05, 1)
-        : min - (max - min) * 0.05,
-    )
-    const domainMax = niceCeil(
-      min === max
-        ? max + Math.max(Math.abs(max) * 0.05, 1)
-        : max + (max - min) * 0.05,
-    )
-
-    const step = (domainMax - domainMin) / (TICK_COUNT - 1)
-    const ticks = Array.from(
-      { length: TICK_COUNT },
-      (_, i) => domainMin + step * i,
-    )
-
-    return {
-      yDomain: [domainMin, domainMax] as [number, number],
-      yTicks: ticks,
-    }
+    const rawMin = Math.min(...values)
+    const rawMax = Math.max(...values)
+    const rawRange =
+      rawMax === rawMin ? Math.max(Math.abs(rawMax) * 0.1, 1) : rawMax - rawMin
+    const step = niceStep(rawRange / 4)
+    return [Math.floor(rawMin / step) * step, Math.ceil(rawMax / step) * step]
   }, [chartData, activeSeries])
 
   const formatDate = (ts: number) => {
@@ -366,7 +333,6 @@ export function NetWorthChart() {
               tickMargin={4}
               width={56}
               domain={yDomain}
-              ticks={yTicks}
               allowDecimals={false}
               tick={{ fontSize: 10 }}
               tickFormatter={(value: number) =>
