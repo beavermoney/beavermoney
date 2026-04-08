@@ -53,7 +53,10 @@ export function AccountCard({
 
   const investmentPercentage =
     showProgress && value.value !== 0
-      ? Number(((1 - balance.value / value.value) * 100).toFixed(2))
+      ? Math.min(
+          Number(((1 - balance.value / value.value) * 100).toFixed(2)),
+          99.99,
+        )
       : 0
 
   return (
