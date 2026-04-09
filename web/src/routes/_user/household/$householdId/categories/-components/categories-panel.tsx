@@ -1,7 +1,7 @@
 import { fetchQuery, graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
-import { useFragment } from 'react-relay'
+import { useFragment, useRelayEnvironment } from 'react-relay'
 import { capitalize, groupBy, map } from 'lodash-es'
 import { Fragment } from 'react/jsx-runtime'
 import { useMemo } from 'react'
@@ -26,9 +26,8 @@ import { CategoriesSankey } from './categories-sankey'
 import { useSearch } from '@tanstack/react-router'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
 import { parseISO } from 'date-fns'
-import { CategoriesQuery } from '../__generated__/CategoriesQuery.graphql'
-import { environment } from '@/environment'
-import { categoriesQuery } from '../-categories-query'
+import type { categoriesPanelRefetch } from './__generated__/categoriesPanelRefetch.graphql'
+import categoriesPanelRefetchNode from './__generated__/categoriesPanelRefetch.graphql'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { PlusButton } from '@/components/plus-button'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
@@ -81,6 +80,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const endDate = parseISO(search.end).toISOString()
   const data = useFragment(CategoriesPanelFragment, fragmentRef)
   const { household } = useHousehold()
+  const environment = useRelayEnvironment()
 
   useRegisterConnection(
     data.transactionCategories.__id,
@@ -124,12 +124,17 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
 
   const onDateRangeChange = async (start: string, end: string) => {
     const period = parseDateRangeFromURL(start, end)
-    await fetchQuery<CategoriesQuery>(environment, categoriesQuery, {
-      startDate: period.startDate,
-      endDate: period.endDate,
-    }).toPromise()
 
-    // Now navigate - the route loader will read from Relay store cache
+    await fetchQuery<categoriesPanelRefetch>(
+      environment,
+      categoriesPanelRefetchNode,
+      {
+        id: household.id,
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+    ).toPromise()
+
     navigate({
       to: '.',
       search: (prev) => ({

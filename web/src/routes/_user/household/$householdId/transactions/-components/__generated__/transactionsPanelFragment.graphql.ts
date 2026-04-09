@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dbb10c62024bef9cf9ec8fa3a7f77a19>>
+ * @generated SignedSource<<ba68018468f27329782295893e3555c0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type transactionsPanelFragment$data = {
   readonly financialReport: {
     readonly " $fragmentSpreads": FragmentRefs<"financialSummaryCardsFragment">;
   };
+  readonly id: string;
   readonly " $fragmentSpreads": FragmentRefs<"transactionsListFragment">;
   readonly " $fragmentType": "transactionsPanelFragment";
 };
@@ -21,6 +22,8 @@ export type transactionsPanelFragment$key = {
   readonly " $data"?: transactionsPanelFragment$data;
   readonly " $fragmentSpreads": FragmentRefs<"transactionsPanelFragment">;
 };
+
+import transactionsPanelRefetchQuery_graphql from './transactionsPanelRefetchQuery.graphql';
 
 const node: ReaderFragment = {
   "argumentDefinitions": [
@@ -41,7 +44,19 @@ const node: ReaderFragment = {
     }
   ],
   "kind": "Fragment",
-  "metadata": null,
+  "metadata": {
+    "refetch": {
+      "connection": null,
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": transactionsPanelRefetchQuery_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
+    }
+  },
   "name": "transactionsPanelFragment",
   "selections": [
     {
@@ -87,12 +102,19 @@ const node: ReaderFragment = {
         }
       ],
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
     }
   ],
   "type": "Household",
   "abstractKey": null
 };
 
-(node as any).hash = "16b36874db741ebcc6f18ef674d19164";
+(node as any).hash = "fe43fdbce492f83a5dbe3b55a2a5f694";
 
 export default node;

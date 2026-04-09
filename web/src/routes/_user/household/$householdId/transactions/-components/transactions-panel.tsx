@@ -1,14 +1,14 @@
 import { fetchQuery, graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
+import { useFragment, useRelayEnvironment } from 'react-relay'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { TransactionsList } from './transactions-list'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
+import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
+import transactionsPanelRefetchQueryNode from './__generated__/transactionsPanelRefetchQuery.graphql'
 import { DateRangeFilter } from '../../categories/-components/date-range-filter'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
-import { environment } from '@/environment'
-import { TransactionsQuery } from '../__generated__/TransactionsQuery.graphql'
-import { transactionsQuery } from '../-transactions-query'
 import { parseDateRangeFromURL } from '@/lib/date-range'
+import { useHousehold } from '@/hooks/use-household'
 import { Fragment } from 'react/jsx-runtime'
 import { PlusButton } from '@/components/plus-button'
 import { parseISO } from 'date-fns'
@@ -16,6 +16,7 @@ import type { TransactionWhereInput } from './__generated__/transactionsListRefe
 
 const transactionsPanelFragment = graphql`
   fragment transactionsPanelFragment on Household
+  @refetchable(queryName: "transactionsPanelRefetchQuery")
   @argumentDefinitions(
     where: { type: "TransactionWhereInput" }
     startDate: { type: "Time!" }
@@ -39,6 +40,8 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const startDate = parseISO(search.start).toISOString()
   const endDate = parseISO(search.end).toISOString()
   const navigate = useNavigate()
+  const environment = useRelayEnvironment()
+  const { household } = useHousehold()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
@@ -49,13 +52,17 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
       datetimeLT: period.endDate,
     }
 
-    await fetchQuery<TransactionsQuery>(environment, transactionsQuery, {
-      where: nextWhere,
-      startDate: period.startDate,
-      endDate: period.endDate,
-    }).toPromise()
+    await fetchQuery<transactionsPanelRefetchQuery>(
+      environment,
+      transactionsPanelRefetchQueryNode,
+      {
+        id: household.id,
+        where: nextWhere,
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+    ).toPromise()
 
-    // Now navigate - the route loader will read from Relay store cache
     navigate({
       to: '.',
       search: (prev) => ({

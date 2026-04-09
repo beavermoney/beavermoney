@@ -5,12 +5,22 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
-import { categoriesQuery } from './-categories-query'
-import { CategoriesQuery } from './__generated__/CategoriesQuery.graphql'
+import type { categoriesQuery } from './__generated__/categoriesQuery.graphql'
 import { CategoriesPanel } from './-components/categories-panel'
 import { parseDateRangeFromURL } from '@/lib/date-range'
+
+const query = graphql`
+  query categoriesQuery($startDate: Time!, $endDate: Time!) {
+    household {
+      # eslint-disable-next-line relay/must-colocate-fragment-spreads
+      ...categoriesPanelFragment
+        @arguments(startDate: $startDate, endDate: $endDate)
+    }
+  }
+`
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/',
@@ -21,7 +31,7 @@ export const Route = createFileRoute(
   loader: ({ deps: search }) => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
-    return loadQuery<CategoriesQuery>(environment, categoriesQuery, period, {
+    return loadQuery<categoriesQuery>(environment, query, period, {
       fetchPolicy: 'store-or-network',
     })
   },
@@ -32,12 +42,12 @@ function RouteComponent() {
   const search = Route.useSearch()
   const queryRef = Route.useLoaderData()
 
-  const data = usePreloadedQuery<CategoriesQuery>(categoriesQuery, queryRef)
+  const data = usePreloadedQuery<categoriesQuery>(query, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
-    fetchQuery(environment, categoriesQuery, period, {
+    fetchQuery(environment, query, period, {
       fetchPolicy: 'network-only',
     }).subscribe({})
   })

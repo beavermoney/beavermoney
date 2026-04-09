@@ -20,7 +20,7 @@ import {
   TrendingUpIcon,
   WrenchIcon,
 } from 'lucide-react'
-import { TransactionCategoryType } from '../__generated__/TransactionsQuery.graphql'
+import { TransactionCategoryType } from '../__generated__/transactionsQuery.graphql'
 import { Badge } from '@/components/ui/badge'
 
 const transactionEntryCardFragment = graphql`
