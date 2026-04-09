@@ -111,22 +111,6 @@ func (r *mutationResolver) UpdateHousehold(ctx context.Context, id int, input en
 
 	client := ent.FromContext(ctx)
 
-	// Verify the caller is an admin of this household.
-	isAdmin, err := client.UserHousehold.Query().
-		Where(
-			userhousehold.UserIDEQ(userID),
-			userhousehold.HouseholdIDEQ(id),
-			userhousehold.RoleEQ(userhousehold.RoleAdmin),
-		).
-		Exist(ctx)
-	if err != nil {
-		r.logger.Error("Failed to verify household membership", "error", err)
-		return nil, err
-	}
-	if !isAdmin {
-		return nil, fmt.Errorf("not authorized to update this household")
-	}
-
 	updated, err := client.Household.UpdateOneID(id).SetInput(input).Save(ctx)
 	if err != nil {
 		r.logger.Error("Failed to update household", "error", err)
