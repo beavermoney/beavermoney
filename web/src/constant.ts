@@ -5,6 +5,7 @@ import {
   CreditCardIcon,
   LucideIcon,
   ReceiptIcon,
+  SettingsIcon,
   TagIcon,
   TrendingUpIcon,
 } from 'lucide-react'
@@ -174,5 +175,20 @@ export const NAV: Array<{
     },
     icon: AppWindowMacIcon,
     shortcut: ['G', 'S'],
+  },
+  {
+    name: 'Settings',
+    link: {
+      to: '/household/$householdId/settings',
+      activeOptions: {
+        exact: false,
+        includeSearch: false,
+      },
+      search: (prev) => ({
+        ...prev,
+      }),
+    },
+    icon: SettingsIcon,
+    shortcut: ['G', 'E'],
   },
 ]

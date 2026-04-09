@@ -308,6 +308,7 @@ type ComplexityRoot struct {
 		SellInvestment              func(childComplexity int, input model.SellInvestmentInputCustom) int
 		UpdateAccount               func(childComplexity int, id int, input ent.UpdateAccountInput) int
 		UpdateCheckpoint            func(childComplexity int, id int, input ent.UpdateCheckpointInput) int
+		UpdateHousehold             func(childComplexity int, id int, input ent.UpdateHouseholdInput) int
 		UpdateRecurringSubscription func(childComplexity int, id int, input ent.UpdateRecurringSubscriptionInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
 		UpdateTransactionCategory   func(childComplexity int, id int, input ent.UpdateTransactionCategoryInput) int
@@ -547,6 +548,7 @@ type InvestmentLotResolver interface {
 }
 type MutationResolver interface {
 	CreateHousehold(ctx context.Context, input ent.CreateHouseholdInput) (*ent.Household, error)
+	UpdateHousehold(ctx context.Context, id int, input ent.UpdateHouseholdInput) (*ent.Household, error)
 	DeleteHousehold(ctx context.Context, id int) (*model.DeleteHouseholdPayload, error)
 	CreateAccount(ctx context.Context, input ent.CreateAccountInput) (*ent.AccountEdge, error)
 	UpdateAccount(ctx context.Context, id int, input ent.UpdateAccountInput) (*ent.AccountEdge, error)
@@ -1916,6 +1918,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateCheckpoint(childComplexity, args["id"].(int), args["input"].(ent.UpdateCheckpointInput)), true
+	case "Mutation.updateHousehold":
+		if e.complexity.Mutation.UpdateHousehold == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateHousehold_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateHousehold(childComplexity, args["id"].(int), args["input"].(ent.UpdateHouseholdInput)), true
 	case "Mutation.updateRecurringSubscription":
 		if e.complexity.Mutation.UpdateRecurringSubscription == nil {
 			break
@@ -3515,6 +3528,22 @@ func (ec *executionContext) field_Mutation_updateCheckpoint_args(ctx context.Con
 	}
 	args["id"] = arg0
 	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateCheckpointInput2beavermoneyᚗappᚋentᚐUpdateCheckpointInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateHousehold_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateHouseholdInput2beavermoneyᚗappᚋentᚐUpdateHouseholdInput)
 	if err != nil {
 		return nil, err
 	}
@@ -9119,6 +9148,89 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createHousehold_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateHousehold(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateHousehold,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateHousehold(ctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateHouseholdInput))
+		},
+		nil,
+		ec.marshalNHousehold2ᚖbeavermoneyᚗappᚋentᚐHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateHousehold(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Household_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Household_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Household_updateTime(ctx, field)
+			case "name":
+				return ec.fieldContext_Household_name(ctx, field)
+			case "locale":
+				return ec.fieldContext_Household_locale(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
+			case "currency":
+				return ec.fieldContext_Household_currency(ctx, field)
+			case "users":
+				return ec.fieldContext_Household_users(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Household_accounts(ctx, field)
+			case "transactions":
+				return ec.fieldContext_Household_transactions(ctx, field)
+			case "investments":
+				return ec.fieldContext_Household_investments(ctx, field)
+			case "investmentLots":
+				return ec.fieldContext_Household_investmentLots(ctx, field)
+			case "transactionCategories":
+				return ec.fieldContext_Household_transactionCategories(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Household_transactionEntries(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateHousehold_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -28595,6 +28707,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "updateHousehold":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateHousehold(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "deleteHousehold":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteHousehold(ctx, field)
@@ -32585,6 +32704,11 @@ func (ec *executionContext) unmarshalNUpdateAccountInput2beavermoneyᚗappᚋent
 
 func (ec *executionContext) unmarshalNUpdateCheckpointInput2beavermoneyᚗappᚋentᚐUpdateCheckpointInput(ctx context.Context, v any) (ent.UpdateCheckpointInput, error) {
 	res, err := ec.unmarshalInputUpdateCheckpointInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateHouseholdInput2beavermoneyᚗappᚋentᚐUpdateHouseholdInput(ctx context.Context, v any) (ent.UpdateHouseholdInput, error) {
+	res, err := ec.unmarshalInputUpdateHouseholdInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
