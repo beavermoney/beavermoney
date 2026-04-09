@@ -139,13 +139,16 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
 
   const groupedInvestments = useMemo(
     () =>
-      groupBy(data.investments.edges, (investment) => {
-        invariant(investment?.node, 'Investment node is null')
-        if (groupByOption === 'symbol') {
-          return investment.node.name
-        }
-        return investment.node.account.id
-      }),
+      groupBy(
+        data.investments.edges?.filter((i) => i?.node?.amount !== '0'),
+        (investment) => {
+          invariant(investment?.node, 'Investment node is null')
+          if (groupByOption === 'symbol') {
+            return investment.node.name
+          }
+          return investment.node.account.id
+        },
+      ),
     [data.investments, groupByOption],
   )
 
