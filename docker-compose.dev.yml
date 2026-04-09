@@ -15,7 +15,7 @@ services:
     ports:
       - 6379:6379
   frankfurter:
-    image: lineofflight/frankfurter
+    image: lineofflight/frankfurter:v2.0.0-beta.1
     ports:
       - 8080:8080
 
