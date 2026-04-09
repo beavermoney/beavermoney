@@ -235,10 +235,13 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
 
           const totalShares =
             groupByOption === 'symbol'
-              ? investments.reduce((sum, inv) => {
-                  invariant(inv?.node, 'Investment node is null')
-                  return sum + Number(inv.node.amount)
-                }, 0)
+              ? investments.reduce(
+                  (sum, inv) => {
+                    invariant(inv?.node, 'Investment node is null')
+                    return sum.add(currency(inv.node.amount, { precision: 8 }))
+                  },
+                  currency(0, { precision: 8 }),
+                ).value
               : null
 
           return (
@@ -249,14 +252,14 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
             >
               <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{groupLabel}</span>
-                {totalShares !== null && (
-                  <span className="text-muted-foreground text-xs tabular-nums">
+                {totalShares !== null && totalShares > 0 && (
+                  <span className="text-muted-foreground text-[0.6875rem] tabular-nums">
                     {totalShares} shares
                   </span>
                 )}
                 <span className="grow"></span>
                 <span className="text-muted-foreground tabular-nums">
-                  ({percentage.toFixed(2)}%)
+                  {percentage.toFixed(2)}%
                 </span>
                 <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
                   {formatCurrencyWithPrivacyMode({
