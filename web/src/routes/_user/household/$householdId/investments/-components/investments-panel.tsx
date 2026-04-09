@@ -57,6 +57,7 @@ const InvestmentsPanelFragment = graphql`
         node {
           id
           name
+          amount
           valueInHouseholdCurrency
           account {
             name
@@ -232,6 +233,14 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
 
           const percentage = (value.value / totalInvestment.value) * 100
 
+          const totalShares =
+            groupByOption === 'symbol'
+              ? investments.reduce((sum, inv) => {
+                  invariant(inv?.node, 'Investment node is null')
+                  return sum + Number(inv.node.amount)
+                }, 0)
+              : null
+
           return (
             <AccordionItem
               value={groupKey}
@@ -240,6 +249,11 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
             >
               <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{groupLabel}</span>
+                {totalShares !== null && (
+                  <span className="text-muted-foreground text-xs tabular-nums">
+                    {totalShares} shares
+                  </span>
+                )}
                 <span className="grow"></span>
                 <span className="text-muted-foreground tabular-nums">
                   ({percentage.toFixed(2)}%)

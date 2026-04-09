@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cf2700bff35ee1a4de5da83061f9bb5d>>
+ * @generated SignedSource<<5779422da1be2bc415e4446e04c13423>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,7 @@ export type investmentsPanelFragment$data = {
           readonly id: string;
           readonly name: string;
         };
+        readonly amount: string;
         readonly id: string;
         readonly name: string;
         readonly valueInHouseholdCurrency: string;
@@ -128,6 +129,13 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
+                  "name": "amount",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
                   "name": "valueInHouseholdCurrency",
                   "storageKey": null
                 },
@@ -216,6 +224,6 @@ return {
 };
 })();
 
-(node as any).hash = "2c5be1f88a647696a585681fa6a7bb3a";
+(node as any).hash = "5e6c3e071790c4436c2e98adfe3fe9d2";
 
 export default node;
