@@ -5,14 +5,23 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
+import { graphql } from 'relay-runtime'
 
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
-import { subscriptionsQuery } from './-subscriptions-query'
 
-import type { SubscriptionsQuery } from './__generated__/SubscriptionsQuery.graphql'
+import type { subscriptionsQuery } from './__generated__/subscriptionsQuery.graphql'
+
+const query = graphql`
+  query subscriptionsQuery {
+    household {
+      # eslint-disable-next-line relay/must-colocate-fragment-spreads
+      ...subscriptionsPanelFragment
+    }
+  }
+`
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/',
@@ -20,9 +29,9 @@ export const Route = createFileRoute(
   component: RouteComponent,
   pendingComponent: PendingComponent,
   loader: () => {
-    return loadQuery<SubscriptionsQuery>(
+    return loadQuery<subscriptionsQuery>(
       environment,
-      subscriptionsQuery,
+      query,
       {},
       { fetchPolicy: 'store-or-network' },
     )
@@ -33,15 +42,12 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
-  const data = usePreloadedQuery<SubscriptionsQuery>(
-    subscriptionsQuery,
-    queryRef,
-  )
+  const data = usePreloadedQuery<subscriptionsQuery>(query, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
     fetchQuery(
       environment,
-      subscriptionsQuery,
+      query,
       {},
       { fetchPolicy: 'network-only' },
     ).subscribe({})

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dcc0fd56c1c4893e915346dbdeda71bc>>
+ * @generated SignedSource<<8ec42367aebb1d4188c4a2ebcd01b2a0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,15 +10,15 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type InvestmentsQuery$variables = Record<PropertyKey, never>;
-export type InvestmentsQuery$data = {
+export type investmentsQuery$variables = Record<PropertyKey, never>;
+export type investmentsQuery$data = {
   readonly household: {
     readonly " $fragmentSpreads": FragmentRefs<"investmentsPanelFragment">;
   };
 };
-export type InvestmentsQuery = {
-  response: InvestmentsQuery$data;
-  variables: InvestmentsQuery$variables;
+export type investmentsQuery = {
+  response: investmentsQuery$data;
+  variables: investmentsQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -48,7 +48,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "InvestmentsQuery",
+    "name": "investmentsQuery",
     "selections": [
       {
         "alias": null,
@@ -74,7 +74,7 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "InvestmentsQuery",
+    "name": "investmentsQuery",
     "selections": [
       {
         "alias": null,
@@ -260,16 +260,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "4382a200ba2e46bcaad4b9b7edbf69b4",
+    "cacheID": "0a332d1442d9d511e9e5f75e19c36ccf",
     "id": null,
     "metadata": {},
-    "name": "InvestmentsQuery",
+    "name": "investmentsQuery",
     "operationKind": "query",
-    "text": "query InvestmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        valueInHouseholdCurrency\n        account {\n          name\n          id\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        valueInHouseholdCurrency\n        account {\n          name\n          id\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "5d653a95986181a0a28a3aac5c580914";
+(node as any).hash = "98fcb7b92d8807fcee109e666588b66c";
 
 export default node;
