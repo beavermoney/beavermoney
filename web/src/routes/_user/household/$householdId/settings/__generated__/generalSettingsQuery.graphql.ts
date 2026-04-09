@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2f44f849467b6c7f46c62cb46410e25f>>
+ * @generated SignedSource<<0e811ead02c4bd0845f27b9943448b47>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,18 +11,15 @@
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type UserHouseholdRole = "admin" | "member" | "%future added value";
-export type SettingsQuery$variables = Record<PropertyKey, never>;
-export type SettingsQuery$data = {
+export type generalSettingsQuery$variables = Record<PropertyKey, never>;
+export type generalSettingsQuery$data = {
   readonly household: {
-    readonly " $fragmentSpreads": FragmentRefs<"generalSettingsHouseholdFragment" | "membersSettingsFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"generalSettingsHouseholdFragment">;
   };
   readonly user: {
-    readonly email: string;
     readonly id: string;
-    readonly name: string;
   };
   readonly userHouseholds: ReadonlyArray<{
-    readonly id: string;
     readonly role: UserHouseholdRole;
     readonly user: {
       readonly id: string;
@@ -30,9 +27,9 @@ export type SettingsQuery$data = {
   }>;
   readonly " $fragmentSpreads": FragmentRefs<"generalSettingsCurrenciesFragment">;
 };
-export type SettingsQuery = {
-  response: SettingsQuery$data;
-  variables: SettingsQuery$variables;
+export type generalSettingsQuery = {
+  response: generalSettingsQuery$data;
+  variables: generalSettingsQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -46,63 +43,23 @@ var v0 = {
 v1 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "name",
-  "storageKey": null
-},
-v2 = {
-  "alias": null,
-  "args": null,
   "concreteType": "User",
   "kind": "LinkedField",
   "name": "user",
   "plural": false,
   "selections": [
-    (v0/*: any*/),
-    (v1/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "email",
-      "storageKey": null
-    }
+    (v0/*: any*/)
   ],
   "storageKey": null
 },
-v3 = {
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "role",
   "storageKey": null
 },
-v4 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "UserHousehold",
-  "kind": "LinkedField",
-  "name": "userHouseholds",
-  "plural": true,
-  "selections": [
-    (v0/*: any*/),
-    (v3/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "User",
-      "kind": "LinkedField",
-      "name": "user",
-      "plural": false,
-      "selections": [
-        (v0/*: any*/)
-      ],
-      "storageKey": null
-    }
-  ],
-  "storageKey": null
-},
-v5 = [
+v3 = [
   (v0/*: any*/),
   {
     "alias": null,
@@ -117,7 +74,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "SettingsQuery",
+    "name": "generalSettingsQuery",
     "selections": [
       {
         "alias": null,
@@ -131,22 +88,29 @@ return {
             "args": null,
             "kind": "FragmentSpread",
             "name": "generalSettingsHouseholdFragment"
-          },
-          {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "membersSettingsFragment"
           }
         ],
         "storageKey": null
       },
-      (v2/*: any*/),
       {
         "args": null,
         "kind": "FragmentSpread",
         "name": "generalSettingsCurrenciesFragment"
       },
-      (v4/*: any*/)
+      (v1/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "UserHousehold",
+        "kind": "LinkedField",
+        "name": "userHouseholds",
+        "plural": true,
+        "selections": [
+          (v2/*: any*/),
+          (v1/*: any*/)
+        ],
+        "storageKey": null
+      }
     ],
     "type": "Query",
     "abstractKey": null
@@ -155,7 +119,7 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "SettingsQuery",
+    "name": "generalSettingsQuery",
     "selections": [
       {
         "alias": null,
@@ -166,7 +130,13 @@ return {
         "plural": false,
         "selections": [
           (v0/*: any*/),
-          (v1/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "name",
+            "storageKey": null
+          },
           {
             "alias": null,
             "args": null,
@@ -181,27 +151,12 @@ return {
             "kind": "LinkedField",
             "name": "currency",
             "plural": false,
-            "selections": (v5/*: any*/),
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "UserHousehold",
-            "kind": "LinkedField",
-            "name": "userHouseholds",
-            "plural": true,
-            "selections": [
-              (v0/*: any*/),
-              (v3/*: any*/),
-              (v2/*: any*/)
-            ],
+            "selections": (v3/*: any*/),
             "storageKey": null
           }
         ],
         "storageKey": null
       },
-      (v2/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -209,23 +164,37 @@ return {
         "kind": "LinkedField",
         "name": "currencies",
         "plural": true,
-        "selections": (v5/*: any*/),
+        "selections": (v3/*: any*/),
         "storageKey": null
       },
-      (v4/*: any*/)
+      (v1/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "UserHousehold",
+        "kind": "LinkedField",
+        "name": "userHouseholds",
+        "plural": true,
+        "selections": [
+          (v2/*: any*/),
+          (v1/*: any*/),
+          (v0/*: any*/)
+        ],
+        "storageKey": null
+      }
     ]
   },
   "params": {
-    "cacheID": "77743dd409e1c2e26d20fd4d2eae916d",
+    "cacheID": "ef0959eb42960b65629ae9d47fb6836c",
     "id": null,
     "metadata": {},
-    "name": "SettingsQuery",
+    "name": "generalSettingsQuery",
     "operationKind": "query",
-    "text": "query SettingsQuery {\n  household {\n    ...generalSettingsHouseholdFragment\n    ...membersSettingsFragment\n    id\n  }\n  user {\n    id\n    name\n    email\n  }\n  ...generalSettingsCurrenciesFragment\n  userHouseholds {\n    id\n    role\n    user {\n      id\n    }\n  }\n}\n\nfragment generalSettingsCurrenciesFragment on Query {\n  currencies {\n    id\n    code\n  }\n}\n\nfragment generalSettingsHouseholdFragment on Household {\n  id\n  name\n  locale\n  currency {\n    id\n    code\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
+    "text": "query generalSettingsQuery {\n  household {\n    ...generalSettingsHouseholdFragment\n    id\n  }\n  ...generalSettingsCurrenciesFragment\n  user {\n    id\n  }\n  userHouseholds {\n    role\n    user {\n      id\n    }\n    id\n  }\n}\n\nfragment generalSettingsCurrenciesFragment on Query {\n  currencies {\n    id\n    code\n  }\n}\n\nfragment generalSettingsHouseholdFragment on Household {\n  id\n  name\n  locale\n  currency {\n    id\n    code\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b71ad7315c4015819998fbc28911b352";
+(node as any).hash = "da4d7c7fdd19f90612156ca1d8e8e6e6";
 
 export default node;
