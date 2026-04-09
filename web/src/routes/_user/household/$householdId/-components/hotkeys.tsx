@@ -87,6 +87,14 @@ const Hotkeys = () => {
     })
   })
 
+  useHotkeySequence(['G', ','], () => {
+    navigate({
+      from: '/household/$householdId',
+      to: '/household/$householdId/settings/general',
+      search: identity,
+    })
+  })
+
   return null
 }
 

@@ -189,6 +189,6 @@ export const NAV: Array<{
       }),
     },
     icon: SettingsIcon,
-    shortcut: ['G', 'E'],
+    shortcut: ['G', ','],
   },
 ]
