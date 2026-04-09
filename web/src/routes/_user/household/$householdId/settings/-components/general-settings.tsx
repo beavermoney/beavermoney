@@ -12,6 +12,7 @@ import type { generalSettingsCurrenciesFragment$key } from './__generated__/gene
 import type { generalSettingsUpdateHouseholdMutation } from './__generated__/generalSettingsUpdateHouseholdMutation.graphql'
 import type { generalSettingsDeleteHouseholdMutation } from './__generated__/generalSettingsDeleteHouseholdMutation.graphql'
 
+import { useUser } from '@/hooks/use-user'
 import { Button } from '@/components/ui/button'
 import {
   Field,
@@ -69,6 +70,12 @@ const generalSettingsCurrenciesFragment = graphql`
       id
       code
     }
+    userHouseholds {
+      role
+      user {
+        id
+      }
+    }
   }
 `
 
@@ -100,21 +107,23 @@ const deleteHouseholdMutation = graphql`
 type GeneralSettingsProps = {
   householdRef: generalSettingsHouseholdFragment$key
   currenciesRef: generalSettingsCurrenciesFragment$key
-  isAdmin: boolean
   onDeleted: () => void
 }
 
 export function GeneralSettings({
   householdRef,
   currenciesRef,
-  isAdmin,
   onDeleted,
 }: GeneralSettingsProps) {
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
-  const { currencies } = useFragment(
+  const { currencies, userHouseholds } = useFragment(
     generalSettingsCurrenciesFragment,
     currenciesRef,
   )
+
+  const user = useUser()
+  const isAdmin =
+    userHouseholds.find((uh) => uh.user.id === user.id)?.role === 'admin'
 
   const currencyOptions = currencies.map((c) => ({
     value: c.id,

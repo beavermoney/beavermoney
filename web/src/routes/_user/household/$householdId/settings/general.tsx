@@ -17,15 +17,6 @@ const query = graphql`
       ...generalSettingsHouseholdFragment
     }
     ...generalSettingsCurrenciesFragment
-    user {
-      id
-    }
-    userHouseholds {
-      role
-      user {
-        id
-      }
-    }
   }
 `
 
@@ -60,16 +51,10 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  const currentUserHousehold = data.userHouseholds.find(
-    (uh) => uh.user.id === data.user.id,
-  )
-  const isAdmin = currentUserHousehold?.role === 'admin'
-
   return (
     <GeneralSettings
       householdRef={data.household}
       currenciesRef={data}
-      isAdmin={isAdmin}
       onDeleted={() => navigate({ to: '/household' })}
     />
   )

@@ -11,6 +11,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item'
+import { useUser } from '@/hooks/use-user'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const membersSettingsFragment = graphql`
@@ -29,14 +30,11 @@ export const membersSettingsFragment = graphql`
 
 type MembersSettingsProps = {
   householdRef: membersSettingsFragment$key
-  userId: string
 }
 
-export function MembersSettings({
-  householdRef,
-  userId,
-}: MembersSettingsProps) {
+export function MembersSettings({ householdRef }: MembersSettingsProps) {
   const { userHouseholds } = useFragment(membersSettingsFragment, householdRef)
+  const user = useUser()
 
   const members = userHouseholds ?? []
 
@@ -44,7 +42,7 @@ export function MembersSettings({
     <div className="flex max-w-md flex-col gap-3">
       <ItemGroup>
         {members.map((uh) => {
-          const isCurrentUser = uh.user.id === userId
+          const isCurrentUser = uh.user.id === user.id
           return (
             <Item key={uh.id} variant="outline" size="sm">
               <ItemContent>
