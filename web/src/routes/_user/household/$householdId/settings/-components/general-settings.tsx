@@ -51,8 +51,7 @@ const formSchema = z.object({
   currencyId: z.string().min(1, 'Currency is required.'),
 })
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const generalSettingsHouseholdFragment = graphql`
+const generalSettingsHouseholdFragment = graphql`
   fragment generalSettingsHouseholdFragment on Household {
     id
     name
@@ -64,8 +63,7 @@ export const generalSettingsHouseholdFragment = graphql`
   }
 `
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const generalSettingsCurrenciesFragment = graphql`
+const generalSettingsCurrenciesFragment = graphql`
   fragment generalSettingsCurrenciesFragment on Query {
     currencies {
       id
