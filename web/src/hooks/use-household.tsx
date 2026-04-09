@@ -1,23 +1,34 @@
 import { createContext, useContext } from 'react'
-import type { routeHouseholdIdQuery$data } from '@/routes/_user/household/$householdId/__generated__/routeHouseholdIdQuery.graphql'
+import { graphql, useFragment } from 'react-relay'
+import type { useHouseholdFragment$key } from './__generated__/useHouseholdFragment.graphql'
 
-type Household = routeHouseholdIdQuery$data['households'][number]
+const UseHouseholdFragment = graphql`
+  fragment useHouseholdFragment on Household {
+    # eslint-disable-next-line relay/unused-fields
+    id
+    # eslint-disable-next-line relay/unused-fields
+    name
+    # eslint-disable-next-line relay/unused-fields
+    locale
+    # eslint-disable-next-line relay/unused-fields
+    currency {
+      id
+      code
+    }
+  }
+`
 
-type HouseholdContextType = {
-  household: Household
-}
-
-const HouseholdContext = createContext<HouseholdContextType | null>(null)
+const HouseholdContext = createContext<useHouseholdFragment$key | null>(null)
 
 export const HouseholdProvider = ({
   children,
-  household,
+  householdRef,
 }: {
   children: React.ReactNode
-  household: Household
+  householdRef: useHouseholdFragment$key
 }) => {
   return (
-    <HouseholdContext.Provider value={{ household }}>
+    <HouseholdContext.Provider value={householdRef}>
       {children}
     </HouseholdContext.Provider>
   )
@@ -25,9 +36,10 @@ export const HouseholdProvider = ({
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useHousehold = () => {
-  const context = useContext(HouseholdContext)
-  if (context === null) {
+  const ref = useContext(HouseholdContext)
+  if (ref === null) {
     throw new Error('useHousehold must be used within a HouseholdProvider')
   }
-  return context
+  const household = useFragment(UseHouseholdFragment, ref)
+  return { household }
 }

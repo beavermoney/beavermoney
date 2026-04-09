@@ -16,9 +16,6 @@ const query = graphql`
     household {
       ...membersSettingsFragment
     }
-    user {
-      id
-    }
   }
 `
 
@@ -52,5 +49,5 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  return <MembersSettings householdRef={data.household} userId={data.user.id} />
+  return <MembersSettings householdRef={data.household} />
 }

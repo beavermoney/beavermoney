@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<338bd4306ab28d2c2bbc9fda68bca444>>
+ * @generated SignedSource<<128e13a56f432150c064bd26880fccec>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,9 +15,6 @@ export type membersSettingsPageQuery$data = {
   readonly household: {
     readonly " $fragmentSpreads": FragmentRefs<"membersSettingsFragment">;
   };
-  readonly user: {
-    readonly id: string;
-  };
 };
 export type membersSettingsPageQuery = {
   response: membersSettingsPageQuery$data;
@@ -30,18 +27,6 @@ var v0 = {
   "args": null,
   "kind": "ScalarField",
   "name": "id",
-  "storageKey": null
-},
-v1 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "User",
-  "kind": "LinkedField",
-  "name": "user",
-  "plural": false,
-  "selections": [
-    (v0/*: any*/)
-  ],
   "storageKey": null
 };
 return {
@@ -66,8 +51,7 @@ return {
           }
         ],
         "storageKey": null
-      },
-      (v1/*: any*/)
+      }
     ],
     "type": "Query",
     "abstractKey": null
@@ -134,21 +118,20 @@ return {
           (v0/*: any*/)
         ],
         "storageKey": null
-      },
-      (v1/*: any*/)
+      }
     ]
   },
   "params": {
-    "cacheID": "731e9303863efd564a17e445befd3911",
+    "cacheID": "3fc05972f17f3a2c01e34293d24e6c32",
     "id": null,
     "metadata": {},
     "name": "membersSettingsPageQuery",
     "operationKind": "query",
-    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n  user {\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
+    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "91ba5b4e863c5f35c31993e155bf12d1";
+(node as any).hash = "d8bb764ae399dd89330784d054fa41e8";
 
 export default node;
