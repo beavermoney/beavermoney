@@ -7,6 +7,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
+import { identity } from 'lodash-es'
 
 const SETTINGS_NAV = [
   {
@@ -14,6 +15,7 @@ const SETTINGS_NAV = [
     ...linkOptions({
       from: '/household/$householdId/settings',
       to: './general',
+      search: identity,
       activeOptions: { exact: true, includeSearch: false },
     }),
   },
@@ -22,6 +24,7 @@ const SETTINGS_NAV = [
     ...linkOptions({
       from: '/household/$householdId/settings',
       to: './members',
+      search: identity,
       activeOptions: { exact: true, includeSearch: false },
     }),
   },
