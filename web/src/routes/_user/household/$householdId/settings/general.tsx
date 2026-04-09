@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { graphql } from 'relay-runtime'
 import {
   fetchQuery,
   loadQuery,
@@ -7,9 +8,26 @@ import {
 } from 'react-relay'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
-import { settingsQuery } from './-settings-query'
-import type { SettingsQuery } from './__generated__/SettingsQuery.graphql'
+import type { generalSettingsQuery } from './__generated__/generalSettingsQuery.graphql'
 import { GeneralSettings } from './-components/general-settings'
+
+const query = graphql`
+  query generalSettingsQuery {
+    household {
+      ...generalSettingsHouseholdFragment
+    }
+    ...generalSettingsCurrenciesFragment
+    user {
+      id
+    }
+    userHouseholds {
+      role
+      user {
+        id
+      }
+    }
+  }
+`
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/settings/general',
@@ -17,9 +35,9 @@ export const Route = createFileRoute(
   component: RouteComponent,
   pendingComponent: PendingComponent,
   loader: () => {
-    return loadQuery<SettingsQuery>(
+    return loadQuery<generalSettingsQuery>(
       environment,
-      settingsQuery,
+      query,
       {},
       { fetchPolicy: 'store-or-network' },
     )
@@ -31,12 +49,12 @@ function RouteComponent() {
   const queryRef = Route.useLoaderData()
   const navigate = useNavigate()
 
-  const data = usePreloadedQuery<SettingsQuery>(settingsQuery, queryRef)
+  const data = usePreloadedQuery<generalSettingsQuery>(query, queryRef)
 
   useSubscribeToInvalidationState([params.householdId], () => {
     fetchQuery(
       environment,
-      settingsQuery,
+      query,
       {},
       { fetchPolicy: 'network-only' },
     ).subscribe({})
@@ -50,6 +68,7 @@ function RouteComponent() {
   return (
     <GeneralSettings
       householdRef={data.household}
+      currenciesRef={data}
       isAdmin={isAdmin}
       onDeleted={() => navigate({ to: '/household' })}
     />
