@@ -130,7 +130,7 @@ func (Household) Policy() ent.Policy {
 				privacy.AlwaysAllowRule(),
 				ent.OpCreate,
 			),
-			rules.FilterMemberHousehold(),
+			rules.FilterAdminHousehold(),
 		},
 	}
 }

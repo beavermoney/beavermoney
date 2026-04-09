@@ -3,12 +3,13 @@ package rules
 import (
 	"context"
 
-	"entgo.io/ent/entql"
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/privacy"
 	"beavermoney.app/ent/user"
+	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/internal/contextkeys"
+	"entgo.io/ent/entql"
 )
 
 func AllowPrivacyBypass() privacy.QueryMutationRule {
@@ -117,6 +118,34 @@ func FilterMemberHousehold() privacy.QueryMutationRule {
 
 			// Apply filter
 			tf.WhereHasUsersWith(user.IDEQ(uid))
+
+			return privacy.Skip
+		},
+	)
+}
+
+// FilterAdminHousehold restricts household mutations to users with the admin role.
+func FilterAdminHousehold() privacy.QueryMutationRule {
+	type AdminHouseholdFilter interface {
+		WhereHasUserHouseholdsWith(preds ...predicate.UserHousehold)
+	}
+
+	return privacy.FilterFunc(
+		func(ctx context.Context, f privacy.Filter) error {
+			uid, ok := ctx.Value(contextkeys.UserIDKey()).(int)
+			if !ok {
+				return privacy.Denyf("unauthenticated admin household")
+			}
+
+			tf, ok := f.(AdminHouseholdFilter)
+			if !ok {
+				return privacy.Denyf("cannot apply admin household filter")
+			}
+
+			tf.WhereHasUserHouseholdsWith(
+				userhousehold.UserIDEQ(uid),
+				userhousehold.RoleEQ(userhousehold.RoleAdmin),
+			)
 
 			return privacy.Skip
 		},
