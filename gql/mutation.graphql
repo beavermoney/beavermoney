@@ -1,5 +1,6 @@
 type Mutation {
   createHousehold(input: CreateHouseholdInput!): Household!
+  updateHousehold(id: ID!, input: UpdateHouseholdInput!): Household!
   deleteHousehold(id: ID!): DeleteHouseholdPayload!
 
   createAccount(input: CreateAccountInput!): AccountEdge!

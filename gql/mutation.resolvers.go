@@ -97,6 +97,45 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 	return household, nil
 }
 
+// UpdateHousehold is the resolver for the updateHousehold field.
+func (r *mutationResolver) UpdateHousehold(ctx context.Context, id int, input ent.UpdateHouseholdInput) (*ent.Household, error) {
+	userID := contextkeys.GetUserID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateHousehold",
+		trace.WithAttributes(
+			attribute.Int("householdID", id),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	// Verify the caller is an admin of this household.
+	isAdmin, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(userID),
+			userhousehold.HouseholdIDEQ(id),
+			userhousehold.RoleEQ(userhousehold.RoleAdmin),
+		).
+		Exist(ctx)
+	if err != nil {
+		r.logger.Error("Failed to verify household membership", "error", err)
+		return nil, err
+	}
+	if !isAdmin {
+		return nil, fmt.Errorf("not authorized to update this household")
+	}
+
+	updated, err := client.Household.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		r.logger.Error("Failed to update household", "error", err)
+		return nil, fmt.Errorf("failed to update household: %w", err)
+	}
+
+	return updated, nil
+}
+
 // DeleteHousehold is the resolver for the deleteHousehold field.
 func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.DeleteHouseholdPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
