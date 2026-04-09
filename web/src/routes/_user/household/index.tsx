@@ -4,7 +4,7 @@ import { graphql } from 'relay-runtime'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
-import type { householdQuery } from './__generated__/householdQuery.graphql'
+import { householdQuery } from './__generated__/householdQuery.graphql'
 
 const query = graphql`
   query householdQuery {
