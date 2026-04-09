@@ -4,7 +4,7 @@ import {
   Link,
   linkOptions,
 } from '@tanstack/react-router'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { identity } from 'lodash-es'
@@ -39,58 +39,56 @@ function RouteComponent() {
   const params = Route.useParams()
 
   return (
-    <ScrollArea className="h-[calc(100vh-48px)] overflow-y-auto">
-      <div className="mx-auto max-w-3xl p-4">
-        {isMobile ? (
-          <div className="flex flex-col gap-4">
-            <nav className="border-b pb-2">
-              <div className="flex gap-1">
-                {SETTINGS_NAV.map(({ label, ...linkProps }) => (
-                  <Link
-                    {...linkProps}
-                    key={label}
-                    params={params}
-                    className={cn(
-                      'text-muted-foreground rounded-md px-2.5 py-1 text-xs/relaxed font-medium transition-colors',
-                      'hover:text-foreground',
-                    )}
-                    activeProps={{
-                      className: 'bg-muted text-foreground font-semibold',
-                    }}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </nav>
-            <Outlet />
-          </div>
-        ) : (
-          <div className="grid grid-cols-[120px_1fr] gap-10">
-            <nav className="flex flex-col gap-0.5 border-r pt-px pr-6">
+    <HouseholdContentLayout className="max-w-3xl">
+      {isMobile ? (
+        <div className="flex flex-col gap-4">
+          <nav className="border-b pb-2">
+            <div className="flex gap-1">
               {SETTINGS_NAV.map(({ label, ...linkProps }) => (
                 <Link
                   {...linkProps}
                   key={label}
                   params={params}
                   className={cn(
-                    'text-muted-foreground -ml-px border-l-2 border-transparent py-0.5 pl-2.5 text-xs/relaxed font-medium transition-colors',
+                    'text-muted-foreground rounded-md px-2.5 py-1 text-xs/relaxed font-medium transition-colors',
                     'hover:text-foreground',
                   )}
                   activeProps={{
-                    className: 'text-primary font-semibold border-l-primary',
+                    className: 'bg-muted text-foreground font-semibold',
                   }}
                 >
                   {label}
                 </Link>
               ))}
-            </nav>
-            <div className="min-w-0">
-              <Outlet />
             </div>
+          </nav>
+          <Outlet />
+        </div>
+      ) : (
+        <div className="grid grid-cols-[120px_1fr] gap-10">
+          <nav className="flex flex-col gap-0.5 border-r pt-px pr-6">
+            {SETTINGS_NAV.map(({ label, ...linkProps }) => (
+              <Link
+                {...linkProps}
+                key={label}
+                params={params}
+                className={cn(
+                  'text-muted-foreground -ml-px border-l-2 border-transparent py-0.5 pl-2.5 text-xs/relaxed font-medium transition-colors',
+                  'hover:text-foreground',
+                )}
+                activeProps={{
+                  className: 'text-primary font-semibold border-l-primary',
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <div className="min-w-0">
+            <Outlet />
           </div>
-        )}
-      </div>
-    </ScrollArea>
+        </div>
+      )}
+    </HouseholdContentLayout>
   )
 }
