@@ -18,8 +18,8 @@ relay-watch:
 relay:
   pnpm relay-compiler
 
-compose argument:
-  docker-compose -f docker-compose.dev.yml '{{argument}}'
+compose *args:
+  docker-compose -f docker-compose.dev.yml {{args}}
 
 migrate-hash:
   atlas migrate hash --dir file://ent/migrate/migrations --dir-format=golang-migrate
