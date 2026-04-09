@@ -253,7 +253,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
               <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
                 <span>{groupLabel}</span>
                 {totalShares !== null && totalShares > 0 && (
-                  <span className="text-muted-foreground text-[0.6875rem] tabular-nums">
+                  <span className="text-muted-foreground text-sm tabular-nums">
                     {totalShares} shares
                   </span>
                 )}
