@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/item'
 import { useUser } from '@/hooks/use-user'
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const membersSettingsFragment = graphql`
+const membersSettingsFragment = graphql`
   fragment membersSettingsFragment on Household {
     userHouseholds {
       id
