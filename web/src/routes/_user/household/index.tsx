@@ -1,18 +1,37 @@
 import { Navigate, createFileRoute } from '@tanstack/react-router'
-import { usePreloadedQuery } from 'react-relay'
+import { loadQuery, usePreloadedQuery } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
 import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
-import { HouseholdQuery } from './__generated__/HouseholdQuery.graphql'
-import { householdQuery } from './-household-query'
+import type { householdQuery } from './__generated__/householdQuery.graphql'
+
+const query = graphql`
+  query householdQuery {
+    households {
+      id
+    }
+  }
+`
 
 export const Route = createFileRoute('/_user/household/')({
   component: RouteComponent,
   pendingComponent: PendingComponent,
+  loader: () => {
+    return loadQuery<householdQuery>(
+      environment,
+      query,
+      {},
+      {
+        fetchPolicy: 'store-or-network',
+      },
+    )
+  },
 })
 
 function RouteComponent() {
-  const queryRef = Route.useRouteContext()
-  const data = usePreloadedQuery<HouseholdQuery>(householdQuery, queryRef)
+  const queryRef = Route.useLoaderData()
+  const data = usePreloadedQuery<householdQuery>(query, queryRef)
 
   const householdId = localStorage.getItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
 

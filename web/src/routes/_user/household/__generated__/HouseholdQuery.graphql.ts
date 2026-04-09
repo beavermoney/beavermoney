@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1662295fdae4992dd1a78659d32f3a3d>>
+ * @generated SignedSource<<e4fa640debbc0ec2f2f6337b75f141dc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,15 +9,15 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from 'relay-runtime';
-export type HouseholdQuery$variables = Record<PropertyKey, never>;
-export type HouseholdQuery$data = {
+export type householdQuery$variables = Record<PropertyKey, never>;
+export type householdQuery$data = {
   readonly households: ReadonlyArray<{
     readonly id: string;
   }>;
 };
-export type HouseholdQuery = {
-  response: HouseholdQuery$data;
-  variables: HouseholdQuery$variables;
+export type householdQuery = {
+  response: householdQuery$data;
+  variables: householdQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -46,7 +46,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "HouseholdQuery",
+    "name": "householdQuery",
     "selections": (v0/*: any*/),
     "type": "Query",
     "abstractKey": null
@@ -55,20 +55,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "HouseholdQuery",
+    "name": "householdQuery",
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "0e0bedf5e32482f979e35b881b0124cb",
+    "cacheID": "97a77d4a4f9a23d305678039aae18845",
     "id": null,
     "metadata": {},
-    "name": "HouseholdQuery",
+    "name": "householdQuery",
     "operationKind": "query",
-    "text": "query HouseholdQuery {\n  households {\n    id\n  }\n}\n"
+    "text": "query householdQuery {\n  households {\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "7d97256ba59d3821de740658cbcd100c";
+(node as any).hash = "cd9cfe2b3f5f0ce3043497fa493d88b3";
 
 export default node;
