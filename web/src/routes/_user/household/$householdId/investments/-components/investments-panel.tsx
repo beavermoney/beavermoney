@@ -31,7 +31,7 @@ import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { RefreshCwIcon } from 'lucide-react'
 import { PlusButton } from '@/components/plus-button'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
@@ -85,6 +85,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const { household } = useHousehold()
   const environment = useRelayEnvironment()
   const navigate = useNavigate()
+  const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
   const search = useSearch({
     from: '/_user/household/$householdId/investments',
@@ -174,7 +175,10 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         >
           <RefreshCwIcon className={isRefreshInFlight ? 'animate-spin' : ''} />
         </Button>
-        <PlusButton />
+        <PlusButton
+          to="/household/$householdId/investments/new"
+          params={{ householdId }}
+        />
       </div>
       <div className="flex flex-col gap-1">
         <span className="text-primary text-[0.6875rem] font-medium tracking-wider uppercase">

@@ -1,4 +1,4 @@
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { graphql, usePaginationFragment } from 'react-relay'
@@ -73,6 +73,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   const { household } = useHousehold()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
+  const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
   useRegisterConnection(
     data.recurringSubscriptions.__id,
@@ -179,7 +180,10 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
-        <PlusButton />
+        <PlusButton
+          to="/household/$householdId/subscriptions/new"
+          params={{ householdId }}
+        />
       </div>
 
       <div className="flex flex-col gap-1">
