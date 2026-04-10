@@ -18,6 +18,8 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -49,6 +51,10 @@ type Client struct {
 	InvestmentLot *InvestmentLotClient
 	// RecurringSubscription is the client for interacting with the RecurringSubscription builders.
 	RecurringSubscription *RecurringSubscriptionClient
+	// Snapshot is the client for interacting with the Snapshot builders.
+	Snapshot *SnapshotClient
+	// SnapshotEntry is the client for interacting with the SnapshotEntry builders.
+	SnapshotEntry *SnapshotEntryClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
 	// TransactionCategory is the client for interacting with the TransactionCategory builders.
@@ -79,6 +85,8 @@ func (c *Client) init() {
 	c.Investment = NewInvestmentClient(c.config)
 	c.InvestmentLot = NewInvestmentLotClient(c.config)
 	c.RecurringSubscription = NewRecurringSubscriptionClient(c.config)
+	c.Snapshot = NewSnapshotClient(c.config)
+	c.SnapshotEntry = NewSnapshotEntryClient(c.config)
 	c.Transaction = NewTransactionClient(c.config)
 	c.TransactionCategory = NewTransactionCategoryClient(c.config)
 	c.TransactionEntry = NewTransactionEntryClient(c.config)
@@ -184,6 +192,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Investment:            NewInvestmentClient(cfg),
 		InvestmentLot:         NewInvestmentLotClient(cfg),
 		RecurringSubscription: NewRecurringSubscriptionClient(cfg),
+		Snapshot:              NewSnapshotClient(cfg),
+		SnapshotEntry:         NewSnapshotEntryClient(cfg),
 		Transaction:           NewTransactionClient(cfg),
 		TransactionCategory:   NewTransactionCategoryClient(cfg),
 		TransactionEntry:      NewTransactionEntryClient(cfg),
@@ -216,6 +226,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Investment:            NewInvestmentClient(cfg),
 		InvestmentLot:         NewInvestmentLotClient(cfg),
 		RecurringSubscription: NewRecurringSubscriptionClient(cfg),
+		Snapshot:              NewSnapshotClient(cfg),
+		SnapshotEntry:         NewSnapshotEntryClient(cfg),
 		Transaction:           NewTransactionClient(cfg),
 		TransactionCategory:   NewTransactionCategoryClient(cfg),
 		TransactionEntry:      NewTransactionEntryClient(cfg),
@@ -252,8 +264,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Account, c.Checkpoint, c.Currency, c.Household, c.Investment, c.InvestmentLot,
-		c.RecurringSubscription, c.Transaction, c.TransactionCategory,
-		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
+		c.RecurringSubscription, c.Snapshot, c.SnapshotEntry, c.Transaction,
+		c.TransactionCategory, c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
 	} {
 		n.Use(hooks...)
 	}
@@ -264,8 +276,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Account, c.Checkpoint, c.Currency, c.Household, c.Investment, c.InvestmentLot,
-		c.RecurringSubscription, c.Transaction, c.TransactionCategory,
-		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
+		c.RecurringSubscription, c.Snapshot, c.SnapshotEntry, c.Transaction,
+		c.TransactionCategory, c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -288,6 +300,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.InvestmentLot.mutate(ctx, m)
 	case *RecurringSubscriptionMutation:
 		return c.RecurringSubscription.mutate(ctx, m)
+	case *SnapshotMutation:
+		return c.Snapshot.mutate(ctx, m)
+	case *SnapshotEntryMutation:
+		return c.SnapshotEntry.mutate(ctx, m)
 	case *TransactionMutation:
 		return c.Transaction.mutate(ctx, m)
 	case *TransactionCategoryMutation:
@@ -889,6 +905,22 @@ func (c *CurrencyClient) QueryCheckpoints(_m *Currency) *CheckpointQuery {
 	return query
 }
 
+// QuerySnapshotEntries queries the snapshot_entries edge of a Currency.
+func (c *CurrencyClient) QuerySnapshotEntries(_m *Currency) *SnapshotEntryQuery {
+	query := (&SnapshotEntryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(currency.Table, currency.FieldID, id),
+			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotEntriesTable, currency.SnapshotEntriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CurrencyClient) Hooks() []Hook {
 	return c.hooks.Currency
@@ -1175,6 +1207,38 @@ func (c *HouseholdClient) QueryCheckpoints(_m *Household) *CheckpointQuery {
 			sqlgraph.From(household.Table, household.FieldID, id),
 			sqlgraph.To(checkpoint.Table, checkpoint.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, household.CheckpointsTable, household.CheckpointsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySnapshots queries the snapshots edge of a Household.
+func (c *HouseholdClient) QuerySnapshots(_m *Household) *SnapshotQuery {
+	query := (&SnapshotClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, id),
+			sqlgraph.To(snapshot.Table, snapshot.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.SnapshotsTable, household.SnapshotsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySnapshotEntries queries the snapshot_entries edge of a Household.
+func (c *HouseholdClient) QuerySnapshotEntries(_m *Household) *SnapshotEntryQuery {
+	query := (&SnapshotEntryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, id),
+			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.SnapshotEntriesTable, household.SnapshotEntriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1783,6 +1847,370 @@ func (c *RecurringSubscriptionClient) mutate(ctx context.Context, m *RecurringSu
 		return (&RecurringSubscriptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown RecurringSubscription mutation op: %q", m.Op())
+	}
+}
+
+// SnapshotClient is a client for the Snapshot schema.
+type SnapshotClient struct {
+	config
+}
+
+// NewSnapshotClient returns a client for the Snapshot from the given config.
+func NewSnapshotClient(c config) *SnapshotClient {
+	return &SnapshotClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `snapshot.Hooks(f(g(h())))`.
+func (c *SnapshotClient) Use(hooks ...Hook) {
+	c.hooks.Snapshot = append(c.hooks.Snapshot, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `snapshot.Intercept(f(g(h())))`.
+func (c *SnapshotClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Snapshot = append(c.inters.Snapshot, interceptors...)
+}
+
+// Create returns a builder for creating a Snapshot entity.
+func (c *SnapshotClient) Create() *SnapshotCreate {
+	mutation := newSnapshotMutation(c.config, OpCreate)
+	return &SnapshotCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Snapshot entities.
+func (c *SnapshotClient) CreateBulk(builders ...*SnapshotCreate) *SnapshotCreateBulk {
+	return &SnapshotCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SnapshotClient) MapCreateBulk(slice any, setFunc func(*SnapshotCreate, int)) *SnapshotCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SnapshotCreateBulk{err: fmt.Errorf("calling to SnapshotClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SnapshotCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SnapshotCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Snapshot.
+func (c *SnapshotClient) Update() *SnapshotUpdate {
+	mutation := newSnapshotMutation(c.config, OpUpdate)
+	return &SnapshotUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SnapshotClient) UpdateOne(_m *Snapshot) *SnapshotUpdateOne {
+	mutation := newSnapshotMutation(c.config, OpUpdateOne, withSnapshot(_m))
+	return &SnapshotUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SnapshotClient) UpdateOneID(id int) *SnapshotUpdateOne {
+	mutation := newSnapshotMutation(c.config, OpUpdateOne, withSnapshotID(id))
+	return &SnapshotUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Snapshot.
+func (c *SnapshotClient) Delete() *SnapshotDelete {
+	mutation := newSnapshotMutation(c.config, OpDelete)
+	return &SnapshotDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SnapshotClient) DeleteOne(_m *Snapshot) *SnapshotDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SnapshotClient) DeleteOneID(id int) *SnapshotDeleteOne {
+	builder := c.Delete().Where(snapshot.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SnapshotDeleteOne{builder}
+}
+
+// Query returns a query builder for Snapshot.
+func (c *SnapshotClient) Query() *SnapshotQuery {
+	return &SnapshotQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSnapshot},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Snapshot entity by its id.
+func (c *SnapshotClient) Get(ctx context.Context, id int) (*Snapshot, error) {
+	return c.Query().Where(snapshot.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SnapshotClient) GetX(ctx context.Context, id int) *Snapshot {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryHousehold queries the household edge of a Snapshot.
+func (c *SnapshotClient) QueryHousehold(_m *Snapshot) *HouseholdQuery {
+	query := (&HouseholdClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshot.Table, snapshot.FieldID, id),
+			sqlgraph.To(household.Table, household.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshot.HouseholdTable, snapshot.HouseholdColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySnapshotEntries queries the snapshot_entries edge of a Snapshot.
+func (c *SnapshotClient) QuerySnapshotEntries(_m *Snapshot) *SnapshotEntryQuery {
+	query := (&SnapshotEntryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshot.Table, snapshot.FieldID, id),
+			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, snapshot.SnapshotEntriesTable, snapshot.SnapshotEntriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SnapshotClient) Hooks() []Hook {
+	hooks := c.hooks.Snapshot
+	return append(hooks[:len(hooks):len(hooks)], snapshot.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *SnapshotClient) Interceptors() []Interceptor {
+	return c.inters.Snapshot
+}
+
+func (c *SnapshotClient) mutate(ctx context.Context, m *SnapshotMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SnapshotCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SnapshotUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SnapshotUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SnapshotDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Snapshot mutation op: %q", m.Op())
+	}
+}
+
+// SnapshotEntryClient is a client for the SnapshotEntry schema.
+type SnapshotEntryClient struct {
+	config
+}
+
+// NewSnapshotEntryClient returns a client for the SnapshotEntry from the given config.
+func NewSnapshotEntryClient(c config) *SnapshotEntryClient {
+	return &SnapshotEntryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `snapshotentry.Hooks(f(g(h())))`.
+func (c *SnapshotEntryClient) Use(hooks ...Hook) {
+	c.hooks.SnapshotEntry = append(c.hooks.SnapshotEntry, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `snapshotentry.Intercept(f(g(h())))`.
+func (c *SnapshotEntryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SnapshotEntry = append(c.inters.SnapshotEntry, interceptors...)
+}
+
+// Create returns a builder for creating a SnapshotEntry entity.
+func (c *SnapshotEntryClient) Create() *SnapshotEntryCreate {
+	mutation := newSnapshotEntryMutation(c.config, OpCreate)
+	return &SnapshotEntryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SnapshotEntry entities.
+func (c *SnapshotEntryClient) CreateBulk(builders ...*SnapshotEntryCreate) *SnapshotEntryCreateBulk {
+	return &SnapshotEntryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SnapshotEntryClient) MapCreateBulk(slice any, setFunc func(*SnapshotEntryCreate, int)) *SnapshotEntryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SnapshotEntryCreateBulk{err: fmt.Errorf("calling to SnapshotEntryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SnapshotEntryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SnapshotEntryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SnapshotEntry.
+func (c *SnapshotEntryClient) Update() *SnapshotEntryUpdate {
+	mutation := newSnapshotEntryMutation(c.config, OpUpdate)
+	return &SnapshotEntryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SnapshotEntryClient) UpdateOne(_m *SnapshotEntry) *SnapshotEntryUpdateOne {
+	mutation := newSnapshotEntryMutation(c.config, OpUpdateOne, withSnapshotEntry(_m))
+	return &SnapshotEntryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SnapshotEntryClient) UpdateOneID(id int) *SnapshotEntryUpdateOne {
+	mutation := newSnapshotEntryMutation(c.config, OpUpdateOne, withSnapshotEntryID(id))
+	return &SnapshotEntryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SnapshotEntry.
+func (c *SnapshotEntryClient) Delete() *SnapshotEntryDelete {
+	mutation := newSnapshotEntryMutation(c.config, OpDelete)
+	return &SnapshotEntryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SnapshotEntryClient) DeleteOne(_m *SnapshotEntry) *SnapshotEntryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SnapshotEntryClient) DeleteOneID(id int) *SnapshotEntryDeleteOne {
+	builder := c.Delete().Where(snapshotentry.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SnapshotEntryDeleteOne{builder}
+}
+
+// Query returns a query builder for SnapshotEntry.
+func (c *SnapshotEntryClient) Query() *SnapshotEntryQuery {
+	return &SnapshotEntryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSnapshotEntry},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SnapshotEntry entity by its id.
+func (c *SnapshotEntryClient) Get(ctx context.Context, id int) (*SnapshotEntry, error) {
+	return c.Query().Where(snapshotentry.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SnapshotEntryClient) GetX(ctx context.Context, id int) *SnapshotEntry {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryHousehold queries the household edge of a SnapshotEntry.
+func (c *SnapshotEntryClient) QueryHousehold(_m *SnapshotEntry) *HouseholdQuery {
+	query := (&HouseholdClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, id),
+			sqlgraph.To(household.Table, household.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.HouseholdTable, snapshotentry.HouseholdColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCurrency queries the currency edge of a SnapshotEntry.
+func (c *SnapshotEntryClient) QueryCurrency(_m *SnapshotEntry) *CurrencyQuery {
+	query := (&CurrencyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, id),
+			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.CurrencyTable, snapshotentry.CurrencyColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUser queries the user edge of a SnapshotEntry.
+func (c *SnapshotEntryClient) QueryUser(_m *SnapshotEntry) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.UserTable, snapshotentry.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySnapshot queries the snapshot edge of a SnapshotEntry.
+func (c *SnapshotEntryClient) QuerySnapshot(_m *SnapshotEntry) *SnapshotQuery {
+	query := (&SnapshotClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, id),
+			sqlgraph.To(snapshot.Table, snapshot.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.SnapshotTable, snapshotentry.SnapshotColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SnapshotEntryClient) Hooks() []Hook {
+	hooks := c.hooks.SnapshotEntry
+	return append(hooks[:len(hooks):len(hooks)], snapshotentry.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *SnapshotEntryClient) Interceptors() []Interceptor {
+	return c.inters.SnapshotEntry
+}
+
+func (c *SnapshotEntryClient) mutate(ctx context.Context, m *SnapshotEntryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SnapshotEntryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SnapshotEntryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SnapshotEntryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SnapshotEntryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SnapshotEntry mutation op: %q", m.Op())
 	}
 }
 
@@ -2552,6 +2980,22 @@ func (c *UserClient) QueryRecurringSubscriptions(_m *User) *RecurringSubscriptio
 	return query
 }
 
+// QuerySnapshotEntries queries the snapshot_entries edge of a User.
+func (c *UserClient) QuerySnapshotEntries(_m *User) *SnapshotEntryQuery {
+	query := (&SnapshotEntryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SnapshotEntriesTable, user.SnapshotEntriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryUserHouseholds queries the user_households edge of a User.
 func (c *UserClient) QueryUserHouseholds(_m *User) *UserHouseholdQuery {
 	query := (&UserHouseholdClient{config: c.config}).Query()
@@ -2914,12 +3358,13 @@ func (c *UserKeyClient) mutate(ctx context.Context, m *UserKeyMutation) (Value, 
 type (
 	hooks struct {
 		Account, Checkpoint, Currency, Household, Investment, InvestmentLot,
-		RecurringSubscription, Transaction, TransactionCategory, TransactionEntry,
-		User, UserHousehold, UserKey []ent.Hook
+		RecurringSubscription, Snapshot, SnapshotEntry, Transaction,
+		TransactionCategory, TransactionEntry, User, UserHousehold, UserKey []ent.Hook
 	}
 	inters struct {
 		Account, Checkpoint, Currency, Household, Investment, InvestmentLot,
-		RecurringSubscription, Transaction, TransactionCategory, TransactionEntry,
-		User, UserHousehold, UserKey []ent.Interceptor
+		RecurringSubscription, Snapshot, SnapshotEntry, Transaction,
+		TransactionCategory, TransactionEntry, User, UserHousehold,
+		UserKey []ent.Interceptor
 	}
 )

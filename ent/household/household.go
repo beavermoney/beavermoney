@@ -47,6 +47,10 @@ const (
 	EdgeRecurringSubscriptions = "recurring_subscriptions"
 	// EdgeCheckpoints holds the string denoting the checkpoints edge name in mutations.
 	EdgeCheckpoints = "checkpoints"
+	// EdgeSnapshots holds the string denoting the snapshots edge name in mutations.
+	EdgeSnapshots = "snapshots"
+	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
+	EdgeSnapshotEntries = "snapshot_entries"
 	// EdgeUserHouseholds holds the string denoting the user_households edge name in mutations.
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the household in the database.
@@ -119,6 +123,20 @@ const (
 	CheckpointsInverseTable = "checkpoints"
 	// CheckpointsColumn is the table column denoting the checkpoints relation/edge.
 	CheckpointsColumn = "household_id"
+	// SnapshotsTable is the table that holds the snapshots relation/edge.
+	SnapshotsTable = "snapshots"
+	// SnapshotsInverseTable is the table name for the Snapshot entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshot" package.
+	SnapshotsInverseTable = "snapshots"
+	// SnapshotsColumn is the table column denoting the snapshots relation/edge.
+	SnapshotsColumn = "household_id"
+	// SnapshotEntriesTable is the table that holds the snapshot_entries relation/edge.
+	SnapshotEntriesTable = "snapshot_entries"
+	// SnapshotEntriesInverseTable is the table name for the SnapshotEntry entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotentry" package.
+	SnapshotEntriesInverseTable = "snapshot_entries"
+	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
+	SnapshotEntriesColumn = "household_id"
 	// UserHouseholdsTable is the table that holds the user_households relation/edge.
 	UserHouseholdsTable = "user_households"
 	// UserHouseholdsInverseTable is the table name for the UserHousehold entity.
@@ -350,6 +368,34 @@ func ByCheckpoints(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// BySnapshotsCount orders the results by snapshots count.
+func BySnapshotsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotsStep(), opts...)
+	}
+}
+
+// BySnapshots orders the results by snapshots terms.
+func BySnapshots(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySnapshotEntriesCount orders the results by snapshot_entries count.
+func BySnapshotEntriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotEntriesStep(), opts...)
+	}
+}
+
+// BySnapshotEntries orders the results by snapshot_entries terms.
+func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByUserHouseholdsCount orders the results by user_households count.
 func ByUserHouseholdsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -431,6 +477,20 @@ func newCheckpointsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CheckpointsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CheckpointsTable, CheckpointsColumn),
+	)
+}
+func newSnapshotsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotsTable, SnapshotsColumn),
+	)
+}
+func newSnapshotEntriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
 	)
 }
 func newUserHouseholdsStep() *sqlgraph.Step {

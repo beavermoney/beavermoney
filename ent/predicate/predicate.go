@@ -27,6 +27,12 @@ type InvestmentLot func(*sql.Selector)
 // RecurringSubscription is the predicate function for recurringsubscription builders.
 type RecurringSubscription func(*sql.Selector)
 
+// Snapshot is the predicate function for snapshot builders.
+type Snapshot func(*sql.Selector)
+
+// SnapshotEntry is the predicate function for snapshotentry builders.
+type SnapshotEntry func(*sql.Selector)
+
 // Transaction is the predicate function for transaction builders.
 type Transaction func(*sql.Selector)
 

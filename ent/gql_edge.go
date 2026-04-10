@@ -144,6 +144,18 @@ func (_m *Currency) Checkpoints(ctx context.Context) (result []*Checkpoint, err 
 	return result, err
 }
 
+func (_m *Currency) SnapshotEntries(ctx context.Context) (result []*SnapshotEntry, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotEntries(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotEntriesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotEntries().All(ctx)
+	}
+	return result, err
+}
+
 func (_m *Household) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
@@ -325,6 +337,46 @@ func (_m *Household) Checkpoints(
 	return _m.QueryCheckpoints().Paginate(ctx, after, first, before, last, opts...)
 }
 
+func (_m *Household) Snapshots(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *SnapshotWhereInput,
+) (*SnapshotConnection, error) {
+	opts := []SnapshotPaginateOption{
+		WithSnapshotFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
+	if nodes, err := _m.NamedSnapshots(alias); err == nil || hasTotalCount {
+		pager, err := newSnapshotPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &SnapshotConnection{Edges: []*SnapshotEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return _m.QuerySnapshots().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (_m *Household) SnapshotEntries(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *SnapshotEntryWhereInput,
+) (*SnapshotEntryConnection, error) {
+	opts := []SnapshotEntryPaginateOption{
+		WithSnapshotEntryFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[11][alias]
+	if nodes, err := _m.NamedSnapshotEntries(alias); err == nil || hasTotalCount {
+		pager, err := newSnapshotEntryPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &SnapshotEntryConnection{Edges: []*SnapshotEntryEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return _m.QuerySnapshotEntries().Paginate(ctx, after, first, before, last, opts...)
+}
+
 func (_m *Household) UserHouseholds(ctx context.Context) (result []*UserHousehold, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedUserHouseholds(graphql.GetFieldContext(ctx).Field.Alias)
@@ -417,6 +469,58 @@ func (_m *RecurringSubscription) User(ctx context.Context) (*User, error) {
 	result, err := _m.Edges.UserOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryUser().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *Snapshot) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *Snapshot) SnapshotEntries(ctx context.Context) (result []*SnapshotEntry, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotEntries(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotEntriesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotEntries().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotEntry) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotEntry) Currency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.CurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryCurrency().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotEntry) User(ctx context.Context) (*User, error) {
+	result, err := _m.Edges.UserOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryUser().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotEntry) Snapshot(ctx context.Context) (*Snapshot, error) {
+	result, err := _m.Edges.SnapshotOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshot().Only(ctx)
 	}
 	return result, err
 }
@@ -577,6 +681,18 @@ func (_m *User) RecurringSubscriptions(ctx context.Context) (result []*Recurring
 	}
 	if IsNotLoaded(err) {
 		result, err = _m.QueryRecurringSubscriptions().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *User) SnapshotEntries(ctx context.Context) (result []*SnapshotEntry, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotEntries(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotEntriesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotEntries().All(ctx)
 	}
 	return result, err
 }

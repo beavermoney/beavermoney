@@ -28,6 +28,8 @@ const (
 	EdgeRecurringSubscriptions = "recurring_subscriptions"
 	// EdgeCheckpoints holds the string denoting the checkpoints edge name in mutations.
 	EdgeCheckpoints = "checkpoints"
+	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
+	EdgeSnapshotEntries = "snapshot_entries"
 	// Table holds the table name of the currency in the database.
 	Table = "currencies"
 	// AccountsTable is the table that holds the accounts relation/edge.
@@ -72,6 +74,13 @@ const (
 	CheckpointsInverseTable = "checkpoints"
 	// CheckpointsColumn is the table column denoting the checkpoints relation/edge.
 	CheckpointsColumn = "currency_id"
+	// SnapshotEntriesTable is the table that holds the snapshot_entries relation/edge.
+	SnapshotEntriesTable = "snapshot_entries"
+	// SnapshotEntriesInverseTable is the table name for the SnapshotEntry entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotentry" package.
+	SnapshotEntriesInverseTable = "snapshot_entries"
+	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
+	SnapshotEntriesColumn = "currency_id"
 )
 
 // Columns holds all SQL columns for currency fields.
@@ -192,6 +201,20 @@ func ByCheckpoints(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCheckpointsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySnapshotEntriesCount orders the results by snapshot_entries count.
+func BySnapshotEntriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotEntriesStep(), opts...)
+	}
+}
+
+// BySnapshotEntries orders the results by snapshot_entries terms.
+func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newAccountsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -232,5 +255,12 @@ func newCheckpointsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CheckpointsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CheckpointsTable, CheckpointsColumn),
+	)
+}
+func newSnapshotEntriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
 	)
 }

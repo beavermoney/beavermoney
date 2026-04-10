@@ -129,6 +129,16 @@ func (r *queryResolver) RecurringSubscriptions(ctx context.Context, after *entgq
 	return r.entClient.RecurringSubscription.Query().Paginate(ctx, after, first, before, last, ent.WithRecurringSubscriptionFilter(where.Filter))
 }
 
+// Snapshots is the resolver for the snapshots field.
+func (r *queryResolver) Snapshots(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) (*ent.SnapshotConnection, error) {
+	panic(fmt.Errorf("not implemented: Snapshots - snapshots"))
+}
+
+// SnapshotEntries is the resolver for the snapshotEntries field.
+func (r *queryResolver) SnapshotEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) (*ent.SnapshotEntryConnection, error) {
+	panic(fmt.Errorf("not implemented: SnapshotEntries - snapshotEntries"))
+}
+
 // Transactions is the resolver for the transactions field.
 func (r *queryResolver) Transactions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) (*ent.TransactionConnection, error) {
 	return r.entClient.Transaction.Query().Paginate(ctx, after, first, before, last, ent.WithTransactionOrder(orderBy), ent.WithTransactionFilter(where.Filter))
@@ -157,6 +167,31 @@ func (r *recurringSubscriptionResolver) Cost(ctx context.Context, obj *ent.Recur
 // FxRate is the resolver for the fxRate field.
 func (r *recurringSubscriptionResolver) FxRate(ctx context.Context, obj *ent.RecurringSubscription) (string, error) {
 	return obj.FxRate.String(), nil
+}
+
+// Liquidity is the resolver for the liquidity field.
+func (r *snapshotEntryResolver) Liquidity(ctx context.Context, obj *ent.SnapshotEntry) (string, error) {
+	panic(fmt.Errorf("not implemented: Liquidity - liquidity"))
+}
+
+// Investment is the resolver for the investment field.
+func (r *snapshotEntryResolver) Investment(ctx context.Context, obj *ent.SnapshotEntry) (string, error) {
+	panic(fmt.Errorf("not implemented: Investment - investment"))
+}
+
+// Property is the resolver for the property field.
+func (r *snapshotEntryResolver) Property(ctx context.Context, obj *ent.SnapshotEntry) (string, error) {
+	panic(fmt.Errorf("not implemented: Property - property"))
+}
+
+// Receivable is the resolver for the receivable field.
+func (r *snapshotEntryResolver) Receivable(ctx context.Context, obj *ent.SnapshotEntry) (string, error) {
+	panic(fmt.Errorf("not implemented: Receivable - receivable"))
+}
+
+// Liability is the resolver for the liability field.
+func (r *snapshotEntryResolver) Liability(ctx context.Context, obj *ent.SnapshotEntry) (string, error) {
+	panic(fmt.Errorf("not implemented: Liability - liability"))
 }
 
 // Amount is the resolver for the amount field.
@@ -900,6 +935,206 @@ func (r *recurringSubscriptionWhereInputResolver) FxRateLte(ctx context.Context,
 	panic(fmt.Errorf("not implemented: FxRateLte - fxRateLTE"))
 }
 
+// Liquidity is the resolver for the liquidity field.
+func (r *snapshotEntryWhereInputResolver) Liquidity(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Liquidity - liquidity"))
+}
+
+// LiquidityNeq is the resolver for the liquidityNEQ field.
+func (r *snapshotEntryWhereInputResolver) LiquidityNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityNeq - liquidityNEQ"))
+}
+
+// LiquidityIn is the resolver for the liquidityIn field.
+func (r *snapshotEntryWhereInputResolver) LiquidityIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiquidityIn - liquidityIn"))
+}
+
+// LiquidityNotIn is the resolver for the liquidityNotIn field.
+func (r *snapshotEntryWhereInputResolver) LiquidityNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiquidityNotIn - liquidityNotIn"))
+}
+
+// LiquidityGt is the resolver for the liquidityGT field.
+func (r *snapshotEntryWhereInputResolver) LiquidityGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityGt - liquidityGT"))
+}
+
+// LiquidityGte is the resolver for the liquidityGTE field.
+func (r *snapshotEntryWhereInputResolver) LiquidityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityGte - liquidityGTE"))
+}
+
+// LiquidityLt is the resolver for the liquidityLT field.
+func (r *snapshotEntryWhereInputResolver) LiquidityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityLt - liquidityLT"))
+}
+
+// LiquidityLte is the resolver for the liquidityLTE field.
+func (r *snapshotEntryWhereInputResolver) LiquidityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiquidityLte - liquidityLTE"))
+}
+
+// Investment is the resolver for the investment field.
+func (r *snapshotEntryWhereInputResolver) Investment(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Investment - investment"))
+}
+
+// InvestmentNeq is the resolver for the investmentNEQ field.
+func (r *snapshotEntryWhereInputResolver) InvestmentNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentNeq - investmentNEQ"))
+}
+
+// InvestmentIn is the resolver for the investmentIn field.
+func (r *snapshotEntryWhereInputResolver) InvestmentIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: InvestmentIn - investmentIn"))
+}
+
+// InvestmentNotIn is the resolver for the investmentNotIn field.
+func (r *snapshotEntryWhereInputResolver) InvestmentNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: InvestmentNotIn - investmentNotIn"))
+}
+
+// InvestmentGt is the resolver for the investmentGT field.
+func (r *snapshotEntryWhereInputResolver) InvestmentGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentGt - investmentGT"))
+}
+
+// InvestmentGte is the resolver for the investmentGTE field.
+func (r *snapshotEntryWhereInputResolver) InvestmentGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentGte - investmentGTE"))
+}
+
+// InvestmentLt is the resolver for the investmentLT field.
+func (r *snapshotEntryWhereInputResolver) InvestmentLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentLt - investmentLT"))
+}
+
+// InvestmentLte is the resolver for the investmentLTE field.
+func (r *snapshotEntryWhereInputResolver) InvestmentLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: InvestmentLte - investmentLTE"))
+}
+
+// Property is the resolver for the property field.
+func (r *snapshotEntryWhereInputResolver) Property(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Property - property"))
+}
+
+// PropertyNeq is the resolver for the propertyNEQ field.
+func (r *snapshotEntryWhereInputResolver) PropertyNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyNeq - propertyNEQ"))
+}
+
+// PropertyIn is the resolver for the propertyIn field.
+func (r *snapshotEntryWhereInputResolver) PropertyIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: PropertyIn - propertyIn"))
+}
+
+// PropertyNotIn is the resolver for the propertyNotIn field.
+func (r *snapshotEntryWhereInputResolver) PropertyNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: PropertyNotIn - propertyNotIn"))
+}
+
+// PropertyGt is the resolver for the propertyGT field.
+func (r *snapshotEntryWhereInputResolver) PropertyGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyGt - propertyGT"))
+}
+
+// PropertyGte is the resolver for the propertyGTE field.
+func (r *snapshotEntryWhereInputResolver) PropertyGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyGte - propertyGTE"))
+}
+
+// PropertyLt is the resolver for the propertyLT field.
+func (r *snapshotEntryWhereInputResolver) PropertyLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyLt - propertyLT"))
+}
+
+// PropertyLte is the resolver for the propertyLTE field.
+func (r *snapshotEntryWhereInputResolver) PropertyLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: PropertyLte - propertyLTE"))
+}
+
+// Receivable is the resolver for the receivable field.
+func (r *snapshotEntryWhereInputResolver) Receivable(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Receivable - receivable"))
+}
+
+// ReceivableNeq is the resolver for the receivableNEQ field.
+func (r *snapshotEntryWhereInputResolver) ReceivableNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableNeq - receivableNEQ"))
+}
+
+// ReceivableIn is the resolver for the receivableIn field.
+func (r *snapshotEntryWhereInputResolver) ReceivableIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: ReceivableIn - receivableIn"))
+}
+
+// ReceivableNotIn is the resolver for the receivableNotIn field.
+func (r *snapshotEntryWhereInputResolver) ReceivableNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: ReceivableNotIn - receivableNotIn"))
+}
+
+// ReceivableGt is the resolver for the receivableGT field.
+func (r *snapshotEntryWhereInputResolver) ReceivableGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableGt - receivableGT"))
+}
+
+// ReceivableGte is the resolver for the receivableGTE field.
+func (r *snapshotEntryWhereInputResolver) ReceivableGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableGte - receivableGTE"))
+}
+
+// ReceivableLt is the resolver for the receivableLT field.
+func (r *snapshotEntryWhereInputResolver) ReceivableLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableLt - receivableLT"))
+}
+
+// ReceivableLte is the resolver for the receivableLTE field.
+func (r *snapshotEntryWhereInputResolver) ReceivableLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: ReceivableLte - receivableLTE"))
+}
+
+// Liability is the resolver for the liability field.
+func (r *snapshotEntryWhereInputResolver) Liability(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Liability - liability"))
+}
+
+// LiabilityNeq is the resolver for the liabilityNEQ field.
+func (r *snapshotEntryWhereInputResolver) LiabilityNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityNeq - liabilityNEQ"))
+}
+
+// LiabilityIn is the resolver for the liabilityIn field.
+func (r *snapshotEntryWhereInputResolver) LiabilityIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiabilityIn - liabilityIn"))
+}
+
+// LiabilityNotIn is the resolver for the liabilityNotIn field.
+func (r *snapshotEntryWhereInputResolver) LiabilityNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: LiabilityNotIn - liabilityNotIn"))
+}
+
+// LiabilityGt is the resolver for the liabilityGT field.
+func (r *snapshotEntryWhereInputResolver) LiabilityGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityGt - liabilityGT"))
+}
+
+// LiabilityGte is the resolver for the liabilityGTE field.
+func (r *snapshotEntryWhereInputResolver) LiabilityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityGte - liabilityGTE"))
+}
+
+// LiabilityLt is the resolver for the liabilityLT field.
+func (r *snapshotEntryWhereInputResolver) LiabilityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityLt - liabilityLT"))
+}
+
+// LiabilityLte is the resolver for the liabilityLTE field.
+func (r *snapshotEntryWhereInputResolver) LiabilityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: LiabilityLte - liabilityLTE"))
+}
+
 // Amount is the resolver for the amount field.
 func (r *transactionEntryWhereInputResolver) Amount(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
 	panic(fmt.Errorf("not implemented: Amount - amount"))
@@ -997,6 +1232,9 @@ func (r *Resolver) RecurringSubscription() RecurringSubscriptionResolver {
 	return &recurringSubscriptionResolver{r}
 }
 
+// SnapshotEntry returns SnapshotEntryResolver implementation.
+func (r *Resolver) SnapshotEntry() SnapshotEntryResolver { return &snapshotEntryResolver{r} }
+
 // TransactionEntry returns TransactionEntryResolver implementation.
 func (r *Resolver) TransactionEntry() TransactionEntryResolver { return &transactionEntryResolver{r} }
 
@@ -1050,6 +1288,11 @@ func (r *Resolver) RecurringSubscriptionWhereInput() RecurringSubscriptionWhereI
 	return &recurringSubscriptionWhereInputResolver{r}
 }
 
+// SnapshotEntryWhereInput returns SnapshotEntryWhereInputResolver implementation.
+func (r *Resolver) SnapshotEntryWhereInput() SnapshotEntryWhereInputResolver {
+	return &snapshotEntryWhereInputResolver{r}
+}
+
 // TransactionEntryWhereInput returns TransactionEntryWhereInputResolver implementation.
 func (r *Resolver) TransactionEntryWhereInput() TransactionEntryWhereInputResolver {
 	return &transactionEntryWhereInputResolver{r}
@@ -1077,6 +1320,7 @@ type investmentResolver struct{ *Resolver }
 type investmentLotResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type recurringSubscriptionResolver struct{ *Resolver }
+type snapshotEntryResolver struct{ *Resolver }
 type transactionEntryResolver struct{ *Resolver }
 type accountWhereInputResolver struct{ *Resolver }
 type checkpointWhereInputResolver struct{ *Resolver }
@@ -1088,6 +1332,7 @@ type createTransactionEntryInputResolver struct{ *Resolver }
 type investmentLotWhereInputResolver struct{ *Resolver }
 type investmentWhereInputResolver struct{ *Resolver }
 type recurringSubscriptionWhereInputResolver struct{ *Resolver }
+type snapshotEntryWhereInputResolver struct{ *Resolver }
 type transactionEntryWhereInputResolver struct{ *Resolver }
 type updateInvestmentLotInputResolver struct{ *Resolver }
 type updateRecurringSubscriptionInputResolver struct{ *Resolver }

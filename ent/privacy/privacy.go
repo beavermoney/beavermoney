@@ -279,6 +279,54 @@ func (f RecurringSubscriptionMutationRuleFunc) EvalMutation(ctx context.Context,
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RecurringSubscriptionMutation", m)
 }
 
+// The SnapshotQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type SnapshotQueryRuleFunc func(context.Context, *ent.SnapshotQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f SnapshotQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.SnapshotQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.SnapshotQuery", q)
+}
+
+// The SnapshotMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type SnapshotMutationRuleFunc func(context.Context, *ent.SnapshotMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f SnapshotMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.SnapshotMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SnapshotMutation", m)
+}
+
+// The SnapshotEntryQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type SnapshotEntryQueryRuleFunc func(context.Context, *ent.SnapshotEntryQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f SnapshotEntryQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.SnapshotEntryQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.SnapshotEntryQuery", q)
+}
+
+// The SnapshotEntryMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type SnapshotEntryMutationRuleFunc func(context.Context, *ent.SnapshotEntryMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f SnapshotEntryMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.SnapshotEntryMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SnapshotEntryMutation", m)
+}
+
 // The TransactionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type TransactionQueryRuleFunc func(context.Context, *ent.TransactionQuery) error
@@ -472,6 +520,10 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.RecurringSubscriptionQuery:
 		return q.Filter(), nil
+	case *ent.SnapshotQuery:
+		return q.Filter(), nil
+	case *ent.SnapshotEntryQuery:
+		return q.Filter(), nil
 	case *ent.TransactionQuery:
 		return q.Filter(), nil
 	case *ent.TransactionCategoryQuery:
@@ -504,6 +556,10 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.InvestmentLotMutation:
 		return m.Filter(), nil
 	case *ent.RecurringSubscriptionMutation:
+		return m.Filter(), nil
+	case *ent.SnapshotMutation:
+		return m.Filter(), nil
+	case *ent.SnapshotEntryMutation:
 		return m.Filter(), nil
 	case *ent.TransactionMutation:
 		return m.Filter(), nil

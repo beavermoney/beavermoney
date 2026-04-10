@@ -14,6 +14,8 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -467,6 +469,19 @@ func (_q *CurrencyQuery) collectField(ctx context.Context, oneNode bool, opCtx *
 				return err
 			}
 			_q.WithNamedCheckpoints(alias, func(wq *CheckpointQuery) {
+				*wq = *query
+			})
+
+		case "snapshotEntries":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotEntryClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotentryImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
 				*wq = *query
 			})
 		case "code":
@@ -1282,6 +1297,184 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				*wq = *query
 			})
 
+		case "snapshots":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotClient{config: _q.config}).Query()
+			)
+			args := newSnapshotPaginateArgs(fieldArgs(ctx, new(SnapshotWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newSnapshotPager(args.opts, args.last != nil)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					_q.loadTotal = append(_q.loadTotal, func(ctx context.Context, nodes []*Household) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"household_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(s.C(household.SnapshotsColumn), ids...))
+						})
+						if err := query.GroupBy(household.SnapshotsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[10][alias] = n
+						}
+						return nil
+					})
+				} else {
+					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Snapshots)
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[10][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
+				return err
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, false, opCtx, *field, path, mayAddCondition(satisfies, snapshotImplementors)...); err != nil {
+					return err
+				}
+			}
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				if oneNode {
+					pager.applyOrder(query.Limit(limit))
+				} else {
+					modify := entgql.LimitPerRow(household.SnapshotsColumn, limit, pager.orderExpr(query))
+					query.modifiers = append(query.modifiers, modify)
+				}
+			} else {
+				query = pager.applyOrder(query)
+			}
+			_q.WithNamedSnapshots(alias, func(wq *SnapshotQuery) {
+				*wq = *query
+			})
+
+		case "snapshotEntries":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotEntryClient{config: _q.config}).Query()
+			)
+			args := newSnapshotEntryPaginateArgs(fieldArgs(ctx, new(SnapshotEntryWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newSnapshotEntryPager(args.opts, args.last != nil)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					_q.loadTotal = append(_q.loadTotal, func(ctx context.Context, nodes []*Household) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"household_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(s.C(household.SnapshotEntriesColumn), ids...))
+						})
+						if err := query.GroupBy(household.SnapshotEntriesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[11] == nil {
+								nodes[i].Edges.totalCount[11] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[11][alias] = n
+						}
+						return nil
+					})
+				} else {
+					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.SnapshotEntries)
+							if nodes[i].Edges.totalCount[11] == nil {
+								nodes[i].Edges.totalCount[11] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[11][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
+				return err
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, false, opCtx, *field, path, mayAddCondition(satisfies, snapshotentryImplementors)...); err != nil {
+					return err
+				}
+			}
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				if oneNode {
+					pager.applyOrder(query.Limit(limit))
+				} else {
+					modify := entgql.LimitPerRow(household.SnapshotEntriesColumn, limit, pager.orderExpr(query))
+					query.modifiers = append(query.modifiers, modify)
+				}
+			} else {
+				query = pager.applyOrder(query)
+			}
+			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
+				*wq = *query
+			})
+
 		case "userHouseholds":
 			var (
 				alias = field.Alias
@@ -1855,6 +2048,293 @@ func newRecurringSubscriptionPaginateArgs(rv map[string]any) *recurringsubscript
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *SnapshotQuery) CollectFields(ctx context.Context, satisfies ...string) (*SnapshotQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *SnapshotQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(snapshot.Columns))
+		selectedFields = []string{snapshot.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[snapshot.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, snapshot.FieldHouseholdID)
+				fieldSeen[snapshot.FieldHouseholdID] = struct{}{}
+			}
+
+		case "snapshotEntries":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotEntryClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotentryImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
+				*wq = *query
+			})
+		case "householdID":
+			if _, ok := fieldSeen[snapshot.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, snapshot.FieldHouseholdID)
+				fieldSeen[snapshot.FieldHouseholdID] = struct{}{}
+			}
+		case "createTime":
+			if _, ok := fieldSeen[snapshot.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, snapshot.FieldCreateTime)
+				fieldSeen[snapshot.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[snapshot.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, snapshot.FieldUpdateTime)
+				fieldSeen[snapshot.FieldUpdateTime] = struct{}{}
+			}
+		case "note":
+			if _, ok := fieldSeen[snapshot.FieldNote]; !ok {
+				selectedFields = append(selectedFields, snapshot.FieldNote)
+				fieldSeen[snapshot.FieldNote] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type snapshotPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []SnapshotPaginateOption
+}
+
+func newSnapshotPaginateArgs(rv map[string]any) *snapshotPaginateArgs {
+	args := &snapshotPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*SnapshotWhereInput); ok {
+		args.opts = append(args.opts, WithSnapshotFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *SnapshotEntryQuery) CollectFields(ctx context.Context, satisfies ...string) (*SnapshotEntryQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *SnapshotEntryQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(snapshotentry.Columns))
+		selectedFields = []string{snapshotentry.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[snapshotentry.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldHouseholdID)
+				fieldSeen[snapshotentry.FieldHouseholdID] = struct{}{}
+			}
+
+		case "currency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withCurrency = query
+			if _, ok := fieldSeen[snapshotentry.FieldCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldCurrencyID)
+				fieldSeen[snapshotentry.FieldCurrencyID] = struct{}{}
+			}
+
+		case "user":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&UserClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, userImplementors)...); err != nil {
+				return err
+			}
+			_q.withUser = query
+			if _, ok := fieldSeen[snapshotentry.FieldUserID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldUserID)
+				fieldSeen[snapshotentry.FieldUserID] = struct{}{}
+			}
+
+		case "snapshot":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, snapshotImplementors)...); err != nil {
+				return err
+			}
+			_q.withSnapshot = query
+			if _, ok := fieldSeen[snapshotentry.FieldSnapshotID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldSnapshotID)
+				fieldSeen[snapshotentry.FieldSnapshotID] = struct{}{}
+			}
+		case "householdID":
+			if _, ok := fieldSeen[snapshotentry.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldHouseholdID)
+				fieldSeen[snapshotentry.FieldHouseholdID] = struct{}{}
+			}
+		case "createTime":
+			if _, ok := fieldSeen[snapshotentry.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldCreateTime)
+				fieldSeen[snapshotentry.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[snapshotentry.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldUpdateTime)
+				fieldSeen[snapshotentry.FieldUpdateTime] = struct{}{}
+			}
+		case "liquidity":
+			if _, ok := fieldSeen[snapshotentry.FieldLiquidity]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldLiquidity)
+				fieldSeen[snapshotentry.FieldLiquidity] = struct{}{}
+			}
+		case "investment":
+			if _, ok := fieldSeen[snapshotentry.FieldInvestment]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldInvestment)
+				fieldSeen[snapshotentry.FieldInvestment] = struct{}{}
+			}
+		case "property":
+			if _, ok := fieldSeen[snapshotentry.FieldProperty]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldProperty)
+				fieldSeen[snapshotentry.FieldProperty] = struct{}{}
+			}
+		case "receivable":
+			if _, ok := fieldSeen[snapshotentry.FieldReceivable]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldReceivable)
+				fieldSeen[snapshotentry.FieldReceivable] = struct{}{}
+			}
+		case "liability":
+			if _, ok := fieldSeen[snapshotentry.FieldLiability]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldLiability)
+				fieldSeen[snapshotentry.FieldLiability] = struct{}{}
+			}
+		case "currencyID":
+			if _, ok := fieldSeen[snapshotentry.FieldCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldCurrencyID)
+				fieldSeen[snapshotentry.FieldCurrencyID] = struct{}{}
+			}
+		case "userID":
+			if _, ok := fieldSeen[snapshotentry.FieldUserID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldUserID)
+				fieldSeen[snapshotentry.FieldUserID] = struct{}{}
+			}
+		case "snapshotID":
+			if _, ok := fieldSeen[snapshotentry.FieldSnapshotID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldSnapshotID)
+				fieldSeen[snapshotentry.FieldSnapshotID] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type snapshotentryPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []SnapshotEntryPaginateOption
+}
+
+func newSnapshotEntryPaginateArgs(rv map[string]any) *snapshotentryPaginateArgs {
+	args := &snapshotentryPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*SnapshotEntryWhereInput); ok {
+		args.opts = append(args.opts, WithSnapshotEntryFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (_q *TransactionQuery) CollectFields(ctx context.Context, satisfies ...string) (*TransactionQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
@@ -2415,6 +2895,19 @@ func (_q *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				return err
 			}
 			_q.WithNamedRecurringSubscriptions(alias, func(wq *RecurringSubscriptionQuery) {
+				*wq = *query
+			})
+
+		case "snapshotEntries":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotEntryClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotentryImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
 				*wq = *query
 			})
 

@@ -57,6 +57,7 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
 	RecurringSubscription() RecurringSubscriptionResolver
+	SnapshotEntry() SnapshotEntryResolver
 	TransactionEntry() TransactionEntryResolver
 	AccountWhereInput() AccountWhereInputResolver
 	CheckpointWhereInput() CheckpointWhereInputResolver
@@ -68,6 +69,7 @@ type ResolverRoot interface {
 	InvestmentLotWhereInput() InvestmentLotWhereInputResolver
 	InvestmentWhereInput() InvestmentWhereInputResolver
 	RecurringSubscriptionWhereInput() RecurringSubscriptionWhereInputResolver
+	SnapshotEntryWhereInput() SnapshotEntryWhereInputResolver
 	TransactionEntryWhereInput() TransactionEntryWhereInputResolver
 	UpdateInvestmentLotInput() UpdateInvestmentLotInputResolver
 	UpdateRecurringSubscriptionInput() UpdateRecurringSubscriptionInputResolver
@@ -171,6 +173,7 @@ type ComplexityRoot struct {
 		Investments            func(childComplexity int) int
 		Locales                func(childComplexity int) int
 		RecurringSubscriptions func(childComplexity int) int
+		SnapshotEntries        func(childComplexity int) int
 		TransactionEntries     func(childComplexity int) int
 	}
 
@@ -221,6 +224,8 @@ type ComplexityRoot struct {
 		Name                   func(childComplexity int) int
 		NetWorthOverTime       func(childComplexity int, period model.TimePeriodInput) int
 		RecurringSubscriptions func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) int
+		SnapshotEntries        func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) int
+		Snapshots              func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) int
 		TransactionCategories  func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) int
 		TransactionEntries     func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionEntryWhereInput) int
 		Transactions           func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
@@ -348,6 +353,8 @@ type ComplexityRoot struct {
 		Node                   func(childComplexity int, id int) int
 		Nodes                  func(childComplexity int, ids []int) int
 		RecurringSubscriptions func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) int
+		SnapshotEntries        func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) int
+		Snapshots              func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) int
 		StockQuote             func(childComplexity int, symbol string) int
 		TransactionCategories  func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) int
 		TransactionEntries     func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionEntryWhereInput) int
@@ -383,6 +390,57 @@ type ComplexityRoot struct {
 	}
 
 	RecurringSubscriptionEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	Snapshot struct {
+		CreateTime      func(childComplexity int) int
+		Household       func(childComplexity int) int
+		HouseholdID     func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Note            func(childComplexity int) int
+		SnapshotEntries func(childComplexity int) int
+		UpdateTime      func(childComplexity int) int
+	}
+
+	SnapshotConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	SnapshotEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	SnapshotEntry struct {
+		CreateTime  func(childComplexity int) int
+		Currency    func(childComplexity int) int
+		CurrencyID  func(childComplexity int) int
+		Household   func(childComplexity int) int
+		HouseholdID func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Investment  func(childComplexity int) int
+		Liability   func(childComplexity int) int
+		Liquidity   func(childComplexity int) int
+		Property    func(childComplexity int) int
+		Receivable  func(childComplexity int) int
+		Snapshot    func(childComplexity int) int
+		SnapshotID  func(childComplexity int) int
+		UpdateTime  func(childComplexity int) int
+		User        func(childComplexity int) int
+		UserID      func(childComplexity int) int
+	}
+
+	SnapshotEntryConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	SnapshotEntryEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -481,6 +539,7 @@ type ComplexityRoot struct {
 		ID                     func(childComplexity int) int
 		Name                   func(childComplexity int) int
 		RecurringSubscriptions func(childComplexity int) int
+		SnapshotEntries        func(childComplexity int) int
 		Transactions           func(childComplexity int) int
 		UpdateTime             func(childComplexity int) int
 		UserHouseholds         func(childComplexity int) int
@@ -584,6 +643,8 @@ type QueryResolver interface {
 	Investments(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.InvestmentWhereInput) (*ent.InvestmentConnection, error)
 	InvestmentLots(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.InvestmentLotWhereInput) (*ent.InvestmentLotConnection, error)
 	RecurringSubscriptions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) (*ent.RecurringSubscriptionConnection, error)
+	Snapshots(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) (*ent.SnapshotConnection, error)
+	SnapshotEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) (*ent.SnapshotEntryConnection, error)
 	Transactions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) (*ent.TransactionConnection, error)
 	TransactionCategories(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) (*ent.TransactionCategoryConnection, error)
 	TransactionEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionEntryWhereInput) (*ent.TransactionEntryConnection, error)
@@ -597,6 +658,13 @@ type QueryResolver interface {
 type RecurringSubscriptionResolver interface {
 	Cost(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
 	FxRate(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
+}
+type SnapshotEntryResolver interface {
+	Liquidity(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
+	Investment(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
+	Property(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
+	Receivable(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
+	Liability(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
 }
 type TransactionEntryResolver interface {
 	Amount(ctx context.Context, obj *ent.TransactionEntry) (string, error)
@@ -756,6 +824,48 @@ type RecurringSubscriptionWhereInputResolver interface {
 	FxRateGte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error
 	FxRateLt(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error
 	FxRateLte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error
+}
+type SnapshotEntryWhereInputResolver interface {
+	Liquidity(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiquidityNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiquidityIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	LiquidityNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	LiquidityGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiquidityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiquidityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiquidityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	Investment(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	InvestmentNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	InvestmentIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	InvestmentNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	InvestmentGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	InvestmentGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	InvestmentLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	InvestmentLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	Property(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	PropertyNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	PropertyIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	PropertyNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	PropertyGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	PropertyGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	PropertyLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	PropertyLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	Receivable(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	ReceivableNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	ReceivableIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	ReceivableNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	ReceivableGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	ReceivableGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	ReceivableLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	ReceivableLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	Liability(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiabilityNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiabilityIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	LiabilityNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	LiabilityGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiabilityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiabilityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	LiabilityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
 }
 type TransactionEntryWhereInputResolver interface {
 	Amount(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error
@@ -1196,6 +1306,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Currency.RecurringSubscriptions(childComplexity), true
+	case "Currency.snapshotEntries":
+		if e.complexity.Currency.SnapshotEntries == nil {
+			break
+		}
+
+		return e.complexity.Currency.SnapshotEntries(childComplexity), true
 	case "Currency.transactionEntries":
 		if e.complexity.Currency.TransactionEntries == nil {
 			break
@@ -1395,6 +1511,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Household.RecurringSubscriptions(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.RecurringSubscriptionWhereInput)), true
+	case "Household.snapshotEntries":
+		if e.complexity.Household.SnapshotEntries == nil {
+			break
+		}
+
+		args, err := ec.field_Household_snapshotEntries_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Household.SnapshotEntries(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.SnapshotEntryWhereInput)), true
+	case "Household.snapshots":
+		if e.complexity.Household.Snapshots == nil {
+			break
+		}
+
+		args, err := ec.field_Household_snapshots_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Household.Snapshots(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.SnapshotWhereInput)), true
 	case "Household.transactionCategories":
 		if e.complexity.Household.TransactionCategories == nil {
 			break
@@ -2155,6 +2293,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.RecurringSubscriptions(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.RecurringSubscriptionWhereInput)), true
+	case "Query.snapshotEntries":
+		if e.complexity.Query.SnapshotEntries == nil {
+			break
+		}
+
+		args, err := ec.field_Query_snapshotEntries_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SnapshotEntries(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.SnapshotEntryWhereInput)), true
+	case "Query.snapshots":
+		if e.complexity.Query.Snapshots == nil {
+			break
+		}
+
+		args, err := ec.field_Query_snapshots_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Snapshots(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.SnapshotWhereInput)), true
 	case "Query.stockQuote":
 		if e.complexity.Query.StockQuote == nil {
 			break
@@ -2346,6 +2506,210 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.RecurringSubscriptionEdge.Node(childComplexity), true
+
+	case "Snapshot.createTime":
+		if e.complexity.Snapshot.CreateTime == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.CreateTime(childComplexity), true
+	case "Snapshot.household":
+		if e.complexity.Snapshot.Household == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Household(childComplexity), true
+	case "Snapshot.householdID":
+		if e.complexity.Snapshot.HouseholdID == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.HouseholdID(childComplexity), true
+	case "Snapshot.id":
+		if e.complexity.Snapshot.ID == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.ID(childComplexity), true
+	case "Snapshot.note":
+		if e.complexity.Snapshot.Note == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Note(childComplexity), true
+	case "Snapshot.snapshotEntries":
+		if e.complexity.Snapshot.SnapshotEntries == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.SnapshotEntries(childComplexity), true
+	case "Snapshot.updateTime":
+		if e.complexity.Snapshot.UpdateTime == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.UpdateTime(childComplexity), true
+
+	case "SnapshotConnection.edges":
+		if e.complexity.SnapshotConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.SnapshotConnection.Edges(childComplexity), true
+	case "SnapshotConnection.pageInfo":
+		if e.complexity.SnapshotConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.SnapshotConnection.PageInfo(childComplexity), true
+	case "SnapshotConnection.totalCount":
+		if e.complexity.SnapshotConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.SnapshotConnection.TotalCount(childComplexity), true
+
+	case "SnapshotEdge.cursor":
+		if e.complexity.SnapshotEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEdge.Cursor(childComplexity), true
+	case "SnapshotEdge.node":
+		if e.complexity.SnapshotEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEdge.Node(childComplexity), true
+
+	case "SnapshotEntry.createTime":
+		if e.complexity.SnapshotEntry.CreateTime == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.CreateTime(childComplexity), true
+	case "SnapshotEntry.currency":
+		if e.complexity.SnapshotEntry.Currency == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Currency(childComplexity), true
+	case "SnapshotEntry.currencyID":
+		if e.complexity.SnapshotEntry.CurrencyID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.CurrencyID(childComplexity), true
+	case "SnapshotEntry.household":
+		if e.complexity.SnapshotEntry.Household == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Household(childComplexity), true
+	case "SnapshotEntry.householdID":
+		if e.complexity.SnapshotEntry.HouseholdID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.HouseholdID(childComplexity), true
+	case "SnapshotEntry.id":
+		if e.complexity.SnapshotEntry.ID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.ID(childComplexity), true
+	case "SnapshotEntry.investment":
+		if e.complexity.SnapshotEntry.Investment == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Investment(childComplexity), true
+	case "SnapshotEntry.liability":
+		if e.complexity.SnapshotEntry.Liability == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Liability(childComplexity), true
+	case "SnapshotEntry.liquidity":
+		if e.complexity.SnapshotEntry.Liquidity == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Liquidity(childComplexity), true
+	case "SnapshotEntry.property":
+		if e.complexity.SnapshotEntry.Property == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Property(childComplexity), true
+	case "SnapshotEntry.receivable":
+		if e.complexity.SnapshotEntry.Receivable == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Receivable(childComplexity), true
+	case "SnapshotEntry.snapshot":
+		if e.complexity.SnapshotEntry.Snapshot == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.Snapshot(childComplexity), true
+	case "SnapshotEntry.snapshotID":
+		if e.complexity.SnapshotEntry.SnapshotID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.SnapshotID(childComplexity), true
+	case "SnapshotEntry.updateTime":
+		if e.complexity.SnapshotEntry.UpdateTime == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.UpdateTime(childComplexity), true
+	case "SnapshotEntry.user":
+		if e.complexity.SnapshotEntry.User == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.User(childComplexity), true
+	case "SnapshotEntry.userID":
+		if e.complexity.SnapshotEntry.UserID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.UserID(childComplexity), true
+
+	case "SnapshotEntryConnection.edges":
+		if e.complexity.SnapshotEntryConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntryConnection.Edges(childComplexity), true
+	case "SnapshotEntryConnection.pageInfo":
+		if e.complexity.SnapshotEntryConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntryConnection.PageInfo(childComplexity), true
+	case "SnapshotEntryConnection.totalCount":
+		if e.complexity.SnapshotEntryConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntryConnection.TotalCount(childComplexity), true
+
+	case "SnapshotEntryEdge.cursor":
+		if e.complexity.SnapshotEntryEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntryEdge.Cursor(childComplexity), true
+	case "SnapshotEntryEdge.node":
+		if e.complexity.SnapshotEntryEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntryEdge.Node(childComplexity), true
 
 	case "StockQuoteResult.currency":
 		if e.complexity.StockQuoteResult.Currency == nil {
@@ -2735,6 +3099,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.User.RecurringSubscriptions(childComplexity), true
+	case "User.snapshotEntries":
+		if e.complexity.User.SnapshotEntries == nil {
+			break
+		}
+
+		return e.complexity.User.SnapshotEntries(childComplexity), true
 	case "User.transactions":
 		if e.complexity.User.Transactions == nil {
 			break
@@ -2872,6 +3242,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateInvestmentInputCustom,
 		ec.unmarshalInputCreateInvestmentLotInput,
 		ec.unmarshalInputCreateRecurringSubscriptionInput,
+		ec.unmarshalInputCreateSnapshotInput,
 		ec.unmarshalInputCreateTransactionCategoryInput,
 		ec.unmarshalInputCreateTransactionEntryInput,
 		ec.unmarshalInputCreateTransactionInput,
@@ -2883,6 +3254,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputMoveInvestmentInputCustom,
 		ec.unmarshalInputRecurringSubscriptionWhereInput,
 		ec.unmarshalInputSellInvestmentInputCustom,
+		ec.unmarshalInputSnapshotEntryWhereInput,
+		ec.unmarshalInputSnapshotWhereInput,
 		ec.unmarshalInputTimePeriodInput,
 		ec.unmarshalInputTransactionCategoryWhereInput,
 		ec.unmarshalInputTransactionEntryWhereInput,
@@ -2894,6 +3267,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputUpdateInvestmentInput,
 		ec.unmarshalInputUpdateInvestmentLotInput,
 		ec.unmarshalInputUpdateRecurringSubscriptionInput,
+		ec.unmarshalInputUpdateSnapshotInput,
 		ec.unmarshalInputUpdateTransactionCategoryInput,
 		ec.unmarshalInputUpdateTransactionEntryInput,
 		ec.unmarshalInputUpdateTransactionInput,
@@ -3189,6 +3563,68 @@ func (ec *executionContext) field_Household_recurringSubscriptions_args(ctx cont
 	}
 	args["last"] = arg3
 	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalORecurringSubscriptionWhereInput2ᚖbeavermoneyᚗappᚋentᚐRecurringSubscriptionWhereInput)
+	if err != nil {
+		return nil, err
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Household_snapshotEntries_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "before", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "last", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOSnapshotEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInput)
+	if err != nil {
+		return nil, err
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Household_snapshots_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "before", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "last", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput)
 	if err != nil {
 		return nil, err
 	}
@@ -3812,6 +4248,68 @@ func (ec *executionContext) field_Query_recurringSubscriptions_args(ctx context.
 	}
 	args["last"] = arg3
 	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalORecurringSubscriptionWhereInput2ᚖbeavermoneyᚗappᚋentᚐRecurringSubscriptionWhereInput)
+	if err != nil {
+		return nil, err
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_snapshotEntries_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "before", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "last", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOSnapshotEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInput)
+	if err != nil {
+		return nil, err
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_snapshots_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "before", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "last", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput)
 	if err != nil {
 		return nil, err
 	}
@@ -4444,6 +4942,10 @@ func (ec *executionContext) fieldContext_Account_household(_ context.Context, fi
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -4499,6 +5001,8 @@ func (ec *executionContext) fieldContext_Account_currency(_ context.Context, fie
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -4550,6 +5054,8 @@ func (ec *executionContext) fieldContext_Account_user(_ context.Context, field g
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -5581,6 +6087,10 @@ func (ec *executionContext) fieldContext_Checkpoint_household(_ context.Context,
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -5636,6 +6146,8 @@ func (ec *executionContext) fieldContext_Checkpoint_currency(_ context.Context, 
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -6317,6 +6829,10 @@ func (ec *executionContext) fieldContext_Currency_households(_ context.Context, 
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -6449,6 +6965,69 @@ func (ec *executionContext) fieldContext_Currency_checkpoints(_ context.Context,
 				return ec.fieldContext_Checkpoint_currency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Checkpoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Currency_snapshotEntries(ctx context.Context, field graphql.CollectedField, obj *ent.Currency) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Currency_snapshotEntries,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotEntries(ctx)
+		},
+		nil,
+		ec.marshalOSnapshotEntry2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Currency_snapshotEntries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Currency",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotEntry_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_SnapshotEntry_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotEntry_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotEntry_updateTime(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_SnapshotEntry_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_SnapshotEntry_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_SnapshotEntry_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_SnapshotEntry_currencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_SnapshotEntry_userID(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotEntry_snapshotID(ctx, field)
+			case "household":
+				return ec.fieldContext_SnapshotEntry_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_SnapshotEntry_currency(ctx, field)
+			case "user":
+				return ec.fieldContext_SnapshotEntry_user(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotEntry_snapshot(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntry", field.Name)
 		},
 	}
 	return fc, nil
@@ -7038,6 +7617,8 @@ func (ec *executionContext) fieldContext_Household_currency(_ context.Context, f
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -7089,6 +7670,8 @@ func (ec *executionContext) fieldContext_Household_users(_ context.Context, fiel
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -7484,6 +8067,104 @@ func (ec *executionContext) fieldContext_Household_checkpoints(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Household_checkpoints_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Household_snapshots(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Household_snapshots,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return obj.Snapshots(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["where"].(*ent.SnapshotWhereInput))
+		},
+		nil,
+		ec.marshalNSnapshotConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotConnection,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Household_snapshots(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Household",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_SnapshotConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_SnapshotConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_SnapshotConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Household_snapshots_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Household_snapshotEntries(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Household_snapshotEntries,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return obj.SnapshotEntries(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["where"].(*ent.SnapshotEntryWhereInput))
+		},
+		nil,
+		ec.marshalNSnapshotEntryConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryConnection,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Household_snapshotEntries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Household",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_SnapshotEntryConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_SnapshotEntryConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_SnapshotEntryConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntryConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Household_snapshotEntries_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8118,6 +8799,10 @@ func (ec *executionContext) fieldContext_Investment_household(_ context.Context,
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -8173,6 +8858,8 @@ func (ec *executionContext) fieldContext_Investment_currency(_ context.Context, 
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -8749,6 +9436,10 @@ func (ec *executionContext) fieldContext_InvestmentLot_household(_ context.Conte
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -9130,6 +9821,10 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -9213,6 +9908,10 @@ func (ec *executionContext) fieldContext_Mutation_updateHousehold(ctx context.Co
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -10911,6 +11610,8 @@ func (ec *executionContext) fieldContext_Query_currencies(_ context.Context, fie
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -10976,6 +11677,10 @@ func (ec *executionContext) fieldContext_Query_households(_ context.Context, fie
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -11130,6 +11835,104 @@ func (ec *executionContext) fieldContext_Query_recurringSubscriptions(ctx contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_recurringSubscriptions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_snapshots(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_snapshots,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().Snapshots(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["where"].(*ent.SnapshotWhereInput))
+		},
+		nil,
+		ec.marshalNSnapshotConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotConnection,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_snapshots(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_SnapshotConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_SnapshotConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_SnapshotConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_snapshots_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_snapshotEntries(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_snapshotEntries,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().SnapshotEntries(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["where"].(*ent.SnapshotEntryWhereInput))
+		},
+		nil,
+		ec.marshalNSnapshotEntryConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryConnection,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_snapshotEntries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_SnapshotEntryConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_SnapshotEntryConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_SnapshotEntryConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntryConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_snapshotEntries_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11374,6 +12177,8 @@ func (ec *executionContext) fieldContext_Query_user(_ context.Context, field gra
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -11441,6 +12246,10 @@ func (ec *executionContext) fieldContext_Query_household(_ context.Context, fiel
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -12173,6 +12982,10 @@ func (ec *executionContext) fieldContext_RecurringSubscription_household(_ conte
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -12228,6 +13041,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_currency(_ contex
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -12279,6 +13094,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_user(_ context.Co
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -12475,6 +13292,1235 @@ func (ec *executionContext) _RecurringSubscriptionEdge_cursor(ctx context.Contex
 func (ec *executionContext) fieldContext_RecurringSubscriptionEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RecurringSubscriptionEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Cursor does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_id(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_householdID(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_householdID,
+		func(ctx context.Context) (any, error) {
+			return obj.HouseholdID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_householdID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_createTime(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_createTime,
+		func(ctx context.Context) (any, error) {
+			return obj.CreateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_createTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_updateTime(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_updateTime,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_updateTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_note(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_note,
+		func(ctx context.Context) (any, error) {
+			return obj.Note, nil
+		},
+		nil,
+		ec.marshalOString2string,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_note(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_household(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_household,
+		func(ctx context.Context) (any, error) {
+			return obj.Household(ctx)
+		},
+		nil,
+		ec.marshalNHousehold2ᚖbeavermoneyᚗappᚋentᚐHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_household(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Household_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Household_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Household_updateTime(ctx, field)
+			case "name":
+				return ec.fieldContext_Household_name(ctx, field)
+			case "locale":
+				return ec.fieldContext_Household_locale(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
+			case "currency":
+				return ec.fieldContext_Household_currency(ctx, field)
+			case "users":
+				return ec.fieldContext_Household_users(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Household_accounts(ctx, field)
+			case "transactions":
+				return ec.fieldContext_Household_transactions(ctx, field)
+			case "investments":
+				return ec.fieldContext_Household_investments(ctx, field)
+			case "investmentLots":
+				return ec.fieldContext_Household_investmentLots(ctx, field)
+			case "transactionCategories":
+				return ec.fieldContext_Household_transactionCategories(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Household_transactionEntries(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_snapshotEntries(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_snapshotEntries,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotEntries(ctx)
+		},
+		nil,
+		ec.marshalOSnapshotEntry2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_snapshotEntries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotEntry_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_SnapshotEntry_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotEntry_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotEntry_updateTime(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_SnapshotEntry_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_SnapshotEntry_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_SnapshotEntry_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_SnapshotEntry_currencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_SnapshotEntry_userID(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotEntry_snapshotID(ctx, field)
+			case "household":
+				return ec.fieldContext_SnapshotEntry_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_SnapshotEntry_currency(ctx, field)
+			case "user":
+				return ec.fieldContext_SnapshotEntry_user(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotEntry_snapshot(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotConnection_edges,
+		func(ctx context.Context) (any, error) {
+			return obj.Edges, nil
+		},
+		nil,
+		ec.marshalOSnapshotEdge2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEdge,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_SnapshotEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_SnapshotEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotConnection_pageInfo,
+		func(ctx context.Context) (any, error) {
+			return obj.PageInfo, nil
+		},
+		nil,
+		ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotConnection_totalCount,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalCount, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEdge_node,
+		func(ctx context.Context) (any, error) {
+			return obj.Node, nil
+		},
+		nil,
+		ec.marshalOSnapshot2ᚖbeavermoneyᚗappᚋentᚐSnapshot,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Snapshot_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Snapshot_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Snapshot_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Snapshot_updateTime(ctx, field)
+			case "note":
+				return ec.fieldContext_Snapshot_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Snapshot_household(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEdge_cursor,
+		func(ctx context.Context) (any, error) {
+			return obj.Cursor, nil
+		},
+		nil,
+		ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Cursor does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_id(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_householdID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_householdID,
+		func(ctx context.Context) (any, error) {
+			return obj.HouseholdID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_householdID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_createTime(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_createTime,
+		func(ctx context.Context) (any, error) {
+			return obj.CreateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_createTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_updateTime(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_updateTime,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_updateTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_liquidity(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_liquidity,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotEntry().Liquidity(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_liquidity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_investment(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_investment,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotEntry().Investment(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_investment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_property(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_property,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotEntry().Property(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_property(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_receivable(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_receivable,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotEntry().Receivable(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_receivable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_liability(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_liability,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotEntry().Liability(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_liability(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_currencyID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_currencyID,
+		func(ctx context.Context) (any, error) {
+			return obj.CurrencyID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_currencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_userID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_userID,
+		func(ctx context.Context) (any, error) {
+			return obj.UserID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_userID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_snapshotID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_snapshotID,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_snapshotID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_household(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_household,
+		func(ctx context.Context) (any, error) {
+			return obj.Household(ctx)
+		},
+		nil,
+		ec.marshalNHousehold2ᚖbeavermoneyᚗappᚋentᚐHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_household(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Household_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Household_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Household_updateTime(ctx, field)
+			case "name":
+				return ec.fieldContext_Household_name(ctx, field)
+			case "locale":
+				return ec.fieldContext_Household_locale(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_Household_currencyID(ctx, field)
+			case "isDemo":
+				return ec.fieldContext_Household_isDemo(ctx, field)
+			case "currency":
+				return ec.fieldContext_Household_currency(ctx, field)
+			case "users":
+				return ec.fieldContext_Household_users(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Household_accounts(ctx, field)
+			case "transactions":
+				return ec.fieldContext_Household_transactions(ctx, field)
+			case "investments":
+				return ec.fieldContext_Household_investments(ctx, field)
+			case "investmentLots":
+				return ec.fieldContext_Household_investmentLots(ctx, field)
+			case "transactionCategories":
+				return ec.fieldContext_Household_transactionCategories(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Household_transactionEntries(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_Household_userHouseholds(ctx, field)
+			case "financialReport":
+				return ec.fieldContext_Household_financialReport(ctx, field)
+			case "netWorthOverTime":
+				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_currency(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_currency,
+		func(ctx context.Context) (any, error) {
+			return obj.Currency(ctx)
+		},
+		nil,
+		ec.marshalNCurrency2ᚖbeavermoneyᚗappᚋentᚐCurrency,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_currency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Currency_id(ctx, field)
+			case "code":
+				return ec.fieldContext_Currency_code(ctx, field)
+			case "locales":
+				return ec.fieldContext_Currency_locales(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Currency_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_Currency_investments(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Currency_transactionEntries(ctx, field)
+			case "households":
+				return ec.fieldContext_Currency_households(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_user(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_user,
+		func(ctx context.Context) (any, error) {
+			return obj.User(ctx)
+		},
+		nil,
+		ec.marshalNUser2ᚖbeavermoneyᚗappᚋentᚐUser,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_User_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_User_updateTime(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "households":
+				return ec.fieldContext_User_households(ctx, field)
+			case "accounts":
+				return ec.fieldContext_User_accounts(ctx, field)
+			case "transactions":
+				return ec.fieldContext_User_transactions(ctx, field)
+			case "userKeys":
+				return ec.fieldContext_User_userKeys(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_User_userHouseholds(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntry_snapshot(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_snapshot,
+		func(ctx context.Context) (any, error) {
+			return obj.Snapshot(ctx)
+		},
+		nil,
+		ec.marshalNSnapshot2ᚖbeavermoneyᚗappᚋentᚐSnapshot,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_snapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Snapshot_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Snapshot_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Snapshot_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Snapshot_updateTime(ctx, field)
+			case "note":
+				return ec.fieldContext_Snapshot_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Snapshot_household(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntryConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntryConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntryConnection_edges,
+		func(ctx context.Context) (any, error) {
+			return obj.Edges, nil
+		},
+		nil,
+		ec.marshalOSnapshotEntryEdge2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryEdge,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntryConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntryConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_SnapshotEntryEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_SnapshotEntryEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntryEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntryConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntryConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntryConnection_pageInfo,
+		func(ctx context.Context) (any, error) {
+			return obj.PageInfo, nil
+		},
+		nil,
+		ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntryConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntryConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntryConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntryConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntryConnection_totalCount,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalCount, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntryConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntryConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntryEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntryEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntryEdge_node,
+		func(ctx context.Context) (any, error) {
+			return obj.Node, nil
+		},
+		nil,
+		ec.marshalOSnapshotEntry2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntry,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntryEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntryEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotEntry_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_SnapshotEntry_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotEntry_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotEntry_updateTime(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_SnapshotEntry_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_SnapshotEntry_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_SnapshotEntry_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_SnapshotEntry_currencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_SnapshotEntry_userID(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotEntry_snapshotID(ctx, field)
+			case "household":
+				return ec.fieldContext_SnapshotEntry_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_SnapshotEntry_currency(ctx, field)
+			case "user":
+				return ec.fieldContext_SnapshotEntry_user(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotEntry_snapshot(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotEntryEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntryEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntryEdge_cursor,
+		func(ctx context.Context) (any, error) {
+			return obj.Cursor, nil
+		},
+		nil,
+		ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntryEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntryEdge",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -12935,6 +14981,8 @@ func (ec *executionContext) fieldContext_Transaction_user(_ context.Context, fie
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -13002,6 +15050,10 @@ func (ec *executionContext) fieldContext_Transaction_household(_ context.Context
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -13464,6 +15516,10 @@ func (ec *executionContext) fieldContext_TransactionCategory_household(_ context
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -14200,6 +16256,10 @@ func (ec *executionContext) fieldContext_TransactionEntry_household(_ context.Co
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -14328,6 +16388,8 @@ func (ec *executionContext) fieldContext_TransactionEntry_currency(_ context.Con
 				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -14784,6 +16846,10 @@ func (ec *executionContext) fieldContext_User_households(_ context.Context, fiel
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -15034,6 +17100,69 @@ func (ec *executionContext) fieldContext_User_recurringSubscriptions(_ context.C
 				return ec.fieldContext_RecurringSubscription_user(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscription", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_snapshotEntries(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_snapshotEntries,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotEntries(ctx)
+		},
+		nil,
+		ec.marshalOSnapshotEntry2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_snapshotEntries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotEntry_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_SnapshotEntry_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotEntry_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotEntry_updateTime(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_SnapshotEntry_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_SnapshotEntry_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_SnapshotEntry_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "currencyID":
+				return ec.fieldContext_SnapshotEntry_currencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_SnapshotEntry_userID(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotEntry_snapshotID(ctx, field)
+			case "household":
+				return ec.fieldContext_SnapshotEntry_household(ctx, field)
+			case "currency":
+				return ec.fieldContext_SnapshotEntry_currency(ctx, field)
+			case "user":
+				return ec.fieldContext_SnapshotEntry_user(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotEntry_snapshot(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEntry", field.Name)
 		},
 	}
 	return fc, nil
@@ -15304,6 +17433,8 @@ func (ec *executionContext) fieldContext_UserHousehold_user(_ context.Context, f
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -15371,6 +17502,10 @@ func (ec *executionContext) fieldContext_UserHousehold_household(_ context.Conte
 				return ec.fieldContext_Household_recurringSubscriptions(ctx, field)
 			case "checkpoints":
 				return ec.fieldContext_Household_checkpoints(ctx, field)
+			case "snapshots":
+				return ec.fieldContext_Household_snapshots(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Household_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
@@ -15602,6 +17737,8 @@ func (ec *executionContext) fieldContext_UserKey_user(_ context.Context, field g
 				return ec.fieldContext_User_userKeys(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
 			case "userHouseholds":
 				return ec.fieldContext_User_userHouseholds(ctx, field)
 			}
@@ -19241,6 +21378,33 @@ func (ec *executionContext) unmarshalInputCreateRecurringSubscriptionInput(ctx c
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateSnapshotInput(ctx context.Context, obj any) (ent.CreateSnapshotInput, error) {
+	var it ent.CreateSnapshotInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"note"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "note":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("note"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Note = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateTransactionCategoryInput(ctx context.Context, obj any) (ent.CreateTransactionCategoryInput, error) {
 	var it ent.CreateTransactionCategoryInput
 	asMap := map[string]any{}
@@ -19418,7 +21582,7 @@ func (ec *executionContext) unmarshalInputCurrencyWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasHouseholds", "hasHouseholdsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasHouseholds", "hasHouseholdsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19677,6 +21841,20 @@ func (ec *executionContext) unmarshalInputCurrencyWhereInput(ctx context.Context
 				return it, err
 			}
 			it.HasCheckpointsWith = data
+		case "hasSnapshotEntries":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntries"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntries = data
+		case "hasSnapshotEntriesWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntriesWith"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntriesWith = data
 		}
 	}
 
@@ -19690,7 +21868,7 @@ func (ec *executionContext) unmarshalInputHouseholdWhereInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "locale", "localeNEQ", "localeIn", "localeNotIn", "localeGT", "localeGTE", "localeLT", "localeLTE", "localeContains", "localeHasPrefix", "localeHasSuffix", "localeEqualFold", "localeContainsFold", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "isDemo", "isDemoNEQ", "hasCurrency", "hasCurrencyWith", "hasUsers", "hasUsersWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasInvestments", "hasInvestmentsWith", "hasInvestmentLots", "hasInvestmentLotsWith", "hasTransactionCategories", "hasTransactionCategoriesWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "locale", "localeNEQ", "localeIn", "localeNotIn", "localeGT", "localeGTE", "localeLT", "localeLTE", "localeContains", "localeHasPrefix", "localeHasSuffix", "localeEqualFold", "localeContainsFold", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "isDemo", "isDemoNEQ", "hasCurrency", "hasCurrencyWith", "hasUsers", "hasUsersWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasInvestments", "hasInvestmentsWith", "hasInvestmentLots", "hasInvestmentLotsWith", "hasTransactionCategories", "hasTransactionCategoriesWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasSnapshots", "hasSnapshotsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20250,6 +22428,34 @@ func (ec *executionContext) unmarshalInputHouseholdWhereInput(ctx context.Contex
 				return it, err
 			}
 			it.HasCheckpointsWith = data
+		case "hasSnapshots":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshots"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshots = data
+		case "hasSnapshotsWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotsWith"))
+			data, err := ec.unmarshalOSnapshotWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotsWith = data
+		case "hasSnapshotEntries":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntries"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntries = data
+		case "hasSnapshotEntriesWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntriesWith"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntriesWith = data
 		case "hasUserHouseholds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUserHouseholds"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -22450,6 +24656,1113 @@ func (ec *executionContext) unmarshalInputSellInvestmentInputCustom(ctx context.
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSnapshotEntryWhereInput(ctx context.Context, obj any) (ent.SnapshotEntryWhereInput, error) {
+	var it ent.SnapshotEntryWhereInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "liquidity", "liquidityNEQ", "liquidityIn", "liquidityNotIn", "liquidityGT", "liquidityGTE", "liquidityLT", "liquidityLTE", "investment", "investmentNEQ", "investmentIn", "investmentNotIn", "investmentGT", "investmentGTE", "investmentLT", "investmentLTE", "property", "propertyNEQ", "propertyIn", "propertyNotIn", "propertyGT", "propertyGTE", "propertyLT", "propertyLTE", "receivable", "receivableNEQ", "receivableIn", "receivableNotIn", "receivableGT", "receivableGTE", "receivableLT", "receivableLTE", "liability", "liabilityNEQ", "liabilityIn", "liabilityNotIn", "liabilityGT", "liabilityGTE", "liabilityLT", "liabilityLTE", "currencyID", "currencyIDNEQ", "currencyIDIn", "currencyIDNotIn", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "snapshotID", "snapshotIDNEQ", "snapshotIDIn", "snapshotIDNotIn", "hasHousehold", "hasHouseholdWith", "hasCurrency", "hasCurrencyWith", "hasUser", "hasUserWith", "hasSnapshot", "hasSnapshotWith"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
+		case "and":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.And = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "idNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNEQ = data
+		case "idIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDIn = data
+		case "idNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNotIn = data
+		case "idGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGT = data
+		case "idGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGTE = data
+		case "idLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLT = data
+		case "idLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLTE = data
+		case "householdID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdID = data
+		case "householdIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDNEQ = data
+		case "householdIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDIn = data
+		case "householdIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDNotIn = data
+		case "createTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTime = data
+		case "createTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNEQ = data
+		case "createTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeIn = data
+		case "createTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNotIn = data
+		case "createTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGT = data
+		case "createTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGTE = data
+		case "createTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLT = data
+		case "createTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLTE = data
+		case "updateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTime = data
+		case "updateTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNEQ = data
+		case "updateTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeIn = data
+		case "updateTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNotIn = data
+		case "updateTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGT = data
+		case "updateTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGTE = data
+		case "updateTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLT = data
+		case "updateTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLTE = data
+		case "liquidity":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidity"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().Liquidity(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liquidityLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liquidityLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiquidityLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investment":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investment"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().Investment(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "investmentLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().InvestmentLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "property":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("property"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().Property(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "propertyLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("propertyLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().PropertyLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivable":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivable"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().Receivable(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "receivableLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("receivableLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().ReceivableLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liability":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liability"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().Liability(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "liabilityLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("liabilityLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "currencyID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyID = data
+		case "currencyIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyIDNEQ = data
+		case "currencyIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyIDIn = data
+		case "currencyIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currencyIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrencyIDNotIn = data
+		case "userID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
+		case "userIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserIDNEQ = data
+		case "userIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserIDIn = data
+		case "userIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserIDNotIn = data
+		case "snapshotID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotID = data
+		case "snapshotIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotIDNEQ = data
+		case "snapshotIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotIDIn = data
+		case "snapshotIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotIDNotIn = data
+		case "hasHousehold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHousehold"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasHousehold = data
+		case "hasHouseholdWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHouseholdWith"))
+			data, err := ec.unmarshalOHouseholdWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐHouseholdWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasHouseholdWith = data
+		case "hasCurrency":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCurrency"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCurrency = data
+		case "hasCurrencyWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCurrencyWith"))
+			data, err := ec.unmarshalOCurrencyWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCurrencyWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCurrencyWith = data
+		case "hasUser":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUser"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasUser = data
+		case "hasUserWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUserWith"))
+			data, err := ec.unmarshalOUserWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasUserWith = data
+		case "hasSnapshot":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshot"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshot = data
+		case "hasSnapshotWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotWith"))
+			data, err := ec.unmarshalOSnapshotWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotWith = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSnapshotWhereInput(ctx context.Context, obj any) (ent.SnapshotWhereInput, error) {
+	var it ent.SnapshotWhereInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "note", "noteNEQ", "noteIn", "noteNotIn", "noteGT", "noteGTE", "noteLT", "noteLTE", "noteContains", "noteHasPrefix", "noteHasSuffix", "noteIsNil", "noteNotNil", "noteEqualFold", "noteContainsFold", "hasHousehold", "hasHouseholdWith", "hasSnapshotEntries", "hasSnapshotEntriesWith"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
+		case "and":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			data, err := ec.unmarshalOSnapshotWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.And = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOSnapshotWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "idNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNEQ = data
+		case "idIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDIn = data
+		case "idNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNotIn = data
+		case "idGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGT = data
+		case "idGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGTE = data
+		case "idLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLT = data
+		case "idLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLTE = data
+		case "householdID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdID = data
+		case "householdIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDNEQ = data
+		case "householdIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDIn = data
+		case "householdIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdIDNotIn = data
+		case "createTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTime = data
+		case "createTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNEQ = data
+		case "createTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeIn = data
+		case "createTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNotIn = data
+		case "createTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGT = data
+		case "createTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGTE = data
+		case "createTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLT = data
+		case "createTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLTE = data
+		case "updateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTime = data
+		case "updateTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNEQ = data
+		case "updateTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeIn = data
+		case "updateTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNotIn = data
+		case "updateTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGT = data
+		case "updateTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGTE = data
+		case "updateTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLT = data
+		case "updateTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLTE = data
+		case "note":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("note"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Note = data
+		case "noteNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteNEQ = data
+		case "noteIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteIn = data
+		case "noteNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteNotIn = data
+		case "noteGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteGT = data
+		case "noteGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteGTE = data
+		case "noteLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteLT = data
+		case "noteLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteLTE = data
+		case "noteContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteContains = data
+		case "noteHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteHasPrefix = data
+		case "noteHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteHasSuffix = data
+		case "noteIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteIsNil = data
+		case "noteNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteNotNil = data
+		case "noteEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteEqualFold = data
+		case "noteContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noteContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NoteContainsFold = data
+		case "hasHousehold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHousehold"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasHousehold = data
+		case "hasHouseholdWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHouseholdWith"))
+			data, err := ec.unmarshalOHouseholdWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐHouseholdWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasHouseholdWith = data
+		case "hasSnapshotEntries":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntries"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntries = data
+		case "hasSnapshotEntriesWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntriesWith"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntriesWith = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTimePeriodInput(ctx context.Context, obj any) (model.TimePeriodInput, error) {
 	var it model.TimePeriodInput
 	asMap := map[string]any{}
@@ -24292,6 +27605,40 @@ func (ec *executionContext) unmarshalInputUpdateRecurringSubscriptionInput(ctx c
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateSnapshotInput(ctx context.Context, obj any) (ent.UpdateSnapshotInput, error) {
+	var it ent.UpdateSnapshotInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"note", "clearNote"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "note":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("note"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Note = data
+		case "clearNote":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearNote"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearNote = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTransactionCategoryInput(ctx context.Context, obj any) (ent.UpdateTransactionCategoryInput, error) {
 	var it ent.UpdateTransactionCategoryInput
 	asMap := map[string]any{}
@@ -25059,7 +28406,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasHouseholds", "hasHouseholdsWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasUserKeys", "hasUserKeysWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasHouseholds", "hasHouseholdsWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasUserKeys", "hasUserKeysWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25507,6 +28854,20 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.HasRecurringSubscriptionsWith = data
+		case "hasSnapshotEntries":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntries"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntries = data
+		case "hasSnapshotEntriesWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotEntriesWith"))
+			data, err := ec.unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotEntriesWith = data
 		case "hasUserHouseholds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUserHouseholds"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -25565,6 +28926,16 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Transaction(ctx, sel, obj)
+	case *ent.SnapshotEntry:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SnapshotEntry(ctx, sel, obj)
+	case *ent.Snapshot:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Snapshot(ctx, sel, obj)
 	case *ent.RecurringSubscription:
 		if obj == nil {
 			return graphql.Null
@@ -26959,6 +30330,39 @@ func (ec *executionContext) _Currency(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Currency_snapshotEntries(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -27745,6 +31149,78 @@ func (ec *executionContext) _Household(ctx context.Context, sel ast.SelectionSet
 					}
 				}()
 				res = ec._Household_checkpoints(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshots":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Household_snapshots(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Household_snapshotEntries(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -29275,6 +32751,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "snapshots":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_snapshots(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "snapshotEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_snapshotEntries(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "transactions":
 			field := field
 
@@ -29830,6 +33350,698 @@ func (ec *executionContext) _RecurringSubscriptionEdge(ctx context.Context, sel 
 			out.Values[i] = ec._RecurringSubscriptionEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._RecurringSubscriptionEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotImplementors = []string{"Snapshot", "Node"}
+
+func (ec *executionContext) _Snapshot(ctx context.Context, sel ast.SelectionSet, obj *ent.Snapshot) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Snapshot")
+		case "id":
+			out.Values[i] = ec._Snapshot_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "householdID":
+			out.Values[i] = ec._Snapshot_householdID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createTime":
+			out.Values[i] = ec._Snapshot_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updateTime":
+			out.Values[i] = ec._Snapshot_updateTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "note":
+			out.Values[i] = ec._Snapshot_note(ctx, field, obj)
+		case "household":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_household(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_snapshotEntries(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotConnectionImplementors = []string{"SnapshotConnection"}
+
+func (ec *executionContext) _SnapshotConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotConnection")
+		case "edges":
+			out.Values[i] = ec._SnapshotConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._SnapshotConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._SnapshotConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotEdgeImplementors = []string{"SnapshotEdge"}
+
+func (ec *executionContext) _SnapshotEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotEdge")
+		case "node":
+			out.Values[i] = ec._SnapshotEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._SnapshotEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotEntryImplementors = []string{"SnapshotEntry", "Node"}
+
+func (ec *executionContext) _SnapshotEntry(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotEntry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotEntryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotEntry")
+		case "id":
+			out.Values[i] = ec._SnapshotEntry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "householdID":
+			out.Values[i] = ec._SnapshotEntry_householdID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createTime":
+			out.Values[i] = ec._SnapshotEntry_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updateTime":
+			out.Values[i] = ec._SnapshotEntry_updateTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "liquidity":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_liquidity(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "investment":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_investment(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "property":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_property(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "receivable":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_receivable(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "liability":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_liability(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currencyID":
+			out.Values[i] = ec._SnapshotEntry_currencyID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "userID":
+			out.Values[i] = ec._SnapshotEntry_userID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "snapshotID":
+			out.Values[i] = ec._SnapshotEntry_snapshotID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "household":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_household(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "currency":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_currency(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "user":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshot":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_snapshot(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotEntryConnectionImplementors = []string{"SnapshotEntryConnection"}
+
+func (ec *executionContext) _SnapshotEntryConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotEntryConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotEntryConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotEntryConnection")
+		case "edges":
+			out.Values[i] = ec._SnapshotEntryConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._SnapshotEntryConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._SnapshotEntryConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotEntryEdgeImplementors = []string{"SnapshotEntryEdge"}
+
+func (ec *executionContext) _SnapshotEntryEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotEntryEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotEntryEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotEntryEdge")
+		case "node":
+			out.Values[i] = ec._SnapshotEntryEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._SnapshotEntryEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -30996,6 +35208,39 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._User_recurringSubscriptions(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotEntries":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_snapshotEntries(ctx, field, obj)
 				return res
 			}
 
@@ -32487,6 +36732,64 @@ func (ec *executionContext) unmarshalNRecurringSubscriptionWhereInput2ᚖbeaverm
 func (ec *executionContext) unmarshalNSellInvestmentInputCustom2beavermoneyᚗappᚋgqlᚋmodelᚐSellInvestmentInputCustom(ctx context.Context, v any) (model.SellInvestmentInputCustom, error) {
 	res, err := ec.unmarshalInputSellInvestmentInputCustom(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSnapshot2ᚖbeavermoneyᚗappᚋentᚐSnapshot(ctx context.Context, sel ast.SelectionSet, v *ent.Snapshot) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Snapshot(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSnapshotConnection2beavermoneyᚗappᚋentᚐSnapshotConnection(ctx context.Context, sel ast.SelectionSet, v ent.SnapshotConnection) graphql.Marshaler {
+	return ec._SnapshotConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSnapshotConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotConnection(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SnapshotConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSnapshotEntry2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntry(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEntry) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SnapshotEntry(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSnapshotEntryConnection2beavermoneyᚗappᚋentᚐSnapshotEntryConnection(ctx context.Context, sel ast.SelectionSet, v ent.SnapshotEntryConnection) graphql.Marshaler {
+	return ec._SnapshotEntryConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSnapshotEntryConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryConnection(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEntryConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SnapshotEntryConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSnapshotEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInput(ctx context.Context, v any) (*ent.SnapshotEntryWhereInput, error) {
+	res, err := ec.unmarshalInputSnapshotEntryWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput(ctx context.Context, v any) (*ent.SnapshotWhereInput, error) {
+	res, err := ec.unmarshalInputSnapshotWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
@@ -34321,6 +38624,215 @@ func (ec *executionContext) unmarshalORecurringSubscriptionWhereInput2ᚖbeaverm
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputRecurringSubscriptionWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSnapshot2ᚖbeavermoneyᚗappᚋentᚐSnapshot(ctx context.Context, sel ast.SelectionSet, v *ent.Snapshot) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Snapshot(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSnapshotEdge2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.SnapshotEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSnapshotEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOSnapshotEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEdge(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SnapshotEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSnapshotEntry2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.SnapshotEntry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSnapshotEntry2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntry(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalOSnapshotEntry2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntry(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEntry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SnapshotEntry(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSnapshotEntryEdge2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.SnapshotEntryEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSnapshotEntryEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOSnapshotEntryEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryEdge(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEntryEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SnapshotEntryEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSnapshotEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInputᚄ(ctx context.Context, v any) ([]*ent.SnapshotEntryWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*ent.SnapshotEntryWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSnapshotEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOSnapshotEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntryWhereInput(ctx context.Context, v any) (*ent.SnapshotEntryWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSnapshotEntryWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOSnapshotWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInputᚄ(ctx context.Context, v any) ([]*ent.SnapshotWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*ent.SnapshotWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput(ctx context.Context, v any) (*ent.SnapshotWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSnapshotWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

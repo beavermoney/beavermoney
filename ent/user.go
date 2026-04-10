@@ -43,19 +43,22 @@ type UserEdges struct {
 	UserKeys []*UserKey `json:"user_keys,omitempty"`
 	// RecurringSubscriptions holds the value of the recurring_subscriptions edge.
 	RecurringSubscriptions []*RecurringSubscription `json:"recurring_subscriptions,omitempty"`
+	// SnapshotEntries holds the value of the snapshot_entries edge.
+	SnapshotEntries []*SnapshotEntry `json:"snapshot_entries,omitempty"`
 	// UserHouseholds holds the value of the user_households edge.
 	UserHouseholds []*UserHousehold `json:"user_households,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 	// totalCount holds the count of the edges above.
-	totalCount [6]map[string]int
+	totalCount [7]map[string]int
 
 	namedHouseholds             map[string][]*Household
 	namedAccounts               map[string][]*Account
 	namedTransactions           map[string][]*Transaction
 	namedUserKeys               map[string][]*UserKey
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
+	namedSnapshotEntries        map[string][]*SnapshotEntry
 	namedUserHouseholds         map[string][]*UserHousehold
 }
 
@@ -104,10 +107,19 @@ func (e UserEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription, erro
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
 }
 
+// SnapshotEntriesOrErr returns the SnapshotEntries value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
+	if e.loadedTypes[5] {
+		return e.SnapshotEntries, nil
+	}
+	return nil, &NotLoadedError{edge: "snapshot_entries"}
+}
+
 // UserHouseholdsOrErr returns the UserHouseholds value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) UserHouseholdsOrErr() ([]*UserHousehold, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.UserHouseholds, nil
 	}
 	return nil, &NotLoadedError{edge: "user_households"}
@@ -205,6 +217,11 @@ func (_m *User) QueryUserKeys() *UserKeyQuery {
 // QueryRecurringSubscriptions queries the "recurring_subscriptions" edge of the User entity.
 func (_m *User) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
 	return NewUserClient(_m.config).QueryRecurringSubscriptions(_m)
+}
+
+// QuerySnapshotEntries queries the "snapshot_entries" edge of the User entity.
+func (_m *User) QuerySnapshotEntries() *SnapshotEntryQuery {
+	return NewUserClient(_m.config).QuerySnapshotEntries(_m)
 }
 
 // QueryUserHouseholds queries the "user_households" edge of the User entity.
@@ -367,6 +384,30 @@ func (_m *User) appendNamedRecurringSubscriptions(name string, edges ...*Recurri
 		_m.Edges.namedRecurringSubscriptions[name] = []*RecurringSubscription{}
 	} else {
 		_m.Edges.namedRecurringSubscriptions[name] = append(_m.Edges.namedRecurringSubscriptions[name], edges...)
+	}
+}
+
+// NamedSnapshotEntries returns the SnapshotEntries named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *User) NamedSnapshotEntries(name string) ([]*SnapshotEntry, error) {
+	if _m.Edges.namedSnapshotEntries == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSnapshotEntries[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *User) appendNamedSnapshotEntries(name string, edges ...*SnapshotEntry) {
+	if _m.Edges.namedSnapshotEntries == nil {
+		_m.Edges.namedSnapshotEntries = make(map[string][]*SnapshotEntry)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSnapshotEntries[name] = []*SnapshotEntry{}
+	} else {
+		_m.Edges.namedSnapshotEntries[name] = append(_m.Edges.namedSnapshotEntries[name], edges...)
 	}
 }
 

@@ -15,6 +15,8 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -65,6 +67,16 @@ var recurringsubscriptionImplementors = []string{"RecurringSubscription", "Node"
 
 // IsNode implements the Node interface check for GQLGen.
 func (*RecurringSubscription) IsNode() {}
+
+var snapshotImplementors = []string{"Snapshot", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Snapshot) IsNode() {}
+
+var snapshotentryImplementors = []string{"SnapshotEntry", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*SnapshotEntry) IsNode() {}
 
 var transactionImplementors = []string{"Transaction", "Node"}
 
@@ -232,6 +244,24 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			Where(recurringsubscription.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, recurringsubscriptionImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case snapshot.Table:
+		query := c.Snapshot.Query().
+			Where(snapshot.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, snapshotImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case snapshotentry.Table:
+		query := c.SnapshotEntry.Query().
+			Where(snapshotentry.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, snapshotentryImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -463,6 +493,38 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.RecurringSubscription.Query().
 			Where(recurringsubscription.IDIn(ids...))
 		query, err := query.CollectFields(ctx, recurringsubscriptionImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case snapshot.Table:
+		query := c.Snapshot.Query().
+			Where(snapshot.IDIn(ids...))
+		query, err := query.CollectFields(ctx, snapshotImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case snapshotentry.Table:
+		query := c.SnapshotEntry.Query().
+			Where(snapshotentry.IDIn(ids...))
+		query, err := query.CollectFields(ctx, snapshotentryImplementors...)
 		if err != nil {
 			return nil, err
 		}

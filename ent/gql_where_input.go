@@ -15,6 +15,8 @@ import (
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -1245,6 +1247,10 @@ type CurrencyWhereInput struct {
 	// "checkpoints" edge predicates.
 	HasCheckpoints     *bool                   `json:"hasCheckpoints,omitempty"`
 	HasCheckpointsWith []*CheckpointWhereInput `json:"hasCheckpointsWith,omitempty"`
+
+	// "snapshot_entries" edge predicates.
+	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
+	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -1490,6 +1496,24 @@ func (i *CurrencyWhereInput) P() (predicate.Currency, error) {
 		}
 		predicates = append(predicates, currency.HasCheckpointsWith(with...))
 	}
+	if i.HasSnapshotEntries != nil {
+		p := currency.HasSnapshotEntries()
+		if !*i.HasSnapshotEntries {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotEntriesWith) > 0 {
+		with := make([]predicate.SnapshotEntry, 0, len(i.HasSnapshotEntriesWith))
+		for _, w := range i.HasSnapshotEntriesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotEntriesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasSnapshotEntriesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyCurrencyWhereInput
@@ -1616,6 +1640,14 @@ type HouseholdWhereInput struct {
 	// "checkpoints" edge predicates.
 	HasCheckpoints     *bool                   `json:"hasCheckpoints,omitempty"`
 	HasCheckpointsWith []*CheckpointWhereInput `json:"hasCheckpointsWith,omitempty"`
+
+	// "snapshots" edge predicates.
+	HasSnapshots     *bool                 `json:"hasSnapshots,omitempty"`
+	HasSnapshotsWith []*SnapshotWhereInput `json:"hasSnapshotsWith,omitempty"`
+
+	// "snapshot_entries" edge predicates.
+	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
+	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
 
 	// "user_households" edge predicates.
 	HasUserHouseholds     *bool                      `json:"hasUserHouseholds,omitempty"`
@@ -2041,6 +2073,42 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, household.HasCheckpointsWith(with...))
+	}
+	if i.HasSnapshots != nil {
+		p := household.HasSnapshots()
+		if !*i.HasSnapshots {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotsWith) > 0 {
+		with := make([]predicate.Snapshot, 0, len(i.HasSnapshotsWith))
+		for _, w := range i.HasSnapshotsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasSnapshotsWith(with...))
+	}
+	if i.HasSnapshotEntries != nil {
+		p := household.HasSnapshotEntries()
+		if !*i.HasSnapshotEntries {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotEntriesWith) > 0 {
+		with := make([]predicate.SnapshotEntry, 0, len(i.HasSnapshotEntriesWith))
+		for _, w := range i.HasSnapshotEntriesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotEntriesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasSnapshotEntriesWith(with...))
 	}
 	if i.HasUserHouseholds != nil {
 		p := household.HasUserHouseholds()
@@ -3604,6 +3672,844 @@ func (i *RecurringSubscriptionWhereInput) P() (predicate.RecurringSubscription, 
 	}
 }
 
+// SnapshotWhereInput represents a where input for filtering Snapshot queries.
+type SnapshotWhereInput struct {
+	Predicates []predicate.Snapshot  `json:"-"`
+	Not        *SnapshotWhereInput   `json:"not,omitempty"`
+	Or         []*SnapshotWhereInput `json:"or,omitempty"`
+	And        []*SnapshotWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "note" field predicates.
+	Note             *string  `json:"note,omitempty"`
+	NoteNEQ          *string  `json:"noteNEQ,omitempty"`
+	NoteIn           []string `json:"noteIn,omitempty"`
+	NoteNotIn        []string `json:"noteNotIn,omitempty"`
+	NoteGT           *string  `json:"noteGT,omitempty"`
+	NoteGTE          *string  `json:"noteGTE,omitempty"`
+	NoteLT           *string  `json:"noteLT,omitempty"`
+	NoteLTE          *string  `json:"noteLTE,omitempty"`
+	NoteContains     *string  `json:"noteContains,omitempty"`
+	NoteHasPrefix    *string  `json:"noteHasPrefix,omitempty"`
+	NoteHasSuffix    *string  `json:"noteHasSuffix,omitempty"`
+	NoteIsNil        bool     `json:"noteIsNil,omitempty"`
+	NoteNotNil       bool     `json:"noteNotNil,omitempty"`
+	NoteEqualFold    *string  `json:"noteEqualFold,omitempty"`
+	NoteContainsFold *string  `json:"noteContainsFold,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "snapshot_entries" edge predicates.
+	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
+	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *SnapshotWhereInput) AddPredicates(predicates ...predicate.Snapshot) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the SnapshotWhereInput filter on the SnapshotQuery builder.
+func (i *SnapshotWhereInput) Filter(q *SnapshotQuery) (*SnapshotQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptySnapshotWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptySnapshotWhereInput is returned in case the SnapshotWhereInput is empty.
+var ErrEmptySnapshotWhereInput = errors.New("ent: empty predicate SnapshotWhereInput")
+
+// P returns a predicate for filtering snapshots.
+// An error is returned if the input is empty or invalid.
+func (i *SnapshotWhereInput) P() (predicate.Snapshot, error) {
+	var predicates []predicate.Snapshot
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, snapshot.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Snapshot, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, snapshot.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Snapshot, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, snapshot.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, snapshot.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, snapshot.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, snapshot.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, snapshot.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, snapshot.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, snapshot.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, snapshot.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, snapshot.IDLTE(*i.IDLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, snapshot.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, snapshot.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, snapshot.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, snapshot.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, snapshot.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, snapshot.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, snapshot.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, snapshot.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, snapshot.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, snapshot.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, snapshot.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, snapshot.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, snapshot.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, snapshot.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, snapshot.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, snapshot.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, snapshot.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, snapshot.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, snapshot.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, snapshot.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.Note != nil {
+		predicates = append(predicates, snapshot.NoteEQ(*i.Note))
+	}
+	if i.NoteNEQ != nil {
+		predicates = append(predicates, snapshot.NoteNEQ(*i.NoteNEQ))
+	}
+	if len(i.NoteIn) > 0 {
+		predicates = append(predicates, snapshot.NoteIn(i.NoteIn...))
+	}
+	if len(i.NoteNotIn) > 0 {
+		predicates = append(predicates, snapshot.NoteNotIn(i.NoteNotIn...))
+	}
+	if i.NoteGT != nil {
+		predicates = append(predicates, snapshot.NoteGT(*i.NoteGT))
+	}
+	if i.NoteGTE != nil {
+		predicates = append(predicates, snapshot.NoteGTE(*i.NoteGTE))
+	}
+	if i.NoteLT != nil {
+		predicates = append(predicates, snapshot.NoteLT(*i.NoteLT))
+	}
+	if i.NoteLTE != nil {
+		predicates = append(predicates, snapshot.NoteLTE(*i.NoteLTE))
+	}
+	if i.NoteContains != nil {
+		predicates = append(predicates, snapshot.NoteContains(*i.NoteContains))
+	}
+	if i.NoteHasPrefix != nil {
+		predicates = append(predicates, snapshot.NoteHasPrefix(*i.NoteHasPrefix))
+	}
+	if i.NoteHasSuffix != nil {
+		predicates = append(predicates, snapshot.NoteHasSuffix(*i.NoteHasSuffix))
+	}
+	if i.NoteIsNil {
+		predicates = append(predicates, snapshot.NoteIsNil())
+	}
+	if i.NoteNotNil {
+		predicates = append(predicates, snapshot.NoteNotNil())
+	}
+	if i.NoteEqualFold != nil {
+		predicates = append(predicates, snapshot.NoteEqualFold(*i.NoteEqualFold))
+	}
+	if i.NoteContainsFold != nil {
+		predicates = append(predicates, snapshot.NoteContainsFold(*i.NoteContainsFold))
+	}
+
+	if i.HasHousehold != nil {
+		p := snapshot.HasHousehold()
+		if !*i.HasHousehold {
+			p = snapshot.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshot.HasHouseholdWith(with...))
+	}
+	if i.HasSnapshotEntries != nil {
+		p := snapshot.HasSnapshotEntries()
+		if !*i.HasSnapshotEntries {
+			p = snapshot.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotEntriesWith) > 0 {
+		with := make([]predicate.SnapshotEntry, 0, len(i.HasSnapshotEntriesWith))
+		for _, w := range i.HasSnapshotEntriesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotEntriesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshot.HasSnapshotEntriesWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptySnapshotWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return snapshot.And(predicates...), nil
+	}
+}
+
+// SnapshotEntryWhereInput represents a where input for filtering SnapshotEntry queries.
+type SnapshotEntryWhereInput struct {
+	Predicates []predicate.SnapshotEntry  `json:"-"`
+	Not        *SnapshotEntryWhereInput   `json:"not,omitempty"`
+	Or         []*SnapshotEntryWhereInput `json:"or,omitempty"`
+	And        []*SnapshotEntryWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "liquidity" field predicates.
+	Liquidity      *decimal.Decimal  `json:"liquidity,omitempty"`
+	LiquidityNEQ   *decimal.Decimal  `json:"liquidityNEQ,omitempty"`
+	LiquidityIn    []decimal.Decimal `json:"liquidityIn,omitempty"`
+	LiquidityNotIn []decimal.Decimal `json:"liquidityNotIn,omitempty"`
+	LiquidityGT    *decimal.Decimal  `json:"liquidityGT,omitempty"`
+	LiquidityGTE   *decimal.Decimal  `json:"liquidityGTE,omitempty"`
+	LiquidityLT    *decimal.Decimal  `json:"liquidityLT,omitempty"`
+	LiquidityLTE   *decimal.Decimal  `json:"liquidityLTE,omitempty"`
+
+	// "investment" field predicates.
+	Investment      *decimal.Decimal  `json:"investment,omitempty"`
+	InvestmentNEQ   *decimal.Decimal  `json:"investmentNEQ,omitempty"`
+	InvestmentIn    []decimal.Decimal `json:"investmentIn,omitempty"`
+	InvestmentNotIn []decimal.Decimal `json:"investmentNotIn,omitempty"`
+	InvestmentGT    *decimal.Decimal  `json:"investmentGT,omitempty"`
+	InvestmentGTE   *decimal.Decimal  `json:"investmentGTE,omitempty"`
+	InvestmentLT    *decimal.Decimal  `json:"investmentLT,omitempty"`
+	InvestmentLTE   *decimal.Decimal  `json:"investmentLTE,omitempty"`
+
+	// "property" field predicates.
+	Property      *decimal.Decimal  `json:"property,omitempty"`
+	PropertyNEQ   *decimal.Decimal  `json:"propertyNEQ,omitempty"`
+	PropertyIn    []decimal.Decimal `json:"propertyIn,omitempty"`
+	PropertyNotIn []decimal.Decimal `json:"propertyNotIn,omitempty"`
+	PropertyGT    *decimal.Decimal  `json:"propertyGT,omitempty"`
+	PropertyGTE   *decimal.Decimal  `json:"propertyGTE,omitempty"`
+	PropertyLT    *decimal.Decimal  `json:"propertyLT,omitempty"`
+	PropertyLTE   *decimal.Decimal  `json:"propertyLTE,omitempty"`
+
+	// "receivable" field predicates.
+	Receivable      *decimal.Decimal  `json:"receivable,omitempty"`
+	ReceivableNEQ   *decimal.Decimal  `json:"receivableNEQ,omitempty"`
+	ReceivableIn    []decimal.Decimal `json:"receivableIn,omitempty"`
+	ReceivableNotIn []decimal.Decimal `json:"receivableNotIn,omitempty"`
+	ReceivableGT    *decimal.Decimal  `json:"receivableGT,omitempty"`
+	ReceivableGTE   *decimal.Decimal  `json:"receivableGTE,omitempty"`
+	ReceivableLT    *decimal.Decimal  `json:"receivableLT,omitempty"`
+	ReceivableLTE   *decimal.Decimal  `json:"receivableLTE,omitempty"`
+
+	// "liability" field predicates.
+	Liability      *decimal.Decimal  `json:"liability,omitempty"`
+	LiabilityNEQ   *decimal.Decimal  `json:"liabilityNEQ,omitempty"`
+	LiabilityIn    []decimal.Decimal `json:"liabilityIn,omitempty"`
+	LiabilityNotIn []decimal.Decimal `json:"liabilityNotIn,omitempty"`
+	LiabilityGT    *decimal.Decimal  `json:"liabilityGT,omitempty"`
+	LiabilityGTE   *decimal.Decimal  `json:"liabilityGTE,omitempty"`
+	LiabilityLT    *decimal.Decimal  `json:"liabilityLT,omitempty"`
+	LiabilityLTE   *decimal.Decimal  `json:"liabilityLTE,omitempty"`
+
+	// "currency_id" field predicates.
+	CurrencyID      *int  `json:"currencyID,omitempty"`
+	CurrencyIDNEQ   *int  `json:"currencyIDNEQ,omitempty"`
+	CurrencyIDIn    []int `json:"currencyIDIn,omitempty"`
+	CurrencyIDNotIn []int `json:"currencyIDNotIn,omitempty"`
+
+	// "user_id" field predicates.
+	UserID      *int  `json:"userID,omitempty"`
+	UserIDNEQ   *int  `json:"userIDNEQ,omitempty"`
+	UserIDIn    []int `json:"userIDIn,omitempty"`
+	UserIDNotIn []int `json:"userIDNotIn,omitempty"`
+
+	// "snapshot_id" field predicates.
+	SnapshotID      *int  `json:"snapshotID,omitempty"`
+	SnapshotIDNEQ   *int  `json:"snapshotIDNEQ,omitempty"`
+	SnapshotIDIn    []int `json:"snapshotIDIn,omitempty"`
+	SnapshotIDNotIn []int `json:"snapshotIDNotIn,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "currency" edge predicates.
+	HasCurrency     *bool                 `json:"hasCurrency,omitempty"`
+	HasCurrencyWith []*CurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+
+	// "user" edge predicates.
+	HasUser     *bool             `json:"hasUser,omitempty"`
+	HasUserWith []*UserWhereInput `json:"hasUserWith,omitempty"`
+
+	// "snapshot" edge predicates.
+	HasSnapshot     *bool                 `json:"hasSnapshot,omitempty"`
+	HasSnapshotWith []*SnapshotWhereInput `json:"hasSnapshotWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *SnapshotEntryWhereInput) AddPredicates(predicates ...predicate.SnapshotEntry) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the SnapshotEntryWhereInput filter on the SnapshotEntryQuery builder.
+func (i *SnapshotEntryWhereInput) Filter(q *SnapshotEntryQuery) (*SnapshotEntryQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptySnapshotEntryWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptySnapshotEntryWhereInput is returned in case the SnapshotEntryWhereInput is empty.
+var ErrEmptySnapshotEntryWhereInput = errors.New("ent: empty predicate SnapshotEntryWhereInput")
+
+// P returns a predicate for filtering snapshotentries.
+// An error is returned if the input is empty or invalid.
+func (i *SnapshotEntryWhereInput) P() (predicate.SnapshotEntry, error) {
+	var predicates []predicate.SnapshotEntry
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, snapshotentry.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.SnapshotEntry, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, snapshotentry.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.SnapshotEntry, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, snapshotentry.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, snapshotentry.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, snapshotentry.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, snapshotentry.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, snapshotentry.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, snapshotentry.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, snapshotentry.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, snapshotentry.IDLTE(*i.IDLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, snapshotentry.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, snapshotentry.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, snapshotentry.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, snapshotentry.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, snapshotentry.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, snapshotentry.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, snapshotentry.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, snapshotentry.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, snapshotentry.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, snapshotentry.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, snapshotentry.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, snapshotentry.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, snapshotentry.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, snapshotentry.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, snapshotentry.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, snapshotentry.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, snapshotentry.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.Liquidity != nil {
+		predicates = append(predicates, snapshotentry.LiquidityEQ(*i.Liquidity))
+	}
+	if i.LiquidityNEQ != nil {
+		predicates = append(predicates, snapshotentry.LiquidityNEQ(*i.LiquidityNEQ))
+	}
+	if len(i.LiquidityIn) > 0 {
+		predicates = append(predicates, snapshotentry.LiquidityIn(i.LiquidityIn...))
+	}
+	if len(i.LiquidityNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.LiquidityNotIn(i.LiquidityNotIn...))
+	}
+	if i.LiquidityGT != nil {
+		predicates = append(predicates, snapshotentry.LiquidityGT(*i.LiquidityGT))
+	}
+	if i.LiquidityGTE != nil {
+		predicates = append(predicates, snapshotentry.LiquidityGTE(*i.LiquidityGTE))
+	}
+	if i.LiquidityLT != nil {
+		predicates = append(predicates, snapshotentry.LiquidityLT(*i.LiquidityLT))
+	}
+	if i.LiquidityLTE != nil {
+		predicates = append(predicates, snapshotentry.LiquidityLTE(*i.LiquidityLTE))
+	}
+	if i.Investment != nil {
+		predicates = append(predicates, snapshotentry.InvestmentEQ(*i.Investment))
+	}
+	if i.InvestmentNEQ != nil {
+		predicates = append(predicates, snapshotentry.InvestmentNEQ(*i.InvestmentNEQ))
+	}
+	if len(i.InvestmentIn) > 0 {
+		predicates = append(predicates, snapshotentry.InvestmentIn(i.InvestmentIn...))
+	}
+	if len(i.InvestmentNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.InvestmentNotIn(i.InvestmentNotIn...))
+	}
+	if i.InvestmentGT != nil {
+		predicates = append(predicates, snapshotentry.InvestmentGT(*i.InvestmentGT))
+	}
+	if i.InvestmentGTE != nil {
+		predicates = append(predicates, snapshotentry.InvestmentGTE(*i.InvestmentGTE))
+	}
+	if i.InvestmentLT != nil {
+		predicates = append(predicates, snapshotentry.InvestmentLT(*i.InvestmentLT))
+	}
+	if i.InvestmentLTE != nil {
+		predicates = append(predicates, snapshotentry.InvestmentLTE(*i.InvestmentLTE))
+	}
+	if i.Property != nil {
+		predicates = append(predicates, snapshotentry.PropertyEQ(*i.Property))
+	}
+	if i.PropertyNEQ != nil {
+		predicates = append(predicates, snapshotentry.PropertyNEQ(*i.PropertyNEQ))
+	}
+	if len(i.PropertyIn) > 0 {
+		predicates = append(predicates, snapshotentry.PropertyIn(i.PropertyIn...))
+	}
+	if len(i.PropertyNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.PropertyNotIn(i.PropertyNotIn...))
+	}
+	if i.PropertyGT != nil {
+		predicates = append(predicates, snapshotentry.PropertyGT(*i.PropertyGT))
+	}
+	if i.PropertyGTE != nil {
+		predicates = append(predicates, snapshotentry.PropertyGTE(*i.PropertyGTE))
+	}
+	if i.PropertyLT != nil {
+		predicates = append(predicates, snapshotentry.PropertyLT(*i.PropertyLT))
+	}
+	if i.PropertyLTE != nil {
+		predicates = append(predicates, snapshotentry.PropertyLTE(*i.PropertyLTE))
+	}
+	if i.Receivable != nil {
+		predicates = append(predicates, snapshotentry.ReceivableEQ(*i.Receivable))
+	}
+	if i.ReceivableNEQ != nil {
+		predicates = append(predicates, snapshotentry.ReceivableNEQ(*i.ReceivableNEQ))
+	}
+	if len(i.ReceivableIn) > 0 {
+		predicates = append(predicates, snapshotentry.ReceivableIn(i.ReceivableIn...))
+	}
+	if len(i.ReceivableNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.ReceivableNotIn(i.ReceivableNotIn...))
+	}
+	if i.ReceivableGT != nil {
+		predicates = append(predicates, snapshotentry.ReceivableGT(*i.ReceivableGT))
+	}
+	if i.ReceivableGTE != nil {
+		predicates = append(predicates, snapshotentry.ReceivableGTE(*i.ReceivableGTE))
+	}
+	if i.ReceivableLT != nil {
+		predicates = append(predicates, snapshotentry.ReceivableLT(*i.ReceivableLT))
+	}
+	if i.ReceivableLTE != nil {
+		predicates = append(predicates, snapshotentry.ReceivableLTE(*i.ReceivableLTE))
+	}
+	if i.Liability != nil {
+		predicates = append(predicates, snapshotentry.LiabilityEQ(*i.Liability))
+	}
+	if i.LiabilityNEQ != nil {
+		predicates = append(predicates, snapshotentry.LiabilityNEQ(*i.LiabilityNEQ))
+	}
+	if len(i.LiabilityIn) > 0 {
+		predicates = append(predicates, snapshotentry.LiabilityIn(i.LiabilityIn...))
+	}
+	if len(i.LiabilityNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.LiabilityNotIn(i.LiabilityNotIn...))
+	}
+	if i.LiabilityGT != nil {
+		predicates = append(predicates, snapshotentry.LiabilityGT(*i.LiabilityGT))
+	}
+	if i.LiabilityGTE != nil {
+		predicates = append(predicates, snapshotentry.LiabilityGTE(*i.LiabilityGTE))
+	}
+	if i.LiabilityLT != nil {
+		predicates = append(predicates, snapshotentry.LiabilityLT(*i.LiabilityLT))
+	}
+	if i.LiabilityLTE != nil {
+		predicates = append(predicates, snapshotentry.LiabilityLTE(*i.LiabilityLTE))
+	}
+	if i.CurrencyID != nil {
+		predicates = append(predicates, snapshotentry.CurrencyIDEQ(*i.CurrencyID))
+	}
+	if i.CurrencyIDNEQ != nil {
+		predicates = append(predicates, snapshotentry.CurrencyIDNEQ(*i.CurrencyIDNEQ))
+	}
+	if len(i.CurrencyIDIn) > 0 {
+		predicates = append(predicates, snapshotentry.CurrencyIDIn(i.CurrencyIDIn...))
+	}
+	if len(i.CurrencyIDNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.CurrencyIDNotIn(i.CurrencyIDNotIn...))
+	}
+	if i.UserID != nil {
+		predicates = append(predicates, snapshotentry.UserIDEQ(*i.UserID))
+	}
+	if i.UserIDNEQ != nil {
+		predicates = append(predicates, snapshotentry.UserIDNEQ(*i.UserIDNEQ))
+	}
+	if len(i.UserIDIn) > 0 {
+		predicates = append(predicates, snapshotentry.UserIDIn(i.UserIDIn...))
+	}
+	if len(i.UserIDNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.UserIDNotIn(i.UserIDNotIn...))
+	}
+	if i.SnapshotID != nil {
+		predicates = append(predicates, snapshotentry.SnapshotIDEQ(*i.SnapshotID))
+	}
+	if i.SnapshotIDNEQ != nil {
+		predicates = append(predicates, snapshotentry.SnapshotIDNEQ(*i.SnapshotIDNEQ))
+	}
+	if len(i.SnapshotIDIn) > 0 {
+		predicates = append(predicates, snapshotentry.SnapshotIDIn(i.SnapshotIDIn...))
+	}
+	if len(i.SnapshotIDNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.SnapshotIDNotIn(i.SnapshotIDNotIn...))
+	}
+
+	if i.HasHousehold != nil {
+		p := snapshotentry.HasHousehold()
+		if !*i.HasHousehold {
+			p = snapshotentry.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotentry.HasHouseholdWith(with...))
+	}
+	if i.HasCurrency != nil {
+		p := snapshotentry.HasCurrency()
+		if !*i.HasCurrency {
+			p = snapshotentry.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasCurrencyWith))
+		for _, w := range i.HasCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotentry.HasCurrencyWith(with...))
+	}
+	if i.HasUser != nil {
+		p := snapshotentry.HasUser()
+		if !*i.HasUser {
+			p = snapshotentry.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasUserWith) > 0 {
+		with := make([]predicate.User, 0, len(i.HasUserWith))
+		for _, w := range i.HasUserWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasUserWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotentry.HasUserWith(with...))
+	}
+	if i.HasSnapshot != nil {
+		p := snapshotentry.HasSnapshot()
+		if !*i.HasSnapshot {
+			p = snapshotentry.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotWith) > 0 {
+		with := make([]predicate.Snapshot, 0, len(i.HasSnapshotWith))
+		for _, w := range i.HasSnapshotWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotentry.HasSnapshotWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptySnapshotEntryWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return snapshotentry.And(predicates...), nil
+	}
+}
+
 // TransactionWhereInput represents a where input for filtering Transaction queries.
 type TransactionWhereInput struct {
 	Predicates []predicate.Transaction  `json:"-"`
@@ -4929,6 +5835,10 @@ type UserWhereInput struct {
 	HasRecurringSubscriptions     *bool                              `json:"hasRecurringSubscriptions,omitempty"`
 	HasRecurringSubscriptionsWith []*RecurringSubscriptionWhereInput `json:"hasRecurringSubscriptionsWith,omitempty"`
 
+	// "snapshot_entries" edge predicates.
+	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
+	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
+
 	// "user_households" edge predicates.
 	HasUserHouseholds     *bool                      `json:"hasUserHouseholds,omitempty"`
 	HasUserHouseholdsWith []*UserHouseholdWhereInput `json:"hasUserHouseholdsWith,omitempty"`
@@ -5245,6 +6155,24 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, user.HasRecurringSubscriptionsWith(with...))
+	}
+	if i.HasSnapshotEntries != nil {
+		p := user.HasSnapshotEntries()
+		if !*i.HasSnapshotEntries {
+			p = user.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotEntriesWith) > 0 {
+		with := make([]predicate.SnapshotEntry, 0, len(i.HasSnapshotEntriesWith))
+		for _, w := range i.HasSnapshotEntriesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotEntriesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, user.HasSnapshotEntriesWith(with...))
 	}
 	if i.HasUserHouseholds != nil {
 		p := user.HasUserHouseholds()
