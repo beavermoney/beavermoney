@@ -93,6 +93,30 @@ func (f RecurringSubscriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RecurringSubscriptionMutation", m)
 }
 
+// The SnapshotFunc type is an adapter to allow the use of ordinary
+// function as Snapshot mutator.
+type SnapshotFunc func(context.Context, *ent.SnapshotMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SnapshotFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SnapshotMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotMutation", m)
+}
+
+// The SnapshotEntryFunc type is an adapter to allow the use of ordinary
+// function as SnapshotEntry mutator.
+type SnapshotEntryFunc func(context.Context, *ent.SnapshotEntryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SnapshotEntryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SnapshotEntryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotEntryMutation", m)
+}
+
 // The TransactionFunc type is an adapter to allow the use of ordinary
 // function as Transaction mutator.
 type TransactionFunc func(context.Context, *ent.TransactionMutation) (ent.Value, error)

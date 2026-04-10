@@ -33,6 +33,8 @@ const (
 	EdgeUserKeys = "user_keys"
 	// EdgeRecurringSubscriptions holds the string denoting the recurring_subscriptions edge name in mutations.
 	EdgeRecurringSubscriptions = "recurring_subscriptions"
+	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
+	EdgeSnapshotEntries = "snapshot_entries"
 	// EdgeUserHouseholds holds the string denoting the user_households edge name in mutations.
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the user in the database.
@@ -70,6 +72,13 @@ const (
 	RecurringSubscriptionsInverseTable = "recurring_subscriptions"
 	// RecurringSubscriptionsColumn is the table column denoting the recurring_subscriptions relation/edge.
 	RecurringSubscriptionsColumn = "user_id"
+	// SnapshotEntriesTable is the table that holds the snapshot_entries relation/edge.
+	SnapshotEntriesTable = "snapshot_entries"
+	// SnapshotEntriesInverseTable is the table name for the SnapshotEntry entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotentry" package.
+	SnapshotEntriesInverseTable = "snapshot_entries"
+	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
+	SnapshotEntriesColumn = "user_id"
 	// UserHouseholdsTable is the table that holds the user_households relation/edge.
 	UserHouseholdsTable = "user_households"
 	// UserHouseholdsInverseTable is the table name for the UserHousehold entity.
@@ -222,6 +231,20 @@ func ByRecurringSubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderO
 	}
 }
 
+// BySnapshotEntriesCount orders the results by snapshot_entries count.
+func BySnapshotEntriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotEntriesStep(), opts...)
+	}
+}
+
+// BySnapshotEntries orders the results by snapshot_entries terms.
+func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByUserHouseholdsCount orders the results by user_households count.
 func ByUserHouseholdsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -268,6 +291,13 @@ func newRecurringSubscriptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RecurringSubscriptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RecurringSubscriptionsTable, RecurringSubscriptionsColumn),
+	)
+}
+func newSnapshotEntriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
 	)
 }
 func newUserHouseholdsStep() *sqlgraph.Step {

@@ -400,6 +400,29 @@ func HasRecurringSubscriptionsWith(preds ...predicate.RecurringSubscription) pre
 	})
 }
 
+// HasSnapshotEntries applies the HasEdge predicate on the "snapshot_entries" edge.
+func HasSnapshotEntries() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotEntriesWith applies the HasEdge predicate on the "snapshot_entries" edge with a given conditions (other predicates).
+func HasSnapshotEntriesWith(preds ...predicate.SnapshotEntry) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newSnapshotEntriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasUserHouseholds applies the HasEdge predicate on the "user_households" edge.
 func HasUserHouseholds() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

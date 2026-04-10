@@ -30,6 +30,7 @@ func (Currency) Edges() []ent.Edge {
 		edge.To("households", Household.Type),
 		edge.To("recurring_subscriptions", RecurringSubscription.Type),
 		edge.To("checkpoints", Checkpoint.Type),
+		edge.To("snapshot_entries", SnapshotEntry.Type),
 	}
 }
 

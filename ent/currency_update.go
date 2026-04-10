@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -151,6 +152,21 @@ func (_u *CurrencyUpdate) AddCheckpoints(v ...*Checkpoint) *CurrencyUpdate {
 	return _u.AddCheckpointIDs(ids...)
 }
 
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_u *CurrencyUpdate) AddSnapshotEntryIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.AddSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *CurrencyUpdate) AddSnapshotEntries(v ...*SnapshotEntry) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotEntryIDs(ids...)
+}
+
 // Mutation returns the CurrencyMutation object of the builder.
 func (_u *CurrencyUpdate) Mutation() *CurrencyMutation {
 	return _u.mutation
@@ -280,6 +296,27 @@ func (_u *CurrencyUpdate) RemoveCheckpoints(v ...*Checkpoint) *CurrencyUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCheckpointIDs(ids...)
+}
+
+// ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *CurrencyUpdate) ClearSnapshotEntries() *CurrencyUpdate {
+	_u.mutation.ClearSnapshotEntries()
+	return _u
+}
+
+// RemoveSnapshotEntryIDs removes the "snapshot_entries" edge to SnapshotEntry entities by IDs.
+func (_u *CurrencyUpdate) RemoveSnapshotEntryIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.RemoveSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotEntries removes "snapshot_entries" edges to SnapshotEntry entities.
+func (_u *CurrencyUpdate) RemoveSnapshotEntries(v ...*SnapshotEntry) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotEntryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -618,6 +655,51 @@ func (_u *CurrencyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotEntriesTable,
+			Columns: []string{currency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotEntriesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotEntriesTable,
+			Columns: []string{currency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotEntriesTable,
+			Columns: []string{currency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -756,6 +838,21 @@ func (_u *CurrencyUpdateOne) AddCheckpoints(v ...*Checkpoint) *CurrencyUpdateOne
 	return _u.AddCheckpointIDs(ids...)
 }
 
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_u *CurrencyUpdateOne) AddSnapshotEntryIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.AddSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *CurrencyUpdateOne) AddSnapshotEntries(v ...*SnapshotEntry) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotEntryIDs(ids...)
+}
+
 // Mutation returns the CurrencyMutation object of the builder.
 func (_u *CurrencyUpdateOne) Mutation() *CurrencyMutation {
 	return _u.mutation
@@ -885,6 +982,27 @@ func (_u *CurrencyUpdateOne) RemoveCheckpoints(v ...*Checkpoint) *CurrencyUpdate
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCheckpointIDs(ids...)
+}
+
+// ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *CurrencyUpdateOne) ClearSnapshotEntries() *CurrencyUpdateOne {
+	_u.mutation.ClearSnapshotEntries()
+	return _u
+}
+
+// RemoveSnapshotEntryIDs removes the "snapshot_entries" edge to SnapshotEntry entities by IDs.
+func (_u *CurrencyUpdateOne) RemoveSnapshotEntryIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.RemoveSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotEntries removes "snapshot_entries" edges to SnapshotEntry entities.
+func (_u *CurrencyUpdateOne) RemoveSnapshotEntries(v ...*SnapshotEntry) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotEntryIDs(ids...)
 }
 
 // Where appends a list predicates to the CurrencyUpdate builder.
@@ -1246,6 +1364,51 @@ func (_u *CurrencyUpdateOne) sqlSave(ctx context.Context) (_node *Currency, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotEntriesTable,
+			Columns: []string{currency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotEntriesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotEntriesTable,
+			Columns: []string{currency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotEntriesTable,
+			Columns: []string{currency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

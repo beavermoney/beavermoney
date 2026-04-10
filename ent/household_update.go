@@ -16,6 +16,8 @@ import (
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -226,6 +228,36 @@ func (_u *HouseholdUpdate) AddCheckpoints(v ...*Checkpoint) *HouseholdUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.AddCheckpointIDs(ids...)
+}
+
+// AddSnapshotIDs adds the "snapshots" edge to the Snapshot entity by IDs.
+func (_u *HouseholdUpdate) AddSnapshotIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.AddSnapshotIDs(ids...)
+	return _u
+}
+
+// AddSnapshots adds the "snapshots" edges to the Snapshot entity.
+func (_u *HouseholdUpdate) AddSnapshots(v ...*Snapshot) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotIDs(ids...)
+}
+
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_u *HouseholdUpdate) AddSnapshotEntryIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.AddSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *HouseholdUpdate) AddSnapshotEntries(v ...*SnapshotEntry) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotEntryIDs(ids...)
 }
 
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
@@ -441,6 +473,48 @@ func (_u *HouseholdUpdate) RemoveCheckpoints(v ...*Checkpoint) *HouseholdUpdate 
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCheckpointIDs(ids...)
+}
+
+// ClearSnapshots clears all "snapshots" edges to the Snapshot entity.
+func (_u *HouseholdUpdate) ClearSnapshots() *HouseholdUpdate {
+	_u.mutation.ClearSnapshots()
+	return _u
+}
+
+// RemoveSnapshotIDs removes the "snapshots" edge to Snapshot entities by IDs.
+func (_u *HouseholdUpdate) RemoveSnapshotIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.RemoveSnapshotIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshots removes "snapshots" edges to Snapshot entities.
+func (_u *HouseholdUpdate) RemoveSnapshots(v ...*Snapshot) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotIDs(ids...)
+}
+
+// ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *HouseholdUpdate) ClearSnapshotEntries() *HouseholdUpdate {
+	_u.mutation.ClearSnapshotEntries()
+	return _u
+}
+
+// RemoveSnapshotEntryIDs removes the "snapshot_entries" edge to SnapshotEntry entities by IDs.
+func (_u *HouseholdUpdate) RemoveSnapshotEntryIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.RemoveSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotEntries removes "snapshot_entries" edges to SnapshotEntry entities.
+func (_u *HouseholdUpdate) RemoveSnapshotEntries(v ...*SnapshotEntry) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotEntryIDs(ids...)
 }
 
 // ClearUserHouseholds clears all "user_households" edges to the UserHousehold entity.
@@ -1002,6 +1076,96 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.SnapshotsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotsTable,
+			Columns: []string{household.SnapshotsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshot.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotsTable,
+			Columns: []string{household.SnapshotsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshot.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotsTable,
+			Columns: []string{household.SnapshotsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshot.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotEntriesTable,
+			Columns: []string{household.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotEntriesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotEntriesTable,
+			Columns: []string{household.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotEntriesTable,
+			Columns: []string{household.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _u.mutation.UserHouseholdsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1257,6 +1421,36 @@ func (_u *HouseholdUpdateOne) AddCheckpoints(v ...*Checkpoint) *HouseholdUpdateO
 	return _u.AddCheckpointIDs(ids...)
 }
 
+// AddSnapshotIDs adds the "snapshots" edge to the Snapshot entity by IDs.
+func (_u *HouseholdUpdateOne) AddSnapshotIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.AddSnapshotIDs(ids...)
+	return _u
+}
+
+// AddSnapshots adds the "snapshots" edges to the Snapshot entity.
+func (_u *HouseholdUpdateOne) AddSnapshots(v ...*Snapshot) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotIDs(ids...)
+}
+
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_u *HouseholdUpdateOne) AddSnapshotEntryIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.AddSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *HouseholdUpdateOne) AddSnapshotEntries(v ...*SnapshotEntry) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotEntryIDs(ids...)
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
 func (_u *HouseholdUpdateOne) AddUserHouseholdIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddUserHouseholdIDs(ids...)
@@ -1470,6 +1664,48 @@ func (_u *HouseholdUpdateOne) RemoveCheckpoints(v ...*Checkpoint) *HouseholdUpda
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCheckpointIDs(ids...)
+}
+
+// ClearSnapshots clears all "snapshots" edges to the Snapshot entity.
+func (_u *HouseholdUpdateOne) ClearSnapshots() *HouseholdUpdateOne {
+	_u.mutation.ClearSnapshots()
+	return _u
+}
+
+// RemoveSnapshotIDs removes the "snapshots" edge to Snapshot entities by IDs.
+func (_u *HouseholdUpdateOne) RemoveSnapshotIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.RemoveSnapshotIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshots removes "snapshots" edges to Snapshot entities.
+func (_u *HouseholdUpdateOne) RemoveSnapshots(v ...*Snapshot) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotIDs(ids...)
+}
+
+// ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *HouseholdUpdateOne) ClearSnapshotEntries() *HouseholdUpdateOne {
+	_u.mutation.ClearSnapshotEntries()
+	return _u
+}
+
+// RemoveSnapshotEntryIDs removes the "snapshot_entries" edge to SnapshotEntry entities by IDs.
+func (_u *HouseholdUpdateOne) RemoveSnapshotEntryIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.RemoveSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotEntries removes "snapshot_entries" edges to SnapshotEntry entities.
+func (_u *HouseholdUpdateOne) RemoveSnapshotEntries(v ...*SnapshotEntry) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotEntryIDs(ids...)
 }
 
 // ClearUserHouseholds clears all "user_households" edges to the UserHousehold entity.
@@ -2054,6 +2290,96 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotsTable,
+			Columns: []string{household.SnapshotsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshot.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotsTable,
+			Columns: []string{household.SnapshotsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshot.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotsTable,
+			Columns: []string{household.SnapshotsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshot.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotEntriesTable,
+			Columns: []string{household.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotEntriesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotEntriesTable,
+			Columns: []string{household.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotEntriesTable,
+			Columns: []string{household.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

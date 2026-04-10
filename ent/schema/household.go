@@ -108,6 +108,24 @@ func (Household) Edges() []ent.Edge {
 				),
 				entgql.RelayConnection(),
 			),
+
+		edge.To("snapshots", Snapshot.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+				entgql.RelayConnection(),
+			),
+
+		edge.To("snapshot_entries", SnapshotEntry.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+				entgql.RelayConnection(),
+			),
 	}
 }
 

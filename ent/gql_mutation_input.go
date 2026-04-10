@@ -386,6 +386,52 @@ func (c *RecurringSubscriptionUpdateOne) SetInput(i UpdateRecurringSubscriptionI
 	return c
 }
 
+// CreateSnapshotInput represents a mutation input for creating snapshots.
+type CreateSnapshotInput struct {
+	Note *string
+}
+
+// Mutate applies the CreateSnapshotInput on the SnapshotMutation builder.
+func (i *CreateSnapshotInput) Mutate(m *SnapshotMutation) {
+	if v := i.Note; v != nil {
+		m.SetNote(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateSnapshotInput on the SnapshotCreate builder.
+func (c *SnapshotCreate) SetInput(i CreateSnapshotInput) *SnapshotCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateSnapshotInput represents a mutation input for updating snapshots.
+type UpdateSnapshotInput struct {
+	ClearNote bool
+	Note      *string
+}
+
+// Mutate applies the UpdateSnapshotInput on the SnapshotMutation builder.
+func (i *UpdateSnapshotInput) Mutate(m *SnapshotMutation) {
+	if i.ClearNote {
+		m.ClearNote()
+	}
+	if v := i.Note; v != nil {
+		m.SetNote(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateSnapshotInput on the SnapshotUpdate builder.
+func (c *SnapshotUpdate) SetInput(i UpdateSnapshotInput) *SnapshotUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateSnapshotInput on the SnapshotUpdateOne builder.
+func (c *SnapshotUpdateOne) SetInput(i UpdateSnapshotInput) *SnapshotUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateTransactionInput represents a mutation input for creating transactions.
 type CreateTransactionInput struct {
 	Description        *string

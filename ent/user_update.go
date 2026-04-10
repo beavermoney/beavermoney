@@ -12,6 +12,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/user"
 	"beavermoney.app/ent/userhousehold"
@@ -144,6 +145,21 @@ func (_u *UserUpdate) AddRecurringSubscriptions(v ...*RecurringSubscription) *Us
 	return _u.AddRecurringSubscriptionIDs(ids...)
 }
 
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_u *UserUpdate) AddSnapshotEntryIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *UserUpdate) AddSnapshotEntries(v ...*SnapshotEntry) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotEntryIDs(ids...)
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
 func (_u *UserUpdate) AddUserHouseholdIDs(ids ...int) *UserUpdate {
 	_u.mutation.AddUserHouseholdIDs(ids...)
@@ -267,6 +283,27 @@ func (_u *UserUpdate) RemoveRecurringSubscriptions(v ...*RecurringSubscription) 
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
+}
+
+// ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *UserUpdate) ClearSnapshotEntries() *UserUpdate {
+	_u.mutation.ClearSnapshotEntries()
+	return _u
+}
+
+// RemoveSnapshotEntryIDs removes the "snapshot_entries" edge to SnapshotEntry entities by IDs.
+func (_u *UserUpdate) RemoveSnapshotEntryIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotEntries removes "snapshot_entries" edges to SnapshotEntry entities.
+func (_u *UserUpdate) RemoveSnapshotEntries(v ...*SnapshotEntry) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotEntryIDs(ids...)
 }
 
 // ClearUserHouseholds clears all "user_households" edges to the UserHousehold entity.
@@ -611,6 +648,51 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SnapshotEntriesTable,
+			Columns: []string{user.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotEntriesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SnapshotEntriesTable,
+			Columns: []string{user.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SnapshotEntriesTable,
+			Columns: []string{user.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _u.mutation.UserHouseholdsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -787,6 +869,21 @@ func (_u *UserUpdateOne) AddRecurringSubscriptions(v ...*RecurringSubscription) 
 	return _u.AddRecurringSubscriptionIDs(ids...)
 }
 
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_u *UserUpdateOne) AddSnapshotEntryIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *UserUpdateOne) AddSnapshotEntries(v ...*SnapshotEntry) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotEntryIDs(ids...)
+}
+
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
 func (_u *UserUpdateOne) AddUserHouseholdIDs(ids ...int) *UserUpdateOne {
 	_u.mutation.AddUserHouseholdIDs(ids...)
@@ -910,6 +1007,27 @@ func (_u *UserUpdateOne) RemoveRecurringSubscriptions(v ...*RecurringSubscriptio
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
+}
+
+// ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
+func (_u *UserUpdateOne) ClearSnapshotEntries() *UserUpdateOne {
+	_u.mutation.ClearSnapshotEntries()
+	return _u
+}
+
+// RemoveSnapshotEntryIDs removes the "snapshot_entries" edge to SnapshotEntry entities by IDs.
+func (_u *UserUpdateOne) RemoveSnapshotEntryIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveSnapshotEntryIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotEntries removes "snapshot_entries" edges to SnapshotEntry entities.
+func (_u *UserUpdateOne) RemoveSnapshotEntries(v ...*SnapshotEntry) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotEntryIDs(ids...)
 }
 
 // ClearUserHouseholds clears all "user_households" edges to the UserHousehold entity.
@@ -1277,6 +1395,51 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(recurringsubscription.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SnapshotEntriesTable,
+			Columns: []string{user.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotEntriesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SnapshotEntriesTable,
+			Columns: []string{user.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SnapshotEntriesTable,
+			Columns: []string{user.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

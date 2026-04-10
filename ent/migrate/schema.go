@@ -251,6 +251,94 @@ var (
 			},
 		},
 	}
+	// SnapshotsColumns holds the columns for the "snapshots" table.
+	SnapshotsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "note", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "household_id", Type: field.TypeInt},
+	}
+	// SnapshotsTable holds the schema information for the "snapshots" table.
+	SnapshotsTable = &schema.Table{
+		Name:       "snapshots",
+		Columns:    SnapshotsColumns,
+		PrimaryKey: []*schema.Column{SnapshotsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "snapshots_households_snapshots",
+				Columns:    []*schema.Column{SnapshotsColumns[4]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "snapshot_household_id_create_time",
+				Unique:  false,
+				Columns: []*schema.Column{SnapshotsColumns[4], SnapshotsColumns[1]},
+			},
+		},
+	}
+	// SnapshotEntriesColumns holds the columns for the "snapshot_entries" table.
+	SnapshotEntriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "liquidity", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "investment", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "property", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "receivable", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "liability", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "currency_id", Type: field.TypeInt},
+		{Name: "household_id", Type: field.TypeInt},
+		{Name: "snapshot_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// SnapshotEntriesTable holds the schema information for the "snapshot_entries" table.
+	SnapshotEntriesTable = &schema.Table{
+		Name:       "snapshot_entries",
+		Columns:    SnapshotEntriesColumns,
+		PrimaryKey: []*schema.Column{SnapshotEntriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "snapshot_entries_currencies_snapshot_entries",
+				Columns:    []*schema.Column{SnapshotEntriesColumns[8]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_entries_households_snapshot_entries",
+				Columns:    []*schema.Column{SnapshotEntriesColumns[9]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_entries_snapshots_snapshot_entries",
+				Columns:    []*schema.Column{SnapshotEntriesColumns[10]},
+				RefColumns: []*schema.Column{SnapshotsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_entries_users_snapshot_entries",
+				Columns:    []*schema.Column{SnapshotEntriesColumns[11]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "snapshotentry_snapshot_id",
+				Unique:  false,
+				Columns: []*schema.Column{SnapshotEntriesColumns[10]},
+			},
+			{
+				Name:    "snapshotentry_snapshot_id_user_id_currency_id",
+				Unique:  true,
+				Columns: []*schema.Column{SnapshotEntriesColumns[10], SnapshotEntriesColumns[11], SnapshotEntriesColumns[8]},
+			},
+		},
+	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -460,6 +548,8 @@ var (
 		InvestmentsTable,
 		InvestmentLotsTable,
 		RecurringSubscriptionsTable,
+		SnapshotsTable,
+		SnapshotEntriesTable,
 		TransactionsTable,
 		TransactionCategoriesTable,
 		TransactionEntriesTable,
@@ -505,6 +595,17 @@ func init() {
 	RecurringSubscriptionsTable.ForeignKeys[2].RefTable = UsersTable
 	RecurringSubscriptionsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(51539607552),
+	}
+	SnapshotsTable.ForeignKeys[0].RefTable = HouseholdsTable
+	SnapshotsTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(60129542144),
+	}
+	SnapshotEntriesTable.ForeignKeys[0].RefTable = CurrenciesTable
+	SnapshotEntriesTable.ForeignKeys[1].RefTable = HouseholdsTable
+	SnapshotEntriesTable.ForeignKeys[2].RefTable = SnapshotsTable
+	SnapshotEntriesTable.ForeignKeys[3].RefTable = UsersTable
+	SnapshotEntriesTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(64424509440),
 	}
 	TransactionsTable.ForeignKeys[0].RefTable = HouseholdsTable
 	TransactionsTable.ForeignKeys[1].RefTable = TransactionCategoriesTable

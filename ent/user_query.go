@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/user"
 	"beavermoney.app/ent/userhousehold"
@@ -35,6 +36,7 @@ type UserQuery struct {
 	withTransactions                *TransactionQuery
 	withUserKeys                    *UserKeyQuery
 	withRecurringSubscriptions      *RecurringSubscriptionQuery
+	withSnapshotEntries             *SnapshotEntryQuery
 	withUserHouseholds              *UserHouseholdQuery
 	loadTotal                       []func(context.Context, []*User) error
 	modifiers                       []func(*sql.Selector)
@@ -43,6 +45,7 @@ type UserQuery struct {
 	withNamedTransactions           map[string]*TransactionQuery
 	withNamedUserKeys               map[string]*UserKeyQuery
 	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
+	withNamedSnapshotEntries        map[string]*SnapshotEntryQuery
 	withNamedUserHouseholds         map[string]*UserHouseholdQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -183,6 +186,28 @@ func (_q *UserQuery) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(recurringsubscription.Table, recurringsubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.RecurringSubscriptionsTable, user.RecurringSubscriptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotEntries chains the current query on the "snapshot_entries" edge.
+func (_q *UserQuery) QuerySnapshotEntries() *SnapshotEntryQuery {
+	query := (&SnapshotEntryClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SnapshotEntriesTable, user.SnapshotEntriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -409,6 +434,7 @@ func (_q *UserQuery) Clone() *UserQuery {
 		withTransactions:           _q.withTransactions.Clone(),
 		withUserKeys:               _q.withUserKeys.Clone(),
 		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
+		withSnapshotEntries:        _q.withSnapshotEntries.Clone(),
 		withUserHouseholds:         _q.withUserHouseholds.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -469,6 +495,17 @@ func (_q *UserQuery) WithRecurringSubscriptions(opts ...func(*RecurringSubscript
 		opt(query)
 	}
 	_q.withRecurringSubscriptions = query
+	return _q
+}
+
+// WithSnapshotEntries tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_entries" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithSnapshotEntries(opts ...func(*SnapshotEntryQuery)) *UserQuery {
+	query := (&SnapshotEntryClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotEntries = query
 	return _q
 }
 
@@ -567,12 +604,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			_q.withHouseholds != nil,
 			_q.withAccounts != nil,
 			_q.withTransactions != nil,
 			_q.withUserKeys != nil,
 			_q.withRecurringSubscriptions != nil,
+			_q.withSnapshotEntries != nil,
 			_q.withUserHouseholds != nil,
 		}
 	)
@@ -634,6 +672,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
+	if query := _q.withSnapshotEntries; query != nil {
+		if err := _q.loadSnapshotEntries(ctx, query, nodes,
+			func(n *User) { n.Edges.SnapshotEntries = []*SnapshotEntry{} },
+			func(n *User, e *SnapshotEntry) { n.Edges.SnapshotEntries = append(n.Edges.SnapshotEntries, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withUserHouseholds; query != nil {
 		if err := _q.loadUserHouseholds(ctx, query, nodes,
 			func(n *User) { n.Edges.UserHouseholds = []*UserHousehold{} },
@@ -673,6 +718,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadRecurringSubscriptions(ctx, query, nodes,
 			func(n *User) { n.appendNamedRecurringSubscriptions(name) },
 			func(n *User, e *RecurringSubscription) { n.appendNamedRecurringSubscriptions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotEntries {
+		if err := _q.loadSnapshotEntries(ctx, query, nodes,
+			func(n *User) { n.appendNamedSnapshotEntries(name) },
+			func(n *User, e *SnapshotEntry) { n.appendNamedSnapshotEntries(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -857,6 +909,36 @@ func (_q *UserQuery) loadRecurringSubscriptions(ctx context.Context, query *Recu
 	}
 	query.Where(predicate.RecurringSubscription(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.RecurringSubscriptionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadSnapshotEntries(ctx context.Context, query *SnapshotEntryQuery, nodes []*User, init func(*User), assign func(*User, *SnapshotEntry)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotentry.FieldUserID)
+	}
+	query.Where(predicate.SnapshotEntry(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.SnapshotEntriesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1063,6 +1145,20 @@ func (_q *UserQuery) WithNamedRecurringSubscriptions(name string, opts ...func(*
 		_q.withNamedRecurringSubscriptions = make(map[string]*RecurringSubscriptionQuery)
 	}
 	_q.withNamedRecurringSubscriptions[name] = query
+	return _q
+}
+
+// WithNamedSnapshotEntries tells the query-builder to eager-load the nodes that are connected to the "snapshot_entries"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithNamedSnapshotEntries(name string, opts ...func(*SnapshotEntryQuery)) *UserQuery {
+	query := (&SnapshotEntryClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotEntries == nil {
+		_q.withNamedSnapshotEntries = make(map[string]*SnapshotEntryQuery)
+	}
+	_q.withNamedSnapshotEntries[name] = query
 	return _q
 }
 

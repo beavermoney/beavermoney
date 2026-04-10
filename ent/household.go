@@ -58,13 +58,17 @@ type HouseholdEdges struct {
 	RecurringSubscriptions []*RecurringSubscription `json:"recurring_subscriptions,omitempty"`
 	// Checkpoints holds the value of the checkpoints edge.
 	Checkpoints []*Checkpoint `json:"checkpoints,omitempty"`
+	// Snapshots holds the value of the snapshots edge.
+	Snapshots []*Snapshot `json:"snapshots,omitempty"`
+	// SnapshotEntries holds the value of the snapshot_entries edge.
+	SnapshotEntries []*SnapshotEntry `json:"snapshot_entries,omitempty"`
 	// UserHouseholds holds the value of the user_households edge.
 	UserHouseholds []*UserHousehold `json:"user_households,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [13]bool
 	// totalCount holds the count of the edges above.
-	totalCount [11]map[string]int
+	totalCount [13]map[string]int
 
 	namedUsers                  map[string][]*User
 	namedAccounts               map[string][]*Account
@@ -75,6 +79,8 @@ type HouseholdEdges struct {
 	namedTransactionEntries     map[string][]*TransactionEntry
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
 	namedCheckpoints            map[string][]*Checkpoint
+	namedSnapshots              map[string][]*Snapshot
+	namedSnapshotEntries        map[string][]*SnapshotEntry
 	namedUserHouseholds         map[string][]*UserHousehold
 }
 
@@ -170,10 +176,28 @@ func (e HouseholdEdges) CheckpointsOrErr() ([]*Checkpoint, error) {
 	return nil, &NotLoadedError{edge: "checkpoints"}
 }
 
+// SnapshotsOrErr returns the Snapshots value or an error if the edge
+// was not loaded in eager-loading.
+func (e HouseholdEdges) SnapshotsOrErr() ([]*Snapshot, error) {
+	if e.loadedTypes[10] {
+		return e.Snapshots, nil
+	}
+	return nil, &NotLoadedError{edge: "snapshots"}
+}
+
+// SnapshotEntriesOrErr returns the SnapshotEntries value or an error if the edge
+// was not loaded in eager-loading.
+func (e HouseholdEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
+	if e.loadedTypes[11] {
+		return e.SnapshotEntries, nil
+	}
+	return nil, &NotLoadedError{edge: "snapshot_entries"}
+}
+
 // UserHouseholdsOrErr returns the UserHouseholds value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UserHouseholdsOrErr() ([]*UserHousehold, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[12] {
 		return e.UserHouseholds, nil
 	}
 	return nil, &NotLoadedError{edge: "user_households"}
@@ -310,6 +334,16 @@ func (_m *Household) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
 // QueryCheckpoints queries the "checkpoints" edge of the Household entity.
 func (_m *Household) QueryCheckpoints() *CheckpointQuery {
 	return NewHouseholdClient(_m.config).QueryCheckpoints(_m)
+}
+
+// QuerySnapshots queries the "snapshots" edge of the Household entity.
+func (_m *Household) QuerySnapshots() *SnapshotQuery {
+	return NewHouseholdClient(_m.config).QuerySnapshots(_m)
+}
+
+// QuerySnapshotEntries queries the "snapshot_entries" edge of the Household entity.
+func (_m *Household) QuerySnapshotEntries() *SnapshotEntryQuery {
+	return NewHouseholdClient(_m.config).QuerySnapshotEntries(_m)
 }
 
 // QueryUserHouseholds queries the "user_households" edge of the Household entity.
@@ -574,6 +608,54 @@ func (_m *Household) appendNamedCheckpoints(name string, edges ...*Checkpoint) {
 		_m.Edges.namedCheckpoints[name] = []*Checkpoint{}
 	} else {
 		_m.Edges.namedCheckpoints[name] = append(_m.Edges.namedCheckpoints[name], edges...)
+	}
+}
+
+// NamedSnapshots returns the Snapshots named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Household) NamedSnapshots(name string) ([]*Snapshot, error) {
+	if _m.Edges.namedSnapshots == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSnapshots[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Household) appendNamedSnapshots(name string, edges ...*Snapshot) {
+	if _m.Edges.namedSnapshots == nil {
+		_m.Edges.namedSnapshots = make(map[string][]*Snapshot)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSnapshots[name] = []*Snapshot{}
+	} else {
+		_m.Edges.namedSnapshots[name] = append(_m.Edges.namedSnapshots[name], edges...)
+	}
+}
+
+// NamedSnapshotEntries returns the SnapshotEntries named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Household) NamedSnapshotEntries(name string) ([]*SnapshotEntry, error) {
+	if _m.Edges.namedSnapshotEntries == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSnapshotEntries[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Household) appendNamedSnapshotEntries(name string, edges ...*SnapshotEntry) {
+	if _m.Edges.namedSnapshotEntries == nil {
+		_m.Edges.namedSnapshotEntries = make(map[string][]*SnapshotEntry)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSnapshotEntries[name] = []*SnapshotEntry{}
+	} else {
+		_m.Edges.namedSnapshotEntries[name] = append(_m.Edges.namedSnapshotEntries[name], edges...)
 	}
 }
 

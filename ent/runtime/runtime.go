@@ -14,6 +14,8 @@ import (
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/schema"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -278,6 +280,66 @@ func init() {
 	recurringsubscriptionDescUserID := recurringsubscriptionFields[9].Descriptor()
 	// recurringsubscription.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	recurringsubscription.UserIDValidator = recurringsubscriptionDescUserID.Validators[0].(func(int) error)
+	snapshotMixin := schema.Snapshot{}.Mixin()
+	snapshot.Policy = privacy.NewPolicies(snapshotMixin[0], schema.Snapshot{})
+	snapshot.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := snapshot.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	snapshotMixinFields1 := snapshotMixin[1].Fields()
+	_ = snapshotMixinFields1
+	snapshotFields := schema.Snapshot{}.Fields()
+	_ = snapshotFields
+	// snapshotDescCreateTime is the schema descriptor for create_time field.
+	snapshotDescCreateTime := snapshotMixinFields1[0].Descriptor()
+	// snapshot.DefaultCreateTime holds the default value on creation for the create_time field.
+	snapshot.DefaultCreateTime = snapshotDescCreateTime.Default.(func() time.Time)
+	// snapshotDescUpdateTime is the schema descriptor for update_time field.
+	snapshotDescUpdateTime := snapshotMixinFields1[1].Descriptor()
+	// snapshot.DefaultUpdateTime holds the default value on creation for the update_time field.
+	snapshot.DefaultUpdateTime = snapshotDescUpdateTime.Default.(func() time.Time)
+	// snapshot.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	snapshot.UpdateDefaultUpdateTime = snapshotDescUpdateTime.UpdateDefault.(func() time.Time)
+	snapshotentryMixin := schema.SnapshotEntry{}.Mixin()
+	snapshotentry.Policy = privacy.NewPolicies(snapshotentryMixin[0], schema.SnapshotEntry{})
+	snapshotentry.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := snapshotentry.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	snapshotentryMixinFields1 := snapshotentryMixin[1].Fields()
+	_ = snapshotentryMixinFields1
+	snapshotentryFields := schema.SnapshotEntry{}.Fields()
+	_ = snapshotentryFields
+	// snapshotentryDescCreateTime is the schema descriptor for create_time field.
+	snapshotentryDescCreateTime := snapshotentryMixinFields1[0].Descriptor()
+	// snapshotentry.DefaultCreateTime holds the default value on creation for the create_time field.
+	snapshotentry.DefaultCreateTime = snapshotentryDescCreateTime.Default.(func() time.Time)
+	// snapshotentryDescUpdateTime is the schema descriptor for update_time field.
+	snapshotentryDescUpdateTime := snapshotentryMixinFields1[1].Descriptor()
+	// snapshotentry.DefaultUpdateTime holds the default value on creation for the update_time field.
+	snapshotentry.DefaultUpdateTime = snapshotentryDescUpdateTime.Default.(func() time.Time)
+	// snapshotentry.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	snapshotentry.UpdateDefaultUpdateTime = snapshotentryDescUpdateTime.UpdateDefault.(func() time.Time)
+	// snapshotentryDescCurrencyID is the schema descriptor for currency_id field.
+	snapshotentryDescCurrencyID := snapshotentryFields[5].Descriptor()
+	// snapshotentry.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
+	snapshotentry.CurrencyIDValidator = snapshotentryDescCurrencyID.Validators[0].(func(int) error)
+	// snapshotentryDescUserID is the schema descriptor for user_id field.
+	snapshotentryDescUserID := snapshotentryFields[6].Descriptor()
+	// snapshotentry.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	snapshotentry.UserIDValidator = snapshotentryDescUserID.Validators[0].(func(int) error)
+	// snapshotentryDescSnapshotID is the schema descriptor for snapshot_id field.
+	snapshotentryDescSnapshotID := snapshotentryFields[7].Descriptor()
+	// snapshotentry.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
+	snapshotentry.SnapshotIDValidator = snapshotentryDescSnapshotID.Validators[0].(func(int) error)
 	transactionMixin := schema.Transaction{}.Mixin()
 	transaction.Policy = privacy.NewPolicies(transactionMixin[1], schema.Transaction{})
 	transaction.Hooks[0] = func(next ent.Mutator) ent.Mutator {
