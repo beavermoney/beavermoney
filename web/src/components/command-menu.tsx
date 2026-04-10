@@ -8,14 +8,12 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { commandStore } from '@/store'
 import {
   LinkOptions,
   useNavigate,
   useParams,
   useSearch,
 } from '@tanstack/react-router'
-import { useStore } from '@tanstack/react-store'
 import { random } from 'lodash-es'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -23,27 +21,20 @@ export function CommandMenu() {
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
-  const [shouldClearValue, setShouldClearValue] = useState(false)
-
   const search = useSearch({
     from: '/_user/household/$householdId',
   })
 
-  const value = useStore(commandStore, (state) => state)
-  const setValue = useCallback((value: string) => {
-    commandStore.setState(value)
-  }, [])
+  const [value, setValue] = useState('')
   const isMobile = useIsMobile()
 
   const open = search.command_open
   const setOpen = useCallback(
     (val: boolean | ((v: boolean) => boolean)) => {
-      if (shouldClearValue) {
-        setValue('')
-        setShouldClearValue(false)
-      }
-
       const commandOpen = typeof val === 'function' ? val(open) : val
+      if (!commandOpen) {
+        setValue('')
+      }
       navigate({
         to: '.',
         search: (old) => ({
@@ -52,7 +43,7 @@ export function CommandMenu() {
         }),
       })
     },
-    [navigate, open, shouldClearValue, setValue, setShouldClearValue],
+    [navigate, open],
   )
 
   useEffect(() => {
@@ -68,7 +59,7 @@ export function CommandMenu() {
 
   const handleSelect = (opts: LinkOptions) => {
     navigate(opts)
-    setShouldClearValue(true)
+    setValue('')
   }
 
   return (

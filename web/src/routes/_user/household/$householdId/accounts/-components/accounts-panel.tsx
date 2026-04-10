@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import {
   ACCOUNT_TYPE_LIST,
   ACCOUNT_CATEGORY_LABEL,
@@ -91,6 +91,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
   const navigate = useNavigate()
+  const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
   const search = useSearch({
     from: '/_user/household/$householdId/accounts',
@@ -224,7 +225,10 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         >
           <RefreshCwIcon className={isRefreshInFlight ? 'animate-spin' : ''} />
         </Button>
-        <PlusButton />
+        <PlusButton
+          to="/household/$householdId/accounts/new"
+          params={{ householdId }}
+        />
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex gap-3">

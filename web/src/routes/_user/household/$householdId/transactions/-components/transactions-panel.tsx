@@ -1,6 +1,6 @@
 import { fetchQuery, graphql } from 'relay-runtime'
 import { useFragment, useRelayEnvironment } from 'react-relay'
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { TransactionsList } from './transactions-list'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
 import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
@@ -11,6 +11,7 @@ import { parseDateRangeFromURL } from '@/lib/date-range'
 import { useHousehold } from '@/hooks/use-household'
 import { Fragment } from 'react/jsx-runtime'
 import { PlusButton } from '@/components/plus-button'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { parseISO } from 'date-fns'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
@@ -42,6 +43,8 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const navigate = useNavigate()
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
+  const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const isMobile = useIsMobile()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
@@ -76,7 +79,17 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 lg:absolute">
-        <PlusButton />
+        <PlusButton
+          to={
+            isMobile ? '/household/$householdId/transactions/new' : '.'
+          }
+          params={isMobile ? { householdId } : undefined}
+          search={
+            isMobile
+              ? undefined
+              : (prev) => ({ ...prev, log_type: 'expense' })
+          }
+        />
       </div>
       <FinancialSummaryCards fragmentRef={data.financialReport} />
       <div className="py-2"></div>

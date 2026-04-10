@@ -20,7 +20,7 @@ import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { CATEGORY_TYPE_LIST } from '@/constant'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { DateRangeFilter } from './date-range-filter'
 import { CategoriesSankey } from './categories-sankey'
 import { useSearch } from '@tanstack/react-router'
@@ -81,6 +81,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const data = useFragment(CategoriesPanelFragment, fragmentRef)
   const { household } = useHousehold()
   const environment = useRelayEnvironment()
+  const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
   useRegisterConnection(
     data.transactionCategories.__id,
@@ -148,7 +149,10 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 lg:absolute">
-        <PlusButton />
+        <PlusButton
+          to="/household/$householdId/categories/new"
+          params={{ householdId }}
+        />
       </div>
       <FinancialSummaryCards fragmentRef={financialReport} />
       <div className="py-2"></div>
