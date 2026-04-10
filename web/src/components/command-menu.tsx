@@ -43,7 +43,7 @@ export function CommandMenu() {
         }),
       })
     },
-    [navigate, open],
+    [navigate, open, setValue],
   )
 
   useEffect(() => {
