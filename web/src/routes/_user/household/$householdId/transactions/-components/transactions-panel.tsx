@@ -1,6 +1,7 @@
 import { fetchQuery, graphql } from 'relay-runtime'
 import { useFragment, useRelayEnvironment } from 'react-relay'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
+import type { LinkOptions } from '@tanstack/react-router'
 import { TransactionsList } from './transactions-list'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
 import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
@@ -9,7 +10,7 @@ import { DateRangeFilter } from '../../categories/-components/date-range-filter'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { useHousehold } from '@/hooks/use-household'
-import { Fragment } from 'react/jsx-runtime'
+import { Fragment, useMemo } from 'react'
 import { PlusButton } from '@/components/plus-button'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { parseISO } from 'date-fns'
@@ -76,20 +77,24 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
     })
   }
 
+  const plusButtonLinkOptions = useMemo<LinkOptions>(
+    () =>
+      isMobile
+        ? {
+            to: '/household/$householdId/transactions/new',
+            params: { householdId },
+          }
+        : {
+            to: '.',
+            search: (prev) => ({ ...prev, log_type: 'expense' }),
+          },
+    [isMobile, householdId],
+  )
+
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 lg:absolute">
-        <PlusButton
-          to={
-            isMobile ? '/household/$householdId/transactions/new' : '.'
-          }
-          params={isMobile ? { householdId } : undefined}
-          search={
-            isMobile
-              ? undefined
-              : (prev) => ({ ...prev, log_type: 'expense' })
-          }
-        />
+        <PlusButton {...plusButtonLinkOptions} />
       </div>
       <FinancialSummaryCards fragmentRef={data.financialReport} />
       <div className="py-2"></div>
