@@ -7,7 +7,6 @@ package gql
 
 import (
 	"context"
-	"time"
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/transaction"
@@ -118,27 +117,6 @@ func (r *queryResolver) Household(ctx context.Context) (*ent.Household, error) {
 	defer span.End()
 
 	return r.entClient.Household.Get(ctx, householdID)
-}
-
-// FxRate is the resolver for the fxRate field.
-func (r *queryResolver) FxRate(ctx context.Context, from string, to string, datetime time.Time) (string, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "queryResolver.FxRate",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	rate, err := r.fxrateClient.GetRate(ctx, from, to, datetime)
-	if err != nil {
-		return "", err
-	}
-
-	return rate.String(), nil
 }
 
 // StockQuote is the resolver for the stockQuote field.
