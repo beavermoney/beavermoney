@@ -140,6 +140,48 @@ func (c *HouseholdUpdateOne) SetInput(i UpdateHouseholdInput) *HouseholdUpdateOn
 	return c
 }
 
+// CreateHouseholdCurrencyInput represents a mutation input for creating householdcurrencies.
+type CreateHouseholdCurrencyInput struct {
+	Important *bool
+}
+
+// Mutate applies the CreateHouseholdCurrencyInput on the HouseholdCurrencyMutation builder.
+func (i *CreateHouseholdCurrencyInput) Mutate(m *HouseholdCurrencyMutation) {
+	if v := i.Important; v != nil {
+		m.SetImportant(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateHouseholdCurrencyInput on the HouseholdCurrencyCreate builder.
+func (c *HouseholdCurrencyCreate) SetInput(i CreateHouseholdCurrencyInput) *HouseholdCurrencyCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateHouseholdCurrencyInput represents a mutation input for updating householdcurrencies.
+type UpdateHouseholdCurrencyInput struct {
+	Important *bool
+}
+
+// Mutate applies the UpdateHouseholdCurrencyInput on the HouseholdCurrencyMutation builder.
+func (i *UpdateHouseholdCurrencyInput) Mutate(m *HouseholdCurrencyMutation) {
+	if v := i.Important; v != nil {
+		m.SetImportant(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateHouseholdCurrencyInput on the HouseholdCurrencyUpdate builder.
+func (c *HouseholdCurrencyUpdate) SetInput(i UpdateHouseholdCurrencyInput) *HouseholdCurrencyUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateHouseholdCurrencyInput on the HouseholdCurrencyUpdateOne builder.
+func (c *HouseholdCurrencyUpdateOne) SetInput(i UpdateHouseholdCurrencyInput) *HouseholdCurrencyUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreateInvestmentInput represents a mutation input for creating investments.
 type CreateInvestmentInput struct {
 	Name      string

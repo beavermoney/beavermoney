@@ -32,6 +32,9 @@ func (Currency) Edges() []ent.Edge {
 		edge.To("snapshot_entries", SnapshotEntry.Type),
 		edge.To("snapshot_rates_from", SnapshotRate.Type),
 		edge.To("snapshot_rates_to", SnapshotRate.Type),
+		edge.To("household_currencies", HouseholdCurrency.Type),
+		edge.To("household_rates_from", HouseholdRate.Type),
+		edge.To("household_rates_to", HouseholdRate.Type),
 	}
 }
 

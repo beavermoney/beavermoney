@@ -10,6 +10,8 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
@@ -717,6 +719,18 @@ type CurrencyWhereInput struct {
 	// "snapshot_rates_to" edge predicates.
 	HasSnapshotRatesTo     *bool                     `json:"hasSnapshotRatesTo,omitempty"`
 	HasSnapshotRatesToWith []*SnapshotRateWhereInput `json:"hasSnapshotRatesToWith,omitempty"`
+
+	// "household_currencies" edge predicates.
+	HasHouseholdCurrencies     *bool                          `json:"hasHouseholdCurrencies,omitempty"`
+	HasHouseholdCurrenciesWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrenciesWith,omitempty"`
+
+	// "household_rates_from" edge predicates.
+	HasHouseholdRatesFrom     *bool                      `json:"hasHouseholdRatesFrom,omitempty"`
+	HasHouseholdRatesFromWith []*HouseholdRateWhereInput `json:"hasHouseholdRatesFromWith,omitempty"`
+
+	// "household_rates_to" edge predicates.
+	HasHouseholdRatesTo     *bool                      `json:"hasHouseholdRatesTo,omitempty"`
+	HasHouseholdRatesToWith []*HouseholdRateWhereInput `json:"hasHouseholdRatesToWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -998,6 +1012,60 @@ func (i *CurrencyWhereInput) P() (predicate.Currency, error) {
 		}
 		predicates = append(predicates, currency.HasSnapshotRatesToWith(with...))
 	}
+	if i.HasHouseholdCurrencies != nil {
+		p := currency.HasHouseholdCurrencies()
+		if !*i.HasHouseholdCurrencies {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdCurrenciesWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrenciesWith))
+		for _, w := range i.HasHouseholdCurrenciesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrenciesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasHouseholdCurrenciesWith(with...))
+	}
+	if i.HasHouseholdRatesFrom != nil {
+		p := currency.HasHouseholdRatesFrom()
+		if !*i.HasHouseholdRatesFrom {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdRatesFromWith) > 0 {
+		with := make([]predicate.HouseholdRate, 0, len(i.HasHouseholdRatesFromWith))
+		for _, w := range i.HasHouseholdRatesFromWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdRatesFromWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasHouseholdRatesFromWith(with...))
+	}
+	if i.HasHouseholdRatesTo != nil {
+		p := currency.HasHouseholdRatesTo()
+		if !*i.HasHouseholdRatesTo {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdRatesToWith) > 0 {
+		with := make([]predicate.HouseholdRate, 0, len(i.HasHouseholdRatesToWith))
+		for _, w := range i.HasHouseholdRatesToWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdRatesToWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasHouseholdRatesToWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyCurrencyWhereInput
@@ -1128,6 +1196,14 @@ type HouseholdWhereInput struct {
 	// "snapshot_entries" edge predicates.
 	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
 	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
+
+	// "household_currencies" edge predicates.
+	HasHouseholdCurrencies     *bool                          `json:"hasHouseholdCurrencies,omitempty"`
+	HasHouseholdCurrenciesWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrenciesWith,omitempty"`
+
+	// "household_rates" edge predicates.
+	HasHouseholdRates     *bool                      `json:"hasHouseholdRates,omitempty"`
+	HasHouseholdRatesWith []*HouseholdRateWhereInput `json:"hasHouseholdRatesWith,omitempty"`
 
 	// "user_households" edge predicates.
 	HasUserHouseholds     *bool                      `json:"hasUserHouseholds,omitempty"`
@@ -1572,6 +1648,42 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 		}
 		predicates = append(predicates, household.HasSnapshotEntriesWith(with...))
 	}
+	if i.HasHouseholdCurrencies != nil {
+		p := household.HasHouseholdCurrencies()
+		if !*i.HasHouseholdCurrencies {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdCurrenciesWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrenciesWith))
+		for _, w := range i.HasHouseholdCurrenciesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrenciesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasHouseholdCurrenciesWith(with...))
+	}
+	if i.HasHouseholdRates != nil {
+		p := household.HasHouseholdRates()
+		if !*i.HasHouseholdRates {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdRatesWith) > 0 {
+		with := make([]predicate.HouseholdRate, 0, len(i.HasHouseholdRatesWith))
+		for _, w := range i.HasHouseholdRatesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdRatesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasHouseholdRatesWith(with...))
+	}
 	if i.HasUserHouseholds != nil {
 		p := household.HasUserHouseholds()
 		if !*i.HasUserHouseholds {
@@ -1597,6 +1709,634 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 		return predicates[0], nil
 	default:
 		return household.And(predicates...), nil
+	}
+}
+
+// HouseholdCurrencyWhereInput represents a where input for filtering HouseholdCurrency queries.
+type HouseholdCurrencyWhereInput struct {
+	Predicates []predicate.HouseholdCurrency  `json:"-"`
+	Not        *HouseholdCurrencyWhereInput   `json:"not,omitempty"`
+	Or         []*HouseholdCurrencyWhereInput `json:"or,omitempty"`
+	And        []*HouseholdCurrencyWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "important" field predicates.
+	Important    *bool `json:"important,omitempty"`
+	ImportantNEQ *bool `json:"importantNEQ,omitempty"`
+
+	// "currency_id" field predicates.
+	CurrencyID      *int  `json:"currencyID,omitempty"`
+	CurrencyIDNEQ   *int  `json:"currencyIDNEQ,omitempty"`
+	CurrencyIDIn    []int `json:"currencyIDIn,omitempty"`
+	CurrencyIDNotIn []int `json:"currencyIDNotIn,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "currency" edge predicates.
+	HasCurrency     *bool                 `json:"hasCurrency,omitempty"`
+	HasCurrencyWith []*CurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *HouseholdCurrencyWhereInput) AddPredicates(predicates ...predicate.HouseholdCurrency) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the HouseholdCurrencyWhereInput filter on the HouseholdCurrencyQuery builder.
+func (i *HouseholdCurrencyWhereInput) Filter(q *HouseholdCurrencyQuery) (*HouseholdCurrencyQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyHouseholdCurrencyWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyHouseholdCurrencyWhereInput is returned in case the HouseholdCurrencyWhereInput is empty.
+var ErrEmptyHouseholdCurrencyWhereInput = errors.New("ent: empty predicate HouseholdCurrencyWhereInput")
+
+// P returns a predicate for filtering householdcurrencies.
+// An error is returned if the input is empty or invalid.
+func (i *HouseholdCurrencyWhereInput) P() (predicate.HouseholdCurrency, error) {
+	var predicates []predicate.HouseholdCurrency
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, householdcurrency.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.HouseholdCurrency, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, householdcurrency.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.HouseholdCurrency, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, householdcurrency.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, householdcurrency.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, householdcurrency.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, householdcurrency.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, householdcurrency.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, householdcurrency.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, householdcurrency.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, householdcurrency.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, householdcurrency.IDLTE(*i.IDLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, householdcurrency.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, householdcurrency.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, householdcurrency.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, householdcurrency.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, householdcurrency.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, householdcurrency.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, householdcurrency.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, householdcurrency.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, householdcurrency.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, householdcurrency.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, householdcurrency.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, householdcurrency.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, householdcurrency.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, householdcurrency.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, householdcurrency.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, householdcurrency.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, householdcurrency.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, householdcurrency.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, householdcurrency.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, householdcurrency.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.Important != nil {
+		predicates = append(predicates, householdcurrency.ImportantEQ(*i.Important))
+	}
+	if i.ImportantNEQ != nil {
+		predicates = append(predicates, householdcurrency.ImportantNEQ(*i.ImportantNEQ))
+	}
+	if i.CurrencyID != nil {
+		predicates = append(predicates, householdcurrency.CurrencyIDEQ(*i.CurrencyID))
+	}
+	if i.CurrencyIDNEQ != nil {
+		predicates = append(predicates, householdcurrency.CurrencyIDNEQ(*i.CurrencyIDNEQ))
+	}
+	if len(i.CurrencyIDIn) > 0 {
+		predicates = append(predicates, householdcurrency.CurrencyIDIn(i.CurrencyIDIn...))
+	}
+	if len(i.CurrencyIDNotIn) > 0 {
+		predicates = append(predicates, householdcurrency.CurrencyIDNotIn(i.CurrencyIDNotIn...))
+	}
+
+	if i.HasHousehold != nil {
+		p := householdcurrency.HasHousehold()
+		if !*i.HasHousehold {
+			p = householdcurrency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, householdcurrency.HasHouseholdWith(with...))
+	}
+	if i.HasCurrency != nil {
+		p := householdcurrency.HasCurrency()
+		if !*i.HasCurrency {
+			p = householdcurrency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasCurrencyWith))
+		for _, w := range i.HasCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, householdcurrency.HasCurrencyWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyHouseholdCurrencyWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return householdcurrency.And(predicates...), nil
+	}
+}
+
+// HouseholdRateWhereInput represents a where input for filtering HouseholdRate queries.
+type HouseholdRateWhereInput struct {
+	Predicates []predicate.HouseholdRate  `json:"-"`
+	Not        *HouseholdRateWhereInput   `json:"not,omitempty"`
+	Or         []*HouseholdRateWhereInput `json:"or,omitempty"`
+	And        []*HouseholdRateWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "rate" field predicates.
+	Rate      *decimal.Decimal  `json:"rate,omitempty"`
+	RateNEQ   *decimal.Decimal  `json:"rateNEQ,omitempty"`
+	RateIn    []decimal.Decimal `json:"rateIn,omitempty"`
+	RateNotIn []decimal.Decimal `json:"rateNotIn,omitempty"`
+	RateGT    *decimal.Decimal  `json:"rateGT,omitempty"`
+	RateGTE   *decimal.Decimal  `json:"rateGTE,omitempty"`
+	RateLT    *decimal.Decimal  `json:"rateLT,omitempty"`
+	RateLTE   *decimal.Decimal  `json:"rateLTE,omitempty"`
+
+	// "from_currency_id" field predicates.
+	FromCurrencyID      *int  `json:"fromCurrencyID,omitempty"`
+	FromCurrencyIDNEQ   *int  `json:"fromCurrencyIDNEQ,omitempty"`
+	FromCurrencyIDIn    []int `json:"fromCurrencyIDIn,omitempty"`
+	FromCurrencyIDNotIn []int `json:"fromCurrencyIDNotIn,omitempty"`
+
+	// "to_currency_id" field predicates.
+	ToCurrencyID      *int  `json:"toCurrencyID,omitempty"`
+	ToCurrencyIDNEQ   *int  `json:"toCurrencyIDNEQ,omitempty"`
+	ToCurrencyIDIn    []int `json:"toCurrencyIDIn,omitempty"`
+	ToCurrencyIDNotIn []int `json:"toCurrencyIDNotIn,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "from_currency" edge predicates.
+	HasFromCurrency     *bool                 `json:"hasFromCurrency,omitempty"`
+	HasFromCurrencyWith []*CurrencyWhereInput `json:"hasFromCurrencyWith,omitempty"`
+
+	// "to_currency" edge predicates.
+	HasToCurrency     *bool                 `json:"hasToCurrency,omitempty"`
+	HasToCurrencyWith []*CurrencyWhereInput `json:"hasToCurrencyWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *HouseholdRateWhereInput) AddPredicates(predicates ...predicate.HouseholdRate) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the HouseholdRateWhereInput filter on the HouseholdRateQuery builder.
+func (i *HouseholdRateWhereInput) Filter(q *HouseholdRateQuery) (*HouseholdRateQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyHouseholdRateWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyHouseholdRateWhereInput is returned in case the HouseholdRateWhereInput is empty.
+var ErrEmptyHouseholdRateWhereInput = errors.New("ent: empty predicate HouseholdRateWhereInput")
+
+// P returns a predicate for filtering householdrates.
+// An error is returned if the input is empty or invalid.
+func (i *HouseholdRateWhereInput) P() (predicate.HouseholdRate, error) {
+	var predicates []predicate.HouseholdRate
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, householdrate.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.HouseholdRate, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, householdrate.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.HouseholdRate, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, householdrate.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, householdrate.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, householdrate.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, householdrate.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, householdrate.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, householdrate.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, householdrate.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, householdrate.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, householdrate.IDLTE(*i.IDLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, householdrate.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, householdrate.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, householdrate.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, householdrate.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, householdrate.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, householdrate.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, householdrate.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, householdrate.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, householdrate.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, householdrate.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, householdrate.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, householdrate.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, householdrate.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, householdrate.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, householdrate.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, householdrate.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, householdrate.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, householdrate.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, householdrate.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, householdrate.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.Rate != nil {
+		predicates = append(predicates, householdrate.RateEQ(*i.Rate))
+	}
+	if i.RateNEQ != nil {
+		predicates = append(predicates, householdrate.RateNEQ(*i.RateNEQ))
+	}
+	if len(i.RateIn) > 0 {
+		predicates = append(predicates, householdrate.RateIn(i.RateIn...))
+	}
+	if len(i.RateNotIn) > 0 {
+		predicates = append(predicates, householdrate.RateNotIn(i.RateNotIn...))
+	}
+	if i.RateGT != nil {
+		predicates = append(predicates, householdrate.RateGT(*i.RateGT))
+	}
+	if i.RateGTE != nil {
+		predicates = append(predicates, householdrate.RateGTE(*i.RateGTE))
+	}
+	if i.RateLT != nil {
+		predicates = append(predicates, householdrate.RateLT(*i.RateLT))
+	}
+	if i.RateLTE != nil {
+		predicates = append(predicates, householdrate.RateLTE(*i.RateLTE))
+	}
+	if i.FromCurrencyID != nil {
+		predicates = append(predicates, householdrate.FromCurrencyIDEQ(*i.FromCurrencyID))
+	}
+	if i.FromCurrencyIDNEQ != nil {
+		predicates = append(predicates, householdrate.FromCurrencyIDNEQ(*i.FromCurrencyIDNEQ))
+	}
+	if len(i.FromCurrencyIDIn) > 0 {
+		predicates = append(predicates, householdrate.FromCurrencyIDIn(i.FromCurrencyIDIn...))
+	}
+	if len(i.FromCurrencyIDNotIn) > 0 {
+		predicates = append(predicates, householdrate.FromCurrencyIDNotIn(i.FromCurrencyIDNotIn...))
+	}
+	if i.ToCurrencyID != nil {
+		predicates = append(predicates, householdrate.ToCurrencyIDEQ(*i.ToCurrencyID))
+	}
+	if i.ToCurrencyIDNEQ != nil {
+		predicates = append(predicates, householdrate.ToCurrencyIDNEQ(*i.ToCurrencyIDNEQ))
+	}
+	if len(i.ToCurrencyIDIn) > 0 {
+		predicates = append(predicates, householdrate.ToCurrencyIDIn(i.ToCurrencyIDIn...))
+	}
+	if len(i.ToCurrencyIDNotIn) > 0 {
+		predicates = append(predicates, householdrate.ToCurrencyIDNotIn(i.ToCurrencyIDNotIn...))
+	}
+
+	if i.HasHousehold != nil {
+		p := householdrate.HasHousehold()
+		if !*i.HasHousehold {
+			p = householdrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, householdrate.HasHouseholdWith(with...))
+	}
+	if i.HasFromCurrency != nil {
+		p := householdrate.HasFromCurrency()
+		if !*i.HasFromCurrency {
+			p = householdrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFromCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasFromCurrencyWith))
+		for _, w := range i.HasFromCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasFromCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, householdrate.HasFromCurrencyWith(with...))
+	}
+	if i.HasToCurrency != nil {
+		p := householdrate.HasToCurrency()
+		if !*i.HasToCurrency {
+			p = householdrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasToCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasToCurrencyWith))
+		for _, w := range i.HasToCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasToCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, householdrate.HasToCurrencyWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyHouseholdRateWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return householdrate.And(predicates...), nil
 	}
 }
 

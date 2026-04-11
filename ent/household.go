@@ -60,13 +60,17 @@ type HouseholdEdges struct {
 	Snapshots []*Snapshot `json:"snapshots,omitempty"`
 	// SnapshotEntries holds the value of the snapshot_entries edge.
 	SnapshotEntries []*SnapshotEntry `json:"snapshot_entries,omitempty"`
+	// HouseholdCurrencies holds the value of the household_currencies edge.
+	HouseholdCurrencies []*HouseholdCurrency `json:"household_currencies,omitempty"`
+	// HouseholdRates holds the value of the household_rates edge.
+	HouseholdRates []*HouseholdRate `json:"household_rates,omitempty"`
 	// UserHouseholds holds the value of the user_households edge.
 	UserHouseholds []*UserHousehold `json:"user_households,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [14]bool
 	// totalCount holds the count of the edges above.
-	totalCount [12]map[string]int
+	totalCount [14]map[string]int
 
 	namedUsers                  map[string][]*User
 	namedAccounts               map[string][]*Account
@@ -78,6 +82,8 @@ type HouseholdEdges struct {
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
 	namedSnapshots              map[string][]*Snapshot
 	namedSnapshotEntries        map[string][]*SnapshotEntry
+	namedHouseholdCurrencies    map[string][]*HouseholdCurrency
+	namedHouseholdRates         map[string][]*HouseholdRate
 	namedUserHouseholds         map[string][]*UserHousehold
 }
 
@@ -182,10 +188,28 @@ func (e HouseholdEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
 	return nil, &NotLoadedError{edge: "snapshot_entries"}
 }
 
+// HouseholdCurrenciesOrErr returns the HouseholdCurrencies value or an error if the edge
+// was not loaded in eager-loading.
+func (e HouseholdEdges) HouseholdCurrenciesOrErr() ([]*HouseholdCurrency, error) {
+	if e.loadedTypes[11] {
+		return e.HouseholdCurrencies, nil
+	}
+	return nil, &NotLoadedError{edge: "household_currencies"}
+}
+
+// HouseholdRatesOrErr returns the HouseholdRates value or an error if the edge
+// was not loaded in eager-loading.
+func (e HouseholdEdges) HouseholdRatesOrErr() ([]*HouseholdRate, error) {
+	if e.loadedTypes[12] {
+		return e.HouseholdRates, nil
+	}
+	return nil, &NotLoadedError{edge: "household_rates"}
+}
+
 // UserHouseholdsOrErr returns the UserHouseholds value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UserHouseholdsOrErr() ([]*UserHousehold, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[13] {
 		return e.UserHouseholds, nil
 	}
 	return nil, &NotLoadedError{edge: "user_households"}
@@ -327,6 +351,16 @@ func (_m *Household) QuerySnapshots() *SnapshotQuery {
 // QuerySnapshotEntries queries the "snapshot_entries" edge of the Household entity.
 func (_m *Household) QuerySnapshotEntries() *SnapshotEntryQuery {
 	return NewHouseholdClient(_m.config).QuerySnapshotEntries(_m)
+}
+
+// QueryHouseholdCurrencies queries the "household_currencies" edge of the Household entity.
+func (_m *Household) QueryHouseholdCurrencies() *HouseholdCurrencyQuery {
+	return NewHouseholdClient(_m.config).QueryHouseholdCurrencies(_m)
+}
+
+// QueryHouseholdRates queries the "household_rates" edge of the Household entity.
+func (_m *Household) QueryHouseholdRates() *HouseholdRateQuery {
+	return NewHouseholdClient(_m.config).QueryHouseholdRates(_m)
 }
 
 // QueryUserHouseholds queries the "user_households" edge of the Household entity.
@@ -615,6 +649,54 @@ func (_m *Household) appendNamedSnapshotEntries(name string, edges ...*SnapshotE
 		_m.Edges.namedSnapshotEntries[name] = []*SnapshotEntry{}
 	} else {
 		_m.Edges.namedSnapshotEntries[name] = append(_m.Edges.namedSnapshotEntries[name], edges...)
+	}
+}
+
+// NamedHouseholdCurrencies returns the HouseholdCurrencies named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Household) NamedHouseholdCurrencies(name string) ([]*HouseholdCurrency, error) {
+	if _m.Edges.namedHouseholdCurrencies == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedHouseholdCurrencies[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Household) appendNamedHouseholdCurrencies(name string, edges ...*HouseholdCurrency) {
+	if _m.Edges.namedHouseholdCurrencies == nil {
+		_m.Edges.namedHouseholdCurrencies = make(map[string][]*HouseholdCurrency)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedHouseholdCurrencies[name] = []*HouseholdCurrency{}
+	} else {
+		_m.Edges.namedHouseholdCurrencies[name] = append(_m.Edges.namedHouseholdCurrencies[name], edges...)
+	}
+}
+
+// NamedHouseholdRates returns the HouseholdRates named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Household) NamedHouseholdRates(name string) ([]*HouseholdRate, error) {
+	if _m.Edges.namedHouseholdRates == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedHouseholdRates[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Household) appendNamedHouseholdRates(name string, edges ...*HouseholdRate) {
+	if _m.Edges.namedHouseholdRates == nil {
+		_m.Edges.namedHouseholdRates = make(map[string][]*HouseholdRate)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedHouseholdRates[name] = []*HouseholdRate{}
+	} else {
+		_m.Edges.namedHouseholdRates[name] = append(_m.Edges.namedHouseholdRates[name], edges...)
 	}
 }
 

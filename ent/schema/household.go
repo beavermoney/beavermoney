@@ -3,12 +3,17 @@ package schema
 import (
 	"beavermoney.app/ent/privacy"
 	"beavermoney.app/ent/rules"
+	beavermoney_mixin "beavermoney.app/ent/schema/mixin"
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+	"github.com/shopspring/decimal"
 )
 
 // Household holds the schema definition for the Household entity.
@@ -117,6 +122,22 @@ func (Household) Edges() []ent.Edge {
 				),
 				entgql.RelayConnection(),
 			),
+		edge.To("household_currencies", HouseholdCurrency.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+				entsql.OnDelete(entsql.Cascade),
+			),
+		edge.To("household_rates", HouseholdRate.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+				entsql.OnDelete(entsql.Cascade),
+			),
 	}
 }
 
@@ -146,6 +167,181 @@ func (Household) Policy() ent.Policy {
 
 func (Household) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		mixin.AnnotateFields(mixin.Time{},
+			entgql.Skip(
+				entgql.SkipMutationCreateInput,
+				entgql.SkipMutationUpdateInput,
+			),
+		),
+	}
+}
+
+type HouseholdCurrency struct {
+	ent.Schema
+}
+
+func (HouseholdCurrency) Fields() []ent.Field {
+	return []ent.Field{
+		field.Bool("important").
+			Default(false),
+
+		field.Int("currency_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+	}
+}
+
+func (HouseholdCurrency) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("household", Household.Type).
+			Field("household_id").
+			Ref("household_currencies").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+		edge.From("currency", Currency.Type).
+			Field("currency_id").
+			Ref("household_currencies").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+	}
+}
+
+func (HouseholdCurrency) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("household_id", "currency_id").Unique(),
+	}
+}
+
+func (HouseholdCurrency) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.QueryField(),
+		entgql.RelayConnection(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
+	}
+}
+
+func (HouseholdCurrency) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		beavermoney_mixin.HouseholdMixin{},
+		mixin.AnnotateFields(mixin.Time{},
+			entgql.Skip(
+				entgql.SkipMutationCreateInput,
+				entgql.SkipMutationUpdateInput,
+			),
+		),
+	}
+}
+
+type HouseholdRate struct {
+	ent.Schema
+}
+
+func (HouseholdRate) Fields() []ent.Field {
+	return []ent.Field{
+		field.Float("rate").GoType(decimal.Decimal{}).
+			SchemaType(map[string]string{
+				dialect.Postgres: "numeric(36,18)",
+			}).
+			Annotations(
+				entgql.Type("String"),
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+
+		field.Int("from_currency_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+
+		field.Int("to_currency_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+	}
+}
+
+func (HouseholdRate) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("household", Household.Type).
+			Field("household_id").
+			Ref("household_rates").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+		edge.From("from_currency", Currency.Type).
+			Field("from_currency_id").
+			Ref("household_rates_from").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+		edge.From("to_currency", Currency.Type).
+			Field("to_currency_id").
+			Ref("household_rates_to").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+	}
+}
+
+func (HouseholdRate) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("household_id", "from_currency_id", "to_currency_id").Unique(),
+	}
+}
+
+func (HouseholdRate) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+	}
+}
+
+func (HouseholdRate) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		beavermoney_mixin.HouseholdMixin{},
 		mixin.AnnotateFields(mixin.Time{},
 			entgql.Skip(
 				entgql.SkipMutationCreateInput,

@@ -183,6 +183,54 @@ func (f HouseholdMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutat
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.HouseholdMutation", m)
 }
 
+// The HouseholdCurrencyQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type HouseholdCurrencyQueryRuleFunc func(context.Context, *ent.HouseholdCurrencyQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f HouseholdCurrencyQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.HouseholdCurrencyQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.HouseholdCurrencyQuery", q)
+}
+
+// The HouseholdCurrencyMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type HouseholdCurrencyMutationRuleFunc func(context.Context, *ent.HouseholdCurrencyMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f HouseholdCurrencyMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.HouseholdCurrencyMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.HouseholdCurrencyMutation", m)
+}
+
+// The HouseholdRateQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type HouseholdRateQueryRuleFunc func(context.Context, *ent.HouseholdRateQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f HouseholdRateQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.HouseholdRateQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.HouseholdRateQuery", q)
+}
+
+// The HouseholdRateMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type HouseholdRateMutationRuleFunc func(context.Context, *ent.HouseholdRateMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f HouseholdRateMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.HouseholdRateMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.HouseholdRateMutation", m)
+}
+
 // The InvestmentQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type InvestmentQueryRuleFunc func(context.Context, *ent.InvestmentQuery) error
@@ -512,6 +560,10 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.HouseholdQuery:
 		return q.Filter(), nil
+	case *ent.HouseholdCurrencyQuery:
+		return q.Filter(), nil
+	case *ent.HouseholdRateQuery:
+		return q.Filter(), nil
 	case *ent.InvestmentQuery:
 		return q.Filter(), nil
 	case *ent.InvestmentLotQuery:
@@ -548,6 +600,10 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.CurrencyMutation:
 		return m.Filter(), nil
 	case *ent.HouseholdMutation:
+		return m.Filter(), nil
+	case *ent.HouseholdCurrencyMutation:
+		return m.Filter(), nil
+	case *ent.HouseholdRateMutation:
 		return m.Filter(), nil
 	case *ent.InvestmentMutation:
 		return m.Filter(), nil

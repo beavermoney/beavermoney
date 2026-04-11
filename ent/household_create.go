@@ -11,6 +11,8 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
@@ -247,6 +249,36 @@ func (_c *HouseholdCreate) AddSnapshotEntries(v ...*SnapshotEntry) *HouseholdCre
 		ids[i] = v[i].ID
 	}
 	return _c.AddSnapshotEntryIDs(ids...)
+}
+
+// AddHouseholdCurrencyIDs adds the "household_currencies" edge to the HouseholdCurrency entity by IDs.
+func (_c *HouseholdCreate) AddHouseholdCurrencyIDs(ids ...int) *HouseholdCreate {
+	_c.mutation.AddHouseholdCurrencyIDs(ids...)
+	return _c
+}
+
+// AddHouseholdCurrencies adds the "household_currencies" edges to the HouseholdCurrency entity.
+func (_c *HouseholdCreate) AddHouseholdCurrencies(v ...*HouseholdCurrency) *HouseholdCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddHouseholdCurrencyIDs(ids...)
+}
+
+// AddHouseholdRateIDs adds the "household_rates" edge to the HouseholdRate entity by IDs.
+func (_c *HouseholdCreate) AddHouseholdRateIDs(ids ...int) *HouseholdCreate {
+	_c.mutation.AddHouseholdRateIDs(ids...)
+	return _c
+}
+
+// AddHouseholdRates adds the "household_rates" edges to the HouseholdRate entity.
+func (_c *HouseholdCreate) AddHouseholdRates(v ...*HouseholdRate) *HouseholdCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddHouseholdRateIDs(ids...)
 }
 
 // AddUserHouseholdIDs adds the "user_households" edge to the UserHousehold entity by IDs.
@@ -581,6 +613,38 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HouseholdCurrenciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.HouseholdCurrenciesTable,
+			Columns: []string{household.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HouseholdRatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.HouseholdRatesTable,
+			Columns: []string{household.HouseholdRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

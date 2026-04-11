@@ -152,6 +152,42 @@ func (_m *Currency) SnapshotRatesTo(ctx context.Context) (result []*SnapshotRate
 	return result, err
 }
 
+func (_m *Currency) HouseholdCurrencies(ctx context.Context) (result []*HouseholdCurrency, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdCurrencies(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdCurrenciesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdCurrencies().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) HouseholdRatesFrom(ctx context.Context) (result []*HouseholdRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdRatesFrom(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdRatesFromOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdRatesFrom().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) HouseholdRatesTo(ctx context.Context) (result []*HouseholdRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdRatesTo(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdRatesToOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdRatesTo().All(ctx)
+	}
+	return result, err
+}
+
 func (_m *Household) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
@@ -353,6 +389,30 @@ func (_m *Household) SnapshotEntries(
 	return _m.QuerySnapshotEntries().Paginate(ctx, after, first, before, last, opts...)
 }
 
+func (_m *Household) HouseholdCurrencies(ctx context.Context) (result []*HouseholdCurrency, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdCurrencies(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdCurrenciesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdCurrencies().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Household) HouseholdRates(ctx context.Context) (result []*HouseholdRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdRates(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdRatesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdRates().All(ctx)
+	}
+	return result, err
+}
+
 func (_m *Household) UserHouseholds(ctx context.Context) (result []*UserHousehold, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedUserHouseholds(graphql.GetFieldContext(ctx).Field.Alias)
@@ -361,6 +421,46 @@ func (_m *Household) UserHouseholds(ctx context.Context) (result []*UserHousehol
 	}
 	if IsNotLoaded(err) {
 		result, err = _m.QueryUserHouseholds().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *HouseholdCurrency) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *HouseholdCurrency) Currency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.CurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryCurrency().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *HouseholdRate) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *HouseholdRate) FromCurrency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.FromCurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryFromCurrency().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *HouseholdRate) ToCurrency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.ToCurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryToCurrency().Only(ctx)
 	}
 	return result, err
 }

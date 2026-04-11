@@ -10,6 +10,8 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
@@ -180,6 +182,51 @@ func (_u *CurrencyUpdate) AddSnapshotRatesTo(v ...*SnapshotRate) *CurrencyUpdate
 		ids[i] = v[i].ID
 	}
 	return _u.AddSnapshotRatesToIDs(ids...)
+}
+
+// AddHouseholdCurrencyIDs adds the "household_currencies" edge to the HouseholdCurrency entity by IDs.
+func (_u *CurrencyUpdate) AddHouseholdCurrencyIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.AddHouseholdCurrencyIDs(ids...)
+	return _u
+}
+
+// AddHouseholdCurrencies adds the "household_currencies" edges to the HouseholdCurrency entity.
+func (_u *CurrencyUpdate) AddHouseholdCurrencies(v ...*HouseholdCurrency) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHouseholdCurrencyIDs(ids...)
+}
+
+// AddHouseholdRatesFromIDs adds the "household_rates_from" edge to the HouseholdRate entity by IDs.
+func (_u *CurrencyUpdate) AddHouseholdRatesFromIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.AddHouseholdRatesFromIDs(ids...)
+	return _u
+}
+
+// AddHouseholdRatesFrom adds the "household_rates_from" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdate) AddHouseholdRatesFrom(v ...*HouseholdRate) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHouseholdRatesFromIDs(ids...)
+}
+
+// AddHouseholdRatesToIDs adds the "household_rates_to" edge to the HouseholdRate entity by IDs.
+func (_u *CurrencyUpdate) AddHouseholdRatesToIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.AddHouseholdRatesToIDs(ids...)
+	return _u
+}
+
+// AddHouseholdRatesTo adds the "household_rates_to" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdate) AddHouseholdRatesTo(v ...*HouseholdRate) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHouseholdRatesToIDs(ids...)
 }
 
 // Mutation returns the CurrencyMutation object of the builder.
@@ -353,6 +400,69 @@ func (_u *CurrencyUpdate) RemoveSnapshotRatesTo(v ...*SnapshotRate) *CurrencyUpd
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSnapshotRatesToIDs(ids...)
+}
+
+// ClearHouseholdCurrencies clears all "household_currencies" edges to the HouseholdCurrency entity.
+func (_u *CurrencyUpdate) ClearHouseholdCurrencies() *CurrencyUpdate {
+	_u.mutation.ClearHouseholdCurrencies()
+	return _u
+}
+
+// RemoveHouseholdCurrencyIDs removes the "household_currencies" edge to HouseholdCurrency entities by IDs.
+func (_u *CurrencyUpdate) RemoveHouseholdCurrencyIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.RemoveHouseholdCurrencyIDs(ids...)
+	return _u
+}
+
+// RemoveHouseholdCurrencies removes "household_currencies" edges to HouseholdCurrency entities.
+func (_u *CurrencyUpdate) RemoveHouseholdCurrencies(v ...*HouseholdCurrency) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHouseholdCurrencyIDs(ids...)
+}
+
+// ClearHouseholdRatesFrom clears all "household_rates_from" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdate) ClearHouseholdRatesFrom() *CurrencyUpdate {
+	_u.mutation.ClearHouseholdRatesFrom()
+	return _u
+}
+
+// RemoveHouseholdRatesFromIDs removes the "household_rates_from" edge to HouseholdRate entities by IDs.
+func (_u *CurrencyUpdate) RemoveHouseholdRatesFromIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.RemoveHouseholdRatesFromIDs(ids...)
+	return _u
+}
+
+// RemoveHouseholdRatesFrom removes "household_rates_from" edges to HouseholdRate entities.
+func (_u *CurrencyUpdate) RemoveHouseholdRatesFrom(v ...*HouseholdRate) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHouseholdRatesFromIDs(ids...)
+}
+
+// ClearHouseholdRatesTo clears all "household_rates_to" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdate) ClearHouseholdRatesTo() *CurrencyUpdate {
+	_u.mutation.ClearHouseholdRatesTo()
+	return _u
+}
+
+// RemoveHouseholdRatesToIDs removes the "household_rates_to" edge to HouseholdRate entities by IDs.
+func (_u *CurrencyUpdate) RemoveHouseholdRatesToIDs(ids ...int) *CurrencyUpdate {
+	_u.mutation.RemoveHouseholdRatesToIDs(ids...)
+	return _u
+}
+
+// RemoveHouseholdRatesTo removes "household_rates_to" edges to HouseholdRate entities.
+func (_u *CurrencyUpdate) RemoveHouseholdRatesTo(v ...*HouseholdRate) *CurrencyUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHouseholdRatesToIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -781,6 +891,141 @@ func (_u *CurrencyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.HouseholdCurrenciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdCurrenciesTable,
+			Columns: []string{currency.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHouseholdCurrenciesIDs(); len(nodes) > 0 && !_u.mutation.HouseholdCurrenciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdCurrenciesTable,
+			Columns: []string{currency.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdCurrenciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdCurrenciesTable,
+			Columns: []string{currency.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdRatesFromCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesFromTable,
+			Columns: []string{currency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHouseholdRatesFromIDs(); len(nodes) > 0 && !_u.mutation.HouseholdRatesFromCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesFromTable,
+			Columns: []string{currency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdRatesFromIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesFromTable,
+			Columns: []string{currency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdRatesToCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesToTable,
+			Columns: []string{currency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHouseholdRatesToIDs(); len(nodes) > 0 && !_u.mutation.HouseholdRatesToCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesToTable,
+			Columns: []string{currency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdRatesToIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesToTable,
+			Columns: []string{currency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -947,6 +1192,51 @@ func (_u *CurrencyUpdateOne) AddSnapshotRatesTo(v ...*SnapshotRate) *CurrencyUpd
 		ids[i] = v[i].ID
 	}
 	return _u.AddSnapshotRatesToIDs(ids...)
+}
+
+// AddHouseholdCurrencyIDs adds the "household_currencies" edge to the HouseholdCurrency entity by IDs.
+func (_u *CurrencyUpdateOne) AddHouseholdCurrencyIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.AddHouseholdCurrencyIDs(ids...)
+	return _u
+}
+
+// AddHouseholdCurrencies adds the "household_currencies" edges to the HouseholdCurrency entity.
+func (_u *CurrencyUpdateOne) AddHouseholdCurrencies(v ...*HouseholdCurrency) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHouseholdCurrencyIDs(ids...)
+}
+
+// AddHouseholdRatesFromIDs adds the "household_rates_from" edge to the HouseholdRate entity by IDs.
+func (_u *CurrencyUpdateOne) AddHouseholdRatesFromIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.AddHouseholdRatesFromIDs(ids...)
+	return _u
+}
+
+// AddHouseholdRatesFrom adds the "household_rates_from" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdateOne) AddHouseholdRatesFrom(v ...*HouseholdRate) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHouseholdRatesFromIDs(ids...)
+}
+
+// AddHouseholdRatesToIDs adds the "household_rates_to" edge to the HouseholdRate entity by IDs.
+func (_u *CurrencyUpdateOne) AddHouseholdRatesToIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.AddHouseholdRatesToIDs(ids...)
+	return _u
+}
+
+// AddHouseholdRatesTo adds the "household_rates_to" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdateOne) AddHouseholdRatesTo(v ...*HouseholdRate) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHouseholdRatesToIDs(ids...)
 }
 
 // Mutation returns the CurrencyMutation object of the builder.
@@ -1120,6 +1410,69 @@ func (_u *CurrencyUpdateOne) RemoveSnapshotRatesTo(v ...*SnapshotRate) *Currency
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSnapshotRatesToIDs(ids...)
+}
+
+// ClearHouseholdCurrencies clears all "household_currencies" edges to the HouseholdCurrency entity.
+func (_u *CurrencyUpdateOne) ClearHouseholdCurrencies() *CurrencyUpdateOne {
+	_u.mutation.ClearHouseholdCurrencies()
+	return _u
+}
+
+// RemoveHouseholdCurrencyIDs removes the "household_currencies" edge to HouseholdCurrency entities by IDs.
+func (_u *CurrencyUpdateOne) RemoveHouseholdCurrencyIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.RemoveHouseholdCurrencyIDs(ids...)
+	return _u
+}
+
+// RemoveHouseholdCurrencies removes "household_currencies" edges to HouseholdCurrency entities.
+func (_u *CurrencyUpdateOne) RemoveHouseholdCurrencies(v ...*HouseholdCurrency) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHouseholdCurrencyIDs(ids...)
+}
+
+// ClearHouseholdRatesFrom clears all "household_rates_from" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdateOne) ClearHouseholdRatesFrom() *CurrencyUpdateOne {
+	_u.mutation.ClearHouseholdRatesFrom()
+	return _u
+}
+
+// RemoveHouseholdRatesFromIDs removes the "household_rates_from" edge to HouseholdRate entities by IDs.
+func (_u *CurrencyUpdateOne) RemoveHouseholdRatesFromIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.RemoveHouseholdRatesFromIDs(ids...)
+	return _u
+}
+
+// RemoveHouseholdRatesFrom removes "household_rates_from" edges to HouseholdRate entities.
+func (_u *CurrencyUpdateOne) RemoveHouseholdRatesFrom(v ...*HouseholdRate) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHouseholdRatesFromIDs(ids...)
+}
+
+// ClearHouseholdRatesTo clears all "household_rates_to" edges to the HouseholdRate entity.
+func (_u *CurrencyUpdateOne) ClearHouseholdRatesTo() *CurrencyUpdateOne {
+	_u.mutation.ClearHouseholdRatesTo()
+	return _u
+}
+
+// RemoveHouseholdRatesToIDs removes the "household_rates_to" edge to HouseholdRate entities by IDs.
+func (_u *CurrencyUpdateOne) RemoveHouseholdRatesToIDs(ids ...int) *CurrencyUpdateOne {
+	_u.mutation.RemoveHouseholdRatesToIDs(ids...)
+	return _u
+}
+
+// RemoveHouseholdRatesTo removes "household_rates_to" edges to HouseholdRate entities.
+func (_u *CurrencyUpdateOne) RemoveHouseholdRatesTo(v ...*HouseholdRate) *CurrencyUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHouseholdRatesToIDs(ids...)
 }
 
 // Where appends a list predicates to the CurrencyUpdate builder.
@@ -1571,6 +1924,141 @@ func (_u *CurrencyUpdateOne) sqlSave(ctx context.Context) (_node *Currency, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdCurrenciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdCurrenciesTable,
+			Columns: []string{currency.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHouseholdCurrenciesIDs(); len(nodes) > 0 && !_u.mutation.HouseholdCurrenciesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdCurrenciesTable,
+			Columns: []string{currency.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdCurrenciesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdCurrenciesTable,
+			Columns: []string{currency.HouseholdCurrenciesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdRatesFromCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesFromTable,
+			Columns: []string{currency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHouseholdRatesFromIDs(); len(nodes) > 0 && !_u.mutation.HouseholdRatesFromCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesFromTable,
+			Columns: []string{currency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdRatesFromIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesFromTable,
+			Columns: []string{currency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdRatesToCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesToTable,
+			Columns: []string{currency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHouseholdRatesToIDs(); len(nodes) > 0 && !_u.mutation.HouseholdRatesToCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesToTable,
+			Columns: []string{currency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdRatesToIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.HouseholdRatesToTable,
+			Columns: []string{currency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

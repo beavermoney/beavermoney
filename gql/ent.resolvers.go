@@ -29,6 +29,11 @@ func (r *accountResolver) FxRate(ctx context.Context, obj *ent.Account) (string,
 	return obj.FxRate.String(), nil
 }
 
+// Rate is the resolver for the rate field.
+func (r *householdRateResolver) Rate(ctx context.Context, obj *ent.HouseholdRate) (string, error) {
+	panic(fmt.Errorf("not implemented: Rate - rate"))
+}
+
 // Amount is the resolver for the amount field.
 func (r *investmentResolver) Amount(ctx context.Context, obj *ent.Investment) (string, error) {
 	return obj.Amount.String(), nil
@@ -77,6 +82,11 @@ func (r *queryResolver) Currencies(ctx context.Context) ([]*ent.Currency, error)
 // Households is the resolver for the households field.
 func (r *queryResolver) Households(ctx context.Context) ([]*ent.Household, error) {
 	return r.entClient.Household.Query().All(ctx)
+}
+
+// HouseholdCurrencies is the resolver for the householdCurrencies field.
+func (r *queryResolver) HouseholdCurrencies(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.HouseholdCurrencyWhereInput) (*ent.HouseholdCurrencyConnection, error) {
+	panic(fmt.Errorf("not implemented: HouseholdCurrencies - householdCurrencies"))
 }
 
 // Investments is the resolver for the investments field.
@@ -383,6 +393,46 @@ func (r *createTransactionEntryInputResolver) Amount(ctx context.Context, obj *e
 
 	obj.Amount = dec
 	return nil
+}
+
+// Rate is the resolver for the rate field.
+func (r *householdRateWhereInputResolver) Rate(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: Rate - rate"))
+}
+
+// RateNeq is the resolver for the rateNEQ field.
+func (r *householdRateWhereInputResolver) RateNeq(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: RateNeq - rateNEQ"))
+}
+
+// RateIn is the resolver for the rateIn field.
+func (r *householdRateWhereInputResolver) RateIn(ctx context.Context, obj *ent.HouseholdRateWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: RateIn - rateIn"))
+}
+
+// RateNotIn is the resolver for the rateNotIn field.
+func (r *householdRateWhereInputResolver) RateNotIn(ctx context.Context, obj *ent.HouseholdRateWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: RateNotIn - rateNotIn"))
+}
+
+// RateGt is the resolver for the rateGT field.
+func (r *householdRateWhereInputResolver) RateGt(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: RateGt - rateGT"))
+}
+
+// RateGte is the resolver for the rateGTE field.
+func (r *householdRateWhereInputResolver) RateGte(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: RateGte - rateGTE"))
+}
+
+// RateLt is the resolver for the rateLT field.
+func (r *householdRateWhereInputResolver) RateLt(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: RateLt - rateLT"))
+}
+
+// RateLte is the resolver for the rateLTE field.
+func (r *householdRateWhereInputResolver) RateLte(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: RateLte - rateLTE"))
 }
 
 // Amount is the resolver for the amount field.
@@ -985,6 +1035,9 @@ func (r *Resolver) Account() AccountResolver { return &accountResolver{r} }
 // Household returns HouseholdResolver implementation.
 func (r *Resolver) Household() HouseholdResolver { return &householdResolver{r} }
 
+// HouseholdRate returns HouseholdRateResolver implementation.
+func (r *Resolver) HouseholdRate() HouseholdRateResolver { return &householdRateResolver{r} }
+
 // Investment returns InvestmentResolver implementation.
 func (r *Resolver) Investment() InvestmentResolver { return &investmentResolver{r} }
 
@@ -1038,6 +1091,11 @@ func (r *Resolver) CreateTransactionEntryInput() CreateTransactionEntryInputReso
 	return &createTransactionEntryInputResolver{r}
 }
 
+// HouseholdRateWhereInput returns HouseholdRateWhereInputResolver implementation.
+func (r *Resolver) HouseholdRateWhereInput() HouseholdRateWhereInputResolver {
+	return &householdRateWhereInputResolver{r}
+}
+
 // InvestmentLotWhereInput returns InvestmentLotWhereInputResolver implementation.
 func (r *Resolver) InvestmentLotWhereInput() InvestmentLotWhereInputResolver {
 	return &investmentLotWhereInputResolver{r}
@@ -1085,6 +1143,7 @@ func (r *Resolver) UpdateTransactionEntryInput() UpdateTransactionEntryInputReso
 
 type accountResolver struct{ *Resolver }
 type householdResolver struct{ *Resolver }
+type householdRateResolver struct{ *Resolver }
 type investmentResolver struct{ *Resolver }
 type investmentLotResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
@@ -1098,6 +1157,7 @@ type createInvestmentInputResolver struct{ *Resolver }
 type createInvestmentLotInputResolver struct{ *Resolver }
 type createRecurringSubscriptionInputResolver struct{ *Resolver }
 type createTransactionEntryInputResolver struct{ *Resolver }
+type householdRateWhereInputResolver struct{ *Resolver }
 type investmentLotWhereInputResolver struct{ *Resolver }
 type investmentWhereInputResolver struct{ *Resolver }
 type recurringSubscriptionWhereInputResolver struct{ *Resolver }
@@ -1107,15 +1167,3 @@ type transactionEntryWhereInputResolver struct{ *Resolver }
 type updateInvestmentLotInputResolver struct{ *Resolver }
 type updateRecurringSubscriptionInputResolver struct{ *Resolver }
 type updateTransactionEntryInputResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *queryResolver) SnapshotRates(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotRateWhereInput) (*ent.SnapshotRateConnection, error) {
-	panic(fmt.Errorf("not implemented: SnapshotRates - snapshotRates"))
-}
-*/
