@@ -1,0 +1,5 @@
+package: frankfurter
+output: internal/frankfurter/client.gen.go
+generate:
+  client: true
+  models: true

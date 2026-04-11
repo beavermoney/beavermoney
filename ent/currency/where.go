@@ -284,6 +284,52 @@ func HasSnapshotEntriesWith(preds ...predicate.SnapshotEntry) predicate.Currency
 	})
 }
 
+// HasSnapshotRatesFrom applies the HasEdge predicate on the "snapshot_rates_from" edge.
+func HasSnapshotRatesFrom() predicate.Currency {
+	return predicate.Currency(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesFromTable, SnapshotRatesFromColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotRatesFromWith applies the HasEdge predicate on the "snapshot_rates_from" edge with a given conditions (other predicates).
+func HasSnapshotRatesFromWith(preds ...predicate.SnapshotRate) predicate.Currency {
+	return predicate.Currency(func(s *sql.Selector) {
+		step := newSnapshotRatesFromStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSnapshotRatesTo applies the HasEdge predicate on the "snapshot_rates_to" edge.
+func HasSnapshotRatesTo() predicate.Currency {
+	return predicate.Currency(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesToTable, SnapshotRatesToColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotRatesToWith applies the HasEdge predicate on the "snapshot_rates_to" edge with a given conditions (other predicates).
+func HasSnapshotRatesToWith(preds ...predicate.SnapshotRate) predicate.Currency {
+	return predicate.Currency(func(s *sql.Selector) {
+		step := newSnapshotRatesToStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Currency) predicate.Currency {
 	return predicate.Currency(sql.AndPredicates(predicates...))

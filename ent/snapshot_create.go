@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -90,6 +91,21 @@ func (_c *SnapshotCreate) AddSnapshotEntries(v ...*SnapshotEntry) *SnapshotCreat
 		ids[i] = v[i].ID
 	}
 	return _c.AddSnapshotEntryIDs(ids...)
+}
+
+// AddSnapshotRateIDs adds the "snapshot_rates" edge to the SnapshotRate entity by IDs.
+func (_c *SnapshotCreate) AddSnapshotRateIDs(ids ...int) *SnapshotCreate {
+	_c.mutation.AddSnapshotRateIDs(ids...)
+	return _c
+}
+
+// AddSnapshotRates adds the "snapshot_rates" edges to the SnapshotRate entity.
+func (_c *SnapshotCreate) AddSnapshotRates(v ...*SnapshotRate) *SnapshotCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotRateIDs(ids...)
 }
 
 // Mutation returns the SnapshotMutation object of the builder.
@@ -225,6 +241,22 @@ func (_c *SnapshotCreate) createSpec() (*Snapshot, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotRatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

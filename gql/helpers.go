@@ -2,6 +2,7 @@ package gql
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"beavermoney.app/ent/currency"
@@ -11,7 +12,9 @@ import (
 	"beavermoney.app/ent/transactionentry"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
+	"beavermoney.app/internal/frankfurter"
 	"entgo.io/ent/dialect/sql"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/shopspring/decimal"
 )
 
@@ -118,23 +121,43 @@ func (r *financialReportResolver) aggregateByCategoryType(
 	categoryMap := make(map[int]*categoryData)
 
 	for _, row := range res {
-		rate, err := r.fxrateClient.GetRate(
-			ctx,
-			row.CurrencyCode,
-			hh.Edges.Currency.Code,
-			time.Now(),
-		)
-		if err != nil {
-			r.logger.Error(
-				"Failed to get FX rate",
-				"error",
-				err,
-				"from",
+		rate := decimal.NewFromInt(1)
+		if row.CurrencyCode != hh.Edges.Currency.Code {
+			date := openapi_types.Date{Time: time.Now().UTC()}
+			resp, err := r.frankfurterClient.GetRateWithResponse(
+				ctx,
 				row.CurrencyCode,
-				"to",
 				hh.Edges.Currency.Code,
+				&frankfurter.GetRateParams{Date: &date},
 			)
-			return nil, err
+			if err != nil {
+				r.logger.Error(
+					"Failed to get FX rate",
+					"error",
+					err,
+					"from",
+					row.CurrencyCode,
+					"to",
+					hh.Edges.Currency.Code,
+				)
+				return nil, err
+			}
+
+			if resp.JSON200 == nil {
+				err = fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
+				r.logger.Error(
+					"Failed to get FX rate",
+					"error",
+					err,
+					"from",
+					row.CurrencyCode,
+					"to",
+					hh.Edges.Currency.Code,
+				)
+				return nil, err
+			}
+
+			rate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
 		}
 
 		convertedTotal := row.Total.Mul(rate)

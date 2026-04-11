@@ -58,6 +58,7 @@ type ResolverRoot interface {
 	Query() QueryResolver
 	RecurringSubscription() RecurringSubscriptionResolver
 	SnapshotEntry() SnapshotEntryResolver
+	SnapshotRate() SnapshotRateResolver
 	TransactionEntry() TransactionEntryResolver
 	AccountWhereInput() AccountWhereInputResolver
 	CheckpointWhereInput() CheckpointWhereInputResolver
@@ -70,6 +71,7 @@ type ResolverRoot interface {
 	InvestmentWhereInput() InvestmentWhereInputResolver
 	RecurringSubscriptionWhereInput() RecurringSubscriptionWhereInputResolver
 	SnapshotEntryWhereInput() SnapshotEntryWhereInputResolver
+	SnapshotRateWhereInput() SnapshotRateWhereInputResolver
 	TransactionEntryWhereInput() TransactionEntryWhereInputResolver
 	UpdateInvestmentLotInput() UpdateInvestmentLotInputResolver
 	UpdateRecurringSubscriptionInput() UpdateRecurringSubscriptionInputResolver
@@ -174,6 +176,8 @@ type ComplexityRoot struct {
 		Locales                func(childComplexity int) int
 		RecurringSubscriptions func(childComplexity int) int
 		SnapshotEntries        func(childComplexity int) int
+		SnapshotRatesFrom      func(childComplexity int) int
+		SnapshotRatesTo        func(childComplexity int) int
 		TransactionEntries     func(childComplexity int) int
 	}
 
@@ -360,6 +364,7 @@ type ComplexityRoot struct {
 		Nodes                  func(childComplexity int, ids []int) int
 		RecurringSubscriptions func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) int
 		SnapshotEntries        func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) int
+		SnapshotRates          func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotRateWhereInput) int
 		Snapshots              func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) int
 		StockQuote             func(childComplexity int, symbol string) int
 		TransactionCategories  func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) int
@@ -407,6 +412,7 @@ type ComplexityRoot struct {
 		ID              func(childComplexity int) int
 		Note            func(childComplexity int) int
 		SnapshotEntries func(childComplexity int) int
+		SnapshotRates   func(childComplexity int) int
 		UpdateTime      func(childComplexity int) int
 	}
 
@@ -447,6 +453,30 @@ type ComplexityRoot struct {
 	}
 
 	SnapshotEntryEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	SnapshotRate struct {
+		CreateTime     func(childComplexity int) int
+		FromCurrency   func(childComplexity int) int
+		FromCurrencyID func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Rate           func(childComplexity int) int
+		Snapshot       func(childComplexity int) int
+		SnapshotID     func(childComplexity int) int
+		ToCurrency     func(childComplexity int) int
+		ToCurrencyID   func(childComplexity int) int
+		UpdateTime     func(childComplexity int) int
+	}
+
+	SnapshotRateConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	SnapshotRateEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -654,6 +684,7 @@ type QueryResolver interface {
 	RecurringSubscriptions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) (*ent.RecurringSubscriptionConnection, error)
 	Snapshots(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) (*ent.SnapshotConnection, error)
 	SnapshotEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) (*ent.SnapshotEntryConnection, error)
+	SnapshotRates(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotRateWhereInput) (*ent.SnapshotRateConnection, error)
 	Transactions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) (*ent.TransactionConnection, error)
 	TransactionCategories(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionCategoryWhereInput) (*ent.TransactionCategoryConnection, error)
 	TransactionEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionEntryWhereInput) (*ent.TransactionEntryConnection, error)
@@ -673,6 +704,9 @@ type SnapshotEntryResolver interface {
 	Property(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
 	Receivable(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
 	Liability(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
+}
+type SnapshotRateResolver interface {
+	Rate(ctx context.Context, obj *ent.SnapshotRate) (string, error)
 }
 type TransactionEntryResolver interface {
 	Amount(ctx context.Context, obj *ent.TransactionEntry) (string, error)
@@ -874,6 +908,16 @@ type SnapshotEntryWhereInputResolver interface {
 	LiabilityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
 	LiabilityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
 	LiabilityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+}
+type SnapshotRateWhereInputResolver interface {
+	Rate(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
+	RateNeq(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
+	RateIn(ctx context.Context, obj *ent.SnapshotRateWhereInput, data []string) error
+	RateNotIn(ctx context.Context, obj *ent.SnapshotRateWhereInput, data []string) error
+	RateGt(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
+	RateGte(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
+	RateLt(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
+	RateLte(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
 }
 type TransactionEntryWhereInputResolver interface {
 	Amount(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error
@@ -1320,6 +1364,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Currency.SnapshotEntries(childComplexity), true
+	case "Currency.snapshotRatesFrom":
+		if e.complexity.Currency.SnapshotRatesFrom == nil {
+			break
+		}
+
+		return e.complexity.Currency.SnapshotRatesFrom(childComplexity), true
+	case "Currency.snapshotRatesTo":
+		if e.complexity.Currency.SnapshotRatesTo == nil {
+			break
+		}
+
+		return e.complexity.Currency.SnapshotRatesTo(childComplexity), true
 	case "Currency.transactionEntries":
 		if e.complexity.Currency.TransactionEntries == nil {
 			break
@@ -2341,6 +2397,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.SnapshotEntries(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.SnapshotEntryWhereInput)), true
+	case "Query.snapshotRates":
+		if e.complexity.Query.SnapshotRates == nil {
+			break
+		}
+
+		args, err := ec.field_Query_snapshotRates_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SnapshotRates(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["where"].(*ent.SnapshotRateWhereInput)), true
 	case "Query.snapshots":
 		if e.complexity.Query.Snapshots == nil {
 			break
@@ -2580,6 +2647,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Snapshot.SnapshotEntries(childComplexity), true
+	case "Snapshot.snapshotRates":
+		if e.complexity.Snapshot.SnapshotRates == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.SnapshotRates(childComplexity), true
 	case "Snapshot.updateTime":
 		if e.complexity.Snapshot.UpdateTime == nil {
 			break
@@ -2747,6 +2820,99 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SnapshotEntryEdge.Node(childComplexity), true
+
+	case "SnapshotRate.createTime":
+		if e.complexity.SnapshotRate.CreateTime == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.CreateTime(childComplexity), true
+	case "SnapshotRate.fromCurrency":
+		if e.complexity.SnapshotRate.FromCurrency == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.FromCurrency(childComplexity), true
+	case "SnapshotRate.fromCurrencyID":
+		if e.complexity.SnapshotRate.FromCurrencyID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.FromCurrencyID(childComplexity), true
+	case "SnapshotRate.id":
+		if e.complexity.SnapshotRate.ID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.ID(childComplexity), true
+	case "SnapshotRate.rate":
+		if e.complexity.SnapshotRate.Rate == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.Rate(childComplexity), true
+	case "SnapshotRate.snapshot":
+		if e.complexity.SnapshotRate.Snapshot == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.Snapshot(childComplexity), true
+	case "SnapshotRate.snapshotID":
+		if e.complexity.SnapshotRate.SnapshotID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.SnapshotID(childComplexity), true
+	case "SnapshotRate.toCurrency":
+		if e.complexity.SnapshotRate.ToCurrency == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.ToCurrency(childComplexity), true
+	case "SnapshotRate.toCurrencyID":
+		if e.complexity.SnapshotRate.ToCurrencyID == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.ToCurrencyID(childComplexity), true
+	case "SnapshotRate.updateTime":
+		if e.complexity.SnapshotRate.UpdateTime == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRate.UpdateTime(childComplexity), true
+
+	case "SnapshotRateConnection.edges":
+		if e.complexity.SnapshotRateConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRateConnection.Edges(childComplexity), true
+	case "SnapshotRateConnection.pageInfo":
+		if e.complexity.SnapshotRateConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRateConnection.PageInfo(childComplexity), true
+	case "SnapshotRateConnection.totalCount":
+		if e.complexity.SnapshotRateConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRateConnection.TotalCount(childComplexity), true
+
+	case "SnapshotRateEdge.cursor":
+		if e.complexity.SnapshotRateEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRateEdge.Cursor(childComplexity), true
+	case "SnapshotRateEdge.node":
+		if e.complexity.SnapshotRateEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.SnapshotRateEdge.Node(childComplexity), true
 
 	case "StockQuoteResult.currency":
 		if e.complexity.StockQuoteResult.Currency == nil {
@@ -3292,6 +3458,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputRecurringSubscriptionWhereInput,
 		ec.unmarshalInputSellInvestmentInputCustom,
 		ec.unmarshalInputSnapshotEntryWhereInput,
+		ec.unmarshalInputSnapshotRateWhereInput,
 		ec.unmarshalInputSnapshotWhereInput,
 		ec.unmarshalInputTimePeriodInput,
 		ec.unmarshalInputTransactionCategoryWhereInput,
@@ -4340,6 +4507,37 @@ func (ec *executionContext) field_Query_snapshotEntries_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_snapshotRates_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "after", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "before", ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor)
+	if err != nil {
+		return nil, err
+	}
+	args["before"] = arg2
+	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "last", ec.unmarshalOInt2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["last"] = arg3
+	arg4, err := graphql.ProcessArgField(ctx, rawArgs, "where", ec.unmarshalOSnapshotRateWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInput)
+	if err != nil {
+		return nil, err
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_snapshots_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5057,6 +5255,10 @@ func (ec *executionContext) fieldContext_Account_currency(_ context.Context, fie
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -6202,6 +6404,10 @@ func (ec *executionContext) fieldContext_Checkpoint_currency(_ context.Context, 
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -7087,6 +7293,108 @@ func (ec *executionContext) fieldContext_Currency_snapshotEntries(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Currency_snapshotRatesFrom(ctx context.Context, field graphql.CollectedField, obj *ent.Currency) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Currency_snapshotRatesFrom,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotRatesFrom(ctx)
+		},
+		nil,
+		ec.marshalOSnapshotRate2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Currency_snapshotRatesFrom(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Currency",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotRate_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotRate_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotRate_updateTime(ctx, field)
+			case "rate":
+				return ec.fieldContext_SnapshotRate_rate(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotRate_snapshotID(ctx, field)
+			case "fromCurrencyID":
+				return ec.fieldContext_SnapshotRate_fromCurrencyID(ctx, field)
+			case "toCurrencyID":
+				return ec.fieldContext_SnapshotRate_toCurrencyID(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotRate_snapshot(ctx, field)
+			case "fromCurrency":
+				return ec.fieldContext_SnapshotRate_fromCurrency(ctx, field)
+			case "toCurrency":
+				return ec.fieldContext_SnapshotRate_toCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotRate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Currency_snapshotRatesTo(ctx context.Context, field graphql.CollectedField, obj *ent.Currency) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Currency_snapshotRatesTo,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotRatesTo(ctx)
+		},
+		nil,
+		ec.marshalOSnapshotRate2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Currency_snapshotRatesTo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Currency",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotRate_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotRate_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotRate_updateTime(ctx, field)
+			case "rate":
+				return ec.fieldContext_SnapshotRate_rate(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotRate_snapshotID(ctx, field)
+			case "fromCurrencyID":
+				return ec.fieldContext_SnapshotRate_fromCurrencyID(ctx, field)
+			case "toCurrencyID":
+				return ec.fieldContext_SnapshotRate_toCurrencyID(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotRate_snapshot(ctx, field)
+			case "fromCurrency":
+				return ec.fieldContext_SnapshotRate_fromCurrency(ctx, field)
+			case "toCurrency":
+				return ec.fieldContext_SnapshotRate_toCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotRate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _DeleteAccountPayload_deletedAccountId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteAccountPayload) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -7702,6 +8010,10 @@ func (ec *executionContext) fieldContext_Household_currency(_ context.Context, f
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -8943,6 +9255,10 @@ func (ec *executionContext) fieldContext_Investment_currency(_ context.Context, 
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -11834,6 +12150,10 @@ func (ec *executionContext) fieldContext_Query_currencies(_ context.Context, fie
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -12155,6 +12475,55 @@ func (ec *executionContext) fieldContext_Query_snapshotEntries(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_snapshotEntries_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_snapshotRates(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_snapshotRates,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().SnapshotRates(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["where"].(*ent.SnapshotRateWhereInput))
+		},
+		nil,
+		ec.marshalNSnapshotRateConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateConnection,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_snapshotRates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_SnapshotRateConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_SnapshotRateConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_SnapshotRateConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotRateConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_snapshotRates_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -13224,6 +13593,10 @@ func (ec *executionContext) fieldContext_RecurringSubscription_currency(_ contex
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -13766,6 +14139,57 @@ func (ec *executionContext) fieldContext_Snapshot_snapshotEntries(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Snapshot_snapshotRates(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_snapshotRates,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotRates(ctx)
+		},
+		nil,
+		ec.marshalOSnapshotRate2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_snapshotRates(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotRate_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotRate_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotRate_updateTime(ctx, field)
+			case "rate":
+				return ec.fieldContext_SnapshotRate_rate(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotRate_snapshotID(ctx, field)
+			case "fromCurrencyID":
+				return ec.fieldContext_SnapshotRate_fromCurrencyID(ctx, field)
+			case "toCurrencyID":
+				return ec.fieldContext_SnapshotRate_toCurrencyID(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotRate_snapshot(ctx, field)
+			case "fromCurrency":
+				return ec.fieldContext_SnapshotRate_fromCurrency(ctx, field)
+			case "toCurrency":
+				return ec.fieldContext_SnapshotRate_toCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotRate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SnapshotConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotConnection) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -13907,6 +14331,8 @@ func (ec *executionContext) fieldContext_SnapshotEdge_node(_ context.Context, fi
 				return ec.fieldContext_Snapshot_household(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			case "snapshotRates":
+				return ec.fieldContext_Snapshot_snapshotRates(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
 		},
@@ -14410,6 +14836,10 @@ func (ec *executionContext) fieldContext_SnapshotEntry_currency(_ context.Contex
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -14510,6 +14940,8 @@ func (ec *executionContext) fieldContext_SnapshotEntry_snapshot(_ context.Contex
 				return ec.fieldContext_Snapshot_household(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			case "snapshotRates":
+				return ec.fieldContext_Snapshot_snapshotRates(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
 		},
@@ -14702,6 +15134,549 @@ func (ec *executionContext) _SnapshotEntryEdge_cursor(ctx context.Context, field
 func (ec *executionContext) fieldContext_SnapshotEntryEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SnapshotEntryEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Cursor does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_id(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_createTime(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_createTime,
+		func(ctx context.Context) (any, error) {
+			return obj.CreateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_createTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_updateTime(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_updateTime,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdateTime, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_updateTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_rate(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_rate,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotRate().Rate(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_rate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_snapshotID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_snapshotID,
+		func(ctx context.Context) (any, error) {
+			return obj.SnapshotID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_snapshotID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_fromCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_fromCurrencyID,
+		func(ctx context.Context) (any, error) {
+			return obj.FromCurrencyID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_fromCurrencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_toCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_toCurrencyID,
+		func(ctx context.Context) (any, error) {
+			return obj.ToCurrencyID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_toCurrencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_snapshot(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_snapshot,
+		func(ctx context.Context) (any, error) {
+			return obj.Snapshot(ctx)
+		},
+		nil,
+		ec.marshalNSnapshot2ᚖbeavermoneyᚗappᚋentᚐSnapshot,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_snapshot(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Snapshot_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Snapshot_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Snapshot_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Snapshot_updateTime(ctx, field)
+			case "note":
+				return ec.fieldContext_Snapshot_note(ctx, field)
+			case "household":
+				return ec.fieldContext_Snapshot_household(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			case "snapshotRates":
+				return ec.fieldContext_Snapshot_snapshotRates(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_fromCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_fromCurrency,
+		func(ctx context.Context) (any, error) {
+			return obj.FromCurrency(ctx)
+		},
+		nil,
+		ec.marshalNCurrency2ᚖbeavermoneyᚗappᚋentᚐCurrency,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_fromCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Currency_id(ctx, field)
+			case "code":
+				return ec.fieldContext_Currency_code(ctx, field)
+			case "locales":
+				return ec.fieldContext_Currency_locales(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Currency_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_Currency_investments(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Currency_transactionEntries(ctx, field)
+			case "households":
+				return ec.fieldContext_Currency_households(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRate_toCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRate) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRate_toCurrency,
+		func(ctx context.Context) (any, error) {
+			return obj.ToCurrency(ctx)
+		},
+		nil,
+		ec.marshalNCurrency2ᚖbeavermoneyᚗappᚋentᚐCurrency,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRate_toCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRate",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Currency_id(ctx, field)
+			case "code":
+				return ec.fieldContext_Currency_code(ctx, field)
+			case "locales":
+				return ec.fieldContext_Currency_locales(ctx, field)
+			case "accounts":
+				return ec.fieldContext_Currency_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_Currency_investments(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_Currency_transactionEntries(ctx, field)
+			case "households":
+				return ec.fieldContext_Currency_households(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_Currency_recurringSubscriptions(ctx, field)
+			case "checkpoints":
+				return ec.fieldContext_Currency_checkpoints(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRateConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRateConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRateConnection_edges,
+		func(ctx context.Context) (any, error) {
+			return obj.Edges, nil
+		},
+		nil,
+		ec.marshalOSnapshotRateEdge2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateEdge,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRateConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRateConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_SnapshotRateEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_SnapshotRateEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotRateEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRateConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRateConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRateConnection_pageInfo,
+		func(ctx context.Context) (any, error) {
+			return obj.PageInfo, nil
+		},
+		nil,
+		ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRateConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRateConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRateConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRateConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRateConnection_totalCount,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalCount, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRateConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRateConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRateEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRateEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRateEdge_node,
+		func(ctx context.Context) (any, error) {
+			return obj.Node, nil
+		},
+		nil,
+		ec.marshalOSnapshotRate2ᚖbeavermoneyᚗappᚋentᚐSnapshotRate,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRateEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRateEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SnapshotRate_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_SnapshotRate_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_SnapshotRate_updateTime(ctx, field)
+			case "rate":
+				return ec.fieldContext_SnapshotRate_rate(ctx, field)
+			case "snapshotID":
+				return ec.fieldContext_SnapshotRate_snapshotID(ctx, field)
+			case "fromCurrencyID":
+				return ec.fieldContext_SnapshotRate_fromCurrencyID(ctx, field)
+			case "toCurrencyID":
+				return ec.fieldContext_SnapshotRate_toCurrencyID(ctx, field)
+			case "snapshot":
+				return ec.fieldContext_SnapshotRate_snapshot(ctx, field)
+			case "fromCurrency":
+				return ec.fieldContext_SnapshotRate_fromCurrency(ctx, field)
+			case "toCurrency":
+				return ec.fieldContext_SnapshotRate_toCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotRate", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SnapshotRateEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotRateEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotRateEdge_cursor,
+		func(ctx context.Context) (any, error) {
+			return obj.Cursor, nil
+		},
+		nil,
+		ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotRateEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotRateEdge",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -16571,6 +17546,10 @@ func (ec *executionContext) fieldContext_TransactionEntry_currency(_ context.Con
 				return ec.fieldContext_Currency_checkpoints(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Currency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_Currency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_Currency_snapshotRatesTo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Currency", field.Name)
 		},
@@ -21763,7 +22742,7 @@ func (ec *executionContext) unmarshalInputCurrencyWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasHouseholds", "hasHouseholdsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasHouseholds", "hasHouseholdsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasCheckpoints", "hasCheckpointsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasSnapshotRatesFrom", "hasSnapshotRatesFromWith", "hasSnapshotRatesTo", "hasSnapshotRatesToWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22036,6 +23015,34 @@ func (ec *executionContext) unmarshalInputCurrencyWhereInput(ctx context.Context
 				return it, err
 			}
 			it.HasSnapshotEntriesWith = data
+		case "hasSnapshotRatesFrom":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotRatesFrom"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotRatesFrom = data
+		case "hasSnapshotRatesFromWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotRatesFromWith"))
+			data, err := ec.unmarshalOSnapshotRateWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotRatesFromWith = data
+		case "hasSnapshotRatesTo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotRatesTo"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotRatesTo = data
+		case "hasSnapshotRatesToWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotRatesToWith"))
+			data, err := ec.unmarshalOSnapshotRateWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotRatesToWith = data
 		}
 	}
 
@@ -25574,6 +26581,413 @@ func (ec *executionContext) unmarshalInputSnapshotEntryWhereInput(ctx context.Co
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSnapshotRateWhereInput(ctx context.Context, obj any) (ent.SnapshotRateWhereInput, error) {
+	var it ent.SnapshotRateWhereInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "rate", "rateNEQ", "rateIn", "rateNotIn", "rateGT", "rateGTE", "rateLT", "rateLTE", "snapshotID", "snapshotIDNEQ", "snapshotIDIn", "snapshotIDNotIn", "fromCurrencyID", "fromCurrencyIDNEQ", "fromCurrencyIDIn", "fromCurrencyIDNotIn", "toCurrencyID", "toCurrencyIDNEQ", "toCurrencyIDIn", "toCurrencyIDNotIn", "hasSnapshot", "hasSnapshotWith", "hasFromCurrency", "hasFromCurrencyWith", "hasToCurrency", "hasToCurrencyWith"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOSnapshotRateWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
+		case "and":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			data, err := ec.unmarshalOSnapshotRateWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.And = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOSnapshotRateWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "idNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNEQ = data
+		case "idIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDIn = data
+		case "idNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNotIn = data
+		case "idGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGT = data
+		case "idGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGTE = data
+		case "idLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLT = data
+		case "idLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLTE = data
+		case "createTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTime = data
+		case "createTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNEQ = data
+		case "createTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeIn = data
+		case "createTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeNotIn = data
+		case "createTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGT = data
+		case "createTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeGTE = data
+		case "createTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLT = data
+		case "createTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreateTimeLTE = data
+		case "updateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTime"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTime = data
+		case "updateTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNEQ = data
+		case "updateTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeIn = data
+		case "updateTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeNotIn = data
+		case "updateTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGT = data
+		case "updateTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeGTE = data
+		case "updateTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLT = data
+		case "updateTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updateTimeLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdateTimeLTE = data
+		case "rate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rate"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().Rate(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "rateLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rateLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotRateWhereInput().RateLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "snapshotID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotID = data
+		case "snapshotIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotIDNEQ = data
+		case "snapshotIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotIDIn = data
+		case "snapshotIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapshotIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapshotIDNotIn = data
+		case "fromCurrencyID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromCurrencyID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromCurrencyID = data
+		case "fromCurrencyIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromCurrencyIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromCurrencyIDNEQ = data
+		case "fromCurrencyIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromCurrencyIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromCurrencyIDIn = data
+		case "fromCurrencyIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromCurrencyIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromCurrencyIDNotIn = data
+		case "toCurrencyID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toCurrencyID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToCurrencyID = data
+		case "toCurrencyIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toCurrencyIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToCurrencyIDNEQ = data
+		case "toCurrencyIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toCurrencyIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToCurrencyIDIn = data
+		case "toCurrencyIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toCurrencyIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToCurrencyIDNotIn = data
+		case "hasSnapshot":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshot"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshot = data
+		case "hasSnapshotWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotWith"))
+			data, err := ec.unmarshalOSnapshotWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotWith = data
+		case "hasFromCurrency":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasFromCurrency"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasFromCurrency = data
+		case "hasFromCurrencyWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasFromCurrencyWith"))
+			data, err := ec.unmarshalOCurrencyWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCurrencyWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasFromCurrencyWith = data
+		case "hasToCurrency":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasToCurrency"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasToCurrency = data
+		case "hasToCurrencyWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasToCurrencyWith"))
+			data, err := ec.unmarshalOCurrencyWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐCurrencyWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasToCurrencyWith = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSnapshotWhereInput(ctx context.Context, obj any) (ent.SnapshotWhereInput, error) {
 	var it ent.SnapshotWhereInput
 	asMap := map[string]any{}
@@ -25581,7 +26995,7 @@ func (ec *executionContext) unmarshalInputSnapshotWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "note", "noteNEQ", "noteIn", "noteNotIn", "noteGT", "noteGTE", "noteLT", "noteLTE", "noteContains", "noteHasPrefix", "noteHasSuffix", "noteIsNil", "noteNotNil", "noteEqualFold", "noteContainsFold", "hasHousehold", "hasHouseholdWith", "hasSnapshotEntries", "hasSnapshotEntriesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "note", "noteNEQ", "noteIn", "noteNotIn", "noteGT", "noteGTE", "noteLT", "noteLTE", "noteContains", "noteHasPrefix", "noteHasSuffix", "noteIsNil", "noteNotNil", "noteEqualFold", "noteContainsFold", "hasHousehold", "hasHouseholdWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasSnapshotRates", "hasSnapshotRatesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25938,6 +27352,20 @@ func (ec *executionContext) unmarshalInputSnapshotWhereInput(ctx context.Context
 				return it, err
 			}
 			it.HasSnapshotEntriesWith = data
+		case "hasSnapshotRates":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotRates"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotRates = data
+		case "hasSnapshotRatesWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSnapshotRatesWith"))
+			data, err := ec.unmarshalOSnapshotRateWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasSnapshotRatesWith = data
 		}
 	}
 
@@ -29107,6 +30535,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Transaction(ctx, sel, obj)
+	case *ent.SnapshotRate:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SnapshotRate(ctx, sel, obj)
 	case *ent.SnapshotEntry:
 		if obj == nil {
 			return graphql.Null
@@ -30521,6 +31954,72 @@ func (ec *executionContext) _Currency(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Currency_snapshotEntries(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotRatesFrom":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Currency_snapshotRatesFrom(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotRatesTo":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Currency_snapshotRatesTo(ctx, field, obj)
 				return res
 			}
 
@@ -33036,6 +34535,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "snapshotRates":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_snapshotRates(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "transactions":
 			field := field
 
@@ -33697,6 +35218,39 @@ func (ec *executionContext) _Snapshot(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotRates":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_snapshotRates(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -34261,6 +35815,301 @@ func (ec *executionContext) _SnapshotEntryEdge(ctx context.Context, sel ast.Sele
 			out.Values[i] = ec._SnapshotEntryEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._SnapshotEntryEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotRateImplementors = []string{"SnapshotRate", "Node"}
+
+func (ec *executionContext) _SnapshotRate(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotRate) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotRateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotRate")
+		case "id":
+			out.Values[i] = ec._SnapshotRate_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createTime":
+			out.Values[i] = ec._SnapshotRate_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updateTime":
+			out.Values[i] = ec._SnapshotRate_updateTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "rate":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotRate_rate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "snapshotID":
+			out.Values[i] = ec._SnapshotRate_snapshotID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "fromCurrencyID":
+			out.Values[i] = ec._SnapshotRate_fromCurrencyID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "toCurrencyID":
+			out.Values[i] = ec._SnapshotRate_toCurrencyID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "snapshot":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotRate_snapshot(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "fromCurrency":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotRate_fromCurrency(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "toCurrency":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotRate_toCurrency(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotRateConnectionImplementors = []string{"SnapshotRateConnection"}
+
+func (ec *executionContext) _SnapshotRateConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotRateConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotRateConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotRateConnection")
+		case "edges":
+			out.Values[i] = ec._SnapshotRateConnection_edges(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._SnapshotRateConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._SnapshotRateConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var snapshotRateEdgeImplementors = []string{"SnapshotRateEdge"}
+
+func (ec *executionContext) _SnapshotRateEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.SnapshotRateEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, snapshotRateEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SnapshotRateEdge")
+		case "node":
+			out.Values[i] = ec._SnapshotRateEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._SnapshotRateEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -37039,6 +38888,35 @@ func (ec *executionContext) unmarshalNSnapshotEntryWhereInput2ᚖbeavermoneyᚗa
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNSnapshotRate2ᚖbeavermoneyᚗappᚋentᚐSnapshotRate(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotRate) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SnapshotRate(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSnapshotRateConnection2beavermoneyᚗappᚋentᚐSnapshotRateConnection(ctx context.Context, sel ast.SelectionSet, v ent.SnapshotRateConnection) graphql.Marshaler {
+	return ec._SnapshotRateConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSnapshotRateConnection2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateConnection(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotRateConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SnapshotRateConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSnapshotRateWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInput(ctx context.Context, v any) (*ent.SnapshotRateWhereInput, error) {
+	res, err := ec.unmarshalInputSnapshotRateWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNSnapshotWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotWhereInput(ctx context.Context, v any) (*ent.SnapshotWhereInput, error) {
 	res, err := ec.unmarshalInputSnapshotWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -39064,6 +40942,134 @@ func (ec *executionContext) unmarshalOSnapshotEntryWhereInput2ᚖbeavermoneyᚗa
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputSnapshotEntryWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSnapshotRate2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.SnapshotRate) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSnapshotRate2ᚖbeavermoneyᚗappᚋentᚐSnapshotRate(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalOSnapshotRate2ᚖbeavermoneyᚗappᚋentᚐSnapshotRate(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotRate) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SnapshotRate(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSnapshotRateEdge2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.SnapshotRateEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSnapshotRateEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOSnapshotRateEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateEdge(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotRateEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SnapshotRateEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSnapshotRateWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInputᚄ(ctx context.Context, v any) ([]*ent.SnapshotRateWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*ent.SnapshotRateWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSnapshotRateWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOSnapshotRateWhereInput2ᚖbeavermoneyᚗappᚋentᚐSnapshotRateWhereInput(ctx context.Context, v any) (*ent.SnapshotRateWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSnapshotRateWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

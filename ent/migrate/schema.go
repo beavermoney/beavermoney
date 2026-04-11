@@ -339,6 +339,54 @@ var (
 			},
 		},
 	}
+	// SnapshotRatesColumns holds the columns for the "snapshot_rates" table.
+	SnapshotRatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "from_currency_id", Type: field.TypeInt},
+		{Name: "to_currency_id", Type: field.TypeInt},
+		{Name: "snapshot_id", Type: field.TypeInt},
+	}
+	// SnapshotRatesTable holds the schema information for the "snapshot_rates" table.
+	SnapshotRatesTable = &schema.Table{
+		Name:       "snapshot_rates",
+		Columns:    SnapshotRatesColumns,
+		PrimaryKey: []*schema.Column{SnapshotRatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "snapshot_rates_currencies_snapshot_rates_from",
+				Columns:    []*schema.Column{SnapshotRatesColumns[4]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_rates_currencies_snapshot_rates_to",
+				Columns:    []*schema.Column{SnapshotRatesColumns[5]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_rates_snapshots_snapshot_rates",
+				Columns:    []*schema.Column{SnapshotRatesColumns[6]},
+				RefColumns: []*schema.Column{SnapshotsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "snapshotrate_snapshot_id",
+				Unique:  false,
+				Columns: []*schema.Column{SnapshotRatesColumns[6]},
+			},
+			{
+				Name:    "snapshotrate_snapshot_id_from_currency_id_to_currency_id",
+				Unique:  true,
+				Columns: []*schema.Column{SnapshotRatesColumns[6], SnapshotRatesColumns[4], SnapshotRatesColumns[5]},
+			},
+		},
+	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -550,6 +598,7 @@ var (
 		RecurringSubscriptionsTable,
 		SnapshotsTable,
 		SnapshotEntriesTable,
+		SnapshotRatesTable,
 		TransactionsTable,
 		TransactionCategoriesTable,
 		TransactionEntriesTable,
@@ -606,6 +655,12 @@ func init() {
 	SnapshotEntriesTable.ForeignKeys[3].RefTable = UsersTable
 	SnapshotEntriesTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(64424509440),
+	}
+	SnapshotRatesTable.ForeignKeys[0].RefTable = CurrenciesTable
+	SnapshotRatesTable.ForeignKeys[1].RefTable = CurrenciesTable
+	SnapshotRatesTable.ForeignKeys[2].RefTable = SnapshotsTable
+	SnapshotRatesTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(68719476736),
 	}
 	TransactionsTable.ForeignKeys[0].RefTable = HouseholdsTable
 	TransactionsTable.ForeignKeys[1].RefTable = TransactionCategoriesTable

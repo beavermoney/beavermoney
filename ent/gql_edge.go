@@ -156,6 +156,30 @@ func (_m *Currency) SnapshotEntries(ctx context.Context) (result []*SnapshotEntr
 	return result, err
 }
 
+func (_m *Currency) SnapshotRatesFrom(ctx context.Context) (result []*SnapshotRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotRatesFrom(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotRatesFromOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotRatesFrom().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) SnapshotRatesTo(ctx context.Context) (result []*SnapshotRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotRatesTo(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotRatesToOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotRatesTo().All(ctx)
+	}
+	return result, err
+}
+
 func (_m *Household) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
@@ -493,6 +517,18 @@ func (_m *Snapshot) SnapshotEntries(ctx context.Context) (result []*SnapshotEntr
 	return result, err
 }
 
+func (_m *Snapshot) SnapshotRates(ctx context.Context) (result []*SnapshotRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotRates(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotRatesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotRates().All(ctx)
+	}
+	return result, err
+}
+
 func (_m *SnapshotEntry) Household(ctx context.Context) (*Household, error) {
 	result, err := _m.Edges.HouseholdOrErr()
 	if IsNotLoaded(err) {
@@ -521,6 +557,30 @@ func (_m *SnapshotEntry) Snapshot(ctx context.Context) (*Snapshot, error) {
 	result, err := _m.Edges.SnapshotOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QuerySnapshot().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotRate) Snapshot(ctx context.Context) (*Snapshot, error) {
+	result, err := _m.Edges.SnapshotOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshot().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotRate) FromCurrency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.FromCurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryFromCurrency().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotRate) ToCurrency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.ToCurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryToCurrency().Only(ctx)
 	}
 	return result, err
 }

@@ -296,6 +296,29 @@ func HasSnapshotEntriesWith(preds ...predicate.SnapshotEntry) predicate.Snapshot
 	})
 }
 
+// HasSnapshotRates applies the HasEdge predicate on the "snapshot_rates" edge.
+func HasSnapshotRates() predicate.Snapshot {
+	return predicate.Snapshot(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesTable, SnapshotRatesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotRatesWith applies the HasEdge predicate on the "snapshot_rates" edge with a given conditions (other predicates).
+func HasSnapshotRatesWith(preds ...predicate.SnapshotRate) predicate.Snapshot {
+	return predicate.Snapshot(func(s *sql.Selector) {
+		step := newSnapshotRatesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Snapshot) predicate.Snapshot {
 	return predicate.Snapshot(sql.AndPredicates(predicates...))

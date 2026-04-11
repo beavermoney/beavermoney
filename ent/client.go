@@ -20,6 +20,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -55,6 +56,8 @@ type Client struct {
 	Snapshot *SnapshotClient
 	// SnapshotEntry is the client for interacting with the SnapshotEntry builders.
 	SnapshotEntry *SnapshotEntryClient
+	// SnapshotRate is the client for interacting with the SnapshotRate builders.
+	SnapshotRate *SnapshotRateClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
 	// TransactionCategory is the client for interacting with the TransactionCategory builders.
@@ -87,6 +90,7 @@ func (c *Client) init() {
 	c.RecurringSubscription = NewRecurringSubscriptionClient(c.config)
 	c.Snapshot = NewSnapshotClient(c.config)
 	c.SnapshotEntry = NewSnapshotEntryClient(c.config)
+	c.SnapshotRate = NewSnapshotRateClient(c.config)
 	c.Transaction = NewTransactionClient(c.config)
 	c.TransactionCategory = NewTransactionCategoryClient(c.config)
 	c.TransactionEntry = NewTransactionEntryClient(c.config)
@@ -194,6 +198,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		RecurringSubscription: NewRecurringSubscriptionClient(cfg),
 		Snapshot:              NewSnapshotClient(cfg),
 		SnapshotEntry:         NewSnapshotEntryClient(cfg),
+		SnapshotRate:          NewSnapshotRateClient(cfg),
 		Transaction:           NewTransactionClient(cfg),
 		TransactionCategory:   NewTransactionCategoryClient(cfg),
 		TransactionEntry:      NewTransactionEntryClient(cfg),
@@ -228,6 +233,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		RecurringSubscription: NewRecurringSubscriptionClient(cfg),
 		Snapshot:              NewSnapshotClient(cfg),
 		SnapshotEntry:         NewSnapshotEntryClient(cfg),
+		SnapshotRate:          NewSnapshotRateClient(cfg),
 		Transaction:           NewTransactionClient(cfg),
 		TransactionCategory:   NewTransactionCategoryClient(cfg),
 		TransactionEntry:      NewTransactionEntryClient(cfg),
@@ -264,8 +270,9 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Account, c.Checkpoint, c.Currency, c.Household, c.Investment, c.InvestmentLot,
-		c.RecurringSubscription, c.Snapshot, c.SnapshotEntry, c.Transaction,
-		c.TransactionCategory, c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
+		c.RecurringSubscription, c.Snapshot, c.SnapshotEntry, c.SnapshotRate,
+		c.Transaction, c.TransactionCategory, c.TransactionEntry, c.User,
+		c.UserHousehold, c.UserKey,
 	} {
 		n.Use(hooks...)
 	}
@@ -276,8 +283,9 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Account, c.Checkpoint, c.Currency, c.Household, c.Investment, c.InvestmentLot,
-		c.RecurringSubscription, c.Snapshot, c.SnapshotEntry, c.Transaction,
-		c.TransactionCategory, c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
+		c.RecurringSubscription, c.Snapshot, c.SnapshotEntry, c.SnapshotRate,
+		c.Transaction, c.TransactionCategory, c.TransactionEntry, c.User,
+		c.UserHousehold, c.UserKey,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -304,6 +312,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Snapshot.mutate(ctx, m)
 	case *SnapshotEntryMutation:
 		return c.SnapshotEntry.mutate(ctx, m)
+	case *SnapshotRateMutation:
+		return c.SnapshotRate.mutate(ctx, m)
 	case *TransactionMutation:
 		return c.Transaction.mutate(ctx, m)
 	case *TransactionCategoryMutation:
@@ -914,6 +924,38 @@ func (c *CurrencyClient) QuerySnapshotEntries(_m *Currency) *SnapshotEntryQuery 
 			sqlgraph.From(currency.Table, currency.FieldID, id),
 			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotEntriesTable, currency.SnapshotEntriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySnapshotRatesFrom queries the snapshot_rates_from edge of a Currency.
+func (c *CurrencyClient) QuerySnapshotRatesFrom(_m *Currency) *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(currency.Table, currency.FieldID, id),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotRatesFromTable, currency.SnapshotRatesFromColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySnapshotRatesTo queries the snapshot_rates_to edge of a Currency.
+func (c *CurrencyClient) QuerySnapshotRatesTo(_m *Currency) *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(currency.Table, currency.FieldID, id),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotRatesToTable, currency.SnapshotRatesToColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1990,6 +2032,22 @@ func (c *SnapshotClient) QuerySnapshotEntries(_m *Snapshot) *SnapshotEntryQuery 
 	return query
 }
 
+// QuerySnapshotRates queries the snapshot_rates edge of a Snapshot.
+func (c *SnapshotClient) QuerySnapshotRates(_m *Snapshot) *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshot.Table, snapshot.FieldID, id),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, snapshot.SnapshotRatesTable, snapshot.SnapshotRatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SnapshotClient) Hooks() []Hook {
 	hooks := c.hooks.Snapshot
@@ -2211,6 +2269,187 @@ func (c *SnapshotEntryClient) mutate(ctx context.Context, m *SnapshotEntryMutati
 		return (&SnapshotEntryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown SnapshotEntry mutation op: %q", m.Op())
+	}
+}
+
+// SnapshotRateClient is a client for the SnapshotRate schema.
+type SnapshotRateClient struct {
+	config
+}
+
+// NewSnapshotRateClient returns a client for the SnapshotRate from the given config.
+func NewSnapshotRateClient(c config) *SnapshotRateClient {
+	return &SnapshotRateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `snapshotrate.Hooks(f(g(h())))`.
+func (c *SnapshotRateClient) Use(hooks ...Hook) {
+	c.hooks.SnapshotRate = append(c.hooks.SnapshotRate, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `snapshotrate.Intercept(f(g(h())))`.
+func (c *SnapshotRateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SnapshotRate = append(c.inters.SnapshotRate, interceptors...)
+}
+
+// Create returns a builder for creating a SnapshotRate entity.
+func (c *SnapshotRateClient) Create() *SnapshotRateCreate {
+	mutation := newSnapshotRateMutation(c.config, OpCreate)
+	return &SnapshotRateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SnapshotRate entities.
+func (c *SnapshotRateClient) CreateBulk(builders ...*SnapshotRateCreate) *SnapshotRateCreateBulk {
+	return &SnapshotRateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SnapshotRateClient) MapCreateBulk(slice any, setFunc func(*SnapshotRateCreate, int)) *SnapshotRateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SnapshotRateCreateBulk{err: fmt.Errorf("calling to SnapshotRateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SnapshotRateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SnapshotRateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SnapshotRate.
+func (c *SnapshotRateClient) Update() *SnapshotRateUpdate {
+	mutation := newSnapshotRateMutation(c.config, OpUpdate)
+	return &SnapshotRateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SnapshotRateClient) UpdateOne(_m *SnapshotRate) *SnapshotRateUpdateOne {
+	mutation := newSnapshotRateMutation(c.config, OpUpdateOne, withSnapshotRate(_m))
+	return &SnapshotRateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SnapshotRateClient) UpdateOneID(id int) *SnapshotRateUpdateOne {
+	mutation := newSnapshotRateMutation(c.config, OpUpdateOne, withSnapshotRateID(id))
+	return &SnapshotRateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SnapshotRate.
+func (c *SnapshotRateClient) Delete() *SnapshotRateDelete {
+	mutation := newSnapshotRateMutation(c.config, OpDelete)
+	return &SnapshotRateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SnapshotRateClient) DeleteOne(_m *SnapshotRate) *SnapshotRateDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SnapshotRateClient) DeleteOneID(id int) *SnapshotRateDeleteOne {
+	builder := c.Delete().Where(snapshotrate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SnapshotRateDeleteOne{builder}
+}
+
+// Query returns a query builder for SnapshotRate.
+func (c *SnapshotRateClient) Query() *SnapshotRateQuery {
+	return &SnapshotRateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSnapshotRate},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SnapshotRate entity by its id.
+func (c *SnapshotRateClient) Get(ctx context.Context, id int) (*SnapshotRate, error) {
+	return c.Query().Where(snapshotrate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SnapshotRateClient) GetX(ctx context.Context, id int) *SnapshotRate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySnapshot queries the snapshot edge of a SnapshotRate.
+func (c *SnapshotRateClient) QuerySnapshot(_m *SnapshotRate) *SnapshotQuery {
+	query := (&SnapshotClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, id),
+			sqlgraph.To(snapshot.Table, snapshot.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.SnapshotTable, snapshotrate.SnapshotColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFromCurrency queries the from_currency edge of a SnapshotRate.
+func (c *SnapshotRateClient) QueryFromCurrency(_m *SnapshotRate) *CurrencyQuery {
+	query := (&CurrencyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, id),
+			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.FromCurrencyTable, snapshotrate.FromCurrencyColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToCurrency queries the to_currency edge of a SnapshotRate.
+func (c *SnapshotRateClient) QueryToCurrency(_m *SnapshotRate) *CurrencyQuery {
+	query := (&CurrencyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, id),
+			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.ToCurrencyTable, snapshotrate.ToCurrencyColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SnapshotRateClient) Hooks() []Hook {
+	return c.hooks.SnapshotRate
+}
+
+// Interceptors returns the client interceptors.
+func (c *SnapshotRateClient) Interceptors() []Interceptor {
+	return c.inters.SnapshotRate
+}
+
+func (c *SnapshotRateClient) mutate(ctx context.Context, m *SnapshotRateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SnapshotRateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SnapshotRateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SnapshotRateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SnapshotRateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SnapshotRate mutation op: %q", m.Op())
 	}
 }
 
@@ -3358,12 +3597,12 @@ func (c *UserKeyClient) mutate(ctx context.Context, m *UserKeyMutation) (Value, 
 type (
 	hooks struct {
 		Account, Checkpoint, Currency, Household, Investment, InvestmentLot,
-		RecurringSubscription, Snapshot, SnapshotEntry, Transaction,
+		RecurringSubscription, Snapshot, SnapshotEntry, SnapshotRate, Transaction,
 		TransactionCategory, TransactionEntry, User, UserHousehold, UserKey []ent.Hook
 	}
 	inters struct {
 		Account, Checkpoint, Currency, Household, Investment, InvestmentLot,
-		RecurringSubscription, Snapshot, SnapshotEntry, Transaction,
+		RecurringSubscription, Snapshot, SnapshotEntry, SnapshotRate, Transaction,
 		TransactionCategory, TransactionEntry, User, UserHousehold,
 		UserKey []ent.Interceptor
 	}

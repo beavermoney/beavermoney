@@ -14,8 +14,9 @@ import (
 	"beavermoney.app/ent/user"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/internal/contextkeys"
-	"beavermoney.app/internal/fxrate"
+	"beavermoney.app/internal/frankfurter"
 	"beavermoney.app/internal/market"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/shopspring/decimal"
 )
 
@@ -23,7 +24,7 @@ import (
 func Seed(
 	ctx context.Context,
 	entClient *ent.Client,
-	fxrateClient *fxrate.Client,
+	frankfurterClient *frankfurter.ClientWithResponses,
 	marketClient *market.Client,
 ) error {
 	alreadySeeded := entClient.User.Query().
@@ -37,10 +38,20 @@ func Seed(
 	entClient.Currency.Query().Where(currency.CodeEQ("CNY")).OnlyX(ctx)
 	usd := entClient.Currency.Query().Where(currency.CodeEQ("USD")).OnlyX(ctx)
 
-	usdToCadRate, err := fxrateClient.GetRate(ctx, "USD", "CAD", time.Now())
+	date := openapi_types.Date{Time: time.Now().UTC()}
+	usdToCadResp, err := frankfurterClient.GetRateWithResponse(
+		ctx,
+		"USD",
+		"CAD",
+		&frankfurter.GetRateParams{Date: &date},
+	)
 	if err != nil {
 		panic(err)
 	}
+	if usdToCadResp.JSON200 == nil {
+		panic(fmt.Errorf("failed to get USD/CAD FX rate: unexpected status %s", usdToCadResp.Status()))
+	}
+	usdToCadRate := decimal.NewFromFloat(float64(usdToCadResp.JSON200.Rate))
 
 	joey := entClient.User.Create().
 		SetEmail("joey@beavermoney.app").
@@ -293,7 +304,7 @@ func SeedDemoHousehold(
 	client *ent.Client,
 	household *ent.Household,
 	userID int,
-	fxrateClient *fxrate.Client,
+	frankfurterClient *frankfurter.ClientWithResponses,
 	marketClient *market.Client,
 ) error {
 	// Load household currency
@@ -351,7 +362,7 @@ func SeedDemoHousehold(
 	}
 
 	currentDate := startDate
-	for weekNumber := 0; weekNumber < 26; weekNumber++ {
+	for weekNumber := range 26 {
 		weekStart := currentDate
 		weekEnd := weekStart.AddDate(0, 0, 7)
 
@@ -768,7 +779,8 @@ func createTransaction(
 func createWeeklyExpenses(
 	ctx context.Context,
 	client *ent.Client,
-	weekStart, weekEnd time.Time,
+	weekStart time.Time,
+	_ time.Time,
 	creditCard *ent.Account,
 	categories *categorySet,
 	household *ent.Household,
@@ -946,7 +958,7 @@ func createSnapshotAtDate(
 	ctx context.Context,
 	client *ent.Client,
 	household *ent.Household,
-	userID int,
+	_ int,
 	snapshotDate time.Time,
 ) error {
 	accounts, err := client.Account.Query().
@@ -1026,6 +1038,33 @@ func createSnapshotAtDate(
 	if len(builders) > 0 {
 		if _, err := client.SnapshotEntry.CreateBulk(builders...).Save(ctx); err != nil {
 			return fmt.Errorf("failed to create snapshot entries: %w", err)
+		}
+	}
+
+	currencyIDs := make([]int, 0)
+	seen := make(map[int]bool)
+	for key := range grouped {
+		if !seen[key.CurrencyID] {
+			seen[key.CurrencyID] = true
+			currencyIDs = append(currencyIDs, key.CurrencyID)
+		}
+	}
+
+	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
+	for i := 0; i < len(currencyIDs); i++ {
+		for j := i + 1; j < len(currencyIDs); j++ {
+			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
+				SetSnapshotID(snap.ID).
+				SetFromCurrencyID(currencyIDs[i]).
+				SetToCurrencyID(currencyIDs[j]).
+				SetRate(decimal.NewFromInt(1)),
+			)
+		}
+	}
+
+	if len(rateBuilders) > 0 {
+		if _, err := client.SnapshotRate.CreateBulk(rateBuilders...).Save(ctx); err != nil {
+			return fmt.Errorf("failed to create snapshot rates: %w", err)
 		}
 	}
 

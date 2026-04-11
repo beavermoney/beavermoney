@@ -17,6 +17,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -1251,6 +1252,14 @@ type CurrencyWhereInput struct {
 	// "snapshot_entries" edge predicates.
 	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
 	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
+
+	// "snapshot_rates_from" edge predicates.
+	HasSnapshotRatesFrom     *bool                     `json:"hasSnapshotRatesFrom,omitempty"`
+	HasSnapshotRatesFromWith []*SnapshotRateWhereInput `json:"hasSnapshotRatesFromWith,omitempty"`
+
+	// "snapshot_rates_to" edge predicates.
+	HasSnapshotRatesTo     *bool                     `json:"hasSnapshotRatesTo,omitempty"`
+	HasSnapshotRatesToWith []*SnapshotRateWhereInput `json:"hasSnapshotRatesToWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -1513,6 +1522,42 @@ func (i *CurrencyWhereInput) P() (predicate.Currency, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, currency.HasSnapshotEntriesWith(with...))
+	}
+	if i.HasSnapshotRatesFrom != nil {
+		p := currency.HasSnapshotRatesFrom()
+		if !*i.HasSnapshotRatesFrom {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotRatesFromWith) > 0 {
+		with := make([]predicate.SnapshotRate, 0, len(i.HasSnapshotRatesFromWith))
+		for _, w := range i.HasSnapshotRatesFromWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotRatesFromWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasSnapshotRatesFromWith(with...))
+	}
+	if i.HasSnapshotRatesTo != nil {
+		p := currency.HasSnapshotRatesTo()
+		if !*i.HasSnapshotRatesTo {
+			p = currency.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotRatesToWith) > 0 {
+		with := make([]predicate.SnapshotRate, 0, len(i.HasSnapshotRatesToWith))
+		for _, w := range i.HasSnapshotRatesToWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotRatesToWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, currency.HasSnapshotRatesToWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -3739,6 +3784,10 @@ type SnapshotWhereInput struct {
 	// "snapshot_entries" edge predicates.
 	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
 	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
+
+	// "snapshot_rates" edge predicates.
+	HasSnapshotRates     *bool                     `json:"hasSnapshotRates,omitempty"`
+	HasSnapshotRatesWith []*SnapshotRateWhereInput `json:"hasSnapshotRatesWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -3977,6 +4026,24 @@ func (i *SnapshotWhereInput) P() (predicate.Snapshot, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, snapshot.HasSnapshotEntriesWith(with...))
+	}
+	if i.HasSnapshotRates != nil {
+		p := snapshot.HasSnapshotRates()
+		if !*i.HasSnapshotRates {
+			p = snapshot.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotRatesWith) > 0 {
+		with := make([]predicate.SnapshotRate, 0, len(i.HasSnapshotRatesWith))
+		for _, w := range i.HasSnapshotRatesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotRatesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshot.HasSnapshotRatesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -4507,6 +4574,352 @@ func (i *SnapshotEntryWhereInput) P() (predicate.SnapshotEntry, error) {
 		return predicates[0], nil
 	default:
 		return snapshotentry.And(predicates...), nil
+	}
+}
+
+// SnapshotRateWhereInput represents a where input for filtering SnapshotRate queries.
+type SnapshotRateWhereInput struct {
+	Predicates []predicate.SnapshotRate  `json:"-"`
+	Not        *SnapshotRateWhereInput   `json:"not,omitempty"`
+	Or         []*SnapshotRateWhereInput `json:"or,omitempty"`
+	And        []*SnapshotRateWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "rate" field predicates.
+	Rate      *decimal.Decimal  `json:"rate,omitempty"`
+	RateNEQ   *decimal.Decimal  `json:"rateNEQ,omitempty"`
+	RateIn    []decimal.Decimal `json:"rateIn,omitempty"`
+	RateNotIn []decimal.Decimal `json:"rateNotIn,omitempty"`
+	RateGT    *decimal.Decimal  `json:"rateGT,omitempty"`
+	RateGTE   *decimal.Decimal  `json:"rateGTE,omitempty"`
+	RateLT    *decimal.Decimal  `json:"rateLT,omitempty"`
+	RateLTE   *decimal.Decimal  `json:"rateLTE,omitempty"`
+
+	// "snapshot_id" field predicates.
+	SnapshotID      *int  `json:"snapshotID,omitempty"`
+	SnapshotIDNEQ   *int  `json:"snapshotIDNEQ,omitempty"`
+	SnapshotIDIn    []int `json:"snapshotIDIn,omitempty"`
+	SnapshotIDNotIn []int `json:"snapshotIDNotIn,omitempty"`
+
+	// "from_currency_id" field predicates.
+	FromCurrencyID      *int  `json:"fromCurrencyID,omitempty"`
+	FromCurrencyIDNEQ   *int  `json:"fromCurrencyIDNEQ,omitempty"`
+	FromCurrencyIDIn    []int `json:"fromCurrencyIDIn,omitempty"`
+	FromCurrencyIDNotIn []int `json:"fromCurrencyIDNotIn,omitempty"`
+
+	// "to_currency_id" field predicates.
+	ToCurrencyID      *int  `json:"toCurrencyID,omitempty"`
+	ToCurrencyIDNEQ   *int  `json:"toCurrencyIDNEQ,omitempty"`
+	ToCurrencyIDIn    []int `json:"toCurrencyIDIn,omitempty"`
+	ToCurrencyIDNotIn []int `json:"toCurrencyIDNotIn,omitempty"`
+
+	// "snapshot" edge predicates.
+	HasSnapshot     *bool                 `json:"hasSnapshot,omitempty"`
+	HasSnapshotWith []*SnapshotWhereInput `json:"hasSnapshotWith,omitempty"`
+
+	// "from_currency" edge predicates.
+	HasFromCurrency     *bool                 `json:"hasFromCurrency,omitempty"`
+	HasFromCurrencyWith []*CurrencyWhereInput `json:"hasFromCurrencyWith,omitempty"`
+
+	// "to_currency" edge predicates.
+	HasToCurrency     *bool                 `json:"hasToCurrency,omitempty"`
+	HasToCurrencyWith []*CurrencyWhereInput `json:"hasToCurrencyWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *SnapshotRateWhereInput) AddPredicates(predicates ...predicate.SnapshotRate) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the SnapshotRateWhereInput filter on the SnapshotRateQuery builder.
+func (i *SnapshotRateWhereInput) Filter(q *SnapshotRateQuery) (*SnapshotRateQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptySnapshotRateWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptySnapshotRateWhereInput is returned in case the SnapshotRateWhereInput is empty.
+var ErrEmptySnapshotRateWhereInput = errors.New("ent: empty predicate SnapshotRateWhereInput")
+
+// P returns a predicate for filtering snapshotrates.
+// An error is returned if the input is empty or invalid.
+func (i *SnapshotRateWhereInput) P() (predicate.SnapshotRate, error) {
+	var predicates []predicate.SnapshotRate
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, snapshotrate.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.SnapshotRate, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, snapshotrate.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.SnapshotRate, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, snapshotrate.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, snapshotrate.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, snapshotrate.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, snapshotrate.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, snapshotrate.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, snapshotrate.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, snapshotrate.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, snapshotrate.IDLTE(*i.IDLTE))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, snapshotrate.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, snapshotrate.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, snapshotrate.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, snapshotrate.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, snapshotrate.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, snapshotrate.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, snapshotrate.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, snapshotrate.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, snapshotrate.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, snapshotrate.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, snapshotrate.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, snapshotrate.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, snapshotrate.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, snapshotrate.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.Rate != nil {
+		predicates = append(predicates, snapshotrate.RateEQ(*i.Rate))
+	}
+	if i.RateNEQ != nil {
+		predicates = append(predicates, snapshotrate.RateNEQ(*i.RateNEQ))
+	}
+	if len(i.RateIn) > 0 {
+		predicates = append(predicates, snapshotrate.RateIn(i.RateIn...))
+	}
+	if len(i.RateNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.RateNotIn(i.RateNotIn...))
+	}
+	if i.RateGT != nil {
+		predicates = append(predicates, snapshotrate.RateGT(*i.RateGT))
+	}
+	if i.RateGTE != nil {
+		predicates = append(predicates, snapshotrate.RateGTE(*i.RateGTE))
+	}
+	if i.RateLT != nil {
+		predicates = append(predicates, snapshotrate.RateLT(*i.RateLT))
+	}
+	if i.RateLTE != nil {
+		predicates = append(predicates, snapshotrate.RateLTE(*i.RateLTE))
+	}
+	if i.SnapshotID != nil {
+		predicates = append(predicates, snapshotrate.SnapshotIDEQ(*i.SnapshotID))
+	}
+	if i.SnapshotIDNEQ != nil {
+		predicates = append(predicates, snapshotrate.SnapshotIDNEQ(*i.SnapshotIDNEQ))
+	}
+	if len(i.SnapshotIDIn) > 0 {
+		predicates = append(predicates, snapshotrate.SnapshotIDIn(i.SnapshotIDIn...))
+	}
+	if len(i.SnapshotIDNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.SnapshotIDNotIn(i.SnapshotIDNotIn...))
+	}
+	if i.FromCurrencyID != nil {
+		predicates = append(predicates, snapshotrate.FromCurrencyIDEQ(*i.FromCurrencyID))
+	}
+	if i.FromCurrencyIDNEQ != nil {
+		predicates = append(predicates, snapshotrate.FromCurrencyIDNEQ(*i.FromCurrencyIDNEQ))
+	}
+	if len(i.FromCurrencyIDIn) > 0 {
+		predicates = append(predicates, snapshotrate.FromCurrencyIDIn(i.FromCurrencyIDIn...))
+	}
+	if len(i.FromCurrencyIDNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.FromCurrencyIDNotIn(i.FromCurrencyIDNotIn...))
+	}
+	if i.ToCurrencyID != nil {
+		predicates = append(predicates, snapshotrate.ToCurrencyIDEQ(*i.ToCurrencyID))
+	}
+	if i.ToCurrencyIDNEQ != nil {
+		predicates = append(predicates, snapshotrate.ToCurrencyIDNEQ(*i.ToCurrencyIDNEQ))
+	}
+	if len(i.ToCurrencyIDIn) > 0 {
+		predicates = append(predicates, snapshotrate.ToCurrencyIDIn(i.ToCurrencyIDIn...))
+	}
+	if len(i.ToCurrencyIDNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.ToCurrencyIDNotIn(i.ToCurrencyIDNotIn...))
+	}
+
+	if i.HasSnapshot != nil {
+		p := snapshotrate.HasSnapshot()
+		if !*i.HasSnapshot {
+			p = snapshotrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotWith) > 0 {
+		with := make([]predicate.Snapshot, 0, len(i.HasSnapshotWith))
+		for _, w := range i.HasSnapshotWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotrate.HasSnapshotWith(with...))
+	}
+	if i.HasFromCurrency != nil {
+		p := snapshotrate.HasFromCurrency()
+		if !*i.HasFromCurrency {
+			p = snapshotrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFromCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasFromCurrencyWith))
+		for _, w := range i.HasFromCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasFromCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotrate.HasFromCurrencyWith(with...))
+	}
+	if i.HasToCurrency != nil {
+		p := snapshotrate.HasToCurrency()
+		if !*i.HasToCurrency {
+			p = snapshotrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasToCurrencyWith) > 0 {
+		with := make([]predicate.Currency, 0, len(i.HasToCurrencyWith))
+		for _, w := range i.HasToCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasToCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotrate.HasToCurrencyWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptySnapshotRateWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return snapshotrate.And(predicates...), nil
 	}
 }
 

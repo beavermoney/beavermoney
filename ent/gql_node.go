@@ -17,6 +17,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -77,6 +78,11 @@ var snapshotentryImplementors = []string{"SnapshotEntry", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*SnapshotEntry) IsNode() {}
+
+var snapshotrateImplementors = []string{"SnapshotRate", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*SnapshotRate) IsNode() {}
 
 var transactionImplementors = []string{"Transaction", "Node"}
 
@@ -262,6 +268,15 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			Where(snapshotentry.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, snapshotentryImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case snapshotrate.Table:
+		query := c.SnapshotRate.Query().
+			Where(snapshotrate.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, snapshotrateImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -525,6 +540,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.SnapshotEntry.Query().
 			Where(snapshotentry.IDIn(ids...))
 		query, err := query.CollectFields(ctx, snapshotentryImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case snapshotrate.Table:
+		query := c.SnapshotRate.Query().
+			Where(snapshotrate.IDIn(ids...))
+		query, err := query.CollectFields(ctx, snapshotrateImplementors...)
 		if err != nil {
 			return nil, err
 		}

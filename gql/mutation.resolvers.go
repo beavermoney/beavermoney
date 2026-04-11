@@ -25,8 +25,10 @@ import (
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
+	"beavermoney.app/internal/frankfurter"
 	"beavermoney.app/internal/gqlutil"
 	"beavermoney.app/internal/seed"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 	"go.opentelemetry.io/otel/attribute"
@@ -86,7 +88,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 			client,
 			household,
 			userID,
-			r.fxrateClient,
+			r.frankfurterClient,
 			r.marketClient,
 		); err != nil {
 			r.logger.Error("Failed to seed demo household data", "error", err)
@@ -279,9 +281,22 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 		return nil, err
 	}
 
-	fxRate, err := r.fxrateClient.GetRate(ctx, accountCurrency.Code, household.Edges.Currency.Code, time.Now())
-	if err != nil {
-		return nil, err
+	fxRate := decimal.NewFromInt(1)
+	if accountCurrency.Code != household.Edges.Currency.Code {
+		date := openapi_types.Date{Time: time.Now().UTC()}
+		resp, err := r.frankfurterClient.GetRateWithResponse(
+			ctx,
+			accountCurrency.Code,
+			household.Edges.Currency.Code,
+			&frankfurter.GetRateParams{Date: &date},
+		)
+		if err != nil {
+			return nil, err
+		}
+		if resp.JSON200 == nil {
+			return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
+		}
+		fxRate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
 	}
 
 	account, err := client.Account.Create().
@@ -675,10 +690,20 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 
 	fxRate := decimal.NewFromInt(1)
 	if currency.ID != household.Edges.Currency.ID {
-		fxRate, err = r.fxrateClient.GetRate(ctx, currency.Code, household.Edges.Currency.Code, time.Now())
+		date := openapi_types.Date{Time: time.Now().UTC()}
+		resp, err := r.frankfurterClient.GetRateWithResponse(
+			ctx,
+			currency.Code,
+			household.Edges.Currency.Code,
+			&frankfurter.GetRateParams{Date: &date},
+		)
 		if err != nil {
 			return nil, err
 		}
+		if resp.JSON200 == nil {
+			return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
+		}
+		fxRate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
 	}
 
 	subscription, err := client.RecurringSubscription.Create().
@@ -734,10 +759,20 @@ func (r *mutationResolver) UpdateRecurringSubscription(ctx context.Context, id i
 		}
 
 		if currency.ID != household.Edges.Currency.ID {
-			fxRate, err = r.fxrateClient.GetRate(ctx, currency.Code, household.Edges.Currency.Code, time.Now())
+			date := openapi_types.Date{Time: time.Now().UTC()}
+			resp, err := r.frankfurterClient.GetRateWithResponse(
+				ctx,
+				currency.Code,
+				household.Edges.Currency.Code,
+				&frankfurter.GetRateParams{Date: &date},
+			)
 			if err != nil {
 				return nil, err
 			}
+			if resp.JSON200 == nil {
+				return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
+			}
+			fxRate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
 		}
 	}
 
@@ -1814,6 +1849,51 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 		}
 	}
 
+	currencyIDs := make([]int, 0)
+	currencyCodeByID := make(map[int]string)
+	currencyIDByCode := make(map[string]int)
+	seen := make(map[int]bool)
+	for _, acc := range accounts {
+		if !seen[acc.CurrencyID] {
+			seen[acc.CurrencyID] = true
+			currencyIDs = append(currencyIDs, acc.CurrencyID)
+			currencyCodeByID[acc.CurrencyID] = acc.Edges.Currency.Code
+			currencyIDByCode[acc.Edges.Currency.Code] = acc.CurrencyID
+		}
+	}
+
+	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
+	for i := 0; i < len(currencyIDs); i++ {
+		for j := i + 1; j < len(currencyIDs); j++ {
+			fromCode := currencyCodeByID[currencyIDs[i]]
+			toCode := currencyCodeByID[currencyIDs[j]]
+
+			resp, err := r.frankfurterClient.GetRateWithResponse(ctx, fromCode, toCode, &frankfurter.GetRateParams{})
+			if err != nil {
+				r.logger.Error("Failed to get FX rate", "error", err, "from", fromCode, "to", toCode)
+				return nil, err
+			}
+			if resp.JSON200 == nil {
+				r.logger.Error("No rate returned", "from", fromCode, "to", toCode)
+				return nil, fmt.Errorf("no rate returned for %s->%s", fromCode, toCode)
+			}
+
+			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
+				SetSnapshotID(snap.ID).
+				SetFromCurrencyID(currencyIDs[i]).
+				SetToCurrencyID(currencyIDs[j]).
+				SetRate(decimal.NewFromFloat(float64(resp.JSON200.Rate))),
+			)
+		}
+	}
+
+	if len(rateBuilders) > 0 {
+		if _, err := client.SnapshotRate.CreateBulk(rateBuilders...).Save(ctx); err != nil {
+			r.logger.Error("Failed to create snapshot rates", "error", err)
+			return nil, err
+		}
+	}
+
 	return &ent.SnapshotEdge{
 		Node:   snap,
 		Cursor: gqlutil.EncodeCursor(snap.ID),
@@ -1920,10 +2000,36 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 
 	// Batch fetch FX rates for all unique currencies
 	if len(uniqueCurrencies) > 0 {
-		rates, err := r.fxrateClient.GetRates(ctx, uniqueCurrencies, householdCurrencyCode, now)
+		date := openapi_types.Date{Time: now.UTC()}
+		base := householdCurrencyCode
+		quotes := strings.Join(uniqueCurrencies, ",")
+		resp, err := r.frankfurterClient.GetRatesWithResponse(
+			ctx,
+			&frankfurter.GetRatesParams{
+				Date:   &date,
+				Base:   &base,
+				Quotes: &quotes,
+			},
+		)
 		if err != nil {
 			r.logger.Error("Failed to fetch FX rates", "error", err)
 			return false, err
+		}
+		if resp.JSON200 == nil {
+			err = fmt.Errorf("failed to fetch FX rates: unexpected status %s", resp.Status())
+			r.logger.Error("Failed to fetch FX rates", "error", err)
+			return false, err
+		}
+
+		rates := make(map[string]decimal.Decimal, len(uniqueCurrencies))
+		for _, rate := range *resp.JSON200 {
+			decimalRate := decimal.NewFromFloat(float64(rate.Rate))
+			if decimalRate.IsZero() {
+				err = fmt.Errorf("invalid FX rate (zero) for currency %s", rate.Quote)
+				r.logger.Error("Failed to fetch FX rates", "error", err)
+				return false, err
+			}
+			rates[rate.Quote] = decimal.NewFromInt(1).Div(decimalRate)
 		}
 
 		// Update accounts with new FX rates

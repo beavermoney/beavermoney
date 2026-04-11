@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -143,6 +144,36 @@ func (_c *CurrencyCreate) AddSnapshotEntries(v ...*SnapshotEntry) *CurrencyCreat
 		ids[i] = v[i].ID
 	}
 	return _c.AddSnapshotEntryIDs(ids...)
+}
+
+// AddSnapshotRatesFromIDs adds the "snapshot_rates_from" edge to the SnapshotRate entity by IDs.
+func (_c *CurrencyCreate) AddSnapshotRatesFromIDs(ids ...int) *CurrencyCreate {
+	_c.mutation.AddSnapshotRatesFromIDs(ids...)
+	return _c
+}
+
+// AddSnapshotRatesFrom adds the "snapshot_rates_from" edges to the SnapshotRate entity.
+func (_c *CurrencyCreate) AddSnapshotRatesFrom(v ...*SnapshotRate) *CurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotRatesFromIDs(ids...)
+}
+
+// AddSnapshotRatesToIDs adds the "snapshot_rates_to" edge to the SnapshotRate entity by IDs.
+func (_c *CurrencyCreate) AddSnapshotRatesToIDs(ids ...int) *CurrencyCreate {
+	_c.mutation.AddSnapshotRatesToIDs(ids...)
+	return _c
+}
+
+// AddSnapshotRatesTo adds the "snapshot_rates_to" edges to the SnapshotRate entity.
+func (_c *CurrencyCreate) AddSnapshotRatesTo(v ...*SnapshotRate) *CurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotRatesToIDs(ids...)
 }
 
 // Mutation returns the CurrencyMutation object of the builder.
@@ -330,6 +361,38 @@ func (_c *CurrencyCreate) createSpec() (*Currency, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotRatesFromIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotRatesFromTable,
+			Columns: []string{currency.SnapshotRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotRatesToIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   currency.SnapshotRatesToTable,
+			Columns: []string{currency.SnapshotRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

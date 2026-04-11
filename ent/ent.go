@@ -18,6 +18,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -96,6 +97,7 @@ func checkColumn(t, c string) error {
 			recurringsubscription.Table: recurringsubscription.ValidColumn,
 			snapshot.Table:              snapshot.ValidColumn,
 			snapshotentry.Table:         snapshotentry.ValidColumn,
+			snapshotrate.Table:          snapshotrate.ValidColumn,
 			transaction.Table:           transaction.ValidColumn,
 			transactioncategory.Table:   transactioncategory.ValidColumn,
 			transactionentry.Table:      transactionentry.ValidColumn,

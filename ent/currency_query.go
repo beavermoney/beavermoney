@@ -16,6 +16,7 @@ import (
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -37,6 +38,8 @@ type CurrencyQuery struct {
 	withRecurringSubscriptions      *RecurringSubscriptionQuery
 	withCheckpoints                 *CheckpointQuery
 	withSnapshotEntries             *SnapshotEntryQuery
+	withSnapshotRatesFrom           *SnapshotRateQuery
+	withSnapshotRatesTo             *SnapshotRateQuery
 	loadTotal                       []func(context.Context, []*Currency) error
 	modifiers                       []func(*sql.Selector)
 	withNamedAccounts               map[string]*AccountQuery
@@ -46,6 +49,8 @@ type CurrencyQuery struct {
 	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
 	withNamedCheckpoints            map[string]*CheckpointQuery
 	withNamedSnapshotEntries        map[string]*SnapshotEntryQuery
+	withNamedSnapshotRatesFrom      map[string]*SnapshotRateQuery
+	withNamedSnapshotRatesTo        map[string]*SnapshotRateQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -229,6 +234,50 @@ func (_q *CurrencyQuery) QuerySnapshotEntries() *SnapshotEntryQuery {
 			sqlgraph.From(currency.Table, currency.FieldID, selector),
 			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotEntriesTable, currency.SnapshotEntriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotRatesFrom chains the current query on the "snapshot_rates_from" edge.
+func (_q *CurrencyQuery) QuerySnapshotRatesFrom() *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(currency.Table, currency.FieldID, selector),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotRatesFromTable, currency.SnapshotRatesFromColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotRatesTo chains the current query on the "snapshot_rates_to" edge.
+func (_q *CurrencyQuery) QuerySnapshotRatesTo() *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(currency.Table, currency.FieldID, selector),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, currency.SnapshotRatesToTable, currency.SnapshotRatesToColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -435,6 +484,8 @@ func (_q *CurrencyQuery) Clone() *CurrencyQuery {
 		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
 		withCheckpoints:            _q.withCheckpoints.Clone(),
 		withSnapshotEntries:        _q.withSnapshotEntries.Clone(),
+		withSnapshotRatesFrom:      _q.withSnapshotRatesFrom.Clone(),
+		withSnapshotRatesTo:        _q.withSnapshotRatesTo.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -519,6 +570,28 @@ func (_q *CurrencyQuery) WithSnapshotEntries(opts ...func(*SnapshotEntryQuery)) 
 	return _q
 }
 
+// WithSnapshotRatesFrom tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_rates_from" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *CurrencyQuery) WithSnapshotRatesFrom(opts ...func(*SnapshotRateQuery)) *CurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotRatesFrom = query
+	return _q
+}
+
+// WithSnapshotRatesTo tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_rates_to" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *CurrencyQuery) WithSnapshotRatesTo(opts ...func(*SnapshotRateQuery)) *CurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotRatesTo = query
+	return _q
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -597,7 +670,7 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 	var (
 		nodes       = []*Currency{}
 		_spec       = _q.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [9]bool{
 			_q.withAccounts != nil,
 			_q.withInvestments != nil,
 			_q.withTransactionEntries != nil,
@@ -605,6 +678,8 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 			_q.withRecurringSubscriptions != nil,
 			_q.withCheckpoints != nil,
 			_q.withSnapshotEntries != nil,
+			_q.withSnapshotRatesFrom != nil,
+			_q.withSnapshotRatesTo != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -681,6 +756,20 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 			return nil, err
 		}
 	}
+	if query := _q.withSnapshotRatesFrom; query != nil {
+		if err := _q.loadSnapshotRatesFrom(ctx, query, nodes,
+			func(n *Currency) { n.Edges.SnapshotRatesFrom = []*SnapshotRate{} },
+			func(n *Currency, e *SnapshotRate) { n.Edges.SnapshotRatesFrom = append(n.Edges.SnapshotRatesFrom, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSnapshotRatesTo; query != nil {
+		if err := _q.loadSnapshotRatesTo(ctx, query, nodes,
+			func(n *Currency) { n.Edges.SnapshotRatesTo = []*SnapshotRate{} },
+			func(n *Currency, e *SnapshotRate) { n.Edges.SnapshotRatesTo = append(n.Edges.SnapshotRatesTo, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedAccounts {
 		if err := _q.loadAccounts(ctx, query, nodes,
 			func(n *Currency) { n.appendNamedAccounts(name) },
@@ -727,6 +816,20 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 		if err := _q.loadSnapshotEntries(ctx, query, nodes,
 			func(n *Currency) { n.appendNamedSnapshotEntries(name) },
 			func(n *Currency, e *SnapshotEntry) { n.appendNamedSnapshotEntries(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotRatesFrom {
+		if err := _q.loadSnapshotRatesFrom(ctx, query, nodes,
+			func(n *Currency) { n.appendNamedSnapshotRatesFrom(name) },
+			func(n *Currency, e *SnapshotRate) { n.appendNamedSnapshotRatesFrom(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotRatesTo {
+		if err := _q.loadSnapshotRatesTo(ctx, query, nodes,
+			func(n *Currency) { n.appendNamedSnapshotRatesTo(name) },
+			func(n *Currency, e *SnapshotRate) { n.appendNamedSnapshotRatesTo(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -948,6 +1051,66 @@ func (_q *CurrencyQuery) loadSnapshotEntries(ctx context.Context, query *Snapsho
 	}
 	return nil
 }
+func (_q *CurrencyQuery) loadSnapshotRatesFrom(ctx context.Context, query *SnapshotRateQuery, nodes []*Currency, init func(*Currency), assign func(*Currency, *SnapshotRate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Currency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotrate.FieldFromCurrencyID)
+	}
+	query.Where(predicate.SnapshotRate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(currency.SnapshotRatesFromColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.FromCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "from_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *CurrencyQuery) loadSnapshotRatesTo(ctx context.Context, query *SnapshotRateQuery, nodes []*Currency, init func(*Currency), assign func(*Currency, *SnapshotRate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Currency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotrate.FieldToCurrencyID)
+	}
+	query.Where(predicate.SnapshotRate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(currency.SnapshotRatesToColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ToCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "to_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (_q *CurrencyQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
@@ -1137,6 +1300,34 @@ func (_q *CurrencyQuery) WithNamedSnapshotEntries(name string, opts ...func(*Sna
 		_q.withNamedSnapshotEntries = make(map[string]*SnapshotEntryQuery)
 	}
 	_q.withNamedSnapshotEntries[name] = query
+	return _q
+}
+
+// WithNamedSnapshotRatesFrom tells the query-builder to eager-load the nodes that are connected to the "snapshot_rates_from"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *CurrencyQuery) WithNamedSnapshotRatesFrom(name string, opts ...func(*SnapshotRateQuery)) *CurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotRatesFrom == nil {
+		_q.withNamedSnapshotRatesFrom = make(map[string]*SnapshotRateQuery)
+	}
+	_q.withNamedSnapshotRatesFrom[name] = query
+	return _q
+}
+
+// WithNamedSnapshotRatesTo tells the query-builder to eager-load the nodes that are connected to the "snapshot_rates_to"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *CurrencyQuery) WithNamedSnapshotRatesTo(name string, opts ...func(*SnapshotRateQuery)) *CurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotRatesTo == nil {
+		_q.withNamedSnapshotRatesTo = make(map[string]*SnapshotRateQuery)
+	}
+	_q.withNamedSnapshotRatesTo[name] = query
 	return _q
 }
 
