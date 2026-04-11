@@ -1413,28 +1413,6 @@ type Query {
     """
     where: SnapshotEntryWhereInput
   ): SnapshotEntryConnection!
-  snapshotRates(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: Cursor
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: Cursor
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-    """
-    Filtering options for SnapshotRates returned from the connection.
-    """
-    where: SnapshotRateWhereInput
-  ): SnapshotRateConnection!
   transactions(
     """
     Returns the elements in the list that come after the specified cursor.

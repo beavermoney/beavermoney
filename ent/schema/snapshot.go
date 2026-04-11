@@ -5,6 +5,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -48,6 +49,7 @@ func (Snapshot) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entsql.OnDelete(entsql.Cascade),
 			),
 		edge.To("snapshot_rates", SnapshotRate.Type).
 			Annotations(
@@ -55,6 +57,7 @@ func (Snapshot) Edges() []ent.Edge {
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
+				entsql.OnDelete(entsql.Cascade),
 			),
 	}
 }
@@ -368,7 +371,6 @@ func (SnapshotRate) Indexes() []ent.Index {
 
 func (SnapshotRate) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entgql.QueryField(),
 		entgql.RelayConnection(),
 	}
 }

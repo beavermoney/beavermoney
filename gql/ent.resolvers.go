@@ -104,11 +104,6 @@ func (r *queryResolver) SnapshotEntries(ctx context.Context, after *entgql.Curso
 	return r.entClient.SnapshotEntry.Query().Paginate(ctx, after, first, before, last, ent.WithSnapshotEntryFilter(where.Filter))
 }
 
-// SnapshotRates is the resolver for the snapshotRates field.
-func (r *queryResolver) SnapshotRates(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotRateWhereInput) (*ent.SnapshotRateConnection, error) {
-	panic(fmt.Errorf("not implemented: SnapshotRates - snapshotRates"))
-}
-
 // Transactions is the resolver for the transactions field.
 func (r *queryResolver) Transactions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) (*ent.TransactionConnection, error) {
 	return r.entClient.Transaction.Query().Paginate(ctx, after, first, before, last, ent.WithTransactionOrder(orderBy), ent.WithTransactionFilter(where.Filter))
@@ -1112,3 +1107,15 @@ type transactionEntryWhereInputResolver struct{ *Resolver }
 type updateInvestmentLotInputResolver struct{ *Resolver }
 type updateRecurringSubscriptionInputResolver struct{ *Resolver }
 type updateTransactionEntryInputResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *queryResolver) SnapshotRates(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotRateWhereInput) (*ent.SnapshotRateConnection, error) {
+	panic(fmt.Errorf("not implemented: SnapshotRates - snapshotRates"))
+}
+*/
