@@ -1912,7 +1912,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(currencyIDs[i]).
 				SetToCurrencyID(currencyIDs[j]).
-				SetRate(decimal.NewFromFloat(float64(resp.JSON200.Rate))),
+				SetRate(decimal.NewFromFloat(float64(resp.JSON200.Rate)).Round(6)),
 			)
 		}
 	}

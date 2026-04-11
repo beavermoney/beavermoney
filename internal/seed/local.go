@@ -51,7 +51,7 @@ func Seed(
 	if usdToCadResp.JSON200 == nil {
 		panic(fmt.Errorf("failed to get USD/CAD FX rate: unexpected status %s", usdToCadResp.Status()))
 	}
-	usdToCadRate := decimal.NewFromFloat(float64(usdToCadResp.JSON200.Rate))
+	usdToCadRate := decimal.NewFromFloat32(usdToCadResp.JSON200.Rate)
 
 	joey := entClient.User.Create().
 		SetEmail("joey@beavermoney.app").
@@ -313,10 +313,13 @@ func SeedDemoHousehold(
 		return fmt.Errorf("failed to load household currency: %w", err)
 	}
 
-	// Demo household is always CAD / Canada
+	usdCurrency, err := client.Currency.Query().Where(currency.CodeEQ("USD")).Only(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to load USD currency: %w", err)
+	}
+
 	config := getDemoConfig()
 
-	// Start exactly 26 weeks ago so the final week-end lands on now.
 	startDate := time.Now().UTC().AddDate(0, 0, -26*7)
 	accounts, err := createDemoAccounts(
 		ctx,
@@ -326,6 +329,7 @@ func SeedDemoHousehold(
 		householdCurrency,
 		config,
 		startDate,
+		usdCurrency,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create demo accounts: %w", err)
@@ -414,7 +418,7 @@ func SeedDemoHousehold(
 			)
 		}
 
-		if err := createSnapshotAtDate(ctx, client, household, userID, snapshotDate); err != nil {
+		if err := createSnapshotAtDate(ctx, client, household, userID, snapshotDate, frankfurterClient); err != nil {
 			return fmt.Errorf(
 				"failed to create snapshot for week %d: %w",
 				weekNumber,
@@ -460,6 +464,7 @@ type demoAccounts struct {
 	checking   *ent.Account
 	creditCard *ent.Account
 	investment *ent.Account
+	usdSavings *ent.Account
 }
 
 func createDemoAccounts(
@@ -470,6 +475,7 @@ func createDemoAccounts(
 	householdCurrency *ent.Currency,
 	config demoConfig,
 	createdAt time.Time,
+	usdCurrency *ent.Currency,
 ) (*demoAccounts, error) {
 	checking, err := client.Account.Create().
 		SetName(config.checkingName).
@@ -516,10 +522,27 @@ func createDemoAccounts(
 	}
 	investmentAccount.Edges.Currency = householdCurrency
 
+	usdSavings, err := client.Account.Create().
+		SetName("Chase Savings").
+		SetIcon("chase.com").
+		SetCurrency(usdCurrency).
+		SetFxRate(decimal.NewFromInt(1)).
+		SetUserID(userID).
+		SetHouseholdID(household.ID).
+		SetType(account.TypeLiquidity).
+		SetValue(decimal.NewFromFloat(5000)).
+		SetCreateTime(createdAt).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create USD savings account: %w", err)
+	}
+	usdSavings.Edges.Currency = usdCurrency
+
 	return &demoAccounts{
 		checking:   checking,
 		creditCard: creditCard,
 		investment: investmentAccount,
+		usdSavings: usdSavings,
 	}, nil
 }
 
@@ -960,9 +983,11 @@ func createSnapshotAtDate(
 	household *ent.Household,
 	_ int,
 	snapshotDate time.Time,
+	frankfurterClient *frankfurter.ClientWithResponses,
 ) error {
 	accounts, err := client.Account.Query().
 		Where(account.HouseholdIDEQ(household.ID)).
+		WithCurrency().
 		All(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to query accounts: %w", err)
@@ -1041,23 +1066,36 @@ func createSnapshotAtDate(
 		}
 	}
 
-	currencyIDs := make([]int, 0)
+	type currencyInfo struct {
+		ID   int
+		Code string
+	}
+	currencies := make([]currencyInfo, 0)
 	seen := make(map[int]bool)
-	for key := range grouped {
-		if !seen[key.CurrencyID] {
-			seen[key.CurrencyID] = true
-			currencyIDs = append(currencyIDs, key.CurrencyID)
+	for _, acc := range accounts {
+		if !seen[acc.CurrencyID] {
+			seen[acc.CurrencyID] = true
+			currencies = append(currencies, currencyInfo{ID: acc.CurrencyID, Code: acc.Edges.Currency.Code})
 		}
 	}
 
 	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
-	for i := 0; i < len(currencyIDs); i++ {
-		for j := i + 1; j < len(currencyIDs); j++ {
+	date := openapi_types.Date{Time: snapshotDate}
+	for i := 0; i < len(currencies); i++ {
+		for j := i + 1; j < len(currencies); j++ {
+			resp, err := frankfurterClient.GetRateWithResponse(ctx, currencies[i].Code, currencies[j].Code, &frankfurter.GetRateParams{Date: &date})
+			if err != nil {
+				return fmt.Errorf("failed to get FX rate %s->%s: %w", currencies[i].Code, currencies[j].Code, err)
+			}
+			if resp.JSON200 == nil {
+				return fmt.Errorf("no rate returned for %s->%s", currencies[i].Code, currencies[j].Code)
+			}
+
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
 				SetSnapshotID(snap.ID).
-				SetFromCurrencyID(currencyIDs[i]).
-				SetToCurrencyID(currencyIDs[j]).
-				SetRate(decimal.NewFromInt(1)),
+				SetFromCurrencyID(currencies[i].ID).
+				SetToCurrencyID(currencies[j].ID).
+				SetRate(decimal.NewFromFloat(float64(resp.JSON200.Rate)).Round(6)),
 			)
 		}
 	}
