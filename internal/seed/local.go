@@ -1095,7 +1095,7 @@ func createSnapshotAtDate(
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(currencies[i].ID).
 				SetToCurrencyID(currencies[j].ID).
-				SetRate(decimal.NewFromFloat(float64(resp.JSON200.Rate)).Round(6)),
+				SetRate(decimal.NewFromFloat32(resp.JSON200.Rate).Round(6)),
 			)
 		}
 	}

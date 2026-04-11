@@ -326,7 +326,7 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 		if resp.JSON200 == nil {
 			return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
 		}
-		fxRate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
+		fxRate = decimal.NewFromFloat32(resp.JSON200.Rate)
 	}
 
 	account, err := client.Account.Create().
@@ -733,7 +733,7 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 		if resp.JSON200 == nil {
 			return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
 		}
-		fxRate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
+		fxRate = decimal.NewFromFloat32(resp.JSON200.Rate)
 	}
 
 	subscription, err := client.RecurringSubscription.Create().
@@ -802,7 +802,7 @@ func (r *mutationResolver) UpdateRecurringSubscription(ctx context.Context, id i
 			if resp.JSON200 == nil {
 				return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
 			}
-			fxRate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
+			fxRate = decimal.NewFromFloat32(resp.JSON200.Rate)
 		}
 	}
 
@@ -1912,7 +1912,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(currencyIDs[i]).
 				SetToCurrencyID(currencyIDs[j]).
-				SetRate(decimal.NewFromFloat(float64(resp.JSON200.Rate)).Round(6)),
+				SetRate(decimal.NewFromFloat32(resp.JSON200.Rate).Round(6)),
 			)
 		}
 	}
@@ -2053,7 +2053,7 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 
 		rates := make(map[string]decimal.Decimal, len(uniqueCurrencies))
 		for _, rate := range *resp.JSON200 {
-			decimalRate := decimal.NewFromFloat(float64(rate.Rate))
+			decimalRate := decimal.NewFromFloat32(rate.Rate)
 			if decimalRate.IsZero() {
 				err = fmt.Errorf("invalid FX rate (zero) for currency %s", rate.Quote)
 				r.logger.Error("Failed to fetch FX rates", "error", err)
