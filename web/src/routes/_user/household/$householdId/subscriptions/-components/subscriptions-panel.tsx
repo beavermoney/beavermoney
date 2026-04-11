@@ -174,7 +174,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         activeCount: activeSubscriptions.length,
         sortedSubscriptions: subscriptionsToSort,
       }
-    }, [data, sortBy])
+    }, [data, sortBy, convert])
 
   return (
     <Fragment>

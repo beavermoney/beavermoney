@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"beavermoney.app/ent"
+	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
@@ -420,6 +422,73 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 				r.logger.Error("Failed to create snapshot rates", "error", err, "snapshotID", snap.ID)
 				continue
 			}
+		}
+	}
+
+	return nil
+}
+
+func (r *mutationResolver) syncHouseholdCurrenciesFromAccounts(
+	ctx context.Context,
+	client *ent.Client,
+	hh *ent.Household,
+	primaryHC *ent.HouseholdCurrency,
+) error {
+	accounts, err := client.Account.Query().
+		Where(account.HouseholdIDEQ(hh.ID)).
+		WithCurrency().
+		All(ctx)
+	if err != nil {
+		return err
+	}
+
+	seen := map[int]bool{hh.CurrencyID: true}
+	var newHCs []*ent.HouseholdCurrency
+	for _, acc := range accounts {
+		if seen[acc.CurrencyID] {
+			continue
+		}
+		seen[acc.CurrencyID] = true
+		hcID, err := client.HouseholdCurrency.Create().
+			SetHouseholdID(hh.ID).
+			SetCurrencyID(acc.CurrencyID).
+			SetImportant(true).
+			OnConflict(
+				sql.ConflictColumns(householdcurrency.FieldHouseholdID, householdcurrency.FieldCurrencyID),
+			).
+			Ignore().
+			ID(ctx)
+		if err != nil {
+			return err
+		}
+		newHCs = append(newHCs, &ent.HouseholdCurrency{
+			ID:         hcID,
+			CurrencyID: acc.CurrencyID,
+			Edges: ent.HouseholdCurrencyEdges{
+				Currency: acc.Edges.Currency,
+			},
+		})
+	}
+
+	if len(newHCs) == 0 {
+		return nil
+	}
+
+	primaryHC.Edges.Currency, err = client.Currency.Get(ctx, hh.CurrencyID)
+	if err != nil {
+		return err
+	}
+	allHCs := append([]*ent.HouseholdCurrency{primaryHC}, newHCs...)
+
+	for _, hc := range newHCs {
+		existing := make([]*ent.HouseholdCurrency, 0, len(allHCs)-1)
+		for _, other := range allHCs {
+			if other.ID != hc.ID {
+				existing = append(existing, other)
+			}
+		}
+		if err := r.syncHouseholdRatesForCurrency(ctx, client, hh.ID, hc.Edges.Currency, existing); err != nil {
+			r.logger.Error("Failed to sync rates for currency", "error", err, "currencyID", hc.CurrencyID)
 		}
 	}
 
