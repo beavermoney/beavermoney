@@ -1,16 +1,3 @@
-extend type Account {
-  balanceInDisplayCurrency: String
-  valueInDisplayCurrency: String
-}
-
-extend type Investment {
-  valueInDisplayCurrency: String
-}
-
-extend type RecurringSubscription {
-  costInDisplayCurrency: String
-}
-
 extend type Household {
   financialReport(period: TimePeriodInput!): FinancialReport!
   netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!

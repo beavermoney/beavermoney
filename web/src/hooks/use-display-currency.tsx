@@ -1,6 +1,7 @@
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, useCallback, useContext, useMemo } from 'react'
 import { graphql, useFragment } from 'react-relay'
 import { useStore } from '@tanstack/react-store'
+import currency from 'currency.js'
 import type { useDisplayCurrencyFragment$key } from './__generated__/useDisplayCurrencyFragment.graphql'
 import { useUser } from './use-user'
 import { displayCurrencyIdStore } from './display-currency-store'
@@ -15,6 +16,16 @@ const UseDisplayCurrencyFragment = graphql`
       id
       important
       currency {
+        code
+      }
+    }
+    # eslint-disable-next-line relay/unused-fields
+    householdRates {
+      rate
+      fromCurrency {
+        code
+      }
+      toCurrency {
         code
       }
     }
@@ -61,21 +72,46 @@ export const useDisplayCurrency = () => {
   const user = useUser()
   const storedId = useStore(displayCurrencyIdStore)
 
-  return useMemo(() => {
+  const code = useMemo(() => {
     if (storedId) {
       const hc = (data.householdCurrencies ?? []).find(
         (c) => c.id === storedId && c.important,
       )
-      if (hc) return { code: hc.currency.code }
+      if (hc) return hc.currency.code
     }
 
     const userHousehold = (data.userHouseholds ?? []).find(
       (uh) => uh.user.id === user.id,
     )
     if (userHousehold?.defaultCurrency?.currency) {
-      return { code: userHousehold.defaultCurrency.currency.code }
+      return userHousehold.defaultCurrency.currency.code
     }
 
-    return { code: data.currency.code }
+    return data.currency.code
   }, [data, user.id, storedId])
+
+  const rateMap = useMemo(() => {
+    const map = new Map<string, currency>()
+    for (const rate of data.householdRates ?? []) {
+      map.set(
+        `${rate.fromCurrency.code}->${rate.toCurrency.code}`,
+        currency(rate.rate, { precision: 8 }),
+      )
+    }
+    return map
+  }, [data.householdRates])
+
+  const convert = useCallback(
+    (amount: currency | string | number, fromCurrencyCode: string) => {
+      if (fromCurrencyCode === code) return currency(amount)
+      const rate = rateMap.get(`${fromCurrencyCode}->${code}`)
+      if (rate == null) {
+        throw new Error(`Missing exchange rate: ${fromCurrencyCode} → ${code}`)
+      }
+      return currency(amount).multiply(rate.value)
+    },
+    [code, rateMap],
+  )
+
+  return { code, convert }
 }

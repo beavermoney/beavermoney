@@ -64,18 +64,29 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 		return nil, fmt.Errorf("failed to create household: %w", err)
 	}
 
+	householdCtx := context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), household.ID)
+
+	primaryHC, err := client.HouseholdCurrency.Create().
+		SetHouseholdID(household.ID).
+		SetCurrencyID(household.CurrencyID).
+		SetImportant(true).
+		Save(householdCtx)
+	if err != nil {
+		r.logger.Error("Failed to create primary household currency", "error", err)
+		return nil, fmt.Errorf("failed to create primary household currency: %w", err)
+	}
+
 	// Create UserHousehold relationship (user is admin of the new household)
 	err = client.UserHousehold.Create().
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetRole(userhousehold.RoleAdmin).
+		SetDefaultCurrencyID(primaryHC.ID).
 		Exec(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to create user-household relationship", "error", err)
 		return nil, fmt.Errorf("failed to create user-household relationship: %w", err)
 	}
-
-	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), household.ID)
 
 	// Seed default transaction categories for the new household
 	if err := seed.SeedHouseholdCategories(householdCtx, client, household.ID); err != nil {
@@ -1655,6 +1666,32 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	}
 	if hasAccounts {
 		return nil, fmt.Errorf("cannot delete a currency that is used by accounts")
+	}
+
+	hasSubscriptions, err := client.RecurringSubscription.Query().
+		Where(
+			recurringsubscription.HouseholdIDEQ(householdID),
+			recurringsubscription.CurrencyIDEQ(hc.CurrencyID),
+		).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if hasSubscriptions {
+		return nil, fmt.Errorf("cannot delete a currency that is used by subscriptions")
+	}
+
+	isUserDefault, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.HouseholdIDEQ(householdID),
+			userhousehold.DefaultCurrencyIDEQ(hc.ID),
+		).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if isUserDefault {
+		return nil, fmt.Errorf("cannot delete a currency that is a user's default display currency")
 	}
 
 	_, err = client.HouseholdRate.Delete().

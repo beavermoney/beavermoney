@@ -62,7 +62,10 @@ const AccountsPanelFragment = graphql`
           type
           category
           name
-          valueInDisplayCurrency
+          value
+          currency {
+            code
+          }
           ...accountCardFragment
         }
       }
@@ -91,7 +94,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const environment = useRelayEnvironment()
   const { household: _household } = useHousehold()
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
@@ -190,7 +193,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       })
       .map((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return currency(edge.node.valueInDisplayCurrency ?? 0)
+        return convert(edge.node.value, edge.node.currency.code)
       })
       .reduce((a, b) => a.add(b), currency(0))
 
@@ -201,7 +204,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       })
       .map((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return currency(edge.node.valueInDisplayCurrency ?? 0)
+        return convert(edge.node.value, edge.node.currency.code)
       })
       .reduce((a, b) => a.add(b), currency(0))
 
@@ -212,7 +215,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       { label: 'Assets', value: assets },
       { label: 'Liabilities', value: liabilities },
     ]
-  }, [data.accounts])
+  }, [data.accounts, convert])
 
   return (
     <Fragment>
@@ -356,8 +359,9 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                     value: accounts
                       .map((account) => {
                         invariant(account?.node, 'Account node is null')
-                        return currency(
-                          account.node.valueInDisplayCurrency ?? 0,
+                        return convert(
+                          account.node.value,
+                          account.node.currency.code,
                         )
                       })
                       .reduce((a, b) => a.add(b), currency(0)),

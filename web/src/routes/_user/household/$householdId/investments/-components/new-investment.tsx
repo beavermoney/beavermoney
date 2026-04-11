@@ -127,7 +127,6 @@ const newInvestmentMutation = graphql`
       node {
         id
         name
-        valueInDisplayCurrency
         account {
           name
           id

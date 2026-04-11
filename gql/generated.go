@@ -83,26 +83,24 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Account struct {
-		Archived                 func(childComplexity int) int
-		Balance                  func(childComplexity int) int
-		BalanceInDisplayCurrency func(childComplexity int) int
-		Category                 func(childComplexity int) int
-		CreateTime               func(childComplexity int) int
-		Currency                 func(childComplexity int) int
-		CurrencyID               func(childComplexity int) int
-		Household                func(childComplexity int) int
-		HouseholdID              func(childComplexity int) int
-		ID                       func(childComplexity int) int
-		Icon                     func(childComplexity int) int
-		Investments              func(childComplexity int) int
-		Name                     func(childComplexity int) int
-		TransactionEntries       func(childComplexity int) int
-		Type                     func(childComplexity int) int
-		UpdateTime               func(childComplexity int) int
-		User                     func(childComplexity int) int
-		UserID                   func(childComplexity int) int
-		Value                    func(childComplexity int) int
-		ValueInDisplayCurrency   func(childComplexity int) int
+		Archived           func(childComplexity int) int
+		Balance            func(childComplexity int) int
+		Category           func(childComplexity int) int
+		CreateTime         func(childComplexity int) int
+		Currency           func(childComplexity int) int
+		CurrencyID         func(childComplexity int) int
+		Household          func(childComplexity int) int
+		HouseholdID        func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		Icon               func(childComplexity int) int
+		Investments        func(childComplexity int) int
+		Name               func(childComplexity int) int
+		TransactionEntries func(childComplexity int) int
+		Type               func(childComplexity int) int
+		UpdateTime         func(childComplexity int) int
+		User               func(childComplexity int) int
+		UserID             func(childComplexity int) int
+		Value              func(childComplexity int) int
 	}
 
 	AccountConnection struct {
@@ -263,23 +261,22 @@ type ComplexityRoot struct {
 	}
 
 	Investment struct {
-		Account                func(childComplexity int) int
-		AccountID              func(childComplexity int) int
-		Amount                 func(childComplexity int) int
-		CreateTime             func(childComplexity int) int
-		Currency               func(childComplexity int) int
-		CurrencyID             func(childComplexity int) int
-		Household              func(childComplexity int) int
-		HouseholdID            func(childComplexity int) int
-		ID                     func(childComplexity int) int
-		InvestmentLots         func(childComplexity int) int
-		Name                   func(childComplexity int) int
-		Quote                  func(childComplexity int) int
-		Symbol                 func(childComplexity int) int
-		Type                   func(childComplexity int) int
-		UpdateTime             func(childComplexity int) int
-		Value                  func(childComplexity int) int
-		ValueInDisplayCurrency func(childComplexity int) int
+		Account        func(childComplexity int) int
+		AccountID      func(childComplexity int) int
+		Amount         func(childComplexity int) int
+		CreateTime     func(childComplexity int) int
+		Currency       func(childComplexity int) int
+		CurrencyID     func(childComplexity int) int
+		Household      func(childComplexity int) int
+		HouseholdID    func(childComplexity int) int
+		ID             func(childComplexity int) int
+		InvestmentLots func(childComplexity int) int
+		Name           func(childComplexity int) int
+		Quote          func(childComplexity int) int
+		Symbol         func(childComplexity int) int
+		Type           func(childComplexity int) int
+		UpdateTime     func(childComplexity int) int
+		Value          func(childComplexity int) int
 	}
 
 	InvestmentConnection struct {
@@ -394,23 +391,22 @@ type ComplexityRoot struct {
 	}
 
 	RecurringSubscription struct {
-		Active                func(childComplexity int) int
-		Cost                  func(childComplexity int) int
-		CostInDisplayCurrency func(childComplexity int) int
-		CreateTime            func(childComplexity int) int
-		Currency              func(childComplexity int) int
-		CurrencyID            func(childComplexity int) int
-		Household             func(childComplexity int) int
-		HouseholdID           func(childComplexity int) int
-		ID                    func(childComplexity int) int
-		Icon                  func(childComplexity int) int
-		Interval              func(childComplexity int) int
-		IntervalCount         func(childComplexity int) int
-		Name                  func(childComplexity int) int
-		StartDate             func(childComplexity int) int
-		UpdateTime            func(childComplexity int) int
-		User                  func(childComplexity int) int
-		UserID                func(childComplexity int) int
+		Active        func(childComplexity int) int
+		Cost          func(childComplexity int) int
+		CreateTime    func(childComplexity int) int
+		Currency      func(childComplexity int) int
+		CurrencyID    func(childComplexity int) int
+		Household     func(childComplexity int) int
+		HouseholdID   func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Icon          func(childComplexity int) int
+		Interval      func(childComplexity int) int
+		IntervalCount func(childComplexity int) int
+		Name          func(childComplexity int) int
+		StartDate     func(childComplexity int) int
+		UpdateTime    func(childComplexity int) int
+		User          func(childComplexity int) int
+		UserID        func(childComplexity int) int
 	}
 
 	RecurringSubscriptionConnection struct {
@@ -629,9 +625,6 @@ type AccountResolver interface {
 	Balance(ctx context.Context, obj *ent.Account) (string, error)
 
 	Value(ctx context.Context, obj *ent.Account) (string, error)
-
-	BalanceInDisplayCurrency(ctx context.Context, obj *ent.Account) (*string, error)
-	ValueInDisplayCurrency(ctx context.Context, obj *ent.Account) (*string, error)
 }
 type FinancialReportResolver interface {
 	IncomeBreakdown(ctx context.Context, obj *model.FinancialReport) (*model.CategoryTypeAggregate, error)
@@ -649,8 +642,6 @@ type InvestmentResolver interface {
 	Amount(ctx context.Context, obj *ent.Investment) (string, error)
 	Quote(ctx context.Context, obj *ent.Investment) (string, error)
 	Value(ctx context.Context, obj *ent.Investment) (string, error)
-
-	ValueInDisplayCurrency(ctx context.Context, obj *ent.Investment) (*string, error)
 }
 type InvestmentLotResolver interface {
 	Amount(ctx context.Context, obj *ent.InvestmentLot) (string, error)
@@ -710,8 +701,6 @@ type QueryResolver interface {
 }
 type RecurringSubscriptionResolver interface {
 	Cost(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
-
-	CostInDisplayCurrency(ctx context.Context, obj *ent.RecurringSubscription) (*string, error)
 }
 type SnapshotEntryResolver interface {
 	Liquidity(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
@@ -930,12 +919,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Account.Balance(childComplexity), true
-	case "Account.balanceInDisplayCurrency":
-		if e.complexity.Account.BalanceInDisplayCurrency == nil {
-			break
-		}
-
-		return e.complexity.Account.BalanceInDisplayCurrency(childComplexity), true
 	case "Account.category":
 		if e.complexity.Account.Category == nil {
 			break
@@ -1032,12 +1015,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Account.Value(childComplexity), true
-	case "Account.valueInDisplayCurrency":
-		if e.complexity.Account.ValueInDisplayCurrency == nil {
-			break
-		}
-
-		return e.complexity.Account.ValueInDisplayCurrency(childComplexity), true
 
 	case "AccountConnection.edges":
 		if e.complexity.AccountConnection.Edges == nil {
@@ -1775,12 +1752,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Investment.Value(childComplexity), true
-	case "Investment.valueInDisplayCurrency":
-		if e.complexity.Investment.ValueInDisplayCurrency == nil {
-			break
-		}
-
-		return e.complexity.Investment.ValueInDisplayCurrency(childComplexity), true
 
 	case "InvestmentConnection.edges":
 		if e.complexity.InvestmentConnection.Edges == nil {
@@ -2500,12 +2471,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.RecurringSubscription.Cost(childComplexity), true
-	case "RecurringSubscription.costInDisplayCurrency":
-		if e.complexity.RecurringSubscription.CostInDisplayCurrency == nil {
-			break
-		}
-
-		return e.complexity.RecurringSubscription.CostInDisplayCurrency(childComplexity), true
 	case "RecurringSubscription.createTime":
 		if e.complexity.RecurringSubscription.CreateTime == nil {
 			break
@@ -5372,68 +5337,8 @@ func (ec *executionContext) fieldContext_Account_investments(_ context.Context, 
 				return ec.fieldContext_Investment_currency(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Investment_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Account_balanceInDisplayCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Account_balanceInDisplayCurrency,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Account().BalanceInDisplayCurrency(ctx, obj)
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Account_balanceInDisplayCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Account",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Account_valueInDisplayCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Account_valueInDisplayCurrency,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Account().ValueInDisplayCurrency(ctx, obj)
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Account_valueInDisplayCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Account",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5602,10 +5507,6 @@ func (ec *executionContext) fieldContext_AccountEdge_node(_ context.Context, fie
 				return ec.fieldContext_Account_transactionEntries(ctx, field)
 			case "investments":
 				return ec.fieldContext_Account_investments(ctx, field)
-			case "balanceInDisplayCurrency":
-				return ec.fieldContext_Account_balanceInDisplayCurrency(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Account_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
 		},
@@ -6167,10 +6068,6 @@ func (ec *executionContext) fieldContext_Currency_accounts(_ context.Context, fi
 				return ec.fieldContext_Account_transactionEntries(ctx, field)
 			case "investments":
 				return ec.fieldContext_Account_investments(ctx, field)
-			case "balanceInDisplayCurrency":
-				return ec.fieldContext_Account_balanceInDisplayCurrency(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Account_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
 		},
@@ -6234,8 +6131,6 @@ func (ec *executionContext) fieldContext_Currency_investments(_ context.Context,
 				return ec.fieldContext_Investment_currency(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Investment_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -6431,8 +6326,6 @@ func (ec *executionContext) fieldContext_Currency_recurringSubscriptions(_ conte
 				return ec.fieldContext_RecurringSubscription_currency(ctx, field)
 			case "user":
 				return ec.fieldContext_RecurringSubscription_user(ctx, field)
-			case "costInDisplayCurrency":
-				return ec.fieldContext_RecurringSubscription_costInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscription", field.Name)
 		},
@@ -9609,10 +9502,6 @@ func (ec *executionContext) fieldContext_Investment_account(_ context.Context, f
 				return ec.fieldContext_Account_transactionEntries(ctx, field)
 			case "investments":
 				return ec.fieldContext_Account_investments(ctx, field)
-			case "balanceInDisplayCurrency":
-				return ec.fieldContext_Account_balanceInDisplayCurrency(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Account_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
 		},
@@ -9809,35 +9698,6 @@ func (ec *executionContext) fieldContext_Investment_investmentLots(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _Investment_valueInDisplayCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Investment_valueInDisplayCurrency,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Investment().ValueInDisplayCurrency(ctx, obj)
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_Investment_valueInDisplayCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Investment",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _InvestmentConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.InvestmentConnection) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -9997,8 +9857,6 @@ func (ec *executionContext) fieldContext_InvestmentEdge_node(_ context.Context, 
 				return ec.fieldContext_Investment_currency(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Investment_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -10400,8 +10258,6 @@ func (ec *executionContext) fieldContext_InvestmentLot_investment(_ context.Cont
 				return ec.fieldContext_Investment_currency(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Investment_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -14119,35 +13975,6 @@ func (ec *executionContext) fieldContext_RecurringSubscription_user(_ context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _RecurringSubscription_costInDisplayCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.RecurringSubscription) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_RecurringSubscription_costInDisplayCurrency,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.RecurringSubscription().CostInDisplayCurrency(ctx, obj)
-		},
-		nil,
-		ec.marshalOString2ᚖstring,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_RecurringSubscription_costInDisplayCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "RecurringSubscription",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _RecurringSubscriptionConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.RecurringSubscriptionConnection) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -14307,8 +14134,6 @@ func (ec *executionContext) fieldContext_RecurringSubscriptionEdge_node(_ contex
 				return ec.fieldContext_RecurringSubscription_currency(ctx, field)
 			case "user":
 				return ec.fieldContext_RecurringSubscription_user(ctx, field)
-			case "costInDisplayCurrency":
-				return ec.fieldContext_RecurringSubscription_costInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscription", field.Name)
 		},
@@ -18000,10 +17825,6 @@ func (ec *executionContext) fieldContext_TransactionEntry_account(_ context.Cont
 				return ec.fieldContext_Account_transactionEntries(ctx, field)
 			case "investments":
 				return ec.fieldContext_Account_investments(ctx, field)
-			case "balanceInDisplayCurrency":
-				return ec.fieldContext_Account_balanceInDisplayCurrency(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Account_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
 		},
@@ -18598,10 +18419,6 @@ func (ec *executionContext) fieldContext_User_accounts(_ context.Context, field 
 				return ec.fieldContext_Account_transactionEntries(ctx, field)
 			case "investments":
 				return ec.fieldContext_Account_investments(ctx, field)
-			case "balanceInDisplayCurrency":
-				return ec.fieldContext_Account_balanceInDisplayCurrency(ctx, field)
-			case "valueInDisplayCurrency":
-				return ec.fieldContext_Account_valueInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
 		},
@@ -18769,8 +18586,6 @@ func (ec *executionContext) fieldContext_User_recurringSubscriptions(_ context.C
 				return ec.fieldContext_RecurringSubscription_currency(ctx, field)
 			case "user":
 				return ec.fieldContext_RecurringSubscription_user(ctx, field)
-			case "costInDisplayCurrency":
-				return ec.fieldContext_RecurringSubscription_costInDisplayCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RecurringSubscription", field.Name)
 		},
@@ -31279,72 +31094,6 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "balanceInDisplayCurrency":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Account_balanceInDisplayCurrency(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "valueInDisplayCurrency":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Account_valueInDisplayCurrency(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -33910,39 +33659,6 @@ func (ec *executionContext) _Investment(ctx context.Context, sel ast.SelectionSe
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "valueInDisplayCurrency":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Investment_valueInDisplayCurrency(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -35433,39 +35149,6 @@ func (ec *executionContext) _RecurringSubscription(ctx context.Context, sel ast.
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "costInDisplayCurrency":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._RecurringSubscription_costInDisplayCurrency(ctx, field, obj)
 				return res
 			}
 

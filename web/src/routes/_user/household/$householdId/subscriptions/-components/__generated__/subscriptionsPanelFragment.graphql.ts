@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<af002be79655fc71452af26c79418321>>
+ * @generated SignedSource<<51e24d6c1a9f66026d8158e22fa50afa>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,6 @@ export type subscriptionsPanelFragment$data = {
       readonly node: {
         readonly active: boolean;
         readonly cost: string;
-        readonly costInDisplayCurrency: string | null | undefined;
         readonly id: string;
         readonly interval: RecurringSubscriptionInterval;
         readonly intervalCount: number;
@@ -136,13 +135,6 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "costInDisplayCurrency",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
                   "name": "interval",
                   "storageKey": null
                 },
@@ -239,6 +231,6 @@ return {
 };
 })();
 
-(node as any).hash = "10f1ae0027634aeee381d2c101990bf9";
+(node as any).hash = "7850cd1b152bec84cd4f2618f9aad6fa";
 
 export default node;

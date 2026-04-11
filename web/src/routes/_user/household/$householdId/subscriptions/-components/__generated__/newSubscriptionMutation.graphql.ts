@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f5529e503cc75b7804a601b2dee5daf9>>
+ * @generated SignedSource<<0080dc1df68ad35822b67f76463cf1db>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -212,13 +212,6 @@ return {
                 "kind": "ScalarField",
                 "name": "icon",
                 "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "costInDisplayCurrency",
-                "storageKey": null
               }
             ],
             "storageKey": null
@@ -229,12 +222,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b953bae24b477bb1f31cb526cede8920",
+    "cacheID": "f6d3464c51f1ae81be329d11f92df95c",
     "id": null,
     "metadata": {},
     "name": "newSubscriptionMutation",
     "operationKind": "mutation",
-    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();

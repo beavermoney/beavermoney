@@ -30,7 +30,10 @@ const SnapshotDialogFragment = graphql`
       edges {
         node {
           type
-          valueInDisplayCurrency
+          value
+          currency {
+            code
+          }
         }
       }
     }
@@ -71,7 +74,7 @@ type SnapshotDialogProps = {
 export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
   const data = useFragment(SnapshotDialogFragment, fragmentRef)
   const { household } = useHousehold()
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const [open, setOpen] = useState(false)
@@ -85,7 +88,7 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
       const total = (data.accounts.edges ?? [])
         .filter((e) => e?.node?.type === type)
         .reduce(
-          (sum, e) => sum.add(currency(e!.node!.valueInDisplayCurrency ?? 0)),
+          (sum, e) => sum.add(convert(e!.node!.value, e!.node!.currency.code)),
           currency(0),
         )
       acc[type] = total

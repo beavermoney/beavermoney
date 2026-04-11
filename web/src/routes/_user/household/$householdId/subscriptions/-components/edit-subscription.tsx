@@ -129,7 +129,6 @@ const editSubscriptionMutation = graphql`
         intervalCount
         startDate
         cost
-        costInDisplayCurrency
         currency {
           id
           code

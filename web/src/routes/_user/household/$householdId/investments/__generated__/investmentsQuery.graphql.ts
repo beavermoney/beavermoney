@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<60d5bc4cb4d2e34c6e5d0a1afb6a6306>>
+ * @generated SignedSource<<f3dbdeaf5668eabc69fde884bb8349d6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -41,6 +41,25 @@ v2 = {
   "args": null,
   "kind": "ScalarField",
   "name": "name",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Currency",
+  "kind": "LinkedField",
+  "name": "currency",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "code",
+      "storageKey": null
+    },
+    (v1/*: any*/)
+  ],
   "storageKey": null
 };
 return {
@@ -121,7 +140,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "valueInDisplayCurrency",
+                        "name": "value",
                         "storageKey": null
                       },
                       {
@@ -133,7 +152,8 @@ return {
                         "plural": false,
                         "selections": [
                           (v2/*: any*/),
-                          (v1/*: any*/)
+                          (v1/*: any*/),
+                          (v3/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -158,32 +178,7 @@ return {
                         "name": "updateTime",
                         "storageKey": null
                       },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "Currency",
-                        "kind": "LinkedField",
-                        "name": "currency",
-                        "plural": false,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "code",
-                            "storageKey": null
-                          },
-                          (v1/*: any*/)
-                        ],
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "value",
-                        "storageKey": null
-                      },
+                      (v3/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -260,12 +255,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e9768f937b08463f787b3cab5e03abee",
+    "cacheID": "b73b5708316b7decb1e455e7cf9aaea2",
     "id": null,
     "metadata": {},
     "name": "investmentsQuery",
     "operationKind": "query",
-    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        amount\n        valueInDisplayCurrency\n        account {\n          name\n          id\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          currency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
