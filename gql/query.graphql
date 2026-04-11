@@ -1,7 +1,6 @@
 extend type Query {
   user: User!
   household: Household!
-  fxRate(from: String!, to: String!, datetime: Time!): String!
   stockQuote(symbol: String!): StockQuoteResult
   cryptoQuote(symbol: String!): CryptoQuoteResult
 }
