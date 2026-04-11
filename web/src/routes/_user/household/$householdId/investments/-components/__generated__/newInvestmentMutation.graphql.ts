@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6a1fc81529629f75e97b6fea9f0365ee>>
+ * @generated SignedSource<<b7e4a91aa536038a959dd81449d46e3f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,7 +34,7 @@ export type newInvestmentMutation$data = {
       };
       readonly id: string;
       readonly name: string;
-      readonly valueInHouseholdCurrency: string;
+      readonly valueInDisplayCurrency: string | null | undefined;
       readonly " $fragmentSpreads": FragmentRefs<"investmentCardFragment">;
     } | null | undefined;
   };
@@ -77,7 +77,7 @@ v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "valueInHouseholdCurrency",
+  "name": "valueInDisplayCurrency",
   "storageKey": null
 },
 v5 = {
@@ -224,16 +224,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b3594289468531bebf25191a4e8dbfaf",
+    "cacheID": "cfe38f471872db3b383c3142e557d66a",
     "id": null,
     "metadata": {},
     "name": "newInvestmentMutation",
     "operationKind": "mutation",
-    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      valueInHouseholdCurrency\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n"
+    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      valueInDisplayCurrency\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1ecd405c531292b12d350a6ce344c717";
+(node as any).hash = "dfb3f9a5d238916d12bde9d56cd23de1";
 
 export default node;

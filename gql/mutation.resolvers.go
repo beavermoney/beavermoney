@@ -14,7 +14,8 @@ import (
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
-	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
@@ -30,7 +31,6 @@ import (
 	"beavermoney.app/internal/frankfurter"
 	"beavermoney.app/internal/gqlutil"
 	"beavermoney.app/internal/seed"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 	"go.opentelemetry.io/otel/attribute"
@@ -289,41 +289,15 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 	client := ent.FromContext(ctx)
 	zero := decimal.NewFromInt(0)
 
-	household, err := r.entClient.Household.Query().Where(
-		household.IDEQ(householdID),
-	).WithCurrency().Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	accountCurrency, err := r.entClient.Currency.Query().Where(currency.IDEQ(input.CurrencyID)).Only(ctx)
 	if err != nil {
 		return nil, err
-	}
-
-	fxRate := decimal.NewFromInt(1)
-	if accountCurrency.Code != household.Edges.Currency.Code {
-		date := openapi_types.Date{Time: time.Now().UTC()}
-		resp, err := r.frankfurterClient.GetRateWithResponse(
-			ctx,
-			accountCurrency.Code,
-			household.Edges.Currency.Code,
-			&frankfurter.GetRateParams{Date: &date},
-		)
-		if err != nil {
-			return nil, err
-		}
-		if resp.JSON200 == nil {
-			return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
-		}
-		fxRate = decimal.NewFromFloat32(resp.JSON200.Rate)
 	}
 
 	account, err := client.Account.Create().
 		SetInput(input).
 		SetUserID(userID).
 		SetHouseholdID(householdID).
-		SetFxRate(fxRate).
 		SetBalance(zero).
 		Save(ctx)
 	if err != nil {
@@ -696,40 +670,9 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 
 	client := ent.FromContext(ctx)
 
-	currency, err := client.Currency.Get(ctx, input.CurrencyID)
-	if err != nil {
-		return nil, fmt.Errorf("currency not found: %w", err)
-	}
-
-	household, err := r.entClient.Household.Query().Where(
-		household.IDEQ(householdID),
-	).WithCurrency().Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	fxRate := decimal.NewFromInt(1)
-	if currency.ID != household.Edges.Currency.ID {
-		date := openapi_types.Date{Time: time.Now().UTC()}
-		resp, err := r.frankfurterClient.GetRateWithResponse(
-			ctx,
-			currency.Code,
-			household.Edges.Currency.Code,
-			&frankfurter.GetRateParams{Date: &date},
-		)
-		if err != nil {
-			return nil, err
-		}
-		if resp.JSON200 == nil {
-			return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
-		}
-		fxRate = decimal.NewFromFloat32(resp.JSON200.Rate)
-	}
-
 	subscription, err := client.RecurringSubscription.Create().
 		SetHouseholdID(householdID).
 		SetInput(input).
-		SetFxRate(fxRate).
 		SetUserID(userID).
 		Save(ctx)
 	if err != nil {
@@ -757,46 +700,7 @@ func (r *mutationResolver) UpdateRecurringSubscription(ctx context.Context, id i
 
 	client := ent.FromContext(ctx)
 
-	originalSubscription, err := client.RecurringSubscription.Get(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("recurring subscription not found: %w", err)
-	}
-
-	fxRate := originalSubscription.FxRate
-	if input.CurrencyID != nil && *input.CurrencyID != originalSubscription.CurrencyID {
-		fxRate = decimal.NewFromInt(1)
-		// We need to update the fx rate in this case
-		currency, err := client.Currency.Get(ctx, *input.CurrencyID)
-		if err != nil {
-			return nil, fmt.Errorf("currency not found: %w", err)
-		}
-
-		household, err := r.entClient.Household.Query().Where(
-			household.IDEQ(householdID),
-		).WithCurrency().Only(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		if currency.ID != household.Edges.Currency.ID {
-			date := openapi_types.Date{Time: time.Now().UTC()}
-			resp, err := r.frankfurterClient.GetRateWithResponse(
-				ctx,
-				currency.Code,
-				household.Edges.Currency.Code,
-				&frankfurter.GetRateParams{Date: &date},
-			)
-			if err != nil {
-				return nil, err
-			}
-			if resp.JSON200 == nil {
-				return nil, fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
-			}
-			fxRate = decimal.NewFromFloat32(resp.JSON200.Rate)
-		}
-	}
-
-	subscription, err := client.RecurringSubscription.UpdateOneID(id).SetInput(input).SetFxRate(fxRate).Save(ctx)
+	subscription, err := client.RecurringSubscription.UpdateOneID(id).SetInput(input).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -1634,6 +1538,168 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (*mode
 	return &model.DeleteTransactionPayload{DeletedTransactionID: id}, nil
 }
 
+// CreateHouseholdCurrency is the resolver for the createHouseholdCurrency field.
+func (r *mutationResolver) CreateHouseholdCurrency(ctx context.Context, input ent.CreateHouseholdCurrencyInput) (*ent.HouseholdCurrency, error) {
+	householdID := contextkeys.GetHouseholdID(ctx)
+	client := ent.FromContext(ctx)
+
+	hc, err := client.HouseholdCurrency.Create().
+		SetInput(input).
+		SetHouseholdID(householdID).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	newCurrency, err := client.Currency.Get(ctx, hc.CurrencyID)
+	if err != nil {
+		return nil, err
+	}
+
+	existingHCs, err := client.HouseholdCurrency.Query().
+		Where(
+			householdcurrency.HouseholdIDEQ(householdID),
+			householdcurrency.IDNEQ(hc.ID),
+		).
+		WithCurrency().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.syncHouseholdRatesForCurrency(ctx, client, householdID, newCurrency, existingHCs); err != nil {
+		r.logger.Error("Failed to sync household rates", "error", err)
+		return nil, err
+	}
+
+	if hc.Important {
+		if err := r.backfillSnapshotRatesForCurrency(ctx, client, householdID, newCurrency, existingHCs); err != nil {
+			r.logger.Error("Failed to backfill snapshot rates", "error", err)
+		}
+	}
+
+	return hc, nil
+}
+
+// UpdateHouseholdCurrency is the resolver for the updateHouseholdCurrency field.
+func (r *mutationResolver) UpdateHouseholdCurrency(ctx context.Context, id int, input ent.UpdateHouseholdCurrencyInput) (*ent.HouseholdCurrency, error) {
+	householdID := contextkeys.GetHouseholdID(ctx)
+	client := ent.FromContext(ctx)
+
+	old, err := client.HouseholdCurrency.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	hc, err := client.HouseholdCurrency.UpdateOneID(id).
+		SetInput(input).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	becameImportant := !old.Important && hc.Important
+	if becameImportant {
+		newCurrency, err := client.Currency.Get(ctx, hc.CurrencyID)
+		if err != nil {
+			return nil, err
+		}
+
+		existingHCs, err := client.HouseholdCurrency.Query().
+			Where(
+				householdcurrency.HouseholdIDEQ(householdID),
+				householdcurrency.IDNEQ(hc.ID),
+			).
+			WithCurrency().
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := r.backfillSnapshotRatesForCurrency(ctx, client, householdID, newCurrency, existingHCs); err != nil {
+			r.logger.Error("Failed to backfill snapshot rates", "error", err)
+		}
+	}
+
+	return hc, nil
+}
+
+// DeleteHouseholdCurrency is the resolver for the deleteHouseholdCurrency field.
+func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) (*model.DeleteHouseholdCurrencyPayload, error) {
+	householdID := contextkeys.GetHouseholdID(ctx)
+	client := ent.FromContext(ctx)
+
+	hc, err := client.HouseholdCurrency.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := client.HouseholdCurrency.Query().
+		Where(householdcurrency.HouseholdIDEQ(householdID)).
+		Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if count <= 1 {
+		return nil, fmt.Errorf("cannot delete the last currency in a household")
+	}
+
+	hasAccounts, err := client.Account.Query().
+		Where(
+			account.HouseholdIDEQ(householdID),
+			account.CurrencyIDEQ(hc.CurrencyID),
+		).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if hasAccounts {
+		return nil, fmt.Errorf("cannot delete a currency that is used by accounts")
+	}
+
+	_, err = client.HouseholdRate.Delete().
+		Where(
+			householdrate.HouseholdIDEQ(householdID),
+			householdrate.Or(
+				householdrate.FromCurrencyIDEQ(hc.CurrencyID),
+				householdrate.ToCurrencyIDEQ(hc.CurrencyID),
+			),
+		).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	snapshots, err := client.Snapshot.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(snapshots) > 0 {
+		snapshotIDs := make([]int, len(snapshots))
+		for i, s := range snapshots {
+			snapshotIDs[i] = s.ID
+		}
+		_, err = client.SnapshotRate.Delete().
+			Where(
+				snapshotrate.SnapshotIDIn(snapshotIDs...),
+				snapshotrate.Or(
+					snapshotrate.FromCurrencyIDEQ(hc.CurrencyID),
+					snapshotrate.ToCurrencyIDEQ(hc.CurrencyID),
+				),
+			).
+			Exec(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if err := client.HouseholdCurrency.DeleteOneID(id).Exec(ctx); err != nil {
+		return nil, err
+	}
+
+	return &model.DeleteHouseholdCurrencyPayload{DeletedHouseholdCurrencyID: id}, nil
+}
+
 // CreateSnapshot is the resolver for the createSnapshot field.
 func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput) (*ent.SnapshotEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
@@ -1863,99 +1929,6 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 	defer span.End()
 
 	client := ent.FromContext(ctx)
-	now := time.Now()
-
-	// Get household with currency
-	household, err := client.Household.Query().
-		Where(household.IDEQ(householdID)).
-		WithCurrency().
-		Only(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch household", "error", err)
-		return false, err
-	}
-
-	householdCurrencyCode := household.Edges.Currency.Code
-
-	// Fetch all accounts for the household with their currencies
-	accounts, err := client.Account.Query().
-		WithCurrency().
-		All(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch accounts", "error", err)
-		return false, err
-	}
-
-	// Group accounts by currency to minimize FX rate API calls
-	currencyToAccounts := lo.GroupBy(accounts, func(account *ent.Account) string {
-		return account.Edges.Currency.Code
-	})
-
-	// Get unique currencies excluding household currency
-	uniqueCurrencies := lo.Filter(lo.Keys(currencyToAccounts), func(code string, _ int) bool {
-		return code != householdCurrencyCode
-	})
-
-	// Batch fetch FX rates for all unique currencies
-	if len(uniqueCurrencies) > 0 {
-		date := openapi_types.Date{Time: now.UTC()}
-		base := householdCurrencyCode
-		quotes := strings.Join(uniqueCurrencies, ",")
-		resp, err := r.frankfurterClient.GetRatesWithResponse(
-			ctx,
-			&frankfurter.GetRatesParams{
-				Date:   &date,
-				Base:   &base,
-				Quotes: &quotes,
-			},
-		)
-		if err != nil {
-			r.logger.Error("Failed to fetch FX rates", "error", err)
-			return false, err
-		}
-		if resp.JSON200 == nil {
-			err = fmt.Errorf("failed to fetch FX rates: unexpected status %s", resp.Status())
-			r.logger.Error("Failed to fetch FX rates", "error", err)
-			return false, err
-		}
-
-		rates := make(map[string]decimal.Decimal, len(uniqueCurrencies))
-		for _, rate := range *resp.JSON200 {
-			decimalRate := decimal.NewFromFloat32(rate.Rate)
-			if decimalRate.IsZero() {
-				err = fmt.Errorf("invalid FX rate (zero) for currency %s", rate.Quote)
-				r.logger.Error("Failed to fetch FX rates", "error", err)
-				return false, err
-			}
-			rates[rate.Quote] = decimal.NewFromInt(1).Div(decimalRate)
-		}
-
-		// Update accounts with new FX rates
-		for currencyCode, accountList := range currencyToAccounts {
-			var fxRate decimal.Decimal
-			if currencyCode == householdCurrencyCode {
-				fxRate = decimal.NewFromInt(1)
-			} else {
-				rate, ok := rates[currencyCode]
-				if !ok {
-					r.logger.Error("FX rate not found for currency", "currency", currencyCode)
-					continue
-				}
-				fxRate = rate
-			}
-
-			// Update all accounts with this currency
-			for _, account := range accountList {
-				err := client.Account.UpdateOneID(account.ID).
-					SetFxRate(fxRate).
-					Exec(ctx)
-				if err != nil {
-					r.logger.Error("Failed to update account FX rate", "error", err, "accountID", account.ID)
-					return false, err
-				}
-			}
-		}
-	}
 
 	// Fetch all investments for the household
 	investments, err := client.Investment.Query().

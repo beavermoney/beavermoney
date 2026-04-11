@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5779422da1be2bc415e4446e04c13423>>
+ * @generated SignedSource<<4ffca40c5e68768c2d96fa16e3f364df>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,7 +23,7 @@ export type investmentsPanelFragment$data = {
         readonly amount: string;
         readonly id: string;
         readonly name: string;
-        readonly valueInHouseholdCurrency: string;
+        readonly valueInDisplayCurrency: string | null | undefined;
         readonly " $fragmentSpreads": FragmentRefs<"investmentCardFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -136,7 +136,7 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "valueInHouseholdCurrency",
+                  "name": "valueInDisplayCurrency",
                   "storageKey": null
                 },
                 {
@@ -224,6 +224,6 @@ return {
 };
 })();
 
-(node as any).hash = "5e6c3e071790c4436c2e98adfe3fe9d2";
+(node as any).hash = "33461327c4aeda51e8f8f9d687a89c7c";
 
 export default node;

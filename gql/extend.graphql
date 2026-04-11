@@ -1,10 +1,14 @@
 extend type Account {
-  balanceInHouseholdCurrency: String!
-  valueInHouseholdCurrency: String!
+  balanceInDisplayCurrency: String
+  valueInDisplayCurrency: String
 }
 
 extend type Investment {
-  valueInHouseholdCurrency: String!
+  valueInDisplayCurrency: String
+}
+
+extend type RecurringSubscription {
+  costInDisplayCurrency: String
 }
 
 extend type Household {

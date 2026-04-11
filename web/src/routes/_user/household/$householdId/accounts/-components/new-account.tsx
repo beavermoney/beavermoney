@@ -85,7 +85,7 @@ const newAccountMutation = graphql`
         id
         type
         name
-        valueInHouseholdCurrency
+        valueInDisplayCurrency
         ...accountCardFragment
       }
     }

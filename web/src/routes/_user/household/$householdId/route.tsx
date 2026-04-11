@@ -1,4 +1,5 @@
 import {
+  ChevronDownIcon,
   EyeIcon,
   EyeOffIcon,
   Moon,
@@ -23,7 +24,8 @@ import {
 } from 'react-relay'
 import { Rnd } from 'react-rnd'
 import { z } from 'zod'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useStore } from '@tanstack/react-store'
 import type { routeHouseholdIdQuery } from './__generated__/routeHouseholdIdQuery.graphql'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileFabNav } from '@/components/mobile-fab-nav'
@@ -44,6 +46,11 @@ import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { HouseholdProvider } from '@/hooks/use-household'
+import { DisplayCurrencyProvider } from '@/hooks/use-display-currency'
+import {
+  displayCurrencyIdStore,
+  setDisplayCurrencyId,
+} from '@/hooks/display-currency-store'
 import { UserProvider } from '@/hooks/use-user'
 import {
   LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
@@ -74,8 +81,18 @@ const routeHouseholdIdQuery = graphql`
     }
     household {
       ...useHouseholdFragment
+      ...useDisplayCurrencyFragment
       ...logTransactionFragment
       ...snapshotDialogFragment
+      # eslint-disable-next-line relay/unused-fields
+      householdCurrencies {
+        id
+        important
+        currency {
+          id
+          code
+        }
+      }
     }
   }
 `
@@ -151,6 +168,25 @@ function RouteComponent() {
   const { setTheme } = useTheme()
   const router = useRouter()
 
+  const currencies = (data.household.householdCurrencies ?? []).filter(
+    (hc) => hc.important,
+  )
+  const displayCurrencyId = useStore(displayCurrencyIdStore)
+  const activeCurrencyCode =
+    currencies.find((c) => c.id === displayCurrencyId)?.currency.code ??
+    currencies[0]?.currency.code ??
+    ''
+  const handleCurrencyChange = useCallback(
+    (hcId: string) => {
+      setDisplayCurrencyId(hcId)
+      commitLocalUpdate(environment, (store) => {
+        store.invalidateStore()
+      })
+      router.invalidate()
+    },
+    [router],
+  )
+
   // Check if this is a fresh session (no dialog shown yet)
   const shouldShowDialog =
     typeof window !== 'undefined' &&
@@ -202,156 +238,187 @@ function RouteComponent() {
   return (
     <UserProvider userRef={data.user}>
       <HouseholdProvider householdRef={data.household}>
-        <Hotkeys />
-        <CommandMenu />
-        <SidebarProvider>
-          <AppSidebar fragmentRef={data} />
-          <SidebarInset>
-            <header className="bg-background sticky top-0 z-10 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-              <div className="flex items-center gap-2 px-4">
-                <SidebarTrigger className="-ml-1 cursor-pointer" />
-                <Separator orientation="vertical" className="mr-2" />
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    {/* <BreadcrumbItem className="hidden md:block"> */}
-                    {/*   <BreadcrumbLink href="#"> */}
-                    {/*     Building Your Application */}
-                    {/*   </BreadcrumbLink> */}
-                    {/* </BreadcrumbItem> */}
-                    {/* <BreadcrumbSeparator className="hidden md:block" /> */}
-                    {/* <BreadcrumbItem> */}
-                    {/*   <BreadcrumbPage>Data Fetching</BreadcrumbPage> */}
-                    {/* </BreadcrumbItem> */}
-                  </BreadcrumbList>
-                </Breadcrumb>
-              </div>
-              <div className="grow"></div>
+        <DisplayCurrencyProvider householdRef={data.household}>
+          <Hotkeys />
+          <CommandMenu />
+          <SidebarProvider>
+            <AppSidebar fragmentRef={data} />
+            <SidebarInset>
+              <header className="bg-background sticky top-0 z-10 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                <div className="flex items-center gap-2 px-4">
+                  <SidebarTrigger className="-ml-1 cursor-pointer" />
+                  <Separator orientation="vertical" className="mr-2" />
+                  <Breadcrumb>
+                    <BreadcrumbList>
+                      {/* <BreadcrumbItem className="hidden md:block"> */}
+                      {/*   <BreadcrumbLink href="#"> */}
+                      {/*     Building Your Application */}
+                      {/*   </BreadcrumbLink> */}
+                      {/* </BreadcrumbItem> */}
+                      {/* <BreadcrumbSeparator className="hidden md:block" /> */}
+                      {/* <BreadcrumbItem> */}
+                      {/*   <BreadcrumbPage>Data Fetching</BreadcrumbPage> */}
+                      {/* </BreadcrumbItem> */}
+                    </BreadcrumbList>
+                  </Breadcrumb>
+                </div>
+                <div className="grow"></div>
 
-              <SnapshotDialog fragmentRef={data.household} />
-              <Button
-                className="cursor-pointer"
-                variant="outline"
-                onClick={() => {
-                  commitLocalUpdate(environment, (store) => {
-                    store.invalidateStore()
-                  })
-                  router.invalidate()
-                }}
-              >
-                <RefreshCwIcon />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="outline" className="cursor-pointer">
-                      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                      <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                      <span className="sr-only">Toggle theme</span>
-                    </Button>
-                  }
-                ></DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setTheme('light')}>
-                    Light
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('dark')}>
-                    Dark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('system')}>
-                    System
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button
-                className="cursor-pointer"
-                variant="outline"
-                onClick={togglePrivacyMode}
-              >
-                {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
-              </Button>
-              <div className="px-1"></div>
-            </header>
-            <div className="flex flex-1 flex-col">
-              <Outlet />
-            </div>
-          </SidebarInset>
-          <MobileFabNav />
-
-          {search.edit_transaction_id && (
-            <Dialog
-              open={true}
-              onOpenChange={() =>
-                navigate({
-                  to: '.',
-                  resetScroll: false,
-                  search: (prev) => ({ ...prev, edit_transaction_id: null }),
-                })
-              }
-            >
-              <DialogContent>
-                <Suspense fallback={<PendingComponent />}>
-                  <EditTransactionDialog
-                    transactionId={search.edit_transaction_id}
-                  />
-                </Suspense>
-              </DialogContent>
-            </Dialog>
-          )}
-
-          {/* Desktop: Resizable & Draggable New Transaction Form */}
-          {!isMobile && (
-            <Rnd
-              enableResizing={{
-                top: false,
-                right: false,
-                bottom: false,
-                left: false,
-                topRight: false,
-                bottomRight: false,
-                bottomLeft: false,
-                topLeft: false,
-              }}
-              default={{
-                x: window.innerWidth / 2 - 300,
-                y: window.innerHeight / 2 - 400,
-                width: '420',
-                height: 'auto',
-              }}
-              bounds="window"
-              dragHandleClassName="drag-handle"
-              style={{ zIndex: 50 }}
-            >
-              {search.log_type && (
-                <Item
-                  className={cn(
-                    'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
-                  )}
+                {currencies.length > 1 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          className="cursor-pointer gap-1 font-mono text-xs"
+                        >
+                          {activeCurrencyCode || 'Currency'}
+                          <ChevronDownIcon />
+                        </Button>
+                      }
+                    ></DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {currencies.map((hc) => (
+                        <DropdownMenuItem
+                          key={hc.id}
+                          onClick={() => handleCurrencyChange(hc.id)}
+                          className={cn(
+                            'font-mono',
+                            hc.id === displayCurrencyId && 'font-bold',
+                          )}
+                        >
+                          {hc.currency.code}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+                <SnapshotDialog fragmentRef={data.household} />
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  onClick={() => {
+                    commitLocalUpdate(environment, (store) => {
+                      store.invalidateStore()
+                    })
+                    router.invalidate()
+                  }}
                 >
-                  {/* Drag Handle Header */}
-                  <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
-                    <div className="flex items-center gap-2">
-                      <GripVertical className="text-muted-foreground h-5 w-5" />
-                      <span className="text-sm font-semibold">
-                        Log Transaction
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => setLogTransactionOpen(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <RefreshCwIcon />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="outline" className="cursor-pointer">
+                        <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                        <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                        <span className="sr-only">Toggle theme</span>
+                      </Button>
+                    }
+                  ></DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setTheme('light')}>
+                      Light
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme('dark')}>
+                      Dark
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme('system')}>
+                      System
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  onClick={togglePrivacyMode}
+                >
+                  {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
+                </Button>
+                <div className="px-1"></div>
+              </header>
+              <div className="flex flex-1 flex-col">
+                <Outlet />
+              </div>
+            </SidebarInset>
+            <MobileFabNav />
 
-                  {/* Transaction Form */}
-                  <LogTransaction fragmentRef={data.household} />
-                </Item>
-              )}
-            </Rnd>
-          )}
-        </SidebarProvider>
+            {search.edit_transaction_id && (
+              <Dialog
+                open={true}
+                onOpenChange={() =>
+                  navigate({
+                    to: '.',
+                    resetScroll: false,
+                    search: (prev) => ({ ...prev, edit_transaction_id: null }),
+                  })
+                }
+              >
+                <DialogContent>
+                  <Suspense fallback={<PendingComponent />}>
+                    <EditTransactionDialog
+                      transactionId={search.edit_transaction_id}
+                    />
+                  </Suspense>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {/* Desktop: Resizable & Draggable New Transaction Form */}
+            {!isMobile && (
+              <Rnd
+                enableResizing={{
+                  top: false,
+                  right: false,
+                  bottom: false,
+                  left: false,
+                  topRight: false,
+                  bottomRight: false,
+                  bottomLeft: false,
+                  topLeft: false,
+                }}
+                default={{
+                  x: window.innerWidth / 2 - 300,
+                  y: window.innerHeight / 2 - 400,
+                  width: '420',
+                  height: 'auto',
+                }}
+                bounds="window"
+                dragHandleClassName="drag-handle"
+                style={{ zIndex: 50 }}
+              >
+                {search.log_type && (
+                  <Item
+                    className={cn(
+                      'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
+                    )}
+                  >
+                    {/* Drag Handle Header */}
+                    <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="text-muted-foreground h-5 w-5" />
+                        <span className="text-sm font-semibold">
+                          Log Transaction
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setLogTransactionOpen(false)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Transaction Form */}
+                    <LogTransaction fragmentRef={data.household} />
+                  </Item>
+                )}
+              </Rnd>
+            )}
+          </SidebarProvider>
+        </DisplayCurrencyProvider>
       </HouseholdProvider>
     </UserProvider>
   )

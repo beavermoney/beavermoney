@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/chart'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { Button } from '@/components/ui/button'
@@ -159,6 +160,7 @@ const chartConfig = {
 
 export function NetWorthChart() {
   const { household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
 
@@ -187,7 +189,7 @@ export function NetWorthChart() {
     ).subscribe({})
   })
 
-  const displayCurrency = household.currency.code
+  const displayCurrency = displayCurrencyCode
 
   const chartData = useMemo(() => {
     return (data.household.snapshots.edges ?? [])

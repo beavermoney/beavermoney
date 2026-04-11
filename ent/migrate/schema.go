@@ -20,7 +20,6 @@ var (
 		{Name: "category", Type: field.TypeEnum, Nullable: true, Enums: []string{"tfsa", "rrsp", "rrif", "resp", "fhsa", "lira", "rdsp", "ira_traditional", "ira_roth", "plan_401k", "roth_401k", "plan_403b", "plan_457b", "sep_ira", "simple_ira", "hsa", "plan_529"}},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "value", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "fx_rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "archived", Type: field.TypeBool, Default: false},
 		{Name: "currency_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
@@ -34,19 +33,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "accounts_currencies_accounts",
-				Columns:    []*schema.Column{AccountsColumns[11]},
+				Columns:    []*schema.Column{AccountsColumns[10]},
 				RefColumns: []*schema.Column{CurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "accounts_households_accounts",
-				Columns:    []*schema.Column{AccountsColumns[12]},
+				Columns:    []*schema.Column{AccountsColumns[11]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "accounts_users_accounts",
-				Columns:    []*schema.Column{AccountsColumns[13]},
+				Columns:    []*schema.Column{AccountsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -257,7 +256,6 @@ var (
 		{Name: "active", Type: field.TypeBool, Default: true},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "cost", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "fx_rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "currency_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
@@ -270,19 +268,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "recurring_subscriptions_currencies_recurring_subscriptions",
-				Columns:    []*schema.Column{RecurringSubscriptionsColumns[11]},
+				Columns:    []*schema.Column{RecurringSubscriptionsColumns[10]},
 				RefColumns: []*schema.Column{CurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "recurring_subscriptions_households_recurring_subscriptions",
-				Columns:    []*schema.Column{RecurringSubscriptionsColumns[12]},
+				Columns:    []*schema.Column{RecurringSubscriptionsColumns[11]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "recurring_subscriptions_users_recurring_subscriptions",
-				Columns:    []*schema.Column{RecurringSubscriptionsColumns[13]},
+				Columns:    []*schema.Column{RecurringSubscriptionsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -566,6 +564,7 @@ var (
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"admin", "member"}},
 		{Name: "user_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
+		{Name: "default_currency_id", Type: field.TypeInt, Nullable: true},
 	}
 	// UserHouseholdsTable holds the schema information for the "user_households" table.
 	UserHouseholdsTable = &schema.Table{
@@ -584,6 +583,12 @@ var (
 				Columns:    []*schema.Column{UserHouseholdsColumns[5]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "user_households_household_currencies_default_currency",
+				Columns:    []*schema.Column{UserHouseholdsColumns[6]},
+				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -728,6 +733,7 @@ func init() {
 	}
 	UserHouseholdsTable.ForeignKeys[0].RefTable = UsersTable
 	UserHouseholdsTable.ForeignKeys[1].RefTable = HouseholdsTable
+	UserHouseholdsTable.ForeignKeys[2].RefTable = HouseholdCurrenciesTable
 	UserHouseholdsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(25769803776),
 	}

@@ -27,7 +27,7 @@ const SubscriptionCardFragment = graphql`
     name
     icon
     cost
-    fxRate
+    costInDisplayCurrency
     interval
     intervalCount
     startDate
@@ -51,7 +51,7 @@ export function SubscriptionCard({
 
   const { intervalText, nextPaymentDate } = useMemo(() => {
     // Convert cost to household currency
-    const cost = currency(data.cost).multiply(data.fxRate)
+    const cost = currency(data.costInDisplayCurrency ?? data.cost)
 
     // Format interval text
     const count = data.intervalCount
@@ -75,7 +75,7 @@ export function SubscriptionCard({
     }
   }, [
     data.cost,
-    data.fxRate,
+    data.costInDisplayCurrency,
     data.interval,
     data.intervalCount,
     data.startDate,

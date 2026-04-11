@@ -15,7 +15,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/shopspring/decimal"
 )
 
 // AccountUpdate is the builder for updating Account entities.
@@ -89,27 +88,6 @@ func (_u *AccountUpdate) SetNillableIcon(v *string) *AccountUpdate {
 // ClearIcon clears the value of the "icon" field.
 func (_u *AccountUpdate) ClearIcon() *AccountUpdate {
 	_u.mutation.ClearIcon()
-	return _u
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (_u *AccountUpdate) SetFxRate(v decimal.Decimal) *AccountUpdate {
-	_u.mutation.ResetFxRate()
-	_u.mutation.SetFxRate(v)
-	return _u
-}
-
-// SetNillableFxRate sets the "fx_rate" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableFxRate(v *decimal.Decimal) *AccountUpdate {
-	if v != nil {
-		_u.SetFxRate(*v)
-	}
-	return _u
-}
-
-// AddFxRate adds value to the "fx_rate" field.
-func (_u *AccountUpdate) AddFxRate(v decimal.Decimal) *AccountUpdate {
-	_u.mutation.AddFxRate(v)
 	return _u
 }
 
@@ -306,12 +284,6 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.IconCleared() {
 		_spec.ClearField(account.FieldIcon, field.TypeString)
 	}
-	if value, ok := _u.mutation.FxRate(); ok {
-		_spec.SetField(account.FieldFxRate, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedFxRate(); ok {
-		_spec.AddField(account.FieldFxRate, field.TypeFloat64, value)
-	}
 	if value, ok := _u.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)
 	}
@@ -484,27 +456,6 @@ func (_u *AccountUpdateOne) SetNillableIcon(v *string) *AccountUpdateOne {
 // ClearIcon clears the value of the "icon" field.
 func (_u *AccountUpdateOne) ClearIcon() *AccountUpdateOne {
 	_u.mutation.ClearIcon()
-	return _u
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (_u *AccountUpdateOne) SetFxRate(v decimal.Decimal) *AccountUpdateOne {
-	_u.mutation.ResetFxRate()
-	_u.mutation.SetFxRate(v)
-	return _u
-}
-
-// SetNillableFxRate sets the "fx_rate" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableFxRate(v *decimal.Decimal) *AccountUpdateOne {
-	if v != nil {
-		_u.SetFxRate(*v)
-	}
-	return _u
-}
-
-// AddFxRate adds value to the "fx_rate" field.
-func (_u *AccountUpdateOne) AddFxRate(v decimal.Decimal) *AccountUpdateOne {
-	_u.mutation.AddFxRate(v)
 	return _u
 }
 
@@ -730,12 +681,6 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if _u.mutation.IconCleared() {
 		_spec.ClearField(account.FieldIcon, field.TypeString)
-	}
-	if value, ok := _u.mutation.FxRate(); ok {
-		_spec.SetField(account.FieldFxRate, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedFxRate(); ok {
-		_spec.AddField(account.FieldFxRate, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)

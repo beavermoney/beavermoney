@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2d6f904cb197f19611d65cd9df55c35d>>
+ * @generated SignedSource<<13526eabc7ee616d69746d8c03d50a7c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -149,7 +149,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "fxRate",
+                "name": "costInDisplayCurrency",
                 "storageKey": null
               },
               {
@@ -216,12 +216,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c455751c21e0e1018e6f71a4fd9334ba",
+    "cacheID": "52208b3483203bd4c8d873ac928b32ef",
     "id": null,
     "metadata": {},
     "name": "SubscriptionIdQuery",
     "operationKind": "query",
-    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n  ...editSubscriptionCurrenciesFragment\n}\n\nfragment editSubscriptionCurrenciesFragment on Query {\n  currencies {\n    id\n    code\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  currency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n  ...editSubscriptionCurrenciesFragment\n}\n\nfragment editSubscriptionCurrenciesFragment on Query {\n  currencies {\n    id\n    code\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  currency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();

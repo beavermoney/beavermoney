@@ -4,7 +4,8 @@ import { ResponsiveSankey, type CustomSankeyLayerProps } from '@nivo/sankey'
 import currency from 'currency.js'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import { Item } from '@/components/ui/item'
-import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
+
 import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import type { categoriesSankeyFragment$key } from './__generated__/categoriesSankeyFragment.graphql'
@@ -270,7 +271,7 @@ interface CategoriesSankeyProps {
 
 export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
   const data = useFragment(CategoriesSankeyFragment, fragmentRef)
-  const { household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
   const nodeColors = useMemo(() => resolveNodeColors(), [])
@@ -300,7 +301,7 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
   const formatAmount = (amount: number) =>
     formatCurrencyWithPrivacyMode({
       value: currency(amount),
-      currencyCode: household.currency.code,
+      currencyCode: displayCurrencyCode,
       numberFormatOptions: { notation: 'compact', maximumFractionDigits: 1 },
       privacyMaskLength: 5,
     })

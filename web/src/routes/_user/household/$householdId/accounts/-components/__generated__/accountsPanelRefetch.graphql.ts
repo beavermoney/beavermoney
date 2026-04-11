@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9890fee764ab224c5c2fd98801d3a441>>
+ * @generated SignedSource<<7f006b9b19099d7e86e56bd0d079516c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -191,7 +191,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "valueInHouseholdCurrency",
+                            "name": "valueInDisplayCurrency",
                             "storageKey": null
                           },
                           {
@@ -329,16 +329,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3ec42103ebdbbf642013474a64d1a64b",
+    "cacheID": "fee875c5c8231cc390e9683bed203fdb",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        valueInDisplayCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "98ea9da7ae3a175d17eb576cdeff3c7d";
+(node as any).hash = "19bb4c85689e84639f442cef13e43c8b";
 
 export default node;

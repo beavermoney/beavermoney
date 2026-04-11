@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4faa5738e45dfc844c432953c30ca9ab>>
+ * @generated SignedSource<<da1b71a7aa6bf2a02ba54d7b49b25012>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -120,7 +120,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "fxRate",
+                        "name": "costInDisplayCurrency",
                         "storageKey": null
                       },
                       {
@@ -253,12 +253,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d34b6d2f08c6714a8d654ecd2b1dce4d",
+    "cacheID": "2899a03a42494c5cee1c901cf7ccc188",
     "id": null,
     "metadata": {},
     "name": "subscriptionsQuery",
     "operationKind": "query",
-    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        fxRate\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        costInDisplayCurrency\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

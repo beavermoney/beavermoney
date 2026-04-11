@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<16d3176d647c1ad074e45e842a94847f>>
+ * @generated SignedSource<<8fd5a37c377ced8891ad3b5c0e74efbb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,7 +21,7 @@ export type accountsPanelFragment$data = {
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
-        readonly valueInHouseholdCurrency: string;
+        readonly valueInDisplayCurrency: string | null | undefined;
         readonly " $fragmentSpreads": FragmentRefs<"accountCardFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -149,7 +149,7 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "valueInHouseholdCurrency",
+                  "name": "valueInDisplayCurrency",
                   "storageKey": null
                 },
                 {
@@ -224,6 +224,6 @@ return {
 };
 })();
 
-(node as any).hash = "98ea9da7ae3a175d17eb576cdeff3c7d";
+(node as any).hash = "19bb4c85689e84639f442cef13e43c8b";
 
 export default node;

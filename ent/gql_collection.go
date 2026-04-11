@@ -166,11 +166,6 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 				selectedFields = append(selectedFields, account.FieldValue)
 				fieldSeen[account.FieldValue] = struct{}{}
 			}
-		case "fxRate":
-			if _, ok := fieldSeen[account.FieldFxRate]; !ok {
-				selectedFields = append(selectedFields, account.FieldFxRate)
-				fieldSeen[account.FieldFxRate] = struct{}{}
-			}
 		case "currencyID":
 			if _, ok := fieldSeen[account.FieldCurrencyID]; !ok {
 				selectedFields = append(selectedFields, account.FieldCurrencyID)
@@ -2089,11 +2084,6 @@ func (_q *RecurringSubscriptionQuery) collectField(ctx context.Context, oneNode 
 				selectedFields = append(selectedFields, recurringsubscription.FieldCost)
 				fieldSeen[recurringsubscription.FieldCost] = struct{}{}
 			}
-		case "fxRate":
-			if _, ok := fieldSeen[recurringsubscription.FieldFxRate]; !ok {
-				selectedFields = append(selectedFields, recurringsubscription.FieldFxRate)
-				fieldSeen[recurringsubscription.FieldFxRate] = struct{}{}
-			}
 		case "currencyID":
 			if _, ok := fieldSeen[recurringsubscription.FieldCurrencyID]; !ok {
 				selectedFields = append(selectedFields, recurringsubscription.FieldCurrencyID)
@@ -3283,6 +3273,21 @@ func (_q *UserHouseholdQuery) collectField(ctx context.Context, oneNode bool, op
 				selectedFields = append(selectedFields, userhousehold.FieldHouseholdID)
 				fieldSeen[userhousehold.FieldHouseholdID] = struct{}{}
 			}
+
+		case "defaultCurrency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withDefaultCurrency = query
+			if _, ok := fieldSeen[userhousehold.FieldDefaultCurrencyID]; !ok {
+				selectedFields = append(selectedFields, userhousehold.FieldDefaultCurrencyID)
+				fieldSeen[userhousehold.FieldDefaultCurrencyID] = struct{}{}
+			}
 		case "createTime":
 			if _, ok := fieldSeen[userhousehold.FieldCreateTime]; !ok {
 				selectedFields = append(selectedFields, userhousehold.FieldCreateTime)
@@ -3307,6 +3312,11 @@ func (_q *UserHouseholdQuery) collectField(ctx context.Context, oneNode bool, op
 			if _, ok := fieldSeen[userhousehold.FieldRole]; !ok {
 				selectedFields = append(selectedFields, userhousehold.FieldRole)
 				fieldSeen[userhousehold.FieldRole] = struct{}{}
+			}
+		case "defaultCurrencyID":
+			if _, ok := fieldSeen[userhousehold.FieldDefaultCurrencyID]; !ok {
+				selectedFields = append(selectedFields, userhousehold.FieldDefaultCurrencyID)
+				fieldSeen[userhousehold.FieldDefaultCurrencyID] = struct{}{}
 			}
 		case "id":
 		case "__typename":

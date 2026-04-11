@@ -837,6 +837,14 @@ func (_m *UserHousehold) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
+func (_m *UserHousehold) DefaultCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+	result, err := _m.Edges.DefaultCurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryDefaultCurrency().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
 func (_m *UserKey) User(ctx context.Context) (*User, error) {
 	result, err := _m.Edges.UserOrErr()
 	if IsNotLoaded(err) {

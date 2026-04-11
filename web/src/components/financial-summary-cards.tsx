@@ -4,6 +4,7 @@ import { useFragment } from 'react-relay'
 import { useMemo } from 'react'
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import type { financialSummaryCardsFragment$key } from './__generated__/financialSummaryCardsFragment.graphql'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 
@@ -26,7 +27,9 @@ export function FinancialSummaryCards({
   fragmentRef,
 }: FinancialSummaryCardsProps) {
   const data = useFragment(FinancialSummaryCardsFragment, fragmentRef)
-  const { household } = useHousehold()
+  const { household: _household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
+  console.log('displayCurrencyCode', displayCurrencyCode)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const { isPrivacyModeEnabled } = usePrivacyMode()
@@ -55,21 +58,21 @@ export function FinancialSummaryCards({
       <div className="text-3xl font-semibold tracking-tight tabular-nums">
         {formatCurrencyWithPrivacyMode({
           value: net,
-          currencyCode: household.currency.code,
+          currencyCode: displayCurrencyCode,
         })}
       </div>
       <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums">
         <span>
           {formatCurrencyWithPrivacyMode({
             value: totalIncome,
-            currencyCode: household.currency.code,
+            currencyCode: displayCurrencyCode,
           })}{' '}
           <span className="text-muted-foreground/60">income</span>
         </span>
         <span>
           {formatCurrencyWithPrivacyMode({
             value: totalExpenses,
-            currencyCode: household.currency.code,
+            currencyCode: displayCurrencyCode,
           })}{' '}
           <span className="text-muted-foreground/60">expenses</span>
         </span>

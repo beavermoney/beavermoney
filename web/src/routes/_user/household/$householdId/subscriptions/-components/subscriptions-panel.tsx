@@ -14,7 +14,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
+
 import { calculateNextPaymentDate } from '@/lib/date-range'
 import currency from 'currency.js'
 
@@ -39,7 +40,7 @@ const SubscriptionsPanelFragment = graphql`
           id
           active
           cost
-          fxRate
+          costInDisplayCurrency
           interval
           intervalCount
           startDate
@@ -70,7 +71,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     SubscriptionsPanelFragment,
     fragmentRef,
   )
-  const { household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
@@ -114,18 +115,16 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         })
 
       const getYearlyEquivalent = (sub: (typeof activeSubscriptions)[0]) => {
-        const costInHouseholdCurrency = currency(sub.cost).multiply(sub.fxRate)
+        const costInDisplayCurrency = currency(
+          sub.costInDisplayCurrency ?? sub.cost,
+        )
         switch (sub.interval) {
           case 'week':
-            return costInHouseholdCurrency
-              .divide(sub.intervalCount)
-              .multiply(52)
+            return costInDisplayCurrency.divide(sub.intervalCount).multiply(52)
           case 'month':
-            return costInHouseholdCurrency
-              .divide(sub.intervalCount)
-              .multiply(12)
+            return costInDisplayCurrency.divide(sub.intervalCount).multiply(12)
           case 'year':
-            return costInHouseholdCurrency.divide(sub.intervalCount)
+            return costInDisplayCurrency.divide(sub.intervalCount)
           default:
             invariant(false, `unexpected interval type: ${sub.interval}`)
         }
@@ -193,14 +192,14 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         <div className="text-3xl font-semibold tracking-tight tabular-nums">
           {formatCurrencyWithPrivacyMode({
             value: monthlyAverage,
-            currencyCode: household.currency.code,
+            currencyCode: displayCurrencyCode,
           })}
         </div>
         <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums">
           <span>
             {formatCurrencyWithPrivacyMode({
               value: yearlyAverage,
-              currencyCode: household.currency.code,
+              currencyCode: displayCurrencyCode,
             })}{' '}
             <span className="text-muted-foreground/60">yearly</span>
           </span>

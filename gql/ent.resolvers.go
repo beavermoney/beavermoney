@@ -24,11 +24,6 @@ func (r *accountResolver) Value(ctx context.Context, obj *ent.Account) (string, 
 	return obj.Value.String(), nil
 }
 
-// FxRate is the resolver for the fxRate field.
-func (r *accountResolver) FxRate(ctx context.Context, obj *ent.Account) (string, error) {
-	return obj.FxRate.String(), nil
-}
-
 // Rate is the resolver for the rate field.
 func (r *householdRateResolver) Rate(ctx context.Context, obj *ent.HouseholdRate) (string, error) {
 	panic(fmt.Errorf("not implemented: Rate - rate"))
@@ -86,7 +81,7 @@ func (r *queryResolver) Households(ctx context.Context) ([]*ent.Household, error
 
 // HouseholdCurrencies is the resolver for the householdCurrencies field.
 func (r *queryResolver) HouseholdCurrencies(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.HouseholdCurrencyWhereInput) (*ent.HouseholdCurrencyConnection, error) {
-	panic(fmt.Errorf("not implemented: HouseholdCurrencies - householdCurrencies"))
+	return r.entClient.HouseholdCurrency.Query().Paginate(ctx, after, first, before, last, ent.WithHouseholdCurrencyFilter(where.Filter))
 }
 
 // Investments is the resolver for the investments field.
@@ -137,11 +132,6 @@ func (r *queryResolver) UserHouseholds(ctx context.Context) ([]*ent.UserHousehol
 // Cost is the resolver for the cost field.
 func (r *recurringSubscriptionResolver) Cost(ctx context.Context, obj *ent.RecurringSubscription) (string, error) {
 	return obj.Cost.String(), nil
-}
-
-// FxRate is the resolver for the fxRate field.
-func (r *recurringSubscriptionResolver) FxRate(ctx context.Context, obj *ent.RecurringSubscription) (string, error) {
-	return obj.FxRate.String(), nil
 }
 
 // Liquidity is the resolver for the liquidity field.
@@ -267,46 +257,6 @@ func (r *accountWhereInputResolver) ValueLt(ctx context.Context, obj *ent.Accoun
 // ValueLte is the resolver for the valueLTE field.
 func (r *accountWhereInputResolver) ValueLte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
 	panic(fmt.Errorf("not implemented: ValueLte - valueLTE"))
-}
-
-// FxRate is the resolver for the fxRate field.
-func (r *accountWhereInputResolver) FxRate(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRate - fxRate"))
-}
-
-// FxRateNeq is the resolver for the fxRateNEQ field.
-func (r *accountWhereInputResolver) FxRateNeq(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateNeq - fxRateNEQ"))
-}
-
-// FxRateIn is the resolver for the fxRateIn field.
-func (r *accountWhereInputResolver) FxRateIn(ctx context.Context, obj *ent.AccountWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: FxRateIn - fxRateIn"))
-}
-
-// FxRateNotIn is the resolver for the fxRateNotIn field.
-func (r *accountWhereInputResolver) FxRateNotIn(ctx context.Context, obj *ent.AccountWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: FxRateNotIn - fxRateNotIn"))
-}
-
-// FxRateGt is the resolver for the fxRateGT field.
-func (r *accountWhereInputResolver) FxRateGt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateGt - fxRateGT"))
-}
-
-// FxRateGte is the resolver for the fxRateGTE field.
-func (r *accountWhereInputResolver) FxRateGte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateGte - fxRateGTE"))
-}
-
-// FxRateLt is the resolver for the fxRateLT field.
-func (r *accountWhereInputResolver) FxRateLt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateLt - fxRateLT"))
-}
-
-// FxRateLte is the resolver for the fxRateLTE field.
-func (r *accountWhereInputResolver) FxRateLte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateLte - fxRateLTE"))
 }
 
 // Balance is the resolver for the balance field.
@@ -673,46 +623,6 @@ func (r *recurringSubscriptionWhereInputResolver) CostLt(ctx context.Context, ob
 // CostLte is the resolver for the costLTE field.
 func (r *recurringSubscriptionWhereInputResolver) CostLte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
 	panic(fmt.Errorf("not implemented: CostLte - costLTE"))
-}
-
-// FxRate is the resolver for the fxRate field.
-func (r *recurringSubscriptionWhereInputResolver) FxRate(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRate - fxRate"))
-}
-
-// FxRateNeq is the resolver for the fxRateNEQ field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateNeq(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateNeq - fxRateNEQ"))
-}
-
-// FxRateIn is the resolver for the fxRateIn field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateIn(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: FxRateIn - fxRateIn"))
-}
-
-// FxRateNotIn is the resolver for the fxRateNotIn field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateNotIn(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: FxRateNotIn - fxRateNotIn"))
-}
-
-// FxRateGt is the resolver for the fxRateGT field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateGt(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateGt - fxRateGT"))
-}
-
-// FxRateGte is the resolver for the fxRateGTE field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateGte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateGte - fxRateGTE"))
-}
-
-// FxRateLt is the resolver for the fxRateLT field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateLt(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateLt - fxRateLT"))
-}
-
-// FxRateLte is the resolver for the fxRateLTE field.
-func (r *recurringSubscriptionWhereInputResolver) FxRateLte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: FxRateLte - fxRateLTE"))
 }
 
 // Liquidity is the resolver for the liquidity field.

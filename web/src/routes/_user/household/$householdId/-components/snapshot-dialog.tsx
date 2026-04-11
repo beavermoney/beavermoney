@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useCurrency } from '@/hooks/use-currency'
 import { commitMutationResult } from '@/lib/relay'
 import { ItemTitle } from '@/components/ui/item'
@@ -29,7 +30,7 @@ const SnapshotDialogFragment = graphql`
       edges {
         node {
           type
-          valueInHouseholdCurrency
+          valueInDisplayCurrency
         }
       }
     }
@@ -70,6 +71,7 @@ type SnapshotDialogProps = {
 export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
   const data = useFragment(SnapshotDialogFragment, fragmentRef)
   const { household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const [open, setOpen] = useState(false)
@@ -83,7 +85,7 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
       const total = (data.accounts.edges ?? [])
         .filter((e) => e?.node?.type === type)
         .reduce(
-          (sum, e) => sum.add(currency(e!.node!.valueInHouseholdCurrency)),
+          (sum, e) => sum.add(currency(e!.node!.valueInDisplayCurrency ?? 0)),
           currency(0),
         )
       acc[type] = total
@@ -139,7 +141,7 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
           <ItemTitle className="text-xl tabular-nums">
             {formatCurrencyWithPrivacyMode({
               value: netWorth,
-              currencyCode: household.currency.code,
+              currencyCode: displayCurrencyCode,
             })}
           </ItemTitle>
         </div>
@@ -162,7 +164,7 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
               <span className="tabular-nums">
                 {formatCurrencyWithPrivacyMode({
                   value: breakdown[type],
-                  currencyCode: household.currency.code,
+                  currencyCode: displayCurrencyCode,
                   liability: type === 'liability',
                 })}
               </span>

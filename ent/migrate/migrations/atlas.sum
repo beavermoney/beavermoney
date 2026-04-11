@@ -1,4 +1,4 @@
-h1:U33BIsE5jHci0ZmDpSvk1m/Wrk7eouuy6OEY44cPjGY=
+h1:Mag4J84mG0XepY8UvjMdjDmNeckZuW8G++HElfsE1zA=
 20250114164520_init.up.sql h1:kLD19UMVgiQpXOcjVFQacyoZG9bNFyqN3pOveynp7lQ=
 20251227201721_balance-trigger.up.sql h1:s8dl6hthzA9WTMbpLrWsVYo4bsssRu+Y0ngJF5/EGjM=
 20251228225913_amount-trigger.up.sql h1:KLlttiUI43zcXXLl7oK/9InIhxcuCHEm6t171sA5miI=
@@ -20,3 +20,5 @@ h1:U33BIsE5jHci0ZmDpSvk1m/Wrk7eouuy6OEY44cPjGY=
 20260411164130_snapshot-rate.up.sql h1:FTVa5d3iPl8rv5TzXyjdbcfhbuYKdYulD9E7bIsI5vk=
 20260411164131_drop-checkpoint.up.sql h1:qh5Sj3aBwoqi0sOoVoi7UHtkT8TwKNchz0hYPoCbK4w=
 20260411181122_snapshot-cascade.up.sql h1:q8oLgweoC6INp/GsCWNBcW/Zj+zBV0C0/EDPiffxV6U=
+20260411191927_household-currency.up.sql h1:ZwYnBoASt/2g4SqIH6vK4BOnsk6SLZlZH1dBFxHdXTM=
+20260411192619_drop-fx-rate.up.sql h1:RRBRfyELYpn55TD4ZbxWEMEhQqQU/m0kD6Q/wwRzyzA=

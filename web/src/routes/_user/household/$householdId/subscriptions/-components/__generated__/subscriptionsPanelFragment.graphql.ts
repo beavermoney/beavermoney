@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d50da8c7b904e4720fb68571d291484a>>
+ * @generated SignedSource<<af002be79655fc71452af26c79418321>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type subscriptionsPanelFragment$data = {
       readonly node: {
         readonly active: boolean;
         readonly cost: string;
-        readonly fxRate: string;
+        readonly costInDisplayCurrency: string | null | undefined;
         readonly id: string;
         readonly interval: RecurringSubscriptionInterval;
         readonly intervalCount: number;
@@ -136,7 +136,7 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "fxRate",
+                  "name": "costInDisplayCurrency",
                   "storageKey": null
                 },
                 {
@@ -239,6 +239,6 @@ return {
 };
 })();
 
-(node as any).hash = "892abbd46395340dc4663d6dc0c54737";
+(node as any).hash = "10f1ae0027634aeee381d2c101990bf9";
 
 export default node;

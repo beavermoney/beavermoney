@@ -155,27 +155,6 @@ func (_u *RecurringSubscriptionUpdate) AddCost(v decimal.Decimal) *RecurringSubs
 	return _u
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (_u *RecurringSubscriptionUpdate) SetFxRate(v decimal.Decimal) *RecurringSubscriptionUpdate {
-	_u.mutation.ResetFxRate()
-	_u.mutation.SetFxRate(v)
-	return _u
-}
-
-// SetNillableFxRate sets the "fx_rate" field if the given value is not nil.
-func (_u *RecurringSubscriptionUpdate) SetNillableFxRate(v *decimal.Decimal) *RecurringSubscriptionUpdate {
-	if v != nil {
-		_u.SetFxRate(*v)
-	}
-	return _u
-}
-
-// AddFxRate adds value to the "fx_rate" field.
-func (_u *RecurringSubscriptionUpdate) AddFxRate(v decimal.Decimal) *RecurringSubscriptionUpdate {
-	_u.mutation.AddFxRate(v)
-	return _u
-}
-
 // SetCurrencyID sets the "currency_id" field.
 func (_u *RecurringSubscriptionUpdate) SetCurrencyID(v int) *RecurringSubscriptionUpdate {
 	_u.mutation.SetCurrencyID(v)
@@ -332,12 +311,6 @@ func (_u *RecurringSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, 
 	}
 	if value, ok := _u.mutation.AddedCost(); ok {
 		_spec.AddField(recurringsubscription.FieldCost, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.FxRate(); ok {
-		_spec.SetField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedFxRate(); ok {
-		_spec.AddField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
 	}
 	if _u.mutation.CurrencyCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -511,27 +484,6 @@ func (_u *RecurringSubscriptionUpdateOne) SetNillableCost(v *decimal.Decimal) *R
 // AddCost adds value to the "cost" field.
 func (_u *RecurringSubscriptionUpdateOne) AddCost(v decimal.Decimal) *RecurringSubscriptionUpdateOne {
 	_u.mutation.AddCost(v)
-	return _u
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (_u *RecurringSubscriptionUpdateOne) SetFxRate(v decimal.Decimal) *RecurringSubscriptionUpdateOne {
-	_u.mutation.ResetFxRate()
-	_u.mutation.SetFxRate(v)
-	return _u
-}
-
-// SetNillableFxRate sets the "fx_rate" field if the given value is not nil.
-func (_u *RecurringSubscriptionUpdateOne) SetNillableFxRate(v *decimal.Decimal) *RecurringSubscriptionUpdateOne {
-	if v != nil {
-		_u.SetFxRate(*v)
-	}
-	return _u
-}
-
-// AddFxRate adds value to the "fx_rate" field.
-func (_u *RecurringSubscriptionUpdateOne) AddFxRate(v decimal.Decimal) *RecurringSubscriptionUpdateOne {
-	_u.mutation.AddFxRate(v)
 	return _u
 }
 
@@ -721,12 +673,6 @@ func (_u *RecurringSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *R
 	}
 	if value, ok := _u.mutation.AddedCost(); ok {
 		_spec.AddField(recurringsubscription.FieldCost, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.FxRate(); ok {
-		_spec.SetField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.AddedFxRate(); ok {
-		_spec.AddField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
 	}
 	if _u.mutation.CurrencyCleared() {
 		edge := &sqlgraph.EdgeSpec{

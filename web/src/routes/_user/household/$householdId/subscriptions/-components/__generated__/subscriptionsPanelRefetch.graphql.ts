@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d511511026520c6b12080a087c5ac999>>
+ * @generated SignedSource<<850876ebad3806f21df1f370722b720c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -176,7 +176,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "fxRate",
+                            "name": "costInDisplayCurrency",
                             "storageKey": null
                           },
                           {
@@ -306,16 +306,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1f2efa739c14271dc8d71b83d89fd109",
+    "cacheID": "cd70041d79015908be52bea86771f00d",
     "id": null,
     "metadata": {},
     "name": "subscriptionsPanelRefetch",
     "operationKind": "query",
-    "text": "query subscriptionsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...subscriptionsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_1G22uz on Household {\n  recurringSubscriptions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        active\n        cost\n        fxRate\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...subscriptionsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_1G22uz on Household {\n  recurringSubscriptions(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        active\n        cost\n        costInDisplayCurrency\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "892abbd46395340dc4663d6dc0c54737";
+(node as any).hash = "10f1ae0027634aeee381d2c101990bf9";
 
 export default node;

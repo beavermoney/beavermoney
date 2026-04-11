@@ -24,6 +24,7 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import {
   Select,
   SelectContent,
@@ -61,7 +62,7 @@ const AccountsPanelFragment = graphql`
           type
           category
           name
-          valueInHouseholdCurrency
+          valueInDisplayCurrency
           ...accountCardFragment
         }
       }
@@ -89,7 +90,8 @@ type GroupByOption = keyof typeof GROUP_BY_OPTIONS
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const environment = useRelayEnvironment()
-  const { household } = useHousehold()
+  const { household: _household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
@@ -188,7 +190,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       })
       .map((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return currency(edge.node.valueInHouseholdCurrency)
+        return currency(edge.node.valueInDisplayCurrency ?? 0)
       })
       .reduce((a, b) => a.add(b), currency(0))
 
@@ -199,7 +201,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       })
       .map((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return currency(edge.node.valueInHouseholdCurrency)
+        return currency(edge.node.valueInDisplayCurrency ?? 0)
       })
       .reduce((a, b) => a.add(b), currency(0))
 
@@ -251,7 +253,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <div className="text-3xl font-semibold tracking-tight tabular-nums">
           {formatCurrencyWithPrivacyMode({
             value: displayOptions[displayIndex].value,
-            currencyCode: household.currency.code,
+            currencyCode: displayCurrencyCode,
             liability: displayIndex === 2, // Show liability formatting for Total Liabilities
           })}
         </div>
@@ -354,10 +356,12 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                     value: accounts
                       .map((account) => {
                         invariant(account?.node, 'Account node is null')
-                        return currency(account.node.valueInHouseholdCurrency)
+                        return currency(
+                          account.node.valueInDisplayCurrency ?? 0,
+                        )
                       })
                       .reduce((a, b) => a.add(b), currency(0)),
-                    currencyCode: household.currency.code,
+                    currencyCode: displayCurrencyCode,
                     liability: isLiabilityGroup,
                   })}
                 </span>

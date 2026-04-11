@@ -137,16 +137,6 @@ type AccountWhereInput struct {
 	ValueLT    *decimal.Decimal  `json:"valueLT,omitempty"`
 	ValueLTE   *decimal.Decimal  `json:"valueLTE,omitempty"`
 
-	// "fx_rate" field predicates.
-	FxRate      *decimal.Decimal  `json:"fxRate,omitempty"`
-	FxRateNEQ   *decimal.Decimal  `json:"fxRateNEQ,omitempty"`
-	FxRateIn    []decimal.Decimal `json:"fxRateIn,omitempty"`
-	FxRateNotIn []decimal.Decimal `json:"fxRateNotIn,omitempty"`
-	FxRateGT    *decimal.Decimal  `json:"fxRateGT,omitempty"`
-	FxRateGTE   *decimal.Decimal  `json:"fxRateGTE,omitempty"`
-	FxRateLT    *decimal.Decimal  `json:"fxRateLT,omitempty"`
-	FxRateLTE   *decimal.Decimal  `json:"fxRateLTE,omitempty"`
-
 	// "currency_id" field predicates.
 	CurrencyID      *int  `json:"currencyID,omitempty"`
 	CurrencyIDNEQ   *int  `json:"currencyIDNEQ,omitempty"`
@@ -500,30 +490,6 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	}
 	if i.ValueLTE != nil {
 		predicates = append(predicates, account.ValueLTE(*i.ValueLTE))
-	}
-	if i.FxRate != nil {
-		predicates = append(predicates, account.FxRateEQ(*i.FxRate))
-	}
-	if i.FxRateNEQ != nil {
-		predicates = append(predicates, account.FxRateNEQ(*i.FxRateNEQ))
-	}
-	if len(i.FxRateIn) > 0 {
-		predicates = append(predicates, account.FxRateIn(i.FxRateIn...))
-	}
-	if len(i.FxRateNotIn) > 0 {
-		predicates = append(predicates, account.FxRateNotIn(i.FxRateNotIn...))
-	}
-	if i.FxRateGT != nil {
-		predicates = append(predicates, account.FxRateGT(*i.FxRateGT))
-	}
-	if i.FxRateGTE != nil {
-		predicates = append(predicates, account.FxRateGTE(*i.FxRateGTE))
-	}
-	if i.FxRateLT != nil {
-		predicates = append(predicates, account.FxRateLT(*i.FxRateLT))
-	}
-	if i.FxRateLTE != nil {
-		predicates = append(predicates, account.FxRateLTE(*i.FxRateLTE))
 	}
 	if i.CurrencyID != nil {
 		predicates = append(predicates, account.CurrencyIDEQ(*i.CurrencyID))
@@ -3397,16 +3363,6 @@ type RecurringSubscriptionWhereInput struct {
 	CostLT    *decimal.Decimal  `json:"costLT,omitempty"`
 	CostLTE   *decimal.Decimal  `json:"costLTE,omitempty"`
 
-	// "fx_rate" field predicates.
-	FxRate      *decimal.Decimal  `json:"fxRate,omitempty"`
-	FxRateNEQ   *decimal.Decimal  `json:"fxRateNEQ,omitempty"`
-	FxRateIn    []decimal.Decimal `json:"fxRateIn,omitempty"`
-	FxRateNotIn []decimal.Decimal `json:"fxRateNotIn,omitempty"`
-	FxRateGT    *decimal.Decimal  `json:"fxRateGT,omitempty"`
-	FxRateGTE   *decimal.Decimal  `json:"fxRateGTE,omitempty"`
-	FxRateLT    *decimal.Decimal  `json:"fxRateLT,omitempty"`
-	FxRateLTE   *decimal.Decimal  `json:"fxRateLTE,omitempty"`
-
 	// "currency_id" field predicates.
 	CurrencyID      *int  `json:"currencyID,omitempty"`
 	CurrencyIDNEQ   *int  `json:"currencyIDNEQ,omitempty"`
@@ -3760,30 +3716,6 @@ func (i *RecurringSubscriptionWhereInput) P() (predicate.RecurringSubscription, 
 	}
 	if i.CostLTE != nil {
 		predicates = append(predicates, recurringsubscription.CostLTE(*i.CostLTE))
-	}
-	if i.FxRate != nil {
-		predicates = append(predicates, recurringsubscription.FxRateEQ(*i.FxRate))
-	}
-	if i.FxRateNEQ != nil {
-		predicates = append(predicates, recurringsubscription.FxRateNEQ(*i.FxRateNEQ))
-	}
-	if len(i.FxRateIn) > 0 {
-		predicates = append(predicates, recurringsubscription.FxRateIn(i.FxRateIn...))
-	}
-	if len(i.FxRateNotIn) > 0 {
-		predicates = append(predicates, recurringsubscription.FxRateNotIn(i.FxRateNotIn...))
-	}
-	if i.FxRateGT != nil {
-		predicates = append(predicates, recurringsubscription.FxRateGT(*i.FxRateGT))
-	}
-	if i.FxRateGTE != nil {
-		predicates = append(predicates, recurringsubscription.FxRateGTE(*i.FxRateGTE))
-	}
-	if i.FxRateLT != nil {
-		predicates = append(predicates, recurringsubscription.FxRateLT(*i.FxRateLT))
-	}
-	if i.FxRateLTE != nil {
-		predicates = append(predicates, recurringsubscription.FxRateLTE(*i.FxRateLTE))
 	}
 	if i.CurrencyID != nil {
 		predicates = append(predicates, recurringsubscription.CurrencyIDEQ(*i.CurrencyID))
@@ -6827,6 +6759,14 @@ type UserHouseholdWhereInput struct {
 	RoleIn    []userhousehold.Role `json:"roleIn,omitempty"`
 	RoleNotIn []userhousehold.Role `json:"roleNotIn,omitempty"`
 
+	// "default_currency_id" field predicates.
+	DefaultCurrencyID       *int  `json:"defaultCurrencyID,omitempty"`
+	DefaultCurrencyIDNEQ    *int  `json:"defaultCurrencyIDNEQ,omitempty"`
+	DefaultCurrencyIDIn     []int `json:"defaultCurrencyIDIn,omitempty"`
+	DefaultCurrencyIDNotIn  []int `json:"defaultCurrencyIDNotIn,omitempty"`
+	DefaultCurrencyIDIsNil  bool  `json:"defaultCurrencyIDIsNil,omitempty"`
+	DefaultCurrencyIDNotNil bool  `json:"defaultCurrencyIDNotNil,omitempty"`
+
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
 	HasUserWith []*UserWhereInput `json:"hasUserWith,omitempty"`
@@ -6834,6 +6774,10 @@ type UserHouseholdWhereInput struct {
 	// "household" edge predicates.
 	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
 	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "default_currency" edge predicates.
+	HasDefaultCurrency     *bool                          `json:"hasDefaultCurrency,omitempty"`
+	HasDefaultCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasDefaultCurrencyWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -7015,6 +6959,24 @@ func (i *UserHouseholdWhereInput) P() (predicate.UserHousehold, error) {
 	if len(i.RoleNotIn) > 0 {
 		predicates = append(predicates, userhousehold.RoleNotIn(i.RoleNotIn...))
 	}
+	if i.DefaultCurrencyID != nil {
+		predicates = append(predicates, userhousehold.DefaultCurrencyIDEQ(*i.DefaultCurrencyID))
+	}
+	if i.DefaultCurrencyIDNEQ != nil {
+		predicates = append(predicates, userhousehold.DefaultCurrencyIDNEQ(*i.DefaultCurrencyIDNEQ))
+	}
+	if len(i.DefaultCurrencyIDIn) > 0 {
+		predicates = append(predicates, userhousehold.DefaultCurrencyIDIn(i.DefaultCurrencyIDIn...))
+	}
+	if len(i.DefaultCurrencyIDNotIn) > 0 {
+		predicates = append(predicates, userhousehold.DefaultCurrencyIDNotIn(i.DefaultCurrencyIDNotIn...))
+	}
+	if i.DefaultCurrencyIDIsNil {
+		predicates = append(predicates, userhousehold.DefaultCurrencyIDIsNil())
+	}
+	if i.DefaultCurrencyIDNotNil {
+		predicates = append(predicates, userhousehold.DefaultCurrencyIDNotNil())
+	}
 
 	if i.HasUser != nil {
 		p := userhousehold.HasUser()
@@ -7051,6 +7013,24 @@ func (i *UserHouseholdWhereInput) P() (predicate.UserHousehold, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, userhousehold.HasHouseholdWith(with...))
+	}
+	if i.HasDefaultCurrency != nil {
+		p := userhousehold.HasDefaultCurrency()
+		if !*i.HasDefaultCurrency {
+			p = userhousehold.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasDefaultCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasDefaultCurrencyWith))
+		for _, w := range i.HasDefaultCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasDefaultCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, userhousehold.HasDefaultCurrencyWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

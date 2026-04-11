@@ -53,6 +53,7 @@ func Seed(
 		panic(fmt.Errorf("failed to get USD/CAD FX rate: unexpected status %s", usdToCadResp.Status()))
 	}
 	usdToCadRate := decimal.NewFromFloat32(usdToCadResp.JSON200.Rate)
+	_ = usdToCadRate
 
 	joey := entClient.User.Create().
 		SetEmail("joey@beavermoney.app").
@@ -123,7 +124,6 @@ func Seed(
 	entClient.Account.Create().
 		SetName("You should not see this account").
 		SetCurrency(usd).
-		SetFxRate(usdToCadRate).
 		SetUser(differentJoey).
 		SetHousehold(differentHousehold).
 		SetType(account.TypeLiquidity).
@@ -134,7 +134,6 @@ func Seed(
 	chase := entClient.Account.Create().
 		SetName("Chase Total Checking").
 		SetCurrency(usd).
-		SetFxRate(usdToCadRate).
 		SetIcon("chase.com").
 		SetUser(joey).
 		SetHousehold(household).
@@ -145,7 +144,6 @@ func Seed(
 		SetName("Wealthsimple Visa Infinite").
 		SetUser(joey).
 		SetIcon("wealthsimple.com").
-		SetFxRate(decimal.NewFromInt(1)).
 		SetCurrency(cad).
 		SetHousehold(household).
 		SetType(account.TypeLiability).
@@ -153,7 +151,6 @@ func Seed(
 
 	webull := entClient.Account.Create().
 		SetHousehold(household).
-		SetFxRate(decimal.NewFromInt(1)).
 		SetIcon("webull.ca").
 		SetName("Webull").
 		SetUser(joey).
@@ -482,7 +479,6 @@ func createDemoAccounts(
 		SetName(config.checkingName).
 		SetIcon(config.checkingIcon).
 		SetCurrency(householdCurrency).
-		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiquidity).
@@ -497,7 +493,6 @@ func createDemoAccounts(
 		SetName(config.creditCardName).
 		SetIcon(config.creditCardIcon).
 		SetCurrency(householdCurrency).
-		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiability).
@@ -512,7 +507,6 @@ func createDemoAccounts(
 		SetName(config.investmentName).
 		SetIcon(config.investmentIcon).
 		SetCurrency(householdCurrency).
-		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeInvestment).
@@ -527,7 +521,6 @@ func createDemoAccounts(
 		SetName("Chase Savings").
 		SetIcon("chase.com").
 		SetCurrency(usdCurrency).
-		SetFxRate(decimal.NewFromInt(1)).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiquidity).

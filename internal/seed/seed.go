@@ -5,18 +5,22 @@ import (
 	"log/slog"
 
 	"beavermoney.app/ent"
+	"beavermoney.app/internal/frankfurter"
 )
 
-// Setup initializes the database with required data like currencies.
-// It ensures all standard currencies exist in the database.
 func Setup(
 	ctx context.Context,
 	client *ent.Client,
+	frankfurterClient *frankfurter.ClientWithResponses,
 	logger *slog.Logger,
 ) error {
 	logger.Info("Running database setup")
 
 	if err := setupCurrencies(ctx, client, logger); err != nil {
+		return err
+	}
+
+	if err := migrateHouseholdCurrencies(ctx, client, frankfurterClient, logger); err != nil {
 		return err
 	}
 

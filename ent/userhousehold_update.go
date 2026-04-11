@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/userhousehold"
 	"entgo.io/ent/dialect/sql"
@@ -49,9 +50,40 @@ func (_u *UserHouseholdUpdate) SetNillableRole(v *userhousehold.Role) *UserHouse
 	return _u
 }
 
+// SetDefaultCurrencyID sets the "default_currency_id" field.
+func (_u *UserHouseholdUpdate) SetDefaultCurrencyID(v int) *UserHouseholdUpdate {
+	_u.mutation.SetDefaultCurrencyID(v)
+	return _u
+}
+
+// SetNillableDefaultCurrencyID sets the "default_currency_id" field if the given value is not nil.
+func (_u *UserHouseholdUpdate) SetNillableDefaultCurrencyID(v *int) *UserHouseholdUpdate {
+	if v != nil {
+		_u.SetDefaultCurrencyID(*v)
+	}
+	return _u
+}
+
+// ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
+func (_u *UserHouseholdUpdate) ClearDefaultCurrencyID() *UserHouseholdUpdate {
+	_u.mutation.ClearDefaultCurrencyID()
+	return _u
+}
+
+// SetDefaultCurrency sets the "default_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdate) SetDefaultCurrency(v *HouseholdCurrency) *UserHouseholdUpdate {
+	return _u.SetDefaultCurrencyID(v.ID)
+}
+
 // Mutation returns the UserHouseholdMutation object of the builder.
 func (_u *UserHouseholdUpdate) Mutation() *UserHouseholdMutation {
 	return _u.mutation
+}
+
+// ClearDefaultCurrency clears the "default_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdate) ClearDefaultCurrency() *UserHouseholdUpdate {
+	_u.mutation.ClearDefaultCurrency()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -136,6 +168,35 @@ func (_u *UserHouseholdUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if value, ok := _u.mutation.Role(); ok {
 		_spec.SetField(userhousehold.FieldRole, field.TypeEnum, value)
 	}
+	if _u.mutation.DefaultCurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.DefaultCurrencyTable,
+			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DefaultCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.DefaultCurrencyTable,
+			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -178,9 +239,40 @@ func (_u *UserHouseholdUpdateOne) SetNillableRole(v *userhousehold.Role) *UserHo
 	return _u
 }
 
+// SetDefaultCurrencyID sets the "default_currency_id" field.
+func (_u *UserHouseholdUpdateOne) SetDefaultCurrencyID(v int) *UserHouseholdUpdateOne {
+	_u.mutation.SetDefaultCurrencyID(v)
+	return _u
+}
+
+// SetNillableDefaultCurrencyID sets the "default_currency_id" field if the given value is not nil.
+func (_u *UserHouseholdUpdateOne) SetNillableDefaultCurrencyID(v *int) *UserHouseholdUpdateOne {
+	if v != nil {
+		_u.SetDefaultCurrencyID(*v)
+	}
+	return _u
+}
+
+// ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
+func (_u *UserHouseholdUpdateOne) ClearDefaultCurrencyID() *UserHouseholdUpdateOne {
+	_u.mutation.ClearDefaultCurrencyID()
+	return _u
+}
+
+// SetDefaultCurrency sets the "default_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdateOne) SetDefaultCurrency(v *HouseholdCurrency) *UserHouseholdUpdateOne {
+	return _u.SetDefaultCurrencyID(v.ID)
+}
+
 // Mutation returns the UserHouseholdMutation object of the builder.
 func (_u *UserHouseholdUpdateOne) Mutation() *UserHouseholdMutation {
 	return _u.mutation
+}
+
+// ClearDefaultCurrency clears the "default_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdateOne) ClearDefaultCurrency() *UserHouseholdUpdateOne {
+	_u.mutation.ClearDefaultCurrency()
+	return _u
 }
 
 // Where appends a list predicates to the UserHouseholdUpdate builder.
@@ -294,6 +386,35 @@ func (_u *UserHouseholdUpdateOne) sqlSave(ctx context.Context) (_node *UserHouse
 	}
 	if value, ok := _u.mutation.Role(); ok {
 		_spec.SetField(userhousehold.FieldRole, field.TypeEnum, value)
+	}
+	if _u.mutation.DefaultCurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.DefaultCurrencyTable,
+			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DefaultCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.DefaultCurrencyTable,
+			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &UserHousehold{config: _u.config}

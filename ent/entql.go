@@ -51,7 +51,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			account.FieldCategory:    {Type: field.TypeEnum, Column: account.FieldCategory},
 			account.FieldIcon:        {Type: field.TypeString, Column: account.FieldIcon},
 			account.FieldValue:       {Type: field.TypeFloat64, Column: account.FieldValue},
-			account.FieldFxRate:      {Type: field.TypeFloat64, Column: account.FieldFxRate},
 			account.FieldCurrencyID:  {Type: field.TypeInt, Column: account.FieldCurrencyID},
 			account.FieldUserID:      {Type: field.TypeInt, Column: account.FieldUserID},
 			account.FieldArchived:    {Type: field.TypeBool, Column: account.FieldArchived},
@@ -193,7 +192,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			recurringsubscription.FieldActive:        {Type: field.TypeBool, Column: recurringsubscription.FieldActive},
 			recurringsubscription.FieldIcon:          {Type: field.TypeString, Column: recurringsubscription.FieldIcon},
 			recurringsubscription.FieldCost:          {Type: field.TypeFloat64, Column: recurringsubscription.FieldCost},
-			recurringsubscription.FieldFxRate:        {Type: field.TypeFloat64, Column: recurringsubscription.FieldFxRate},
 			recurringsubscription.FieldCurrencyID:    {Type: field.TypeInt, Column: recurringsubscription.FieldCurrencyID},
 			recurringsubscription.FieldUserID:        {Type: field.TypeInt, Column: recurringsubscription.FieldUserID},
 		},
@@ -347,11 +345,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "UserHousehold",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			userhousehold.FieldCreateTime:  {Type: field.TypeTime, Column: userhousehold.FieldCreateTime},
-			userhousehold.FieldUpdateTime:  {Type: field.TypeTime, Column: userhousehold.FieldUpdateTime},
-			userhousehold.FieldUserID:      {Type: field.TypeInt, Column: userhousehold.FieldUserID},
-			userhousehold.FieldHouseholdID: {Type: field.TypeInt, Column: userhousehold.FieldHouseholdID},
-			userhousehold.FieldRole:        {Type: field.TypeEnum, Column: userhousehold.FieldRole},
+			userhousehold.FieldCreateTime:        {Type: field.TypeTime, Column: userhousehold.FieldCreateTime},
+			userhousehold.FieldUpdateTime:        {Type: field.TypeTime, Column: userhousehold.FieldUpdateTime},
+			userhousehold.FieldUserID:            {Type: field.TypeInt, Column: userhousehold.FieldUserID},
+			userhousehold.FieldHouseholdID:       {Type: field.TypeInt, Column: userhousehold.FieldHouseholdID},
+			userhousehold.FieldRole:              {Type: field.TypeEnum, Column: userhousehold.FieldRole},
+			userhousehold.FieldDefaultCurrencyID: {Type: field.TypeInt, Column: userhousehold.FieldDefaultCurrencyID},
 		},
 	}
 	graph.Nodes[16] = &sqlgraph.Node{
@@ -1273,6 +1272,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Household",
 	)
 	graph.MustAddE(
+		"default_currency",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.DefaultCurrencyTable,
+			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+		},
+		"UserHousehold",
+		"HouseholdCurrency",
+	)
+	graph.MustAddE(
 		"user",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1376,11 +1387,6 @@ func (f *AccountFilter) WhereIcon(p entql.StringP) {
 // WhereValue applies the entql float64 predicate on the value field.
 func (f *AccountFilter) WhereValue(p entql.Float64P) {
 	f.Where(p.Field(account.FieldValue))
-}
-
-// WhereFxRate applies the entql float64 predicate on the fx_rate field.
-func (f *AccountFilter) WhereFxRate(p entql.Float64P) {
-	f.Where(p.Field(account.FieldFxRate))
 }
 
 // WhereCurrencyID applies the entql int predicate on the currency_id field.
@@ -2501,11 +2507,6 @@ func (f *RecurringSubscriptionFilter) WhereCost(p entql.Float64P) {
 	f.Where(p.Field(recurringsubscription.FieldCost))
 }
 
-// WhereFxRate applies the entql float64 predicate on the fx_rate field.
-func (f *RecurringSubscriptionFilter) WhereFxRate(p entql.Float64P) {
-	f.Where(p.Field(recurringsubscription.FieldFxRate))
-}
-
 // WhereCurrencyID applies the entql int predicate on the currency_id field.
 func (f *RecurringSubscriptionFilter) WhereCurrencyID(p entql.IntP) {
 	f.Where(p.Field(recurringsubscription.FieldCurrencyID))
@@ -3530,6 +3531,11 @@ func (f *UserHouseholdFilter) WhereRole(p entql.StringP) {
 	f.Where(p.Field(userhousehold.FieldRole))
 }
 
+// WhereDefaultCurrencyID applies the entql int predicate on the default_currency_id field.
+func (f *UserHouseholdFilter) WhereDefaultCurrencyID(p entql.IntP) {
+	f.Where(p.Field(userhousehold.FieldDefaultCurrencyID))
+}
+
 // WhereHasUser applies a predicate to check if query has an edge user.
 func (f *UserHouseholdFilter) WhereHasUser() {
 	f.Where(entql.HasEdge("user"))
@@ -3552,6 +3558,20 @@ func (f *UserHouseholdFilter) WhereHasHousehold() {
 // WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
 func (f *UserHouseholdFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
 	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasDefaultCurrency applies a predicate to check if query has an edge default_currency.
+func (f *UserHouseholdFilter) WhereHasDefaultCurrency() {
+	f.Where(entql.HasEdge("default_currency"))
+}
+
+// WhereHasDefaultCurrencyWith applies a predicate to check if query has an edge default_currency with a given conditions (other predicates).
+func (f *UserHouseholdFilter) WhereHasDefaultCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("default_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

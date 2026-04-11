@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/accordion'
 
 import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { CATEGORY_TYPE_LIST } from '@/constant'
@@ -80,6 +81,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const endDate = parseISO(search.end).toISOString()
   const data = useFragment(CategoriesPanelFragment, fragmentRef)
   const { household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const environment = useRelayEnvironment()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
 
@@ -188,7 +190,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                   <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
                     {formatCurrencyWithPrivacyMode({
                       value: currency(typeAggregate.total),
-                      currencyCode: household.currency.code,
+                      currencyCode: displayCurrencyCode,
                     })}
                   </span>
                 )}
