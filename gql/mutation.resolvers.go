@@ -1746,26 +1746,37 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 	}
 
 	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
-	for i := 0; i < len(currencyIDs); i++ {
+	for i := 0; i < len(currencyIDs)-1; i++ {
+		baseCode := currencyCodeByID[currencyIDs[i]]
+		quoteCodes := make([]string, 0, len(currencyIDs)-i-1)
 		for j := i + 1; j < len(currencyIDs); j++ {
-			fromCode := currencyCodeByID[currencyIDs[i]]
-			toCode := currencyCodeByID[currencyIDs[j]]
+			quoteCodes = append(quoteCodes, currencyCodeByID[currencyIDs[j]])
+		}
+		quotes := strings.Join(quoteCodes, ",")
 
-			resp, err := r.frankfurterClient.GetRateWithResponse(ctx, fromCode, toCode, &frankfurter.GetRateParams{})
-			if err != nil {
-				r.logger.Error("Failed to get FX rate", "error", err, "from", fromCode, "to", toCode)
-				return nil, err
-			}
-			if resp.JSON200 == nil {
-				r.logger.Error("No rate returned", "from", fromCode, "to", toCode)
-				return nil, fmt.Errorf("no rate returned for %s->%s", fromCode, toCode)
-			}
+		resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
+			Base:   &baseCode,
+			Quotes: &quotes,
+		})
+		if err != nil {
+			r.logger.Error("Failed to get FX rates", "error", err, "base", baseCode)
+			return nil, err
+		}
+		if resp.JSON200 == nil {
+			r.logger.Error("No rates returned", "base", baseCode)
+			return nil, fmt.Errorf("no rates returned for base %s", baseCode)
+		}
 
+		for _, rate := range *resp.JSON200 {
+			toCurrencyID, ok := currencyIDByCode[rate.Quote]
+			if !ok {
+				continue
+			}
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(currencyIDs[i]).
-				SetToCurrencyID(currencyIDs[j]).
-				SetRate(decimal.NewFromFloat32(resp.JSON200.Rate).Round(6)),
+				SetToCurrencyID(toCurrencyID).
+				SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 			)
 		}
 	}

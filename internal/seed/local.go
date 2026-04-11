@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"beavermoney.app/ent"
@@ -1079,23 +1080,42 @@ func createSnapshotAtDate(
 		}
 	}
 
+	currencyIDByCode := make(map[string]int, len(currencies))
+	for _, c := range currencies {
+		currencyIDByCode[c.Code] = c.ID
+	}
+
 	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
 	date := openapi_types.Date{Time: snapshotDate}
-	for i := 0; i < len(currencies); i++ {
+	for i := 0; i < len(currencies)-1; i++ {
+		quoteCodes := make([]string, 0, len(currencies)-i-1)
 		for j := i + 1; j < len(currencies); j++ {
-			resp, err := frankfurterClient.GetRateWithResponse(ctx, currencies[i].Code, currencies[j].Code, &frankfurter.GetRateParams{Date: &date})
-			if err != nil {
-				return fmt.Errorf("failed to get FX rate %s->%s: %w", currencies[i].Code, currencies[j].Code, err)
-			}
-			if resp.JSON200 == nil {
-				return fmt.Errorf("no rate returned for %s->%s", currencies[i].Code, currencies[j].Code)
-			}
+			quoteCodes = append(quoteCodes, currencies[j].Code)
+		}
+		quotes := strings.Join(quoteCodes, ",")
 
+		resp, err := frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
+			Date:   &date,
+			Base:   &currencies[i].Code,
+			Quotes: &quotes,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to get FX rates for base %s: %w", currencies[i].Code, err)
+		}
+		if resp.JSON200 == nil {
+			return fmt.Errorf("no rates returned for base %s", currencies[i].Code)
+		}
+
+		for _, rate := range *resp.JSON200 {
+			toCurrencyID, ok := currencyIDByCode[rate.Quote]
+			if !ok {
+				continue
+			}
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(currencies[i].ID).
-				SetToCurrencyID(currencies[j].ID).
-				SetRate(decimal.NewFromFloat32(resp.JSON200.Rate).Round(6)),
+				SetToCurrencyID(toCurrencyID).
+				SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 			)
 		}
 	}
