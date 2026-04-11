@@ -1746,11 +1746,16 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 	}
 
 	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
-	for i := 0; i < len(currencyIDs)-1; i++ {
-		baseCode := currencyCodeByID[currencyIDs[i]]
-		quoteCodes := make([]string, 0, len(currencyIDs)-i-1)
-		for j := i + 1; j < len(currencyIDs); j++ {
-			quoteCodes = append(quoteCodes, currencyCodeByID[currencyIDs[j]])
+	for _, fromID := range currencyIDs {
+		baseCode := currencyCodeByID[fromID]
+		quoteCodes := make([]string, 0, len(currencyIDs)-1)
+		for _, toID := range currencyIDs {
+			if toID != fromID {
+				quoteCodes = append(quoteCodes, currencyCodeByID[toID])
+			}
+		}
+		if len(quoteCodes) == 0 {
+			continue
 		}
 		quotes := strings.Join(quoteCodes, ",")
 
@@ -1774,7 +1779,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 			}
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
 				SetSnapshotID(snap.ID).
-				SetFromCurrencyID(currencyIDs[i]).
+				SetFromCurrencyID(fromID).
 				SetToCurrencyID(toCurrencyID).
 				SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 			)

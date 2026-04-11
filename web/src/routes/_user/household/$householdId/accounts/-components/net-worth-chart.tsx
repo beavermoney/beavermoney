@@ -35,15 +35,12 @@ function buildRateMap(
     readonly toCurrency: { readonly code: string }
   }>,
 ): Map<string, number> {
-  const map = new Map<string, number>()
-  for (const r of rates) {
-    const rate = parseFloat(r.rate)
-    map.set(`${r.fromCurrency.code}->${r.toCurrency.code}`, rate)
-    if (rate !== 0) {
-      map.set(`${r.toCurrency.code}->${r.fromCurrency.code}`, 1 / rate)
-    }
-  }
-  return map
+  return new Map(
+    rates.map((r) => [
+      `${r.fromCurrency.code}->${r.toCurrency.code}`,
+      parseFloat(r.rate),
+    ]),
+  )
 }
 
 function getRate(

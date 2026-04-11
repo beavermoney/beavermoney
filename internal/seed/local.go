@@ -1087,23 +1087,28 @@ func createSnapshotAtDate(
 
 	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
 	date := openapi_types.Date{Time: snapshotDate}
-	for i := 0; i < len(currencies)-1; i++ {
-		quoteCodes := make([]string, 0, len(currencies)-i-1)
-		for j := i + 1; j < len(currencies); j++ {
-			quoteCodes = append(quoteCodes, currencies[j].Code)
+	for _, from := range currencies {
+		quoteCodes := make([]string, 0, len(currencies)-1)
+		for _, to := range currencies {
+			if to.ID != from.ID {
+				quoteCodes = append(quoteCodes, to.Code)
+			}
+		}
+		if len(quoteCodes) == 0 {
+			continue
 		}
 		quotes := strings.Join(quoteCodes, ",")
 
 		resp, err := frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
 			Date:   &date,
-			Base:   &currencies[i].Code,
+			Base:   &from.Code,
 			Quotes: &quotes,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to get FX rates for base %s: %w", currencies[i].Code, err)
+			return fmt.Errorf("failed to get FX rates for base %s: %w", from.Code, err)
 		}
 		if resp.JSON200 == nil {
-			return fmt.Errorf("no rates returned for base %s", currencies[i].Code)
+			return fmt.Errorf("no rates returned for base %s", from.Code)
 		}
 
 		for _, rate := range *resp.JSON200 {
@@ -1113,7 +1118,7 @@ func createSnapshotAtDate(
 			}
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
 				SetSnapshotID(snap.ID).
-				SetFromCurrencyID(currencies[i].ID).
+				SetFromCurrencyID(from.ID).
 				SetToCurrencyID(toCurrencyID).
 				SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 			)
