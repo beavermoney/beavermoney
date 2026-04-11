@@ -1,6 +1,6 @@
 import { fetchQuery, graphql } from 'relay-runtime'
 import { useFragment, useRelayEnvironment } from 'react-relay'
-import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import type { LinkOptions } from '@tanstack/react-router'
 import { TransactionsList } from './transactions-list'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
@@ -44,7 +44,6 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const navigate = useNavigate()
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
-  const { householdId } = useParams({ from: '/_user/household/$householdId' })
   const isMobile = useIsMobile()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
@@ -81,14 +80,15 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
     () =>
       isMobile
         ? {
+            from: '/household/$householdId/transactions',
             to: '/household/$householdId/transactions/new',
-            params: { householdId },
+            search: (prev) => ({ ...prev, log_type: 'expense' }),
           }
         : {
             to: '.',
             search: (prev) => ({ ...prev, log_type: 'expense' }),
           },
-    [isMobile, householdId],
+    [isMobile],
   )
 
   return (
