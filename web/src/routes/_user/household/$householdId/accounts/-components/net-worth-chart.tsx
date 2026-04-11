@@ -192,7 +192,6 @@ export function NetWorthChart() {
 
   const displayCurrency = household.currency.code
 
-  console.log(data.household.snapshots.edges)
   const chartData = useMemo(() => {
     return (data.household.snapshots.edges ?? [])
       .flatMap((edge) => {
