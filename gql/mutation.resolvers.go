@@ -107,6 +107,10 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 			r.logger.Error("Failed to seed demo household data", "error", err)
 			return nil, fmt.Errorf("failed to seed demo household data: %w", err)
 		}
+
+		if err := r.syncHouseholdCurrenciesFromAccounts(householdCtx, client, household, primaryHC); err != nil {
+			r.logger.Error("Failed to sync household currencies after demo seed", "error", err)
+		}
 	}
 
 	return household, nil
