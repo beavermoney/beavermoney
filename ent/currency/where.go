@@ -238,29 +238,6 @@ func HasRecurringSubscriptionsWith(preds ...predicate.RecurringSubscription) pre
 	})
 }
 
-// HasCheckpoints applies the HasEdge predicate on the "checkpoints" edge.
-func HasCheckpoints() predicate.Currency {
-	return predicate.Currency(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CheckpointsTable, CheckpointsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCheckpointsWith applies the HasEdge predicate on the "checkpoints" edge with a given conditions (other predicates).
-func HasCheckpointsWith(preds ...predicate.Checkpoint) predicate.Currency {
-	return predicate.Currency(func(s *sql.Selector) {
-		step := newCheckpointsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasSnapshotEntries applies the HasEdge predicate on the "snapshot_entries" edge.
 func HasSnapshotEntries() predicate.Currency {
 	return predicate.Currency(func(s *sql.Selector) {

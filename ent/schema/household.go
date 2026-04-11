@@ -100,15 +100,6 @@ func (Household) Edges() []ent.Edge {
 				),
 				entgql.RelayConnection(),
 			),
-		edge.To("checkpoints", Checkpoint.Type).
-			Annotations(
-				entgql.Skip(
-					entgql.SkipMutationCreateInput,
-					entgql.SkipMutationUpdateInput,
-				),
-				entgql.RelayConnection(),
-			),
-
 		edge.To("snapshots", Snapshot.Type).
 			Annotations(
 				entgql.Skip(

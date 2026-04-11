@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -213,21 +212,6 @@ func (_u *HouseholdUpdate) AddRecurringSubscriptions(v ...*RecurringSubscription
 		ids[i] = v[i].ID
 	}
 	return _u.AddRecurringSubscriptionIDs(ids...)
-}
-
-// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by IDs.
-func (_u *HouseholdUpdate) AddCheckpointIDs(ids ...int) *HouseholdUpdate {
-	_u.mutation.AddCheckpointIDs(ids...)
-	return _u
-}
-
-// AddCheckpoints adds the "checkpoints" edges to the Checkpoint entity.
-func (_u *HouseholdUpdate) AddCheckpoints(v ...*Checkpoint) *HouseholdUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddCheckpointIDs(ids...)
 }
 
 // AddSnapshotIDs adds the "snapshots" edge to the Snapshot entity by IDs.
@@ -452,27 +436,6 @@ func (_u *HouseholdUpdate) RemoveRecurringSubscriptions(v ...*RecurringSubscript
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
-}
-
-// ClearCheckpoints clears all "checkpoints" edges to the Checkpoint entity.
-func (_u *HouseholdUpdate) ClearCheckpoints() *HouseholdUpdate {
-	_u.mutation.ClearCheckpoints()
-	return _u
-}
-
-// RemoveCheckpointIDs removes the "checkpoints" edge to Checkpoint entities by IDs.
-func (_u *HouseholdUpdate) RemoveCheckpointIDs(ids ...int) *HouseholdUpdate {
-	_u.mutation.RemoveCheckpointIDs(ids...)
-	return _u
-}
-
-// RemoveCheckpoints removes "checkpoints" edges to Checkpoint entities.
-func (_u *HouseholdUpdate) RemoveCheckpoints(v ...*Checkpoint) *HouseholdUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveCheckpointIDs(ids...)
 }
 
 // ClearSnapshots clears all "snapshots" edges to the Snapshot entity.
@@ -1031,51 +994,6 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   household.CheckpointsTable,
-			Columns: []string{household.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedCheckpointsIDs(); len(nodes) > 0 && !_u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   household.CheckpointsTable,
-			Columns: []string{household.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.CheckpointsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   household.CheckpointsTable,
-			Columns: []string{household.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if _u.mutation.SnapshotsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1406,21 +1324,6 @@ func (_u *HouseholdUpdateOne) AddRecurringSubscriptions(v ...*RecurringSubscript
 	return _u.AddRecurringSubscriptionIDs(ids...)
 }
 
-// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by IDs.
-func (_u *HouseholdUpdateOne) AddCheckpointIDs(ids ...int) *HouseholdUpdateOne {
-	_u.mutation.AddCheckpointIDs(ids...)
-	return _u
-}
-
-// AddCheckpoints adds the "checkpoints" edges to the Checkpoint entity.
-func (_u *HouseholdUpdateOne) AddCheckpoints(v ...*Checkpoint) *HouseholdUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddCheckpointIDs(ids...)
-}
-
 // AddSnapshotIDs adds the "snapshots" edge to the Snapshot entity by IDs.
 func (_u *HouseholdUpdateOne) AddSnapshotIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddSnapshotIDs(ids...)
@@ -1643,27 +1546,6 @@ func (_u *HouseholdUpdateOne) RemoveRecurringSubscriptions(v ...*RecurringSubscr
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
-}
-
-// ClearCheckpoints clears all "checkpoints" edges to the Checkpoint entity.
-func (_u *HouseholdUpdateOne) ClearCheckpoints() *HouseholdUpdateOne {
-	_u.mutation.ClearCheckpoints()
-	return _u
-}
-
-// RemoveCheckpointIDs removes the "checkpoints" edge to Checkpoint entities by IDs.
-func (_u *HouseholdUpdateOne) RemoveCheckpointIDs(ids ...int) *HouseholdUpdateOne {
-	_u.mutation.RemoveCheckpointIDs(ids...)
-	return _u
-}
-
-// RemoveCheckpoints removes "checkpoints" edges to Checkpoint entities.
-func (_u *HouseholdUpdateOne) RemoveCheckpoints(v ...*Checkpoint) *HouseholdUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveCheckpointIDs(ids...)
 }
 
 // ClearSnapshots clears all "snapshots" edges to the Snapshot entity.
@@ -2245,51 +2127,6 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(recurringsubscription.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   household.CheckpointsTable,
-			Columns: []string{household.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedCheckpointsIDs(); len(nodes) > 0 && !_u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   household.CheckpointsTable,
-			Columns: []string{household.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.CheckpointsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   household.CheckpointsTable,
-			Columns: []string{household.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -9,7 +9,6 @@ import (
 	"math"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -36,7 +35,6 @@ type CurrencyQuery struct {
 	withTransactionEntries          *TransactionEntryQuery
 	withHouseholds                  *HouseholdQuery
 	withRecurringSubscriptions      *RecurringSubscriptionQuery
-	withCheckpoints                 *CheckpointQuery
 	withSnapshotEntries             *SnapshotEntryQuery
 	withSnapshotRatesFrom           *SnapshotRateQuery
 	withSnapshotRatesTo             *SnapshotRateQuery
@@ -47,7 +45,6 @@ type CurrencyQuery struct {
 	withNamedTransactionEntries     map[string]*TransactionEntryQuery
 	withNamedHouseholds             map[string]*HouseholdQuery
 	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
-	withNamedCheckpoints            map[string]*CheckpointQuery
 	withNamedSnapshotEntries        map[string]*SnapshotEntryQuery
 	withNamedSnapshotRatesFrom      map[string]*SnapshotRateQuery
 	withNamedSnapshotRatesTo        map[string]*SnapshotRateQuery
@@ -190,28 +187,6 @@ func (_q *CurrencyQuery) QueryRecurringSubscriptions() *RecurringSubscriptionQue
 			sqlgraph.From(currency.Table, currency.FieldID, selector),
 			sqlgraph.To(recurringsubscription.Table, recurringsubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, currency.RecurringSubscriptionsTable, currency.RecurringSubscriptionsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCheckpoints chains the current query on the "checkpoints" edge.
-func (_q *CurrencyQuery) QueryCheckpoints() *CheckpointQuery {
-	query := (&CheckpointClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(currency.Table, currency.FieldID, selector),
-			sqlgraph.To(checkpoint.Table, checkpoint.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, currency.CheckpointsTable, currency.CheckpointsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -482,7 +457,6 @@ func (_q *CurrencyQuery) Clone() *CurrencyQuery {
 		withTransactionEntries:     _q.withTransactionEntries.Clone(),
 		withHouseholds:             _q.withHouseholds.Clone(),
 		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
-		withCheckpoints:            _q.withCheckpoints.Clone(),
 		withSnapshotEntries:        _q.withSnapshotEntries.Clone(),
 		withSnapshotRatesFrom:      _q.withSnapshotRatesFrom.Clone(),
 		withSnapshotRatesTo:        _q.withSnapshotRatesTo.Clone(),
@@ -545,17 +519,6 @@ func (_q *CurrencyQuery) WithRecurringSubscriptions(opts ...func(*RecurringSubsc
 		opt(query)
 	}
 	_q.withRecurringSubscriptions = query
-	return _q
-}
-
-// WithCheckpoints tells the query-builder to eager-load the nodes that are connected to
-// the "checkpoints" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *CurrencyQuery) WithCheckpoints(opts ...func(*CheckpointQuery)) *CurrencyQuery {
-	query := (&CheckpointClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withCheckpoints = query
 	return _q
 }
 
@@ -670,13 +633,12 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 	var (
 		nodes       = []*Currency{}
 		_spec       = _q.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [8]bool{
 			_q.withAccounts != nil,
 			_q.withInvestments != nil,
 			_q.withTransactionEntries != nil,
 			_q.withHouseholds != nil,
 			_q.withRecurringSubscriptions != nil,
-			_q.withCheckpoints != nil,
 			_q.withSnapshotEntries != nil,
 			_q.withSnapshotRatesFrom != nil,
 			_q.withSnapshotRatesTo != nil,
@@ -742,13 +704,6 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 			return nil, err
 		}
 	}
-	if query := _q.withCheckpoints; query != nil {
-		if err := _q.loadCheckpoints(ctx, query, nodes,
-			func(n *Currency) { n.Edges.Checkpoints = []*Checkpoint{} },
-			func(n *Currency, e *Checkpoint) { n.Edges.Checkpoints = append(n.Edges.Checkpoints, e) }); err != nil {
-			return nil, err
-		}
-	}
 	if query := _q.withSnapshotEntries; query != nil {
 		if err := _q.loadSnapshotEntries(ctx, query, nodes,
 			func(n *Currency) { n.Edges.SnapshotEntries = []*SnapshotEntry{} },
@@ -802,13 +757,6 @@ func (_q *CurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cur
 		if err := _q.loadRecurringSubscriptions(ctx, query, nodes,
 			func(n *Currency) { n.appendNamedRecurringSubscriptions(name) },
 			func(n *Currency, e *RecurringSubscription) { n.appendNamedRecurringSubscriptions(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range _q.withNamedCheckpoints {
-		if err := _q.loadCheckpoints(ctx, query, nodes,
-			func(n *Currency) { n.appendNamedCheckpoints(name) },
-			func(n *Currency, e *Checkpoint) { n.appendNamedCheckpoints(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -976,36 +924,6 @@ func (_q *CurrencyQuery) loadRecurringSubscriptions(ctx context.Context, query *
 	}
 	query.Where(predicate.RecurringSubscription(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(currency.RecurringSubscriptionsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.CurrencyID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "currency_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *CurrencyQuery) loadCheckpoints(ctx context.Context, query *CheckpointQuery, nodes []*Currency, init func(*Currency), assign func(*Currency, *Checkpoint)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Currency)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(checkpoint.FieldCurrencyID)
-	}
-	query.Where(predicate.Checkpoint(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(currency.CheckpointsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1272,20 +1190,6 @@ func (_q *CurrencyQuery) WithNamedRecurringSubscriptions(name string, opts ...fu
 		_q.withNamedRecurringSubscriptions = make(map[string]*RecurringSubscriptionQuery)
 	}
 	_q.withNamedRecurringSubscriptions[name] = query
-	return _q
-}
-
-// WithNamedCheckpoints tells the query-builder to eager-load the nodes that are connected to the "checkpoints"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (_q *CurrencyQuery) WithNamedCheckpoints(name string, opts ...func(*CheckpointQuery)) *CurrencyQuery {
-	query := (&CheckpointClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if _q.withNamedCheckpoints == nil {
-		_q.withNamedCheckpoints = make(map[string]*CheckpointQuery)
-	}
-	_q.withNamedCheckpoints[name] = query
 	return _q
 }
 

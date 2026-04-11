@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -114,21 +113,6 @@ func (_c *CurrencyCreate) AddRecurringSubscriptions(v ...*RecurringSubscription)
 		ids[i] = v[i].ID
 	}
 	return _c.AddRecurringSubscriptionIDs(ids...)
-}
-
-// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by IDs.
-func (_c *CurrencyCreate) AddCheckpointIDs(ids ...int) *CurrencyCreate {
-	_c.mutation.AddCheckpointIDs(ids...)
-	return _c
-}
-
-// AddCheckpoints adds the "checkpoints" edges to the Checkpoint entity.
-func (_c *CurrencyCreate) AddCheckpoints(v ...*Checkpoint) *CurrencyCreate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddCheckpointIDs(ids...)
 }
 
 // AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
@@ -329,22 +313,6 @@ func (_c *CurrencyCreate) createSpec() (*Currency, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(recurringsubscription.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.CheckpointsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

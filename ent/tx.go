@@ -14,8 +14,6 @@ type Tx struct {
 	config
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
-	// Checkpoint is the client for interacting with the Checkpoint builders.
-	Checkpoint *CheckpointClient
 	// Currency is the client for interacting with the Currency builders.
 	Currency *CurrencyClient
 	// Household is the client for interacting with the Household builders.
@@ -176,7 +174,6 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
-	tx.Checkpoint = NewCheckpointClient(tx.config)
 	tx.Currency = NewCurrencyClient(tx.config)
 	tx.Household = NewHouseholdClient(tx.config)
 	tx.Investment = NewInvestmentClient(tx.config)

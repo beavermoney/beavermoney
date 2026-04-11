@@ -38,10 +38,6 @@ type Mutation {
   updateTransaction(id: ID!, input: UpdateTransactionInput!): TransactionEdge!
   deleteTransaction(id: ID!): DeleteTransactionPayload!
 
-  createCheckpoint(input: CreateCheckpointInput!): CheckpointEdge!
-  updateCheckpoint(id: ID!, input: UpdateCheckpointInput!): CheckpointEdge!
-  deleteCheckpoint(id: ID!): DeleteCheckpointPayload!
-
   createSnapshot(input: CreateSnapshotInput!): SnapshotEdge!
   updateSnapshot(id: ID!, input: UpdateSnapshotInput!): SnapshotEdge!
   deleteSnapshot(id: ID!): DeleteSnapshotPayload!
@@ -67,10 +63,6 @@ type DeleteRecurringSubscriptionPayload {
 
 type DeleteTransactionPayload {
   deletedTransactionId: ID!
-}
-
-type DeleteCheckpointPayload {
-  deletedCheckpointId: ID!
 }
 
 type DeleteSnapshotPayload {

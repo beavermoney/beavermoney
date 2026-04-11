@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -136,21 +135,6 @@ func (_u *CurrencyUpdate) AddRecurringSubscriptions(v ...*RecurringSubscription)
 		ids[i] = v[i].ID
 	}
 	return _u.AddRecurringSubscriptionIDs(ids...)
-}
-
-// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by IDs.
-func (_u *CurrencyUpdate) AddCheckpointIDs(ids ...int) *CurrencyUpdate {
-	_u.mutation.AddCheckpointIDs(ids...)
-	return _u
-}
-
-// AddCheckpoints adds the "checkpoints" edges to the Checkpoint entity.
-func (_u *CurrencyUpdate) AddCheckpoints(v ...*Checkpoint) *CurrencyUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddCheckpointIDs(ids...)
 }
 
 // AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
@@ -306,27 +290,6 @@ func (_u *CurrencyUpdate) RemoveRecurringSubscriptions(v ...*RecurringSubscripti
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
-}
-
-// ClearCheckpoints clears all "checkpoints" edges to the Checkpoint entity.
-func (_u *CurrencyUpdate) ClearCheckpoints() *CurrencyUpdate {
-	_u.mutation.ClearCheckpoints()
-	return _u
-}
-
-// RemoveCheckpointIDs removes the "checkpoints" edge to Checkpoint entities by IDs.
-func (_u *CurrencyUpdate) RemoveCheckpointIDs(ids ...int) *CurrencyUpdate {
-	_u.mutation.RemoveCheckpointIDs(ids...)
-	return _u
-}
-
-// RemoveCheckpoints removes "checkpoints" edges to Checkpoint entities.
-func (_u *CurrencyUpdate) RemoveCheckpoints(v ...*Checkpoint) *CurrencyUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveCheckpointIDs(ids...)
 }
 
 // ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
@@ -683,51 +646,6 @@ func (_u *CurrencyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedCheckpointsIDs(); len(nodes) > 0 && !_u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.CheckpointsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if _u.mutation.SnapshotEntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -986,21 +904,6 @@ func (_u *CurrencyUpdateOne) AddRecurringSubscriptions(v ...*RecurringSubscripti
 	return _u.AddRecurringSubscriptionIDs(ids...)
 }
 
-// AddCheckpointIDs adds the "checkpoints" edge to the Checkpoint entity by IDs.
-func (_u *CurrencyUpdateOne) AddCheckpointIDs(ids ...int) *CurrencyUpdateOne {
-	_u.mutation.AddCheckpointIDs(ids...)
-	return _u
-}
-
-// AddCheckpoints adds the "checkpoints" edges to the Checkpoint entity.
-func (_u *CurrencyUpdateOne) AddCheckpoints(v ...*Checkpoint) *CurrencyUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddCheckpointIDs(ids...)
-}
-
 // AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
 func (_u *CurrencyUpdateOne) AddSnapshotEntryIDs(ids ...int) *CurrencyUpdateOne {
 	_u.mutation.AddSnapshotEntryIDs(ids...)
@@ -1154,27 +1057,6 @@ func (_u *CurrencyUpdateOne) RemoveRecurringSubscriptions(v ...*RecurringSubscri
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveRecurringSubscriptionIDs(ids...)
-}
-
-// ClearCheckpoints clears all "checkpoints" edges to the Checkpoint entity.
-func (_u *CurrencyUpdateOne) ClearCheckpoints() *CurrencyUpdateOne {
-	_u.mutation.ClearCheckpoints()
-	return _u
-}
-
-// RemoveCheckpointIDs removes the "checkpoints" edge to Checkpoint entities by IDs.
-func (_u *CurrencyUpdateOne) RemoveCheckpointIDs(ids ...int) *CurrencyUpdateOne {
-	_u.mutation.RemoveCheckpointIDs(ids...)
-	return _u
-}
-
-// RemoveCheckpoints removes "checkpoints" edges to Checkpoint entities.
-func (_u *CurrencyUpdateOne) RemoveCheckpoints(v ...*Checkpoint) *CurrencyUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveCheckpointIDs(ids...)
 }
 
 // ClearSnapshotEntries clears all "snapshot_entries" edges to the SnapshotEntry entity.
@@ -1554,51 +1436,6 @@ func (_u *CurrencyUpdateOne) sqlSave(ctx context.Context) (_node *Currency, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(recurringsubscription.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedCheckpointsIDs(); len(nodes) > 0 && !_u.mutation.CheckpointsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.CheckpointsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   currency.CheckpointsTable,
-			Columns: []string{currency.CheckpointsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(checkpoint.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
