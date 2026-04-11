@@ -40,7 +40,6 @@ const SubscriptionsPanelFragment = graphql`
           id
           active
           cost
-          costInDisplayCurrency
           interval
           intervalCount
           startDate
@@ -115,9 +114,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         })
 
       const getYearlyEquivalent = (sub: (typeof activeSubscriptions)[0]) => {
-        const costInDisplayCurrency = currency(
-          sub.costInDisplayCurrency ?? sub.cost,
-        )
+        const costInDisplayCurrency = currency(sub.cost)
         switch (sub.interval) {
           case 'week':
             return costInDisplayCurrency.divide(sub.intervalCount).multiply(52)

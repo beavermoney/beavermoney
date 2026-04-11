@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b7e4a91aa536038a959dd81449d46e3f>>
+ * @generated SignedSource<<fd43bf6f587ef0840b3f6de6d6fdbe03>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,7 +34,6 @@ export type newInvestmentMutation$data = {
       };
       readonly id: string;
       readonly name: string;
-      readonly valueInDisplayCurrency: string | null | undefined;
       readonly " $fragmentSpreads": FragmentRefs<"investmentCardFragment">;
     } | null | undefined;
   };
@@ -76,13 +75,6 @@ v3 = {
 v4 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "valueInDisplayCurrency",
-  "storageKey": null
-},
-v5 = {
-  "alias": null,
-  "args": null,
   "concreteType": "Account",
   "kind": "LinkedField",
   "name": "account",
@@ -119,7 +111,6 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -160,7 +151,6 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -224,16 +214,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "cfe38f471872db3b383c3142e557d66a",
+    "cacheID": "ba89e4f23cf550b57983e99af037a6f8",
     "id": null,
     "metadata": {},
     "name": "newInvestmentMutation",
     "operationKind": "mutation",
-    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      valueInDisplayCurrency\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n"
+    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n"
   }
 };
 })();
 
-(node as any).hash = "dfb3f9a5d238916d12bde9d56cd23de1";
+(node as any).hash = "65b830af3fc9b59081cb61e83fc8fe15";
 
 export default node;

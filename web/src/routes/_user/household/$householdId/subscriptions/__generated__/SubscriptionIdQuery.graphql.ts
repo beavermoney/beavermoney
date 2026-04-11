@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<13526eabc7ee616d69746d8c03d50a7c>>
+ * @generated SignedSource<<b674a92aa16910552d65b566a93f5a9c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -149,13 +149,6 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "costInDisplayCurrency",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
                 "name": "interval",
                 "storageKey": null
               },
@@ -216,12 +209,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "52208b3483203bd4c8d873ac928b32ef",
+    "cacheID": "989d0e7112ae331cfb3c27c45607d4b3",
     "id": null,
     "metadata": {},
     "name": "SubscriptionIdQuery",
     "operationKind": "query",
-    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n  ...editSubscriptionCurrenciesFragment\n}\n\nfragment editSubscriptionCurrenciesFragment on Query {\n  currencies {\n    id\n    code\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  currency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n  ...editSubscriptionCurrenciesFragment\n}\n\nfragment editSubscriptionCurrenciesFragment on Query {\n  currencies {\n    id\n    code\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  currency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();

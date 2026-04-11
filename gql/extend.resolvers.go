@@ -11,30 +11,7 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/gql/model"
-	"beavermoney.app/internal/fx"
 )
-
-// BalanceInDisplayCurrency is the resolver for the balanceInDisplayCurrency field.
-func (r *accountResolver) BalanceInDisplayCurrency(ctx context.Context, obj *ent.Account) (*string, error) {
-	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Balance, obj.CurrencyID)
-	if err != nil {
-		r.logger.Error("Failed to convert balance to display currency", "error", err, "accountID", obj.ID)
-		return nil, nil
-	}
-	s := converted.String()
-	return &s, nil
-}
-
-// ValueInDisplayCurrency is the resolver for the valueInDisplayCurrency field.
-func (r *accountResolver) ValueInDisplayCurrency(ctx context.Context, obj *ent.Account) (*string, error) {
-	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Value, obj.CurrencyID)
-	if err != nil {
-		r.logger.Error("Failed to convert value to display currency", "error", err, "accountID", obj.ID)
-		return nil, nil
-	}
-	s := converted.String()
-	return &s, nil
-}
 
 // FinancialReport is the resolver for the financialReport field.
 func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) (*model.FinancialReport, error) {
@@ -50,31 +27,4 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 // NetWorthOverTime is the resolver for the netWorthOverTime field.
 func (r *householdResolver) NetWorthOverTime(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) ([]*model.NetWorthDataPoint, error) {
 	panic(fmt.Errorf("not implemented: NetWorthOverTime - netWorthOverTime"))
-}
-
-// ValueInDisplayCurrency is the resolver for the valueInDisplayCurrency field.
-func (r *investmentResolver) ValueInDisplayCurrency(ctx context.Context, obj *ent.Investment) (*string, error) {
-	account, err := obj.QueryAccount().Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Value, account.CurrencyID)
-	if err != nil {
-		r.logger.Error("Failed to convert investment value to display currency", "error", err, "investmentID", obj.ID)
-		return nil, nil
-	}
-	s := converted.String()
-	return &s, nil
-}
-
-// CostInDisplayCurrency is the resolver for the costInDisplayCurrency field.
-func (r *recurringSubscriptionResolver) CostInDisplayCurrency(ctx context.Context, obj *ent.RecurringSubscription) (*string, error) {
-	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Cost, obj.CurrencyID)
-	if err != nil {
-		r.logger.Error("Failed to convert subscription cost to display currency", "error", err, "subscriptionID", obj.ID)
-		return nil, nil
-	}
-	s := converted.String()
-	return &s, nil
 }

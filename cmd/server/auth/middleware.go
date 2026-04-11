@@ -9,7 +9,6 @@ import (
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/internal/contextkeys"
-	"beavermoney.app/internal/fx"
 	"github.com/go-chi/jwtauth/v5"
 )
 
@@ -67,7 +66,6 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 				}
 
 				ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), hid)
-				ctx = fx.NewContext(ctx)
 
 				displayCurrency := resolveDisplayCurrency(r, client, bypassCtx, uh, hid)
 				if displayCurrency != nil {

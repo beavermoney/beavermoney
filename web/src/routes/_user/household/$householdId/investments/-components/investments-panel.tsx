@@ -59,10 +59,13 @@ const InvestmentsPanelFragment = graphql`
           id
           name
           amount
-          valueInDisplayCurrency
+          value
           account {
             name
             id
+            currency {
+              code
+            }
           }
           ...investmentCardFragment
         }
@@ -84,7 +87,7 @@ type InvestmentsPanelProps = {
 export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const data = useFragment(InvestmentsPanelFragment, fragmentRef)
   const { household: _household } = useHousehold()
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
   const environment = useRelayEnvironment()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
@@ -159,10 +162,13 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     return (data.investments.edges ?? [])
       .map((investment) => {
         invariant(investment?.node, 'Investment node is null')
-        return currency(investment.node.valueInDisplayCurrency ?? 0)
+        return convert(
+          investment.node.value,
+          investment.node.account.currency.code,
+        )
       })
       .reduce((a, b) => a.add(b), currency(0))
-  }, [data.investments])
+  }, [data.investments, convert])
 
   return (
     <Fragment>
@@ -236,7 +242,10 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
           const value = investments
             .map((investment) => {
               invariant(investment?.node, 'Investment node is null')
-              return currency(investment.node.valueInDisplayCurrency ?? 0)
+              return convert(
+                investment.node.value,
+                investment.node.account.currency.code,
+              )
             })
             .reduce((a, b) => a.add(b), currency(0))
 

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8fd5a37c377ced8891ad3b5c0e74efbb>>
+ * @generated SignedSource<<ec3c9c5b7cddde16a341863be9e21a2a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,10 +18,13 @@ export type accountsPanelFragment$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly category: AccountCategory | null | undefined;
+        readonly currency: {
+          readonly code: string;
+        };
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
-        readonly valueInDisplayCurrency: string | null | undefined;
+        readonly value: string;
         readonly " $fragmentSpreads": FragmentRefs<"accountCardFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -149,7 +152,25 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "valueInDisplayCurrency",
+                  "name": "value",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "Currency",
+                  "kind": "LinkedField",
+                  "name": "currency",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "code",
+                      "storageKey": null
+                    }
+                  ],
                   "storageKey": null
                 },
                 {
@@ -224,6 +245,6 @@ return {
 };
 })();
 
-(node as any).hash = "19bb4c85689e84639f442cef13e43c8b";
+(node as any).hash = "ab0ebfb50ac0e302f4cd82d540376454";
 
 export default node;

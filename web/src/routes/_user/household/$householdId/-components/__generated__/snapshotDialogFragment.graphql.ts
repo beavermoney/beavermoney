@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1e0661baa199119e28ca998b057c70d5>>
+ * @generated SignedSource<<9923a1fc9e0c625f058e5edd0714c408>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,8 +15,11 @@ export type snapshotDialogFragment$data = {
   readonly accounts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly currency: {
+          readonly code: string;
+        };
         readonly type: AccountType;
-        readonly valueInDisplayCurrency: string | null | undefined;
+        readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -76,7 +79,25 @@ const node: ReaderFragment = {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "valueInDisplayCurrency",
+                  "name": "value",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "Currency",
+                  "kind": "LinkedField",
+                  "name": "currency",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "code",
+                      "storageKey": null
+                    }
+                  ],
                   "storageKey": null
                 }
               ],
@@ -93,6 +114,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "a5ebbaf7b0d7edd5260568baa34ba8ae";
+(node as any).hash = "3fd91c0b308aae99eadb2131af10074e";
 
 export default node;

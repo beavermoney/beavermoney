@@ -35,8 +35,6 @@ type Account implements Node {
   user: User!
   transactionEntries: [TransactionEntry!]
   investments: [Investment!]
-  balanceInDisplayCurrency: String
-  valueInDisplayCurrency: String
 }
 
 """
@@ -1142,7 +1140,6 @@ type Investment implements Node {
   household: Household!
   currency: Currency!
   investmentLots: [InvestmentLot!]
-  valueInDisplayCurrency: String
 }
 
 """
@@ -1805,7 +1802,6 @@ type RecurringSubscription implements Node {
   household: Household!
   currency: Currency!
   user: User!
-  costInDisplayCurrency: String
 }
 
 """
