@@ -43,11 +43,15 @@ type CurrencyEdges struct {
 	Checkpoints []*Checkpoint `json:"checkpoints,omitempty"`
 	// SnapshotEntries holds the value of the snapshot_entries edge.
 	SnapshotEntries []*SnapshotEntry `json:"snapshot_entries,omitempty"`
+	// SnapshotRatesFrom holds the value of the snapshot_rates_from edge.
+	SnapshotRatesFrom []*SnapshotRate `json:"snapshot_rates_from,omitempty"`
+	// SnapshotRatesTo holds the value of the snapshot_rates_to edge.
+	SnapshotRatesTo []*SnapshotRate `json:"snapshot_rates_to,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [9]bool
 	// totalCount holds the count of the edges above.
-	totalCount [7]map[string]int
+	totalCount [9]map[string]int
 
 	namedAccounts               map[string][]*Account
 	namedInvestments            map[string][]*Investment
@@ -56,6 +60,8 @@ type CurrencyEdges struct {
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
 	namedCheckpoints            map[string][]*Checkpoint
 	namedSnapshotEntries        map[string][]*SnapshotEntry
+	namedSnapshotRatesFrom      map[string][]*SnapshotRate
+	namedSnapshotRatesTo        map[string][]*SnapshotRate
 }
 
 // AccountsOrErr returns the Accounts value or an error if the edge
@@ -119,6 +125,24 @@ func (e CurrencyEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
 		return e.SnapshotEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_entries"}
+}
+
+// SnapshotRatesFromOrErr returns the SnapshotRatesFrom value or an error if the edge
+// was not loaded in eager-loading.
+func (e CurrencyEdges) SnapshotRatesFromOrErr() ([]*SnapshotRate, error) {
+	if e.loadedTypes[7] {
+		return e.SnapshotRatesFrom, nil
+	}
+	return nil, &NotLoadedError{edge: "snapshot_rates_from"}
+}
+
+// SnapshotRatesToOrErr returns the SnapshotRatesTo value or an error if the edge
+// was not loaded in eager-loading.
+func (e CurrencyEdges) SnapshotRatesToOrErr() ([]*SnapshotRate, error) {
+	if e.loadedTypes[8] {
+		return e.SnapshotRatesTo, nil
+	}
+	return nil, &NotLoadedError{edge: "snapshot_rates_to"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -213,6 +237,16 @@ func (_m *Currency) QueryCheckpoints() *CheckpointQuery {
 // QuerySnapshotEntries queries the "snapshot_entries" edge of the Currency entity.
 func (_m *Currency) QuerySnapshotEntries() *SnapshotEntryQuery {
 	return NewCurrencyClient(_m.config).QuerySnapshotEntries(_m)
+}
+
+// QuerySnapshotRatesFrom queries the "snapshot_rates_from" edge of the Currency entity.
+func (_m *Currency) QuerySnapshotRatesFrom() *SnapshotRateQuery {
+	return NewCurrencyClient(_m.config).QuerySnapshotRatesFrom(_m)
+}
+
+// QuerySnapshotRatesTo queries the "snapshot_rates_to" edge of the Currency entity.
+func (_m *Currency) QuerySnapshotRatesTo() *SnapshotRateQuery {
+	return NewCurrencyClient(_m.config).QuerySnapshotRatesTo(_m)
 }
 
 // Update returns a builder for updating this Currency.
@@ -412,6 +446,54 @@ func (_m *Currency) appendNamedSnapshotEntries(name string, edges ...*SnapshotEn
 		_m.Edges.namedSnapshotEntries[name] = []*SnapshotEntry{}
 	} else {
 		_m.Edges.namedSnapshotEntries[name] = append(_m.Edges.namedSnapshotEntries[name], edges...)
+	}
+}
+
+// NamedSnapshotRatesFrom returns the SnapshotRatesFrom named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Currency) NamedSnapshotRatesFrom(name string) ([]*SnapshotRate, error) {
+	if _m.Edges.namedSnapshotRatesFrom == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSnapshotRatesFrom[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Currency) appendNamedSnapshotRatesFrom(name string, edges ...*SnapshotRate) {
+	if _m.Edges.namedSnapshotRatesFrom == nil {
+		_m.Edges.namedSnapshotRatesFrom = make(map[string][]*SnapshotRate)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSnapshotRatesFrom[name] = []*SnapshotRate{}
+	} else {
+		_m.Edges.namedSnapshotRatesFrom[name] = append(_m.Edges.namedSnapshotRatesFrom[name], edges...)
+	}
+}
+
+// NamedSnapshotRatesTo returns the SnapshotRatesTo named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Currency) NamedSnapshotRatesTo(name string) ([]*SnapshotRate, error) {
+	if _m.Edges.namedSnapshotRatesTo == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSnapshotRatesTo[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Currency) appendNamedSnapshotRatesTo(name string, edges ...*SnapshotRate) {
+	if _m.Edges.namedSnapshotRatesTo == nil {
+		_m.Edges.namedSnapshotRatesTo = make(map[string][]*SnapshotRate)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSnapshotRatesTo[name] = []*SnapshotRate{}
+	} else {
+		_m.Edges.namedSnapshotRatesTo[name] = append(_m.Edges.namedSnapshotRatesTo[name], edges...)
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"beavermoney.app/ent"
-	"beavermoney.app/internal/fxrate"
+	"beavermoney.app/internal/frankfurter"
 	"beavermoney.app/internal/market"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/getsentry/sentry-go"
@@ -17,19 +17,19 @@ import (
 // here.
 
 type Resolver struct {
-	logger       *slog.Logger
-	entClient    *ent.Client
-	fxrateClient *fxrate.Client
-	marketClient *market.Client
-	meter        sentry.Meter
-	tracer       trace.Tracer
+	logger            *slog.Logger
+	entClient         *ent.Client
+	frankfurterClient *frankfurter.ClientWithResponses
+	marketClient      *market.Client
+	meter             sentry.Meter
+	tracer            trace.Tracer
 }
 
 // NewSchema creates a graphql executable schema.
 func NewSchema(
 	logger *slog.Logger,
 	entClient *ent.Client,
-	fxrateClient *fxrate.Client,
+	frankfurterClient *frankfurter.ClientWithResponses,
 	marketClient *market.Client,
 	meter sentry.Meter,
 	tracer trace.Tracer,
@@ -38,7 +38,7 @@ func NewSchema(
 		Resolvers: &Resolver{
 			logger,
 			entClient,
-			fxrateClient,
+			frankfurterClient,
 			marketClient,
 			meter,
 			tracer,

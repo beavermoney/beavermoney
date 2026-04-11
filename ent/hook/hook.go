@@ -117,6 +117,18 @@ func (f SnapshotEntryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotEntryMutation", m)
 }
 
+// The SnapshotRateFunc type is an adapter to allow the use of ordinary
+// function as SnapshotRate mutator.
+type SnapshotRateFunc func(context.Context, *ent.SnapshotRateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SnapshotRateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SnapshotRateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotRateMutation", m)
+}
+
 // The TransactionFunc type is an adapter to allow the use of ordinary
 // function as Transaction mutator.
 type TransactionFunc func(context.Context, *ent.TransactionMutation) (ent.Value, error)

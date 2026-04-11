@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -71,6 +72,21 @@ func (_u *SnapshotUpdate) AddSnapshotEntries(v ...*SnapshotEntry) *SnapshotUpdat
 	return _u.AddSnapshotEntryIDs(ids...)
 }
 
+// AddSnapshotRateIDs adds the "snapshot_rates" edge to the SnapshotRate entity by IDs.
+func (_u *SnapshotUpdate) AddSnapshotRateIDs(ids ...int) *SnapshotUpdate {
+	_u.mutation.AddSnapshotRateIDs(ids...)
+	return _u
+}
+
+// AddSnapshotRates adds the "snapshot_rates" edges to the SnapshotRate entity.
+func (_u *SnapshotUpdate) AddSnapshotRates(v ...*SnapshotRate) *SnapshotUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotRateIDs(ids...)
+}
+
 // Mutation returns the SnapshotMutation object of the builder.
 func (_u *SnapshotUpdate) Mutation() *SnapshotMutation {
 	return _u.mutation
@@ -95,6 +111,27 @@ func (_u *SnapshotUpdate) RemoveSnapshotEntries(v ...*SnapshotEntry) *SnapshotUp
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSnapshotEntryIDs(ids...)
+}
+
+// ClearSnapshotRates clears all "snapshot_rates" edges to the SnapshotRate entity.
+func (_u *SnapshotUpdate) ClearSnapshotRates() *SnapshotUpdate {
+	_u.mutation.ClearSnapshotRates()
+	return _u
+}
+
+// RemoveSnapshotRateIDs removes the "snapshot_rates" edge to SnapshotRate entities by IDs.
+func (_u *SnapshotUpdate) RemoveSnapshotRateIDs(ids ...int) *SnapshotUpdate {
+	_u.mutation.RemoveSnapshotRateIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotRates removes "snapshot_rates" edges to SnapshotRate entities.
+func (_u *SnapshotUpdate) RemoveSnapshotRates(v ...*SnapshotRate) *SnapshotUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotRateIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -219,6 +256,51 @@ func (_u *SnapshotUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.SnapshotRatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotRatesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotRatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotRatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -282,6 +364,21 @@ func (_u *SnapshotUpdateOne) AddSnapshotEntries(v ...*SnapshotEntry) *SnapshotUp
 	return _u.AddSnapshotEntryIDs(ids...)
 }
 
+// AddSnapshotRateIDs adds the "snapshot_rates" edge to the SnapshotRate entity by IDs.
+func (_u *SnapshotUpdateOne) AddSnapshotRateIDs(ids ...int) *SnapshotUpdateOne {
+	_u.mutation.AddSnapshotRateIDs(ids...)
+	return _u
+}
+
+// AddSnapshotRates adds the "snapshot_rates" edges to the SnapshotRate entity.
+func (_u *SnapshotUpdateOne) AddSnapshotRates(v ...*SnapshotRate) *SnapshotUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotRateIDs(ids...)
+}
+
 // Mutation returns the SnapshotMutation object of the builder.
 func (_u *SnapshotUpdateOne) Mutation() *SnapshotMutation {
 	return _u.mutation
@@ -306,6 +403,27 @@ func (_u *SnapshotUpdateOne) RemoveSnapshotEntries(v ...*SnapshotEntry) *Snapsho
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSnapshotEntryIDs(ids...)
+}
+
+// ClearSnapshotRates clears all "snapshot_rates" edges to the SnapshotRate entity.
+func (_u *SnapshotUpdateOne) ClearSnapshotRates() *SnapshotUpdateOne {
+	_u.mutation.ClearSnapshotRates()
+	return _u
+}
+
+// RemoveSnapshotRateIDs removes the "snapshot_rates" edge to SnapshotRate entities by IDs.
+func (_u *SnapshotUpdateOne) RemoveSnapshotRateIDs(ids ...int) *SnapshotUpdateOne {
+	_u.mutation.RemoveSnapshotRateIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotRates removes "snapshot_rates" edges to SnapshotRate entities.
+func (_u *SnapshotUpdateOne) RemoveSnapshotRates(v ...*SnapshotRate) *SnapshotUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotRateIDs(ids...)
 }
 
 // Where appends a list predicates to the SnapshotUpdate builder.
@@ -453,6 +571,51 @@ func (_u *SnapshotUpdateOne) sqlSave(ctx context.Context) (_node *Snapshot, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotRatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotRatesIDs(); len(nodes) > 0 && !_u.mutation.SnapshotRatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotRatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   snapshot.SnapshotRatesTable,
+			Columns: []string{snapshot.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

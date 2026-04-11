@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8f9cc26130fd6b4803b8f36291787472>>
+ * @generated SignedSource<<9c2afcc8c9d65e6595c1e3dfe53c6862>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,6 +30,8 @@ export type SnapshotWhereInput = {
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
   hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  hasSnapshotRates?: boolean | null | undefined;
+  hasSnapshotRatesWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
   householdID?: string | null | undefined;
   householdIDIn?: ReadonlyArray<string> | null | undefined;
   householdIDNEQ?: string | null | undefined;
@@ -182,6 +184,10 @@ export type CurrencyWhereInput = {
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
   hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  hasSnapshotRatesFrom?: boolean | null | undefined;
+  hasSnapshotRatesFromWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
+  hasSnapshotRatesTo?: boolean | null | undefined;
+  hasSnapshotRatesToWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
   hasTransactionEntries?: boolean | null | undefined;
   hasTransactionEntriesWith?: ReadonlyArray<TransactionEntryWhereInput> | null | undefined;
   id?: string | null | undefined;
@@ -1146,6 +1152,61 @@ export type CheckpointWhereInput = {
   updateTimeNEQ?: any | null | undefined;
   updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
 };
+export type SnapshotRateWhereInput = {
+  and?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
+  createTime?: any | null | undefined;
+  createTimeGT?: any | null | undefined;
+  createTimeGTE?: any | null | undefined;
+  createTimeIn?: ReadonlyArray<any> | null | undefined;
+  createTimeLT?: any | null | undefined;
+  createTimeLTE?: any | null | undefined;
+  createTimeNEQ?: any | null | undefined;
+  createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  fromCurrencyID?: string | null | undefined;
+  fromCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
+  fromCurrencyIDNEQ?: string | null | undefined;
+  fromCurrencyIDNotIn?: ReadonlyArray<string> | null | undefined;
+  hasFromCurrency?: boolean | null | undefined;
+  hasFromCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
+  hasSnapshot?: boolean | null | undefined;
+  hasSnapshotWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
+  hasToCurrency?: boolean | null | undefined;
+  hasToCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
+  id?: string | null | undefined;
+  idGT?: string | null | undefined;
+  idGTE?: string | null | undefined;
+  idIn?: ReadonlyArray<string> | null | undefined;
+  idLT?: string | null | undefined;
+  idLTE?: string | null | undefined;
+  idNEQ?: string | null | undefined;
+  idNotIn?: ReadonlyArray<string> | null | undefined;
+  not?: SnapshotRateWhereInput | null | undefined;
+  or?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
+  rate?: string | null | undefined;
+  rateGT?: string | null | undefined;
+  rateGTE?: string | null | undefined;
+  rateIn?: ReadonlyArray<string> | null | undefined;
+  rateLT?: string | null | undefined;
+  rateLTE?: string | null | undefined;
+  rateNEQ?: string | null | undefined;
+  rateNotIn?: ReadonlyArray<string> | null | undefined;
+  snapshotID?: string | null | undefined;
+  snapshotIDIn?: ReadonlyArray<string> | null | undefined;
+  snapshotIDNEQ?: string | null | undefined;
+  snapshotIDNotIn?: ReadonlyArray<string> | null | undefined;
+  toCurrencyID?: string | null | undefined;
+  toCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
+  toCurrencyIDNEQ?: string | null | undefined;
+  toCurrencyIDNotIn?: ReadonlyArray<string> | null | undefined;
+  updateTime?: any | null | undefined;
+  updateTimeGT?: any | null | undefined;
+  updateTimeGTE?: any | null | undefined;
+  updateTimeIn?: ReadonlyArray<any> | null | undefined;
+  updateTimeLT?: any | null | undefined;
+  updateTimeLTE?: any | null | undefined;
+  updateTimeNEQ?: any | null | undefined;
+  updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
+};
 export type netWorthChartQuery$variables = {
   where?: SnapshotWhereInput | null | undefined;
 };
@@ -1155,12 +1216,25 @@ export type netWorthChartQuery$data = {
       readonly edges: ReadonlyArray<{
         readonly node: {
           readonly createTime: any;
-          readonly investment: string;
-          readonly liability: string;
-          readonly liquidity: string;
-          readonly netWorth: string;
-          readonly property: string;
-          readonly receivable: string;
+          readonly snapshotEntries: ReadonlyArray<{
+            readonly currency: {
+              readonly code: string;
+            };
+            readonly investment: string;
+            readonly liability: string;
+            readonly liquidity: string;
+            readonly property: string;
+            readonly receivable: string;
+          }> | null | undefined;
+          readonly snapshotRates: ReadonlyArray<{
+            readonly fromCurrency: {
+              readonly code: string;
+            };
+            readonly rate: string;
+            readonly toCurrency: {
+              readonly code: string;
+            };
+          }> | null | undefined;
         } | null | undefined;
       } | null | undefined> | null | undefined;
     };
@@ -1202,51 +1276,65 @@ v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "netWorth",
+  "name": "liquidity",
   "storageKey": null
 },
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "liquidity",
+  "name": "investment",
   "storageKey": null
 },
 v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "investment",
+  "name": "property",
   "storageKey": null
 },
 v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "property",
+  "name": "receivable",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "receivable",
+  "name": "liability",
   "storageKey": null
 },
 v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "liability",
+  "name": "code",
   "storageKey": null
 },
-v9 = {
+v9 = [
+  (v8/*: any*/)
+],
+v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "rate",
+  "storageKey": null
+},
+v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
-};
+},
+v12 = [
+  (v8/*: any*/),
+  (v11/*: any*/)
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -1287,12 +1375,64 @@ return {
                     "plural": false,
                     "selections": [
                       (v2/*: any*/),
-                      (v3/*: any*/),
-                      (v4/*: any*/),
-                      (v5/*: any*/),
-                      (v6/*: any*/),
-                      (v7/*: any*/),
-                      (v8/*: any*/)
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "SnapshotEntry",
+                        "kind": "LinkedField",
+                        "name": "snapshotEntries",
+                        "plural": true,
+                        "selections": [
+                          (v3/*: any*/),
+                          (v4/*: any*/),
+                          (v5/*: any*/),
+                          (v6/*: any*/),
+                          (v7/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Currency",
+                            "kind": "LinkedField",
+                            "name": "currency",
+                            "plural": false,
+                            "selections": (v9/*: any*/),
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "SnapshotRate",
+                        "kind": "LinkedField",
+                        "name": "snapshotRates",
+                        "plural": true,
+                        "selections": [
+                          (v10/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Currency",
+                            "kind": "LinkedField",
+                            "name": "fromCurrency",
+                            "plural": false,
+                            "selections": (v9/*: any*/),
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Currency",
+                            "kind": "LinkedField",
+                            "name": "toCurrency",
+                            "plural": false,
+                            "selections": (v9/*: any*/),
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      }
                     ],
                     "storageKey": null
                   }
@@ -1348,13 +1488,67 @@ return {
                     "plural": false,
                     "selections": [
                       (v2/*: any*/),
-                      (v3/*: any*/),
-                      (v4/*: any*/),
-                      (v5/*: any*/),
-                      (v6/*: any*/),
-                      (v7/*: any*/),
-                      (v8/*: any*/),
-                      (v9/*: any*/)
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "SnapshotEntry",
+                        "kind": "LinkedField",
+                        "name": "snapshotEntries",
+                        "plural": true,
+                        "selections": [
+                          (v3/*: any*/),
+                          (v4/*: any*/),
+                          (v5/*: any*/),
+                          (v6/*: any*/),
+                          (v7/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Currency",
+                            "kind": "LinkedField",
+                            "name": "currency",
+                            "plural": false,
+                            "selections": (v12/*: any*/),
+                            "storageKey": null
+                          },
+                          (v11/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "SnapshotRate",
+                        "kind": "LinkedField",
+                        "name": "snapshotRates",
+                        "plural": true,
+                        "selections": [
+                          (v10/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Currency",
+                            "kind": "LinkedField",
+                            "name": "fromCurrency",
+                            "plural": false,
+                            "selections": (v12/*: any*/),
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Currency",
+                            "kind": "LinkedField",
+                            "name": "toCurrency",
+                            "plural": false,
+                            "selections": (v12/*: any*/),
+                            "storageKey": null
+                          },
+                          (v11/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v11/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -1364,23 +1558,23 @@ return {
             ],
             "storageKey": null
           },
-          (v9/*: any*/)
+          (v11/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "ba3dd79835d2c3d97fc1eff96d3379bf",
+    "cacheID": "28b5e1dff790195e2e4c89c088e4c495",
     "id": null,
     "metadata": {},
     "name": "netWorthChartQuery",
     "operationKind": "query",
-    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          netWorth\n          liquidity\n          investment\n          property\n          receivable\n          liability\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          snapshotEntries {\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            currency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a64256ca4ab9991a83973585120d1134";
+(node as any).hash = "0f98887f3e99fb9fb3c1efbe93d9550a";
 
 export default node;

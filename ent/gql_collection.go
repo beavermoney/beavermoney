@@ -16,6 +16,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -482,6 +483,32 @@ func (_q *CurrencyQuery) collectField(ctx context.Context, oneNode bool, opCtx *
 				return err
 			}
 			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
+				*wq = *query
+			})
+
+		case "snapshotRatesFrom":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotRatesFrom(alias, func(wq *SnapshotRateQuery) {
+				*wq = *query
+			})
+
+		case "snapshotRatesTo":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotRatesTo(alias, func(wq *SnapshotRateQuery) {
 				*wq = *query
 			})
 		case "code":
@@ -2096,6 +2123,19 @@ func (_q *SnapshotQuery) collectField(ctx context.Context, oneNode bool, opCtx *
 			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
 				*wq = *query
 			})
+
+		case "snapshotRates":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotRates(alias, func(wq *SnapshotRateQuery) {
+				*wq = *query
+			})
 		case "householdID":
 			if _, ok := fieldSeen[snapshot.FieldHouseholdID]; !ok {
 				selectedFields = append(selectedFields, snapshot.FieldHouseholdID)
@@ -2330,6 +2370,143 @@ func newSnapshotEntryPaginateArgs(rv map[string]any) *snapshotentryPaginateArgs 
 	}
 	if v, ok := rv[whereField].(*SnapshotEntryWhereInput); ok {
 		args.opts = append(args.opts, WithSnapshotEntryFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *SnapshotRateQuery) CollectFields(ctx context.Context, satisfies ...string) (*SnapshotRateQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *SnapshotRateQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(snapshotrate.Columns))
+		selectedFields = []string{snapshotrate.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "snapshot":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, snapshotImplementors)...); err != nil {
+				return err
+			}
+			_q.withSnapshot = query
+			if _, ok := fieldSeen[snapshotrate.FieldSnapshotID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldSnapshotID)
+				fieldSeen[snapshotrate.FieldSnapshotID] = struct{}{}
+			}
+
+		case "fromCurrency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withFromCurrency = query
+			if _, ok := fieldSeen[snapshotrate.FieldFromCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldFromCurrencyID)
+				fieldSeen[snapshotrate.FieldFromCurrencyID] = struct{}{}
+			}
+
+		case "toCurrency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withToCurrency = query
+			if _, ok := fieldSeen[snapshotrate.FieldToCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldToCurrencyID)
+				fieldSeen[snapshotrate.FieldToCurrencyID] = struct{}{}
+			}
+		case "createTime":
+			if _, ok := fieldSeen[snapshotrate.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldCreateTime)
+				fieldSeen[snapshotrate.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[snapshotrate.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldUpdateTime)
+				fieldSeen[snapshotrate.FieldUpdateTime] = struct{}{}
+			}
+		case "rate":
+			if _, ok := fieldSeen[snapshotrate.FieldRate]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldRate)
+				fieldSeen[snapshotrate.FieldRate] = struct{}{}
+			}
+		case "snapshotID":
+			if _, ok := fieldSeen[snapshotrate.FieldSnapshotID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldSnapshotID)
+				fieldSeen[snapshotrate.FieldSnapshotID] = struct{}{}
+			}
+		case "fromCurrencyID":
+			if _, ok := fieldSeen[snapshotrate.FieldFromCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldFromCurrencyID)
+				fieldSeen[snapshotrate.FieldFromCurrencyID] = struct{}{}
+			}
+		case "toCurrencyID":
+			if _, ok := fieldSeen[snapshotrate.FieldToCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldToCurrencyID)
+				fieldSeen[snapshotrate.FieldToCurrencyID] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type snapshotratePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []SnapshotRatePaginateOption
+}
+
+func newSnapshotRatePaginateArgs(rv map[string]any) *snapshotratePaginateArgs {
+	args := &snapshotratePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*SnapshotRateWhereInput); ok {
+		args.opts = append(args.opts, WithSnapshotRateFilter(v.Filter))
 	}
 	return args
 }

@@ -30,6 +30,10 @@ const (
 	EdgeCheckpoints = "checkpoints"
 	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
 	EdgeSnapshotEntries = "snapshot_entries"
+	// EdgeSnapshotRatesFrom holds the string denoting the snapshot_rates_from edge name in mutations.
+	EdgeSnapshotRatesFrom = "snapshot_rates_from"
+	// EdgeSnapshotRatesTo holds the string denoting the snapshot_rates_to edge name in mutations.
+	EdgeSnapshotRatesTo = "snapshot_rates_to"
 	// Table holds the table name of the currency in the database.
 	Table = "currencies"
 	// AccountsTable is the table that holds the accounts relation/edge.
@@ -81,6 +85,20 @@ const (
 	SnapshotEntriesInverseTable = "snapshot_entries"
 	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
 	SnapshotEntriesColumn = "currency_id"
+	// SnapshotRatesFromTable is the table that holds the snapshot_rates_from relation/edge.
+	SnapshotRatesFromTable = "snapshot_rates"
+	// SnapshotRatesFromInverseTable is the table name for the SnapshotRate entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotrate" package.
+	SnapshotRatesFromInverseTable = "snapshot_rates"
+	// SnapshotRatesFromColumn is the table column denoting the snapshot_rates_from relation/edge.
+	SnapshotRatesFromColumn = "from_currency_id"
+	// SnapshotRatesToTable is the table that holds the snapshot_rates_to relation/edge.
+	SnapshotRatesToTable = "snapshot_rates"
+	// SnapshotRatesToInverseTable is the table name for the SnapshotRate entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotrate" package.
+	SnapshotRatesToInverseTable = "snapshot_rates"
+	// SnapshotRatesToColumn is the table column denoting the snapshot_rates_to relation/edge.
+	SnapshotRatesToColumn = "to_currency_id"
 )
 
 // Columns holds all SQL columns for currency fields.
@@ -215,6 +233,34 @@ func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSnapshotEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySnapshotRatesFromCount orders the results by snapshot_rates_from count.
+func BySnapshotRatesFromCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotRatesFromStep(), opts...)
+	}
+}
+
+// BySnapshotRatesFrom orders the results by snapshot_rates_from terms.
+func BySnapshotRatesFrom(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesFromStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySnapshotRatesToCount orders the results by snapshot_rates_to count.
+func BySnapshotRatesToCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotRatesToStep(), opts...)
+	}
+}
+
+// BySnapshotRatesTo orders the results by snapshot_rates_to terms.
+func BySnapshotRatesTo(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesToStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newAccountsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -262,5 +308,19 @@ func newSnapshotEntriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
+	)
+}
+func newSnapshotRatesFromStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotRatesFromInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesFromTable, SnapshotRatesFromColumn),
+	)
+}
+func newSnapshotRatesToStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotRatesToInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesToTable, SnapshotRatesToColumn),
 	)
 }

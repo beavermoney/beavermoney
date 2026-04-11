@@ -30,6 +30,8 @@ type Tx struct {
 	Snapshot *SnapshotClient
 	// SnapshotEntry is the client for interacting with the SnapshotEntry builders.
 	SnapshotEntry *SnapshotEntryClient
+	// SnapshotRate is the client for interacting with the SnapshotRate builders.
+	SnapshotRate *SnapshotRateClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
 	// TransactionCategory is the client for interacting with the TransactionCategory builders.
@@ -182,6 +184,7 @@ func (tx *Tx) init() {
 	tx.RecurringSubscription = NewRecurringSubscriptionClient(tx.config)
 	tx.Snapshot = NewSnapshotClient(tx.config)
 	tx.SnapshotEntry = NewSnapshotEntryClient(tx.config)
+	tx.SnapshotRate = NewSnapshotRateClient(tx.config)
 	tx.Transaction = NewTransactionClient(tx.config)
 	tx.TransactionCategory = NewTransactionCategoryClient(tx.config)
 	tx.TransactionEntry = NewTransactionEntryClient(tx.config)

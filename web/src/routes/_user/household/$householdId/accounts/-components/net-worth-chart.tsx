@@ -28,6 +28,33 @@ import type {
 } from './__generated__/netWorthChartQuery.graphql'
 import { environment } from '@/environment'
 
+function buildRateMap(
+  rates: ReadonlyArray<{
+    readonly rate: string
+    readonly fromCurrency: { readonly code: string }
+    readonly toCurrency: { readonly code: string }
+  }>,
+): Map<string, number> {
+  const map = new Map<string, number>()
+  for (const r of rates) {
+    const rate = parseFloat(r.rate)
+    map.set(`${r.fromCurrency.code}->${r.toCurrency.code}`, rate)
+    if (rate !== 0) {
+      map.set(`${r.toCurrency.code}->${r.fromCurrency.code}`, 1 / rate)
+    }
+  }
+  return map
+}
+
+function getRate(
+  rateMap: Map<string, number>,
+  fromCode: string,
+  toCode: string,
+): number {
+  if (fromCode === toCode) return 1
+  return rateMap.get(`${fromCode}->${toCode}`) ?? 1
+}
+
 function niceStep(rawStep: number): number {
   const exponent = Math.floor(Math.log10(rawStep))
   const fraction = rawStep / Math.pow(10, exponent)
@@ -42,12 +69,25 @@ const NetWorthChartQuery = graphql`
         edges {
           node {
             createTime
-            netWorth
-            liquidity
-            investment
-            property
-            receivable
-            liability
+            snapshotEntries {
+              liquidity
+              investment
+              property
+              receivable
+              liability
+              currency {
+                code
+              }
+            }
+            snapshotRates {
+              rate
+              fromCurrency {
+                code
+              }
+              toCurrency {
+                code
+              }
+            }
           }
         }
       }
@@ -150,26 +190,46 @@ export function NetWorthChart() {
     ).subscribe({})
   })
 
-  const chartData = (data.household.snapshots.edges ?? [])
-    .flatMap((edge) => {
-      if (!edge?.node) return []
-      const node = edge.node
-      const liquidity = currency(node.liquidity, { precision: 8 }).value
-      const investment = currency(node.investment, { precision: 8 }).value
-      const property = currency(node.property, { precision: 8 }).value
-      const receivable = currency(node.receivable, { precision: 8 }).value
-      return {
-        date: new Date(node.createTime).getTime(),
-        netWorth: currency(node.netWorth, { precision: 8 }).value,
-        asset: liquidity + investment + property + receivable,
-        liquidity,
-        investment,
-        property,
-        receivable,
-        liability: currency(node.liability, { precision: 8 }).value,
-      }
-    })
-    .sort((a, b) => a.date - b.date)
+  const displayCurrency = household.currency.code
+
+  console.log(data.household.snapshots.edges)
+  const chartData = useMemo(() => {
+    return (data.household.snapshots.edges ?? [])
+      .flatMap((edge) => {
+        if (!edge?.node) return []
+        const snap = edge.node
+        const rateMap = buildRateMap(snap.snapshotRates ?? [])
+
+        let liquidity = 0
+        let inv = 0
+        let property = 0
+        let receivable = 0
+        let liability = 0
+
+        for (const entry of snap.snapshotEntries ?? []) {
+          const rate = getRate(rateMap, entry.currency.code, displayCurrency)
+          liquidity += currency(entry.liquidity, { precision: 8 }).value * rate
+          inv += currency(entry.investment, { precision: 8 }).value * rate
+          property += currency(entry.property, { precision: 8 }).value * rate
+          receivable +=
+            currency(entry.receivable, { precision: 8 }).value * rate
+          liability += currency(entry.liability, { precision: 8 }).value * rate
+        }
+
+        const asset = liquidity + inv + property + receivable
+        return {
+          date: new Date(snap.createTime).getTime(),
+          netWorth: liquidity + inv + property + receivable + liability,
+          asset,
+          liquidity,
+          investment: inv,
+          property,
+          receivable,
+          liability,
+        }
+      })
+      .sort((a, b) => a.date - b.date)
+  }, [data.household.snapshots.edges, displayCurrency])
 
   const yDomain = useMemo((): [number, number] => {
     const values = chartData
@@ -230,7 +290,7 @@ export function NetWorthChart() {
   const formatSignedCurrencyShort = (value: number) => {
     const formatted = formatCurrencyWithPrivacyMode({
       value: currency(value),
-      currencyCode: household.currency.code,
+      currencyCode: displayCurrency,
       numberFormatOptions: {
         notation: 'compact',
         maximumFractionDigits: 1,
@@ -338,7 +398,7 @@ export function NetWorthChart() {
               tickFormatter={(value: number) =>
                 formatCurrencyWithPrivacyMode({
                   value: currency(value),
-                  currencyCode: household.currency.code,
+                  currencyCode: displayCurrency,
                   numberFormatOptions: {
                     notation: 'compact',
                     maximumFractionDigits: 1,
@@ -377,7 +437,7 @@ export function NetWorthChart() {
                         <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
                           {formatCurrencyWithPrivacyMode({
                             value: currency(value),
-                            currencyCode: household.currency.code,
+                            currencyCode: displayCurrency,
                           })}
                         </span>
                       </>

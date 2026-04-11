@@ -19,6 +19,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -48,6 +49,7 @@ const (
 	TypeRecurringSubscription = "RecurringSubscription"
 	TypeSnapshot              = "Snapshot"
 	TypeSnapshotEntry         = "SnapshotEntry"
+	TypeSnapshotRate          = "SnapshotRate"
 	TypeTransaction           = "Transaction"
 	TypeTransactionCategory   = "TransactionCategory"
 	TypeTransactionEntry      = "TransactionEntry"
@@ -2707,6 +2709,12 @@ type CurrencyMutation struct {
 	snapshot_entries               map[int]struct{}
 	removedsnapshot_entries        map[int]struct{}
 	clearedsnapshot_entries        bool
+	snapshot_rates_from            map[int]struct{}
+	removedsnapshot_rates_from     map[int]struct{}
+	clearedsnapshot_rates_from     bool
+	snapshot_rates_to              map[int]struct{}
+	removedsnapshot_rates_to       map[int]struct{}
+	clearedsnapshot_rates_to       bool
 	done                           bool
 	oldValue                       func(context.Context) (*Currency, error)
 	predicates                     []predicate.Currency
@@ -3275,6 +3283,114 @@ func (m *CurrencyMutation) ResetSnapshotEntries() {
 	m.removedsnapshot_entries = nil
 }
 
+// AddSnapshotRatesFromIDs adds the "snapshot_rates_from" edge to the SnapshotRate entity by ids.
+func (m *CurrencyMutation) AddSnapshotRatesFromIDs(ids ...int) {
+	if m.snapshot_rates_from == nil {
+		m.snapshot_rates_from = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.snapshot_rates_from[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSnapshotRatesFrom clears the "snapshot_rates_from" edge to the SnapshotRate entity.
+func (m *CurrencyMutation) ClearSnapshotRatesFrom() {
+	m.clearedsnapshot_rates_from = true
+}
+
+// SnapshotRatesFromCleared reports if the "snapshot_rates_from" edge to the SnapshotRate entity was cleared.
+func (m *CurrencyMutation) SnapshotRatesFromCleared() bool {
+	return m.clearedsnapshot_rates_from
+}
+
+// RemoveSnapshotRatesFromIDs removes the "snapshot_rates_from" edge to the SnapshotRate entity by IDs.
+func (m *CurrencyMutation) RemoveSnapshotRatesFromIDs(ids ...int) {
+	if m.removedsnapshot_rates_from == nil {
+		m.removedsnapshot_rates_from = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.snapshot_rates_from, ids[i])
+		m.removedsnapshot_rates_from[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSnapshotRatesFrom returns the removed IDs of the "snapshot_rates_from" edge to the SnapshotRate entity.
+func (m *CurrencyMutation) RemovedSnapshotRatesFromIDs() (ids []int) {
+	for id := range m.removedsnapshot_rates_from {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SnapshotRatesFromIDs returns the "snapshot_rates_from" edge IDs in the mutation.
+func (m *CurrencyMutation) SnapshotRatesFromIDs() (ids []int) {
+	for id := range m.snapshot_rates_from {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSnapshotRatesFrom resets all changes to the "snapshot_rates_from" edge.
+func (m *CurrencyMutation) ResetSnapshotRatesFrom() {
+	m.snapshot_rates_from = nil
+	m.clearedsnapshot_rates_from = false
+	m.removedsnapshot_rates_from = nil
+}
+
+// AddSnapshotRatesToIDs adds the "snapshot_rates_to" edge to the SnapshotRate entity by ids.
+func (m *CurrencyMutation) AddSnapshotRatesToIDs(ids ...int) {
+	if m.snapshot_rates_to == nil {
+		m.snapshot_rates_to = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.snapshot_rates_to[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSnapshotRatesTo clears the "snapshot_rates_to" edge to the SnapshotRate entity.
+func (m *CurrencyMutation) ClearSnapshotRatesTo() {
+	m.clearedsnapshot_rates_to = true
+}
+
+// SnapshotRatesToCleared reports if the "snapshot_rates_to" edge to the SnapshotRate entity was cleared.
+func (m *CurrencyMutation) SnapshotRatesToCleared() bool {
+	return m.clearedsnapshot_rates_to
+}
+
+// RemoveSnapshotRatesToIDs removes the "snapshot_rates_to" edge to the SnapshotRate entity by IDs.
+func (m *CurrencyMutation) RemoveSnapshotRatesToIDs(ids ...int) {
+	if m.removedsnapshot_rates_to == nil {
+		m.removedsnapshot_rates_to = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.snapshot_rates_to, ids[i])
+		m.removedsnapshot_rates_to[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSnapshotRatesTo returns the removed IDs of the "snapshot_rates_to" edge to the SnapshotRate entity.
+func (m *CurrencyMutation) RemovedSnapshotRatesToIDs() (ids []int) {
+	for id := range m.removedsnapshot_rates_to {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SnapshotRatesToIDs returns the "snapshot_rates_to" edge IDs in the mutation.
+func (m *CurrencyMutation) SnapshotRatesToIDs() (ids []int) {
+	for id := range m.snapshot_rates_to {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSnapshotRatesTo resets all changes to the "snapshot_rates_to" edge.
+func (m *CurrencyMutation) ResetSnapshotRatesTo() {
+	m.snapshot_rates_to = nil
+	m.clearedsnapshot_rates_to = false
+	m.removedsnapshot_rates_to = nil
+}
+
 // Where appends a list predicates to the CurrencyMutation builder.
 func (m *CurrencyMutation) Where(ps ...predicate.Currency) {
 	m.predicates = append(m.predicates, ps...)
@@ -3425,7 +3541,7 @@ func (m *CurrencyMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CurrencyMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.accounts != nil {
 		edges = append(edges, currency.EdgeAccounts)
 	}
@@ -3446,6 +3562,12 @@ func (m *CurrencyMutation) AddedEdges() []string {
 	}
 	if m.snapshot_entries != nil {
 		edges = append(edges, currency.EdgeSnapshotEntries)
+	}
+	if m.snapshot_rates_from != nil {
+		edges = append(edges, currency.EdgeSnapshotRatesFrom)
+	}
+	if m.snapshot_rates_to != nil {
+		edges = append(edges, currency.EdgeSnapshotRatesTo)
 	}
 	return edges
 }
@@ -3496,13 +3618,25 @@ func (m *CurrencyMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case currency.EdgeSnapshotRatesFrom:
+		ids := make([]ent.Value, 0, len(m.snapshot_rates_from))
+		for id := range m.snapshot_rates_from {
+			ids = append(ids, id)
+		}
+		return ids
+	case currency.EdgeSnapshotRatesTo:
+		ids := make([]ent.Value, 0, len(m.snapshot_rates_to))
+		for id := range m.snapshot_rates_to {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CurrencyMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.removedaccounts != nil {
 		edges = append(edges, currency.EdgeAccounts)
 	}
@@ -3523,6 +3657,12 @@ func (m *CurrencyMutation) RemovedEdges() []string {
 	}
 	if m.removedsnapshot_entries != nil {
 		edges = append(edges, currency.EdgeSnapshotEntries)
+	}
+	if m.removedsnapshot_rates_from != nil {
+		edges = append(edges, currency.EdgeSnapshotRatesFrom)
+	}
+	if m.removedsnapshot_rates_to != nil {
+		edges = append(edges, currency.EdgeSnapshotRatesTo)
 	}
 	return edges
 }
@@ -3573,13 +3713,25 @@ func (m *CurrencyMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case currency.EdgeSnapshotRatesFrom:
+		ids := make([]ent.Value, 0, len(m.removedsnapshot_rates_from))
+		for id := range m.removedsnapshot_rates_from {
+			ids = append(ids, id)
+		}
+		return ids
+	case currency.EdgeSnapshotRatesTo:
+		ids := make([]ent.Value, 0, len(m.removedsnapshot_rates_to))
+		for id := range m.removedsnapshot_rates_to {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CurrencyMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.clearedaccounts {
 		edges = append(edges, currency.EdgeAccounts)
 	}
@@ -3600,6 +3752,12 @@ func (m *CurrencyMutation) ClearedEdges() []string {
 	}
 	if m.clearedsnapshot_entries {
 		edges = append(edges, currency.EdgeSnapshotEntries)
+	}
+	if m.clearedsnapshot_rates_from {
+		edges = append(edges, currency.EdgeSnapshotRatesFrom)
+	}
+	if m.clearedsnapshot_rates_to {
+		edges = append(edges, currency.EdgeSnapshotRatesTo)
 	}
 	return edges
 }
@@ -3622,6 +3780,10 @@ func (m *CurrencyMutation) EdgeCleared(name string) bool {
 		return m.clearedcheckpoints
 	case currency.EdgeSnapshotEntries:
 		return m.clearedsnapshot_entries
+	case currency.EdgeSnapshotRatesFrom:
+		return m.clearedsnapshot_rates_from
+	case currency.EdgeSnapshotRatesTo:
+		return m.clearedsnapshot_rates_to
 	}
 	return false
 }
@@ -3658,6 +3820,12 @@ func (m *CurrencyMutation) ResetEdge(name string) error {
 		return nil
 	case currency.EdgeSnapshotEntries:
 		m.ResetSnapshotEntries()
+		return nil
+	case currency.EdgeSnapshotRatesFrom:
+		m.ResetSnapshotRatesFrom()
+		return nil
+	case currency.EdgeSnapshotRatesTo:
+		m.ResetSnapshotRatesTo()
 		return nil
 	}
 	return fmt.Errorf("unknown Currency edge %s", name)
@@ -8637,6 +8805,9 @@ type SnapshotMutation struct {
 	snapshot_entries        map[int]struct{}
 	removedsnapshot_entries map[int]struct{}
 	clearedsnapshot_entries bool
+	snapshot_rates          map[int]struct{}
+	removedsnapshot_rates   map[int]struct{}
+	clearedsnapshot_rates   bool
 	done                    bool
 	oldValue                func(context.Context) (*Snapshot, error)
 	predicates              []predicate.Snapshot
@@ -8978,6 +9149,60 @@ func (m *SnapshotMutation) ResetSnapshotEntries() {
 	m.removedsnapshot_entries = nil
 }
 
+// AddSnapshotRateIDs adds the "snapshot_rates" edge to the SnapshotRate entity by ids.
+func (m *SnapshotMutation) AddSnapshotRateIDs(ids ...int) {
+	if m.snapshot_rates == nil {
+		m.snapshot_rates = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.snapshot_rates[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSnapshotRates clears the "snapshot_rates" edge to the SnapshotRate entity.
+func (m *SnapshotMutation) ClearSnapshotRates() {
+	m.clearedsnapshot_rates = true
+}
+
+// SnapshotRatesCleared reports if the "snapshot_rates" edge to the SnapshotRate entity was cleared.
+func (m *SnapshotMutation) SnapshotRatesCleared() bool {
+	return m.clearedsnapshot_rates
+}
+
+// RemoveSnapshotRateIDs removes the "snapshot_rates" edge to the SnapshotRate entity by IDs.
+func (m *SnapshotMutation) RemoveSnapshotRateIDs(ids ...int) {
+	if m.removedsnapshot_rates == nil {
+		m.removedsnapshot_rates = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.snapshot_rates, ids[i])
+		m.removedsnapshot_rates[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSnapshotRates returns the removed IDs of the "snapshot_rates" edge to the SnapshotRate entity.
+func (m *SnapshotMutation) RemovedSnapshotRatesIDs() (ids []int) {
+	for id := range m.removedsnapshot_rates {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SnapshotRatesIDs returns the "snapshot_rates" edge IDs in the mutation.
+func (m *SnapshotMutation) SnapshotRatesIDs() (ids []int) {
+	for id := range m.snapshot_rates {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSnapshotRates resets all changes to the "snapshot_rates" edge.
+func (m *SnapshotMutation) ResetSnapshotRates() {
+	m.snapshot_rates = nil
+	m.clearedsnapshot_rates = false
+	m.removedsnapshot_rates = nil
+}
+
 // Where appends a list predicates to the SnapshotMutation builder.
 func (m *SnapshotMutation) Where(ps ...predicate.Snapshot) {
 	m.predicates = append(m.predicates, ps...)
@@ -9174,12 +9399,15 @@ func (m *SnapshotMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SnapshotMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.household != nil {
 		edges = append(edges, snapshot.EdgeHousehold)
 	}
 	if m.snapshot_entries != nil {
 		edges = append(edges, snapshot.EdgeSnapshotEntries)
+	}
+	if m.snapshot_rates != nil {
+		edges = append(edges, snapshot.EdgeSnapshotRates)
 	}
 	return edges
 }
@@ -9198,15 +9426,24 @@ func (m *SnapshotMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case snapshot.EdgeSnapshotRates:
+		ids := make([]ent.Value, 0, len(m.snapshot_rates))
+		for id := range m.snapshot_rates {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SnapshotMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedsnapshot_entries != nil {
 		edges = append(edges, snapshot.EdgeSnapshotEntries)
+	}
+	if m.removedsnapshot_rates != nil {
+		edges = append(edges, snapshot.EdgeSnapshotRates)
 	}
 	return edges
 }
@@ -9221,18 +9458,27 @@ func (m *SnapshotMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case snapshot.EdgeSnapshotRates:
+		ids := make([]ent.Value, 0, len(m.removedsnapshot_rates))
+		for id := range m.removedsnapshot_rates {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SnapshotMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedhousehold {
 		edges = append(edges, snapshot.EdgeHousehold)
 	}
 	if m.clearedsnapshot_entries {
 		edges = append(edges, snapshot.EdgeSnapshotEntries)
+	}
+	if m.clearedsnapshot_rates {
+		edges = append(edges, snapshot.EdgeSnapshotRates)
 	}
 	return edges
 }
@@ -9245,6 +9491,8 @@ func (m *SnapshotMutation) EdgeCleared(name string) bool {
 		return m.clearedhousehold
 	case snapshot.EdgeSnapshotEntries:
 		return m.clearedsnapshot_entries
+	case snapshot.EdgeSnapshotRates:
+		return m.clearedsnapshot_rates
 	}
 	return false
 }
@@ -9269,6 +9517,9 @@ func (m *SnapshotMutation) ResetEdge(name string) error {
 		return nil
 	case snapshot.EdgeSnapshotEntries:
 		m.ResetSnapshotEntries()
+		return nil
+	case snapshot.EdgeSnapshotRates:
+		m.ResetSnapshotRates()
 		return nil
 	}
 	return fmt.Errorf("unknown Snapshot edge %s", name)
@@ -10498,6 +10749,784 @@ func (m *SnapshotEntryMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown SnapshotEntry edge %s", name)
+}
+
+// SnapshotRateMutation represents an operation that mutates the SnapshotRate nodes in the graph.
+type SnapshotRateMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *int
+	create_time          *time.Time
+	update_time          *time.Time
+	rate                 *decimal.Decimal
+	addrate              *decimal.Decimal
+	clearedFields        map[string]struct{}
+	snapshot             *int
+	clearedsnapshot      bool
+	from_currency        *int
+	clearedfrom_currency bool
+	to_currency          *int
+	clearedto_currency   bool
+	done                 bool
+	oldValue             func(context.Context) (*SnapshotRate, error)
+	predicates           []predicate.SnapshotRate
+}
+
+var _ ent.Mutation = (*SnapshotRateMutation)(nil)
+
+// snapshotrateOption allows management of the mutation configuration using functional options.
+type snapshotrateOption func(*SnapshotRateMutation)
+
+// newSnapshotRateMutation creates new mutation for the SnapshotRate entity.
+func newSnapshotRateMutation(c config, op Op, opts ...snapshotrateOption) *SnapshotRateMutation {
+	m := &SnapshotRateMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSnapshotRate,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSnapshotRateID sets the ID field of the mutation.
+func withSnapshotRateID(id int) snapshotrateOption {
+	return func(m *SnapshotRateMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SnapshotRate
+		)
+		m.oldValue = func(ctx context.Context) (*SnapshotRate, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SnapshotRate.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSnapshotRate sets the old SnapshotRate of the mutation.
+func withSnapshotRate(node *SnapshotRate) snapshotrateOption {
+	return func(m *SnapshotRateMutation) {
+		m.oldValue = func(context.Context) (*SnapshotRate, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SnapshotRateMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SnapshotRateMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SnapshotRateMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SnapshotRateMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SnapshotRate.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *SnapshotRateMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *SnapshotRateMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *SnapshotRateMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *SnapshotRateMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *SnapshotRateMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *SnapshotRateMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetRate sets the "rate" field.
+func (m *SnapshotRateMutation) SetRate(d decimal.Decimal) {
+	m.rate = &d
+	m.addrate = nil
+}
+
+// Rate returns the value of the "rate" field in the mutation.
+func (m *SnapshotRateMutation) Rate() (r decimal.Decimal, exists bool) {
+	v := m.rate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRate returns the old "rate" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldRate(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRate: %w", err)
+	}
+	return oldValue.Rate, nil
+}
+
+// AddRate adds d to the "rate" field.
+func (m *SnapshotRateMutation) AddRate(d decimal.Decimal) {
+	if m.addrate != nil {
+		*m.addrate = m.addrate.Add(d)
+	} else {
+		m.addrate = &d
+	}
+}
+
+// AddedRate returns the value that was added to the "rate" field in this mutation.
+func (m *SnapshotRateMutation) AddedRate() (r decimal.Decimal, exists bool) {
+	v := m.addrate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRate resets all changes to the "rate" field.
+func (m *SnapshotRateMutation) ResetRate() {
+	m.rate = nil
+	m.addrate = nil
+}
+
+// SetSnapshotID sets the "snapshot_id" field.
+func (m *SnapshotRateMutation) SetSnapshotID(i int) {
+	m.snapshot = &i
+}
+
+// SnapshotID returns the value of the "snapshot_id" field in the mutation.
+func (m *SnapshotRateMutation) SnapshotID() (r int, exists bool) {
+	v := m.snapshot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapshotID returns the old "snapshot_id" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldSnapshotID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapshotID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapshotID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapshotID: %w", err)
+	}
+	return oldValue.SnapshotID, nil
+}
+
+// ResetSnapshotID resets all changes to the "snapshot_id" field.
+func (m *SnapshotRateMutation) ResetSnapshotID() {
+	m.snapshot = nil
+}
+
+// SetFromCurrencyID sets the "from_currency_id" field.
+func (m *SnapshotRateMutation) SetFromCurrencyID(i int) {
+	m.from_currency = &i
+}
+
+// FromCurrencyID returns the value of the "from_currency_id" field in the mutation.
+func (m *SnapshotRateMutation) FromCurrencyID() (r int, exists bool) {
+	v := m.from_currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFromCurrencyID returns the old "from_currency_id" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldFromCurrencyID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFromCurrencyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFromCurrencyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFromCurrencyID: %w", err)
+	}
+	return oldValue.FromCurrencyID, nil
+}
+
+// ResetFromCurrencyID resets all changes to the "from_currency_id" field.
+func (m *SnapshotRateMutation) ResetFromCurrencyID() {
+	m.from_currency = nil
+}
+
+// SetToCurrencyID sets the "to_currency_id" field.
+func (m *SnapshotRateMutation) SetToCurrencyID(i int) {
+	m.to_currency = &i
+}
+
+// ToCurrencyID returns the value of the "to_currency_id" field in the mutation.
+func (m *SnapshotRateMutation) ToCurrencyID() (r int, exists bool) {
+	v := m.to_currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToCurrencyID returns the old "to_currency_id" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldToCurrencyID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToCurrencyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToCurrencyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToCurrencyID: %w", err)
+	}
+	return oldValue.ToCurrencyID, nil
+}
+
+// ResetToCurrencyID resets all changes to the "to_currency_id" field.
+func (m *SnapshotRateMutation) ResetToCurrencyID() {
+	m.to_currency = nil
+}
+
+// ClearSnapshot clears the "snapshot" edge to the Snapshot entity.
+func (m *SnapshotRateMutation) ClearSnapshot() {
+	m.clearedsnapshot = true
+	m.clearedFields[snapshotrate.FieldSnapshotID] = struct{}{}
+}
+
+// SnapshotCleared reports if the "snapshot" edge to the Snapshot entity was cleared.
+func (m *SnapshotRateMutation) SnapshotCleared() bool {
+	return m.clearedsnapshot
+}
+
+// SnapshotIDs returns the "snapshot" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SnapshotID instead. It exists only for internal usage by the builders.
+func (m *SnapshotRateMutation) SnapshotIDs() (ids []int) {
+	if id := m.snapshot; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSnapshot resets all changes to the "snapshot" edge.
+func (m *SnapshotRateMutation) ResetSnapshot() {
+	m.snapshot = nil
+	m.clearedsnapshot = false
+}
+
+// ClearFromCurrency clears the "from_currency" edge to the Currency entity.
+func (m *SnapshotRateMutation) ClearFromCurrency() {
+	m.clearedfrom_currency = true
+	m.clearedFields[snapshotrate.FieldFromCurrencyID] = struct{}{}
+}
+
+// FromCurrencyCleared reports if the "from_currency" edge to the Currency entity was cleared.
+func (m *SnapshotRateMutation) FromCurrencyCleared() bool {
+	return m.clearedfrom_currency
+}
+
+// FromCurrencyIDs returns the "from_currency" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// FromCurrencyID instead. It exists only for internal usage by the builders.
+func (m *SnapshotRateMutation) FromCurrencyIDs() (ids []int) {
+	if id := m.from_currency; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetFromCurrency resets all changes to the "from_currency" edge.
+func (m *SnapshotRateMutation) ResetFromCurrency() {
+	m.from_currency = nil
+	m.clearedfrom_currency = false
+}
+
+// ClearToCurrency clears the "to_currency" edge to the Currency entity.
+func (m *SnapshotRateMutation) ClearToCurrency() {
+	m.clearedto_currency = true
+	m.clearedFields[snapshotrate.FieldToCurrencyID] = struct{}{}
+}
+
+// ToCurrencyCleared reports if the "to_currency" edge to the Currency entity was cleared.
+func (m *SnapshotRateMutation) ToCurrencyCleared() bool {
+	return m.clearedto_currency
+}
+
+// ToCurrencyIDs returns the "to_currency" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ToCurrencyID instead. It exists only for internal usage by the builders.
+func (m *SnapshotRateMutation) ToCurrencyIDs() (ids []int) {
+	if id := m.to_currency; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetToCurrency resets all changes to the "to_currency" edge.
+func (m *SnapshotRateMutation) ResetToCurrency() {
+	m.to_currency = nil
+	m.clearedto_currency = false
+}
+
+// Where appends a list predicates to the SnapshotRateMutation builder.
+func (m *SnapshotRateMutation) Where(ps ...predicate.SnapshotRate) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SnapshotRateMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SnapshotRateMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SnapshotRate, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SnapshotRateMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SnapshotRateMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SnapshotRate).
+func (m *SnapshotRateMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SnapshotRateMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.create_time != nil {
+		fields = append(fields, snapshotrate.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, snapshotrate.FieldUpdateTime)
+	}
+	if m.rate != nil {
+		fields = append(fields, snapshotrate.FieldRate)
+	}
+	if m.snapshot != nil {
+		fields = append(fields, snapshotrate.FieldSnapshotID)
+	}
+	if m.from_currency != nil {
+		fields = append(fields, snapshotrate.FieldFromCurrencyID)
+	}
+	if m.to_currency != nil {
+		fields = append(fields, snapshotrate.FieldToCurrencyID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SnapshotRateMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case snapshotrate.FieldCreateTime:
+		return m.CreateTime()
+	case snapshotrate.FieldUpdateTime:
+		return m.UpdateTime()
+	case snapshotrate.FieldRate:
+		return m.Rate()
+	case snapshotrate.FieldSnapshotID:
+		return m.SnapshotID()
+	case snapshotrate.FieldFromCurrencyID:
+		return m.FromCurrencyID()
+	case snapshotrate.FieldToCurrencyID:
+		return m.ToCurrencyID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SnapshotRateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case snapshotrate.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case snapshotrate.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case snapshotrate.FieldRate:
+		return m.OldRate(ctx)
+	case snapshotrate.FieldSnapshotID:
+		return m.OldSnapshotID(ctx)
+	case snapshotrate.FieldFromCurrencyID:
+		return m.OldFromCurrencyID(ctx)
+	case snapshotrate.FieldToCurrencyID:
+		return m.OldToCurrencyID(ctx)
+	}
+	return nil, fmt.Errorf("unknown SnapshotRate field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SnapshotRateMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case snapshotrate.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case snapshotrate.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case snapshotrate.FieldRate:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRate(v)
+		return nil
+	case snapshotrate.FieldSnapshotID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapshotID(v)
+		return nil
+	case snapshotrate.FieldFromCurrencyID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFromCurrencyID(v)
+		return nil
+	case snapshotrate.FieldToCurrencyID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToCurrencyID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SnapshotRate field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SnapshotRateMutation) AddedFields() []string {
+	var fields []string
+	if m.addrate != nil {
+		fields = append(fields, snapshotrate.FieldRate)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SnapshotRateMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case snapshotrate.FieldRate:
+		return m.AddedRate()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SnapshotRateMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case snapshotrate.FieldRate:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRate(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SnapshotRate numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SnapshotRateMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SnapshotRateMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SnapshotRateMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown SnapshotRate nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SnapshotRateMutation) ResetField(name string) error {
+	switch name {
+	case snapshotrate.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case snapshotrate.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case snapshotrate.FieldRate:
+		m.ResetRate()
+		return nil
+	case snapshotrate.FieldSnapshotID:
+		m.ResetSnapshotID()
+		return nil
+	case snapshotrate.FieldFromCurrencyID:
+		m.ResetFromCurrencyID()
+		return nil
+	case snapshotrate.FieldToCurrencyID:
+		m.ResetToCurrencyID()
+		return nil
+	}
+	return fmt.Errorf("unknown SnapshotRate field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SnapshotRateMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.snapshot != nil {
+		edges = append(edges, snapshotrate.EdgeSnapshot)
+	}
+	if m.from_currency != nil {
+		edges = append(edges, snapshotrate.EdgeFromCurrency)
+	}
+	if m.to_currency != nil {
+		edges = append(edges, snapshotrate.EdgeToCurrency)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SnapshotRateMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case snapshotrate.EdgeSnapshot:
+		if id := m.snapshot; id != nil {
+			return []ent.Value{*id}
+		}
+	case snapshotrate.EdgeFromCurrency:
+		if id := m.from_currency; id != nil {
+			return []ent.Value{*id}
+		}
+	case snapshotrate.EdgeToCurrency:
+		if id := m.to_currency; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SnapshotRateMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SnapshotRateMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SnapshotRateMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedsnapshot {
+		edges = append(edges, snapshotrate.EdgeSnapshot)
+	}
+	if m.clearedfrom_currency {
+		edges = append(edges, snapshotrate.EdgeFromCurrency)
+	}
+	if m.clearedto_currency {
+		edges = append(edges, snapshotrate.EdgeToCurrency)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SnapshotRateMutation) EdgeCleared(name string) bool {
+	switch name {
+	case snapshotrate.EdgeSnapshot:
+		return m.clearedsnapshot
+	case snapshotrate.EdgeFromCurrency:
+		return m.clearedfrom_currency
+	case snapshotrate.EdgeToCurrency:
+		return m.clearedto_currency
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SnapshotRateMutation) ClearEdge(name string) error {
+	switch name {
+	case snapshotrate.EdgeSnapshot:
+		m.ClearSnapshot()
+		return nil
+	case snapshotrate.EdgeFromCurrency:
+		m.ClearFromCurrency()
+		return nil
+	case snapshotrate.EdgeToCurrency:
+		m.ClearToCurrency()
+		return nil
+	}
+	return fmt.Errorf("unknown SnapshotRate unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SnapshotRateMutation) ResetEdge(name string) error {
+	switch name {
+	case snapshotrate.EdgeSnapshot:
+		m.ResetSnapshot()
+		return nil
+	case snapshotrate.EdgeFromCurrency:
+		m.ResetFromCurrency()
+		return nil
+	case snapshotrate.EdgeToCurrency:
+		m.ResetToCurrency()
+		return nil
+	}
+	return fmt.Errorf("unknown SnapshotRate edge %s", name)
 }
 
 // TransactionMutation represents an operation that mutates the Transaction nodes in the graph.

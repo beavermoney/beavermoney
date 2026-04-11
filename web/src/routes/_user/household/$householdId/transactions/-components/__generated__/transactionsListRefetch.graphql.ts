@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa00c27199ccb52e52b764c1e46a99dc>>
+ * @generated SignedSource<<8a3fe8cbb88f446784fb13808ebeb9e5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -276,6 +276,10 @@ export type CurrencyWhereInput = {
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
   hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  hasSnapshotRatesFrom?: boolean | null | undefined;
+  hasSnapshotRatesFromWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
+  hasSnapshotRatesTo?: boolean | null | undefined;
+  hasSnapshotRatesToWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
   hasTransactionEntries?: boolean | null | undefined;
   hasTransactionEntriesWith?: ReadonlyArray<TransactionEntryWhereInput> | null | undefined;
   id?: string | null | undefined;
@@ -955,6 +959,8 @@ export type SnapshotWhereInput = {
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
   hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  hasSnapshotRates?: boolean | null | undefined;
+  hasSnapshotRatesWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
   householdID?: string | null | undefined;
   householdIDIn?: ReadonlyArray<string> | null | undefined;
   householdIDNEQ?: string | null | undefined;
@@ -984,6 +990,61 @@ export type SnapshotWhereInput = {
   noteNotIn?: ReadonlyArray<string> | null | undefined;
   noteNotNil?: boolean | null | undefined;
   or?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
+  updateTime?: any | null | undefined;
+  updateTimeGT?: any | null | undefined;
+  updateTimeGTE?: any | null | undefined;
+  updateTimeIn?: ReadonlyArray<any> | null | undefined;
+  updateTimeLT?: any | null | undefined;
+  updateTimeLTE?: any | null | undefined;
+  updateTimeNEQ?: any | null | undefined;
+  updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
+};
+export type SnapshotRateWhereInput = {
+  and?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
+  createTime?: any | null | undefined;
+  createTimeGT?: any | null | undefined;
+  createTimeGTE?: any | null | undefined;
+  createTimeIn?: ReadonlyArray<any> | null | undefined;
+  createTimeLT?: any | null | undefined;
+  createTimeLTE?: any | null | undefined;
+  createTimeNEQ?: any | null | undefined;
+  createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  fromCurrencyID?: string | null | undefined;
+  fromCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
+  fromCurrencyIDNEQ?: string | null | undefined;
+  fromCurrencyIDNotIn?: ReadonlyArray<string> | null | undefined;
+  hasFromCurrency?: boolean | null | undefined;
+  hasFromCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
+  hasSnapshot?: boolean | null | undefined;
+  hasSnapshotWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
+  hasToCurrency?: boolean | null | undefined;
+  hasToCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
+  id?: string | null | undefined;
+  idGT?: string | null | undefined;
+  idGTE?: string | null | undefined;
+  idIn?: ReadonlyArray<string> | null | undefined;
+  idLT?: string | null | undefined;
+  idLTE?: string | null | undefined;
+  idNEQ?: string | null | undefined;
+  idNotIn?: ReadonlyArray<string> | null | undefined;
+  not?: SnapshotRateWhereInput | null | undefined;
+  or?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
+  rate?: string | null | undefined;
+  rateGT?: string | null | undefined;
+  rateGTE?: string | null | undefined;
+  rateIn?: ReadonlyArray<string> | null | undefined;
+  rateLT?: string | null | undefined;
+  rateLTE?: string | null | undefined;
+  rateNEQ?: string | null | undefined;
+  rateNotIn?: ReadonlyArray<string> | null | undefined;
+  snapshotID?: string | null | undefined;
+  snapshotIDIn?: ReadonlyArray<string> | null | undefined;
+  snapshotIDNEQ?: string | null | undefined;
+  snapshotIDNotIn?: ReadonlyArray<string> | null | undefined;
+  toCurrencyID?: string | null | undefined;
+  toCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
+  toCurrencyIDNEQ?: string | null | undefined;
+  toCurrencyIDNotIn?: ReadonlyArray<string> | null | undefined;
   updateTime?: any | null | undefined;
   updateTimeGT?: any | null | undefined;
   updateTimeGTE?: any | null | undefined;

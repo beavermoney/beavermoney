@@ -1,0 +1,593 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Frankfurter API",
+    "description": "Frankfurter is an open-source API for current and historical foreign exchange rates published by central banks.",
+    "version": "2.0.0",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/lineofflight/frankfurter/blob/main/LICENSE"
+    },
+    "contact": {
+      "url": "https://github.com/lineofflight/frankfurter/issues"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.frankfurter.dev/v2"
+    }
+  ],
+  "paths": {
+    "/rates": {
+      "get": {
+        "operationId": "getRates",
+        "summary": "Get exchange rates",
+        "description": "Returns exchange rates blended across providers. Without date params, returns the latest rates. Each record is a single currency pair.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/date"
+          },
+          {
+            "$ref": "#/components/parameters/from"
+          },
+          {
+            "$ref": "#/components/parameters/to"
+          },
+          {
+            "$ref": "#/components/parameters/base"
+          },
+          {
+            "$ref": "#/components/parameters/quotes"
+          },
+          {
+            "$ref": "#/components/parameters/providers"
+          },
+          {
+            "$ref": "#/components/parameters/group"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exchange rates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rate"
+                  }
+                },
+                "example": [
+                  {
+                    "date": "2024-01-15",
+                    "base": "EUR",
+                    "quote": "USD",
+                    "rate": 1.089
+                  },
+                  {
+                    "date": "2024-01-15",
+                    "base": "EUR",
+                    "quote": "GBP",
+                    "rate": 0.8623
+                  }
+                ]
+              },
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string",
+                  "description": "NDJSON stream of Rate objects, one JSON object per line"
+                },
+                "example": "{ \"date\": \"2024-01-15\", \"base\": \"EUR\", \"quote\": \"USD\", \"rate\": 1.089 }\n{ \"date\": \"2024-01-15\", \"base\": \"EUR\", \"quote\": \"GBP\", \"rate\": 0.8623 }\n"
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/rate/{base}/{quote}": {
+      "get": {
+        "operationId": "getRate",
+        "summary": "Get a single exchange rate pair",
+        "description": "Returns the blended exchange rate for a single currency pair. Without a date param, returns the latest rate.",
+        "parameters": [
+          {
+            "name": "base",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "EUR"
+            }
+          },
+          {
+            "name": "quote",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "USD"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/date"
+          },
+          {
+            "$ref": "#/components/parameters/providers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exchange rate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rate"
+                },
+                "example": {
+                  "date": "2026-03-25",
+                  "base": "EUR",
+                  "quote": "USD",
+                  "rate": 1.1568
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/currency/{code}": {
+      "get": {
+        "operationId": "getCurrency",
+        "summary": "Get a single currency",
+        "description": "Returns details for a single currency, including provider information or peg metadata.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "USD"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Currency details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrencyDetail"
+                },
+                "example": {
+                  "iso_code": "USD",
+                  "iso_numeric": "840",
+                  "name": "United States Dollar",
+                  "symbol": "$",
+                  "providers": [
+                    "ECB",
+                    "BOC",
+                    "FED"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/currencies": {
+      "get": {
+        "operationId": "getCurrencies",
+        "summary": "Get available currencies",
+        "description": "Returns available currencies with their names and date ranges. By default, only active currencies are included.",
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "Set to 'all' to include legacy currencies",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/parameters/providers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available currencies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Currency"
+                  }
+                },
+                "example": [
+                  {
+                    "iso_code": "EUR",
+                    "iso_numeric": "978",
+                    "name": "Euro",
+                    "symbol": "\u20ac",
+                    "start_date": "1999-01-04",
+                    "end_date": "2026-03-17"
+                  },
+                  {
+                    "iso_code": "USD",
+                    "iso_numeric": "840",
+                    "name": "United States Dollar",
+                    "symbol": "$",
+                    "start_date": "1999-01-04",
+                    "end_date": "2026-03-17"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/providers": {
+      "get": {
+        "operationId": "getProviders",
+        "summary": "Get available data providers",
+        "description": "Returns available exchange rate data providers with their base currency.",
+        "responses": {
+          "200": {
+            "description": "Available providers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Provider"
+                  }
+                },
+                "example": [
+                  {
+                    "key": "ECB",
+                    "name": "European Central Bank",
+                    "country_code": "EU",
+                    "rate_type": "reference",
+                    "pivot_currency": "EUR",
+                    "data_url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
+                    "terms_url": "https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html",
+                    "start_date": "1999-01-04",
+                    "end_date": "2026-03-17",
+                    "currencies": [
+                      "USD",
+                      "GBP"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "date": {
+        "name": "date",
+        "in": "query",
+        "description": "Specific date (YYYY-MM-DD). Cannot be combined with from/to.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "example": "2024-01-15"
+        }
+      },
+      "from": {
+        "name": "from",
+        "in": "query",
+        "description": "Start of date range (YYYY-MM-DD)",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "example": "2024-01-01"
+        }
+      },
+      "to": {
+        "name": "to",
+        "in": "query",
+        "description": "End of date range (YYYY-MM-DD). Defaults to today.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "example": "2024-01-31"
+        }
+      },
+      "base": {
+        "name": "base",
+        "in": "query",
+        "description": "Base currency (default: EUR)",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "EUR",
+          "example": "USD"
+        }
+      },
+      "quotes": {
+        "name": "quotes",
+        "in": "query",
+        "description": "Comma-separated list of quote currencies to include",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "USD,GBP,JPY"
+        }
+      },
+      "providers": {
+        "name": "providers",
+        "in": "query",
+        "description": "Comma-separated list of data providers to include",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "ECB,TCMB"
+        }
+      },
+      "group": {
+        "name": "group",
+        "in": "query",
+        "description": "Downsample rates by time period. Only applies to date ranges.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "week",
+            "month"
+          ],
+          "example": "month"
+        }
+      }
+    },
+    "schemas": {
+      "Rate": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "The date of the rate"
+          },
+          "base": {
+            "type": "string",
+            "description": "Base currency code"
+          },
+          "quote": {
+            "type": "string",
+            "description": "Quote currency code"
+          },
+          "rate": {
+            "type": "number",
+            "description": "Exchange rate value",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "date",
+          "base",
+          "quote",
+          "rate"
+        ]
+      },
+      "Currency": {
+        "type": "object",
+        "properties": {
+          "iso_code": {
+            "type": "string",
+            "description": "ISO 4217 currency code"
+          },
+          "iso_numeric": {
+            "type": "string",
+            "description": "ISO 4217 numeric code",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Full currency name"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Currency symbol",
+            "nullable": true
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Earliest available date",
+            "nullable": true
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Latest available date",
+            "nullable": true
+          }
+        },
+        "required": [
+          "iso_code",
+          "name"
+        ]
+      },
+      "CurrencyDetail": {
+        "type": "object",
+        "properties": {
+          "iso_code": {
+            "type": "string",
+            "description": "ISO 4217 currency code"
+          },
+          "iso_numeric": {
+            "type": "string",
+            "description": "ISO 4217 numeric code",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Full currency name"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Currency symbol",
+            "nullable": true
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Provider keys that publish this currency"
+          },
+          "peg": {
+            "type": "object",
+            "properties": {
+              "base": {
+                "type": "string"
+              },
+              "rate": {
+                "type": "number"
+              },
+              "authority": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "description": "Peg metadata, present only for pegged currencies"
+          }
+        },
+        "required": [
+          "iso_code",
+          "name"
+        ]
+      },
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Provider identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full provider name"
+          },
+          "country_code": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 country code",
+            "nullable": true
+          },
+          "rate_type": {
+            "type": "string",
+            "description": "Official rate type as used by the source",
+            "nullable": true
+          },
+          "pivot_currency": {
+            "type": "string",
+            "description": "Base currency for published rates",
+            "nullable": true
+          },
+          "data_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link to the data source",
+            "nullable": true
+          },
+          "terms_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link to terms of use",
+            "nullable": true
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Earliest available date",
+            "nullable": true
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Latest available date",
+            "nullable": true
+          },
+          "currencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Currency codes covered by this provider"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "currencies"
+        ]
+      }
+    },
+    "responses": {
+      "UnprocessableEntity": {
+        "description": "Invalid request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No data found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

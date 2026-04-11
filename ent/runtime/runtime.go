@@ -16,6 +16,7 @@ import (
 	"beavermoney.app/ent/schema"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -340,6 +341,33 @@ func init() {
 	snapshotentryDescSnapshotID := snapshotentryFields[7].Descriptor()
 	// snapshotentry.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
 	snapshotentry.SnapshotIDValidator = snapshotentryDescSnapshotID.Validators[0].(func(int) error)
+	snapshotrateMixin := schema.SnapshotRate{}.Mixin()
+	snapshotrateMixinFields0 := snapshotrateMixin[0].Fields()
+	_ = snapshotrateMixinFields0
+	snapshotrateFields := schema.SnapshotRate{}.Fields()
+	_ = snapshotrateFields
+	// snapshotrateDescCreateTime is the schema descriptor for create_time field.
+	snapshotrateDescCreateTime := snapshotrateMixinFields0[0].Descriptor()
+	// snapshotrate.DefaultCreateTime holds the default value on creation for the create_time field.
+	snapshotrate.DefaultCreateTime = snapshotrateDescCreateTime.Default.(func() time.Time)
+	// snapshotrateDescUpdateTime is the schema descriptor for update_time field.
+	snapshotrateDescUpdateTime := snapshotrateMixinFields0[1].Descriptor()
+	// snapshotrate.DefaultUpdateTime holds the default value on creation for the update_time field.
+	snapshotrate.DefaultUpdateTime = snapshotrateDescUpdateTime.Default.(func() time.Time)
+	// snapshotrate.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	snapshotrate.UpdateDefaultUpdateTime = snapshotrateDescUpdateTime.UpdateDefault.(func() time.Time)
+	// snapshotrateDescSnapshotID is the schema descriptor for snapshot_id field.
+	snapshotrateDescSnapshotID := snapshotrateFields[1].Descriptor()
+	// snapshotrate.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
+	snapshotrate.SnapshotIDValidator = snapshotrateDescSnapshotID.Validators[0].(func(int) error)
+	// snapshotrateDescFromCurrencyID is the schema descriptor for from_currency_id field.
+	snapshotrateDescFromCurrencyID := snapshotrateFields[2].Descriptor()
+	// snapshotrate.FromCurrencyIDValidator is a validator for the "from_currency_id" field. It is called by the builders before save.
+	snapshotrate.FromCurrencyIDValidator = snapshotrateDescFromCurrencyID.Validators[0].(func(int) error)
+	// snapshotrateDescToCurrencyID is the schema descriptor for to_currency_id field.
+	snapshotrateDescToCurrencyID := snapshotrateFields[3].Descriptor()
+	// snapshotrate.ToCurrencyIDValidator is a validator for the "to_currency_id" field. It is called by the builders before save.
+	snapshotrate.ToCurrencyIDValidator = snapshotrateDescToCurrencyID.Validators[0].(func(int) error)
 	transactionMixin := schema.Transaction{}.Mixin()
 	transaction.Policy = privacy.NewPolicies(transactionMixin[1], schema.Transaction{})
 	transaction.Hooks[0] = func(next ent.Mutator) ent.Mutator {

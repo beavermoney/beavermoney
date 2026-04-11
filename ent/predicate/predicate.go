@@ -33,6 +33,9 @@ type Snapshot func(*sql.Selector)
 // SnapshotEntry is the predicate function for snapshotentry builders.
 type SnapshotEntry func(*sql.Selector)
 
+// SnapshotRate is the predicate function for snapshotrate builders.
+type SnapshotRate func(*sql.Selector)
+
 // Transaction is the predicate function for transaction builders.
 type Transaction func(*sql.Selector)
 

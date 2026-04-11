@@ -27,6 +27,8 @@ const (
 	EdgeHousehold = "household"
 	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
 	EdgeSnapshotEntries = "snapshot_entries"
+	// EdgeSnapshotRates holds the string denoting the snapshot_rates edge name in mutations.
+	EdgeSnapshotRates = "snapshot_rates"
 	// Table holds the table name of the snapshot in the database.
 	Table = "snapshots"
 	// HouseholdTable is the table that holds the household relation/edge.
@@ -43,6 +45,13 @@ const (
 	SnapshotEntriesInverseTable = "snapshot_entries"
 	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
 	SnapshotEntriesColumn = "snapshot_id"
+	// SnapshotRatesTable is the table that holds the snapshot_rates relation/edge.
+	SnapshotRatesTable = "snapshot_rates"
+	// SnapshotRatesInverseTable is the table name for the SnapshotRate entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotrate" package.
+	SnapshotRatesInverseTable = "snapshot_rates"
+	// SnapshotRatesColumn is the table column denoting the snapshot_rates relation/edge.
+	SnapshotRatesColumn = "snapshot_id"
 )
 
 // Columns holds all SQL columns for snapshot fields.
@@ -128,6 +137,20 @@ func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSnapshotEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySnapshotRatesCount orders the results by snapshot_rates count.
+func BySnapshotRatesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotRatesStep(), opts...)
+	}
+}
+
+// BySnapshotRates orders the results by snapshot_rates terms.
+func BySnapshotRates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newHouseholdStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -140,5 +163,12 @@ func newSnapshotEntriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
+	)
+}
+func newSnapshotRatesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotRatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesTable, SnapshotRatesColumn),
 	)
 }

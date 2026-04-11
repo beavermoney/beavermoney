@@ -28,7 +28,7 @@ import (
 	"beavermoney.app/ent/user"
 	"beavermoney.app/ent/userkey"
 	"beavermoney.app/internal/contextkeys"
-	"beavermoney.app/internal/fxrate"
+	"beavermoney.app/internal/frankfurter"
 	"beavermoney.app/internal/market"
 	"beavermoney.app/internal/seed"
 	"entgo.io/contrib/entgql"
@@ -111,8 +111,10 @@ func main() {
 	}
 
 	// Setup internal clients
-	fxrateProvider := fxrate.NewFrankfurterProvider(cfg.FrankfurterBaseURL)
-	fxrateClient := fxrate.NewClient(fxrateProvider)
+	frankfurterClient, err := frankfurter.NewClientWithResponses(cfg.FrankfurterBaseURL + "/v2")
+	if err != nil {
+		panic(fmt.Errorf("failed to create frankfurter client: %w", err))
+	}
 
 	// Use EODHD provider if API key is provided, otherwise fall back to Yahoo
 	var marketProvider market.MarketProvider
@@ -156,7 +158,7 @@ func main() {
 		gql.NewSchema(
 			logger,
 			entClient,
-			fxrateClient,
+			frankfurterClient,
 			marketClient,
 			meter,
 			otel.Tracer("beavermoney-server"),
@@ -252,7 +254,7 @@ func main() {
 
 				// TODO: implement short-lived token + refresh token
 				_, tokenString, _ := tokenAuth.Encode(
-					map[string]interface{}{
+					map[string]any{
 						"user_id": strconv.Itoa(userID),
 					},
 				)

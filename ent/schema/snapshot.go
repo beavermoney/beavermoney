@@ -49,6 +49,13 @@ func (Snapshot) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
+		edge.To("snapshot_rates", SnapshotRate.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 	}
 }
 
@@ -257,6 +264,117 @@ func (SnapshotEntry) Annotations() []schema.Annotation {
 func (SnapshotEntry) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		beavermoney_mixin.HouseholdMixin{},
+		mixin.AnnotateFields(mixin.Time{},
+			entgql.Skip(
+				entgql.SkipMutationCreateInput,
+				entgql.SkipMutationUpdateInput,
+			),
+		),
+	}
+}
+
+type SnapshotRate struct {
+	ent.Schema
+}
+
+func (SnapshotRate) Fields() []ent.Field {
+	return []ent.Field{
+		field.Float("rate").GoType(decimal.Decimal{}).
+			SchemaType(map[string]string{
+				dialect.Postgres: "numeric(36,18)",
+			}).
+			Annotations(
+				entgql.Type("String"),
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			).
+			Immutable(),
+
+		field.Int("snapshot_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+
+		field.Int("from_currency_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+
+		field.Int("to_currency_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+	}
+}
+
+func (SnapshotRate) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("snapshot", Snapshot.Type).
+			Field("snapshot_id").
+			Ref("snapshot_rates").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+		edge.From("from_currency", Currency.Type).
+			Field("from_currency_id").
+			Ref("snapshot_rates_from").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+		edge.From("to_currency", Currency.Type).
+			Field("to_currency_id").
+			Ref("snapshot_rates_to").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
+	}
+}
+
+func (SnapshotRate) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("snapshot_id"),
+		index.Fields("snapshot_id", "from_currency_id", "to_currency_id").Unique(),
+	}
+}
+
+func (SnapshotRate) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.QueryField(),
+		entgql.RelayConnection(),
+	}
+}
+
+func (SnapshotRate) Mixin() []ent.Mixin {
+	return []ent.Mixin{
 		mixin.AnnotateFields(mixin.Time{},
 			entgql.Skip(
 				entgql.SkipMutationCreateInput,
