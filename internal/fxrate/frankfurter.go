@@ -11,13 +11,11 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// FrankfurterProvider implements the ExchangeRateProvider interface for the frankfurter.dev API.
 type FrankfurterProvider struct {
 	client  *http.Client
 	baseURL string
 }
 
-// NewFrankfurterProvider creates a new FrankfurterProvider.
 func NewFrankfurterProvider(baseURL string) *FrankfurterProvider {
 	return &FrankfurterProvider{
 		client: &http.Client{
@@ -27,7 +25,13 @@ func NewFrankfurterProvider(baseURL string) *FrankfurterProvider {
 	}
 }
 
-// GetRate fetches the exchange rate from the Frankfurter.dev API.
+type v2RateRecord struct {
+	Date  string      `json:"date"`
+	Base  string      `json:"base"`
+	Quote string      `json:"quote"`
+	Rate  json.Number `json:"rate"`
+}
+
 func (p *FrankfurterProvider) GetRate(
 	ctx context.Context,
 	fromCurrency, toCurrency string,
@@ -35,7 +39,7 @@ func (p *FrankfurterProvider) GetRate(
 ) (decimal.Decimal, error) {
 	dateStr := datetime.Format("2006-01-02")
 	url := fmt.Sprintf(
-		"%s/v1/%s?from=%s&to=%s",
+		"%s/v2/rates?date=%s&base=%s&quotes=%s",
 		p.baseURL,
 		dateStr,
 		fromCurrency,
@@ -49,36 +53,24 @@ func (p *FrankfurterProvider) GetRate(
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		return decimal.Zero, fmt.Errorf(
-			"failed to fetch exchange rate: %w",
-			err,
-		)
+		return decimal.Zero, fmt.Errorf("failed to fetch exchange rate: %w", err)
 	}
 	defer resp.Body.Close() //nolint:errcheck
 
 	if resp.StatusCode != http.StatusOK {
-		return decimal.Zero, fmt.Errorf(
-			"unexpected status code: %d",
-			resp.StatusCode,
-		)
+		return decimal.Zero, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var data struct {
-		Rates map[string]json.Number `json:"rates"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	var records []v2RateRecord
+	if err := json.NewDecoder(resp.Body).Decode(&records); err != nil {
 		return decimal.Zero, fmt.Errorf("failed to decode response: %w", err)
 	}
 
-	rateStr, ok := data.Rates[toCurrency]
-	if !ok {
-		return decimal.Zero, fmt.Errorf(
-			"rate for currency %s not found",
-			toCurrency,
-		)
+	if len(records) == 0 {
+		return decimal.Zero, fmt.Errorf("no rate found for %s->%s on %s", fromCurrency, toCurrency, dateStr)
 	}
 
-	rate, err := decimal.NewFromString(rateStr.String())
+	rate, err := decimal.NewFromString(records[0].Rate.String())
 	if err != nil {
 		return decimal.Zero, fmt.Errorf("failed to parse rate: %w", err)
 	}
@@ -88,7 +80,7 @@ func (p *FrankfurterProvider) GetRate(
 
 // GetRates fetches exchange rates for multiple fromCurrencies to a single toCurrency.
 // This is optimized to make a single API call by using inverse rates.
-// To get USD->EUR, GBP->EUR, JPY->EUR, we query with base=EUR&symbols=USD,GBP,JPY
+// To get USD->EUR, GBP->EUR, JPY->EUR, we query with base=EUR&quotes=USD,GBP,JPY
 // and then invert the results.
 func (p *FrankfurterProvider) GetRates(
 	ctx context.Context,
@@ -100,7 +92,6 @@ func (p *FrankfurterProvider) GetRates(
 		return make(map[string]decimal.Decimal), nil
 	}
 
-	// If we only have one fromCurrency, use the single GetRate method
 	if len(fromCurrencies) == 1 {
 		rate, err := p.GetRate(ctx, fromCurrencies[0], toCurrency, datetime)
 		if err != nil {
@@ -109,16 +100,14 @@ func (p *FrankfurterProvider) GetRates(
 		return map[string]decimal.Decimal{fromCurrencies[0]: rate}, nil
 	}
 
-	// Use base=toCurrency&symbols=fromCurrency1,fromCurrency2,...
-	// This gives us toCurrency->fromCurrency rates, which we then invert
 	dateStr := datetime.Format("2006-01-02")
-	fromCurrenciesStr := joinCurrencies(fromCurrencies)
+	quotesStr := strings.Join(fromCurrencies, ",")
 	url := fmt.Sprintf(
-		"%s/v1/%s?base=%s&symbols=%s",
+		"%s/v2/rates?date=%s&base=%s&quotes=%s",
 		p.baseURL,
 		dateStr,
 		toCurrency,
-		fromCurrenciesStr,
+		quotesStr,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -136,44 +125,26 @@ func (p *FrankfurterProvider) GetRates(
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var data struct {
-		Rates map[string]json.Number `json:"rates"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	var records []v2RateRecord
+	if err := json.NewDecoder(resp.Body).Decode(&records); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
 	results := make(map[string]decimal.Decimal, len(fromCurrencies))
 
-	// Invert rates: we got toCurrency->fromCurrency, need fromCurrency->toCurrency
-	for _, fromCurrency := range fromCurrencies {
-		rateStr, ok := data.Rates[fromCurrency]
-		if !ok {
-			return nil, fmt.Errorf(
-				"rate for currency %s not found",
-				fromCurrency,
-			)
-		}
-
-		rate, err := decimal.NewFromString(rateStr.String())
+	for _, record := range records {
+		rate, err := decimal.NewFromString(record.Rate.String())
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse rate: %w", err)
+			return nil, fmt.Errorf("failed to parse rate for %s: %w", record.Quote, err)
 		}
 
-		// Invert: if EUR->USD is 1.2, then USD->EUR is 1/1.2
 		if rate.IsZero() {
-			return nil, fmt.Errorf(
-				"invalid rate (zero) for currency %s",
-				fromCurrency,
-			)
+			return nil, fmt.Errorf("invalid rate (zero) for currency %s", record.Quote)
 		}
-		results[fromCurrency] = decimal.NewFromInt(1).Div(rate)
+		// Invert: we queried base=toCurrency, so record.Rate is toCurrency->fromCurrency.
+		// We need fromCurrency->toCurrency.
+		results[record.Quote] = decimal.NewFromInt(1).Div(rate)
 	}
 
 	return results, nil
-}
-
-// joinCurrencies joins currency codes with commas.
-func joinCurrencies(currencies []string) string {
-	return strings.Join(currencies, ",")
 }

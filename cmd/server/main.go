@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -163,12 +165,19 @@ func main() {
 	gqlHandler.Use(gqlgen_opentelemetry.Tracer{})
 	gqlHandler.Use(entgql.Transactioner{TxOpener: entClient})
 
+	frankfurterURL, err := url.Parse(cfg.FrankfurterBaseURL)
+	if err != nil {
+		panic(fmt.Errorf("invalid FRANKFURTER_BASE_URL: %w", err))
+	}
+	fxProxy := httputil.NewSingleHostReverseProxy(frankfurterURL)
+
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator(tokenAuth))
 		r.Use(auth.Middleware(entClient))
 
 		r.Handle("/query", gqlHandler)
+		r.Handle("/fx/*", http.StripPrefix("/fx", fxProxy))
 	})
 
 	r.Handle("/", playground.Handler("GraphQL playground", "/query"))

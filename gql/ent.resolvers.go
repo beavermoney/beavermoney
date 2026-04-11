@@ -1232,9 +1232,6 @@ func (r *Resolver) RecurringSubscription() RecurringSubscriptionResolver {
 	return &recurringSubscriptionResolver{r}
 }
 
-// Snapshot returns SnapshotResolver implementation.
-func (r *Resolver) Snapshot() SnapshotResolver { return &snapshotResolver{r} }
-
 // SnapshotEntry returns SnapshotEntryResolver implementation.
 func (r *Resolver) SnapshotEntry() SnapshotEntryResolver { return &snapshotEntryResolver{r} }
 
@@ -1316,30 +1313,37 @@ func (r *Resolver) UpdateTransactionEntryInput() UpdateTransactionEntryInputReso
 	return &updateTransactionEntryInputResolver{r}
 }
 
-type (
-	accountResolver                          struct{ *Resolver }
-	checkpointResolver                       struct{ *Resolver }
-	householdResolver                        struct{ *Resolver }
-	investmentResolver                       struct{ *Resolver }
-	investmentLotResolver                    struct{ *Resolver }
-	queryResolver                            struct{ *Resolver }
-	recurringSubscriptionResolver            struct{ *Resolver }
-	snapshotResolver                         struct{ *Resolver }
-	snapshotEntryResolver                    struct{ *Resolver }
-	transactionEntryResolver                 struct{ *Resolver }
-	accountWhereInputResolver                struct{ *Resolver }
-	checkpointWhereInputResolver             struct{ *Resolver }
-	createAccountInputResolver               struct{ *Resolver }
-	createInvestmentInputResolver            struct{ *Resolver }
-	createInvestmentLotInputResolver         struct{ *Resolver }
-	createRecurringSubscriptionInputResolver struct{ *Resolver }
-	createTransactionEntryInputResolver      struct{ *Resolver }
-	investmentLotWhereInputResolver          struct{ *Resolver }
-	investmentWhereInputResolver             struct{ *Resolver }
-	recurringSubscriptionWhereInputResolver  struct{ *Resolver }
-	snapshotEntryWhereInputResolver          struct{ *Resolver }
-	transactionEntryWhereInputResolver       struct{ *Resolver }
-	updateInvestmentLotInputResolver         struct{ *Resolver }
-	updateRecurringSubscriptionInputResolver struct{ *Resolver }
-	updateTransactionEntryInputResolver      struct{ *Resolver }
-)
+type accountResolver struct{ *Resolver }
+type checkpointResolver struct{ *Resolver }
+type householdResolver struct{ *Resolver }
+type investmentResolver struct{ *Resolver }
+type investmentLotResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
+type recurringSubscriptionResolver struct{ *Resolver }
+type snapshotEntryResolver struct{ *Resolver }
+type transactionEntryResolver struct{ *Resolver }
+type accountWhereInputResolver struct{ *Resolver }
+type checkpointWhereInputResolver struct{ *Resolver }
+type createAccountInputResolver struct{ *Resolver }
+type createInvestmentInputResolver struct{ *Resolver }
+type createInvestmentLotInputResolver struct{ *Resolver }
+type createRecurringSubscriptionInputResolver struct{ *Resolver }
+type createTransactionEntryInputResolver struct{ *Resolver }
+type investmentLotWhereInputResolver struct{ *Resolver }
+type investmentWhereInputResolver struct{ *Resolver }
+type recurringSubscriptionWhereInputResolver struct{ *Resolver }
+type snapshotEntryWhereInputResolver struct{ *Resolver }
+type transactionEntryWhereInputResolver struct{ *Resolver }
+type updateInvestmentLotInputResolver struct{ *Resolver }
+type updateRecurringSubscriptionInputResolver struct{ *Resolver }
+type updateTransactionEntryInputResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *Resolver) Snapshot() SnapshotResolver { return &snapshotResolver{r} }
+*/
