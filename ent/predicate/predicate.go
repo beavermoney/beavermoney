@@ -15,6 +15,12 @@ type Currency func(*sql.Selector)
 // Household is the predicate function for household builders.
 type Household func(*sql.Selector)
 
+// HouseholdCurrency is the predicate function for householdcurrency builders.
+type HouseholdCurrency func(*sql.Selector)
+
+// HouseholdRate is the predicate function for householdrate builders.
+type HouseholdRate func(*sql.Selector)
+
 // Investment is the predicate function for investment builders.
 type Investment func(*sql.Selector)
 

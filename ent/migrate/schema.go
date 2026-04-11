@@ -88,6 +88,85 @@ var (
 			},
 		},
 	}
+	// HouseholdCurrenciesColumns holds the columns for the "household_currencies" table.
+	HouseholdCurrenciesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "important", Type: field.TypeBool, Default: false},
+		{Name: "currency_id", Type: field.TypeInt},
+		{Name: "household_id", Type: field.TypeInt},
+	}
+	// HouseholdCurrenciesTable holds the schema information for the "household_currencies" table.
+	HouseholdCurrenciesTable = &schema.Table{
+		Name:       "household_currencies",
+		Columns:    HouseholdCurrenciesColumns,
+		PrimaryKey: []*schema.Column{HouseholdCurrenciesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "household_currencies_currencies_household_currencies",
+				Columns:    []*schema.Column{HouseholdCurrenciesColumns[4]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "household_currencies_households_household_currencies",
+				Columns:    []*schema.Column{HouseholdCurrenciesColumns[5]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "householdcurrency_household_id_currency_id",
+				Unique:  true,
+				Columns: []*schema.Column{HouseholdCurrenciesColumns[5], HouseholdCurrenciesColumns[4]},
+			},
+		},
+	}
+	// HouseholdRatesColumns holds the columns for the "household_rates" table.
+	HouseholdRatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "from_currency_id", Type: field.TypeInt},
+		{Name: "to_currency_id", Type: field.TypeInt},
+		{Name: "household_id", Type: field.TypeInt},
+	}
+	// HouseholdRatesTable holds the schema information for the "household_rates" table.
+	HouseholdRatesTable = &schema.Table{
+		Name:       "household_rates",
+		Columns:    HouseholdRatesColumns,
+		PrimaryKey: []*schema.Column{HouseholdRatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "household_rates_currencies_household_rates_from",
+				Columns:    []*schema.Column{HouseholdRatesColumns[4]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "household_rates_currencies_household_rates_to",
+				Columns:    []*schema.Column{HouseholdRatesColumns[5]},
+				RefColumns: []*schema.Column{CurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "household_rates_households_household_rates",
+				Columns:    []*schema.Column{HouseholdRatesColumns[6]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "householdrate_household_id_from_currency_id_to_currency_id",
+				Unique:  true,
+				Columns: []*schema.Column{HouseholdRatesColumns[6], HouseholdRatesColumns[4], HouseholdRatesColumns[5]},
+			},
+		},
+	}
 	// InvestmentsColumns holds the columns for the "investments" table.
 	InvestmentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -550,6 +629,8 @@ var (
 		AccountsTable,
 		CurrenciesTable,
 		HouseholdsTable,
+		HouseholdCurrenciesTable,
+		HouseholdRatesTable,
 		InvestmentsTable,
 		InvestmentLotsTable,
 		RecurringSubscriptionsTable,
@@ -578,6 +659,17 @@ func init() {
 	HouseholdsTable.ForeignKeys[0].RefTable = CurrenciesTable
 	HouseholdsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(8589934592),
+	}
+	HouseholdCurrenciesTable.ForeignKeys[0].RefTable = CurrenciesTable
+	HouseholdCurrenciesTable.ForeignKeys[1].RefTable = HouseholdsTable
+	HouseholdCurrenciesTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(73014444032),
+	}
+	HouseholdRatesTable.ForeignKeys[0].RefTable = CurrenciesTable
+	HouseholdRatesTable.ForeignKeys[1].RefTable = CurrenciesTable
+	HouseholdRatesTable.ForeignKeys[2].RefTable = HouseholdsTable
+	HouseholdRatesTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(77309411328),
 	}
 	InvestmentsTable.ForeignKeys[0].RefTable = AccountsTable
 	InvestmentsTable.ForeignKeys[1].RefTable = CurrenciesTable

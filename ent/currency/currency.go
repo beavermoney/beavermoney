@@ -32,6 +32,12 @@ const (
 	EdgeSnapshotRatesFrom = "snapshot_rates_from"
 	// EdgeSnapshotRatesTo holds the string denoting the snapshot_rates_to edge name in mutations.
 	EdgeSnapshotRatesTo = "snapshot_rates_to"
+	// EdgeHouseholdCurrencies holds the string denoting the household_currencies edge name in mutations.
+	EdgeHouseholdCurrencies = "household_currencies"
+	// EdgeHouseholdRatesFrom holds the string denoting the household_rates_from edge name in mutations.
+	EdgeHouseholdRatesFrom = "household_rates_from"
+	// EdgeHouseholdRatesTo holds the string denoting the household_rates_to edge name in mutations.
+	EdgeHouseholdRatesTo = "household_rates_to"
 	// Table holds the table name of the currency in the database.
 	Table = "currencies"
 	// AccountsTable is the table that holds the accounts relation/edge.
@@ -90,6 +96,27 @@ const (
 	SnapshotRatesToInverseTable = "snapshot_rates"
 	// SnapshotRatesToColumn is the table column denoting the snapshot_rates_to relation/edge.
 	SnapshotRatesToColumn = "to_currency_id"
+	// HouseholdCurrenciesTable is the table that holds the household_currencies relation/edge.
+	HouseholdCurrenciesTable = "household_currencies"
+	// HouseholdCurrenciesInverseTable is the table name for the HouseholdCurrency entity.
+	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
+	HouseholdCurrenciesInverseTable = "household_currencies"
+	// HouseholdCurrenciesColumn is the table column denoting the household_currencies relation/edge.
+	HouseholdCurrenciesColumn = "currency_id"
+	// HouseholdRatesFromTable is the table that holds the household_rates_from relation/edge.
+	HouseholdRatesFromTable = "household_rates"
+	// HouseholdRatesFromInverseTable is the table name for the HouseholdRate entity.
+	// It exists in this package in order to avoid circular dependency with the "householdrate" package.
+	HouseholdRatesFromInverseTable = "household_rates"
+	// HouseholdRatesFromColumn is the table column denoting the household_rates_from relation/edge.
+	HouseholdRatesFromColumn = "from_currency_id"
+	// HouseholdRatesToTable is the table that holds the household_rates_to relation/edge.
+	HouseholdRatesToTable = "household_rates"
+	// HouseholdRatesToInverseTable is the table name for the HouseholdRate entity.
+	// It exists in this package in order to avoid circular dependency with the "householdrate" package.
+	HouseholdRatesToInverseTable = "household_rates"
+	// HouseholdRatesToColumn is the table column denoting the household_rates_to relation/edge.
+	HouseholdRatesToColumn = "to_currency_id"
 )
 
 // Columns holds all SQL columns for currency fields.
@@ -238,6 +265,48 @@ func BySnapshotRatesTo(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesToStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByHouseholdCurrenciesCount orders the results by household_currencies count.
+func ByHouseholdCurrenciesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newHouseholdCurrenciesStep(), opts...)
+	}
+}
+
+// ByHouseholdCurrencies orders the results by household_currencies terms.
+func ByHouseholdCurrencies(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdCurrenciesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByHouseholdRatesFromCount orders the results by household_rates_from count.
+func ByHouseholdRatesFromCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newHouseholdRatesFromStep(), opts...)
+	}
+}
+
+// ByHouseholdRatesFrom orders the results by household_rates_from terms.
+func ByHouseholdRatesFrom(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdRatesFromStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByHouseholdRatesToCount orders the results by household_rates_to count.
+func ByHouseholdRatesToCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newHouseholdRatesToStep(), opts...)
+	}
+}
+
+// ByHouseholdRatesTo orders the results by household_rates_to terms.
+func ByHouseholdRatesTo(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdRatesToStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newAccountsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -292,5 +361,26 @@ func newSnapshotRatesToStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SnapshotRatesToInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesToTable, SnapshotRatesToColumn),
+	)
+}
+func newHouseholdCurrenciesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdCurrenciesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdCurrenciesTable, HouseholdCurrenciesColumn),
+	)
+}
+func newHouseholdRatesFromStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdRatesFromInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdRatesFromTable, HouseholdRatesFromColumn),
+	)
+}
+func newHouseholdRatesToStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdRatesToInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdRatesToTable, HouseholdRatesToColumn),
 	)
 }

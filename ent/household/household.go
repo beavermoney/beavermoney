@@ -49,6 +49,10 @@ const (
 	EdgeSnapshots = "snapshots"
 	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
 	EdgeSnapshotEntries = "snapshot_entries"
+	// EdgeHouseholdCurrencies holds the string denoting the household_currencies edge name in mutations.
+	EdgeHouseholdCurrencies = "household_currencies"
+	// EdgeHouseholdRates holds the string denoting the household_rates edge name in mutations.
+	EdgeHouseholdRates = "household_rates"
 	// EdgeUserHouseholds holds the string denoting the user_households edge name in mutations.
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the household in the database.
@@ -128,6 +132,20 @@ const (
 	SnapshotEntriesInverseTable = "snapshot_entries"
 	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
 	SnapshotEntriesColumn = "household_id"
+	// HouseholdCurrenciesTable is the table that holds the household_currencies relation/edge.
+	HouseholdCurrenciesTable = "household_currencies"
+	// HouseholdCurrenciesInverseTable is the table name for the HouseholdCurrency entity.
+	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
+	HouseholdCurrenciesInverseTable = "household_currencies"
+	// HouseholdCurrenciesColumn is the table column denoting the household_currencies relation/edge.
+	HouseholdCurrenciesColumn = "household_id"
+	// HouseholdRatesTable is the table that holds the household_rates relation/edge.
+	HouseholdRatesTable = "household_rates"
+	// HouseholdRatesInverseTable is the table name for the HouseholdRate entity.
+	// It exists in this package in order to avoid circular dependency with the "householdrate" package.
+	HouseholdRatesInverseTable = "household_rates"
+	// HouseholdRatesColumn is the table column denoting the household_rates relation/edge.
+	HouseholdRatesColumn = "household_id"
 	// UserHouseholdsTable is the table that holds the user_households relation/edge.
 	UserHouseholdsTable = "user_households"
 	// UserHouseholdsInverseTable is the table name for the UserHousehold entity.
@@ -373,6 +391,34 @@ func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByHouseholdCurrenciesCount orders the results by household_currencies count.
+func ByHouseholdCurrenciesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newHouseholdCurrenciesStep(), opts...)
+	}
+}
+
+// ByHouseholdCurrencies orders the results by household_currencies terms.
+func ByHouseholdCurrencies(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdCurrenciesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByHouseholdRatesCount orders the results by household_rates count.
+func ByHouseholdRatesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newHouseholdRatesStep(), opts...)
+	}
+}
+
+// ByHouseholdRates orders the results by household_rates terms.
+func ByHouseholdRates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdRatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByUserHouseholdsCount orders the results by user_households count.
 func ByUserHouseholdsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -461,6 +507,20 @@ func newSnapshotEntriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
+	)
+}
+func newHouseholdCurrenciesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdCurrenciesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdCurrenciesTable, HouseholdCurrenciesColumn),
+	)
+}
+func newHouseholdRatesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdRatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdRatesTable, HouseholdRatesColumn),
 	)
 }
 func newUserHouseholdsStep() *sqlgraph.Step {

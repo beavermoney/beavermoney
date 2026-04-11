@@ -9,6 +9,8 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
@@ -126,6 +128,70 @@ func init() {
 	householdDescIsDemo := householdFields[3].Descriptor()
 	// household.DefaultIsDemo holds the default value on creation for the is_demo field.
 	household.DefaultIsDemo = householdDescIsDemo.Default.(bool)
+	householdcurrencyMixin := schema.HouseholdCurrency{}.Mixin()
+	householdcurrency.Policy = privacy.NewPolicies(householdcurrencyMixin[0], schema.HouseholdCurrency{})
+	householdcurrency.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := householdcurrency.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	householdcurrencyMixinFields1 := householdcurrencyMixin[1].Fields()
+	_ = householdcurrencyMixinFields1
+	householdcurrencyFields := schema.HouseholdCurrency{}.Fields()
+	_ = householdcurrencyFields
+	// householdcurrencyDescCreateTime is the schema descriptor for create_time field.
+	householdcurrencyDescCreateTime := householdcurrencyMixinFields1[0].Descriptor()
+	// householdcurrency.DefaultCreateTime holds the default value on creation for the create_time field.
+	householdcurrency.DefaultCreateTime = householdcurrencyDescCreateTime.Default.(func() time.Time)
+	// householdcurrencyDescUpdateTime is the schema descriptor for update_time field.
+	householdcurrencyDescUpdateTime := householdcurrencyMixinFields1[1].Descriptor()
+	// householdcurrency.DefaultUpdateTime holds the default value on creation for the update_time field.
+	householdcurrency.DefaultUpdateTime = householdcurrencyDescUpdateTime.Default.(func() time.Time)
+	// householdcurrency.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	householdcurrency.UpdateDefaultUpdateTime = householdcurrencyDescUpdateTime.UpdateDefault.(func() time.Time)
+	// householdcurrencyDescImportant is the schema descriptor for important field.
+	householdcurrencyDescImportant := householdcurrencyFields[0].Descriptor()
+	// householdcurrency.DefaultImportant holds the default value on creation for the important field.
+	householdcurrency.DefaultImportant = householdcurrencyDescImportant.Default.(bool)
+	// householdcurrencyDescCurrencyID is the schema descriptor for currency_id field.
+	householdcurrencyDescCurrencyID := householdcurrencyFields[1].Descriptor()
+	// householdcurrency.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
+	householdcurrency.CurrencyIDValidator = householdcurrencyDescCurrencyID.Validators[0].(func(int) error)
+	householdrateMixin := schema.HouseholdRate{}.Mixin()
+	householdrate.Policy = privacy.NewPolicies(householdrateMixin[0], schema.HouseholdRate{})
+	householdrate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := householdrate.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	householdrateMixinFields1 := householdrateMixin[1].Fields()
+	_ = householdrateMixinFields1
+	householdrateFields := schema.HouseholdRate{}.Fields()
+	_ = householdrateFields
+	// householdrateDescCreateTime is the schema descriptor for create_time field.
+	householdrateDescCreateTime := householdrateMixinFields1[0].Descriptor()
+	// householdrate.DefaultCreateTime holds the default value on creation for the create_time field.
+	householdrate.DefaultCreateTime = householdrateDescCreateTime.Default.(func() time.Time)
+	// householdrateDescUpdateTime is the schema descriptor for update_time field.
+	householdrateDescUpdateTime := householdrateMixinFields1[1].Descriptor()
+	// householdrate.DefaultUpdateTime holds the default value on creation for the update_time field.
+	householdrate.DefaultUpdateTime = householdrateDescUpdateTime.Default.(func() time.Time)
+	// householdrate.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	householdrate.UpdateDefaultUpdateTime = householdrateDescUpdateTime.UpdateDefault.(func() time.Time)
+	// householdrateDescFromCurrencyID is the schema descriptor for from_currency_id field.
+	householdrateDescFromCurrencyID := householdrateFields[1].Descriptor()
+	// householdrate.FromCurrencyIDValidator is a validator for the "from_currency_id" field. It is called by the builders before save.
+	householdrate.FromCurrencyIDValidator = householdrateDescFromCurrencyID.Validators[0].(func(int) error)
+	// householdrateDescToCurrencyID is the schema descriptor for to_currency_id field.
+	householdrateDescToCurrencyID := householdrateFields[2].Descriptor()
+	// householdrate.ToCurrencyIDValidator is a validator for the "to_currency_id" field. It is called by the builders before save.
+	householdrate.ToCurrencyIDValidator = householdrateDescToCurrencyID.Validators[0].(func(int) error)
 	investmentMixin := schema.Investment{}.Mixin()
 	investment.Policy = privacy.NewPolicies(investmentMixin[1], schema.Investment{})
 	investment.Hooks[0] = func(next ent.Mutator) ent.Mutator {

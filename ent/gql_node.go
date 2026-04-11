@@ -10,6 +10,8 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/internal"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
@@ -47,6 +49,16 @@ var householdImplementors = []string{"Household", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Household) IsNode() {}
+
+var householdcurrencyImplementors = []string{"HouseholdCurrency", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*HouseholdCurrency) IsNode() {}
+
+var householdrateImplementors = []string{"HouseholdRate", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*HouseholdRate) IsNode() {}
 
 var investmentImplementors = []string{"Investment", "Node"}
 
@@ -208,6 +220,24 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			Where(household.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, householdImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case householdcurrency.Table:
+		query := c.HouseholdCurrency.Query().
+			Where(householdcurrency.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, householdcurrencyImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case householdrate.Table:
+		query := c.HouseholdRate.Query().
+			Where(householdrate.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, householdrateImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -429,6 +459,38 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.Household.Query().
 			Where(household.IDIn(ids...))
 		query, err := query.CollectFields(ctx, householdImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case householdcurrency.Table:
+		query := c.HouseholdCurrency.Query().
+			Where(householdcurrency.IDIn(ids...))
+		query, err := query.CollectFields(ctx, householdcurrencyImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case householdrate.Table:
+		query := c.HouseholdRate.Query().
+			Where(householdrate.IDIn(ids...))
+		query, err := query.CollectFields(ctx, householdrateImplementors...)
 		if err != nil {
 			return nil, err
 		}

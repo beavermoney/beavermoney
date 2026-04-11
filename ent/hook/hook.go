@@ -45,6 +45,30 @@ func (f HouseholdFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HouseholdMutation", m)
 }
 
+// The HouseholdCurrencyFunc type is an adapter to allow the use of ordinary
+// function as HouseholdCurrency mutator.
+type HouseholdCurrencyFunc func(context.Context, *ent.HouseholdCurrencyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f HouseholdCurrencyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.HouseholdCurrencyMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HouseholdCurrencyMutation", m)
+}
+
+// The HouseholdRateFunc type is an adapter to allow the use of ordinary
+// function as HouseholdRate mutator.
+type HouseholdRateFunc func(context.Context, *ent.HouseholdRateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f HouseholdRateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.HouseholdRateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HouseholdRateMutation", m)
+}
+
 // The InvestmentFunc type is an adapter to allow the use of ordinary
 // function as Investment mutator.
 type InvestmentFunc func(context.Context, *ent.InvestmentMutation) (ent.Value, error)

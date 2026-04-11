@@ -10,6 +10,8 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
@@ -348,6 +350,45 @@ func (_q *CurrencyQuery) collectField(ctx context.Context, oneNode bool, opCtx *
 				return err
 			}
 			_q.WithNamedSnapshotRatesTo(alias, func(wq *SnapshotRateQuery) {
+				*wq = *query
+			})
+
+		case "householdCurrencies":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdCurrencies(alias, func(wq *HouseholdCurrencyQuery) {
+				*wq = *query
+			})
+
+		case "householdRatesFrom":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdRatesFrom(alias, func(wq *HouseholdRateQuery) {
+				*wq = *query
+			})
+
+		case "householdRatesTo":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdRatesTo(alias, func(wq *HouseholdRateQuery) {
 				*wq = *query
 			})
 		case "code":
@@ -1252,6 +1293,32 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				*wq = *query
 			})
 
+		case "householdCurrencies":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdCurrencies(alias, func(wq *HouseholdCurrencyQuery) {
+				*wq = *query
+			})
+
+		case "householdRates":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdRates(alias, func(wq *HouseholdRateQuery) {
+				*wq = *query
+			})
+
 		case "userHouseholds":
 			var (
 				alias = field.Alias
@@ -1331,6 +1398,260 @@ func newHouseholdPaginateArgs(rv map[string]any) *householdPaginateArgs {
 	}
 	if v, ok := rv[whereField].(*HouseholdWhereInput); ok {
 		args.opts = append(args.opts, WithHouseholdFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *HouseholdCurrencyQuery) CollectFields(ctx context.Context, satisfies ...string) (*HouseholdCurrencyQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *HouseholdCurrencyQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(householdcurrency.Columns))
+		selectedFields = []string{householdcurrency.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[householdcurrency.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldHouseholdID)
+				fieldSeen[householdcurrency.FieldHouseholdID] = struct{}{}
+			}
+
+		case "currency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withCurrency = query
+			if _, ok := fieldSeen[householdcurrency.FieldCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldCurrencyID)
+				fieldSeen[householdcurrency.FieldCurrencyID] = struct{}{}
+			}
+		case "householdID":
+			if _, ok := fieldSeen[householdcurrency.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldHouseholdID)
+				fieldSeen[householdcurrency.FieldHouseholdID] = struct{}{}
+			}
+		case "createTime":
+			if _, ok := fieldSeen[householdcurrency.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldCreateTime)
+				fieldSeen[householdcurrency.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[householdcurrency.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldUpdateTime)
+				fieldSeen[householdcurrency.FieldUpdateTime] = struct{}{}
+			}
+		case "important":
+			if _, ok := fieldSeen[householdcurrency.FieldImportant]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldImportant)
+				fieldSeen[householdcurrency.FieldImportant] = struct{}{}
+			}
+		case "currencyID":
+			if _, ok := fieldSeen[householdcurrency.FieldCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldCurrencyID)
+				fieldSeen[householdcurrency.FieldCurrencyID] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type householdcurrencyPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []HouseholdCurrencyPaginateOption
+}
+
+func newHouseholdCurrencyPaginateArgs(rv map[string]any) *householdcurrencyPaginateArgs {
+	args := &householdcurrencyPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*HouseholdCurrencyWhereInput); ok {
+		args.opts = append(args.opts, WithHouseholdCurrencyFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *HouseholdRateQuery) CollectFields(ctx context.Context, satisfies ...string) (*HouseholdRateQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *HouseholdRateQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(householdrate.Columns))
+		selectedFields = []string{householdrate.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[householdrate.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldHouseholdID)
+				fieldSeen[householdrate.FieldHouseholdID] = struct{}{}
+			}
+
+		case "fromCurrency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withFromCurrency = query
+			if _, ok := fieldSeen[householdrate.FieldFromCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldFromCurrencyID)
+				fieldSeen[householdrate.FieldFromCurrencyID] = struct{}{}
+			}
+
+		case "toCurrency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withToCurrency = query
+			if _, ok := fieldSeen[householdrate.FieldToCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldToCurrencyID)
+				fieldSeen[householdrate.FieldToCurrencyID] = struct{}{}
+			}
+		case "householdID":
+			if _, ok := fieldSeen[householdrate.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldHouseholdID)
+				fieldSeen[householdrate.FieldHouseholdID] = struct{}{}
+			}
+		case "createTime":
+			if _, ok := fieldSeen[householdrate.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldCreateTime)
+				fieldSeen[householdrate.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[householdrate.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldUpdateTime)
+				fieldSeen[householdrate.FieldUpdateTime] = struct{}{}
+			}
+		case "rate":
+			if _, ok := fieldSeen[householdrate.FieldRate]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldRate)
+				fieldSeen[householdrate.FieldRate] = struct{}{}
+			}
+		case "fromCurrencyID":
+			if _, ok := fieldSeen[householdrate.FieldFromCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldFromCurrencyID)
+				fieldSeen[householdrate.FieldFromCurrencyID] = struct{}{}
+			}
+		case "toCurrencyID":
+			if _, ok := fieldSeen[householdrate.FieldToCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldToCurrencyID)
+				fieldSeen[householdrate.FieldToCurrencyID] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type householdratePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []HouseholdRatePaginateOption
+}
+
+func newHouseholdRatePaginateArgs(rv map[string]any) *householdratePaginateArgs {
+	args := &householdratePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*HouseholdRateWhereInput); ok {
+		args.opts = append(args.opts, WithHouseholdRateFilter(v.Filter))
 	}
 	return args
 }

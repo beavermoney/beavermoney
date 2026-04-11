@@ -578,6 +578,52 @@ func HasSnapshotEntriesWith(preds ...predicate.SnapshotEntry) predicate.Househol
 	})
 }
 
+// HasHouseholdCurrencies applies the HasEdge predicate on the "household_currencies" edge.
+func HasHouseholdCurrencies() predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, HouseholdCurrenciesTable, HouseholdCurrenciesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasHouseholdCurrenciesWith applies the HasEdge predicate on the "household_currencies" edge with a given conditions (other predicates).
+func HasHouseholdCurrenciesWith(preds ...predicate.HouseholdCurrency) predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := newHouseholdCurrenciesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasHouseholdRates applies the HasEdge predicate on the "household_rates" edge.
+func HasHouseholdRates() predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, HouseholdRatesTable, HouseholdRatesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasHouseholdRatesWith applies the HasEdge predicate on the "household_rates" edge with a given conditions (other predicates).
+func HasHouseholdRatesWith(preds ...predicate.HouseholdRate) predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := newHouseholdRatesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasUserHouseholds applies the HasEdge predicate on the "user_households" edge.
 func HasUserHouseholds() predicate.Household {
 	return predicate.Household(func(s *sql.Selector) {
