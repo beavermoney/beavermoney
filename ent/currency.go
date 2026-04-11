@@ -39,8 +39,6 @@ type CurrencyEdges struct {
 	Households []*Household `json:"households,omitempty"`
 	// RecurringSubscriptions holds the value of the recurring_subscriptions edge.
 	RecurringSubscriptions []*RecurringSubscription `json:"recurring_subscriptions,omitempty"`
-	// Checkpoints holds the value of the checkpoints edge.
-	Checkpoints []*Checkpoint `json:"checkpoints,omitempty"`
 	// SnapshotEntries holds the value of the snapshot_entries edge.
 	SnapshotEntries []*SnapshotEntry `json:"snapshot_entries,omitempty"`
 	// SnapshotRatesFrom holds the value of the snapshot_rates_from edge.
@@ -49,16 +47,15 @@ type CurrencyEdges struct {
 	SnapshotRatesTo []*SnapshotRate `json:"snapshot_rates_to,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [8]bool
 	// totalCount holds the count of the edges above.
-	totalCount [9]map[string]int
+	totalCount [8]map[string]int
 
 	namedAccounts               map[string][]*Account
 	namedInvestments            map[string][]*Investment
 	namedTransactionEntries     map[string][]*TransactionEntry
 	namedHouseholds             map[string][]*Household
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
-	namedCheckpoints            map[string][]*Checkpoint
 	namedSnapshotEntries        map[string][]*SnapshotEntry
 	namedSnapshotRatesFrom      map[string][]*SnapshotRate
 	namedSnapshotRatesTo        map[string][]*SnapshotRate
@@ -109,19 +106,10 @@ func (e CurrencyEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription, 
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
 }
 
-// CheckpointsOrErr returns the Checkpoints value or an error if the edge
-// was not loaded in eager-loading.
-func (e CurrencyEdges) CheckpointsOrErr() ([]*Checkpoint, error) {
-	if e.loadedTypes[5] {
-		return e.Checkpoints, nil
-	}
-	return nil, &NotLoadedError{edge: "checkpoints"}
-}
-
 // SnapshotEntriesOrErr returns the SnapshotEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e CurrencyEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[5] {
 		return e.SnapshotEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_entries"}
@@ -130,7 +118,7 @@ func (e CurrencyEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
 // SnapshotRatesFromOrErr returns the SnapshotRatesFrom value or an error if the edge
 // was not loaded in eager-loading.
 func (e CurrencyEdges) SnapshotRatesFromOrErr() ([]*SnapshotRate, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[6] {
 		return e.SnapshotRatesFrom, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_rates_from"}
@@ -139,7 +127,7 @@ func (e CurrencyEdges) SnapshotRatesFromOrErr() ([]*SnapshotRate, error) {
 // SnapshotRatesToOrErr returns the SnapshotRatesTo value or an error if the edge
 // was not loaded in eager-loading.
 func (e CurrencyEdges) SnapshotRatesToOrErr() ([]*SnapshotRate, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[7] {
 		return e.SnapshotRatesTo, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_rates_to"}
@@ -227,11 +215,6 @@ func (_m *Currency) QueryHouseholds() *HouseholdQuery {
 // QueryRecurringSubscriptions queries the "recurring_subscriptions" edge of the Currency entity.
 func (_m *Currency) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
 	return NewCurrencyClient(_m.config).QueryRecurringSubscriptions(_m)
-}
-
-// QueryCheckpoints queries the "checkpoints" edge of the Currency entity.
-func (_m *Currency) QueryCheckpoints() *CheckpointQuery {
-	return NewCurrencyClient(_m.config).QueryCheckpoints(_m)
 }
 
 // QuerySnapshotEntries queries the "snapshot_entries" edge of the Currency entity.
@@ -398,30 +381,6 @@ func (_m *Currency) appendNamedRecurringSubscriptions(name string, edges ...*Rec
 		_m.Edges.namedRecurringSubscriptions[name] = []*RecurringSubscription{}
 	} else {
 		_m.Edges.namedRecurringSubscriptions[name] = append(_m.Edges.namedRecurringSubscriptions[name], edges...)
-	}
-}
-
-// NamedCheckpoints returns the Checkpoints named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (_m *Currency) NamedCheckpoints(name string) ([]*Checkpoint, error) {
-	if _m.Edges.namedCheckpoints == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := _m.Edges.namedCheckpoints[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (_m *Currency) appendNamedCheckpoints(name string, edges ...*Checkpoint) {
-	if _m.Edges.namedCheckpoints == nil {
-		_m.Edges.namedCheckpoints = make(map[string][]*Checkpoint)
-	}
-	if len(edges) == 0 {
-		_m.Edges.namedCheckpoints[name] = []*Checkpoint{}
-	} else {
-		_m.Edges.namedCheckpoints[name] = append(_m.Edges.namedCheckpoints[name], edges...)
 	}
 }
 

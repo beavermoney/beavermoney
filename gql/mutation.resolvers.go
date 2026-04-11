@@ -13,7 +13,6 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -213,15 +212,6 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete recurring subscriptions", "error", err)
-		return nil, err
-	}
-
-	// 7. Checkpoint
-	_, err = client.Checkpoint.Delete().
-		Where(checkpoint.HouseholdIDEQ(id)).
-		Exec(ctx)
-	if err != nil {
-		r.logger.Error("Failed to delete checkpoints", "error", err)
 		return nil, err
 	}
 
@@ -1642,143 +1632,6 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (*mode
 	}
 
 	return &model.DeleteTransactionPayload{DeletedTransactionID: id}, nil
-}
-
-// CreateCheckpoint is the resolver for the createCheckpoint field.
-func (r *mutationResolver) CreateCheckpoint(ctx context.Context, input ent.CreateCheckpointInput) (*ent.CheckpointEdge, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "mutationResolver.CreateCheckpoint",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	client := ent.FromContext(ctx)
-
-	// Get household with currency
-	household, err := client.Household.Query().
-		Where(household.IDEQ(householdID)).
-		WithCurrency().
-		Only(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch household", "error", err)
-		return nil, err
-	}
-
-	// Fetch all non-archived accounts for the household
-	accounts, err := client.Account.Query().
-		Where(account.ArchivedEQ(false)).
-		All(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch accounts", "error", err)
-		return nil, err
-	}
-
-	// Initialize totals for each account type
-	zero := decimal.NewFromInt(0)
-	liquidity := zero
-	investment := zero
-	property := zero
-	receivable := zero
-	liability := zero
-
-	// Convert each account's value to household currency using the stored FX rate
-	for _, acc := range accounts {
-		convertedValue := acc.Value.Mul(acc.FxRate)
-
-		switch acc.Type {
-		case account.TypeLiquidity:
-			liquidity = liquidity.Add(convertedValue)
-		case account.TypeInvestment:
-			investment = investment.Add(convertedValue)
-		case account.TypeProperty:
-			property = property.Add(convertedValue)
-		case account.TypeReceivable:
-			receivable = receivable.Add(convertedValue)
-		case account.TypeLiability:
-			liability = liability.Add(convertedValue)
-		}
-	}
-
-	// Calculate net worth (liabilities are already negative)
-	netWorth := liquidity.Add(investment).Add(property).Add(receivable).Add(liability)
-
-	// Create the checkpoint
-	checkpoint, err := client.Checkpoint.Create().
-		SetHouseholdID(householdID).
-		SetCurrencyID(household.Edges.Currency.ID).
-		SetNetWorth(netWorth).
-		SetLiquidity(liquidity).
-		SetInvestment(investment).
-		SetProperty(property).
-		SetReceivable(receivable).
-		SetLiability(liability).
-		SetInput(input).
-		Save(ctx)
-	if err != nil {
-		r.logger.Error("Failed to create checkpoint", "error", err)
-		return nil, err
-	}
-
-	return &ent.CheckpointEdge{
-		Node:   checkpoint,
-		Cursor: gqlutil.EncodeCursor(checkpoint.ID),
-	}, nil
-}
-
-// UpdateCheckpoint is the resolver for the updateCheckpoint field.
-func (r *mutationResolver) UpdateCheckpoint(ctx context.Context, id int, input ent.UpdateCheckpointInput) (*ent.CheckpointEdge, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateCheckpoint",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	client := ent.FromContext(ctx)
-
-	updated, err := client.Checkpoint.UpdateOneID(id).SetInput(input).Save(ctx)
-	if err != nil {
-		r.logger.Error("Failed to update checkpoint", "error", err)
-		return nil, err
-	}
-
-	return &ent.CheckpointEdge{
-		Node:   updated,
-		Cursor: gqlutil.EncodeCursor(updated.ID),
-	}, nil
-}
-
-// DeleteCheckpoint is the resolver for the deleteCheckpoint field.
-func (r *mutationResolver) DeleteCheckpoint(ctx context.Context, id int) (*model.DeleteCheckpointPayload, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteCheckpoint",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	client := ent.FromContext(ctx)
-
-	err := client.Checkpoint.DeleteOneID(id).Exec(ctx)
-	if err != nil {
-		r.logger.Error("Failed to delete checkpoint", "error", err)
-		return nil, err
-	}
-
-	return &model.DeleteCheckpointPayload{DeletedCheckpointID: id}, nil
 }
 
 // CreateSnapshot is the resolver for the createSnapshot field.

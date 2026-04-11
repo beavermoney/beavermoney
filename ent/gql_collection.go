@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/checkpoint"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investment"
@@ -227,153 +226,6 @@ func newAccountPaginateArgs(rv map[string]any) *accountPaginateArgs {
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (_q *CheckpointQuery) CollectFields(ctx context.Context, satisfies ...string) (*CheckpointQuery, error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc == nil {
-		return _q, nil
-	}
-	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
-		return nil, err
-	}
-	return _q, nil
-}
-
-func (_q *CheckpointQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
-	path = append([]string(nil), path...)
-	var (
-		unknownSeen    bool
-		fieldSeen      = make(map[string]struct{}, len(checkpoint.Columns))
-		selectedFields = []string{checkpoint.FieldID}
-	)
-	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
-		switch field.Name {
-
-		case "household":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&HouseholdClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
-				return err
-			}
-			_q.withHousehold = query
-			if _, ok := fieldSeen[checkpoint.FieldHouseholdID]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldHouseholdID)
-				fieldSeen[checkpoint.FieldHouseholdID] = struct{}{}
-			}
-
-		case "currency":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
-				return err
-			}
-			_q.withCurrency = query
-			if _, ok := fieldSeen[checkpoint.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldCurrencyID)
-				fieldSeen[checkpoint.FieldCurrencyID] = struct{}{}
-			}
-		case "householdID":
-			if _, ok := fieldSeen[checkpoint.FieldHouseholdID]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldHouseholdID)
-				fieldSeen[checkpoint.FieldHouseholdID] = struct{}{}
-			}
-		case "createTime":
-			if _, ok := fieldSeen[checkpoint.FieldCreateTime]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldCreateTime)
-				fieldSeen[checkpoint.FieldCreateTime] = struct{}{}
-			}
-		case "updateTime":
-			if _, ok := fieldSeen[checkpoint.FieldUpdateTime]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldUpdateTime)
-				fieldSeen[checkpoint.FieldUpdateTime] = struct{}{}
-			}
-		case "netWorth":
-			if _, ok := fieldSeen[checkpoint.FieldNetWorth]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldNetWorth)
-				fieldSeen[checkpoint.FieldNetWorth] = struct{}{}
-			}
-		case "liquidity":
-			if _, ok := fieldSeen[checkpoint.FieldLiquidity]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldLiquidity)
-				fieldSeen[checkpoint.FieldLiquidity] = struct{}{}
-			}
-		case "investment":
-			if _, ok := fieldSeen[checkpoint.FieldInvestment]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldInvestment)
-				fieldSeen[checkpoint.FieldInvestment] = struct{}{}
-			}
-		case "property":
-			if _, ok := fieldSeen[checkpoint.FieldProperty]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldProperty)
-				fieldSeen[checkpoint.FieldProperty] = struct{}{}
-			}
-		case "receivable":
-			if _, ok := fieldSeen[checkpoint.FieldReceivable]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldReceivable)
-				fieldSeen[checkpoint.FieldReceivable] = struct{}{}
-			}
-		case "liability":
-			if _, ok := fieldSeen[checkpoint.FieldLiability]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldLiability)
-				fieldSeen[checkpoint.FieldLiability] = struct{}{}
-			}
-		case "currencyID":
-			if _, ok := fieldSeen[checkpoint.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldCurrencyID)
-				fieldSeen[checkpoint.FieldCurrencyID] = struct{}{}
-			}
-		case "note":
-			if _, ok := fieldSeen[checkpoint.FieldNote]; !ok {
-				selectedFields = append(selectedFields, checkpoint.FieldNote)
-				fieldSeen[checkpoint.FieldNote] = struct{}{}
-			}
-		case "id":
-		case "__typename":
-		default:
-			unknownSeen = true
-		}
-	}
-	if !unknownSeen {
-		_q.Select(selectedFields...)
-	}
-	return nil
-}
-
-type checkpointPaginateArgs struct {
-	first, last   *int
-	after, before *Cursor
-	opts          []CheckpointPaginateOption
-}
-
-func newCheckpointPaginateArgs(rv map[string]any) *checkpointPaginateArgs {
-	args := &checkpointPaginateArgs{}
-	if rv == nil {
-		return args
-	}
-	if v := rv[firstField]; v != nil {
-		args.first = v.(*int)
-	}
-	if v := rv[lastField]; v != nil {
-		args.last = v.(*int)
-	}
-	if v := rv[afterField]; v != nil {
-		args.after = v.(*Cursor)
-	}
-	if v := rv[beforeField]; v != nil {
-		args.before = v.(*Cursor)
-	}
-	if v, ok := rv[whereField].(*CheckpointWhereInput); ok {
-		args.opts = append(args.opts, WithCheckpointFilter(v.Filter))
-	}
-	return args
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (_q *CurrencyQuery) CollectFields(ctx context.Context, satisfies ...string) (*CurrencyQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
@@ -457,19 +309,6 @@ func (_q *CurrencyQuery) collectField(ctx context.Context, oneNode bool, opCtx *
 				return err
 			}
 			_q.WithNamedRecurringSubscriptions(alias, func(wq *RecurringSubscriptionQuery) {
-				*wq = *query
-			})
-
-		case "checkpoints":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&CheckpointClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, checkpointImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedCheckpoints(alias, func(wq *CheckpointQuery) {
 				*wq = *query
 			})
 
@@ -1235,95 +1074,6 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				*wq = *query
 			})
 
-		case "checkpoints":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&CheckpointClient{config: _q.config}).Query()
-			)
-			args := newCheckpointPaginateArgs(fieldArgs(ctx, new(CheckpointWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newCheckpointPager(args.opts, args.last != nil)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					_q.loadTotal = append(_q.loadTotal, func(ctx context.Context, nodes []*Household) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID int `sql:"household_id"`
-							Count  int `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(s.C(household.CheckpointsColumn), ids...))
-						})
-						if err := query.GroupBy(household.CheckpointsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[int]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[9] == nil {
-								nodes[i].Edges.totalCount[9] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[9][alias] = n
-						}
-						return nil
-					})
-				} else {
-					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.Checkpoints)
-							if nodes[i].Edges.totalCount[9] == nil {
-								nodes[i].Edges.totalCount[9] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[9][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
-				return err
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, false, opCtx, *field, path, mayAddCondition(satisfies, checkpointImplementors)...); err != nil {
-					return err
-				}
-			}
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				if oneNode {
-					pager.applyOrder(query.Limit(limit))
-				} else {
-					modify := entgql.LimitPerRow(household.CheckpointsColumn, limit, pager.orderExpr(query))
-					query.modifiers = append(query.modifiers, modify)
-				}
-			} else {
-				query = pager.applyOrder(query)
-			}
-			_q.WithNamedCheckpoints(alias, func(wq *CheckpointQuery) {
-				*wq = *query
-			})
-
 		case "snapshots":
 			var (
 				alias = field.Alias
@@ -1367,10 +1117,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[10] == nil {
-								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							if nodes[i].Edges.totalCount[9] == nil {
+								nodes[i].Edges.totalCount[9] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[10][alias] = n
+							nodes[i].Edges.totalCount[9][alias] = n
 						}
 						return nil
 					})
@@ -1378,10 +1128,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Snapshots)
-							if nodes[i].Edges.totalCount[10] == nil {
-								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							if nodes[i].Edges.totalCount[9] == nil {
+								nodes[i].Edges.totalCount[9] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[10][alias] = n
+							nodes[i].Edges.totalCount[9][alias] = n
 						}
 						return nil
 					})
@@ -1456,10 +1206,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[11] == nil {
-								nodes[i].Edges.totalCount[11] = make(map[string]int)
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[11][alias] = n
+							nodes[i].Edges.totalCount[10][alias] = n
 						}
 						return nil
 					})
@@ -1467,10 +1217,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.SnapshotEntries)
-							if nodes[i].Edges.totalCount[11] == nil {
-								nodes[i].Edges.totalCount[11] = make(map[string]int)
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[11][alias] = n
+							nodes[i].Edges.totalCount[10][alias] = n
 						}
 						return nil
 					})

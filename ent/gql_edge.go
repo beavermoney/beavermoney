@@ -56,22 +56,6 @@ func (_m *Account) Investments(ctx context.Context) (result []*Investment, err e
 	return result, err
 }
 
-func (_m *Checkpoint) Household(ctx context.Context) (*Household, error) {
-	result, err := _m.Edges.HouseholdOrErr()
-	if IsNotLoaded(err) {
-		result, err = _m.QueryHousehold().Only(ctx)
-	}
-	return result, err
-}
-
-func (_m *Checkpoint) Currency(ctx context.Context) (*Currency, error) {
-	result, err := _m.Edges.CurrencyOrErr()
-	if IsNotLoaded(err) {
-		result, err = _m.QueryCurrency().Only(ctx)
-	}
-	return result, err
-}
-
 func (_m *Currency) Accounts(ctx context.Context) (result []*Account, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
@@ -128,18 +112,6 @@ func (_m *Currency) RecurringSubscriptions(ctx context.Context) (result []*Recur
 	}
 	if IsNotLoaded(err) {
 		result, err = _m.QueryRecurringSubscriptions().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *Currency) Checkpoints(ctx context.Context) (result []*Checkpoint, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedCheckpoints(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.CheckpointsOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryCheckpoints().All(ctx)
 	}
 	return result, err
 }
@@ -341,26 +313,6 @@ func (_m *Household) RecurringSubscriptions(
 	return _m.QueryRecurringSubscriptions().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (_m *Household) Checkpoints(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *CheckpointWhereInput,
-) (*CheckpointConnection, error) {
-	opts := []CheckpointPaginateOption{
-		WithCheckpointFilter(where.Filter),
-	}
-	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
-	if nodes, err := _m.NamedCheckpoints(alias); err == nil || hasTotalCount {
-		pager, err := newCheckpointPager(opts, last != nil)
-		if err != nil {
-			return nil, err
-		}
-		conn := &CheckpointConnection{Edges: []*CheckpointEdge{}, TotalCount: totalCount}
-		conn.build(nodes, pager, after, first, before, last)
-		return conn, nil
-	}
-	return _m.QueryCheckpoints().Paginate(ctx, after, first, before, last, opts...)
-}
-
 func (_m *Household) Snapshots(
 	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *SnapshotWhereInput,
 ) (*SnapshotConnection, error) {
@@ -368,7 +320,7 @@ func (_m *Household) Snapshots(
 		WithSnapshotFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
 	if nodes, err := _m.NamedSnapshots(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotPager(opts, last != nil)
 		if err != nil {
@@ -388,7 +340,7 @@ func (_m *Household) SnapshotEntries(
 		WithSnapshotEntryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[11][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
 	if nodes, err := _m.NamedSnapshotEntries(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotEntryPager(opts, last != nil)
 		if err != nil {

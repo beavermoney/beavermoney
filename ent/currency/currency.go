@@ -26,8 +26,6 @@ const (
 	EdgeHouseholds = "households"
 	// EdgeRecurringSubscriptions holds the string denoting the recurring_subscriptions edge name in mutations.
 	EdgeRecurringSubscriptions = "recurring_subscriptions"
-	// EdgeCheckpoints holds the string denoting the checkpoints edge name in mutations.
-	EdgeCheckpoints = "checkpoints"
 	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
 	EdgeSnapshotEntries = "snapshot_entries"
 	// EdgeSnapshotRatesFrom holds the string denoting the snapshot_rates_from edge name in mutations.
@@ -71,13 +69,6 @@ const (
 	RecurringSubscriptionsInverseTable = "recurring_subscriptions"
 	// RecurringSubscriptionsColumn is the table column denoting the recurring_subscriptions relation/edge.
 	RecurringSubscriptionsColumn = "currency_id"
-	// CheckpointsTable is the table that holds the checkpoints relation/edge.
-	CheckpointsTable = "checkpoints"
-	// CheckpointsInverseTable is the table name for the Checkpoint entity.
-	// It exists in this package in order to avoid circular dependency with the "checkpoint" package.
-	CheckpointsInverseTable = "checkpoints"
-	// CheckpointsColumn is the table column denoting the checkpoints relation/edge.
-	CheckpointsColumn = "currency_id"
 	// SnapshotEntriesTable is the table that holds the snapshot_entries relation/edge.
 	SnapshotEntriesTable = "snapshot_entries"
 	// SnapshotEntriesInverseTable is the table name for the SnapshotEntry entity.
@@ -206,20 +197,6 @@ func ByRecurringSubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderO
 	}
 }
 
-// ByCheckpointsCount orders the results by checkpoints count.
-func ByCheckpointsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newCheckpointsStep(), opts...)
-	}
-}
-
-// ByCheckpoints orders the results by checkpoints terms.
-func ByCheckpoints(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCheckpointsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // BySnapshotEntriesCount orders the results by snapshot_entries count.
 func BySnapshotEntriesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -294,13 +271,6 @@ func newRecurringSubscriptionsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RecurringSubscriptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RecurringSubscriptionsTable, RecurringSubscriptionsColumn),
-	)
-}
-func newCheckpointsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CheckpointsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CheckpointsTable, CheckpointsColumn),
 	)
 }
 func newSnapshotEntriesStep() *sqlgraph.Step {

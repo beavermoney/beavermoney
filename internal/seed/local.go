@@ -342,7 +342,7 @@ func SeedDemoHousehold(
 	}
 
 	// Pre-fetch 6-month daily historical prices for all symbols before creating investments.
-	// This gives us accurate per-week prices for lot purchases and checkpoint valuation.
+	// This gives us accurate per-week prices for lot purchases and snapshot valuation.
 	allSymbols := append([]string{config.etfSymbol}, config.stockSymbols...)
 	historicalPrices, err := fetchHistoricalPrices(ctx, marketClient, allSymbols, startDate, time.Now())
 	if err != nil {
@@ -735,7 +735,7 @@ func fetchAndCreateInvestments(
 
 // updateInvestmentQuotesToHistorical sets each investment's Quote to its real
 // historical price at the given date so the DB trigger recalculates Account.Value
-// before the checkpoint is snapshotted.
+// before the snapshot is recorded.
 func updateInvestmentQuotesToHistorical(
 	ctx context.Context,
 	client *ent.Client,
