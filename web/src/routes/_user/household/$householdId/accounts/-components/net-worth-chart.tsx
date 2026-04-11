@@ -196,32 +196,46 @@ export function NetWorthChart() {
         const snap = edge.node
         const rateMap = buildRateMap(snap.snapshotRates ?? [])
 
-        let liquidity = 0
-        let inv = 0
-        let property = 0
-        let receivable = 0
-        let liability = 0
+        const totals = (snap.snapshotEntries ?? []).reduce(
+          (acc, entry) => {
+            const rate = getRate(rateMap, entry.currency.code, displayCurrency)
+            return {
+              liquidity:
+                acc.liquidity +
+                currency(entry.liquidity, { precision: 8 }).value * rate,
+              investment:
+                acc.investment +
+                currency(entry.investment, { precision: 8 }).value * rate,
+              property:
+                acc.property +
+                currency(entry.property, { precision: 8 }).value * rate,
+              receivable:
+                acc.receivable +
+                currency(entry.receivable, { precision: 8 }).value * rate,
+              liability:
+                acc.liability +
+                currency(entry.liability, { precision: 8 }).value * rate,
+            }
+          },
+          {
+            liquidity: 0,
+            investment: 0,
+            property: 0,
+            receivable: 0,
+            liability: 0,
+          },
+        )
 
-        for (const entry of snap.snapshotEntries ?? []) {
-          const rate = getRate(rateMap, entry.currency.code, displayCurrency)
-          liquidity += currency(entry.liquidity, { precision: 8 }).value * rate
-          inv += currency(entry.investment, { precision: 8 }).value * rate
-          property += currency(entry.property, { precision: 8 }).value * rate
-          receivable +=
-            currency(entry.receivable, { precision: 8 }).value * rate
-          liability += currency(entry.liability, { precision: 8 }).value * rate
-        }
-
-        const asset = liquidity + inv + property + receivable
+        const asset =
+          totals.liquidity +
+          totals.investment +
+          totals.property +
+          totals.receivable
         return {
           date: new Date(snap.createTime).getTime(),
-          netWorth: liquidity + inv + property + receivable + liability,
+          netWorth: asset + totals.liability,
           asset,
-          liquidity,
-          investment: inv,
-          property,
-          receivable,
-          liability,
+          ...totals,
         }
       })
       .sort((a, b) => a.date - b.date)

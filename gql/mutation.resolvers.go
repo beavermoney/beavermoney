@@ -1841,8 +1841,7 @@ func (r *mutationResolver) DeleteSnapshot(ctx context.Context, id int) (*model.D
 
 	client := ent.FromContext(ctx)
 
-	err := client.Snapshot.DeleteOneID(id).Exec(ctx)
-	if err != nil {
+	if err := client.Snapshot.DeleteOneID(id).Exec(ctx); err != nil {
 		r.logger.Error("Failed to delete snapshot", "error", err)
 		return nil, err
 	}

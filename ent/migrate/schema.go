@@ -275,7 +275,7 @@ var (
 				Symbol:     "snapshot_entries_snapshots_snapshot_entries",
 				Columns:    []*schema.Column{SnapshotEntriesColumns[10]},
 				RefColumns: []*schema.Column{SnapshotsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "snapshot_entries_users_snapshot_entries",
@@ -329,7 +329,7 @@ var (
 				Symbol:     "snapshot_rates_snapshots_snapshot_rates",
 				Columns:    []*schema.Column{SnapshotRatesColumns[6]},
 				RefColumns: []*schema.Column{SnapshotsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
