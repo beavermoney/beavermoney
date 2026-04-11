@@ -76,6 +76,10 @@ type DeleteRecurringSubscriptionPayload struct {
 	DeletedRecurringSubscriptionID int `json:"deletedRecurringSubscriptionId"`
 }
 
+type DeleteSnapshotPayload struct {
+	DeletedSnapshotID int `json:"deletedSnapshotId"`
+}
+
 type DeleteTransactionCategoryPayload struct {
 	DeletedTransactionCategoryID int `json:"deletedTransactionCategoryId"`
 }

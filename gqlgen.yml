@@ -48,3 +48,17 @@ models:
         resolver: true
       transactionCount:
         resolver: true
+  Snapshot:
+    fields:
+      netWorth:
+        resolver: true
+      liquidity:
+        resolver: true
+      investment:
+        resolver: true
+      property:
+        resolver: true
+      receivable:
+        resolver: true
+      liability:
+        resolver: true

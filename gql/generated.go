@@ -57,6 +57,7 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
 	RecurringSubscription() RecurringSubscriptionResolver
+	Snapshot() SnapshotResolver
 	SnapshotEntry() SnapshotEntryResolver
 	TransactionEntry() TransactionEntryResolver
 	AccountWhereInput() AccountWhereInputResolver
@@ -193,6 +194,10 @@ type ComplexityRoot struct {
 		DeletedRecurringSubscriptionID func(childComplexity int) int
 	}
 
+	DeleteSnapshotPayload struct {
+		DeletedSnapshotID func(childComplexity int) int
+	}
+
 	DeleteTransactionCategoryPayload struct {
 		DeletedTransactionCategoryID func(childComplexity int) int
 	}
@@ -300,12 +305,14 @@ type ComplexityRoot struct {
 		CreateIncome                func(childComplexity int, input model.CreateIncomeInputCustom) int
 		CreateInvestment            func(childComplexity int, input model.CreateInvestmentInputCustom) int
 		CreateRecurringSubscription func(childComplexity int, input ent.CreateRecurringSubscriptionInput) int
+		CreateSnapshot              func(childComplexity int, input ent.CreateSnapshotInput) int
 		CreateTransactionCategory   func(childComplexity int, input ent.CreateTransactionCategoryInput) int
 		CreateTransfer              func(childComplexity int, input model.CreateTransferInputCustom) int
 		DeleteAccount               func(childComplexity int, id int) int
 		DeleteCheckpoint            func(childComplexity int, id int) int
 		DeleteHousehold             func(childComplexity int, id int) int
 		DeleteRecurringSubscription func(childComplexity int, id int) int
+		DeleteSnapshot              func(childComplexity int, id int) int
 		DeleteTransaction           func(childComplexity int, id int) int
 		DeleteTransactionCategory   func(childComplexity int, id int) int
 		MoveInvestment              func(childComplexity int, input model.MoveInvestmentInputCustom) int
@@ -315,6 +322,7 @@ type ComplexityRoot struct {
 		UpdateCheckpoint            func(childComplexity int, id int, input ent.UpdateCheckpointInput) int
 		UpdateHousehold             func(childComplexity int, id int, input ent.UpdateHouseholdInput) int
 		UpdateRecurringSubscription func(childComplexity int, id int, input ent.UpdateRecurringSubscriptionInput) int
+		UpdateSnapshot              func(childComplexity int, id int, input ent.UpdateSnapshotInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
 		UpdateTransactionCategory   func(childComplexity int, id int, input ent.UpdateTransactionCategoryInput) int
 	}
@@ -399,7 +407,13 @@ type ComplexityRoot struct {
 		Household       func(childComplexity int) int
 		HouseholdID     func(childComplexity int) int
 		ID              func(childComplexity int) int
+		Investment      func(childComplexity int) int
+		Liability       func(childComplexity int) int
+		Liquidity       func(childComplexity int) int
+		NetWorth        func(childComplexity int) int
 		Note            func(childComplexity int) int
+		Property        func(childComplexity int) int
+		Receivable      func(childComplexity int) int
 		SnapshotEntries func(childComplexity int) int
 		UpdateTime      func(childComplexity int) int
 	}
@@ -631,6 +645,9 @@ type MutationResolver interface {
 	CreateCheckpoint(ctx context.Context, input ent.CreateCheckpointInput) (*ent.CheckpointEdge, error)
 	UpdateCheckpoint(ctx context.Context, id int, input ent.UpdateCheckpointInput) (*ent.CheckpointEdge, error)
 	DeleteCheckpoint(ctx context.Context, id int) (*model.DeleteCheckpointPayload, error)
+	CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput) (*ent.SnapshotEdge, error)
+	UpdateSnapshot(ctx context.Context, id int, input ent.UpdateSnapshotInput) (*ent.SnapshotEdge, error)
+	DeleteSnapshot(ctx context.Context, id int) (*model.DeleteSnapshotPayload, error)
 	Refresh(ctx context.Context) (bool, error)
 }
 type QueryResolver interface {
@@ -658,6 +675,14 @@ type QueryResolver interface {
 type RecurringSubscriptionResolver interface {
 	Cost(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
 	FxRate(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
+}
+type SnapshotResolver interface {
+	NetWorth(ctx context.Context, obj *ent.Snapshot) (string, error)
+	Liquidity(ctx context.Context, obj *ent.Snapshot) (string, error)
+	Investment(ctx context.Context, obj *ent.Snapshot) (string, error)
+	Property(ctx context.Context, obj *ent.Snapshot) (string, error)
+	Receivable(ctx context.Context, obj *ent.Snapshot) (string, error)
+	Liability(ctx context.Context, obj *ent.Snapshot) (string, error)
 }
 type SnapshotEntryResolver interface {
 	Liquidity(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
@@ -1347,6 +1372,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DeleteRecurringSubscriptionPayload.DeletedRecurringSubscriptionID(childComplexity), true
 
+	case "DeleteSnapshotPayload.deletedSnapshotId":
+		if e.complexity.DeleteSnapshotPayload.DeletedSnapshotID == nil {
+			break
+		}
+
+		return e.complexity.DeleteSnapshotPayload.DeletedSnapshotID(childComplexity), true
+
 	case "DeleteTransactionCategoryPayload.deletedTransactionCategoryId":
 		if e.complexity.DeleteTransactionCategoryPayload.DeletedTransactionCategoryID == nil {
 			break
@@ -1918,6 +1950,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.CreateRecurringSubscription(childComplexity, args["input"].(ent.CreateRecurringSubscriptionInput)), true
+	case "Mutation.createSnapshot":
+		if e.complexity.Mutation.CreateSnapshot == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createSnapshot_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateSnapshot(childComplexity, args["input"].(ent.CreateSnapshotInput)), true
 	case "Mutation.createTransactionCategory":
 		if e.complexity.Mutation.CreateTransactionCategory == nil {
 			break
@@ -1984,6 +2027,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteRecurringSubscription(childComplexity, args["id"].(int)), true
+	case "Mutation.deleteSnapshot":
+		if e.complexity.Mutation.DeleteSnapshot == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteSnapshot_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteSnapshot(childComplexity, args["id"].(int)), true
 	case "Mutation.deleteTransaction":
 		if e.complexity.Mutation.DeleteTransaction == nil {
 			break
@@ -2078,6 +2132,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateRecurringSubscription(childComplexity, args["id"].(int), args["input"].(ent.UpdateRecurringSubscriptionInput)), true
+	case "Mutation.updateSnapshot":
+		if e.complexity.Mutation.UpdateSnapshot == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateSnapshot_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateSnapshot(childComplexity, args["id"].(int), args["input"].(ent.UpdateSnapshotInput)), true
 	case "Mutation.updateTransaction":
 		if e.complexity.Mutation.UpdateTransaction == nil {
 			break
@@ -2531,12 +2596,48 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Snapshot.ID(childComplexity), true
+	case "Snapshot.investment":
+		if e.complexity.Snapshot.Investment == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Investment(childComplexity), true
+	case "Snapshot.liability":
+		if e.complexity.Snapshot.Liability == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Liability(childComplexity), true
+	case "Snapshot.liquidity":
+		if e.complexity.Snapshot.Liquidity == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Liquidity(childComplexity), true
+	case "Snapshot.netWorth":
+		if e.complexity.Snapshot.NetWorth == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.NetWorth(childComplexity), true
 	case "Snapshot.note":
 		if e.complexity.Snapshot.Note == nil {
 			break
 		}
 
 		return e.complexity.Snapshot.Note(childComplexity), true
+	case "Snapshot.property":
+		if e.complexity.Snapshot.Property == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Property(childComplexity), true
+	case "Snapshot.receivable":
+		if e.complexity.Snapshot.Receivable == nil {
+			break
+		}
+
+		return e.complexity.Snapshot.Receivable(childComplexity), true
 	case "Snapshot.snapshotEntries":
 		if e.complexity.Snapshot.SnapshotEntries == nil {
 			break
@@ -3829,6 +3930,17 @@ func (ec *executionContext) field_Mutation_createRecurringSubscription_args(ctx 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createSnapshot_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNCreateSnapshotInput2beavermoneyᚗappᚋentᚐCreateSnapshotInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createTransactionCategory_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -3885,6 +3997,17 @@ func (ec *executionContext) field_Mutation_deleteHousehold_args(ctx context.Cont
 }
 
 func (ec *executionContext) field_Mutation_deleteRecurringSubscription_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteSnapshot_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
@@ -3996,6 +4119,22 @@ func (ec *executionContext) field_Mutation_updateRecurringSubscription_args(ctx 
 	}
 	args["id"] = arg0
 	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateRecurringSubscriptionInput2beavermoneyᚗappᚋentᚐUpdateRecurringSubscriptionInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateSnapshot_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateSnapshotInput2beavermoneyᚗappᚋentᚐUpdateSnapshotInput)
 	if err != nil {
 		return nil, err
 	}
@@ -7139,6 +7278,35 @@ func (ec *executionContext) _DeleteRecurringSubscriptionPayload_deletedRecurring
 func (ec *executionContext) fieldContext_DeleteRecurringSubscriptionPayload_deletedRecurringSubscriptionId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteRecurringSubscriptionPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteSnapshotPayload_deletedSnapshotId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteSnapshotPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteSnapshotPayload_deletedSnapshotId,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedSnapshotID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteSnapshotPayload_deletedSnapshotId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteSnapshotPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -10999,6 +11167,145 @@ func (ec *executionContext) fieldContext_Mutation_deleteCheckpoint(ctx context.C
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createSnapshot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createSnapshot,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().CreateSnapshot(ctx, fc.Args["input"].(ent.CreateSnapshotInput))
+		},
+		nil,
+		ec.marshalNSnapshotEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createSnapshot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_SnapshotEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_SnapshotEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEdge", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createSnapshot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateSnapshot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateSnapshot,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateSnapshot(ctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateSnapshotInput))
+		},
+		nil,
+		ec.marshalNSnapshotEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateSnapshot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_SnapshotEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_SnapshotEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SnapshotEdge", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateSnapshot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteSnapshot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_deleteSnapshot,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().DeleteSnapshot(ctx, fc.Args["id"].(int))
+		},
+		nil,
+		ec.marshalNDeleteSnapshotPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteSnapshotPayload,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteSnapshot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "deletedSnapshotId":
+				return ec.fieldContext_DeleteSnapshotPayload_deletedSnapshotId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteSnapshotPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteSnapshot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_refresh(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -13585,6 +13892,180 @@ func (ec *executionContext) fieldContext_Snapshot_snapshotEntries(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Snapshot_netWorth(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_netWorth,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Snapshot().NetWorth(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_netWorth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_liquidity(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_liquidity,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Snapshot().Liquidity(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_liquidity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_investment(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_investment,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Snapshot().Investment(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_investment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_property(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_property,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Snapshot().Property(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_property(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_receivable(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_receivable,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Snapshot().Receivable(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_receivable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Snapshot_liability(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Snapshot_liability,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Snapshot().Liability(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Snapshot_liability(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Snapshot",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SnapshotConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotConnection) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -13726,6 +14207,18 @@ func (ec *executionContext) fieldContext_SnapshotEdge_node(_ context.Context, fi
 				return ec.fieldContext_Snapshot_household(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_Snapshot_netWorth(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_Snapshot_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_Snapshot_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_Snapshot_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_Snapshot_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_Snapshot_liability(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
 		},
@@ -14329,6 +14822,18 @@ func (ec *executionContext) fieldContext_SnapshotEntry_snapshot(_ context.Contex
 				return ec.fieldContext_Snapshot_household(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
+			case "netWorth":
+				return ec.fieldContext_Snapshot_netWorth(ctx, field)
+			case "liquidity":
+				return ec.fieldContext_Snapshot_liquidity(ctx, field)
+			case "investment":
+				return ec.fieldContext_Snapshot_investment(ctx, field)
+			case "property":
+				return ec.fieldContext_Snapshot_property(ctx, field)
+			case "receivable":
+				return ec.fieldContext_Snapshot_receivable(ctx, field)
+			case "liability":
+				return ec.fieldContext_Snapshot_liability(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
 		},
@@ -30542,6 +31047,45 @@ func (ec *executionContext) _DeleteRecurringSubscriptionPayload(ctx context.Cont
 	return out
 }
 
+var deleteSnapshotPayloadImplementors = []string{"DeleteSnapshotPayload"}
+
+func (ec *executionContext) _DeleteSnapshotPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteSnapshotPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteSnapshotPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteSnapshotPayload")
+		case "deletedSnapshotId":
+			out.Values[i] = ec._DeleteSnapshotPayload_deletedSnapshotId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var deleteTransactionCategoryPayloadImplementors = []string{"DeleteTransactionCategoryPayload"}
 
 func (ec *executionContext) _DeleteTransactionCategoryPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteTransactionCategoryPayload) graphql.Marshaler {
@@ -32351,6 +32895,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createSnapshot":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createSnapshot(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateSnapshot":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateSnapshot(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteSnapshot":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteSnapshot(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "refresh":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_refresh(ctx, field)
@@ -33455,6 +34020,222 @@ func (ec *executionContext) _Snapshot(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Snapshot_snapshotEntries(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "netWorth":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_netWorth(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "liquidity":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_liquidity(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "investment":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_investment(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "property":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_property(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "receivable":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_receivable(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "liability":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Snapshot_liability(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -36146,6 +36927,11 @@ func (ec *executionContext) unmarshalNCreateRecurringSubscriptionInput2beavermon
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateSnapshotInput2beavermoneyᚗappᚋentᚐCreateSnapshotInput(ctx context.Context, v any) (ent.CreateSnapshotInput, error) {
+	res, err := ec.unmarshalInputCreateSnapshotInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTransactionCategoryInput2beavermoneyᚗappᚋentᚐCreateTransactionCategoryInput(ctx context.Context, v any) (ent.CreateTransactionCategoryInput, error) {
 	res, err := ec.unmarshalInputCreateTransactionCategoryInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -36304,6 +37090,20 @@ func (ec *executionContext) marshalNDeleteRecurringSubscriptionPayload2ᚖbeaver
 		return graphql.Null
 	}
 	return ec._DeleteRecurringSubscriptionPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDeleteSnapshotPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteSnapshotPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteSnapshotPayload) graphql.Marshaler {
+	return ec._DeleteSnapshotPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteSnapshotPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐDeleteSnapshotPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteSnapshotPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteSnapshotPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNDeleteTransactionCategoryPayload2beavermoneyᚗappᚋgqlᚋmodelᚐDeleteTransactionCategoryPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteTransactionCategoryPayload) graphql.Marshaler {
@@ -36758,6 +37558,20 @@ func (ec *executionContext) marshalNSnapshotConnection2ᚖbeavermoneyᚗappᚋen
 	return ec._SnapshotConnection(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNSnapshotEdge2beavermoneyᚗappᚋentᚐSnapshotEdge(ctx context.Context, sel ast.SelectionSet, v ent.SnapshotEdge) graphql.Marshaler {
+	return ec._SnapshotEdge(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSnapshotEdge2ᚖbeavermoneyᚗappᚋentᚐSnapshotEdge(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SnapshotEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNSnapshotEntry2ᚖbeavermoneyᚗappᚋentᚐSnapshotEntry(ctx context.Context, sel ast.SelectionSet, v *ent.SnapshotEntry) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -37017,6 +37831,11 @@ func (ec *executionContext) unmarshalNUpdateHouseholdInput2beavermoneyᚗappᚋe
 
 func (ec *executionContext) unmarshalNUpdateRecurringSubscriptionInput2beavermoneyᚗappᚋentᚐUpdateRecurringSubscriptionInput(ctx context.Context, v any) (ent.UpdateRecurringSubscriptionInput, error) {
 	res, err := ec.unmarshalInputUpdateRecurringSubscriptionInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateSnapshotInput2beavermoneyᚗappᚋentᚐUpdateSnapshotInput(ctx context.Context, v any) (ent.UpdateSnapshotInput, error) {
+	res, err := ec.unmarshalInputUpdateSnapshotInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

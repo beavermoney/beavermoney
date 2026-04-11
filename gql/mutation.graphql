@@ -42,6 +42,10 @@ type Mutation {
   updateCheckpoint(id: ID!, input: UpdateCheckpointInput!): CheckpointEdge!
   deleteCheckpoint(id: ID!): DeleteCheckpointPayload!
 
+  createSnapshot(input: CreateSnapshotInput!): SnapshotEdge!
+  updateSnapshot(id: ID!, input: UpdateSnapshotInput!): SnapshotEdge!
+  deleteSnapshot(id: ID!): DeleteSnapshotPayload!
+
   refresh: Boolean!
 }
 
@@ -67,6 +71,10 @@ type DeleteTransactionPayload {
 
 type DeleteCheckpointPayload {
   deletedCheckpointId: ID!
+}
+
+type DeleteSnapshotPayload {
+  deletedSnapshotId: ID!
 }
 
 input CreateInvestmentInputCustom {

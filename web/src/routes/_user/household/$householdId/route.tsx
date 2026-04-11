@@ -54,7 +54,7 @@ import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { CommandMenu } from '@/components/command-menu'
 import { LogTransaction } from './transactions/-components/log-transaction'
-import { CheckpointDialog } from './-components/checkpoint-dialog'
+import { SnapshotDialog } from './-components/snapshot-dialog'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
@@ -75,7 +75,7 @@ const routeHouseholdIdQuery = graphql`
     household {
       ...useHouseholdFragment
       ...logTransactionFragment
-      ...checkpointDialogFragment
+      ...snapshotDialogFragment
     }
   }
 `
@@ -227,7 +227,7 @@ function RouteComponent() {
               </div>
               <div className="grow"></div>
 
-              <CheckpointDialog fragmentRef={data.household} />
+              <SnapshotDialog fragmentRef={data.household} />
               <Button
                 className="cursor-pointer"
                 variant="outline"
