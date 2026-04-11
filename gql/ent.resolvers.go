@@ -1051,31 +1051,29 @@ func (r *Resolver) UpdateTransactionEntryInput() UpdateTransactionEntryInputReso
 	return &updateTransactionEntryInputResolver{r}
 }
 
-type (
-	accountResolver                          struct{ *Resolver }
-	householdResolver                        struct{ *Resolver }
-	householdRateResolver                    struct{ *Resolver }
-	investmentResolver                       struct{ *Resolver }
-	investmentLotResolver                    struct{ *Resolver }
-	queryResolver                            struct{ *Resolver }
-	recurringSubscriptionResolver            struct{ *Resolver }
-	snapshotEntryResolver                    struct{ *Resolver }
-	snapshotRateResolver                     struct{ *Resolver }
-	transactionEntryResolver                 struct{ *Resolver }
-	accountWhereInputResolver                struct{ *Resolver }
-	createAccountInputResolver               struct{ *Resolver }
-	createInvestmentInputResolver            struct{ *Resolver }
-	createInvestmentLotInputResolver         struct{ *Resolver }
-	createRecurringSubscriptionInputResolver struct{ *Resolver }
-	createTransactionEntryInputResolver      struct{ *Resolver }
-	householdRateWhereInputResolver          struct{ *Resolver }
-	investmentLotWhereInputResolver          struct{ *Resolver }
-	investmentWhereInputResolver             struct{ *Resolver }
-	recurringSubscriptionWhereInputResolver  struct{ *Resolver }
-	snapshotEntryWhereInputResolver          struct{ *Resolver }
-	snapshotRateWhereInputResolver           struct{ *Resolver }
-	transactionEntryWhereInputResolver       struct{ *Resolver }
-	updateInvestmentLotInputResolver         struct{ *Resolver }
-	updateRecurringSubscriptionInputResolver struct{ *Resolver }
-	updateTransactionEntryInputResolver      struct{ *Resolver }
-)
+type accountResolver struct{ *Resolver }
+type householdResolver struct{ *Resolver }
+type householdRateResolver struct{ *Resolver }
+type investmentResolver struct{ *Resolver }
+type investmentLotResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
+type recurringSubscriptionResolver struct{ *Resolver }
+type snapshotEntryResolver struct{ *Resolver }
+type snapshotRateResolver struct{ *Resolver }
+type transactionEntryResolver struct{ *Resolver }
+type accountWhereInputResolver struct{ *Resolver }
+type createAccountInputResolver struct{ *Resolver }
+type createInvestmentInputResolver struct{ *Resolver }
+type createInvestmentLotInputResolver struct{ *Resolver }
+type createRecurringSubscriptionInputResolver struct{ *Resolver }
+type createTransactionEntryInputResolver struct{ *Resolver }
+type householdRateWhereInputResolver struct{ *Resolver }
+type investmentLotWhereInputResolver struct{ *Resolver }
+type investmentWhereInputResolver struct{ *Resolver }
+type recurringSubscriptionWhereInputResolver struct{ *Resolver }
+type snapshotEntryWhereInputResolver struct{ *Resolver }
+type snapshotRateWhereInputResolver struct{ *Resolver }
+type transactionEntryWhereInputResolver struct{ *Resolver }
+type updateInvestmentLotInputResolver struct{ *Resolver }
+type updateRecurringSubscriptionInputResolver struct{ *Resolver }
+type updateTransactionEntryInputResolver struct{ *Resolver }

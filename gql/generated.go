@@ -202,7 +202,6 @@ type ComplexityRoot struct {
 		IsDemo                 func(childComplexity int) int
 		Locale                 func(childComplexity int) int
 		Name                   func(childComplexity int) int
-		NetWorthOverTime       func(childComplexity int, period model.TimePeriodInput) int
 		RecurringSubscriptions func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) int
 		SnapshotEntries        func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) int
 		Snapshots              func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) int
@@ -345,20 +344,6 @@ type ComplexityRoot struct {
 		UpdateSnapshot              func(childComplexity int, id int, input ent.UpdateSnapshotInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
 		UpdateTransactionCategory   func(childComplexity int, id int, input ent.UpdateTransactionCategoryInput) int
-	}
-
-	NetWorthBreakdown struct {
-		Investment func(childComplexity int) int
-		Liability  func(childComplexity int) int
-		Liquidity  func(childComplexity int) int
-		Property   func(childComplexity int) int
-		Receivable func(childComplexity int) int
-	}
-
-	NetWorthDataPoint struct {
-		Breakdown func(childComplexity int) int
-		Date      func(childComplexity int) int
-		NetWorth  func(childComplexity int) int
 	}
 
 	PageInfo struct {
@@ -633,7 +618,6 @@ type FinancialReportResolver interface {
 }
 type HouseholdResolver interface {
 	FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) (*model.FinancialReport, error)
-	NetWorthOverTime(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) ([]*model.NetWorthDataPoint, error)
 }
 type HouseholdRateResolver interface {
 	Rate(ctx context.Context, obj *ent.HouseholdRate) (string, error)
@@ -1386,17 +1370,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Household.Name(childComplexity), true
-	case "Household.netWorthOverTime":
-		if e.complexity.Household.NetWorthOverTime == nil {
-			break
-		}
-
-		args, err := ec.field_Household_netWorthOverTime_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Household.NetWorthOverTime(childComplexity, args["period"].(model.TimePeriodInput)), true
 	case "Household.recurringSubscriptions":
 		if e.complexity.Household.RecurringSubscriptions == nil {
 			break
@@ -2198,56 +2171,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateTransactionCategory(childComplexity, args["id"].(int), args["input"].(ent.UpdateTransactionCategoryInput)), true
-
-	case "NetWorthBreakdown.investment":
-		if e.complexity.NetWorthBreakdown.Investment == nil {
-			break
-		}
-
-		return e.complexity.NetWorthBreakdown.Investment(childComplexity), true
-	case "NetWorthBreakdown.liability":
-		if e.complexity.NetWorthBreakdown.Liability == nil {
-			break
-		}
-
-		return e.complexity.NetWorthBreakdown.Liability(childComplexity), true
-	case "NetWorthBreakdown.liquidity":
-		if e.complexity.NetWorthBreakdown.Liquidity == nil {
-			break
-		}
-
-		return e.complexity.NetWorthBreakdown.Liquidity(childComplexity), true
-	case "NetWorthBreakdown.property":
-		if e.complexity.NetWorthBreakdown.Property == nil {
-			break
-		}
-
-		return e.complexity.NetWorthBreakdown.Property(childComplexity), true
-	case "NetWorthBreakdown.receivable":
-		if e.complexity.NetWorthBreakdown.Receivable == nil {
-			break
-		}
-
-		return e.complexity.NetWorthBreakdown.Receivable(childComplexity), true
-
-	case "NetWorthDataPoint.breakdown":
-		if e.complexity.NetWorthDataPoint.Breakdown == nil {
-			break
-		}
-
-		return e.complexity.NetWorthDataPoint.Breakdown(childComplexity), true
-	case "NetWorthDataPoint.date":
-		if e.complexity.NetWorthDataPoint.Date == nil {
-			break
-		}
-
-		return e.complexity.NetWorthDataPoint.Date(childComplexity), true
-	case "NetWorthDataPoint.netWorth":
-		if e.complexity.NetWorthDataPoint.NetWorth == nil {
-			break
-		}
-
-		return e.complexity.NetWorthDataPoint.NetWorth(childComplexity), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -3691,17 +3614,6 @@ func (ec *executionContext) field_Household_investments_args(ctx context.Context
 	return args, nil
 }
 
-func (ec *executionContext) field_Household_netWorthOverTime_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "period", ec.unmarshalNTimePeriodInput2beavermoneyᚗappᚋgqlᚋmodelᚐTimePeriodInput)
-	if err != nil {
-		return nil, err
-	}
-	args["period"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Household_recurringSubscriptions_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -5103,8 +5015,6 @@ func (ec *executionContext) fieldContext_Account_household(_ context.Context, fi
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -6261,8 +6171,6 @@ func (ec *executionContext) fieldContext_Currency_households(_ context.Context, 
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -7975,55 +7883,6 @@ func (ec *executionContext) fieldContext_Household_financialReport(ctx context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _Household_netWorthOverTime(ctx context.Context, field graphql.CollectedField, obj *ent.Household) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Household_netWorthOverTime,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Household().NetWorthOverTime(ctx, obj, fc.Args["period"].(model.TimePeriodInput))
-		},
-		nil,
-		ec.marshalNNetWorthDataPoint2ᚕᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthDataPointᚄ,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Household_netWorthOverTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Household",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "date":
-				return ec.fieldContext_NetWorthDataPoint_date(ctx, field)
-			case "netWorth":
-				return ec.fieldContext_NetWorthDataPoint_netWorth(ctx, field)
-			case "breakdown":
-				return ec.fieldContext_NetWorthDataPoint_breakdown(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type NetWorthDataPoint", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Household_netWorthOverTime_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _HouseholdCurrency_id(ctx context.Context, field graphql.CollectedField, obj *ent.HouseholdCurrency) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -8266,8 +8125,6 @@ func (ec *executionContext) fieldContext_HouseholdCurrency_household(_ context.C
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -8784,8 +8641,6 @@ func (ec *executionContext) fieldContext_HouseholdRate_household(_ context.Conte
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -9577,8 +9432,6 @@ func (ec *executionContext) fieldContext_Investment_household(_ context.Context,
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -10193,8 +10046,6 @@ func (ec *executionContext) fieldContext_InvestmentLot_household(_ context.Conte
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -10578,8 +10429,6 @@ func (ec *executionContext) fieldContext_Mutation_createHousehold(ctx context.Co
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -10667,8 +10516,6 @@ func (ec *executionContext) fieldContext_Mutation_updateHousehold(ctx context.Co
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -11942,250 +11789,6 @@ func (ec *executionContext) fieldContext_Mutation_refresh(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _NetWorthBreakdown_liquidity(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthBreakdown) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthBreakdown_liquidity,
-		func(ctx context.Context) (any, error) {
-			return obj.Liquidity, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthBreakdown_liquidity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthBreakdown",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthBreakdown_investment(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthBreakdown) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthBreakdown_investment,
-		func(ctx context.Context) (any, error) {
-			return obj.Investment, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthBreakdown_investment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthBreakdown",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthBreakdown_property(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthBreakdown) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthBreakdown_property,
-		func(ctx context.Context) (any, error) {
-			return obj.Property, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthBreakdown_property(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthBreakdown",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthBreakdown_receivable(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthBreakdown) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthBreakdown_receivable,
-		func(ctx context.Context) (any, error) {
-			return obj.Receivable, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthBreakdown_receivable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthBreakdown",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthBreakdown_liability(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthBreakdown) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthBreakdown_liability,
-		func(ctx context.Context) (any, error) {
-			return obj.Liability, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthBreakdown_liability(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthBreakdown",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthDataPoint_date(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthDataPoint) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthDataPoint_date,
-		func(ctx context.Context) (any, error) {
-			return obj.Date, nil
-		},
-		nil,
-		ec.marshalNTime2timeᚐTime,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthDataPoint_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthDataPoint",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthDataPoint_netWorth(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthDataPoint) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthDataPoint_netWorth,
-		func(ctx context.Context) (any, error) {
-			return obj.NetWorth, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthDataPoint_netWorth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthDataPoint",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _NetWorthDataPoint_breakdown(ctx context.Context, field graphql.CollectedField, obj *model.NetWorthDataPoint) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_NetWorthDataPoint_breakdown,
-		func(ctx context.Context) (any, error) {
-			return obj.Breakdown, nil
-		},
-		nil,
-		ec.marshalNNetWorthBreakdown2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthBreakdown,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_NetWorthDataPoint_breakdown(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "NetWorthDataPoint",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "liquidity":
-				return ec.fieldContext_NetWorthBreakdown_liquidity(ctx, field)
-			case "investment":
-				return ec.fieldContext_NetWorthBreakdown_investment(ctx, field)
-			case "property":
-				return ec.fieldContext_NetWorthBreakdown_property(ctx, field)
-			case "receivable":
-				return ec.fieldContext_NetWorthBreakdown_receivable(ctx, field)
-			case "liability":
-				return ec.fieldContext_NetWorthBreakdown_liability(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type NetWorthBreakdown", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[int]) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -12560,8 +12163,6 @@ func (ec *executionContext) fieldContext_Query_households(_ context.Context, fie
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -13184,8 +12785,6 @@ func (ec *executionContext) fieldContext_Query_household(_ context.Context, fiel
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -13852,8 +13451,6 @@ func (ec *executionContext) fieldContext_RecurringSubscription_household(_ conte
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -14383,8 +13980,6 @@ func (ec *executionContext) fieldContext_Snapshot_household(_ context.Context, f
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -15101,8 +14696,6 @@ func (ec *executionContext) fieldContext_SnapshotEntry_household(_ context.Conte
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -16546,8 +16139,6 @@ func (ec *executionContext) fieldContext_Transaction_household(_ context.Context
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -17014,8 +16605,6 @@ func (ec *executionContext) fieldContext_TransactionCategory_household(_ context
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -17756,8 +17345,6 @@ func (ec *executionContext) fieldContext_TransactionEntry_household(_ context.Co
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -18350,8 +17937,6 @@ func (ec *executionContext) fieldContext_User_households(_ context.Context, fiel
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -19033,8 +18618,6 @@ func (ec *executionContext) fieldContext_UserHousehold_household(_ context.Conte
 				return ec.fieldContext_Household_userHouseholds(ctx, field)
 			case "financialReport":
 				return ec.fieldContext_Household_financialReport(ctx, field)
-			case "netWorthOverTime":
-				return ec.fieldContext_Household_netWorthOverTime(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
 		},
@@ -32777,42 +32360,6 @@ func (ec *executionContext) _Household(ctx context.Context, sel ast.SelectionSet
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "netWorthOverTime":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Household_netWorthOverTime(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -34319,114 +33866,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_refresh(ctx, field)
 			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var netWorthBreakdownImplementors = []string{"NetWorthBreakdown"}
-
-func (ec *executionContext) _NetWorthBreakdown(ctx context.Context, sel ast.SelectionSet, obj *model.NetWorthBreakdown) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, netWorthBreakdownImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("NetWorthBreakdown")
-		case "liquidity":
-			out.Values[i] = ec._NetWorthBreakdown_liquidity(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "investment":
-			out.Values[i] = ec._NetWorthBreakdown_investment(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "property":
-			out.Values[i] = ec._NetWorthBreakdown_property(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "receivable":
-			out.Values[i] = ec._NetWorthBreakdown_receivable(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "liability":
-			out.Values[i] = ec._NetWorthBreakdown_liability(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var netWorthDataPointImplementors = []string{"NetWorthDataPoint"}
-
-func (ec *executionContext) _NetWorthDataPoint(ctx context.Context, sel ast.SelectionSet, obj *model.NetWorthDataPoint) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, netWorthDataPointImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("NetWorthDataPoint")
-		case "date":
-			out.Values[i] = ec._NetWorthDataPoint_date(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "netWorth":
-			out.Values[i] = ec._NetWorthDataPoint_netWorth(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "breakdown":
-			out.Values[i] = ec._NetWorthDataPoint_breakdown(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -38851,70 +38290,6 @@ func (ec *executionContext) unmarshalNInvestmentWhereInput2ᚖbeavermoneyᚗapp�
 func (ec *executionContext) unmarshalNMoveInvestmentInputCustom2beavermoneyᚗappᚋgqlᚋmodelᚐMoveInvestmentInputCustom(ctx context.Context, v any) (model.MoveInvestmentInputCustom, error) {
 	res, err := ec.unmarshalInputMoveInvestmentInputCustom(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNNetWorthBreakdown2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthBreakdown(ctx context.Context, sel ast.SelectionSet, v *model.NetWorthBreakdown) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._NetWorthBreakdown(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNNetWorthDataPoint2ᚕᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthDataPointᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.NetWorthDataPoint) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNNetWorthDataPoint2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthDataPoint(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNNetWorthDataPoint2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐNetWorthDataPoint(ctx context.Context, sel ast.SelectionSet, v *model.NetWorthDataPoint) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._NetWorthDataPoint(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNNode2ᚕbeavermoneyᚗappᚋentᚐNoder(ctx context.Context, sel ast.SelectionSet, v []ent.Noder) graphql.Marshaler {

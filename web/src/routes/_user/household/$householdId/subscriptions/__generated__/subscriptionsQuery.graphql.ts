@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c88d6a2c4256d8e0be44cac2744f98d6>>
+ * @generated SignedSource<<a19faa1661e17f2ce5eee5207f7a7eca>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -119,6 +119,25 @@ return {
                       {
                         "alias": null,
                         "args": null,
+                        "concreteType": "Currency",
+                        "kind": "LinkedField",
+                        "name": "currency",
+                        "plural": false,
+                        "selections": [
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "code",
+                            "storageKey": null
+                          },
+                          (v1/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
                         "kind": "ScalarField",
                         "name": "interval",
                         "storageKey": null
@@ -149,25 +168,6 @@ return {
                         "args": null,
                         "kind": "ScalarField",
                         "name": "icon",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "Currency",
-                        "kind": "LinkedField",
-                        "name": "currency",
-                        "plural": false,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "code",
-                            "storageKey": null
-                          },
-                          (v1/*: any*/)
-                        ],
                         "storageKey": null
                       },
                       {
@@ -246,12 +246,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "252ebd7868bc2f4f52245e8041b6abe4",
+    "cacheID": "c4d1ad64ba5d1978e2648bdb43217518",
     "id": null,
     "metadata": {},
     "name": "subscriptionsQuery",
     "operationKind": "query",
-    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        currency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

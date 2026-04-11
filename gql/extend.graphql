@@ -1,4 +1,3 @@
 extend type Household {
   financialReport(period: TimePeriodInput!): FinancialReport!
-  netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
 }

@@ -49,16 +49,3 @@ type CategoryAggregate {
   transactionCount: Int!
 }
 
-type NetWorthBreakdown {
-  liquidity: String!
-  investment: String!
-  property: String!
-  receivable: String!
-  liability: String!
-}
-
-type NetWorthDataPoint {
-  date: Time!
-  netWorth: String!
-  breakdown: NetWorthBreakdown!
-}
