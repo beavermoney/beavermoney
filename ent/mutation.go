@@ -76,8 +76,6 @@ type AccountMutation struct {
 	icon                       *string
 	value                      *decimal.Decimal
 	addvalue                   *decimal.Decimal
-	fx_rate                    *decimal.Decimal
-	addfx_rate                 *decimal.Decimal
 	archived                   *bool
 	clearedFields              map[string]struct{}
 	household                  *int
@@ -585,62 +583,6 @@ func (m *AccountMutation) ResetValue() {
 	m.addvalue = nil
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (m *AccountMutation) SetFxRate(d decimal.Decimal) {
-	m.fx_rate = &d
-	m.addfx_rate = nil
-}
-
-// FxRate returns the value of the "fx_rate" field in the mutation.
-func (m *AccountMutation) FxRate() (r decimal.Decimal, exists bool) {
-	v := m.fx_rate
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFxRate returns the old "fx_rate" field's value of the Account entity.
-// If the Account object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountMutation) OldFxRate(ctx context.Context) (v decimal.Decimal, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFxRate is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFxRate requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFxRate: %w", err)
-	}
-	return oldValue.FxRate, nil
-}
-
-// AddFxRate adds d to the "fx_rate" field.
-func (m *AccountMutation) AddFxRate(d decimal.Decimal) {
-	if m.addfx_rate != nil {
-		*m.addfx_rate = m.addfx_rate.Add(d)
-	} else {
-		m.addfx_rate = &d
-	}
-}
-
-// AddedFxRate returns the value that was added to the "fx_rate" field in this mutation.
-func (m *AccountMutation) AddedFxRate() (r decimal.Decimal, exists bool) {
-	v := m.addfx_rate
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetFxRate resets all changes to the "fx_rate" field.
-func (m *AccountMutation) ResetFxRate() {
-	m.fx_rate = nil
-	m.addfx_rate = nil
-}
-
 // SetCurrencyID sets the "currency_id" field.
 func (m *AccountMutation) SetCurrencyID(i int) {
 	m.currency = &i
@@ -972,7 +914,7 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 12)
 	if m.create_time != nil {
 		fields = append(fields, account.FieldCreateTime)
 	}
@@ -999,9 +941,6 @@ func (m *AccountMutation) Fields() []string {
 	}
 	if m.value != nil {
 		fields = append(fields, account.FieldValue)
-	}
-	if m.fx_rate != nil {
-		fields = append(fields, account.FieldFxRate)
 	}
 	if m.currency != nil {
 		fields = append(fields, account.FieldCurrencyID)
@@ -1038,8 +977,6 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.Icon()
 	case account.FieldValue:
 		return m.Value()
-	case account.FieldFxRate:
-		return m.FxRate()
 	case account.FieldCurrencyID:
 		return m.CurrencyID()
 	case account.FieldUserID:
@@ -1073,8 +1010,6 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldIcon(ctx)
 	case account.FieldValue:
 		return m.OldValue(ctx)
-	case account.FieldFxRate:
-		return m.OldFxRate(ctx)
 	case account.FieldCurrencyID:
 		return m.OldCurrencyID(ctx)
 	case account.FieldUserID:
@@ -1153,13 +1088,6 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetValue(v)
 		return nil
-	case account.FieldFxRate:
-		v, ok := value.(decimal.Decimal)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFxRate(v)
-		return nil
 	case account.FieldCurrencyID:
 		v, ok := value.(int)
 		if !ok {
@@ -1195,9 +1123,6 @@ func (m *AccountMutation) AddedFields() []string {
 	if m.addvalue != nil {
 		fields = append(fields, account.FieldValue)
 	}
-	if m.addfx_rate != nil {
-		fields = append(fields, account.FieldFxRate)
-	}
 	return fields
 }
 
@@ -1210,8 +1135,6 @@ func (m *AccountMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedBalance()
 	case account.FieldValue:
 		return m.AddedValue()
-	case account.FieldFxRate:
-		return m.AddedFxRate()
 	}
 	return nil, false
 }
@@ -1234,13 +1157,6 @@ func (m *AccountMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddValue(v)
-		return nil
-	case account.FieldFxRate:
-		v, ok := value.(decimal.Decimal)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddFxRate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Account numeric field %s", name)
@@ -1310,9 +1226,6 @@ func (m *AccountMutation) ResetField(name string) error {
 		return nil
 	case account.FieldValue:
 		m.ResetValue()
-		return nil
-	case account.FieldFxRate:
-		m.ResetFxRate()
 		return nil
 	case account.FieldCurrencyID:
 		m.ResetCurrencyID()
@@ -8048,8 +7961,6 @@ type RecurringSubscriptionMutation struct {
 	icon              *string
 	cost              *decimal.Decimal
 	addcost           *decimal.Decimal
-	fx_rate           *decimal.Decimal
-	addfx_rate        *decimal.Decimal
 	clearedFields     map[string]struct{}
 	household         *int
 	clearedhousehold  bool
@@ -8573,62 +8484,6 @@ func (m *RecurringSubscriptionMutation) ResetCost() {
 	m.addcost = nil
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (m *RecurringSubscriptionMutation) SetFxRate(d decimal.Decimal) {
-	m.fx_rate = &d
-	m.addfx_rate = nil
-}
-
-// FxRate returns the value of the "fx_rate" field in the mutation.
-func (m *RecurringSubscriptionMutation) FxRate() (r decimal.Decimal, exists bool) {
-	v := m.fx_rate
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFxRate returns the old "fx_rate" field's value of the RecurringSubscription entity.
-// If the RecurringSubscription object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RecurringSubscriptionMutation) OldFxRate(ctx context.Context) (v decimal.Decimal, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFxRate is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFxRate requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFxRate: %w", err)
-	}
-	return oldValue.FxRate, nil
-}
-
-// AddFxRate adds d to the "fx_rate" field.
-func (m *RecurringSubscriptionMutation) AddFxRate(d decimal.Decimal) {
-	if m.addfx_rate != nil {
-		*m.addfx_rate = m.addfx_rate.Add(d)
-	} else {
-		m.addfx_rate = &d
-	}
-}
-
-// AddedFxRate returns the value that was added to the "fx_rate" field in this mutation.
-func (m *RecurringSubscriptionMutation) AddedFxRate() (r decimal.Decimal, exists bool) {
-	v := m.addfx_rate
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetFxRate resets all changes to the "fx_rate" field.
-func (m *RecurringSubscriptionMutation) ResetFxRate() {
-	m.fx_rate = nil
-	m.addfx_rate = nil
-}
-
 // SetCurrencyID sets the "currency_id" field.
 func (m *RecurringSubscriptionMutation) SetCurrencyID(i int) {
 	m.currency = &i
@@ -8816,7 +8671,7 @@ func (m *RecurringSubscriptionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RecurringSubscriptionMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 12)
 	if m.create_time != nil {
 		fields = append(fields, recurringsubscription.FieldCreateTime)
 	}
@@ -8846,9 +8701,6 @@ func (m *RecurringSubscriptionMutation) Fields() []string {
 	}
 	if m.cost != nil {
 		fields = append(fields, recurringsubscription.FieldCost)
-	}
-	if m.fx_rate != nil {
-		fields = append(fields, recurringsubscription.FieldFxRate)
 	}
 	if m.currency != nil {
 		fields = append(fields, recurringsubscription.FieldCurrencyID)
@@ -8884,8 +8736,6 @@ func (m *RecurringSubscriptionMutation) Field(name string) (ent.Value, bool) {
 		return m.Icon()
 	case recurringsubscription.FieldCost:
 		return m.Cost()
-	case recurringsubscription.FieldFxRate:
-		return m.FxRate()
 	case recurringsubscription.FieldCurrencyID:
 		return m.CurrencyID()
 	case recurringsubscription.FieldUserID:
@@ -8919,8 +8769,6 @@ func (m *RecurringSubscriptionMutation) OldField(ctx context.Context, name strin
 		return m.OldIcon(ctx)
 	case recurringsubscription.FieldCost:
 		return m.OldCost(ctx)
-	case recurringsubscription.FieldFxRate:
-		return m.OldFxRate(ctx)
 	case recurringsubscription.FieldCurrencyID:
 		return m.OldCurrencyID(ctx)
 	case recurringsubscription.FieldUserID:
@@ -9004,13 +8852,6 @@ func (m *RecurringSubscriptionMutation) SetField(name string, value ent.Value) e
 		}
 		m.SetCost(v)
 		return nil
-	case recurringsubscription.FieldFxRate:
-		v, ok := value.(decimal.Decimal)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFxRate(v)
-		return nil
 	case recurringsubscription.FieldCurrencyID:
 		v, ok := value.(int)
 		if !ok {
@@ -9039,9 +8880,6 @@ func (m *RecurringSubscriptionMutation) AddedFields() []string {
 	if m.addcost != nil {
 		fields = append(fields, recurringsubscription.FieldCost)
 	}
-	if m.addfx_rate != nil {
-		fields = append(fields, recurringsubscription.FieldFxRate)
-	}
 	return fields
 }
 
@@ -9054,8 +8892,6 @@ func (m *RecurringSubscriptionMutation) AddedField(name string) (ent.Value, bool
 		return m.AddedIntervalCount()
 	case recurringsubscription.FieldCost:
 		return m.AddedCost()
-	case recurringsubscription.FieldFxRate:
-		return m.AddedFxRate()
 	}
 	return nil, false
 }
@@ -9078,13 +8914,6 @@ func (m *RecurringSubscriptionMutation) AddField(name string, value ent.Value) e
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCost(v)
-		return nil
-	case recurringsubscription.FieldFxRate:
-		v, ok := value.(decimal.Decimal)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddFxRate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown RecurringSubscription numeric field %s", name)
@@ -9151,9 +8980,6 @@ func (m *RecurringSubscriptionMutation) ResetField(name string) error {
 		return nil
 	case recurringsubscription.FieldCost:
 		m.ResetCost()
-		return nil
-	case recurringsubscription.FieldFxRate:
-		m.ResetFxRate()
 		return nil
 	case recurringsubscription.FieldCurrencyID:
 		m.ResetCurrencyID()
@@ -15809,20 +15635,22 @@ func (m *UserMutation) ResetEdge(name string) error {
 // UserHouseholdMutation represents an operation that mutates the UserHousehold nodes in the graph.
 type UserHouseholdMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *int
-	create_time      *time.Time
-	update_time      *time.Time
-	role             *userhousehold.Role
-	clearedFields    map[string]struct{}
-	user             *int
-	cleareduser      bool
-	household        *int
-	clearedhousehold bool
-	done             bool
-	oldValue         func(context.Context) (*UserHousehold, error)
-	predicates       []predicate.UserHousehold
+	op                      Op
+	typ                     string
+	id                      *int
+	create_time             *time.Time
+	update_time             *time.Time
+	role                    *userhousehold.Role
+	clearedFields           map[string]struct{}
+	user                    *int
+	cleareduser             bool
+	household               *int
+	clearedhousehold        bool
+	default_currency        *int
+	cleareddefault_currency bool
+	done                    bool
+	oldValue                func(context.Context) (*UserHousehold, error)
+	predicates              []predicate.UserHousehold
 }
 
 var _ ent.Mutation = (*UserHouseholdMutation)(nil)
@@ -16103,6 +15931,55 @@ func (m *UserHouseholdMutation) ResetRole() {
 	m.role = nil
 }
 
+// SetDefaultCurrencyID sets the "default_currency_id" field.
+func (m *UserHouseholdMutation) SetDefaultCurrencyID(i int) {
+	m.default_currency = &i
+}
+
+// DefaultCurrencyID returns the value of the "default_currency_id" field in the mutation.
+func (m *UserHouseholdMutation) DefaultCurrencyID() (r int, exists bool) {
+	v := m.default_currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDefaultCurrencyID returns the old "default_currency_id" field's value of the UserHousehold entity.
+// If the UserHousehold object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserHouseholdMutation) OldDefaultCurrencyID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDefaultCurrencyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDefaultCurrencyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDefaultCurrencyID: %w", err)
+	}
+	return oldValue.DefaultCurrencyID, nil
+}
+
+// ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
+func (m *UserHouseholdMutation) ClearDefaultCurrencyID() {
+	m.default_currency = nil
+	m.clearedFields[userhousehold.FieldDefaultCurrencyID] = struct{}{}
+}
+
+// DefaultCurrencyIDCleared returns if the "default_currency_id" field was cleared in this mutation.
+func (m *UserHouseholdMutation) DefaultCurrencyIDCleared() bool {
+	_, ok := m.clearedFields[userhousehold.FieldDefaultCurrencyID]
+	return ok
+}
+
+// ResetDefaultCurrencyID resets all changes to the "default_currency_id" field.
+func (m *UserHouseholdMutation) ResetDefaultCurrencyID() {
+	m.default_currency = nil
+	delete(m.clearedFields, userhousehold.FieldDefaultCurrencyID)
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *UserHouseholdMutation) ClearUser() {
 	m.cleareduser = true
@@ -16157,6 +16034,33 @@ func (m *UserHouseholdMutation) ResetHousehold() {
 	m.clearedhousehold = false
 }
 
+// ClearDefaultCurrency clears the "default_currency" edge to the HouseholdCurrency entity.
+func (m *UserHouseholdMutation) ClearDefaultCurrency() {
+	m.cleareddefault_currency = true
+	m.clearedFields[userhousehold.FieldDefaultCurrencyID] = struct{}{}
+}
+
+// DefaultCurrencyCleared reports if the "default_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *UserHouseholdMutation) DefaultCurrencyCleared() bool {
+	return m.DefaultCurrencyIDCleared() || m.cleareddefault_currency
+}
+
+// DefaultCurrencyIDs returns the "default_currency" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DefaultCurrencyID instead. It exists only for internal usage by the builders.
+func (m *UserHouseholdMutation) DefaultCurrencyIDs() (ids []int) {
+	if id := m.default_currency; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDefaultCurrency resets all changes to the "default_currency" edge.
+func (m *UserHouseholdMutation) ResetDefaultCurrency() {
+	m.default_currency = nil
+	m.cleareddefault_currency = false
+}
+
 // Where appends a list predicates to the UserHouseholdMutation builder.
 func (m *UserHouseholdMutation) Where(ps ...predicate.UserHousehold) {
 	m.predicates = append(m.predicates, ps...)
@@ -16191,7 +16095,7 @@ func (m *UserHouseholdMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserHouseholdMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.create_time != nil {
 		fields = append(fields, userhousehold.FieldCreateTime)
 	}
@@ -16206,6 +16110,9 @@ func (m *UserHouseholdMutation) Fields() []string {
 	}
 	if m.role != nil {
 		fields = append(fields, userhousehold.FieldRole)
+	}
+	if m.default_currency != nil {
+		fields = append(fields, userhousehold.FieldDefaultCurrencyID)
 	}
 	return fields
 }
@@ -16225,6 +16132,8 @@ func (m *UserHouseholdMutation) Field(name string) (ent.Value, bool) {
 		return m.HouseholdID()
 	case userhousehold.FieldRole:
 		return m.Role()
+	case userhousehold.FieldDefaultCurrencyID:
+		return m.DefaultCurrencyID()
 	}
 	return nil, false
 }
@@ -16244,6 +16153,8 @@ func (m *UserHouseholdMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldHouseholdID(ctx)
 	case userhousehold.FieldRole:
 		return m.OldRole(ctx)
+	case userhousehold.FieldDefaultCurrencyID:
+		return m.OldDefaultCurrencyID(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserHousehold field %s", name)
 }
@@ -16288,6 +16199,13 @@ func (m *UserHouseholdMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRole(v)
 		return nil
+	case userhousehold.FieldDefaultCurrencyID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDefaultCurrencyID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold field %s", name)
 }
@@ -16320,7 +16238,11 @@ func (m *UserHouseholdMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserHouseholdMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(userhousehold.FieldDefaultCurrencyID) {
+		fields = append(fields, userhousehold.FieldDefaultCurrencyID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -16333,6 +16255,11 @@ func (m *UserHouseholdMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserHouseholdMutation) ClearField(name string) error {
+	switch name {
+	case userhousehold.FieldDefaultCurrencyID:
+		m.ClearDefaultCurrencyID()
+		return nil
+	}
 	return fmt.Errorf("unknown UserHousehold nullable field %s", name)
 }
 
@@ -16355,18 +16282,24 @@ func (m *UserHouseholdMutation) ResetField(name string) error {
 	case userhousehold.FieldRole:
 		m.ResetRole()
 		return nil
+	case userhousehold.FieldDefaultCurrencyID:
+		m.ResetDefaultCurrencyID()
+		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserHouseholdMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.user != nil {
 		edges = append(edges, userhousehold.EdgeUser)
 	}
 	if m.household != nil {
 		edges = append(edges, userhousehold.EdgeHousehold)
+	}
+	if m.default_currency != nil {
+		edges = append(edges, userhousehold.EdgeDefaultCurrency)
 	}
 	return edges
 }
@@ -16383,13 +16316,17 @@ func (m *UserHouseholdMutation) AddedIDs(name string) []ent.Value {
 		if id := m.household; id != nil {
 			return []ent.Value{*id}
 		}
+	case userhousehold.EdgeDefaultCurrency:
+		if id := m.default_currency; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserHouseholdMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -16401,12 +16338,15 @@ func (m *UserHouseholdMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserHouseholdMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.cleareduser {
 		edges = append(edges, userhousehold.EdgeUser)
 	}
 	if m.clearedhousehold {
 		edges = append(edges, userhousehold.EdgeHousehold)
+	}
+	if m.cleareddefault_currency {
+		edges = append(edges, userhousehold.EdgeDefaultCurrency)
 	}
 	return edges
 }
@@ -16419,6 +16359,8 @@ func (m *UserHouseholdMutation) EdgeCleared(name string) bool {
 		return m.cleareduser
 	case userhousehold.EdgeHousehold:
 		return m.clearedhousehold
+	case userhousehold.EdgeDefaultCurrency:
+		return m.cleareddefault_currency
 	}
 	return false
 }
@@ -16433,6 +16375,9 @@ func (m *UserHouseholdMutation) ClearEdge(name string) error {
 	case userhousehold.EdgeHousehold:
 		m.ClearHousehold()
 		return nil
+	case userhousehold.EdgeDefaultCurrency:
+		m.ClearDefaultCurrency()
+		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold unique edge %s", name)
 }
@@ -16446,6 +16391,9 @@ func (m *UserHouseholdMutation) ResetEdge(name string) error {
 		return nil
 	case userhousehold.EdgeHousehold:
 		m.ResetHousehold()
+		return nil
+	case userhousehold.EdgeDefaultCurrency:
+		m.ResetDefaultCurrency()
 		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold edge %s", name)

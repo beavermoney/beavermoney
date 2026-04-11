@@ -16,7 +16,8 @@ import type { TransactionCategoryType } from './__generated__/categoryCardFragme
 import { cn } from '@/lib/utils'
 
 import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
+
 import { categoryCardCategoryFragment$key } from './__generated__/categoryCardCategoryFragment.graphql'
 import { categoryCardFinancialReportFragment$key } from './__generated__/categoryCardFinancialReportFragment.graphql'
 import { identity } from 'lodash-es'
@@ -70,7 +71,7 @@ export function CategoryCard({
     financialReportRef,
   )
   const { formatCurrencyWithPrivacyMode } = useCurrency()
-  const { household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
 
   // Look up this category's aggregate data
   const { total, transactionCount } = useMemo(() => {
@@ -116,7 +117,7 @@ export function CategoryCard({
           <span className="text-sm font-semibold tabular-nums">
             {formatCurrencyWithPrivacyMode({
               value: currency(total),
-              currencyCode: household.currency.code,
+              currencyCode: displayCurrencyCode,
             })}
           </span>
         ) : (

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b7d45264ee3e9ba8094862216603d125>>
+ * @generated SignedSource<<480f7ce37db7a49730ca8eb7c405cc85>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,10 +13,10 @@ export type RecurringSubscriptionInterval = "month" | "week" | "year" | "%future
 import { FragmentRefs } from "relay-runtime";
 export type subscriptionCardFragment$data = {
   readonly cost: string;
+  readonly costInDisplayCurrency: string | null | undefined;
   readonly currency: {
     readonly code: string;
   };
-  readonly fxRate: string;
   readonly icon: string | null | undefined;
   readonly id: string;
   readonly interval: RecurringSubscriptionInterval;
@@ -68,7 +68,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "fxRate",
+      "name": "costInDisplayCurrency",
       "storageKey": null
     },
     {
@@ -115,6 +115,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "ac15caa523e73beb1577fcd455e1404d";
+(node as any).hash = "b37b0c1e0eb42aa0717c1b315431c8c5";
 
 export default node;

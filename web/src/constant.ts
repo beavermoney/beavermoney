@@ -15,6 +15,7 @@ export const LOCAL_STORAGE_TOKEN_KEY = 'token'
 export const LOCAL_STORAGE_PRIVACY_MODE_KEY = 'privacyMode'
 export const LOCAL_STORAGE_THEME_KEY = 'theme'
 export const LOCAL_STORAGE_RND_POSITION_KEY = 'rndPosition'
+export const LOCAL_STORAGE_DISPLAY_CURRENCY_ID_KEY = 'displayCurrencyId'
 
 export const SESSION_STORAGE_PRIVACY_DIALOG_KEY = 'privacyDialogShown'
 

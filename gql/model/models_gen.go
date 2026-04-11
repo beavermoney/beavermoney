@@ -64,6 +64,10 @@ type DeleteAccountPayload struct {
 	DeletedAccountID int `json:"deletedAccountId"`
 }
 
+type DeleteHouseholdCurrencyPayload struct {
+	DeletedHouseholdCurrencyID int `json:"deletedHouseholdCurrencyId"`
+}
+
 type DeleteHouseholdPayload struct {
 	DeletedHouseholdID int `json:"deletedHouseholdId"`
 }

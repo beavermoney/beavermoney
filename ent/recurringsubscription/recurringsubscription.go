@@ -39,8 +39,6 @@ const (
 	FieldIcon = "icon"
 	// FieldCost holds the string denoting the cost field in the database.
 	FieldCost = "cost"
-	// FieldFxRate holds the string denoting the fx_rate field in the database.
-	FieldFxRate = "fx_rate"
 	// FieldCurrencyID holds the string denoting the currency_id field in the database.
 	FieldCurrencyID = "currency_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
@@ -89,7 +87,6 @@ var Columns = []string{
 	FieldActive,
 	FieldIcon,
 	FieldCost,
-	FieldFxRate,
 	FieldCurrencyID,
 	FieldUserID,
 }
@@ -214,11 +211,6 @@ func ByIcon(opts ...sql.OrderTermOption) OrderOption {
 // ByCost orders the results by the cost field.
 func ByCost(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCost, opts...).ToFunc()
-}
-
-// ByFxRate orders the results by the fx_rate field.
-func ByFxRate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFxRate, opts...).ToFunc()
 }
 
 // ByCurrencyID orders the results by the currency_id field.

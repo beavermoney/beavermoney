@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/select'
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
@@ -58,7 +59,7 @@ const InvestmentsPanelFragment = graphql`
           id
           name
           amount
-          valueInHouseholdCurrency
+          valueInDisplayCurrency
           account {
             name
             id
@@ -82,7 +83,8 @@ type InvestmentsPanelProps = {
 
 export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const data = useFragment(InvestmentsPanelFragment, fragmentRef)
-  const { household } = useHousehold()
+  const { household: _household } = useHousehold()
+  const { code: displayCurrencyCode } = useDisplayCurrency()
   const environment = useRelayEnvironment()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
@@ -157,7 +159,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     return (data.investments.edges ?? [])
       .map((investment) => {
         invariant(investment?.node, 'Investment node is null')
-        return currency(investment.node.valueInHouseholdCurrency)
+        return currency(investment.node.valueInDisplayCurrency ?? 0)
       })
       .reduce((a, b) => a.add(b), currency(0))
   }, [data.investments])
@@ -187,7 +189,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         <div className="text-3xl font-semibold tracking-tight tabular-nums">
           {formatCurrencyWithPrivacyMode({
             value: totalInvestment,
-            currencyCode: household.currency.code,
+            currencyCode: displayCurrencyCode,
           })}
         </div>
       </div>
@@ -234,7 +236,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
           const value = investments
             .map((investment) => {
               invariant(investment?.node, 'Investment node is null')
-              return currency(investment.node.valueInHouseholdCurrency)
+              return currency(investment.node.valueInDisplayCurrency ?? 0)
             })
             .reduce((a, b) => a.add(b), currency(0))
 
@@ -271,7 +273,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                 <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
                   {formatCurrencyWithPrivacyMode({
                     value,
-                    currencyCode: household.currency.code,
+                    currencyCode: displayCurrencyCode,
                   })}
                 </span>
               </AccordionTrigger>

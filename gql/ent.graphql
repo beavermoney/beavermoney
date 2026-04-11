@@ -17,7 +17,6 @@ type Account implements Node {
   Value is the total value of the account including investments
   """
   value: String!
-  fxRate: String!
   currencyID: ID!
   userID: ID!
   archived: Boolean!
@@ -209,17 +208,6 @@ input AccountWhereInput {
   valueGTE: String
   valueLT: String
   valueLTE: String
-  """
-  fx_rate field predicates
-  """
-  fxRate: String
-  fxRateNEQ: String
-  fxRateIn: [String!]
-  fxRateNotIn: [String!]
-  fxRateGT: String
-  fxRateGTE: String
-  fxRateLT: String
-  fxRateLTE: String
   """
   currency_id field predicates
   """
@@ -1829,7 +1817,6 @@ type RecurringSubscription implements Node {
   active: Boolean!
   icon: String
   cost: String!
-  fxRate: String!
   currencyID: ID!
   userID: ID!
   household: Household!
@@ -2001,17 +1988,6 @@ input RecurringSubscriptionWhereInput {
   costGTE: String
   costLT: String
   costLTE: String
-  """
-  fx_rate field predicates
-  """
-  fxRate: String
-  fxRateNEQ: String
-  fxRateIn: [String!]
-  fxRateNotIn: [String!]
-  fxRateGT: String
-  fxRateGTE: String
-  fxRateLT: String
-  fxRateLTE: String
   """
   currency_id field predicates
   """
@@ -3119,8 +3095,10 @@ type UserHousehold implements Node {
   userID: ID!
   householdID: ID!
   role: UserHouseholdRole!
+  defaultCurrencyID: ID
   user: User!
   household: Household!
+  defaultCurrency: HouseholdCurrency
 }
 """
 UserHouseholdRole is enum for the field role

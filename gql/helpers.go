@@ -3,10 +3,14 @@ package gql
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
+	"beavermoney.app/ent"
 	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdrate"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -33,14 +37,23 @@ func (r *financialReportResolver) aggregateByCategoryType(
 
 	client := r.entClient
 
-	// Get household currency
-	hh, err := client.Household.Query().
-		Where(household.IDEQ(householdID)).
-		WithCurrency().
-		Only(ctx)
-	if err != nil {
-		r.logger.Error("Failed to get household", "error", err)
-		return nil, err
+	dc := contextkeys.GetDisplayCurrency(ctx)
+	var (
+		targetCurrencyCode string
+		err                error
+	)
+	if dc != nil {
+		targetCurrencyCode = dc.Code
+	} else {
+		hh, err := client.Household.Query().
+			Where(household.IDEQ(householdID)).
+			WithCurrency().
+			Only(ctx)
+		if err != nil {
+			r.logger.Error("Failed to get household", "error", err)
+			return nil, err
+		}
+		targetCurrencyCode = hh.Edges.Currency.Code
 	}
 
 	// Query grouped by category and currency
@@ -122,12 +135,12 @@ func (r *financialReportResolver) aggregateByCategoryType(
 
 	for _, row := range res {
 		rate := decimal.NewFromInt(1)
-		if row.CurrencyCode != hh.Edges.Currency.Code {
+		if row.CurrencyCode != targetCurrencyCode {
 			date := openapi_types.Date{Time: time.Now().UTC()}
 			resp, err := r.frankfurterClient.GetRateWithResponse(
 				ctx,
 				row.CurrencyCode,
-				hh.Edges.Currency.Code,
+				targetCurrencyCode,
 				&frankfurter.GetRateParams{Date: &date},
 			)
 			if err != nil {
@@ -138,7 +151,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 					"from",
 					row.CurrencyCode,
 					"to",
-					hh.Edges.Currency.Code,
+					targetCurrencyCode,
 				)
 				return nil, err
 			}
@@ -152,7 +165,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 					"from",
 					row.CurrencyCode,
 					"to",
-					hh.Edges.Currency.Code,
+					targetCurrencyCode,
 				)
 				return nil, err
 			}
@@ -238,4 +251,177 @@ func parseTimePeriod(period model.TimePeriodInput) (time.Time, time.Time) {
 
 	// Default: all time
 	return time.Time{}, time.Now()
+}
+
+func (r *mutationResolver) syncHouseholdRatesForCurrency(
+	ctx context.Context,
+	client *ent.Client,
+	householdID int,
+	newCurrency *ent.Currency,
+	existingHCs []*ent.HouseholdCurrency,
+) error {
+	if len(existingHCs) == 0 {
+		return nil
+	}
+
+	var quoteCodes []string
+	codeToID := map[string]int{newCurrency.Code: newCurrency.ID}
+	for _, hc := range existingHCs {
+		quoteCodes = append(quoteCodes, hc.Edges.Currency.Code)
+		codeToID[hc.Edges.Currency.Code] = hc.CurrencyID
+	}
+
+	var builders []*ent.HouseholdRateCreate
+	quotes := strings.Join(quoteCodes, ",")
+
+	resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
+		Base:   &newCurrency.Code,
+		Quotes: &quotes,
+	})
+	if err != nil {
+		return err
+	}
+	if resp.JSON200 != nil {
+		for _, rate := range *resp.JSON200 {
+			toID, ok := codeToID[rate.Quote]
+			if !ok {
+				continue
+			}
+			builders = append(builders,
+				client.HouseholdRate.Create().
+					SetHouseholdID(householdID).
+					SetFromCurrencyID(newCurrency.ID).
+					SetToCurrencyID(toID).
+					SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
+				client.HouseholdRate.Create().
+					SetHouseholdID(householdID).
+					SetFromCurrencyID(toID).
+					SetToCurrencyID(newCurrency.ID).
+					SetRate(decimal.NewFromInt(1).Div(decimal.NewFromFloat32(rate.Rate)).Round(6)),
+			)
+		}
+	}
+
+	if len(builders) > 0 {
+		return client.HouseholdRate.CreateBulk(builders...).
+			OnConflict(
+				sql.ConflictColumns(
+					householdrate.FieldHouseholdID,
+					householdrate.FieldFromCurrencyID,
+					householdrate.FieldToCurrencyID,
+				),
+			).
+			Ignore().
+			Exec(ctx)
+	}
+	return nil
+}
+
+func (r *mutationResolver) backfillSnapshotRatesForCurrency(
+	ctx context.Context,
+	client *ent.Client,
+	householdID int,
+	newCurrency *ent.Currency,
+	existingHCs []*ent.HouseholdCurrency,
+) error {
+	if len(existingHCs) == 0 {
+		return nil
+	}
+
+	importantHCs := make([]*ent.HouseholdCurrency, 0)
+	for _, hc := range existingHCs {
+		if hc.Important {
+			importantHCs = append(importantHCs, hc)
+		}
+	}
+	if len(importantHCs) == 0 {
+		return nil
+	}
+
+	snapshots, err := client.Snapshot.Query().All(ctx)
+	if err != nil {
+		return err
+	}
+	if len(snapshots) == 0 {
+		return nil
+	}
+
+	codeToID := map[string]int{newCurrency.Code: newCurrency.ID}
+	var quoteCodes []string
+	for _, hc := range importantHCs {
+		quoteCodes = append(quoteCodes, hc.Edges.Currency.Code)
+		codeToID[hc.Edges.Currency.Code] = hc.CurrencyID
+	}
+	quotes := strings.Join(quoteCodes, ",")
+
+	for _, snap := range snapshots {
+		alreadyExists, err := client.SnapshotRate.Query().
+			Where(
+				snapshotrate.SnapshotIDEQ(snap.ID),
+				snapshotrate.Or(
+					snapshotrate.FromCurrencyIDEQ(newCurrency.ID),
+					snapshotrate.ToCurrencyIDEQ(newCurrency.ID),
+				),
+			).
+			Exist(ctx)
+		if err != nil {
+			return err
+		}
+		if alreadyExists {
+			continue
+		}
+
+		date := openapi_types.Date{Time: snap.CreateTime}
+		resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
+			Date:   &date,
+			Base:   &newCurrency.Code,
+			Quotes: &quotes,
+		})
+		if err != nil {
+			r.logger.Error("Failed to fetch historical rates for snapshot", "error", err, "snapshotID", snap.ID)
+			continue
+		}
+		if resp.JSON200 == nil {
+			continue
+		}
+
+		var builders []*ent.SnapshotRateCreate
+		for _, rate := range *resp.JSON200 {
+			toID, ok := codeToID[rate.Quote]
+			if !ok {
+				continue
+			}
+			builders = append(builders,
+				client.SnapshotRate.Create().
+					SetSnapshotID(snap.ID).
+					SetFromCurrencyID(newCurrency.ID).
+					SetToCurrencyID(toID).
+					SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
+				client.SnapshotRate.Create().
+					SetSnapshotID(snap.ID).
+					SetFromCurrencyID(toID).
+					SetToCurrencyID(newCurrency.ID).
+					SetRate(decimal.NewFromInt(1).Div(decimal.NewFromFloat32(rate.Rate)).Round(6)),
+			)
+		}
+
+		if len(builders) > 0 {
+			err = client.SnapshotRate.CreateBulk(builders...).
+				OnConflict(
+					sql.ConflictColumns(
+						snapshotrate.FieldSnapshotID,
+						snapshotrate.FieldFromCurrencyID,
+						snapshotrate.FieldToCurrencyID,
+					),
+				).
+				Ignore().
+				Exec(ctx)
+			if err != nil {
+				r.logger.Error("Failed to create snapshot rates", "error", err, "snapshotID", snap.ID)
+				continue
+			}
+		}
+	}
+
+	return nil
 }

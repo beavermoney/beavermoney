@@ -134,6 +134,9 @@ func (UserHousehold) Fields() []ent.Field {
 		field.Int("household_id").Immutable(),
 		field.Enum("role").
 			Values("admin", "member"),
+		field.Int("default_currency_id").
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -149,6 +152,9 @@ func (UserHousehold) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Field("household_id").Immutable(),
+		edge.To("default_currency", HouseholdCurrency.Type).
+			Unique().
+			Field("default_currency_id"),
 	}
 }
 

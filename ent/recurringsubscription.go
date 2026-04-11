@@ -41,8 +41,6 @@ type RecurringSubscription struct {
 	Icon string `json:"icon,omitempty"`
 	// Cost holds the value of the "cost" field.
 	Cost decimal.Decimal `json:"cost,omitempty"`
-	// FxRate holds the value of the "fx_rate" field.
-	FxRate decimal.Decimal `json:"fx_rate,omitempty"`
 	// CurrencyID holds the value of the "currency_id" field.
 	CurrencyID int `json:"currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -106,7 +104,7 @@ func (*RecurringSubscription) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case recurringsubscription.FieldCost, recurringsubscription.FieldFxRate:
+		case recurringsubscription.FieldCost:
 			values[i] = new(decimal.Decimal)
 		case recurringsubscription.FieldActive:
 			values[i] = new(sql.NullBool)
@@ -196,12 +194,6 @@ func (_m *RecurringSubscription) assignValues(columns []string, values []any) er
 				return fmt.Errorf("unexpected type %T for field cost", values[i])
 			} else if value != nil {
 				_m.Cost = *value
-			}
-		case recurringsubscription.FieldFxRate:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
-				return fmt.Errorf("unexpected type %T for field fx_rate", values[i])
-			} else if value != nil {
-				_m.FxRate = *value
 			}
 		case recurringsubscription.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -295,9 +287,6 @@ func (_m *RecurringSubscription) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("cost=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Cost))
-	builder.WriteString(", ")
-	builder.WriteString("fx_rate=")
-	builder.WriteString(fmt.Sprintf("%v", _m.FxRate))
 	builder.WriteString(", ")
 	builder.WriteString("currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))

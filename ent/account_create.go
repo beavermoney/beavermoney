@@ -130,12 +130,6 @@ func (_c *AccountCreate) SetNillableValue(v *decimal.Decimal) *AccountCreate {
 	return _c
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (_c *AccountCreate) SetFxRate(v decimal.Decimal) *AccountCreate {
-	_c.mutation.SetFxRate(v)
-	return _c
-}
-
 // SetCurrencyID sets the "currency_id" field.
 func (_c *AccountCreate) SetCurrencyID(v int) *AccountCreate {
 	_c.mutation.SetCurrencyID(v)
@@ -317,9 +311,6 @@ func (_c *AccountCreate) check() error {
 	if _, ok := _c.mutation.Value(); !ok {
 		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "Account.value"`)}
 	}
-	if _, ok := _c.mutation.FxRate(); !ok {
-		return &ValidationError{Name: "fx_rate", err: errors.New(`ent: missing required field "Account.fx_rate"`)}
-	}
 	if _, ok := _c.mutation.CurrencyID(); !ok {
 		return &ValidationError{Name: "currency_id", err: errors.New(`ent: missing required field "Account.currency_id"`)}
 	}
@@ -406,10 +397,6 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Value(); ok {
 		_spec.SetField(account.FieldValue, field.TypeFloat64, value)
 		_node.Value = value
-	}
-	if value, ok := _c.mutation.FxRate(); ok {
-		_spec.SetField(account.FieldFxRate, field.TypeFloat64, value)
-		_node.FxRate = value
 	}
 	if value, ok := _c.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)
@@ -610,24 +597,6 @@ func (u *AccountUpsert) ClearIcon() *AccountUpsert {
 	return u
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (u *AccountUpsert) SetFxRate(v decimal.Decimal) *AccountUpsert {
-	u.Set(account.FieldFxRate, v)
-	return u
-}
-
-// UpdateFxRate sets the "fx_rate" field to the value that was provided on create.
-func (u *AccountUpsert) UpdateFxRate() *AccountUpsert {
-	u.SetExcluded(account.FieldFxRate)
-	return u
-}
-
-// AddFxRate adds v to the "fx_rate" field.
-func (u *AccountUpsert) AddFxRate(v decimal.Decimal) *AccountUpsert {
-	u.Add(account.FieldFxRate, v)
-	return u
-}
-
 // SetArchived sets the "archived" field.
 func (u *AccountUpsert) SetArchived(v bool) *AccountUpsert {
 	u.Set(account.FieldArchived, v)
@@ -770,27 +739,6 @@ func (u *AccountUpsertOne) UpdateIcon() *AccountUpsertOne {
 func (u *AccountUpsertOne) ClearIcon() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.ClearIcon()
-	})
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (u *AccountUpsertOne) SetFxRate(v decimal.Decimal) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetFxRate(v)
-	})
-}
-
-// AddFxRate adds v to the "fx_rate" field.
-func (u *AccountUpsertOne) AddFxRate(v decimal.Decimal) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.AddFxRate(v)
-	})
-}
-
-// UpdateFxRate sets the "fx_rate" field to the value that was provided on create.
-func (u *AccountUpsertOne) UpdateFxRate() *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateFxRate()
 	})
 }
 
@@ -1104,27 +1052,6 @@ func (u *AccountUpsertBulk) UpdateIcon() *AccountUpsertBulk {
 func (u *AccountUpsertBulk) ClearIcon() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.ClearIcon()
-	})
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (u *AccountUpsertBulk) SetFxRate(v decimal.Decimal) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetFxRate(v)
-	})
-}
-
-// AddFxRate adds v to the "fx_rate" field.
-func (u *AccountUpsertBulk) AddFxRate(v decimal.Decimal) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.AddFxRate(v)
-	})
-}
-
-// UpdateFxRate sets the "fx_rate" field to the value that was provided on create.
-func (u *AccountUpsertBulk) UpdateFxRate() *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateFxRate()
 	})
 }
 

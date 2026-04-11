@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9d26a1823248e6383cf65f5e763fd8c0>>
+ * @generated SignedSource<<f92aad6b074ff5ebcdcdde2e5b57726f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -177,7 +177,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "valueInHouseholdCurrency",
+                            "name": "valueInDisplayCurrency",
                             "storageKey": null
                           },
                           {
@@ -313,16 +313,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "22bf529c38044afb822d1d8061879d8a",
+    "cacheID": "76bdbd0328c0c5ee92f274268117bfe2",
     "id": null,
     "metadata": {},
     "name": "investmentsPanelRefetch",
     "operationKind": "query",
-    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment_1G22uz on Household {\n  investments(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        name\n        amount\n        valueInHouseholdCurrency\n        account {\n          name\n          id\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment_1G22uz on Household {\n  investments(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        name\n        amount\n        valueInDisplayCurrency\n        account {\n          name\n          id\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "5e6c3e071790c4436c2e98adfe3fe9d2";
+(node as any).hash = "33461327c4aeda51e8f8f9d687a89c7c";
 
 export default node;

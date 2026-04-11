@@ -11,16 +11,29 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/gql/model"
+	"beavermoney.app/internal/fx"
 )
 
-// BalanceInHouseholdCurrency is the resolver for the balanceInHouseholdCurrency field.
-func (r *accountResolver) BalanceInHouseholdCurrency(ctx context.Context, obj *ent.Account) (string, error) {
-	return obj.Balance.Mul(obj.FxRate).String(), nil
+// BalanceInDisplayCurrency is the resolver for the balanceInDisplayCurrency field.
+func (r *accountResolver) BalanceInDisplayCurrency(ctx context.Context, obj *ent.Account) (*string, error) {
+	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Balance, obj.CurrencyID)
+	if err != nil {
+		r.logger.Error("Failed to convert balance to display currency", "error", err, "accountID", obj.ID)
+		return nil, nil
+	}
+	s := converted.String()
+	return &s, nil
 }
 
-// ValueInHouseholdCurrency is the resolver for the valueInHouseholdCurrency field.
-func (r *accountResolver) ValueInHouseholdCurrency(ctx context.Context, obj *ent.Account) (string, error) {
-	return obj.Value.Mul(obj.FxRate).String(), nil
+// ValueInDisplayCurrency is the resolver for the valueInDisplayCurrency field.
+func (r *accountResolver) ValueInDisplayCurrency(ctx context.Context, obj *ent.Account) (*string, error) {
+	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Value, obj.CurrencyID)
+	if err != nil {
+		r.logger.Error("Failed to convert value to display currency", "error", err, "accountID", obj.ID)
+		return nil, nil
+	}
+	s := converted.String()
+	return &s, nil
 }
 
 // FinancialReport is the resolver for the financialReport field.
@@ -39,12 +52,29 @@ func (r *householdResolver) NetWorthOverTime(ctx context.Context, obj *ent.House
 	panic(fmt.Errorf("not implemented: NetWorthOverTime - netWorthOverTime"))
 }
 
-// ValueInHouseholdCurrency is the resolver for the valueInHouseholdCurrency field.
-func (r *investmentResolver) ValueInHouseholdCurrency(ctx context.Context, obj *ent.Investment) (string, error) {
+// ValueInDisplayCurrency is the resolver for the valueInDisplayCurrency field.
+func (r *investmentResolver) ValueInDisplayCurrency(ctx context.Context, obj *ent.Investment) (*string, error) {
 	account, err := obj.QueryAccount().Only(ctx)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return obj.Value.Mul(account.FxRate).String(), nil
+	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Value, account.CurrencyID)
+	if err != nil {
+		r.logger.Error("Failed to convert investment value to display currency", "error", err, "investmentID", obj.ID)
+		return nil, nil
+	}
+	s := converted.String()
+	return &s, nil
+}
+
+// CostInDisplayCurrency is the resolver for the costInDisplayCurrency field.
+func (r *recurringSubscriptionResolver) CostInDisplayCurrency(ctx context.Context, obj *ent.RecurringSubscription) (*string, error) {
+	converted, err := fx.ConvertToDisplayCurrency(ctx, r.entClient, obj.Cost, obj.CurrencyID)
+	if err != nil {
+		r.logger.Error("Failed to convert subscription cost to display currency", "error", err, "subscriptionID", obj.ID)
+		return nil, nil
+	}
+	s := converted.String()
+	return &s, nil
 }

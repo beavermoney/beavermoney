@@ -71,15 +71,15 @@ func init() {
 	// account.DefaultValue holds the default value on creation for the value field.
 	account.DefaultValue = accountDescValue.Default.(func() decimal.Decimal)
 	// accountDescCurrencyID is the schema descriptor for currency_id field.
-	accountDescCurrencyID := accountFields[7].Descriptor()
+	accountDescCurrencyID := accountFields[6].Descriptor()
 	// account.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
 	account.CurrencyIDValidator = accountDescCurrencyID.Validators[0].(func(int) error)
 	// accountDescUserID is the schema descriptor for user_id field.
-	accountDescUserID := accountFields[8].Descriptor()
+	accountDescUserID := accountFields[7].Descriptor()
 	// account.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	account.UserIDValidator = accountDescUserID.Validators[0].(func(int) error)
 	// accountDescArchived is the schema descriptor for archived field.
-	accountDescArchived := accountFields[9].Descriptor()
+	accountDescArchived := accountFields[8].Descriptor()
 	// account.DefaultArchived holds the default value on creation for the archived field.
 	account.DefaultArchived = accountDescArchived.Default.(bool)
 	currencyFields := schema.Currency{}.Fields()
@@ -311,11 +311,11 @@ func init() {
 	// recurringsubscription.DefaultCost holds the default value on creation for the cost field.
 	recurringsubscription.DefaultCost = recurringsubscriptionDescCost.Default.(func() decimal.Decimal)
 	// recurringsubscriptionDescCurrencyID is the schema descriptor for currency_id field.
-	recurringsubscriptionDescCurrencyID := recurringsubscriptionFields[8].Descriptor()
+	recurringsubscriptionDescCurrencyID := recurringsubscriptionFields[7].Descriptor()
 	// recurringsubscription.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
 	recurringsubscription.CurrencyIDValidator = recurringsubscriptionDescCurrencyID.Validators[0].(func(int) error)
 	// recurringsubscriptionDescUserID is the schema descriptor for user_id field.
-	recurringsubscriptionDescUserID := recurringsubscriptionFields[9].Descriptor()
+	recurringsubscriptionDescUserID := recurringsubscriptionFields[8].Descriptor()
 	// recurringsubscription.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	recurringsubscription.UserIDValidator = recurringsubscriptionDescUserID.Validators[0].(func(int) error)
 	snapshotMixin := schema.Snapshot{}.Mixin()

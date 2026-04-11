@@ -134,12 +134,6 @@ func (_c *RecurringSubscriptionCreate) SetNillableCost(v *decimal.Decimal) *Recu
 	return _c
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (_c *RecurringSubscriptionCreate) SetFxRate(v decimal.Decimal) *RecurringSubscriptionCreate {
-	_c.mutation.SetFxRate(v)
-	return _c
-}
-
 // SetCurrencyID sets the "currency_id" field.
 func (_c *RecurringSubscriptionCreate) SetCurrencyID(v int) *RecurringSubscriptionCreate {
 	_c.mutation.SetCurrencyID(v)
@@ -280,9 +274,6 @@ func (_c *RecurringSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.Cost(); !ok {
 		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "RecurringSubscription.cost"`)}
 	}
-	if _, ok := _c.mutation.FxRate(); !ok {
-		return &ValidationError{Name: "fx_rate", err: errors.New(`ent: missing required field "RecurringSubscription.fx_rate"`)}
-	}
 	if _, ok := _c.mutation.CurrencyID(); !ok {
 		return &ValidationError{Name: "currency_id", err: errors.New(`ent: missing required field "RecurringSubscription.currency_id"`)}
 	}
@@ -370,10 +361,6 @@ func (_c *RecurringSubscriptionCreate) createSpec() (*RecurringSubscription, *sq
 	if value, ok := _c.mutation.Cost(); ok {
 		_spec.SetField(recurringsubscription.FieldCost, field.TypeFloat64, value)
 		_node.Cost = value
-	}
-	if value, ok := _c.mutation.FxRate(); ok {
-		_spec.SetField(recurringsubscription.FieldFxRate, field.TypeFloat64, value)
-		_node.FxRate = value
 	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -592,24 +579,6 @@ func (u *RecurringSubscriptionUpsert) AddCost(v decimal.Decimal) *RecurringSubsc
 	return u
 }
 
-// SetFxRate sets the "fx_rate" field.
-func (u *RecurringSubscriptionUpsert) SetFxRate(v decimal.Decimal) *RecurringSubscriptionUpsert {
-	u.Set(recurringsubscription.FieldFxRate, v)
-	return u
-}
-
-// UpdateFxRate sets the "fx_rate" field to the value that was provided on create.
-func (u *RecurringSubscriptionUpsert) UpdateFxRate() *RecurringSubscriptionUpsert {
-	u.SetExcluded(recurringsubscription.FieldFxRate)
-	return u
-}
-
-// AddFxRate adds v to the "fx_rate" field.
-func (u *RecurringSubscriptionUpsert) AddFxRate(v decimal.Decimal) *RecurringSubscriptionUpsert {
-	u.Add(recurringsubscription.FieldFxRate, v)
-	return u
-}
-
 // SetCurrencyID sets the "currency_id" field.
 func (u *RecurringSubscriptionUpsert) SetCurrencyID(v int) *RecurringSubscriptionUpsert {
 	u.Set(recurringsubscription.FieldCurrencyID, v)
@@ -803,27 +772,6 @@ func (u *RecurringSubscriptionUpsertOne) AddCost(v decimal.Decimal) *RecurringSu
 func (u *RecurringSubscriptionUpsertOne) UpdateCost() *RecurringSubscriptionUpsertOne {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
 		s.UpdateCost()
-	})
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (u *RecurringSubscriptionUpsertOne) SetFxRate(v decimal.Decimal) *RecurringSubscriptionUpsertOne {
-	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.SetFxRate(v)
-	})
-}
-
-// AddFxRate adds v to the "fx_rate" field.
-func (u *RecurringSubscriptionUpsertOne) AddFxRate(v decimal.Decimal) *RecurringSubscriptionUpsertOne {
-	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.AddFxRate(v)
-	})
-}
-
-// UpdateFxRate sets the "fx_rate" field to the value that was provided on create.
-func (u *RecurringSubscriptionUpsertOne) UpdateFxRate() *RecurringSubscriptionUpsertOne {
-	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.UpdateFxRate()
 	})
 }
 
@@ -1188,27 +1136,6 @@ func (u *RecurringSubscriptionUpsertBulk) AddCost(v decimal.Decimal) *RecurringS
 func (u *RecurringSubscriptionUpsertBulk) UpdateCost() *RecurringSubscriptionUpsertBulk {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
 		s.UpdateCost()
-	})
-}
-
-// SetFxRate sets the "fx_rate" field.
-func (u *RecurringSubscriptionUpsertBulk) SetFxRate(v decimal.Decimal) *RecurringSubscriptionUpsertBulk {
-	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.SetFxRate(v)
-	})
-}
-
-// AddFxRate adds v to the "fx_rate" field.
-func (u *RecurringSubscriptionUpsertBulk) AddFxRate(v decimal.Decimal) *RecurringSubscriptionUpsertBulk {
-	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.AddFxRate(v)
-	})
-}
-
-// UpdateFxRate sets the "fx_rate" field to the value that was provided on create.
-func (u *RecurringSubscriptionUpsertBulk) UpdateFxRate() *RecurringSubscriptionUpsertBulk {
-	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.UpdateFxRate()
 	})
 }
 

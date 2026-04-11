@@ -6,12 +6,13 @@ import (
 	"strconv"
 
 	"beavermoney.app/ent"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/internal/contextkeys"
+	"beavermoney.app/internal/fx"
 	"github.com/go-chi/jwtauth/v5"
 )
 
-// Middleware validates JWT tokens and sets user/household context.
 func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -19,30 +20,18 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 
 			_, claims, err := jwtauth.FromContext(ctx)
 			if err != nil {
-				http.Error(
-					w,
-					"Unauthorized: Invalid token",
-					http.StatusUnauthorized,
-				)
+				http.Error(w, "Unauthorized: Invalid token", http.StatusUnauthorized)
 				return
 			}
 
 			userIDStr, ok := claims["user_id"].(string)
 			if !ok {
-				http.Error(
-					w,
-					"Unauthorized: Invalid user ID",
-					http.StatusUnauthorized,
-				)
+				http.Error(w, "Unauthorized: Invalid user ID", http.StatusUnauthorized)
 				return
 			}
 			userID, err := strconv.Atoi(userIDStr)
 			if err != nil {
-				http.Error(
-					w,
-					"Bad Request: Invalid user ID format",
-					http.StatusBadRequest,
-				)
+				http.Error(w, "Bad Request: Invalid user ID format", http.StatusBadRequest)
 				return
 			}
 
@@ -52,39 +41,81 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 			if householdIDStr != "" {
 				hid, err := strconv.Atoi(householdIDStr)
 				if err != nil {
-					http.Error(
-						w,
-						"Bad Request: Invalid Household ID",
-						http.StatusBadRequest,
-					)
+					http.Error(w, "Bad Request: Invalid Household ID", http.StatusBadRequest)
 					return
 				}
 
-				isMember, err := client.UserHousehold.Query().
+				bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+				bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), hid)
+
+				uh, err := client.UserHousehold.Query().
 					Where(
 						userhousehold.UserID(userID),
 						userhousehold.HouseholdID(hid),
 					).
-					Exist(contextkeys.NewPrivacyBypassContext(ctx))
+					WithDefaultCurrency(func(q *ent.HouseholdCurrencyQuery) {
+						q.WithCurrency()
+					}).
+					Only(bypassCtx)
 				if err != nil {
-					http.Error(
-						w,
-						"Internal Server Error",
-						http.StatusInternalServerError,
-					)
+					if ent.IsNotFound(err) {
+						next.ServeHTTP(w, r.WithContext(ctx))
+						return
+					}
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 					return
 				}
 
-				if isMember {
-					ctx = context.WithValue(
-						ctx,
-						contextkeys.HouseholdIDKey(),
-						hid,
-					)
+				ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), hid)
+				ctx = fx.NewContext(ctx)
+
+				displayCurrency := resolveDisplayCurrency(r, client, bypassCtx, uh, hid)
+				if displayCurrency != nil {
+					ctx = context.WithValue(ctx, contextkeys.DisplayCurrencyKey(), displayCurrency)
 				}
 			}
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+func resolveDisplayCurrency(
+	r *http.Request,
+	client *ent.Client,
+	ctx context.Context,
+	uh *ent.UserHousehold,
+	householdID int,
+) *contextkeys.DisplayCurrency {
+	headerStr := r.Header.Get("X-Display-Currency-ID")
+	if headerStr != "" {
+		hcID, err := strconv.Atoi(headerStr)
+		if err == nil {
+			hc, err := client.HouseholdCurrency.Query().
+				Where(
+					householdcurrency.IDEQ(hcID),
+					householdcurrency.HouseholdIDEQ(householdID),
+				).
+				WithCurrency().
+				Only(ctx)
+			if err == nil {
+				return &contextkeys.DisplayCurrency{
+					HouseholdCurrencyID: hc.ID,
+					CurrencyID:          hc.CurrencyID,
+					Code:                hc.Edges.Currency.Code,
+				}
+			}
+		}
+	}
+
+	if uh.Edges.DefaultCurrency != nil && uh.Edges.DefaultCurrency.Edges.Currency != nil {
+		dc := uh.Edges.DefaultCurrency
+		return &contextkeys.DisplayCurrency{
+			HouseholdCurrencyID: dc.ID,
+			CurrencyID:          dc.CurrencyID,
+			Code:                dc.Edges.Currency.Code,
+		}
+	}
+
+	return nil
 }

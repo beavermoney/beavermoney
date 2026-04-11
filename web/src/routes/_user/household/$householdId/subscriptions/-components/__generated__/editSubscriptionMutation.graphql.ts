@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<326dcdbacf4aa58fb72db082db341462>>
+ * @generated SignedSource<<e953dfe6ab5ecdfbf3762472f6495038>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,11 +31,11 @@ export type editSubscriptionMutation$data = {
     readonly node: {
       readonly active: boolean;
       readonly cost: string;
+      readonly costInDisplayCurrency: string | null | undefined;
       readonly currency: {
         readonly code: string;
         readonly id: string;
       };
-      readonly fxRate: string;
       readonly id: string;
       readonly interval: RecurringSubscriptionInterval;
       readonly intervalCount: number;
@@ -121,7 +121,7 @@ v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "fxRate",
+  "name": "costInDisplayCurrency",
   "storageKey": null
 },
 v9 = {
@@ -244,16 +244,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a86c6ac0ae6dd0e04985bf1f9ee0d649",
+    "cacheID": "7b3be9ee8ade3ef6d01de5e9458bec3b",
     "id": null,
     "metadata": {},
     "name": "editSubscriptionMutation",
     "operationKind": "mutation",
-    "text": "mutation editSubscriptionMutation(\n  $id: ID!\n  $input: UpdateRecurringSubscriptionInput!\n) {\n  updateRecurringSubscription(id: $id, input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      fxRate\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "mutation editSubscriptionMutation(\n  $id: ID!\n  $input: UpdateRecurringSubscriptionInput!\n) {\n  updateRecurringSubscription(id: $id, input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      costInDisplayCurrency\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "73a3e41a3743fb229b791afebc47b1fd";
+(node as any).hash = "2ca9941ca6d60fab00814338df7c1dd3";
 
 export default node;

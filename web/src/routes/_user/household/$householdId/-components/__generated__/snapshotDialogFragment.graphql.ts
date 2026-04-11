@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<501097e3262cffe6b791d4f33ebaa179>>
+ * @generated SignedSource<<1e0661baa199119e28ca998b057c70d5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type snapshotDialogFragment$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly type: AccountType;
-        readonly valueInHouseholdCurrency: string;
+        readonly valueInDisplayCurrency: string | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -76,7 +76,7 @@ const node: ReaderFragment = {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "valueInHouseholdCurrency",
+                  "name": "valueInDisplayCurrency",
                   "storageKey": null
                 }
               ],
@@ -93,6 +93,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "798ee4817c242ffb38974c4f603495cd";
+(node as any).hash = "a5ebbaf7b0d7edd5260568baa34ba8ae";
 
 export default node;

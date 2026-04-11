@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f2429008ab683d0ea034c4c19d04c51f>>
+ * @generated SignedSource<<57089dbbbb526f5afc77588a66767df7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -135,7 +135,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "valueInHouseholdCurrency",
+                        "name": "valueInDisplayCurrency",
                         "storageKey": null
                       },
                       {
@@ -276,12 +276,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "4472d46e7215c391f8071a00885281a8",
+    "cacheID": "a3f71328fab4b37799c07aee819e98f3",
     "id": null,
     "metadata": {},
     "name": "accountsQuery",
     "operationKind": "query",
-    "text": "query accountsQuery {\n  household {\n    ...accountsPanelFragment\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Household {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        valueInHouseholdCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsQuery {\n  household {\n    ...accountsPanelFragment\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Household {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        valueInDisplayCurrency\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

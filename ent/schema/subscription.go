@@ -45,17 +45,6 @@ func (RecurringSubscription) Fields() []ent.Field {
 				return decimal.NewFromInt(0)
 			}),
 
-		field.Float("fx_rate").GoType(decimal.Decimal{}).
-			SchemaType(map[string]string{
-				dialect.Postgres: "numeric(36,18)",
-			}).
-			Annotations(
-				entgql.Type("String"),
-				entgql.Skip(
-					entgql.SkipMutationCreateInput,
-					entgql.SkipMutationUpdateInput,
-				),
-			),
 		field.Int("currency_id").Positive(),
 		field.Int("user_id").Positive().Immutable(),
 	}

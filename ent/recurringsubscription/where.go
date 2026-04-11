@@ -101,11 +101,6 @@ func Cost(v decimal.Decimal) predicate.RecurringSubscription {
 	return predicate.RecurringSubscription(sql.FieldEQ(FieldCost, v))
 }
 
-// FxRate applies equality check predicate on the "fx_rate" field. It's identical to FxRateEQ.
-func FxRate(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldEQ(FieldFxRate, v))
-}
-
 // CurrencyID applies equality check predicate on the "currency_id" field. It's identical to CurrencyIDEQ.
 func CurrencyID(v int) predicate.RecurringSubscription {
 	return predicate.RecurringSubscription(sql.FieldEQ(FieldCurrencyID, v))
@@ -504,46 +499,6 @@ func CostLT(v decimal.Decimal) predicate.RecurringSubscription {
 // CostLTE applies the LTE predicate on the "cost" field.
 func CostLTE(v decimal.Decimal) predicate.RecurringSubscription {
 	return predicate.RecurringSubscription(sql.FieldLTE(FieldCost, v))
-}
-
-// FxRateEQ applies the EQ predicate on the "fx_rate" field.
-func FxRateEQ(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldEQ(FieldFxRate, v))
-}
-
-// FxRateNEQ applies the NEQ predicate on the "fx_rate" field.
-func FxRateNEQ(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldNEQ(FieldFxRate, v))
-}
-
-// FxRateIn applies the In predicate on the "fx_rate" field.
-func FxRateIn(vs ...decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldIn(FieldFxRate, vs...))
-}
-
-// FxRateNotIn applies the NotIn predicate on the "fx_rate" field.
-func FxRateNotIn(vs ...decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldNotIn(FieldFxRate, vs...))
-}
-
-// FxRateGT applies the GT predicate on the "fx_rate" field.
-func FxRateGT(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldGT(FieldFxRate, v))
-}
-
-// FxRateGTE applies the GTE predicate on the "fx_rate" field.
-func FxRateGTE(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldGTE(FieldFxRate, v))
-}
-
-// FxRateLT applies the LT predicate on the "fx_rate" field.
-func FxRateLT(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldLT(FieldFxRate, v))
-}
-
-// FxRateLTE applies the LTE predicate on the "fx_rate" field.
-func FxRateLTE(v decimal.Decimal) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldLTE(FieldFxRate, v))
 }
 
 // CurrencyIDEQ applies the EQ predicate on the "currency_id" field.

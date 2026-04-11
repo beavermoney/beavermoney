@@ -39,8 +39,6 @@ type Account struct {
 	Icon string `json:"icon,omitempty"`
 	// Value is the total value of the account including investments
 	Value decimal.Decimal `json:"value,omitempty"`
-	// FxRate holds the value of the "fx_rate" field.
-	FxRate decimal.Decimal `json:"fx_rate,omitempty"`
 	// CurrencyID holds the value of the "currency_id" field.
 	CurrencyID int `json:"currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -131,7 +129,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case account.FieldBalance, account.FieldValue, account.FieldFxRate:
+		case account.FieldBalance, account.FieldValue:
 			values[i] = new(decimal.Decimal)
 		case account.FieldArchived:
 			values[i] = new(sql.NullBool)
@@ -216,12 +214,6 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field value", values[i])
 			} else if value != nil {
 				_m.Value = *value
-			}
-		case account.FieldFxRate:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
-				return fmt.Errorf("unexpected type %T for field fx_rate", values[i])
-			} else if value != nil {
-				_m.FxRate = *value
 			}
 		case account.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -330,9 +322,6 @@ func (_m *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("value=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Value))
-	builder.WriteString(", ")
-	builder.WriteString("fx_rate=")
-	builder.WriteString(fmt.Sprintf("%v", _m.FxRate))
 	builder.WriteString(", ")
 	builder.WriteString("currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))

@@ -3,10 +3,17 @@ package contextkeys
 import "context"
 
 type (
-	householdIDKey   struct{}
-	userIDKey        struct{}
-	privacyBypassKey struct{}
+	householdIDKey     struct{}
+	userIDKey          struct{}
+	privacyBypassKey   struct{}
+	displayCurrencyKey struct{}
 )
+
+type DisplayCurrency struct {
+	HouseholdCurrencyID int
+	CurrencyID          int
+	Code                string
+}
 
 func HouseholdIDKey() any {
 	return householdIDKey{}
@@ -49,4 +56,16 @@ func GetUserID(ctx context.Context) int {
 	}
 
 	return id
+}
+
+func DisplayCurrencyKey() any {
+	return displayCurrencyKey{}
+}
+
+func GetDisplayCurrency(ctx context.Context) *DisplayCurrency {
+	v, ok := ctx.Value(displayCurrencyKey{}).(*DisplayCurrency)
+	if !ok {
+		return nil
+	}
+	return v
 }

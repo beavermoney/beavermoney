@@ -99,19 +99,18 @@ func main() {
 		panic(err)
 	}
 
-	// Setup database (currencies, etc.)
-	if err := seed.Setup(ctx, entClient, logger); err != nil {
+	// Setup internal clients
+	frankfurterClient, err := frankfurter.NewClientWithResponses(cfg.FrankfurterBaseURL + "/v2")
+	if err != nil {
+		panic(fmt.Errorf("failed to create frankfurter client: %w", err))
+	}
+
+	if err := seed.Setup(ctx, entClient, frankfurterClient, logger); err != nil {
 		logger.Error(
 			"database setup failed",
 			slog.String("error", err.Error()),
 		)
 		panic(err)
-	}
-
-	// Setup internal clients
-	frankfurterClient, err := frankfurter.NewClientWithResponses(cfg.FrankfurterBaseURL + "/v2")
-	if err != nil {
-		panic(fmt.Errorf("failed to create frankfurter client: %w", err))
 	}
 
 	// Use EODHD provider if API key is provided, otherwise fall back to Yahoo
@@ -137,6 +136,7 @@ func main() {
 			"X-CSRF-Token",
 			"sentry-trace",
 			"X-Household-ID",
+			"X-Display-Currency-ID",
 			"baggage",
 		},
 		AllowCredentials: true,

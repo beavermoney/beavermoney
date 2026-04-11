@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<83fb6221d92ba63707ba02ef41ea9a2f>>
+ * @generated SignedSource<<f5529e503cc75b7804a601b2dee5daf9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -217,7 +217,7 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "fxRate",
+                "name": "costInDisplayCurrency",
                 "storageKey": null
               }
             ],
@@ -229,12 +229,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ecbf59dee60c63406acae8dd47711dbf",
+    "cacheID": "b953bae24b477bb1f31cb526cede8920",
     "id": null,
     "metadata": {},
     "name": "newSubscriptionMutation",
     "operationKind": "mutation",
-    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  fxRate\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  costInDisplayCurrency\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();
