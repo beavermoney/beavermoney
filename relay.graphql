@@ -2008,12 +2008,6 @@ type Snapshot implements Node {
   note: String
   household: Household!
   snapshotEntries: [SnapshotEntry!]
-  netWorth: String!
-  liquidity: String!
-  investment: String!
-  property: String!
-  receivable: String!
-  liability: String!
 }
 
 """

@@ -57,7 +57,6 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
 	RecurringSubscription() RecurringSubscriptionResolver
-	Snapshot() SnapshotResolver
 	SnapshotEntry() SnapshotEntryResolver
 	TransactionEntry() TransactionEntryResolver
 	AccountWhereInput() AccountWhereInputResolver
@@ -407,13 +406,7 @@ type ComplexityRoot struct {
 		Household       func(childComplexity int) int
 		HouseholdID     func(childComplexity int) int
 		ID              func(childComplexity int) int
-		Investment      func(childComplexity int) int
-		Liability       func(childComplexity int) int
-		Liquidity       func(childComplexity int) int
-		NetWorth        func(childComplexity int) int
 		Note            func(childComplexity int) int
-		Property        func(childComplexity int) int
-		Receivable      func(childComplexity int) int
 		SnapshotEntries func(childComplexity int) int
 		UpdateTime      func(childComplexity int) int
 	}
@@ -675,14 +668,6 @@ type QueryResolver interface {
 type RecurringSubscriptionResolver interface {
 	Cost(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
 	FxRate(ctx context.Context, obj *ent.RecurringSubscription) (string, error)
-}
-type SnapshotResolver interface {
-	NetWorth(ctx context.Context, obj *ent.Snapshot) (string, error)
-	Liquidity(ctx context.Context, obj *ent.Snapshot) (string, error)
-	Investment(ctx context.Context, obj *ent.Snapshot) (string, error)
-	Property(ctx context.Context, obj *ent.Snapshot) (string, error)
-	Receivable(ctx context.Context, obj *ent.Snapshot) (string, error)
-	Liability(ctx context.Context, obj *ent.Snapshot) (string, error)
 }
 type SnapshotEntryResolver interface {
 	Liquidity(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
@@ -2596,48 +2581,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Snapshot.ID(childComplexity), true
-	case "Snapshot.investment":
-		if e.complexity.Snapshot.Investment == nil {
-			break
-		}
-
-		return e.complexity.Snapshot.Investment(childComplexity), true
-	case "Snapshot.liability":
-		if e.complexity.Snapshot.Liability == nil {
-			break
-		}
-
-		return e.complexity.Snapshot.Liability(childComplexity), true
-	case "Snapshot.liquidity":
-		if e.complexity.Snapshot.Liquidity == nil {
-			break
-		}
-
-		return e.complexity.Snapshot.Liquidity(childComplexity), true
-	case "Snapshot.netWorth":
-		if e.complexity.Snapshot.NetWorth == nil {
-			break
-		}
-
-		return e.complexity.Snapshot.NetWorth(childComplexity), true
 	case "Snapshot.note":
 		if e.complexity.Snapshot.Note == nil {
 			break
 		}
 
 		return e.complexity.Snapshot.Note(childComplexity), true
-	case "Snapshot.property":
-		if e.complexity.Snapshot.Property == nil {
-			break
-		}
-
-		return e.complexity.Snapshot.Property(childComplexity), true
-	case "Snapshot.receivable":
-		if e.complexity.Snapshot.Receivable == nil {
-			break
-		}
-
-		return e.complexity.Snapshot.Receivable(childComplexity), true
 	case "Snapshot.snapshotEntries":
 		if e.complexity.Snapshot.SnapshotEntries == nil {
 			break
@@ -13892,180 +13841,6 @@ func (ec *executionContext) fieldContext_Snapshot_snapshotEntries(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Snapshot_netWorth(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Snapshot_netWorth,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Snapshot().NetWorth(ctx, obj)
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Snapshot_netWorth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Snapshot",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Snapshot_liquidity(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Snapshot_liquidity,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Snapshot().Liquidity(ctx, obj)
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Snapshot_liquidity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Snapshot",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Snapshot_investment(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Snapshot_investment,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Snapshot().Investment(ctx, obj)
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Snapshot_investment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Snapshot",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Snapshot_property(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Snapshot_property,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Snapshot().Property(ctx, obj)
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Snapshot_property(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Snapshot",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Snapshot_receivable(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Snapshot_receivable,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Snapshot().Receivable(ctx, obj)
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Snapshot_receivable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Snapshot",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Snapshot_liability(ctx context.Context, field graphql.CollectedField, obj *ent.Snapshot) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Snapshot_liability,
-		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Snapshot().Liability(ctx, obj)
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Snapshot_liability(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Snapshot",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _SnapshotConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotConnection) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -14207,18 +13982,6 @@ func (ec *executionContext) fieldContext_SnapshotEdge_node(_ context.Context, fi
 				return ec.fieldContext_Snapshot_household(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
-			case "netWorth":
-				return ec.fieldContext_Snapshot_netWorth(ctx, field)
-			case "liquidity":
-				return ec.fieldContext_Snapshot_liquidity(ctx, field)
-			case "investment":
-				return ec.fieldContext_Snapshot_investment(ctx, field)
-			case "property":
-				return ec.fieldContext_Snapshot_property(ctx, field)
-			case "receivable":
-				return ec.fieldContext_Snapshot_receivable(ctx, field)
-			case "liability":
-				return ec.fieldContext_Snapshot_liability(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
 		},
@@ -14822,18 +14585,6 @@ func (ec *executionContext) fieldContext_SnapshotEntry_snapshot(_ context.Contex
 				return ec.fieldContext_Snapshot_household(ctx, field)
 			case "snapshotEntries":
 				return ec.fieldContext_Snapshot_snapshotEntries(ctx, field)
-			case "netWorth":
-				return ec.fieldContext_Snapshot_netWorth(ctx, field)
-			case "liquidity":
-				return ec.fieldContext_Snapshot_liquidity(ctx, field)
-			case "investment":
-				return ec.fieldContext_Snapshot_investment(ctx, field)
-			case "property":
-				return ec.fieldContext_Snapshot_property(ctx, field)
-			case "receivable":
-				return ec.fieldContext_Snapshot_receivable(ctx, field)
-			case "liability":
-				return ec.fieldContext_Snapshot_liability(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Snapshot", field.Name)
 		},
@@ -34020,222 +33771,6 @@ func (ec *executionContext) _Snapshot(ctx context.Context, sel ast.SelectionSet,
 					}
 				}()
 				res = ec._Snapshot_snapshotEntries(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "netWorth":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Snapshot_netWorth(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "liquidity":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Snapshot_liquidity(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "investment":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Snapshot_investment(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "property":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Snapshot_property(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "receivable":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Snapshot_receivable(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "liability":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Snapshot_liability(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 

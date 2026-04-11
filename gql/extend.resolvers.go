@@ -8,13 +8,9 @@ package gql
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"beavermoney.app/ent"
-	"beavermoney.app/ent/household"
 	"beavermoney.app/gql/model"
-	"beavermoney.app/internal/contextkeys"
-	"github.com/shopspring/decimal"
 )
 
 // BalanceInHouseholdCurrency is the resolver for the balanceInHouseholdCurrency field.
@@ -51,116 +47,4 @@ func (r *investmentResolver) ValueInHouseholdCurrency(ctx context.Context, obj *
 	}
 
 	return obj.Value.Mul(account.FxRate).String(), nil
-}
-
-type snapshotAggregation struct {
-	Liquidity  decimal.Decimal
-	Investment decimal.Decimal
-	Property   decimal.Decimal
-	Receivable decimal.Decimal
-	Liability  decimal.Decimal
-}
-
-func (r *snapshotResolver) aggregate(ctx context.Context, obj *ent.Snapshot) (*snapshotAggregation, error) {
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	hh, err := r.entClient.Household.Query().
-		Where(household.IDEQ(householdID)).
-		WithCurrency().
-		Only(ctx)
-	if err != nil {
-		r.logger.Error("Failed to get household", "error", err)
-		return nil, err
-	}
-
-	entries, err := obj.QuerySnapshotEntries().WithCurrency().All(ctx)
-	if err != nil {
-		r.logger.Error("Failed to query snapshot entries", "error", err)
-		return nil, err
-	}
-
-	currencyCodes := make([]string, 0, len(entries))
-	for _, entry := range entries {
-		currencyCodes = append(currencyCodes, entry.Edges.Currency.Code)
-	}
-
-	rates, err := r.fxrateClient.GetRates(ctx, currencyCodes, hh.Edges.Currency.Code, time.Now())
-	if err != nil {
-		r.logger.Error("Failed to get FX rates", "error", err)
-		return nil, err
-	}
-
-	zero := decimal.NewFromInt(0)
-	agg := &snapshotAggregation{
-		Liquidity:  zero,
-		Investment: zero,
-		Property:   zero,
-		Receivable: zero,
-		Liability:  zero,
-	}
-
-	for _, entry := range entries {
-		rate := rates[entry.Edges.Currency.Code]
-		agg.Liquidity = agg.Liquidity.Add(entry.Liquidity.Mul(rate))
-		agg.Investment = agg.Investment.Add(entry.Investment.Mul(rate))
-		agg.Property = agg.Property.Add(entry.Property.Mul(rate))
-		agg.Receivable = agg.Receivable.Add(entry.Receivable.Mul(rate))
-		agg.Liability = agg.Liability.Add(entry.Liability.Mul(rate))
-	}
-
-	return agg, nil
-}
-
-// NetWorth is the resolver for the netWorth field.
-func (r *snapshotResolver) NetWorth(ctx context.Context, obj *ent.Snapshot) (string, error) {
-	agg, err := r.aggregate(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	return agg.Liquidity.Add(agg.Investment).Add(agg.Property).Add(agg.Receivable).Add(agg.Liability).String(), nil
-}
-
-// Liquidity is the resolver for the liquidity field.
-func (r *snapshotResolver) Liquidity(ctx context.Context, obj *ent.Snapshot) (string, error) {
-	agg, err := r.aggregate(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	return agg.Liquidity.String(), nil
-}
-
-// Investment is the resolver for the investment field.
-func (r *snapshotResolver) Investment(ctx context.Context, obj *ent.Snapshot) (string, error) {
-	agg, err := r.aggregate(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	return agg.Investment.String(), nil
-}
-
-// Property is the resolver for the property field.
-func (r *snapshotResolver) Property(ctx context.Context, obj *ent.Snapshot) (string, error) {
-	agg, err := r.aggregate(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	return agg.Property.String(), nil
-}
-
-// Receivable is the resolver for the receivable field.
-func (r *snapshotResolver) Receivable(ctx context.Context, obj *ent.Snapshot) (string, error) {
-	agg, err := r.aggregate(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	return agg.Receivable.String(), nil
-}
-
-// Liability is the resolver for the liability field.
-func (r *snapshotResolver) Liability(ctx context.Context, obj *ent.Snapshot) (string, error) {
-	agg, err := r.aggregate(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	return agg.Liability.String(), nil
 }
