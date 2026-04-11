@@ -40,6 +40,9 @@ const SubscriptionsPanelFragment = graphql`
           id
           active
           cost
+          currency {
+            code
+          }
           interval
           intervalCount
           startDate
@@ -70,7 +73,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     SubscriptionsPanelFragment,
     fragmentRef,
   )
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
@@ -114,7 +117,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         })
 
       const getYearlyEquivalent = (sub: (typeof activeSubscriptions)[0]) => {
-        const costInDisplayCurrency = currency(sub.cost)
+        const costInDisplayCurrency = convert(sub.cost, sub.currency.code)
         switch (sub.interval) {
           case 'week':
             return costInDisplayCurrency.divide(sub.intervalCount).multiply(52)

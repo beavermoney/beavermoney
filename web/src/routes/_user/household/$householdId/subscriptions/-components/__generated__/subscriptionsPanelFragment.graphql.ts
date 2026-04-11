@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<51e24d6c1a9f66026d8158e22fa50afa>>
+ * @generated SignedSource<<711b97e8d283989743cb52b02d7d8d6a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,6 +19,9 @@ export type subscriptionsPanelFragment$data = {
       readonly node: {
         readonly active: boolean;
         readonly cost: string;
+        readonly currency: {
+          readonly code: string;
+        };
         readonly id: string;
         readonly interval: RecurringSubscriptionInterval;
         readonly intervalCount: number;
@@ -134,6 +137,24 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "concreteType": "Currency",
+                  "kind": "LinkedField",
+                  "name": "currency",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "code",
+                      "storageKey": null
+                    }
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "kind": "ScalarField",
                   "name": "interval",
                   "storageKey": null
@@ -231,6 +252,6 @@ return {
 };
 })();
 
-(node as any).hash = "7850cd1b152bec84cd4f2618f9aad6fa";
+(node as any).hash = "71db342553c16da7a34d1037cd7fa6bf";
 
 export default node;

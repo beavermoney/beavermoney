@@ -102,20 +102,6 @@ type MoveInvestmentInputCustom struct {
 	Fees           []*ent.CreateTransactionEntryInput `json:"fees"`
 }
 
-type NetWorthBreakdown struct {
-	Liquidity  string `json:"liquidity"`
-	Investment string `json:"investment"`
-	Property   string `json:"property"`
-	Receivable string `json:"receivable"`
-	Liability  string `json:"liability"`
-}
-
-type NetWorthDataPoint struct {
-	Date      time.Time          `json:"date"`
-	NetWorth  string             `json:"netWorth"`
-	Breakdown *NetWorthBreakdown `json:"breakdown"`
-}
-
 type SellInvestmentInputCustom struct {
 	Transaction      *ent.CreateTransactionInput        `json:"transaction"`
 	TransactionEntry *ent.CreateTransactionEntryInput   `json:"transactionEntry"`

@@ -713,7 +713,6 @@ type Household implements Node {
   householdRates: [HouseholdRate!]
   userHouseholds: [UserHousehold!]
   financialReport(period: TimePeriodInput!): FinancialReport!
-  netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
 }
 
 type HouseholdCurrency implements Node {
@@ -3549,20 +3548,6 @@ type CategoryAggregate {
   category: TransactionCategory!
   total: String!
   transactionCount: Int!
-}
-
-type NetWorthBreakdown {
-  liquidity: String!
-  investment: String!
-  property: String!
-  receivable: String!
-  liability: String!
-}
-
-type NetWorthDataPoint {
-  date: Time!
-  netWorth: String!
-  breakdown: NetWorthBreakdown!
 }
 
 schema {
