@@ -157,7 +157,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 				return nil, err
 			}
 
-			rate = decimal.NewFromFloat(float64(resp.JSON200.Rate))
+			rate = decimal.NewFromFloat32(resp.JSON200.Rate)
 		}
 
 		convertedTotal := row.Total.Mul(rate)
