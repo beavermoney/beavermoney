@@ -19,6 +19,9 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -219,6 +222,33 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.
 		Exec(ctx)
 	if err != nil {
 		r.logger.Error("Failed to delete checkpoints", "error", err)
+		return nil, err
+	}
+
+	// 7b. SnapshotRate — no household_id, delete via snapshot edge
+	_, err = client.SnapshotRate.Delete().
+		Where(snapshotrate.HasSnapshotWith(snapshot.HouseholdIDEQ(id))).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete snapshot rates", "error", err)
+		return nil, err
+	}
+
+	// 7c. SnapshotEntry
+	_, err = client.SnapshotEntry.Delete().
+		Where(snapshotentry.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete snapshot entries", "error", err)
+		return nil, err
+	}
+
+	// 7d. Snapshot
+	_, err = client.Snapshot.Delete().
+		Where(snapshot.HouseholdIDEQ(id)).
+		Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete snapshots", "error", err)
 		return nil, err
 	}
 
