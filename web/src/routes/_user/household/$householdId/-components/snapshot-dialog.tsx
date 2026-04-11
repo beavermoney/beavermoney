@@ -1,0 +1,188 @@
+import { graphql } from 'relay-runtime'
+import { useFragment, useMutation } from 'react-relay'
+import { useState } from 'react'
+import currency from 'currency.js'
+import { match } from 'ts-pattern'
+import { toast } from 'sonner'
+import { capitalize } from 'lodash-es'
+import { FlagIcon } from 'lucide-react'
+import type { snapshotDialogFragment$key } from './__generated__/snapshotDialogFragment.graphql'
+import type { snapshotDialogMutation } from './__generated__/snapshotDialogMutation.graphql'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { useHousehold } from '@/hooks/use-household'
+import { useCurrency } from '@/hooks/use-currency'
+import { commitMutationResult } from '@/lib/relay'
+import { ItemTitle } from '@/components/ui/item'
+
+const SnapshotDialogFragment = graphql`
+  fragment snapshotDialogFragment on Household {
+    accounts(where: { archived: false }) {
+      edges {
+        node {
+          type
+          valueInHouseholdCurrency
+        }
+      }
+    }
+  }
+`
+
+const SnapshotDialogMutation = graphql`
+  mutation snapshotDialogMutation($input: CreateSnapshotInput!) {
+    createSnapshot(input: $input) {
+      node {
+        id
+        createTime
+      }
+    }
+  }
+`
+
+const CATEGORIES = [
+  'liquidity',
+  'investment',
+  'property',
+  'receivable',
+  'liability',
+] as const
+
+const CATEGORY_COLORS: Record<(typeof CATEGORIES)[number], string> = {
+  liquidity: 'var(--chart-liquidity)',
+  investment: 'var(--chart-investment)',
+  property: 'var(--chart-property)',
+  receivable: 'var(--chart-receivable)',
+  liability: 'var(--chart-liability)',
+}
+
+type SnapshotDialogProps = {
+  fragmentRef: snapshotDialogFragment$key
+}
+
+export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
+  const data = useFragment(SnapshotDialogFragment, fragmentRef)
+  const { household } = useHousehold()
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
+
+  const [open, setOpen] = useState(false)
+  const [note, setNote] = useState('')
+
+  const [commitMutation, isMutationInFlight] =
+    useMutation<snapshotDialogMutation>(SnapshotDialogMutation)
+
+  const breakdown = CATEGORIES.reduce(
+    (acc, type) => {
+      const total = (data.accounts.edges ?? [])
+        .filter((e) => e?.node?.type === type)
+        .reduce(
+          (sum, e) => sum.add(currency(e!.node!.valueInHouseholdCurrency)),
+          currency(0),
+        )
+      acc[type] = total
+      return acc
+    },
+    {} as Record<(typeof CATEGORIES)[number], currency>,
+  )
+
+  const netWorth = CATEGORIES.reduce(
+    (sum, type) => sum.add(breakdown[type]),
+    currency(0),
+  )
+
+  const handleSnapshot = async () => {
+    const result = await commitMutationResult<snapshotDialogMutation>(
+      commitMutation,
+      {
+        variables: { input: { note: note.trim() || null } },
+        updater: (store) => {
+          store.get(household.id)?.invalidateRecord()
+        },
+      },
+    )
+
+    match(result)
+      .with({ status: 'success' }, () => {
+        toast.success('Snapshot saved!')
+        setNote('')
+        setOpen(false)
+      })
+      .with({ status: 'error' }, ({ error }) => {
+        toast.error(`Failed to save snapshot: ${error}`)
+      })
+      .exhaustive()
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={
+          <Button variant="outline" className="cursor-pointer">
+            <FlagIcon />
+          </Button>
+        }
+      />
+      <DialogContent className="gap-3">
+        <DialogHeader>
+          <DialogTitle>Snapshot</DialogTitle>
+        </DialogHeader>
+
+        <div className="bg-muted/50 rounded-lg px-3 py-2.5">
+          <p className="text-muted-foreground mb-0.5 text-xs">Net Worth</p>
+          <ItemTitle className="text-xl tabular-nums">
+            {formatCurrencyWithPrivacyMode({
+              value: netWorth,
+              currencyCode: household.currency.code,
+            })}
+          </ItemTitle>
+        </div>
+
+        <div className="flex flex-col gap-0">
+          {CATEGORIES.map((type, i) => (
+            <div
+              key={type}
+              className={`flex items-center justify-between py-1.5 ${i < CATEGORIES.length - 1 ? 'border-border/50 border-b' : ''}`}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="size-1.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: CATEGORY_COLORS[type] }}
+                />
+                <span className="text-muted-foreground">
+                  {capitalize(type)}
+                </span>
+              </div>
+              <span className="tabular-nums">
+                {formatCurrencyWithPrivacyMode({
+                  value: breakdown[type],
+                  currencyCode: household.currency.code,
+                  liability: type === 'liability',
+                })}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <Textarea
+          placeholder="Add a note (optional)"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          className="min-h-16 resize-none"
+        />
+
+        <DialogFooter showCloseButton>
+          <Button onClick={handleSnapshot} disabled={isMutationInFlight}>
+            {isMutationInFlight ? 'Saving...' : 'Save'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

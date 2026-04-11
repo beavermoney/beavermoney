@@ -1716,6 +1716,161 @@ func (r *mutationResolver) DeleteCheckpoint(ctx context.Context, id int) (*model
 	return &model.DeleteCheckpointPayload{DeletedCheckpointID: id}, nil
 }
 
+// CreateSnapshot is the resolver for the createSnapshot field.
+func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput) (*ent.SnapshotEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.CreateSnapshot",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	accounts, err := client.Account.Query().
+		Where(account.ArchivedEQ(false)).
+		WithCurrency().
+		All(ctx)
+	if err != nil {
+		r.logger.Error("Failed to fetch accounts", "error", err)
+		return nil, err
+	}
+
+	snap, err := client.Snapshot.Create().
+		SetHouseholdID(householdID).
+		SetInput(input).
+		Save(ctx)
+	if err != nil {
+		r.logger.Error("Failed to create snapshot", "error", err)
+		return nil, err
+	}
+
+	type entryKey struct {
+		UserID     int
+		CurrencyID int
+	}
+	type entryValues struct {
+		Liquidity  decimal.Decimal
+		Investment decimal.Decimal
+		Property   decimal.Decimal
+		Receivable decimal.Decimal
+		Liability  decimal.Decimal
+	}
+
+	grouped := make(map[entryKey]*entryValues)
+	zero := decimal.NewFromInt(0)
+
+	for _, acc := range accounts {
+		key := entryKey{UserID: acc.UserID, CurrencyID: acc.CurrencyID}
+		vals, ok := grouped[key]
+		if !ok {
+			vals = &entryValues{
+				Liquidity:  zero,
+				Investment: zero,
+				Property:   zero,
+				Receivable: zero,
+				Liability:  zero,
+			}
+			grouped[key] = vals
+		}
+
+		switch acc.Type {
+		case account.TypeLiquidity:
+			vals.Liquidity = vals.Liquidity.Add(acc.Value)
+		case account.TypeInvestment:
+			vals.Investment = vals.Investment.Add(acc.Value)
+		case account.TypeProperty:
+			vals.Property = vals.Property.Add(acc.Value)
+		case account.TypeReceivable:
+			vals.Receivable = vals.Receivable.Add(acc.Value)
+		case account.TypeLiability:
+			vals.Liability = vals.Liability.Add(acc.Value)
+		}
+	}
+
+	builders := make([]*ent.SnapshotEntryCreate, 0, len(grouped))
+	for key, vals := range grouped {
+		builders = append(builders, client.SnapshotEntry.Create().
+			SetSnapshotID(snap.ID).
+			SetHouseholdID(householdID).
+			SetUserID(key.UserID).
+			SetCurrencyID(key.CurrencyID).
+			SetLiquidity(vals.Liquidity).
+			SetInvestment(vals.Investment).
+			SetProperty(vals.Property).
+			SetReceivable(vals.Receivable).
+			SetLiability(vals.Liability),
+		)
+	}
+
+	if len(builders) > 0 {
+		if _, err := client.SnapshotEntry.CreateBulk(builders...).Save(ctx); err != nil {
+			r.logger.Error("Failed to create snapshot entries", "error", err)
+			return nil, err
+		}
+	}
+
+	return &ent.SnapshotEdge{
+		Node:   snap,
+		Cursor: gqlutil.EncodeCursor(snap.ID),
+	}, nil
+}
+
+// UpdateSnapshot is the resolver for the updateSnapshot field.
+func (r *mutationResolver) UpdateSnapshot(ctx context.Context, id int, input ent.UpdateSnapshotInput) (*ent.SnapshotEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateSnapshot",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	updated, err := client.Snapshot.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		r.logger.Error("Failed to update snapshot", "error", err)
+		return nil, err
+	}
+
+	return &ent.SnapshotEdge{
+		Node:   updated,
+		Cursor: gqlutil.EncodeCursor(updated.ID),
+	}, nil
+}
+
+// DeleteSnapshot is the resolver for the deleteSnapshot field.
+func (r *mutationResolver) DeleteSnapshot(ctx context.Context, id int) (*model.DeleteSnapshotPayload, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteSnapshot",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	err := client.Snapshot.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		r.logger.Error("Failed to delete snapshot", "error", err)
+		return nil, err
+	}
+
+	return &model.DeleteSnapshotPayload{DeletedSnapshotID: id}, nil
+}
+
 // Refresh is the resolver for the refresh field.
 func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 	userID := contextkeys.GetUserID(ctx)

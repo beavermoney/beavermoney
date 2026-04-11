@@ -286,8 +286,8 @@ func Seed(
 	return nil
 }
 
-// SeedDemoHousehold creates realistic demo data for a new household with weekly checkpoints.
-// Data is built incrementally over 6 months (26 weeks) with accurate checkpoints after each week.
+// SeedDemoHousehold creates realistic demo data for a new household with weekly snapshots.
+// Data is built incrementally over 6 months (26 weeks) with accurate snapshots after each week.
 func SeedDemoHousehold(
 	ctx context.Context,
 	client *ent.Client,
@@ -350,7 +350,6 @@ func SeedDemoHousehold(
 		return fmt.Errorf("failed to create investments: %w", err)
 	}
 
-	// Build data week by week with checkpoints
 	currentDate := startDate
 	for weekNumber := 0; weekNumber < 26; weekNumber++ {
 		weekStart := currentDate
@@ -395,10 +394,8 @@ func SeedDemoHousehold(
 			}
 		}
 
-		// Update all investment quotes to their real historical price at week-end so the
-		// DB trigger recalculates Account.Value before we snapshot the checkpoint.
-		checkpointDate := weekEnd
-		if err := updateInvestmentQuotesToHistorical(ctx, client, investments, historicalPrices, checkpointDate); err != nil {
+		snapshotDate := weekEnd
+		if err := updateInvestmentQuotesToHistorical(ctx, client, investments, historicalPrices, snapshotDate); err != nil {
 			return fmt.Errorf(
 				"failed to update investment quotes for week %d: %w",
 				weekNumber,
@@ -406,10 +403,9 @@ func SeedDemoHousehold(
 			)
 		}
 
-		// Create checkpoint at end of week
-		if err := createCheckpointAtDate(ctx, client, household, householdCurrency, checkpointDate); err != nil {
+		if err := createSnapshotAtDate(ctx, client, household, userID, snapshotDate); err != nil {
 			return fmt.Errorf(
-				"failed to create checkpoint for week %d: %w",
+				"failed to create snapshot for week %d: %w",
 				weekNumber,
 				err,
 			)
@@ -946,15 +942,13 @@ func buyShares(
 	return nil
 }
 
-// createCheckpointAtDate creates a checkpoint at a specific historical date
-func createCheckpointAtDate(
+func createSnapshotAtDate(
 	ctx context.Context,
 	client *ent.Client,
 	household *ent.Household,
-	householdCurrency *ent.Currency,
-	checkpointDate time.Time,
+	userID int,
+	snapshotDate time.Time,
 ) error {
-	// Query all accounts — FxRate is already stored on each account
 	accounts, err := client.Account.Query().
 		Where(account.HouseholdIDEQ(household.ID)).
 		All(ctx)
@@ -962,50 +956,80 @@ func createCheckpointAtDate(
 		return fmt.Errorf("failed to query accounts: %w", err)
 	}
 
-	// Calculate totals by account type
+	snap, err := client.Snapshot.Create().
+		SetHouseholdID(household.ID).
+		SetCreateTime(snapshotDate).
+		Save(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to create snapshot: %w", err)
+	}
+
+	type entryKey struct {
+		UserID     int
+		CurrencyID int
+	}
+	type entryValues struct {
+		Liquidity  decimal.Decimal
+		Investment decimal.Decimal
+		Property   decimal.Decimal
+		Receivable decimal.Decimal
+		Liability  decimal.Decimal
+	}
+
+	grouped := make(map[entryKey]*entryValues)
 	zero := decimal.NewFromInt(0)
-	liquidity := zero
-	investment := zero
-	property := zero
-	receivable := zero
-	liability := zero
 
 	for _, acc := range accounts {
-		convertedValue := acc.Value.Mul(acc.FxRate)
+		key := entryKey{UserID: acc.UserID, CurrencyID: acc.CurrencyID}
+		vals, ok := grouped[key]
+		if !ok {
+			vals = &entryValues{
+				Liquidity:  zero,
+				Investment: zero,
+				Property:   zero,
+				Receivable: zero,
+				Liability:  zero,
+			}
+			grouped[key] = vals
+		}
 
 		switch acc.Type {
 		case account.TypeLiquidity:
-			liquidity = liquidity.Add(convertedValue)
+			vals.Liquidity = vals.Liquidity.Add(acc.Value)
 		case account.TypeInvestment:
-			investment = investment.Add(convertedValue)
+			vals.Investment = vals.Investment.Add(acc.Value)
 		case account.TypeProperty:
-			property = property.Add(convertedValue)
+			vals.Property = vals.Property.Add(acc.Value)
 		case account.TypeReceivable:
-			receivable = receivable.Add(convertedValue)
+			vals.Receivable = vals.Receivable.Add(acc.Value)
 		case account.TypeLiability:
-			liability = liability.Add(convertedValue)
+			vals.Liability = vals.Liability.Add(acc.Value)
 		}
 	}
 
-	netWorth := liquidity.Add(investment).
-		Add(property).
-		Add(receivable).
-		Add(liability)
+	builders := make([]*ent.SnapshotEntryCreate, 0, len(grouped))
+	for key, vals := range grouped {
+		builders = append(builders, client.SnapshotEntry.Create().
+			SetSnapshotID(snap.ID).
+			SetHouseholdID(household.ID).
+			SetUserID(key.UserID).
+			SetCurrencyID(key.CurrencyID).
+			SetLiquidity(vals.Liquidity).
+			SetInvestment(vals.Investment).
+			SetProperty(vals.Property).
+			SetReceivable(vals.Receivable).
+			SetLiability(vals.Liability).
+			SetCreateTime(snapshotDate),
+		)
+	}
 
-	// Create checkpoint with backdated timestamp
-	_, err = client.Checkpoint.Create().
-		SetHouseholdID(household.ID).
-		SetCurrencyID(householdCurrency.ID).
-		SetNetWorth(netWorth).
-		SetLiquidity(liquidity).
-		SetInvestment(investment).
-		SetProperty(property).
-		SetReceivable(receivable).
-		SetLiability(liability).
-		SetCreateTime(checkpointDate).
-		Save(ctx)
+	if len(builders) > 0 {
+		if _, err := client.SnapshotEntry.CreateBulk(builders...).Save(ctx); err != nil {
+			return fmt.Errorf("failed to create snapshot entries: %w", err)
+		}
+	}
 
-	return err
+	return nil
 }
 
 // Helper functions for realistic amounts

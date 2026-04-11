@@ -2008,6 +2008,12 @@ type Snapshot implements Node {
   note: String
   household: Household!
   snapshotEntries: [SnapshotEntry!]
+  netWorth: String!
+  liquidity: String!
+  investment: String!
+  property: String!
+  receivable: String!
+  liability: String!
 }
 
 """
@@ -3281,6 +3287,9 @@ type Mutation {
   createCheckpoint(input: CreateCheckpointInput!): CheckpointEdge!
   updateCheckpoint(id: ID!, input: UpdateCheckpointInput!): CheckpointEdge!
   deleteCheckpoint(id: ID!): DeleteCheckpointPayload!
+  createSnapshot(input: CreateSnapshotInput!): SnapshotEdge!
+  updateSnapshot(id: ID!, input: UpdateSnapshotInput!): SnapshotEdge!
+  deleteSnapshot(id: ID!): DeleteSnapshotPayload!
   refresh: Boolean!
 }
 
@@ -3306,6 +3315,10 @@ type DeleteTransactionPayload {
 
 type DeleteCheckpointPayload {
   deletedCheckpointId: ID!
+}
+
+type DeleteSnapshotPayload {
+  deletedSnapshotId: ID!
 }
 
 input CreateInvestmentInputCustom {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5f1ce6dbf86b72bd6f804ea09b2f084a>>
+ * @generated SignedSource<<8f9cc26130fd6b4803b8f36291787472>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,8 +16,8 @@ export type RecurringSubscriptionInterval = "month" | "week" | "year" | "%future
 export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 export type UserHouseholdRole = "admin" | "member" | "%future added value";
 export type UserKeyProvider = "google" | "%future added value";
-export type CheckpointWhereInput = {
-  and?: ReadonlyArray<CheckpointWhereInput> | null | undefined;
+export type SnapshotWhereInput = {
+  and?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
   createTime?: any | null | undefined;
   createTimeGT?: any | null | undefined;
   createTimeGTE?: any | null | undefined;
@@ -26,14 +26,10 @@ export type CheckpointWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  currencyID?: string | null | undefined;
-  currencyIDIn?: ReadonlyArray<string> | null | undefined;
-  currencyIDNEQ?: string | null | undefined;
-  currencyIDNotIn?: ReadonlyArray<string> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
+  hasSnapshotEntries?: boolean | null | undefined;
+  hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
   householdID?: string | null | undefined;
   householdIDIn?: ReadonlyArray<string> | null | undefined;
   householdIDNEQ?: string | null | undefined;
@@ -46,39 +42,7 @@ export type CheckpointWhereInput = {
   idLTE?: string | null | undefined;
   idNEQ?: string | null | undefined;
   idNotIn?: ReadonlyArray<string> | null | undefined;
-  investment?: string | null | undefined;
-  investmentGT?: string | null | undefined;
-  investmentGTE?: string | null | undefined;
-  investmentIn?: ReadonlyArray<string> | null | undefined;
-  investmentLT?: string | null | undefined;
-  investmentLTE?: string | null | undefined;
-  investmentNEQ?: string | null | undefined;
-  investmentNotIn?: ReadonlyArray<string> | null | undefined;
-  liability?: string | null | undefined;
-  liabilityGT?: string | null | undefined;
-  liabilityGTE?: string | null | undefined;
-  liabilityIn?: ReadonlyArray<string> | null | undefined;
-  liabilityLT?: string | null | undefined;
-  liabilityLTE?: string | null | undefined;
-  liabilityNEQ?: string | null | undefined;
-  liabilityNotIn?: ReadonlyArray<string> | null | undefined;
-  liquidity?: string | null | undefined;
-  liquidityGT?: string | null | undefined;
-  liquidityGTE?: string | null | undefined;
-  liquidityIn?: ReadonlyArray<string> | null | undefined;
-  liquidityLT?: string | null | undefined;
-  liquidityLTE?: string | null | undefined;
-  liquidityNEQ?: string | null | undefined;
-  liquidityNotIn?: ReadonlyArray<string> | null | undefined;
-  netWorth?: string | null | undefined;
-  netWorthGT?: string | null | undefined;
-  netWorthGTE?: string | null | undefined;
-  netWorthIn?: ReadonlyArray<string> | null | undefined;
-  netWorthLT?: string | null | undefined;
-  netWorthLTE?: string | null | undefined;
-  netWorthNEQ?: string | null | undefined;
-  netWorthNotIn?: ReadonlyArray<string> | null | undefined;
-  not?: CheckpointWhereInput | null | undefined;
+  not?: SnapshotWhereInput | null | undefined;
   note?: string | null | undefined;
   noteContains?: string | null | undefined;
   noteContainsFold?: string | null | undefined;
@@ -94,23 +58,7 @@ export type CheckpointWhereInput = {
   noteNEQ?: string | null | undefined;
   noteNotIn?: ReadonlyArray<string> | null | undefined;
   noteNotNil?: boolean | null | undefined;
-  or?: ReadonlyArray<CheckpointWhereInput> | null | undefined;
-  property?: string | null | undefined;
-  propertyGT?: string | null | undefined;
-  propertyGTE?: string | null | undefined;
-  propertyIn?: ReadonlyArray<string> | null | undefined;
-  propertyLT?: string | null | undefined;
-  propertyLTE?: string | null | undefined;
-  propertyNEQ?: string | null | undefined;
-  propertyNotIn?: ReadonlyArray<string> | null | undefined;
-  receivable?: string | null | undefined;
-  receivableGT?: string | null | undefined;
-  receivableGTE?: string | null | undefined;
-  receivableIn?: ReadonlyArray<string> | null | undefined;
-  receivableLT?: string | null | undefined;
-  receivableLTE?: string | null | undefined;
-  receivableNEQ?: string | null | undefined;
-  receivableNotIn?: ReadonlyArray<string> | null | undefined;
+  or?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
   updateTime?: any | null | undefined;
   updateTimeGT?: any | null | undefined;
   updateTimeGTE?: any | null | undefined;
@@ -146,6 +94,10 @@ export type HouseholdWhereInput = {
   hasInvestmentsWith?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
   hasRecurringSubscriptions?: boolean | null | undefined;
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
+  hasSnapshotEntries?: boolean | null | undefined;
+  hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  hasSnapshots?: boolean | null | undefined;
+  hasSnapshotsWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
   hasTransactionCategories?: boolean | null | undefined;
   hasTransactionCategoriesWith?: ReadonlyArray<TransactionCategoryWhereInput> | null | undefined;
   hasTransactionEntries?: boolean | null | undefined;
@@ -228,6 +180,8 @@ export type CurrencyWhereInput = {
   hasInvestmentsWith?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
   hasRecurringSubscriptions?: boolean | null | undefined;
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
+  hasSnapshotEntries?: boolean | null | undefined;
+  hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
   hasTransactionEntries?: boolean | null | undefined;
   hasTransactionEntriesWith?: ReadonlyArray<TransactionEntryWhereInput> | null | undefined;
   id?: string | null | undefined;
@@ -385,6 +339,8 @@ export type UserWhereInput = {
   hasHouseholdsWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasRecurringSubscriptions?: boolean | null | undefined;
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
+  hasSnapshotEntries?: boolean | null | undefined;
+  hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
   hasTransactions?: boolean | null | undefined;
   hasTransactionsWith?: ReadonlyArray<TransactionWhereInput> | null | undefined;
   hasUserHouseholds?: boolean | null | undefined;
@@ -960,6 +916,99 @@ export type RecurringSubscriptionWhereInput = {
   userIDNEQ?: string | null | undefined;
   userIDNotIn?: ReadonlyArray<string> | null | undefined;
 };
+export type SnapshotEntryWhereInput = {
+  and?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  createTime?: any | null | undefined;
+  createTimeGT?: any | null | undefined;
+  createTimeGTE?: any | null | undefined;
+  createTimeIn?: ReadonlyArray<any> | null | undefined;
+  createTimeLT?: any | null | undefined;
+  createTimeLTE?: any | null | undefined;
+  createTimeNEQ?: any | null | undefined;
+  createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  currencyID?: string | null | undefined;
+  currencyIDIn?: ReadonlyArray<string> | null | undefined;
+  currencyIDNEQ?: string | null | undefined;
+  currencyIDNotIn?: ReadonlyArray<string> | null | undefined;
+  hasCurrency?: boolean | null | undefined;
+  hasCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
+  hasHousehold?: boolean | null | undefined;
+  hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
+  hasSnapshot?: boolean | null | undefined;
+  hasSnapshotWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
+  hasUser?: boolean | null | undefined;
+  hasUserWith?: ReadonlyArray<UserWhereInput> | null | undefined;
+  householdID?: string | null | undefined;
+  householdIDIn?: ReadonlyArray<string> | null | undefined;
+  householdIDNEQ?: string | null | undefined;
+  householdIDNotIn?: ReadonlyArray<string> | null | undefined;
+  id?: string | null | undefined;
+  idGT?: string | null | undefined;
+  idGTE?: string | null | undefined;
+  idIn?: ReadonlyArray<string> | null | undefined;
+  idLT?: string | null | undefined;
+  idLTE?: string | null | undefined;
+  idNEQ?: string | null | undefined;
+  idNotIn?: ReadonlyArray<string> | null | undefined;
+  investment?: string | null | undefined;
+  investmentGT?: string | null | undefined;
+  investmentGTE?: string | null | undefined;
+  investmentIn?: ReadonlyArray<string> | null | undefined;
+  investmentLT?: string | null | undefined;
+  investmentLTE?: string | null | undefined;
+  investmentNEQ?: string | null | undefined;
+  investmentNotIn?: ReadonlyArray<string> | null | undefined;
+  liability?: string | null | undefined;
+  liabilityGT?: string | null | undefined;
+  liabilityGTE?: string | null | undefined;
+  liabilityIn?: ReadonlyArray<string> | null | undefined;
+  liabilityLT?: string | null | undefined;
+  liabilityLTE?: string | null | undefined;
+  liabilityNEQ?: string | null | undefined;
+  liabilityNotIn?: ReadonlyArray<string> | null | undefined;
+  liquidity?: string | null | undefined;
+  liquidityGT?: string | null | undefined;
+  liquidityGTE?: string | null | undefined;
+  liquidityIn?: ReadonlyArray<string> | null | undefined;
+  liquidityLT?: string | null | undefined;
+  liquidityLTE?: string | null | undefined;
+  liquidityNEQ?: string | null | undefined;
+  liquidityNotIn?: ReadonlyArray<string> | null | undefined;
+  not?: SnapshotEntryWhereInput | null | undefined;
+  or?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  property?: string | null | undefined;
+  propertyGT?: string | null | undefined;
+  propertyGTE?: string | null | undefined;
+  propertyIn?: ReadonlyArray<string> | null | undefined;
+  propertyLT?: string | null | undefined;
+  propertyLTE?: string | null | undefined;
+  propertyNEQ?: string | null | undefined;
+  propertyNotIn?: ReadonlyArray<string> | null | undefined;
+  receivable?: string | null | undefined;
+  receivableGT?: string | null | undefined;
+  receivableGTE?: string | null | undefined;
+  receivableIn?: ReadonlyArray<string> | null | undefined;
+  receivableLT?: string | null | undefined;
+  receivableLTE?: string | null | undefined;
+  receivableNEQ?: string | null | undefined;
+  receivableNotIn?: ReadonlyArray<string> | null | undefined;
+  snapshotID?: string | null | undefined;
+  snapshotIDIn?: ReadonlyArray<string> | null | undefined;
+  snapshotIDNEQ?: string | null | undefined;
+  snapshotIDNotIn?: ReadonlyArray<string> | null | undefined;
+  updateTime?: any | null | undefined;
+  updateTimeGT?: any | null | undefined;
+  updateTimeGTE?: any | null | undefined;
+  updateTimeIn?: ReadonlyArray<any> | null | undefined;
+  updateTimeLT?: any | null | undefined;
+  updateTimeLTE?: any | null | undefined;
+  updateTimeNEQ?: any | null | undefined;
+  updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  userID?: string | null | undefined;
+  userIDIn?: ReadonlyArray<string> | null | undefined;
+  userIDNEQ?: string | null | undefined;
+  userIDNotIn?: ReadonlyArray<string> | null | undefined;
+};
 export type UserHouseholdWhereInput = {
   and?: ReadonlyArray<UserHouseholdWhereInput> | null | undefined;
   createTime?: any | null | undefined;
@@ -993,12 +1042,116 @@ export type UserHouseholdWhereInput = {
   updateTimeNEQ?: any | null | undefined;
   updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
 };
+export type CheckpointWhereInput = {
+  and?: ReadonlyArray<CheckpointWhereInput> | null | undefined;
+  createTime?: any | null | undefined;
+  createTimeGT?: any | null | undefined;
+  createTimeGTE?: any | null | undefined;
+  createTimeIn?: ReadonlyArray<any> | null | undefined;
+  createTimeLT?: any | null | undefined;
+  createTimeLTE?: any | null | undefined;
+  createTimeNEQ?: any | null | undefined;
+  createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  currencyID?: string | null | undefined;
+  currencyIDIn?: ReadonlyArray<string> | null | undefined;
+  currencyIDNEQ?: string | null | undefined;
+  currencyIDNotIn?: ReadonlyArray<string> | null | undefined;
+  hasCurrency?: boolean | null | undefined;
+  hasCurrencyWith?: ReadonlyArray<CurrencyWhereInput> | null | undefined;
+  hasHousehold?: boolean | null | undefined;
+  hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
+  householdID?: string | null | undefined;
+  householdIDIn?: ReadonlyArray<string> | null | undefined;
+  householdIDNEQ?: string | null | undefined;
+  householdIDNotIn?: ReadonlyArray<string> | null | undefined;
+  id?: string | null | undefined;
+  idGT?: string | null | undefined;
+  idGTE?: string | null | undefined;
+  idIn?: ReadonlyArray<string> | null | undefined;
+  idLT?: string | null | undefined;
+  idLTE?: string | null | undefined;
+  idNEQ?: string | null | undefined;
+  idNotIn?: ReadonlyArray<string> | null | undefined;
+  investment?: string | null | undefined;
+  investmentGT?: string | null | undefined;
+  investmentGTE?: string | null | undefined;
+  investmentIn?: ReadonlyArray<string> | null | undefined;
+  investmentLT?: string | null | undefined;
+  investmentLTE?: string | null | undefined;
+  investmentNEQ?: string | null | undefined;
+  investmentNotIn?: ReadonlyArray<string> | null | undefined;
+  liability?: string | null | undefined;
+  liabilityGT?: string | null | undefined;
+  liabilityGTE?: string | null | undefined;
+  liabilityIn?: ReadonlyArray<string> | null | undefined;
+  liabilityLT?: string | null | undefined;
+  liabilityLTE?: string | null | undefined;
+  liabilityNEQ?: string | null | undefined;
+  liabilityNotIn?: ReadonlyArray<string> | null | undefined;
+  liquidity?: string | null | undefined;
+  liquidityGT?: string | null | undefined;
+  liquidityGTE?: string | null | undefined;
+  liquidityIn?: ReadonlyArray<string> | null | undefined;
+  liquidityLT?: string | null | undefined;
+  liquidityLTE?: string | null | undefined;
+  liquidityNEQ?: string | null | undefined;
+  liquidityNotIn?: ReadonlyArray<string> | null | undefined;
+  netWorth?: string | null | undefined;
+  netWorthGT?: string | null | undefined;
+  netWorthGTE?: string | null | undefined;
+  netWorthIn?: ReadonlyArray<string> | null | undefined;
+  netWorthLT?: string | null | undefined;
+  netWorthLTE?: string | null | undefined;
+  netWorthNEQ?: string | null | undefined;
+  netWorthNotIn?: ReadonlyArray<string> | null | undefined;
+  not?: CheckpointWhereInput | null | undefined;
+  note?: string | null | undefined;
+  noteContains?: string | null | undefined;
+  noteContainsFold?: string | null | undefined;
+  noteEqualFold?: string | null | undefined;
+  noteGT?: string | null | undefined;
+  noteGTE?: string | null | undefined;
+  noteHasPrefix?: string | null | undefined;
+  noteHasSuffix?: string | null | undefined;
+  noteIn?: ReadonlyArray<string> | null | undefined;
+  noteIsNil?: boolean | null | undefined;
+  noteLT?: string | null | undefined;
+  noteLTE?: string | null | undefined;
+  noteNEQ?: string | null | undefined;
+  noteNotIn?: ReadonlyArray<string> | null | undefined;
+  noteNotNil?: boolean | null | undefined;
+  or?: ReadonlyArray<CheckpointWhereInput> | null | undefined;
+  property?: string | null | undefined;
+  propertyGT?: string | null | undefined;
+  propertyGTE?: string | null | undefined;
+  propertyIn?: ReadonlyArray<string> | null | undefined;
+  propertyLT?: string | null | undefined;
+  propertyLTE?: string | null | undefined;
+  propertyNEQ?: string | null | undefined;
+  propertyNotIn?: ReadonlyArray<string> | null | undefined;
+  receivable?: string | null | undefined;
+  receivableGT?: string | null | undefined;
+  receivableGTE?: string | null | undefined;
+  receivableIn?: ReadonlyArray<string> | null | undefined;
+  receivableLT?: string | null | undefined;
+  receivableLTE?: string | null | undefined;
+  receivableNEQ?: string | null | undefined;
+  receivableNotIn?: ReadonlyArray<string> | null | undefined;
+  updateTime?: any | null | undefined;
+  updateTimeGT?: any | null | undefined;
+  updateTimeGTE?: any | null | undefined;
+  updateTimeIn?: ReadonlyArray<any> | null | undefined;
+  updateTimeLT?: any | null | undefined;
+  updateTimeLTE?: any | null | undefined;
+  updateTimeNEQ?: any | null | undefined;
+  updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
+};
 export type netWorthChartQuery$variables = {
-  where?: CheckpointWhereInput | null | undefined;
+  where?: SnapshotWhereInput | null | undefined;
 };
 export type netWorthChartQuery$data = {
   readonly household: {
-    readonly checkpoints: {
+    readonly snapshots: {
       readonly edges: ReadonlyArray<{
         readonly node: {
           readonly createTime: any;
@@ -1112,15 +1265,15 @@ return {
           {
             "alias": null,
             "args": (v1/*: any*/),
-            "concreteType": "CheckpointConnection",
+            "concreteType": "SnapshotConnection",
             "kind": "LinkedField",
-            "name": "checkpoints",
+            "name": "snapshots",
             "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "CheckpointEdge",
+                "concreteType": "SnapshotEdge",
                 "kind": "LinkedField",
                 "name": "edges",
                 "plural": true,
@@ -1128,7 +1281,7 @@ return {
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "Checkpoint",
+                    "concreteType": "Snapshot",
                     "kind": "LinkedField",
                     "name": "node",
                     "plural": false,
@@ -1173,15 +1326,15 @@ return {
           {
             "alias": null,
             "args": (v1/*: any*/),
-            "concreteType": "CheckpointConnection",
+            "concreteType": "SnapshotConnection",
             "kind": "LinkedField",
-            "name": "checkpoints",
+            "name": "snapshots",
             "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "CheckpointEdge",
+                "concreteType": "SnapshotEdge",
                 "kind": "LinkedField",
                 "name": "edges",
                 "plural": true,
@@ -1189,7 +1342,7 @@ return {
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "Checkpoint",
+                    "concreteType": "Snapshot",
                     "kind": "LinkedField",
                     "name": "node",
                     "plural": false,
@@ -1218,16 +1371,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "9bdd7449c893a0397659b34e5f188cf4",
+    "cacheID": "ba3dd79835d2c3d97fc1eff96d3379bf",
     "id": null,
     "metadata": {},
     "name": "netWorthChartQuery",
     "operationKind": "query",
-    "text": "query netWorthChartQuery(\n  $where: CheckpointWhereInput\n) {\n  household {\n    checkpoints(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          netWorth\n          liquidity\n          investment\n          property\n          receivable\n          liability\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          netWorth\n          liquidity\n          investment\n          property\n          receivable\n          liability\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a79225dc7fb60d6e113fd7c7ac4c8bf0";
+(node as any).hash = "a64256ca4ab9991a83973585120d1134";
 
 export default node;

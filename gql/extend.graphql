@@ -11,3 +11,12 @@ extend type Household {
   financialReport(period: TimePeriodInput!): FinancialReport!
   netWorthOverTime(period: TimePeriodInput!): [NetWorthDataPoint!]!
 }
+
+extend type Snapshot {
+  netWorth: String!
+  liquidity: String!
+  investment: String!
+  property: String!
+  receivable: String!
+  liability: String!
+}

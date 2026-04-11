@@ -23,7 +23,7 @@ import { Item } from '@/components/ui/item'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Spinner } from '@/components/ui/spinner'
 import type {
-  CheckpointWhereInput,
+  SnapshotWhereInput,
   netWorthChartQuery,
 } from './__generated__/netWorthChartQuery.graphql'
 import { environment } from '@/environment'
@@ -36,9 +36,9 @@ function niceStep(rawStep: number): number {
 }
 
 const NetWorthChartQuery = graphql`
-  query netWorthChartQuery($where: CheckpointWhereInput) {
+  query netWorthChartQuery($where: SnapshotWhereInput) {
     household {
-      checkpoints(first: 500, where: $where) {
+      snapshots(first: 500, where: $where) {
         edges {
           node {
             createTime
@@ -133,7 +133,7 @@ export function NetWorthChart() {
 
   const createTimeGTE = durationToDate(duration)
 
-  const where: CheckpointWhereInput = {
+  const where: SnapshotWhereInput = {
     createTimeGTE,
   }
 
@@ -150,9 +150,9 @@ export function NetWorthChart() {
     ).subscribe({})
   })
 
-  const chartData = (data.household.checkpoints.edges ?? [])
-    .map((edge) => {
-      invariant(edge?.node, 'checkpoint edge node must exist')
+  const chartData = (data.household.snapshots.edges ?? [])
+    .flatMap((edge) => {
+      if (!edge?.node) return []
       const node = edge.node
       const liquidity = currency(node.liquidity, { precision: 8 }).value
       const investment = currency(node.investment, { precision: 8 }).value

@@ -131,12 +131,12 @@ func (r *queryResolver) RecurringSubscriptions(ctx context.Context, after *entgq
 
 // Snapshots is the resolver for the snapshots field.
 func (r *queryResolver) Snapshots(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotWhereInput) (*ent.SnapshotConnection, error) {
-	panic(fmt.Errorf("not implemented: Snapshots - snapshots"))
+	return r.entClient.Snapshot.Query().Paginate(ctx, after, first, before, last, ent.WithSnapshotFilter(where.Filter))
 }
 
 // SnapshotEntries is the resolver for the snapshotEntries field.
 func (r *queryResolver) SnapshotEntries(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.SnapshotEntryWhereInput) (*ent.SnapshotEntryConnection, error) {
-	panic(fmt.Errorf("not implemented: SnapshotEntries - snapshotEntries"))
+	return r.entClient.SnapshotEntry.Query().Paginate(ctx, after, first, before, last, ent.WithSnapshotEntryFilter(where.Filter))
 }
 
 // Transactions is the resolver for the transactions field.
@@ -1232,6 +1232,9 @@ func (r *Resolver) RecurringSubscription() RecurringSubscriptionResolver {
 	return &recurringSubscriptionResolver{r}
 }
 
+// Snapshot returns SnapshotResolver implementation.
+func (r *Resolver) Snapshot() SnapshotResolver { return &snapshotResolver{r} }
+
 // SnapshotEntry returns SnapshotEntryResolver implementation.
 func (r *Resolver) SnapshotEntry() SnapshotEntryResolver { return &snapshotEntryResolver{r} }
 
@@ -1313,27 +1316,30 @@ func (r *Resolver) UpdateTransactionEntryInput() UpdateTransactionEntryInputReso
 	return &updateTransactionEntryInputResolver{r}
 }
 
-type accountResolver struct{ *Resolver }
-type checkpointResolver struct{ *Resolver }
-type householdResolver struct{ *Resolver }
-type investmentResolver struct{ *Resolver }
-type investmentLotResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
-type recurringSubscriptionResolver struct{ *Resolver }
-type snapshotEntryResolver struct{ *Resolver }
-type transactionEntryResolver struct{ *Resolver }
-type accountWhereInputResolver struct{ *Resolver }
-type checkpointWhereInputResolver struct{ *Resolver }
-type createAccountInputResolver struct{ *Resolver }
-type createInvestmentInputResolver struct{ *Resolver }
-type createInvestmentLotInputResolver struct{ *Resolver }
-type createRecurringSubscriptionInputResolver struct{ *Resolver }
-type createTransactionEntryInputResolver struct{ *Resolver }
-type investmentLotWhereInputResolver struct{ *Resolver }
-type investmentWhereInputResolver struct{ *Resolver }
-type recurringSubscriptionWhereInputResolver struct{ *Resolver }
-type snapshotEntryWhereInputResolver struct{ *Resolver }
-type transactionEntryWhereInputResolver struct{ *Resolver }
-type updateInvestmentLotInputResolver struct{ *Resolver }
-type updateRecurringSubscriptionInputResolver struct{ *Resolver }
-type updateTransactionEntryInputResolver struct{ *Resolver }
+type (
+	accountResolver                          struct{ *Resolver }
+	checkpointResolver                       struct{ *Resolver }
+	householdResolver                        struct{ *Resolver }
+	investmentResolver                       struct{ *Resolver }
+	investmentLotResolver                    struct{ *Resolver }
+	queryResolver                            struct{ *Resolver }
+	recurringSubscriptionResolver            struct{ *Resolver }
+	snapshotResolver                         struct{ *Resolver }
+	snapshotEntryResolver                    struct{ *Resolver }
+	transactionEntryResolver                 struct{ *Resolver }
+	accountWhereInputResolver                struct{ *Resolver }
+	checkpointWhereInputResolver             struct{ *Resolver }
+	createAccountInputResolver               struct{ *Resolver }
+	createInvestmentInputResolver            struct{ *Resolver }
+	createInvestmentLotInputResolver         struct{ *Resolver }
+	createRecurringSubscriptionInputResolver struct{ *Resolver }
+	createTransactionEntryInputResolver      struct{ *Resolver }
+	investmentLotWhereInputResolver          struct{ *Resolver }
+	investmentWhereInputResolver             struct{ *Resolver }
+	recurringSubscriptionWhereInputResolver  struct{ *Resolver }
+	snapshotEntryWhereInputResolver          struct{ *Resolver }
+	transactionEntryWhereInputResolver       struct{ *Resolver }
+	updateInvestmentLotInputResolver         struct{ *Resolver }
+	updateRecurringSubscriptionInputResolver struct{ *Resolver }
+	updateTransactionEntryInputResolver      struct{ *Resolver }
+)
