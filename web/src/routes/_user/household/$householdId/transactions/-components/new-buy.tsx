@@ -457,7 +457,8 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.currency.code ??
+                        household.currency.code
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
@@ -494,7 +495,8 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.currency.code ??
+                        household.currency.code
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

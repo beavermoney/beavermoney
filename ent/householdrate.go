@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -28,14 +28,10 @@ type HouseholdRate struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Rate holds the value of the "rate" field.
 	Rate decimal.Decimal `json:"rate,omitempty"`
-	// FromHouseholdCurrencyID holds the value of the "from_household_currency_id" field.
-	FromHouseholdCurrencyID int `json:"from_household_currency_id,omitempty"`
-	// LegacyFromCurrencyID holds the value of the "legacy_from_currency_id" field.
-	LegacyFromCurrencyID *int `json:"legacy_from_currency_id,omitempty"`
-	// ToHouseholdCurrencyID holds the value of the "to_household_currency_id" field.
-	ToHouseholdCurrencyID int `json:"to_household_currency_id,omitempty"`
-	// LegacyToCurrencyID holds the value of the "legacy_to_currency_id" field.
-	LegacyToCurrencyID *int `json:"legacy_to_currency_id,omitempty"`
+	// FromCurrencyID holds the value of the "from_currency_id" field.
+	FromCurrencyID int `json:"from_currency_id,omitempty"`
+	// ToCurrencyID holds the value of the "to_currency_id" field.
+	ToCurrencyID int `json:"to_currency_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the HouseholdRateQuery when eager-loading is set.
 	Edges        HouseholdRateEdges `json:"edges"`
@@ -47,9 +43,9 @@ type HouseholdRateEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
 	// FromCurrency holds the value of the from_currency edge.
-	FromCurrency *HouseholdCurrency `json:"from_currency,omitempty"`
+	FromCurrency *Currency `json:"from_currency,omitempty"`
 	// ToCurrency holds the value of the to_currency edge.
-	ToCurrency *HouseholdCurrency `json:"to_currency,omitempty"`
+	ToCurrency *Currency `json:"to_currency,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -70,22 +66,22 @@ func (e HouseholdRateEdges) HouseholdOrErr() (*Household, error) {
 
 // FromCurrencyOrErr returns the FromCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e HouseholdRateEdges) FromCurrencyOrErr() (*HouseholdCurrency, error) {
+func (e HouseholdRateEdges) FromCurrencyOrErr() (*Currency, error) {
 	if e.FromCurrency != nil {
 		return e.FromCurrency, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
+		return nil, &NotFoundError{label: currency.Label}
 	}
 	return nil, &NotLoadedError{edge: "from_currency"}
 }
 
 // ToCurrencyOrErr returns the ToCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e HouseholdRateEdges) ToCurrencyOrErr() (*HouseholdCurrency, error) {
+func (e HouseholdRateEdges) ToCurrencyOrErr() (*Currency, error) {
 	if e.ToCurrency != nil {
 		return e.ToCurrency, nil
 	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
+		return nil, &NotFoundError{label: currency.Label}
 	}
 	return nil, &NotLoadedError{edge: "to_currency"}
 }
@@ -97,7 +93,7 @@ func (*HouseholdRate) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case householdrate.FieldRate:
 			values[i] = new(decimal.Decimal)
-		case householdrate.FieldID, householdrate.FieldHouseholdID, householdrate.FieldFromHouseholdCurrencyID, householdrate.FieldLegacyFromCurrencyID, householdrate.FieldToHouseholdCurrencyID, householdrate.FieldLegacyToCurrencyID:
+		case householdrate.FieldID, householdrate.FieldHouseholdID, householdrate.FieldFromCurrencyID, householdrate.FieldToCurrencyID:
 			values[i] = new(sql.NullInt64)
 		case householdrate.FieldCreateTime, householdrate.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -146,31 +142,17 @@ func (_m *HouseholdRate) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.Rate = *value
 			}
-		case householdrate.FieldFromHouseholdCurrencyID:
+		case householdrate.FieldFromCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field from_household_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field from_currency_id", values[i])
 			} else if value.Valid {
-				_m.FromHouseholdCurrencyID = int(value.Int64)
+				_m.FromCurrencyID = int(value.Int64)
 			}
-		case householdrate.FieldLegacyFromCurrencyID:
+		case householdrate.FieldToCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_from_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field to_currency_id", values[i])
 			} else if value.Valid {
-				_m.LegacyFromCurrencyID = new(int)
-				*_m.LegacyFromCurrencyID = int(value.Int64)
-			}
-		case householdrate.FieldToHouseholdCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field to_household_currency_id", values[i])
-			} else if value.Valid {
-				_m.ToHouseholdCurrencyID = int(value.Int64)
-			}
-		case householdrate.FieldLegacyToCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_to_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyToCurrencyID = new(int)
-				*_m.LegacyToCurrencyID = int(value.Int64)
+				_m.ToCurrencyID = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -191,12 +173,12 @@ func (_m *HouseholdRate) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryFromCurrency queries the "from_currency" edge of the HouseholdRate entity.
-func (_m *HouseholdRate) QueryFromCurrency() *HouseholdCurrencyQuery {
+func (_m *HouseholdRate) QueryFromCurrency() *CurrencyQuery {
 	return NewHouseholdRateClient(_m.config).QueryFromCurrency(_m)
 }
 
 // QueryToCurrency queries the "to_currency" edge of the HouseholdRate entity.
-func (_m *HouseholdRate) QueryToCurrency() *HouseholdCurrencyQuery {
+func (_m *HouseholdRate) QueryToCurrency() *CurrencyQuery {
 	return NewHouseholdRateClient(_m.config).QueryToCurrency(_m)
 }
 
@@ -235,21 +217,11 @@ func (_m *HouseholdRate) String() string {
 	builder.WriteString("rate=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Rate))
 	builder.WriteString(", ")
-	builder.WriteString("from_household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.FromHouseholdCurrencyID))
+	builder.WriteString("from_currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.FromCurrencyID))
 	builder.WriteString(", ")
-	if v := _m.LegacyFromCurrencyID; v != nil {
-		builder.WriteString("legacy_from_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("to_household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ToHouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyToCurrencyID; v != nil {
-		builder.WriteString("legacy_to_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("to_currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ToCurrencyID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
@@ -38,6 +39,11 @@ var accountImplementors = []string{"Account", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*Account) IsNode() {}
+
+var currencyImplementors = []string{"Currency", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Currency) IsNode() {}
 
 var householdImplementors = []string{"Household", "Node"}
 
@@ -196,6 +202,15 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			Where(account.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, accountImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case currency.Table:
+		query := c.Currency.Query().
+			Where(currency.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, currencyImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -412,6 +427,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.Account.Query().
 			Where(account.IDIn(ids...))
 		query, err := query.CollectFields(ctx, accountImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case currency.Table:
+		query := c.Currency.Query().
+			Where(currency.IDIn(ids...))
+		query, err := query.CollectFields(ctx, currencyImplementors...)
 		if err != nil {
 			return nil, err
 		}

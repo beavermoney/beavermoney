@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -41,10 +41,8 @@ type Investment struct {
 	Value decimal.Decimal `json:"value,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID int `json:"account_id,omitempty"`
-	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
-	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
+	// CurrencyID holds the value of the "currency_id" field.
+	CurrencyID int `json:"currency_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InvestmentQuery when eager-loading is set.
 	Edges        InvestmentEdges `json:"edges"`
@@ -58,7 +56,7 @@ type InvestmentEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
 	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	Currency *Currency `json:"currency,omitempty"`
 	// InvestmentLots holds the value of the investment_lots edge.
 	InvestmentLots []*InvestmentLot `json:"investment_lots,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -94,11 +92,11 @@ func (e InvestmentEdges) HouseholdOrErr() (*Household, error) {
 
 // CurrencyOrErr returns the Currency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e InvestmentEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
+func (e InvestmentEdges) CurrencyOrErr() (*Currency, error) {
 	if e.Currency != nil {
 		return e.Currency, nil
 	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
+		return nil, &NotFoundError{label: currency.Label}
 	}
 	return nil, &NotLoadedError{edge: "currency"}
 }
@@ -119,7 +117,7 @@ func (*Investment) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case investment.FieldAmount, investment.FieldQuote, investment.FieldValue:
 			values[i] = new(decimal.Decimal)
-		case investment.FieldID, investment.FieldHouseholdID, investment.FieldAccountID, investment.FieldHouseholdCurrencyID, investment.FieldLegacyCurrencyID:
+		case investment.FieldID, investment.FieldHouseholdID, investment.FieldAccountID, investment.FieldCurrencyID:
 			values[i] = new(sql.NullInt64)
 		case investment.FieldName, investment.FieldType, investment.FieldSymbol:
 			values[i] = new(sql.NullString)
@@ -206,18 +204,11 @@ func (_m *Investment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.AccountID = int(value.Int64)
 			}
-		case investment.FieldHouseholdCurrencyID:
+		case investment.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field currency_id", values[i])
 			} else if value.Valid {
-				_m.HouseholdCurrencyID = int(value.Int64)
-			}
-		case investment.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
+				_m.CurrencyID = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -243,7 +234,7 @@ func (_m *Investment) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency queries the "currency" edge of the Investment entity.
-func (_m *Investment) QueryCurrency() *HouseholdCurrencyQuery {
+func (_m *Investment) QueryCurrency() *CurrencyQuery {
 	return NewInvestmentClient(_m.config).QueryCurrency(_m)
 }
 
@@ -305,13 +296,8 @@ func (_m *Investment) String() string {
 	builder.WriteString("account_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.AccountID))
 	builder.WriteString(", ")
-	builder.WriteString("household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))
 	builder.WriteByte(')')
 	return builder.String()
 }

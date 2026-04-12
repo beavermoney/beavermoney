@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -25,10 +26,8 @@ type Household struct {
 	Name string `json:"name,omitempty"`
 	// Locale holds the value of the "locale" field.
 	Locale string `json:"locale,omitempty"`
-	// CurrencyCode holds the value of the "currency_code" field.
-	CurrencyCode string `json:"currency_code,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
+	// CurrencyID holds the value of the "currency_id" field.
+	CurrencyID int `json:"currency_id,omitempty"`
 	// IsDemo holds the value of the "is_demo" field.
 	IsDemo bool `json:"is_demo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -39,6 +38,8 @@ type Household struct {
 
 // HouseholdEdges holds the relations/edges for other nodes in the graph.
 type HouseholdEdges struct {
+	// Currency holds the value of the currency edge.
+	Currency *Currency `json:"currency,omitempty"`
 	// Users holds the value of the users edge.
 	Users []*User `json:"users,omitempty"`
 	// Accounts holds the value of the accounts edge.
@@ -67,9 +68,9 @@ type HouseholdEdges struct {
 	UserHouseholds []*UserHousehold `json:"user_households,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [14]bool
 	// totalCount holds the count of the edges above.
-	totalCount [13]map[string]int
+	totalCount [14]map[string]int
 
 	namedUsers                  map[string][]*User
 	namedAccounts               map[string][]*Account
@@ -86,10 +87,21 @@ type HouseholdEdges struct {
 	namedUserHouseholds         map[string][]*UserHousehold
 }
 
+// CurrencyOrErr returns the Currency value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e HouseholdEdges) CurrencyOrErr() (*Currency, error) {
+	if e.Currency != nil {
+		return e.Currency, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: currency.Label}
+	}
+	return nil, &NotLoadedError{edge: "currency"}
+}
+
 // UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UsersOrErr() ([]*User, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Users, nil
 	}
 	return nil, &NotLoadedError{edge: "users"}
@@ -98,7 +110,7 @@ func (e HouseholdEdges) UsersOrErr() ([]*User, error) {
 // AccountsOrErr returns the Accounts value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) AccountsOrErr() ([]*Account, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Accounts, nil
 	}
 	return nil, &NotLoadedError{edge: "accounts"}
@@ -107,7 +119,7 @@ func (e HouseholdEdges) AccountsOrErr() ([]*Account, error) {
 // TransactionsOrErr returns the Transactions value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) TransactionsOrErr() ([]*Transaction, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Transactions, nil
 	}
 	return nil, &NotLoadedError{edge: "transactions"}
@@ -116,7 +128,7 @@ func (e HouseholdEdges) TransactionsOrErr() ([]*Transaction, error) {
 // InvestmentsOrErr returns the Investments value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) InvestmentsOrErr() ([]*Investment, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Investments, nil
 	}
 	return nil, &NotLoadedError{edge: "investments"}
@@ -125,7 +137,7 @@ func (e HouseholdEdges) InvestmentsOrErr() ([]*Investment, error) {
 // InvestmentLotsOrErr returns the InvestmentLots value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.InvestmentLots, nil
 	}
 	return nil, &NotLoadedError{edge: "investment_lots"}
@@ -134,7 +146,7 @@ func (e HouseholdEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
 // TransactionCategoriesOrErr returns the TransactionCategories value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) TransactionCategoriesOrErr() ([]*TransactionCategory, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.TransactionCategories, nil
 	}
 	return nil, &NotLoadedError{edge: "transaction_categories"}
@@ -143,7 +155,7 @@ func (e HouseholdEdges) TransactionCategoriesOrErr() ([]*TransactionCategory, er
 // TransactionEntriesOrErr returns the TransactionEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.TransactionEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "transaction_entries"}
@@ -152,7 +164,7 @@ func (e HouseholdEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error) {
 // RecurringSubscriptionsOrErr returns the RecurringSubscriptions value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.RecurringSubscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
@@ -161,7 +173,7 @@ func (e HouseholdEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription,
 // SnapshotsOrErr returns the Snapshots value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotsOrErr() ([]*Snapshot, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.Snapshots, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshots"}
@@ -170,7 +182,7 @@ func (e HouseholdEdges) SnapshotsOrErr() ([]*Snapshot, error) {
 // SnapshotEntriesOrErr returns the SnapshotEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.SnapshotEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_entries"}
@@ -179,7 +191,7 @@ func (e HouseholdEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
 // HouseholdCurrenciesOrErr returns the HouseholdCurrencies value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) HouseholdCurrenciesOrErr() ([]*HouseholdCurrency, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[11] {
 		return e.HouseholdCurrencies, nil
 	}
 	return nil, &NotLoadedError{edge: "household_currencies"}
@@ -188,7 +200,7 @@ func (e HouseholdEdges) HouseholdCurrenciesOrErr() ([]*HouseholdCurrency, error)
 // HouseholdRatesOrErr returns the HouseholdRates value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) HouseholdRatesOrErr() ([]*HouseholdRate, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[12] {
 		return e.HouseholdRates, nil
 	}
 	return nil, &NotLoadedError{edge: "household_rates"}
@@ -197,7 +209,7 @@ func (e HouseholdEdges) HouseholdRatesOrErr() ([]*HouseholdRate, error) {
 // UserHouseholdsOrErr returns the UserHouseholds value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UserHouseholdsOrErr() ([]*UserHousehold, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[13] {
 		return e.UserHouseholds, nil
 	}
 	return nil, &NotLoadedError{edge: "user_households"}
@@ -210,9 +222,9 @@ func (*Household) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case household.FieldIsDemo:
 			values[i] = new(sql.NullBool)
-		case household.FieldID, household.FieldLegacyCurrencyID:
+		case household.FieldID, household.FieldCurrencyID:
 			values[i] = new(sql.NullInt64)
-		case household.FieldName, household.FieldLocale, household.FieldCurrencyCode:
+		case household.FieldName, household.FieldLocale:
 			values[i] = new(sql.NullString)
 		case household.FieldCreateTime, household.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -261,18 +273,11 @@ func (_m *Household) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Locale = value.String
 			}
-		case household.FieldCurrencyCode:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field currency_code", values[i])
-			} else if value.Valid {
-				_m.CurrencyCode = value.String
-			}
-		case household.FieldLegacyCurrencyID:
+		case household.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field currency_id", values[i])
 			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
+				_m.CurrencyID = int(value.Int64)
 			}
 		case household.FieldIsDemo:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -291,6 +296,11 @@ func (_m *Household) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Household) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryCurrency queries the "currency" edge of the Household entity.
+func (_m *Household) QueryCurrency() *CurrencyQuery {
+	return NewHouseholdClient(_m.config).QueryCurrency(_m)
 }
 
 // QueryUsers queries the "users" edge of the Household entity.
@@ -393,13 +403,8 @@ func (_m *Household) String() string {
 	builder.WriteString("locale=")
 	builder.WriteString(_m.Locale)
 	builder.WriteString(", ")
-	builder.WriteString("currency_code=")
-	builder.WriteString(_m.CurrencyCode)
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))
 	builder.WriteString(", ")
 	builder.WriteString("is_demo=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsDemo))

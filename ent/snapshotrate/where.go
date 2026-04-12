@@ -76,24 +76,14 @@ func SnapshotID(v int) predicate.SnapshotRate {
 	return predicate.SnapshotRate(sql.FieldEQ(FieldSnapshotID, v))
 }
 
-// FromHouseholdCurrencyID applies equality check predicate on the "from_household_currency_id" field. It's identical to FromHouseholdCurrencyIDEQ.
-func FromHouseholdCurrencyID(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldFromHouseholdCurrencyID, v))
+// FromCurrencyID applies equality check predicate on the "from_currency_id" field. It's identical to FromCurrencyIDEQ.
+func FromCurrencyID(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldEQ(FieldFromCurrencyID, v))
 }
 
-// LegacyFromCurrencyID applies equality check predicate on the "legacy_from_currency_id" field. It's identical to LegacyFromCurrencyIDEQ.
-func LegacyFromCurrencyID(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldLegacyFromCurrencyID, v))
-}
-
-// ToHouseholdCurrencyID applies equality check predicate on the "to_household_currency_id" field. It's identical to ToHouseholdCurrencyIDEQ.
-func ToHouseholdCurrencyID(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldToHouseholdCurrencyID, v))
-}
-
-// LegacyToCurrencyID applies equality check predicate on the "legacy_to_currency_id" field. It's identical to LegacyToCurrencyIDEQ.
-func LegacyToCurrencyID(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldLegacyToCurrencyID, v))
+// ToCurrencyID applies equality check predicate on the "to_currency_id" field. It's identical to ToCurrencyIDEQ.
+func ToCurrencyID(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldEQ(FieldToCurrencyID, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
@@ -236,144 +226,44 @@ func SnapshotIDNotIn(vs ...int) predicate.SnapshotRate {
 	return predicate.SnapshotRate(sql.FieldNotIn(FieldSnapshotID, vs...))
 }
 
-// FromHouseholdCurrencyIDEQ applies the EQ predicate on the "from_household_currency_id" field.
-func FromHouseholdCurrencyIDEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldFromHouseholdCurrencyID, v))
+// FromCurrencyIDEQ applies the EQ predicate on the "from_currency_id" field.
+func FromCurrencyIDEQ(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldEQ(FieldFromCurrencyID, v))
 }
 
-// FromHouseholdCurrencyIDNEQ applies the NEQ predicate on the "from_household_currency_id" field.
-func FromHouseholdCurrencyIDNEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNEQ(FieldFromHouseholdCurrencyID, v))
+// FromCurrencyIDNEQ applies the NEQ predicate on the "from_currency_id" field.
+func FromCurrencyIDNEQ(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldNEQ(FieldFromCurrencyID, v))
 }
 
-// FromHouseholdCurrencyIDIn applies the In predicate on the "from_household_currency_id" field.
-func FromHouseholdCurrencyIDIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldIn(FieldFromHouseholdCurrencyID, vs...))
+// FromCurrencyIDIn applies the In predicate on the "from_currency_id" field.
+func FromCurrencyIDIn(vs ...int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldIn(FieldFromCurrencyID, vs...))
 }
 
-// FromHouseholdCurrencyIDNotIn applies the NotIn predicate on the "from_household_currency_id" field.
-func FromHouseholdCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNotIn(FieldFromHouseholdCurrencyID, vs...))
+// FromCurrencyIDNotIn applies the NotIn predicate on the "from_currency_id" field.
+func FromCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldNotIn(FieldFromCurrencyID, vs...))
 }
 
-// LegacyFromCurrencyIDEQ applies the EQ predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldLegacyFromCurrencyID, v))
+// ToCurrencyIDEQ applies the EQ predicate on the "to_currency_id" field.
+func ToCurrencyIDEQ(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldEQ(FieldToCurrencyID, v))
 }
 
-// LegacyFromCurrencyIDNEQ applies the NEQ predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDNEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNEQ(FieldLegacyFromCurrencyID, v))
+// ToCurrencyIDNEQ applies the NEQ predicate on the "to_currency_id" field.
+func ToCurrencyIDNEQ(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldNEQ(FieldToCurrencyID, v))
 }
 
-// LegacyFromCurrencyIDIn applies the In predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldIn(FieldLegacyFromCurrencyID, vs...))
+// ToCurrencyIDIn applies the In predicate on the "to_currency_id" field.
+func ToCurrencyIDIn(vs ...int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldIn(FieldToCurrencyID, vs...))
 }
 
-// LegacyFromCurrencyIDNotIn applies the NotIn predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNotIn(FieldLegacyFromCurrencyID, vs...))
-}
-
-// LegacyFromCurrencyIDGT applies the GT predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDGT(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldGT(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDGTE applies the GTE predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDGTE(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldGTE(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDLT applies the LT predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDLT(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldLT(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDLTE applies the LTE predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDLTE(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldLTE(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDIsNil applies the IsNil predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDIsNil() predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldIsNull(FieldLegacyFromCurrencyID))
-}
-
-// LegacyFromCurrencyIDNotNil applies the NotNil predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDNotNil() predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNotNull(FieldLegacyFromCurrencyID))
-}
-
-// ToHouseholdCurrencyIDEQ applies the EQ predicate on the "to_household_currency_id" field.
-func ToHouseholdCurrencyIDEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldToHouseholdCurrencyID, v))
-}
-
-// ToHouseholdCurrencyIDNEQ applies the NEQ predicate on the "to_household_currency_id" field.
-func ToHouseholdCurrencyIDNEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNEQ(FieldToHouseholdCurrencyID, v))
-}
-
-// ToHouseholdCurrencyIDIn applies the In predicate on the "to_household_currency_id" field.
-func ToHouseholdCurrencyIDIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldIn(FieldToHouseholdCurrencyID, vs...))
-}
-
-// ToHouseholdCurrencyIDNotIn applies the NotIn predicate on the "to_household_currency_id" field.
-func ToHouseholdCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNotIn(FieldToHouseholdCurrencyID, vs...))
-}
-
-// LegacyToCurrencyIDEQ applies the EQ predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldEQ(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDNEQ applies the NEQ predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDNEQ(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNEQ(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDIn applies the In predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldIn(FieldLegacyToCurrencyID, vs...))
-}
-
-// LegacyToCurrencyIDNotIn applies the NotIn predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNotIn(FieldLegacyToCurrencyID, vs...))
-}
-
-// LegacyToCurrencyIDGT applies the GT predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDGT(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldGT(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDGTE applies the GTE predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDGTE(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldGTE(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDLT applies the LT predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDLT(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldLT(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDLTE applies the LTE predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDLTE(v int) predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldLTE(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDIsNil applies the IsNil predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDIsNil() predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldIsNull(FieldLegacyToCurrencyID))
-}
-
-// LegacyToCurrencyIDNotNil applies the NotNil predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDNotNil() predicate.SnapshotRate {
-	return predicate.SnapshotRate(sql.FieldNotNull(FieldLegacyToCurrencyID))
+// ToCurrencyIDNotIn applies the NotIn predicate on the "to_currency_id" field.
+func ToCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldNotIn(FieldToCurrencyID, vs...))
 }
 
 // HasSnapshot applies the HasEdge predicate on the "snapshot" edge.
@@ -411,7 +301,7 @@ func HasFromCurrency() predicate.SnapshotRate {
 }
 
 // HasFromCurrencyWith applies the HasEdge predicate on the "from_currency" edge with a given conditions (other predicates).
-func HasFromCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.SnapshotRate {
+func HasFromCurrencyWith(preds ...predicate.Currency) predicate.SnapshotRate {
 	return predicate.SnapshotRate(func(s *sql.Selector) {
 		step := newFromCurrencyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
@@ -434,7 +324,7 @@ func HasToCurrency() predicate.SnapshotRate {
 }
 
 // HasToCurrencyWith applies the HasEdge predicate on the "to_currency" edge with a given conditions (other predicates).
-func HasToCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.SnapshotRate {
+func HasToCurrencyWith(preds ...predicate.Currency) predicate.SnapshotRate {
 	return predicate.SnapshotRate(func(s *sql.Selector) {
 		step := newToCurrencyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

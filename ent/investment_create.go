@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"entgo.io/ent/dialect/sql"
@@ -119,23 +119,9 @@ func (_c *InvestmentCreate) SetAccountID(v int) *InvestmentCreate {
 	return _c
 }
 
-// SetHouseholdCurrencyID sets the "household_currency_id" field.
-func (_c *InvestmentCreate) SetHouseholdCurrencyID(v int) *InvestmentCreate {
-	_c.mutation.SetHouseholdCurrencyID(v)
-	return _c
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_c *InvestmentCreate) SetLegacyCurrencyID(v int) *InvestmentCreate {
-	_c.mutation.SetLegacyCurrencyID(v)
-	return _c
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_c *InvestmentCreate) SetNillableLegacyCurrencyID(v *int) *InvestmentCreate {
-	if v != nil {
-		_c.SetLegacyCurrencyID(*v)
-	}
+// SetCurrencyID sets the "currency_id" field.
+func (_c *InvestmentCreate) SetCurrencyID(v int) *InvestmentCreate {
+	_c.mutation.SetCurrencyID(v)
 	return _c
 }
 
@@ -149,14 +135,8 @@ func (_c *InvestmentCreate) SetHousehold(v *Household) *InvestmentCreate {
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_c *InvestmentCreate) SetCurrencyID(id int) *InvestmentCreate {
-	_c.mutation.SetCurrencyID(id)
-	return _c
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_c *InvestmentCreate) SetCurrency(v *HouseholdCurrency) *InvestmentCreate {
+// SetCurrency sets the "currency" edge to the Currency entity.
+func (_c *InvestmentCreate) SetCurrency(v *Currency) *InvestmentCreate {
 	return _c.SetCurrencyID(v.ID)
 }
 
@@ -290,12 +270,12 @@ func (_c *InvestmentCreate) check() error {
 			return &ValidationError{Name: "account_id", err: fmt.Errorf(`ent: validator failed for field "Investment.account_id": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.HouseholdCurrencyID(); !ok {
-		return &ValidationError{Name: "household_currency_id", err: errors.New(`ent: missing required field "Investment.household_currency_id"`)}
+	if _, ok := _c.mutation.CurrencyID(); !ok {
+		return &ValidationError{Name: "currency_id", err: errors.New(`ent: missing required field "Investment.currency_id"`)}
 	}
-	if v, ok := _c.mutation.HouseholdCurrencyID(); ok {
-		if err := investment.HouseholdCurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "Investment.household_currency_id": %w`, err)}
+	if v, ok := _c.mutation.CurrencyID(); ok {
+		if err := investment.CurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "Investment.currency_id": %w`, err)}
 		}
 	}
 	if len(_c.mutation.AccountIDs()) == 0 {
@@ -366,10 +346,6 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 		_spec.SetField(investment.FieldValue, field.TypeFloat64, value)
 		_node.Value = value
 	}
-	if value, ok := _c.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(investment.FieldLegacyCurrencyID, field.TypeInt, value)
-		_node.LegacyCurrencyID = &value
-	}
 	if nodes := _c.mutation.AccountIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -412,13 +388,13 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 			Columns: []string{investment.CurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.HouseholdCurrencyID = nodes[0]
+		_node.CurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.InvestmentLotsIDs(); len(nodes) > 0 {
@@ -555,30 +531,6 @@ func (u *InvestmentUpsert) AddQuote(v decimal.Decimal) *InvestmentUpsert {
 	return u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (u *InvestmentUpsert) SetLegacyCurrencyID(v int) *InvestmentUpsert {
-	u.Set(investment.FieldLegacyCurrencyID, v)
-	return u
-}
-
-// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
-func (u *InvestmentUpsert) UpdateLegacyCurrencyID() *InvestmentUpsert {
-	u.SetExcluded(investment.FieldLegacyCurrencyID)
-	return u
-}
-
-// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
-func (u *InvestmentUpsert) AddLegacyCurrencyID(v int) *InvestmentUpsert {
-	u.Add(investment.FieldLegacyCurrencyID, v)
-	return u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (u *InvestmentUpsert) ClearLegacyCurrencyID() *InvestmentUpsert {
-	u.SetNull(investment.FieldLegacyCurrencyID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -605,8 +557,8 @@ func (u *InvestmentUpsertOne) UpdateNewValues() *InvestmentUpsertOne {
 		if _, exists := u.create.mutation.AccountID(); exists {
 			s.SetIgnore(investment.FieldAccountID)
 		}
-		if _, exists := u.create.mutation.HouseholdCurrencyID(); exists {
-			s.SetIgnore(investment.FieldHouseholdCurrencyID)
+		if _, exists := u.create.mutation.CurrencyID(); exists {
+			s.SetIgnore(investment.FieldCurrencyID)
 		}
 	}))
 	return u
@@ -713,34 +665,6 @@ func (u *InvestmentUpsertOne) AddQuote(v decimal.Decimal) *InvestmentUpsertOne {
 func (u *InvestmentUpsertOne) UpdateQuote() *InvestmentUpsertOne {
 	return u.Update(func(s *InvestmentUpsert) {
 		s.UpdateQuote()
-	})
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (u *InvestmentUpsertOne) SetLegacyCurrencyID(v int) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetLegacyCurrencyID(v)
-	})
-}
-
-// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
-func (u *InvestmentUpsertOne) AddLegacyCurrencyID(v int) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.AddLegacyCurrencyID(v)
-	})
-}
-
-// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
-func (u *InvestmentUpsertOne) UpdateLegacyCurrencyID() *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateLegacyCurrencyID()
-	})
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (u *InvestmentUpsertOne) ClearLegacyCurrencyID() *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.ClearLegacyCurrencyID()
 	})
 }
 
@@ -935,8 +859,8 @@ func (u *InvestmentUpsertBulk) UpdateNewValues() *InvestmentUpsertBulk {
 			if _, exists := b.mutation.AccountID(); exists {
 				s.SetIgnore(investment.FieldAccountID)
 			}
-			if _, exists := b.mutation.HouseholdCurrencyID(); exists {
-				s.SetIgnore(investment.FieldHouseholdCurrencyID)
+			if _, exists := b.mutation.CurrencyID(); exists {
+				s.SetIgnore(investment.FieldCurrencyID)
 			}
 		}
 	}))
@@ -1044,34 +968,6 @@ func (u *InvestmentUpsertBulk) AddQuote(v decimal.Decimal) *InvestmentUpsertBulk
 func (u *InvestmentUpsertBulk) UpdateQuote() *InvestmentUpsertBulk {
 	return u.Update(func(s *InvestmentUpsert) {
 		s.UpdateQuote()
-	})
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (u *InvestmentUpsertBulk) SetLegacyCurrencyID(v int) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetLegacyCurrencyID(v)
-	})
-}
-
-// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
-func (u *InvestmentUpsertBulk) AddLegacyCurrencyID(v int) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.AddLegacyCurrencyID(v)
-	})
-}
-
-// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
-func (u *InvestmentUpsertBulk) UpdateLegacyCurrencyID() *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateLegacyCurrencyID()
-	})
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (u *InvestmentUpsertBulk) ClearLegacyCurrencyID() *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.ClearLegacyCurrencyID()
 	})
 }
 

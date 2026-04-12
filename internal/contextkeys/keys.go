@@ -11,6 +11,7 @@ type (
 
 type DisplayCurrency struct {
 	HouseholdCurrencyID int
+	CurrencyID          int
 	Code                string
 }
 

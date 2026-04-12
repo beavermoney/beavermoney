@@ -52,7 +52,9 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 						userhousehold.UserID(userID),
 						userhousehold.HouseholdID(hid),
 					).
-					WithDefaultCurrency().
+					WithDefaultCurrency(func(q *ent.HouseholdCurrencyQuery) {
+						q.WithCurrency()
+					}).
 					Only(bypassCtx)
 				if err != nil {
 					if ent.IsNotFound(err) {
@@ -92,21 +94,24 @@ func resolveDisplayCurrency(
 					householdcurrency.IDEQ(hcID),
 					householdcurrency.HouseholdIDEQ(householdID),
 				).
+				WithCurrency().
 				Only(ctx)
 			if err == nil {
 				return &contextkeys.DisplayCurrency{
 					HouseholdCurrencyID: hc.ID,
-					Code:                hc.Code,
+					CurrencyID:          hc.CurrencyID,
+					Code:                hc.Edges.Currency.Code,
 				}
 			}
 		}
 	}
 
-	if uh.Edges.DefaultCurrency != nil {
+	if uh.Edges.DefaultCurrency != nil && uh.Edges.DefaultCurrency.Edges.Currency != nil {
 		dc := uh.Edges.DefaultCurrency
 		return &contextkeys.DisplayCurrency{
 			HouseholdCurrencyID: dc.ID,
-			Code:                dc.Code,
+			CurrencyID:          dc.CurrencyID,
+			Code:                dc.Edges.Currency.Code,
 		}
 	}
 

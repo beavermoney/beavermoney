@@ -101,14 +101,9 @@ func AccountID(v int) predicate.Investment {
 	return predicate.Investment(sql.FieldEQ(FieldAccountID, v))
 }
 
-// HouseholdCurrencyID applies equality check predicate on the "household_currency_id" field. It's identical to HouseholdCurrencyIDEQ.
-func HouseholdCurrencyID(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldEQ(FieldHouseholdCurrencyID, v))
-}
-
-// LegacyCurrencyID applies equality check predicate on the "legacy_currency_id" field. It's identical to LegacyCurrencyIDEQ.
-func LegacyCurrencyID(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldEQ(FieldLegacyCurrencyID, v))
+// CurrencyID applies equality check predicate on the "currency_id" field. It's identical to CurrencyIDEQ.
+func CurrencyID(v int) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldCurrencyID, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
@@ -501,74 +496,24 @@ func AccountIDNotIn(vs ...int) predicate.Investment {
 	return predicate.Investment(sql.FieldNotIn(FieldAccountID, vs...))
 }
 
-// HouseholdCurrencyIDEQ applies the EQ predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDEQ(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldEQ(FieldHouseholdCurrencyID, v))
+// CurrencyIDEQ applies the EQ predicate on the "currency_id" field.
+func CurrencyIDEQ(v int) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldCurrencyID, v))
 }
 
-// HouseholdCurrencyIDNEQ applies the NEQ predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDNEQ(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldNEQ(FieldHouseholdCurrencyID, v))
+// CurrencyIDNEQ applies the NEQ predicate on the "currency_id" field.
+func CurrencyIDNEQ(v int) predicate.Investment {
+	return predicate.Investment(sql.FieldNEQ(FieldCurrencyID, v))
 }
 
-// HouseholdCurrencyIDIn applies the In predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDIn(vs ...int) predicate.Investment {
-	return predicate.Investment(sql.FieldIn(FieldHouseholdCurrencyID, vs...))
+// CurrencyIDIn applies the In predicate on the "currency_id" field.
+func CurrencyIDIn(vs ...int) predicate.Investment {
+	return predicate.Investment(sql.FieldIn(FieldCurrencyID, vs...))
 }
 
-// HouseholdCurrencyIDNotIn applies the NotIn predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDNotIn(vs ...int) predicate.Investment {
-	return predicate.Investment(sql.FieldNotIn(FieldHouseholdCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDEQ applies the EQ predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDEQ(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldEQ(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDNEQ applies the NEQ predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNEQ(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldNEQ(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDIn applies the In predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDIn(vs ...int) predicate.Investment {
-	return predicate.Investment(sql.FieldIn(FieldLegacyCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDNotIn applies the NotIn predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNotIn(vs ...int) predicate.Investment {
-	return predicate.Investment(sql.FieldNotIn(FieldLegacyCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDGT applies the GT predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDGT(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldGT(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDGTE applies the GTE predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDGTE(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldGTE(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDLT applies the LT predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDLT(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldLT(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDLTE applies the LTE predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDLTE(v int) predicate.Investment {
-	return predicate.Investment(sql.FieldLTE(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDIsNil applies the IsNil predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDIsNil() predicate.Investment {
-	return predicate.Investment(sql.FieldIsNull(FieldLegacyCurrencyID))
-}
-
-// LegacyCurrencyIDNotNil applies the NotNil predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNotNil() predicate.Investment {
-	return predicate.Investment(sql.FieldNotNull(FieldLegacyCurrencyID))
+// CurrencyIDNotIn applies the NotIn predicate on the "currency_id" field.
+func CurrencyIDNotIn(vs ...int) predicate.Investment {
+	return predicate.Investment(sql.FieldNotIn(FieldCurrencyID, vs...))
 }
 
 // HasAccount applies the HasEdge predicate on the "account" edge.
@@ -629,7 +574,7 @@ func HasCurrency() predicate.Investment {
 }
 
 // HasCurrencyWith applies the HasEdge predicate on the "currency" edge with a given conditions (other predicates).
-func HasCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.Investment {
+func HasCurrencyWith(preds ...predicate.Currency) predicate.Investment {
 	return predicate.Investment(func(s *sql.Selector) {
 		step := newCurrencyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

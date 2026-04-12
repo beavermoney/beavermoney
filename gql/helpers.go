@@ -8,6 +8,7 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
@@ -48,12 +49,13 @@ func (r *financialReportResolver) aggregateByCategoryType(
 	} else {
 		hh, err := client.Household.Query().
 			Where(household.IDEQ(householdID)).
+			WithCurrency().
 			Only(ctx)
 		if err != nil {
 			r.logger.Error("Failed to get household", "error", err)
 			return nil, err
 		}
-		targetCurrencyCode = hh.CurrencyCode
+		targetCurrencyCode = hh.Edges.Currency.Code
 	}
 
 	// Query grouped by category and currency
@@ -68,7 +70,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 		Modify(func(s *sql.Selector) {
 			te := sql.Table(transactionentry.Table)
 			tc := sql.Table(transactioncategory.Table)
-			cu := sql.Table(householdcurrency.Table)
+			cu := sql.Table(currency.Table)
 
 			// Join tables
 			s.Join(te).
@@ -76,7 +78,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 			s.Join(tc).
 				On(s.C(transaction.CategoryColumn), tc.C(transactioncategory.FieldID))
 			s.Join(cu).
-				On(te.C(transactionentry.CurrencyColumn), cu.C(householdcurrency.FieldID))
+				On(te.C(transactionentry.CurrencyColumn), cu.C(currency.FieldID))
 
 			// Filter by household
 			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
@@ -98,7 +100,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 			// Group by category and currency and sum
 			s.Select(
 				sql.As(tc.C(transactioncategory.FieldID), "category_id"),
-				sql.As(cu.C(householdcurrency.FieldCode), "currency_code"),
+				sql.As(cu.C(currency.FieldCode), "currency_code"),
 				sql.As(sql.Sum(te.C(transactionentry.FieldAmount)), "total"),
 				sql.As(
 					sql.Count(sql.Distinct(s.C(transaction.FieldID))),
@@ -107,7 +109,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 			)
 			s.GroupBy(
 				tc.C(transactioncategory.FieldID),
-				cu.C(householdcurrency.FieldCode),
+				cu.C(currency.FieldCode),
 			)
 		}).
 		Scan(ctx, &res)
@@ -257,7 +259,7 @@ func (r *mutationResolver) syncHouseholdRatesForCurrency(
 	ctx context.Context,
 	client *ent.Client,
 	householdID int,
-	newHC *ent.HouseholdCurrency,
+	newCurrency *ent.Currency,
 	existingHCs []*ent.HouseholdCurrency,
 ) error {
 	if len(existingHCs) == 0 {
@@ -265,17 +267,17 @@ func (r *mutationResolver) syncHouseholdRatesForCurrency(
 	}
 
 	var quoteCodes []string
-	codeToID := map[string]int{newHC.Code: newHC.ID}
+	codeToID := map[string]int{newCurrency.Code: newCurrency.ID}
 	for _, hc := range existingHCs {
-		quoteCodes = append(quoteCodes, hc.Code)
-		codeToID[hc.Code] = hc.ID
+		quoteCodes = append(quoteCodes, hc.Edges.Currency.Code)
+		codeToID[hc.Edges.Currency.Code] = hc.CurrencyID
 	}
 
 	var builders []*ent.HouseholdRateCreate
 	quotes := strings.Join(quoteCodes, ",")
 
 	resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
-		Base:   &newHC.Code,
+		Base:   &newCurrency.Code,
 		Quotes: &quotes,
 	})
 	if err != nil {
@@ -290,13 +292,13 @@ func (r *mutationResolver) syncHouseholdRatesForCurrency(
 			builders = append(builders,
 				client.HouseholdRate.Create().
 					SetHouseholdID(householdID).
-					SetFromHouseholdCurrencyID(newHC.ID).
-					SetToHouseholdCurrencyID(toID).
+					SetFromCurrencyID(newCurrency.ID).
+					SetToCurrencyID(toID).
 					SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 				client.HouseholdRate.Create().
 					SetHouseholdID(householdID).
-					SetFromHouseholdCurrencyID(toID).
-					SetToHouseholdCurrencyID(newHC.ID).
+					SetFromCurrencyID(toID).
+					SetToCurrencyID(newCurrency.ID).
 					SetRate(decimal.NewFromInt(1).Div(decimal.NewFromFloat32(rate.Rate)).Round(6)),
 			)
 		}
@@ -307,8 +309,8 @@ func (r *mutationResolver) syncHouseholdRatesForCurrency(
 			OnConflict(
 				sql.ConflictColumns(
 					householdrate.FieldHouseholdID,
-					householdrate.FieldFromHouseholdCurrencyID,
-					householdrate.FieldToHouseholdCurrencyID,
+					householdrate.FieldFromCurrencyID,
+					householdrate.FieldToCurrencyID,
 				),
 			).
 			Ignore().
@@ -321,7 +323,7 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 	ctx context.Context,
 	client *ent.Client,
 	householdID int,
-	newHC *ent.HouseholdCurrency,
+	newCurrency *ent.Currency,
 	existingHCs []*ent.HouseholdCurrency,
 ) error {
 	if len(existingHCs) == 0 {
@@ -346,11 +348,11 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 		return nil
 	}
 
-	codeToID := map[string]int{newHC.Code: newHC.ID}
+	codeToID := map[string]int{newCurrency.Code: newCurrency.ID}
 	var quoteCodes []string
 	for _, hc := range importantHCs {
-		quoteCodes = append(quoteCodes, hc.Code)
-		codeToID[hc.Code] = hc.ID
+		quoteCodes = append(quoteCodes, hc.Edges.Currency.Code)
+		codeToID[hc.Edges.Currency.Code] = hc.CurrencyID
 	}
 	quotes := strings.Join(quoteCodes, ",")
 
@@ -359,8 +361,8 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 			Where(
 				snapshotrate.SnapshotIDEQ(snap.ID),
 				snapshotrate.Or(
-					snapshotrate.FromHouseholdCurrencyIDEQ(newHC.ID),
-					snapshotrate.ToHouseholdCurrencyIDEQ(newHC.ID),
+					snapshotrate.FromCurrencyIDEQ(newCurrency.ID),
+					snapshotrate.ToCurrencyIDEQ(newCurrency.ID),
 				),
 			).
 			Exist(ctx)
@@ -374,7 +376,7 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 		date := openapi_types.Date{Time: snap.CreateTime}
 		resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
 			Date:   &date,
-			Base:   &newHC.Code,
+			Base:   &newCurrency.Code,
 			Quotes: &quotes,
 		})
 		if err != nil {
@@ -394,13 +396,13 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 			builders = append(builders,
 				client.SnapshotRate.Create().
 					SetSnapshotID(snap.ID).
-					SetFromHouseholdCurrencyID(newHC.ID).
-					SetToHouseholdCurrencyID(toID).
+					SetFromCurrencyID(newCurrency.ID).
+					SetToCurrencyID(toID).
 					SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 				client.SnapshotRate.Create().
 					SetSnapshotID(snap.ID).
-					SetFromHouseholdCurrencyID(toID).
-					SetToHouseholdCurrencyID(newHC.ID).
+					SetFromCurrencyID(toID).
+					SetToCurrencyID(newCurrency.ID).
 					SetRate(decimal.NewFromInt(1).Div(decimal.NewFromFloat32(rate.Rate)).Round(6)),
 			)
 		}
@@ -410,8 +412,8 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 				OnConflict(
 					sql.ConflictColumns(
 						snapshotrate.FieldSnapshotID,
-						snapshotrate.FieldFromHouseholdCurrencyID,
-						snapshotrate.FieldToHouseholdCurrencyID,
+						snapshotrate.FieldFromCurrencyID,
+						snapshotrate.FieldToCurrencyID,
 					),
 				).
 				Ignore().
@@ -434,38 +436,59 @@ func (r *mutationResolver) syncHouseholdCurrenciesFromAccounts(
 ) error {
 	accounts, err := client.Account.Query().
 		Where(account.HouseholdIDEQ(hh.ID)).
+		WithCurrency().
 		All(ctx)
 	if err != nil {
 		return err
 	}
 
-	seen := map[string]bool{hh.CurrencyCode: true}
-	allHCs := []*ent.HouseholdCurrency{primaryHC}
+	seen := map[int]bool{hh.CurrencyID: true}
+	var newHCs []*ent.HouseholdCurrency
 	for _, acc := range accounts {
-		hc, err := acc.QueryCurrency().Only(ctx)
+		if seen[acc.CurrencyID] {
+			continue
+		}
+		seen[acc.CurrencyID] = true
+		hcID, err := client.HouseholdCurrency.Create().
+			SetHouseholdID(hh.ID).
+			SetCurrencyID(acc.CurrencyID).
+			SetImportant(true).
+			OnConflict(
+				sql.ConflictColumns(householdcurrency.FieldHouseholdID, householdcurrency.FieldCurrencyID),
+			).
+			Ignore().
+			ID(ctx)
 		if err != nil {
 			return err
 		}
-		if seen[hc.Code] {
-			continue
-		}
-		seen[hc.Code] = true
-		allHCs = append(allHCs, hc)
+		newHCs = append(newHCs, &ent.HouseholdCurrency{
+			ID:         hcID,
+			CurrencyID: acc.CurrencyID,
+			Edges: ent.HouseholdCurrencyEdges{
+				Currency: acc.Edges.Currency,
+			},
+		})
 	}
 
-	if len(allHCs) <= 1 {
+	if len(newHCs) == 0 {
 		return nil
 	}
 
-	for _, hc := range allHCs[1:] {
+	primaryHC.Edges.Currency, err = client.Currency.Get(ctx, hh.CurrencyID)
+	if err != nil {
+		return err
+	}
+	allHCs := append([]*ent.HouseholdCurrency{primaryHC}, newHCs...)
+
+	for _, hc := range newHCs {
 		existing := make([]*ent.HouseholdCurrency, 0, len(allHCs)-1)
 		for _, other := range allHCs {
 			if other.ID != hc.ID {
 				existing = append(existing, other)
 			}
 		}
-		if err := r.syncHouseholdRatesForCurrency(ctx, client, hh.ID, hc, existing); err != nil {
-			r.logger.Error("Failed to sync rates for currency", "error", err, "householdCurrencyID", hc.ID)
+		if err := r.syncHouseholdRatesForCurrency(ctx, client, hh.ID, hc.Edges.Currency, existing); err != nil {
+			r.logger.Error("Failed to sync rates for currency", "error", err, "currencyID", hc.CurrencyID)
 		}
 	}
 

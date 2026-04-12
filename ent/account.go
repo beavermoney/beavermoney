@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -39,10 +39,8 @@ type Account struct {
 	Icon string `json:"icon,omitempty"`
 	// Value is the total value of the account including investments
 	Value decimal.Decimal `json:"value,omitempty"`
-	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
-	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
+	// CurrencyID holds the value of the "currency_id" field.
+	CurrencyID int `json:"currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// Archived holds the value of the "archived" field.
@@ -58,7 +56,7 @@ type AccountEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
 	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	Currency *Currency `json:"currency,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// TransactionEntries holds the value of the transaction_entries edge.
@@ -88,11 +86,11 @@ func (e AccountEdges) HouseholdOrErr() (*Household, error) {
 
 // CurrencyOrErr returns the Currency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AccountEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
+func (e AccountEdges) CurrencyOrErr() (*Currency, error) {
 	if e.Currency != nil {
 		return e.Currency, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
+		return nil, &NotFoundError{label: currency.Label}
 	}
 	return nil, &NotLoadedError{edge: "currency"}
 }
@@ -135,7 +133,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 			values[i] = new(decimal.Decimal)
 		case account.FieldArchived:
 			values[i] = new(sql.NullBool)
-		case account.FieldID, account.FieldHouseholdID, account.FieldHouseholdCurrencyID, account.FieldLegacyCurrencyID, account.FieldUserID:
+		case account.FieldID, account.FieldHouseholdID, account.FieldCurrencyID, account.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case account.FieldName, account.FieldType, account.FieldCategory, account.FieldIcon:
 			values[i] = new(sql.NullString)
@@ -217,18 +215,11 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.Value = *value
 			}
-		case account.FieldHouseholdCurrencyID:
+		case account.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field currency_id", values[i])
 			} else if value.Valid {
-				_m.HouseholdCurrencyID = int(value.Int64)
-			}
-		case account.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
+				_m.CurrencyID = int(value.Int64)
 			}
 		case account.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -261,7 +252,7 @@ func (_m *Account) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency queries the "currency" edge of the Account entity.
-func (_m *Account) QueryCurrency() *HouseholdCurrencyQuery {
+func (_m *Account) QueryCurrency() *CurrencyQuery {
 	return NewAccountClient(_m.config).QueryCurrency(_m)
 }
 
@@ -332,13 +323,8 @@ func (_m *Account) String() string {
 	builder.WriteString("value=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Value))
 	builder.WriteString(", ")
-	builder.WriteString("household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))

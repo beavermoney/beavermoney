@@ -16,7 +16,7 @@ func (_m *Account) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *Account) Currency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *Account) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryCurrency().Only(ctx)
@@ -56,6 +56,146 @@ func (_m *Account) Investments(ctx context.Context) (result []*Investment, err e
 	return result, err
 }
 
+func (_m *Currency) Accounts(ctx context.Context) (result []*Account, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.AccountsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryAccounts().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) Investments(ctx context.Context) (result []*Investment, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedInvestments(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.InvestmentsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryInvestments().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) TransactionEntries(ctx context.Context) (result []*TransactionEntry, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedTransactionEntries(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.TransactionEntriesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryTransactionEntries().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) Households(ctx context.Context) (result []*Household, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholds(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholds().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) RecurringSubscriptions(ctx context.Context) (result []*RecurringSubscription, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedRecurringSubscriptions(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.RecurringSubscriptionsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryRecurringSubscriptions().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) SnapshotEntries(ctx context.Context) (result []*SnapshotEntry, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotEntries(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotEntriesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotEntries().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) SnapshotRatesFrom(ctx context.Context) (result []*SnapshotRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotRatesFrom(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotRatesFromOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotRatesFrom().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) SnapshotRatesTo(ctx context.Context) (result []*SnapshotRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedSnapshotRatesTo(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.SnapshotRatesToOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QuerySnapshotRatesTo().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) HouseholdCurrencies(ctx context.Context) (result []*HouseholdCurrency, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdCurrencies(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdCurrenciesOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdCurrencies().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) HouseholdRatesFrom(ctx context.Context) (result []*HouseholdRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdRatesFrom(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdRatesFromOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdRatesFrom().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Currency) HouseholdRatesTo(ctx context.Context) (result []*HouseholdRate, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedHouseholdRatesTo(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.HouseholdRatesToOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHouseholdRatesTo().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *Household) Currency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.CurrencyOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryCurrency().Only(ctx)
+	}
+	return result, err
+}
+
 func (_m *Household) Users(ctx context.Context) (result []*User, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedUsers(graphql.GetFieldContext(ctx).Field.Alias)
@@ -75,7 +215,7 @@ func (_m *Household) Accounts(
 		WithAccountFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[1][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[2][alias]
 	if nodes, err := _m.NamedAccounts(alias); err == nil || hasTotalCount {
 		pager, err := newAccountPager(opts, last != nil)
 		if err != nil {
@@ -96,7 +236,7 @@ func (_m *Household) Transactions(
 		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[2][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[3][alias]
 	if nodes, err := _m.NamedTransactions(alias); err == nil || hasTotalCount {
 		pager, err := newTransactionPager(opts, last != nil)
 		if err != nil {
@@ -116,7 +256,7 @@ func (_m *Household) Investments(
 		WithInvestmentFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[3][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[4][alias]
 	if nodes, err := _m.NamedInvestments(alias); err == nil || hasTotalCount {
 		pager, err := newInvestmentPager(opts, last != nil)
 		if err != nil {
@@ -136,7 +276,7 @@ func (_m *Household) InvestmentLots(
 		WithInvestmentLotFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[4][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[5][alias]
 	if nodes, err := _m.NamedInvestmentLots(alias); err == nil || hasTotalCount {
 		pager, err := newInvestmentLotPager(opts, last != nil)
 		if err != nil {
@@ -156,7 +296,7 @@ func (_m *Household) TransactionCategories(
 		WithTransactionCategoryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[5][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[6][alias]
 	if nodes, err := _m.NamedTransactionCategories(alias); err == nil || hasTotalCount {
 		pager, err := newTransactionCategoryPager(opts, last != nil)
 		if err != nil {
@@ -176,7 +316,7 @@ func (_m *Household) TransactionEntries(
 		WithTransactionEntryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[6][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[7][alias]
 	if nodes, err := _m.NamedTransactionEntries(alias); err == nil || hasTotalCount {
 		pager, err := newTransactionEntryPager(opts, last != nil)
 		if err != nil {
@@ -196,7 +336,7 @@ func (_m *Household) RecurringSubscriptions(
 		WithRecurringSubscriptionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[7][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[8][alias]
 	if nodes, err := _m.NamedRecurringSubscriptions(alias); err == nil || hasTotalCount {
 		pager, err := newRecurringSubscriptionPager(opts, last != nil)
 		if err != nil {
@@ -216,7 +356,7 @@ func (_m *Household) Snapshots(
 		WithSnapshotFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[8][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
 	if nodes, err := _m.NamedSnapshots(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotPager(opts, last != nil)
 		if err != nil {
@@ -236,7 +376,7 @@ func (_m *Household) SnapshotEntries(
 		WithSnapshotEntryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
 	if nodes, err := _m.NamedSnapshotEntries(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotEntryPager(opts, last != nil)
 		if err != nil {
@@ -293,110 +433,10 @@ func (_m *HouseholdCurrency) Household(ctx context.Context) (*Household, error) 
 	return result, err
 }
 
-func (_m *HouseholdCurrency) Accounts(ctx context.Context) (result []*Account, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.AccountsOrErr()
-	}
+func (_m *HouseholdCurrency) Currency(ctx context.Context) (*Currency, error) {
+	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
-		result, err = _m.QueryAccounts().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) Investments(ctx context.Context) (result []*Investment, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedInvestments(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.InvestmentsOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryInvestments().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) TransactionEntries(ctx context.Context) (result []*TransactionEntry, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedTransactionEntries(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.TransactionEntriesOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryTransactionEntries().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) RecurringSubscriptions(ctx context.Context) (result []*RecurringSubscription, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedRecurringSubscriptions(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.RecurringSubscriptionsOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryRecurringSubscriptions().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) SnapshotEntries(ctx context.Context) (result []*SnapshotEntry, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedSnapshotEntries(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.SnapshotEntriesOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QuerySnapshotEntries().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) SnapshotRatesFrom(ctx context.Context) (result []*SnapshotRate, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedSnapshotRatesFrom(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.SnapshotRatesFromOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QuerySnapshotRatesFrom().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) SnapshotRatesTo(ctx context.Context) (result []*SnapshotRate, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedSnapshotRatesTo(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.SnapshotRatesToOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QuerySnapshotRatesTo().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) HouseholdRatesFrom(ctx context.Context) (result []*HouseholdRate, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedHouseholdRatesFrom(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.HouseholdRatesFromOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryHouseholdRatesFrom().All(ctx)
-	}
-	return result, err
-}
-
-func (_m *HouseholdCurrency) HouseholdRatesTo(ctx context.Context) (result []*HouseholdRate, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedHouseholdRatesTo(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.HouseholdRatesToOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryHouseholdRatesTo().All(ctx)
+		result, err = _m.QueryCurrency().Only(ctx)
 	}
 	return result, err
 }
@@ -409,7 +449,7 @@ func (_m *HouseholdRate) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *HouseholdRate) FromCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *HouseholdRate) FromCurrency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.FromCurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryFromCurrency().Only(ctx)
@@ -417,7 +457,7 @@ func (_m *HouseholdRate) FromCurrency(ctx context.Context) (*HouseholdCurrency, 
 	return result, err
 }
 
-func (_m *HouseholdRate) ToCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *HouseholdRate) ToCurrency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.ToCurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryToCurrency().Only(ctx)
@@ -441,7 +481,7 @@ func (_m *Investment) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *Investment) Currency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *Investment) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryCurrency().Only(ctx)
@@ -493,7 +533,7 @@ func (_m *RecurringSubscription) Household(ctx context.Context) (*Household, err
 	return result, err
 }
 
-func (_m *RecurringSubscription) Currency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *RecurringSubscription) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryCurrency().Only(ctx)
@@ -549,7 +589,7 @@ func (_m *SnapshotEntry) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *SnapshotEntry) Currency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *SnapshotEntry) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryCurrency().Only(ctx)
@@ -581,7 +621,7 @@ func (_m *SnapshotRate) Snapshot(ctx context.Context) (*Snapshot, error) {
 	return result, err
 }
 
-func (_m *SnapshotRate) FromCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *SnapshotRate) FromCurrency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.FromCurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryFromCurrency().Only(ctx)
@@ -589,7 +629,7 @@ func (_m *SnapshotRate) FromCurrency(ctx context.Context) (*HouseholdCurrency, e
 	return result, err
 }
 
-func (_m *SnapshotRate) ToCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *SnapshotRate) ToCurrency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.ToCurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryToCurrency().Only(ctx)
@@ -681,7 +721,7 @@ func (_m *TransactionEntry) Account(ctx context.Context) (*Account, error) {
 	return result, err
 }
 
-func (_m *TransactionEntry) Currency(ctx context.Context) (*HouseholdCurrency, error) {
+func (_m *TransactionEntry) Currency(ctx context.Context) (*Currency, error) {
 	result, err := _m.Edges.CurrencyOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryCurrency().Only(ctx)

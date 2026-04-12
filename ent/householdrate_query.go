@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"math"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/predicate"
 	"entgo.io/ent"
@@ -26,8 +26,8 @@ type HouseholdRateQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.HouseholdRate
 	withHousehold    *HouseholdQuery
-	withFromCurrency *HouseholdCurrencyQuery
-	withToCurrency   *HouseholdCurrencyQuery
+	withFromCurrency *CurrencyQuery
+	withToCurrency   *CurrencyQuery
 	loadTotal        []func(context.Context, []*HouseholdRate) error
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -89,8 +89,8 @@ func (_q *HouseholdRateQuery) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryFromCurrency chains the current query on the "from_currency" edge.
-func (_q *HouseholdRateQuery) QueryFromCurrency() *HouseholdCurrencyQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
+func (_q *HouseholdRateQuery) QueryFromCurrency() *CurrencyQuery {
+	query := (&CurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -101,7 +101,7 @@ func (_q *HouseholdRateQuery) QueryFromCurrency() *HouseholdCurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(householdrate.Table, householdrate.FieldID, selector),
-			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
+			sqlgraph.To(currency.Table, currency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, householdrate.FromCurrencyTable, householdrate.FromCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -111,8 +111,8 @@ func (_q *HouseholdRateQuery) QueryFromCurrency() *HouseholdCurrencyQuery {
 }
 
 // QueryToCurrency chains the current query on the "to_currency" edge.
-func (_q *HouseholdRateQuery) QueryToCurrency() *HouseholdCurrencyQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
+func (_q *HouseholdRateQuery) QueryToCurrency() *CurrencyQuery {
+	query := (&CurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -123,7 +123,7 @@ func (_q *HouseholdRateQuery) QueryToCurrency() *HouseholdCurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(householdrate.Table, householdrate.FieldID, selector),
-			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
+			sqlgraph.To(currency.Table, currency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, householdrate.ToCurrencyTable, householdrate.ToCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -347,8 +347,8 @@ func (_q *HouseholdRateQuery) WithHousehold(opts ...func(*HouseholdQuery)) *Hous
 
 // WithFromCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "from_currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *HouseholdRateQuery) WithFromCurrency(opts ...func(*HouseholdCurrencyQuery)) *HouseholdRateQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
+func (_q *HouseholdRateQuery) WithFromCurrency(opts ...func(*CurrencyQuery)) *HouseholdRateQuery {
+	query := (&CurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -358,8 +358,8 @@ func (_q *HouseholdRateQuery) WithFromCurrency(opts ...func(*HouseholdCurrencyQu
 
 // WithToCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "to_currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *HouseholdRateQuery) WithToCurrency(opts ...func(*HouseholdCurrencyQuery)) *HouseholdRateQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
+func (_q *HouseholdRateQuery) WithToCurrency(opts ...func(*CurrencyQuery)) *HouseholdRateQuery {
+	query := (&CurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -486,13 +486,13 @@ func (_q *HouseholdRateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	}
 	if query := _q.withFromCurrency; query != nil {
 		if err := _q.loadFromCurrency(ctx, query, nodes, nil,
-			func(n *HouseholdRate, e *HouseholdCurrency) { n.Edges.FromCurrency = e }); err != nil {
+			func(n *HouseholdRate, e *Currency) { n.Edges.FromCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
 	if query := _q.withToCurrency; query != nil {
 		if err := _q.loadToCurrency(ctx, query, nodes, nil,
-			func(n *HouseholdRate, e *HouseholdCurrency) { n.Edges.ToCurrency = e }); err != nil {
+			func(n *HouseholdRate, e *Currency) { n.Edges.ToCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -533,11 +533,11 @@ func (_q *HouseholdRateQuery) loadHousehold(ctx context.Context, query *Househol
 	}
 	return nil
 }
-func (_q *HouseholdRateQuery) loadFromCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*HouseholdRate, init func(*HouseholdRate), assign func(*HouseholdRate, *HouseholdCurrency)) error {
+func (_q *HouseholdRateQuery) loadFromCurrency(ctx context.Context, query *CurrencyQuery, nodes []*HouseholdRate, init func(*HouseholdRate), assign func(*HouseholdRate, *Currency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*HouseholdRate)
 	for i := range nodes {
-		fk := nodes[i].FromHouseholdCurrencyID
+		fk := nodes[i].FromCurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -546,7 +546,7 @@ func (_q *HouseholdRateQuery) loadFromCurrency(ctx context.Context, query *House
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(householdcurrency.IDIn(ids...))
+	query.Where(currency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -554,7 +554,7 @@ func (_q *HouseholdRateQuery) loadFromCurrency(ctx context.Context, query *House
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "from_household_currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "from_currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -562,11 +562,11 @@ func (_q *HouseholdRateQuery) loadFromCurrency(ctx context.Context, query *House
 	}
 	return nil
 }
-func (_q *HouseholdRateQuery) loadToCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*HouseholdRate, init func(*HouseholdRate), assign func(*HouseholdRate, *HouseholdCurrency)) error {
+func (_q *HouseholdRateQuery) loadToCurrency(ctx context.Context, query *CurrencyQuery, nodes []*HouseholdRate, init func(*HouseholdRate), assign func(*HouseholdRate, *Currency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*HouseholdRate)
 	for i := range nodes {
-		fk := nodes[i].ToHouseholdCurrencyID
+		fk := nodes[i].ToCurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -575,7 +575,7 @@ func (_q *HouseholdRateQuery) loadToCurrency(ctx context.Context, query *Househo
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(householdcurrency.IDIn(ids...))
+	query.Where(currency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -583,7 +583,7 @@ func (_q *HouseholdRateQuery) loadToCurrency(ctx context.Context, query *Househo
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "to_household_currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "to_currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -624,10 +624,10 @@ func (_q *HouseholdRateQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(householdrate.FieldHouseholdID)
 		}
 		if _q.withFromCurrency != nil {
-			_spec.Node.AddColumnOnce(householdrate.FieldFromHouseholdCurrencyID)
+			_spec.Node.AddColumnOnce(householdrate.FieldFromCurrencyID)
 		}
 		if _q.withToCurrency != nil {
-			_spec.Node.AddColumnOnce(householdrate.FieldToHouseholdCurrencyID)
+			_spec.Node.AddColumnOnce(householdrate.FieldToCurrencyID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

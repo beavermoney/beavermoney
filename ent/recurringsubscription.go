@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent"
@@ -41,10 +41,8 @@ type RecurringSubscription struct {
 	Icon string `json:"icon,omitempty"`
 	// Cost holds the value of the "cost" field.
 	Cost decimal.Decimal `json:"cost,omitempty"`
-	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
-	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
+	// CurrencyID holds the value of the "currency_id" field.
+	CurrencyID int `json:"currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -58,7 +56,7 @@ type RecurringSubscriptionEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
 	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	Currency *Currency `json:"currency,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -81,11 +79,11 @@ func (e RecurringSubscriptionEdges) HouseholdOrErr() (*Household, error) {
 
 // CurrencyOrErr returns the Currency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e RecurringSubscriptionEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
+func (e RecurringSubscriptionEdges) CurrencyOrErr() (*Currency, error) {
 	if e.Currency != nil {
 		return e.Currency, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
+		return nil, &NotFoundError{label: currency.Label}
 	}
 	return nil, &NotLoadedError{edge: "currency"}
 }
@@ -110,7 +108,7 @@ func (*RecurringSubscription) scanValues(columns []string) ([]any, error) {
 			values[i] = new(decimal.Decimal)
 		case recurringsubscription.FieldActive:
 			values[i] = new(sql.NullBool)
-		case recurringsubscription.FieldID, recurringsubscription.FieldHouseholdID, recurringsubscription.FieldIntervalCount, recurringsubscription.FieldHouseholdCurrencyID, recurringsubscription.FieldLegacyCurrencyID, recurringsubscription.FieldUserID:
+		case recurringsubscription.FieldID, recurringsubscription.FieldHouseholdID, recurringsubscription.FieldIntervalCount, recurringsubscription.FieldCurrencyID, recurringsubscription.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case recurringsubscription.FieldName, recurringsubscription.FieldInterval, recurringsubscription.FieldIcon:
 			values[i] = new(sql.NullString)
@@ -197,18 +195,11 @@ func (_m *RecurringSubscription) assignValues(columns []string, values []any) er
 			} else if value != nil {
 				_m.Cost = *value
 			}
-		case recurringsubscription.FieldHouseholdCurrencyID:
+		case recurringsubscription.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field currency_id", values[i])
 			} else if value.Valid {
-				_m.HouseholdCurrencyID = int(value.Int64)
-			}
-		case recurringsubscription.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
+				_m.CurrencyID = int(value.Int64)
 			}
 		case recurringsubscription.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -235,7 +226,7 @@ func (_m *RecurringSubscription) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency queries the "currency" edge of the RecurringSubscription entity.
-func (_m *RecurringSubscription) QueryCurrency() *HouseholdCurrencyQuery {
+func (_m *RecurringSubscription) QueryCurrency() *CurrencyQuery {
 	return NewRecurringSubscriptionClient(_m.config).QueryCurrency(_m)
 }
 
@@ -297,13 +288,8 @@ func (_m *RecurringSubscription) String() string {
 	builder.WriteString("cost=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Cost))
 	builder.WriteString(", ")
-	builder.WriteString("household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))

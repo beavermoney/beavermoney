@@ -11,12 +11,8 @@ const UseHouseholdFragment = graphql`
     # eslint-disable-next-line relay/unused-fields
     locale
     # eslint-disable-next-line relay/unused-fields
-    currencyCode
-    # eslint-disable-next-line relay/unused-fields
-    householdCurrencies {
-      # eslint-disable-next-line relay/unused-fields
+    currency {
       id
-      # eslint-disable-next-line relay/unused-fields
       code
     }
   }

@@ -460,7 +460,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.currency.code ??
+                        household.currency.code
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
@@ -497,7 +498,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.currency.code ??
+                        household.currency.code
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

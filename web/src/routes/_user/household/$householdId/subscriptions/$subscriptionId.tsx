@@ -39,6 +39,7 @@ const subscriptionIdQuery = graphql`
         ...editSubscriptionFragment
       }
     }
+    ...editSubscriptionCurrenciesFragment
   }
 `
 
@@ -73,7 +74,11 @@ function RouteComponent() {
       </div>
       <Item className="p-0">
         <SubscriptionCard fragmentRef={data.node} />
-        <EditSubscription key={data.node.id} fragmentRef={data.node} />
+        <EditSubscription
+          key={data.node.id}
+          fragmentRef={data.node}
+          currenciesRef={data}
+        />
       </Item>
     </div>
   )

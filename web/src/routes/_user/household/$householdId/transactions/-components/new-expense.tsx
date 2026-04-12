@@ -374,7 +374,8 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.currency.code ??
+                        household.currency.code
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
