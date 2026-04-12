@@ -471,3 +471,72 @@ func (r *mutationResolver) syncHouseholdCurrenciesFromAccounts(
 
 	return nil
 }
+
+func (r *mutationResolver) refreshHouseholdRates(
+	ctx context.Context,
+	client *ent.Client,
+	householdID int,
+) error {
+	hcs, err := client.HouseholdCurrency.Query().
+		Where(householdcurrency.HouseholdIDEQ(householdID)).
+		All(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to query household currencies: %w", err)
+	}
+	if len(hcs) < 2 {
+		return nil
+	}
+
+	codeToID := make(map[string]int, len(hcs))
+	for _, hc := range hcs {
+		codeToID[hc.Code] = hc.ID
+	}
+
+	var builders []*ent.HouseholdRateCreate
+	for _, from := range hcs {
+		var quoteCodes []string
+		for _, to := range hcs {
+			if to.ID != from.ID {
+				quoteCodes = append(quoteCodes, to.Code)
+			}
+		}
+		quotes := strings.Join(quoteCodes, ",")
+		resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
+			Base:   &from.Code,
+			Quotes: &quotes,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to fetch rates for %s: %w", from.Code, err)
+		}
+		if resp.JSON200 == nil {
+			continue
+		}
+		for _, rate := range *resp.JSON200 {
+			toID, ok := codeToID[rate.Quote]
+			if !ok {
+				continue
+			}
+			builders = append(builders, client.HouseholdRate.Create().
+				SetHouseholdID(householdID).
+				SetFromHouseholdCurrencyID(from.ID).
+				SetToHouseholdCurrencyID(toID).
+				SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
+			)
+		}
+	}
+
+	if len(builders) == 0 {
+		return nil
+	}
+
+	return client.HouseholdRate.CreateBulk(builders...).
+		OnConflict(
+			sql.ConflictColumns(
+				householdrate.FieldHouseholdID,
+				householdrate.FieldFromHouseholdCurrencyID,
+				householdrate.FieldToHouseholdCurrencyID,
+			),
+		).
+		UpdateNewValues().
+		Exec(ctx)
+}

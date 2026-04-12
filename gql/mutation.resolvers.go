@@ -2039,6 +2039,11 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 		}
 	}
 
+	if err := r.refreshHouseholdRates(ctx, client, householdID); err != nil {
+		r.logger.Error("Failed to refresh household rates", "error", err)
+		return false, err
+	}
+
 	return true, nil
 }
 
