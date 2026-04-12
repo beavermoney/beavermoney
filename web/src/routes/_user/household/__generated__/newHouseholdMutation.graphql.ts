@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<30e89539fc5b23351fe88e68a4d66c06>>
+ * @generated SignedSource<<d7c8c2a6a479b97bda978bae49fca60f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type CreateHouseholdInput = {
-  currencyID: string;
+  currencyCode: string;
   isDemo?: boolean | null | undefined;
   locale: string;
   name: string;

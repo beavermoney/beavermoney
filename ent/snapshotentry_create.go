@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/user"
@@ -91,9 +91,23 @@ func (_c *SnapshotEntryCreate) SetLiability(v decimal.Decimal) *SnapshotEntryCre
 	return _c
 }
 
-// SetCurrencyID sets the "currency_id" field.
-func (_c *SnapshotEntryCreate) SetCurrencyID(v int) *SnapshotEntryCreate {
-	_c.mutation.SetCurrencyID(v)
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_c *SnapshotEntryCreate) SetHouseholdCurrencyID(v int) *SnapshotEntryCreate {
+	_c.mutation.SetHouseholdCurrencyID(v)
+	return _c
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (_c *SnapshotEntryCreate) SetLegacyCurrencyID(v int) *SnapshotEntryCreate {
+	_c.mutation.SetLegacyCurrencyID(v)
+	return _c
+}
+
+// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
+func (_c *SnapshotEntryCreate) SetNillableLegacyCurrencyID(v *int) *SnapshotEntryCreate {
+	if v != nil {
+		_c.SetLegacyCurrencyID(*v)
+	}
 	return _c
 }
 
@@ -114,8 +128,14 @@ func (_c *SnapshotEntryCreate) SetHousehold(v *Household) *SnapshotEntryCreate {
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrency sets the "currency" edge to the Currency entity.
-func (_c *SnapshotEntryCreate) SetCurrency(v *Currency) *SnapshotEntryCreate {
+// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
+func (_c *SnapshotEntryCreate) SetCurrencyID(id int) *SnapshotEntryCreate {
+	_c.mutation.SetCurrencyID(id)
+	return _c
+}
+
+// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
+func (_c *SnapshotEntryCreate) SetCurrency(v *HouseholdCurrency) *SnapshotEntryCreate {
 	return _c.SetCurrencyID(v.ID)
 }
 
@@ -209,12 +229,12 @@ func (_c *SnapshotEntryCreate) check() error {
 	if _, ok := _c.mutation.Liability(); !ok {
 		return &ValidationError{Name: "liability", err: errors.New(`ent: missing required field "SnapshotEntry.liability"`)}
 	}
-	if _, ok := _c.mutation.CurrencyID(); !ok {
-		return &ValidationError{Name: "currency_id", err: errors.New(`ent: missing required field "SnapshotEntry.currency_id"`)}
+	if _, ok := _c.mutation.HouseholdCurrencyID(); !ok {
+		return &ValidationError{Name: "household_currency_id", err: errors.New(`ent: missing required field "SnapshotEntry.household_currency_id"`)}
 	}
-	if v, ok := _c.mutation.CurrencyID(); ok {
-		if err := snapshotentry.CurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "SnapshotEntry.currency_id": %w`, err)}
+	if v, ok := _c.mutation.HouseholdCurrencyID(); ok {
+		if err := snapshotentry.HouseholdCurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "SnapshotEntry.household_currency_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.UserID(); !ok {
@@ -300,6 +320,10 @@ func (_c *SnapshotEntryCreate) createSpec() (*SnapshotEntry, *sqlgraph.CreateSpe
 		_spec.SetField(snapshotentry.FieldLiability, field.TypeFloat64, value)
 		_node.Liability = value
 	}
+	if value, ok := _c.mutation.LegacyCurrencyID(); ok {
+		_spec.SetField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt, value)
+		_node.LegacyCurrencyID = &value
+	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -325,13 +349,13 @@ func (_c *SnapshotEntryCreate) createSpec() (*SnapshotEntry, *sqlgraph.CreateSpe
 			Columns: []string{snapshotentry.CurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CurrencyID = nodes[0]
+		_node.HouseholdCurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
@@ -432,6 +456,30 @@ func (u *SnapshotEntryUpsert) UpdateUpdateTime() *SnapshotEntryUpsert {
 	return u
 }
 
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsert) SetLegacyCurrencyID(v int) *SnapshotEntryUpsert {
+	u.Set(snapshotentry.FieldLegacyCurrencyID, v)
+	return u
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *SnapshotEntryUpsert) UpdateLegacyCurrencyID() *SnapshotEntryUpsert {
+	u.SetExcluded(snapshotentry.FieldLegacyCurrencyID)
+	return u
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsert) AddLegacyCurrencyID(v int) *SnapshotEntryUpsert {
+	u.Add(snapshotentry.FieldLegacyCurrencyID, v)
+	return u
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsert) ClearLegacyCurrencyID() *SnapshotEntryUpsert {
+	u.SetNull(snapshotentry.FieldLegacyCurrencyID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -464,8 +512,8 @@ func (u *SnapshotEntryUpsertOne) UpdateNewValues() *SnapshotEntryUpsertOne {
 		if _, exists := u.create.mutation.Liability(); exists {
 			s.SetIgnore(snapshotentry.FieldLiability)
 		}
-		if _, exists := u.create.mutation.CurrencyID(); exists {
-			s.SetIgnore(snapshotentry.FieldCurrencyID)
+		if _, exists := u.create.mutation.HouseholdCurrencyID(); exists {
+			s.SetIgnore(snapshotentry.FieldHouseholdCurrencyID)
 		}
 		if _, exists := u.create.mutation.UserID(); exists {
 			s.SetIgnore(snapshotentry.FieldUserID)
@@ -515,6 +563,34 @@ func (u *SnapshotEntryUpsertOne) SetUpdateTime(v time.Time) *SnapshotEntryUpsert
 func (u *SnapshotEntryUpsertOne) UpdateUpdateTime() *SnapshotEntryUpsertOne {
 	return u.Update(func(s *SnapshotEntryUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsertOne) SetLegacyCurrencyID(v int) *SnapshotEntryUpsertOne {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.SetLegacyCurrencyID(v)
+	})
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsertOne) AddLegacyCurrencyID(v int) *SnapshotEntryUpsertOne {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.AddLegacyCurrencyID(v)
+	})
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *SnapshotEntryUpsertOne) UpdateLegacyCurrencyID() *SnapshotEntryUpsertOne {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.UpdateLegacyCurrencyID()
+	})
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsertOne) ClearLegacyCurrencyID() *SnapshotEntryUpsertOne {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.ClearLegacyCurrencyID()
 	})
 }
 
@@ -715,8 +791,8 @@ func (u *SnapshotEntryUpsertBulk) UpdateNewValues() *SnapshotEntryUpsertBulk {
 			if _, exists := b.mutation.Liability(); exists {
 				s.SetIgnore(snapshotentry.FieldLiability)
 			}
-			if _, exists := b.mutation.CurrencyID(); exists {
-				s.SetIgnore(snapshotentry.FieldCurrencyID)
+			if _, exists := b.mutation.HouseholdCurrencyID(); exists {
+				s.SetIgnore(snapshotentry.FieldHouseholdCurrencyID)
 			}
 			if _, exists := b.mutation.UserID(); exists {
 				s.SetIgnore(snapshotentry.FieldUserID)
@@ -767,6 +843,34 @@ func (u *SnapshotEntryUpsertBulk) SetUpdateTime(v time.Time) *SnapshotEntryUpser
 func (u *SnapshotEntryUpsertBulk) UpdateUpdateTime() *SnapshotEntryUpsertBulk {
 	return u.Update(func(s *SnapshotEntryUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsertBulk) SetLegacyCurrencyID(v int) *SnapshotEntryUpsertBulk {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.SetLegacyCurrencyID(v)
+	})
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsertBulk) AddLegacyCurrencyID(v int) *SnapshotEntryUpsertBulk {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.AddLegacyCurrencyID(v)
+	})
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *SnapshotEntryUpsertBulk) UpdateLegacyCurrencyID() *SnapshotEntryUpsertBulk {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.UpdateLegacyCurrencyID()
+	})
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *SnapshotEntryUpsertBulk) ClearLegacyCurrencyID() *SnapshotEntryUpsertBulk {
+	return u.Update(func(s *SnapshotEntryUpsert) {
+		s.ClearLegacyCurrencyID()
 	})
 }
 

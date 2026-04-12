@@ -72,6 +72,33 @@ func (_u *TransactionEntryUpdate) SetNillableAccountID(v *int) *TransactionEntry
 	return _u
 }
 
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (_u *TransactionEntryUpdate) SetLegacyCurrencyID(v int) *TransactionEntryUpdate {
+	_u.mutation.ResetLegacyCurrencyID()
+	_u.mutation.SetLegacyCurrencyID(v)
+	return _u
+}
+
+// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
+func (_u *TransactionEntryUpdate) SetNillableLegacyCurrencyID(v *int) *TransactionEntryUpdate {
+	if v != nil {
+		_u.SetLegacyCurrencyID(*v)
+	}
+	return _u
+}
+
+// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
+func (_u *TransactionEntryUpdate) AddLegacyCurrencyID(v int) *TransactionEntryUpdate {
+	_u.mutation.AddLegacyCurrencyID(v)
+	return _u
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (_u *TransactionEntryUpdate) ClearLegacyCurrencyID() *TransactionEntryUpdate {
+	_u.mutation.ClearLegacyCurrencyID()
+	return _u
+}
+
 // SetAccount sets the "account" edge to the Account entity.
 func (_u *TransactionEntryUpdate) SetAccount(v *Account) *TransactionEntryUpdate {
 	return _u.SetAccountID(v.ID)
@@ -179,6 +206,15 @@ func (_u *TransactionEntryUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.AddedAmount(); ok {
 		_spec.AddField(transactionentry.FieldAmount, field.TypeFloat64, value)
 	}
+	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
+		_spec.SetField(transactionentry.FieldLegacyCurrencyID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
+		_spec.AddField(transactionentry.FieldLegacyCurrencyID, field.TypeInt, value)
+	}
+	if _u.mutation.LegacyCurrencyIDCleared() {
+		_spec.ClearField(transactionentry.FieldLegacyCurrencyID, field.TypeInt)
+	}
 	if _u.mutation.AccountCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -268,6 +304,33 @@ func (_u *TransactionEntryUpdateOne) SetNillableAccountID(v *int) *TransactionEn
 	if v != nil {
 		_u.SetAccountID(*v)
 	}
+	return _u
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (_u *TransactionEntryUpdateOne) SetLegacyCurrencyID(v int) *TransactionEntryUpdateOne {
+	_u.mutation.ResetLegacyCurrencyID()
+	_u.mutation.SetLegacyCurrencyID(v)
+	return _u
+}
+
+// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
+func (_u *TransactionEntryUpdateOne) SetNillableLegacyCurrencyID(v *int) *TransactionEntryUpdateOne {
+	if v != nil {
+		_u.SetLegacyCurrencyID(*v)
+	}
+	return _u
+}
+
+// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
+func (_u *TransactionEntryUpdateOne) AddLegacyCurrencyID(v int) *TransactionEntryUpdateOne {
+	_u.mutation.AddLegacyCurrencyID(v)
+	return _u
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (_u *TransactionEntryUpdateOne) ClearLegacyCurrencyID() *TransactionEntryUpdateOne {
+	_u.mutation.ClearLegacyCurrencyID()
 	return _u
 }
 
@@ -407,6 +470,15 @@ func (_u *TransactionEntryUpdateOne) sqlSave(ctx context.Context) (_node *Transa
 	}
 	if value, ok := _u.mutation.AddedAmount(); ok {
 		_spec.AddField(transactionentry.FieldAmount, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
+		_spec.SetField(transactionentry.FieldLegacyCurrencyID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
+		_spec.AddField(transactionentry.FieldLegacyCurrencyID, field.TypeInt, value)
+	}
+	if _u.mutation.LegacyCurrencyIDCleared() {
+		_spec.ClearField(transactionentry.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if _u.mutation.AccountCleared() {
 		edge := &sqlgraph.EdgeSpec{

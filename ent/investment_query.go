@@ -10,8 +10,8 @@ import (
 	"math"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
@@ -30,7 +30,7 @@ type InvestmentQuery struct {
 	predicates              []predicate.Investment
 	withAccount             *AccountQuery
 	withHousehold           *HouseholdQuery
-	withCurrency            *CurrencyQuery
+	withCurrency            *HouseholdCurrencyQuery
 	withInvestmentLots      *InvestmentLotQuery
 	loadTotal               []func(context.Context, []*Investment) error
 	modifiers               []func(*sql.Selector)
@@ -116,8 +116,8 @@ func (_q *InvestmentQuery) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency chains the current query on the "currency" edge.
-func (_q *InvestmentQuery) QueryCurrency() *CurrencyQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *InvestmentQuery) QueryCurrency() *HouseholdCurrencyQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -128,7 +128,7 @@ func (_q *InvestmentQuery) QueryCurrency() *CurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(investment.Table, investment.FieldID, selector),
-			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, investment.CurrencyTable, investment.CurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -386,8 +386,8 @@ func (_q *InvestmentQuery) WithHousehold(opts ...func(*HouseholdQuery)) *Investm
 
 // WithCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *InvestmentQuery) WithCurrency(opts ...func(*CurrencyQuery)) *InvestmentQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *InvestmentQuery) WithCurrency(opts ...func(*HouseholdCurrencyQuery)) *InvestmentQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -532,7 +532,7 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	}
 	if query := _q.withCurrency; query != nil {
 		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *Investment, e *Currency) { n.Edges.Currency = e }); err != nil {
+			func(n *Investment, e *HouseholdCurrency) { n.Edges.Currency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -616,11 +616,11 @@ func (_q *InvestmentQuery) loadHousehold(ctx context.Context, query *HouseholdQu
 	}
 	return nil
 }
-func (_q *InvestmentQuery) loadCurrency(ctx context.Context, query *CurrencyQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *Currency)) error {
+func (_q *InvestmentQuery) loadCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Investment)
 	for i := range nodes {
-		fk := nodes[i].CurrencyID
+		fk := nodes[i].HouseholdCurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -629,7 +629,7 @@ func (_q *InvestmentQuery) loadCurrency(ctx context.Context, query *CurrencyQuer
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(currency.IDIn(ids...))
+	query.Where(householdcurrency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -637,7 +637,7 @@ func (_q *InvestmentQuery) loadCurrency(ctx context.Context, query *CurrencyQuer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "household_currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -711,7 +711,7 @@ func (_q *InvestmentQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(investment.FieldHouseholdID)
 		}
 		if _q.withCurrency != nil {
-			_spec.Node.AddColumnOnce(investment.FieldCurrencyID)
+			_spec.Node.AddColumnOnce(investment.FieldHouseholdCurrencyID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

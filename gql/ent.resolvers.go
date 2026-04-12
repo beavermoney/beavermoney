@@ -69,11 +69,6 @@ func (r *queryResolver) Accounts(ctx context.Context, after *entgql.Cursor[int],
 	return r.entClient.Account.Query().Paginate(ctx, after, first, before, last, ent.WithAccountFilter(where.Filter))
 }
 
-// Currencies is the resolver for the currencies field.
-func (r *queryResolver) Currencies(ctx context.Context) ([]*ent.Currency, error) {
-	return r.entClient.Currency.Query().All(ctx)
-}
-
 // Households is the resolver for the households field.
 func (r *queryResolver) Households(ctx context.Context) ([]*ent.Household, error) {
 	return r.entClient.Household.Query().All(ctx)

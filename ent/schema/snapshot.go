@@ -168,13 +168,18 @@ func (SnapshotEntry) Fields() []ent.Field {
 			Immutable().
 			Comment("Total liability account values (negative)"),
 
-		field.Int("currency_id").Positive().Immutable().
+		field.Int("household_currency_id").Positive().Immutable().
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),
+		field.Int("legacy_currency_id").
+			StorageKey("currency_id").
+			Optional().
+			Nillable().
+			Annotations(entgql.Skip(entgql.SkipAll)),
 
 		field.Int("user_id").Positive().Immutable().
 			Annotations(
@@ -209,8 +214,8 @@ func (SnapshotEntry) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("currency", Currency.Type).
-			Field("currency_id").
+		edge.From("currency", HouseholdCurrency.Type).
+			Field("household_currency_id").
 			Ref("snapshot_entries").
 			Unique().
 			Immutable().
@@ -253,7 +258,7 @@ func (SnapshotEntry) Edges() []ent.Edge {
 func (SnapshotEntry) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("snapshot_id"),
-		index.Fields("snapshot_id", "user_id", "currency_id").Unique(),
+		index.Fields("snapshot_id", "user_id", "household_currency_id").Unique(),
 	}
 }
 
@@ -303,21 +308,31 @@ func (SnapshotRate) Fields() []ent.Field {
 				),
 			),
 
-		field.Int("from_currency_id").Positive().Immutable().
+		field.Int("from_household_currency_id").Positive().Immutable().
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),
+		field.Int("legacy_from_currency_id").
+			StorageKey("from_currency_id").
+			Optional().
+			Nillable().
+			Annotations(entgql.Skip(entgql.SkipAll)),
 
-		field.Int("to_currency_id").Positive().Immutable().
+		field.Int("to_household_currency_id").Positive().Immutable().
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),
+		field.Int("legacy_to_currency_id").
+			StorageKey("to_currency_id").
+			Optional().
+			Nillable().
+			Annotations(entgql.Skip(entgql.SkipAll)),
 	}
 }
 
@@ -335,8 +350,8 @@ func (SnapshotRate) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("from_currency", Currency.Type).
-			Field("from_currency_id").
+		edge.From("from_currency", HouseholdCurrency.Type).
+			Field("from_household_currency_id").
 			Ref("snapshot_rates_from").
 			Unique().
 			Immutable().
@@ -347,8 +362,8 @@ func (SnapshotRate) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("to_currency", Currency.Type).
-			Field("to_currency_id").
+		edge.From("to_currency", HouseholdCurrency.Type).
+			Field("to_household_currency_id").
 			Ref("snapshot_rates_to").
 			Unique().
 			Immutable().
@@ -365,7 +380,7 @@ func (SnapshotRate) Edges() []ent.Edge {
 func (SnapshotRate) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("snapshot_id"),
-		index.Fields("snapshot_id", "from_currency_id", "to_currency_id").Unique(),
+		index.Fields("snapshot_id", "from_household_currency_id", "to_household_currency_id").Unique(),
 	}
 }
 

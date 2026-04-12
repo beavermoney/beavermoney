@@ -105,7 +105,7 @@ func main() {
 		panic(fmt.Errorf("failed to create frankfurter client: %w", err))
 	}
 
-	if err := seed.Setup(ctx, entClient, frankfurterClient, logger); err != nil {
+	if err := seed.Setup(ctx, entClient, db, frankfurterClient, logger); err != nil {
 		logger.Error(
 			"database setup failed",
 			slog.String("error", err.Error()),

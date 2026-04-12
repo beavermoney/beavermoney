@@ -35,6 +35,60 @@ func (_u *SnapshotRateUpdate) SetUpdateTime(v time.Time) *SnapshotRateUpdate {
 	return _u
 }
 
+// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
+func (_u *SnapshotRateUpdate) SetLegacyFromCurrencyID(v int) *SnapshotRateUpdate {
+	_u.mutation.ResetLegacyFromCurrencyID()
+	_u.mutation.SetLegacyFromCurrencyID(v)
+	return _u
+}
+
+// SetNillableLegacyFromCurrencyID sets the "legacy_from_currency_id" field if the given value is not nil.
+func (_u *SnapshotRateUpdate) SetNillableLegacyFromCurrencyID(v *int) *SnapshotRateUpdate {
+	if v != nil {
+		_u.SetLegacyFromCurrencyID(*v)
+	}
+	return _u
+}
+
+// AddLegacyFromCurrencyID adds value to the "legacy_from_currency_id" field.
+func (_u *SnapshotRateUpdate) AddLegacyFromCurrencyID(v int) *SnapshotRateUpdate {
+	_u.mutation.AddLegacyFromCurrencyID(v)
+	return _u
+}
+
+// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
+func (_u *SnapshotRateUpdate) ClearLegacyFromCurrencyID() *SnapshotRateUpdate {
+	_u.mutation.ClearLegacyFromCurrencyID()
+	return _u
+}
+
+// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
+func (_u *SnapshotRateUpdate) SetLegacyToCurrencyID(v int) *SnapshotRateUpdate {
+	_u.mutation.ResetLegacyToCurrencyID()
+	_u.mutation.SetLegacyToCurrencyID(v)
+	return _u
+}
+
+// SetNillableLegacyToCurrencyID sets the "legacy_to_currency_id" field if the given value is not nil.
+func (_u *SnapshotRateUpdate) SetNillableLegacyToCurrencyID(v *int) *SnapshotRateUpdate {
+	if v != nil {
+		_u.SetLegacyToCurrencyID(*v)
+	}
+	return _u
+}
+
+// AddLegacyToCurrencyID adds value to the "legacy_to_currency_id" field.
+func (_u *SnapshotRateUpdate) AddLegacyToCurrencyID(v int) *SnapshotRateUpdate {
+	_u.mutation.AddLegacyToCurrencyID(v)
+	return _u
+}
+
+// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
+func (_u *SnapshotRateUpdate) ClearLegacyToCurrencyID() *SnapshotRateUpdate {
+	_u.mutation.ClearLegacyToCurrencyID()
+	return _u
+}
+
 // Mutation returns the SnapshotRateMutation object of the builder.
 func (_u *SnapshotRateUpdate) Mutation() *SnapshotRateMutation {
 	return _u.mutation
@@ -111,6 +165,24 @@ func (_u *SnapshotRateUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if value, ok := _u.mutation.UpdateTime(); ok {
 		_spec.SetField(snapshotrate.FieldUpdateTime, field.TypeTime, value)
 	}
+	if value, ok := _u.mutation.LegacyFromCurrencyID(); ok {
+		_spec.SetField(snapshotrate.FieldLegacyFromCurrencyID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedLegacyFromCurrencyID(); ok {
+		_spec.AddField(snapshotrate.FieldLegacyFromCurrencyID, field.TypeInt, value)
+	}
+	if _u.mutation.LegacyFromCurrencyIDCleared() {
+		_spec.ClearField(snapshotrate.FieldLegacyFromCurrencyID, field.TypeInt)
+	}
+	if value, ok := _u.mutation.LegacyToCurrencyID(); ok {
+		_spec.SetField(snapshotrate.FieldLegacyToCurrencyID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedLegacyToCurrencyID(); ok {
+		_spec.AddField(snapshotrate.FieldLegacyToCurrencyID, field.TypeInt, value)
+	}
+	if _u.mutation.LegacyToCurrencyIDCleared() {
+		_spec.ClearField(snapshotrate.FieldLegacyToCurrencyID, field.TypeInt)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -136,6 +208,60 @@ type SnapshotRateUpdateOne struct {
 // SetUpdateTime sets the "update_time" field.
 func (_u *SnapshotRateUpdateOne) SetUpdateTime(v time.Time) *SnapshotRateUpdateOne {
 	_u.mutation.SetUpdateTime(v)
+	return _u
+}
+
+// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
+func (_u *SnapshotRateUpdateOne) SetLegacyFromCurrencyID(v int) *SnapshotRateUpdateOne {
+	_u.mutation.ResetLegacyFromCurrencyID()
+	_u.mutation.SetLegacyFromCurrencyID(v)
+	return _u
+}
+
+// SetNillableLegacyFromCurrencyID sets the "legacy_from_currency_id" field if the given value is not nil.
+func (_u *SnapshotRateUpdateOne) SetNillableLegacyFromCurrencyID(v *int) *SnapshotRateUpdateOne {
+	if v != nil {
+		_u.SetLegacyFromCurrencyID(*v)
+	}
+	return _u
+}
+
+// AddLegacyFromCurrencyID adds value to the "legacy_from_currency_id" field.
+func (_u *SnapshotRateUpdateOne) AddLegacyFromCurrencyID(v int) *SnapshotRateUpdateOne {
+	_u.mutation.AddLegacyFromCurrencyID(v)
+	return _u
+}
+
+// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
+func (_u *SnapshotRateUpdateOne) ClearLegacyFromCurrencyID() *SnapshotRateUpdateOne {
+	_u.mutation.ClearLegacyFromCurrencyID()
+	return _u
+}
+
+// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
+func (_u *SnapshotRateUpdateOne) SetLegacyToCurrencyID(v int) *SnapshotRateUpdateOne {
+	_u.mutation.ResetLegacyToCurrencyID()
+	_u.mutation.SetLegacyToCurrencyID(v)
+	return _u
+}
+
+// SetNillableLegacyToCurrencyID sets the "legacy_to_currency_id" field if the given value is not nil.
+func (_u *SnapshotRateUpdateOne) SetNillableLegacyToCurrencyID(v *int) *SnapshotRateUpdateOne {
+	if v != nil {
+		_u.SetLegacyToCurrencyID(*v)
+	}
+	return _u
+}
+
+// AddLegacyToCurrencyID adds value to the "legacy_to_currency_id" field.
+func (_u *SnapshotRateUpdateOne) AddLegacyToCurrencyID(v int) *SnapshotRateUpdateOne {
+	_u.mutation.AddLegacyToCurrencyID(v)
+	return _u
+}
+
+// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
+func (_u *SnapshotRateUpdateOne) ClearLegacyToCurrencyID() *SnapshotRateUpdateOne {
+	_u.mutation.ClearLegacyToCurrencyID()
 	return _u
 }
 
@@ -244,6 +370,24 @@ func (_u *SnapshotRateUpdateOne) sqlSave(ctx context.Context) (_node *SnapshotRa
 	}
 	if value, ok := _u.mutation.UpdateTime(); ok {
 		_spec.SetField(snapshotrate.FieldUpdateTime, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.LegacyFromCurrencyID(); ok {
+		_spec.SetField(snapshotrate.FieldLegacyFromCurrencyID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedLegacyFromCurrencyID(); ok {
+		_spec.AddField(snapshotrate.FieldLegacyFromCurrencyID, field.TypeInt, value)
+	}
+	if _u.mutation.LegacyFromCurrencyIDCleared() {
+		_spec.ClearField(snapshotrate.FieldLegacyFromCurrencyID, field.TypeInt)
+	}
+	if value, ok := _u.mutation.LegacyToCurrencyID(); ok {
+		_spec.SetField(snapshotrate.FieldLegacyToCurrencyID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedLegacyToCurrencyID(); ok {
+		_spec.AddField(snapshotrate.FieldLegacyToCurrencyID, field.TypeInt, value)
+	}
+	if _u.mutation.LegacyToCurrencyIDCleared() {
+		_spec.ClearField(snapshotrate.FieldLegacyToCurrencyID, field.TypeInt)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &SnapshotRate{config: _u.config}

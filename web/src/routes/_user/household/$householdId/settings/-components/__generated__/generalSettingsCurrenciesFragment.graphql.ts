@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cb39456e3e25b19bcf186b46998bf4ff>>
+ * @generated SignedSource<<e453c7811c3993a76ac7f539a40d9328>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,10 +12,6 @@ import { ReaderFragment } from 'relay-runtime';
 export type UserHouseholdRole = "admin" | "member" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type generalSettingsCurrenciesFragment$data = {
-  readonly currencies: ReadonlyArray<{
-    readonly code: string;
-    readonly id: string;
-  }>;
   readonly userHouseholds: ReadonlyArray<{
     readonly role: UserHouseholdRole;
     readonly user: {
@@ -29,39 +25,12 @@ export type generalSettingsCurrenciesFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"generalSettingsCurrenciesFragment">;
 };
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
-return {
+const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "generalSettingsCurrenciesFragment",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "Currency",
-      "kind": "LinkedField",
-      "name": "currencies",
-      "plural": true,
-      "selections": [
-        (v0/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "code",
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
-    },
     {
       "alias": null,
       "args": null,
@@ -85,7 +54,13 @@ return {
           "name": "user",
           "plural": false,
           "selections": [
-            (v0/*: any*/)
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "id",
+              "storageKey": null
+            }
           ],
           "storageKey": null
         }
@@ -96,8 +71,7 @@ return {
   "type": "Query",
   "abstractKey": null
 };
-})();
 
-(node as any).hash = "4948867c41b25ccca799947299839f2b";
+(node as any).hash = "8a5beed7318475a346f4e277f66c9ee3";
 
 export default node;

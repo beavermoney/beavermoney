@@ -4,14 +4,21 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 
-	"beavermoney.app/ent/currency"
+	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
+	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
+	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,14 +28,31 @@ import (
 // HouseholdCurrencyQuery is the builder for querying HouseholdCurrency entities.
 type HouseholdCurrencyQuery struct {
 	config
-	ctx           *QueryContext
-	order         []householdcurrency.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.HouseholdCurrency
-	withHousehold *HouseholdQuery
-	withCurrency  *CurrencyQuery
-	loadTotal     []func(context.Context, []*HouseholdCurrency) error
-	modifiers     []func(*sql.Selector)
+	ctx                             *QueryContext
+	order                           []householdcurrency.OrderOption
+	inters                          []Interceptor
+	predicates                      []predicate.HouseholdCurrency
+	withHousehold                   *HouseholdQuery
+	withAccounts                    *AccountQuery
+	withInvestments                 *InvestmentQuery
+	withTransactionEntries          *TransactionEntryQuery
+	withRecurringSubscriptions      *RecurringSubscriptionQuery
+	withSnapshotEntries             *SnapshotEntryQuery
+	withSnapshotRatesFrom           *SnapshotRateQuery
+	withSnapshotRatesTo             *SnapshotRateQuery
+	withHouseholdRatesFrom          *HouseholdRateQuery
+	withHouseholdRatesTo            *HouseholdRateQuery
+	loadTotal                       []func(context.Context, []*HouseholdCurrency) error
+	modifiers                       []func(*sql.Selector)
+	withNamedAccounts               map[string]*AccountQuery
+	withNamedInvestments            map[string]*InvestmentQuery
+	withNamedTransactionEntries     map[string]*TransactionEntryQuery
+	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
+	withNamedSnapshotEntries        map[string]*SnapshotEntryQuery
+	withNamedSnapshotRatesFrom      map[string]*SnapshotRateQuery
+	withNamedSnapshotRatesTo        map[string]*SnapshotRateQuery
+	withNamedHouseholdRatesFrom     map[string]*HouseholdRateQuery
+	withNamedHouseholdRatesTo       map[string]*HouseholdRateQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -87,9 +111,9 @@ func (_q *HouseholdCurrencyQuery) QueryHousehold() *HouseholdQuery {
 	return query
 }
 
-// QueryCurrency chains the current query on the "currency" edge.
-func (_q *HouseholdCurrencyQuery) QueryCurrency() *CurrencyQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+// QueryAccounts chains the current query on the "accounts" edge.
+func (_q *HouseholdCurrencyQuery) QueryAccounts() *AccountQuery {
+	query := (&AccountClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -100,8 +124,184 @@ func (_q *HouseholdCurrencyQuery) QueryCurrency() *CurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
-			sqlgraph.To(currency.Table, currency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, householdcurrency.CurrencyTable, householdcurrency.CurrencyColumn),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.AccountsTable, householdcurrency.AccountsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInvestments chains the current query on the "investments" edge.
+func (_q *HouseholdCurrencyQuery) QueryInvestments() *InvestmentQuery {
+	query := (&InvestmentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(investment.Table, investment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.InvestmentsTable, householdcurrency.InvestmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTransactionEntries chains the current query on the "transaction_entries" edge.
+func (_q *HouseholdCurrencyQuery) QueryTransactionEntries() *TransactionEntryQuery {
+	query := (&TransactionEntryClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(transactionentry.Table, transactionentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.TransactionEntriesTable, householdcurrency.TransactionEntriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRecurringSubscriptions chains the current query on the "recurring_subscriptions" edge.
+func (_q *HouseholdCurrencyQuery) QueryRecurringSubscriptions() *RecurringSubscriptionQuery {
+	query := (&RecurringSubscriptionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(recurringsubscription.Table, recurringsubscription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.RecurringSubscriptionsTable, householdcurrency.RecurringSubscriptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotEntries chains the current query on the "snapshot_entries" edge.
+func (_q *HouseholdCurrencyQuery) QuerySnapshotEntries() *SnapshotEntryQuery {
+	query := (&SnapshotEntryClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(snapshotentry.Table, snapshotentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.SnapshotEntriesTable, householdcurrency.SnapshotEntriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotRatesFrom chains the current query on the "snapshot_rates_from" edge.
+func (_q *HouseholdCurrencyQuery) QuerySnapshotRatesFrom() *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.SnapshotRatesFromTable, householdcurrency.SnapshotRatesFromColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotRatesTo chains the current query on the "snapshot_rates_to" edge.
+func (_q *HouseholdCurrencyQuery) QuerySnapshotRatesTo() *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.SnapshotRatesToTable, householdcurrency.SnapshotRatesToColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryHouseholdRatesFrom chains the current query on the "household_rates_from" edge.
+func (_q *HouseholdCurrencyQuery) QueryHouseholdRatesFrom() *HouseholdRateQuery {
+	query := (&HouseholdRateClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(householdrate.Table, householdrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.HouseholdRatesFromTable, householdcurrency.HouseholdRatesFromColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryHouseholdRatesTo chains the current query on the "household_rates_to" edge.
+func (_q *HouseholdCurrencyQuery) QueryHouseholdRatesTo() *HouseholdRateQuery {
+	query := (&HouseholdRateClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, selector),
+			sqlgraph.To(householdrate.Table, householdrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.HouseholdRatesToTable, householdcurrency.HouseholdRatesToColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -296,13 +496,21 @@ func (_q *HouseholdCurrencyQuery) Clone() *HouseholdCurrencyQuery {
 		return nil
 	}
 	return &HouseholdCurrencyQuery{
-		config:        _q.config,
-		ctx:           _q.ctx.Clone(),
-		order:         append([]householdcurrency.OrderOption{}, _q.order...),
-		inters:        append([]Interceptor{}, _q.inters...),
-		predicates:    append([]predicate.HouseholdCurrency{}, _q.predicates...),
-		withHousehold: _q.withHousehold.Clone(),
-		withCurrency:  _q.withCurrency.Clone(),
+		config:                     _q.config,
+		ctx:                        _q.ctx.Clone(),
+		order:                      append([]householdcurrency.OrderOption{}, _q.order...),
+		inters:                     append([]Interceptor{}, _q.inters...),
+		predicates:                 append([]predicate.HouseholdCurrency{}, _q.predicates...),
+		withHousehold:              _q.withHousehold.Clone(),
+		withAccounts:               _q.withAccounts.Clone(),
+		withInvestments:            _q.withInvestments.Clone(),
+		withTransactionEntries:     _q.withTransactionEntries.Clone(),
+		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
+		withSnapshotEntries:        _q.withSnapshotEntries.Clone(),
+		withSnapshotRatesFrom:      _q.withSnapshotRatesFrom.Clone(),
+		withSnapshotRatesTo:        _q.withSnapshotRatesTo.Clone(),
+		withHouseholdRatesFrom:     _q.withHouseholdRatesFrom.Clone(),
+		withHouseholdRatesTo:       _q.withHouseholdRatesTo.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -321,14 +529,102 @@ func (_q *HouseholdCurrencyQuery) WithHousehold(opts ...func(*HouseholdQuery)) *
 	return _q
 }
 
-// WithCurrency tells the query-builder to eager-load the nodes that are connected to
-// the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *HouseholdCurrencyQuery) WithCurrency(opts ...func(*CurrencyQuery)) *HouseholdCurrencyQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+// WithAccounts tells the query-builder to eager-load the nodes that are connected to
+// the "accounts" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithAccounts(opts ...func(*AccountQuery)) *HouseholdCurrencyQuery {
+	query := (&AccountClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCurrency = query
+	_q.withAccounts = query
+	return _q
+}
+
+// WithInvestments tells the query-builder to eager-load the nodes that are connected to
+// the "investments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithInvestments(opts ...func(*InvestmentQuery)) *HouseholdCurrencyQuery {
+	query := (&InvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withInvestments = query
+	return _q
+}
+
+// WithTransactionEntries tells the query-builder to eager-load the nodes that are connected to
+// the "transaction_entries" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithTransactionEntries(opts ...func(*TransactionEntryQuery)) *HouseholdCurrencyQuery {
+	query := (&TransactionEntryClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTransactionEntries = query
+	return _q
+}
+
+// WithRecurringSubscriptions tells the query-builder to eager-load the nodes that are connected to
+// the "recurring_subscriptions" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithRecurringSubscriptions(opts ...func(*RecurringSubscriptionQuery)) *HouseholdCurrencyQuery {
+	query := (&RecurringSubscriptionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withRecurringSubscriptions = query
+	return _q
+}
+
+// WithSnapshotEntries tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_entries" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithSnapshotEntries(opts ...func(*SnapshotEntryQuery)) *HouseholdCurrencyQuery {
+	query := (&SnapshotEntryClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotEntries = query
+	return _q
+}
+
+// WithSnapshotRatesFrom tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_rates_from" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithSnapshotRatesFrom(opts ...func(*SnapshotRateQuery)) *HouseholdCurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotRatesFrom = query
+	return _q
+}
+
+// WithSnapshotRatesTo tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_rates_to" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithSnapshotRatesTo(opts ...func(*SnapshotRateQuery)) *HouseholdCurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotRatesTo = query
+	return _q
+}
+
+// WithHouseholdRatesFrom tells the query-builder to eager-load the nodes that are connected to
+// the "household_rates_from" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithHouseholdRatesFrom(opts ...func(*HouseholdRateQuery)) *HouseholdCurrencyQuery {
+	query := (&HouseholdRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withHouseholdRatesFrom = query
+	return _q
+}
+
+// WithHouseholdRatesTo tells the query-builder to eager-load the nodes that are connected to
+// the "household_rates_to" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithHouseholdRatesTo(opts ...func(*HouseholdRateQuery)) *HouseholdCurrencyQuery {
+	query := (&HouseholdRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withHouseholdRatesTo = query
 	return _q
 }
 
@@ -416,9 +712,17 @@ func (_q *HouseholdCurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	var (
 		nodes       = []*HouseholdCurrency{}
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [10]bool{
 			_q.withHousehold != nil,
-			_q.withCurrency != nil,
+			_q.withAccounts != nil,
+			_q.withInvestments != nil,
+			_q.withTransactionEntries != nil,
+			_q.withRecurringSubscriptions != nil,
+			_q.withSnapshotEntries != nil,
+			_q.withSnapshotRatesFrom != nil,
+			_q.withSnapshotRatesTo != nil,
+			_q.withHouseholdRatesFrom != nil,
+			_q.withHouseholdRatesTo != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -448,9 +752,143 @@ func (_q *HouseholdCurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook
 			return nil, err
 		}
 	}
-	if query := _q.withCurrency; query != nil {
-		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *HouseholdCurrency, e *Currency) { n.Edges.Currency = e }); err != nil {
+	if query := _q.withAccounts; query != nil {
+		if err := _q.loadAccounts(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.Accounts = []*Account{} },
+			func(n *HouseholdCurrency, e *Account) { n.Edges.Accounts = append(n.Edges.Accounts, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withInvestments; query != nil {
+		if err := _q.loadInvestments(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.Investments = []*Investment{} },
+			func(n *HouseholdCurrency, e *Investment) { n.Edges.Investments = append(n.Edges.Investments, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTransactionEntries; query != nil {
+		if err := _q.loadTransactionEntries(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.TransactionEntries = []*TransactionEntry{} },
+			func(n *HouseholdCurrency, e *TransactionEntry) {
+				n.Edges.TransactionEntries = append(n.Edges.TransactionEntries, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withRecurringSubscriptions; query != nil {
+		if err := _q.loadRecurringSubscriptions(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.RecurringSubscriptions = []*RecurringSubscription{} },
+			func(n *HouseholdCurrency, e *RecurringSubscription) {
+				n.Edges.RecurringSubscriptions = append(n.Edges.RecurringSubscriptions, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSnapshotEntries; query != nil {
+		if err := _q.loadSnapshotEntries(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.SnapshotEntries = []*SnapshotEntry{} },
+			func(n *HouseholdCurrency, e *SnapshotEntry) {
+				n.Edges.SnapshotEntries = append(n.Edges.SnapshotEntries, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSnapshotRatesFrom; query != nil {
+		if err := _q.loadSnapshotRatesFrom(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.SnapshotRatesFrom = []*SnapshotRate{} },
+			func(n *HouseholdCurrency, e *SnapshotRate) {
+				n.Edges.SnapshotRatesFrom = append(n.Edges.SnapshotRatesFrom, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSnapshotRatesTo; query != nil {
+		if err := _q.loadSnapshotRatesTo(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.SnapshotRatesTo = []*SnapshotRate{} },
+			func(n *HouseholdCurrency, e *SnapshotRate) {
+				n.Edges.SnapshotRatesTo = append(n.Edges.SnapshotRatesTo, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withHouseholdRatesFrom; query != nil {
+		if err := _q.loadHouseholdRatesFrom(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.HouseholdRatesFrom = []*HouseholdRate{} },
+			func(n *HouseholdCurrency, e *HouseholdRate) {
+				n.Edges.HouseholdRatesFrom = append(n.Edges.HouseholdRatesFrom, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withHouseholdRatesTo; query != nil {
+		if err := _q.loadHouseholdRatesTo(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.Edges.HouseholdRatesTo = []*HouseholdRate{} },
+			func(n *HouseholdCurrency, e *HouseholdRate) {
+				n.Edges.HouseholdRatesTo = append(n.Edges.HouseholdRatesTo, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedAccounts {
+		if err := _q.loadAccounts(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedAccounts(name) },
+			func(n *HouseholdCurrency, e *Account) { n.appendNamedAccounts(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedInvestments {
+		if err := _q.loadInvestments(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedInvestments(name) },
+			func(n *HouseholdCurrency, e *Investment) { n.appendNamedInvestments(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedTransactionEntries {
+		if err := _q.loadTransactionEntries(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedTransactionEntries(name) },
+			func(n *HouseholdCurrency, e *TransactionEntry) { n.appendNamedTransactionEntries(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedRecurringSubscriptions {
+		if err := _q.loadRecurringSubscriptions(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedRecurringSubscriptions(name) },
+			func(n *HouseholdCurrency, e *RecurringSubscription) { n.appendNamedRecurringSubscriptions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotEntries {
+		if err := _q.loadSnapshotEntries(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedSnapshotEntries(name) },
+			func(n *HouseholdCurrency, e *SnapshotEntry) { n.appendNamedSnapshotEntries(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotRatesFrom {
+		if err := _q.loadSnapshotRatesFrom(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedSnapshotRatesFrom(name) },
+			func(n *HouseholdCurrency, e *SnapshotRate) { n.appendNamedSnapshotRatesFrom(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotRatesTo {
+		if err := _q.loadSnapshotRatesTo(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedSnapshotRatesTo(name) },
+			func(n *HouseholdCurrency, e *SnapshotRate) { n.appendNamedSnapshotRatesTo(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedHouseholdRatesFrom {
+		if err := _q.loadHouseholdRatesFrom(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedHouseholdRatesFrom(name) },
+			func(n *HouseholdCurrency, e *HouseholdRate) { n.appendNamedHouseholdRatesFrom(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedHouseholdRatesTo {
+		if err := _q.loadHouseholdRatesTo(ctx, query, nodes,
+			func(n *HouseholdCurrency) { n.appendNamedHouseholdRatesTo(name) },
+			func(n *HouseholdCurrency, e *HouseholdRate) { n.appendNamedHouseholdRatesTo(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -491,32 +929,273 @@ func (_q *HouseholdCurrencyQuery) loadHousehold(ctx context.Context, query *Hous
 	}
 	return nil
 }
-func (_q *HouseholdCurrencyQuery) loadCurrency(ctx context.Context, query *CurrencyQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *Currency)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*HouseholdCurrency)
+func (_q *HouseholdCurrencyQuery) loadAccounts(ctx context.Context, query *AccountQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *Account)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
 	for i := range nodes {
-		fk := nodes[i].CurrencyID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
 		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(ids) == 0 {
-		return nil
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(account.FieldHouseholdCurrencyID)
 	}
-	query.Where(currency.IDIn(ids...))
+	query.Where(predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.AccountsColumn), fks...))
+	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
+		fk := n.HouseholdCurrencyID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "household_currency_id" returned %v for node %v`, fk, n.ID)
 		}
-		for i := range nodes {
-			assign(nodes[i], n)
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadInvestments(ctx context.Context, query *InvestmentQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *Investment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
 		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(investment.FieldHouseholdCurrencyID)
+	}
+	query.Where(predicate.Investment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.InvestmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadTransactionEntries(ctx context.Context, query *TransactionEntryQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *TransactionEntry)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(transactionentry.FieldHouseholdCurrencyID)
+	}
+	query.Where(predicate.TransactionEntry(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.TransactionEntriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadRecurringSubscriptions(ctx context.Context, query *RecurringSubscriptionQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *RecurringSubscription)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(recurringsubscription.FieldHouseholdCurrencyID)
+	}
+	query.Where(predicate.RecurringSubscription(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.RecurringSubscriptionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadSnapshotEntries(ctx context.Context, query *SnapshotEntryQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *SnapshotEntry)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotentry.FieldHouseholdCurrencyID)
+	}
+	query.Where(predicate.SnapshotEntry(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.SnapshotEntriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadSnapshotRatesFrom(ctx context.Context, query *SnapshotRateQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *SnapshotRate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotrate.FieldFromHouseholdCurrencyID)
+	}
+	query.Where(predicate.SnapshotRate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.SnapshotRatesFromColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.FromHouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "from_household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadSnapshotRatesTo(ctx context.Context, query *SnapshotRateQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *SnapshotRate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotrate.FieldToHouseholdCurrencyID)
+	}
+	query.Where(predicate.SnapshotRate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.SnapshotRatesToColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ToHouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "to_household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadHouseholdRatesFrom(ctx context.Context, query *HouseholdRateQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *HouseholdRate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(householdrate.FieldFromHouseholdCurrencyID)
+	}
+	query.Where(predicate.HouseholdRate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.HouseholdRatesFromColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.FromHouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "from_household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdCurrencyQuery) loadHouseholdRatesTo(ctx context.Context, query *HouseholdRateQuery, nodes []*HouseholdCurrency, init func(*HouseholdCurrency), assign func(*HouseholdCurrency, *HouseholdRate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*HouseholdCurrency)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(householdrate.FieldToHouseholdCurrencyID)
+	}
+	query.Where(predicate.HouseholdRate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(householdcurrency.HouseholdRatesToColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ToHouseholdCurrencyID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "to_household_currency_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -551,9 +1230,6 @@ func (_q *HouseholdCurrencyQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withHousehold != nil {
 			_spec.Node.AddColumnOnce(householdcurrency.FieldHouseholdID)
-		}
-		if _q.withCurrency != nil {
-			_spec.Node.AddColumnOnce(householdcurrency.FieldCurrencyID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {
@@ -618,6 +1294,132 @@ func (_q *HouseholdCurrencyQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *HouseholdCurrencyQuery) Modify(modifiers ...func(s *sql.Selector)) *HouseholdCurrencySelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedAccounts tells the query-builder to eager-load the nodes that are connected to the "accounts"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedAccounts(name string, opts ...func(*AccountQuery)) *HouseholdCurrencyQuery {
+	query := (&AccountClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedAccounts == nil {
+		_q.withNamedAccounts = make(map[string]*AccountQuery)
+	}
+	_q.withNamedAccounts[name] = query
+	return _q
+}
+
+// WithNamedInvestments tells the query-builder to eager-load the nodes that are connected to the "investments"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedInvestments(name string, opts ...func(*InvestmentQuery)) *HouseholdCurrencyQuery {
+	query := (&InvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedInvestments == nil {
+		_q.withNamedInvestments = make(map[string]*InvestmentQuery)
+	}
+	_q.withNamedInvestments[name] = query
+	return _q
+}
+
+// WithNamedTransactionEntries tells the query-builder to eager-load the nodes that are connected to the "transaction_entries"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedTransactionEntries(name string, opts ...func(*TransactionEntryQuery)) *HouseholdCurrencyQuery {
+	query := (&TransactionEntryClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedTransactionEntries == nil {
+		_q.withNamedTransactionEntries = make(map[string]*TransactionEntryQuery)
+	}
+	_q.withNamedTransactionEntries[name] = query
+	return _q
+}
+
+// WithNamedRecurringSubscriptions tells the query-builder to eager-load the nodes that are connected to the "recurring_subscriptions"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedRecurringSubscriptions(name string, opts ...func(*RecurringSubscriptionQuery)) *HouseholdCurrencyQuery {
+	query := (&RecurringSubscriptionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedRecurringSubscriptions == nil {
+		_q.withNamedRecurringSubscriptions = make(map[string]*RecurringSubscriptionQuery)
+	}
+	_q.withNamedRecurringSubscriptions[name] = query
+	return _q
+}
+
+// WithNamedSnapshotEntries tells the query-builder to eager-load the nodes that are connected to the "snapshot_entries"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedSnapshotEntries(name string, opts ...func(*SnapshotEntryQuery)) *HouseholdCurrencyQuery {
+	query := (&SnapshotEntryClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotEntries == nil {
+		_q.withNamedSnapshotEntries = make(map[string]*SnapshotEntryQuery)
+	}
+	_q.withNamedSnapshotEntries[name] = query
+	return _q
+}
+
+// WithNamedSnapshotRatesFrom tells the query-builder to eager-load the nodes that are connected to the "snapshot_rates_from"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedSnapshotRatesFrom(name string, opts ...func(*SnapshotRateQuery)) *HouseholdCurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotRatesFrom == nil {
+		_q.withNamedSnapshotRatesFrom = make(map[string]*SnapshotRateQuery)
+	}
+	_q.withNamedSnapshotRatesFrom[name] = query
+	return _q
+}
+
+// WithNamedSnapshotRatesTo tells the query-builder to eager-load the nodes that are connected to the "snapshot_rates_to"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedSnapshotRatesTo(name string, opts ...func(*SnapshotRateQuery)) *HouseholdCurrencyQuery {
+	query := (&SnapshotRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotRatesTo == nil {
+		_q.withNamedSnapshotRatesTo = make(map[string]*SnapshotRateQuery)
+	}
+	_q.withNamedSnapshotRatesTo[name] = query
+	return _q
+}
+
+// WithNamedHouseholdRatesFrom tells the query-builder to eager-load the nodes that are connected to the "household_rates_from"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedHouseholdRatesFrom(name string, opts ...func(*HouseholdRateQuery)) *HouseholdCurrencyQuery {
+	query := (&HouseholdRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedHouseholdRatesFrom == nil {
+		_q.withNamedHouseholdRatesFrom = make(map[string]*HouseholdRateQuery)
+	}
+	_q.withNamedHouseholdRatesFrom[name] = query
+	return _q
+}
+
+// WithNamedHouseholdRatesTo tells the query-builder to eager-load the nodes that are connected to the "household_rates_to"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdCurrencyQuery) WithNamedHouseholdRatesTo(name string, opts ...func(*HouseholdRateQuery)) *HouseholdCurrencyQuery {
+	query := (&HouseholdRateClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedHouseholdRatesTo == nil {
+		_q.withNamedHouseholdRatesTo = make(map[string]*HouseholdRateQuery)
+	}
+	_q.withNamedHouseholdRatesTo[name] = query
+	return _q
 }
 
 // HouseholdCurrencyGroupBy is the group-by builder for HouseholdCurrency entities.

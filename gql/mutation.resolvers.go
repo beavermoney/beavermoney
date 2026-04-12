@@ -13,7 +13,6 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
@@ -68,7 +67,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 
 	primaryHC, err := client.HouseholdCurrency.Create().
 		SetHouseholdID(household.ID).
-		SetCurrencyID(household.CurrencyID).
+		SetCode(input.CurrencyCode).
 		SetImportant(true).
 		Save(householdCtx)
 	if err != nil {
@@ -304,24 +303,6 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 	client := ent.FromContext(ctx)
 	zero := decimal.NewFromInt(0)
 
-	isHouseholdCurrency, err := client.HouseholdCurrency.Query().
-		Where(
-			householdcurrency.HouseholdIDEQ(householdID),
-			householdcurrency.CurrencyIDEQ(input.CurrencyID),
-		).
-		Exist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if !isHouseholdCurrency {
-		return nil, fmt.Errorf("currency is not a household currency")
-	}
-
-	accountCurrency, err := r.entClient.Currency.Query().Where(currency.IDEQ(input.CurrencyID)).Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	account, err := client.Account.Create().
 		SetInput(input).
 		SetUserID(userID).
@@ -360,7 +341,7 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 		SetAccount(account).
 		SetAmount(*input.Balance).
 		SetTransaction(transaction).
-		SetCurrency(accountCurrency).
+		SetCurrencyID(input.CurrencyID).
 		Exec(ctx)
 	if err != nil {
 		return nil, err
@@ -523,11 +504,6 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		return nil, fmt.Errorf("investment currency %s does not match account currency %s", quote.Currency, account.Edges.Currency.Code)
 	}
 
-	currencyID, err := client.Currency.Query().Where(currency.CodeEQ(quote.Currency)).OnlyID(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	// Set the symbol to uppercase
 	input.Input.Symbol = symbolUpper
 
@@ -538,7 +514,7 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		SetAmount(zero).
 		SetQuote(quote.CurrentPrice).
 		SetValue(zero).
-		SetCurrencyID(currencyID).
+		SetCurrencyID(account.Edges.Currency.ID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -697,19 +673,6 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 	defer span.End()
 
 	client := ent.FromContext(ctx)
-
-	isHouseholdCurrency, err := client.HouseholdCurrency.Query().
-		Where(
-			householdcurrency.HouseholdIDEQ(householdID),
-			householdcurrency.CurrencyIDEQ(input.CurrencyID),
-		).
-		Exist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if !isHouseholdCurrency {
-		return nil, fmt.Errorf("currency is not a household currency")
-	}
 
 	subscription, err := client.RecurringSubscription.Create().
 		SetHouseholdID(householdID).
@@ -1592,29 +1555,23 @@ func (r *mutationResolver) CreateHouseholdCurrency(ctx context.Context, input en
 		return nil, err
 	}
 
-	newCurrency, err := client.Currency.Get(ctx, hc.CurrencyID)
-	if err != nil {
-		return nil, err
-	}
-
 	existingHCs, err := client.HouseholdCurrency.Query().
 		Where(
 			householdcurrency.HouseholdIDEQ(householdID),
 			householdcurrency.IDNEQ(hc.ID),
 		).
-		WithCurrency().
 		All(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := r.syncHouseholdRatesForCurrency(ctx, client, householdID, newCurrency, existingHCs); err != nil {
+	if err := r.syncHouseholdRatesForCurrency(ctx, client, householdID, hc, existingHCs); err != nil {
 		r.logger.Error("Failed to sync household rates", "error", err)
 		return nil, err
 	}
 
 	if hc.Important {
-		if err := r.backfillSnapshotRatesForCurrency(ctx, client, householdID, newCurrency, existingHCs); err != nil {
+		if err := r.backfillSnapshotRatesForCurrency(ctx, client, householdID, hc, existingHCs); err != nil {
 			r.logger.Error("Failed to backfill snapshot rates", "error", err)
 		}
 	}
@@ -1641,23 +1598,17 @@ func (r *mutationResolver) UpdateHouseholdCurrency(ctx context.Context, id int, 
 
 	becameImportant := !old.Important && hc.Important
 	if becameImportant {
-		newCurrency, err := client.Currency.Get(ctx, hc.CurrencyID)
-		if err != nil {
-			return nil, err
-		}
-
 		existingHCs, err := client.HouseholdCurrency.Query().
 			Where(
 				householdcurrency.HouseholdIDEQ(householdID),
 				householdcurrency.IDNEQ(hc.ID),
 			).
-			WithCurrency().
 			All(ctx)
 		if err != nil {
 			return nil, err
 		}
 
-		if err := r.backfillSnapshotRatesForCurrency(ctx, client, householdID, newCurrency, existingHCs); err != nil {
+		if err := r.backfillSnapshotRatesForCurrency(ctx, client, householdID, hc, existingHCs); err != nil {
 			r.logger.Error("Failed to backfill snapshot rates", "error", err)
 		}
 	}
@@ -1688,7 +1639,7 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	hasAccounts, err := client.Account.Query().
 		Where(
 			account.HouseholdIDEQ(householdID),
-			account.CurrencyIDEQ(hc.CurrencyID),
+			account.HasCurrencyWith(householdcurrency.ID(hc.ID)),
 		).
 		Exist(ctx)
 	if err != nil {
@@ -1701,7 +1652,7 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	hasSubscriptions, err := client.RecurringSubscription.Query().
 		Where(
 			recurringsubscription.HouseholdIDEQ(householdID),
-			recurringsubscription.CurrencyIDEQ(hc.CurrencyID),
+			recurringsubscription.HasCurrencyWith(householdcurrency.ID(hc.ID)),
 		).
 		Exist(ctx)
 	if err != nil {
@@ -1728,8 +1679,8 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 		Where(
 			householdrate.HouseholdIDEQ(householdID),
 			householdrate.Or(
-				householdrate.FromCurrencyIDEQ(hc.CurrencyID),
-				householdrate.ToCurrencyIDEQ(hc.CurrencyID),
+				householdrate.HasFromCurrencyWith(householdcurrency.ID(hc.ID)),
+				householdrate.HasToCurrencyWith(householdcurrency.ID(hc.ID)),
 			),
 		).
 		Exec(ctx)
@@ -1750,8 +1701,8 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 			Where(
 				snapshotrate.SnapshotIDIn(snapshotIDs...),
 				snapshotrate.Or(
-					snapshotrate.FromCurrencyIDEQ(hc.CurrencyID),
-					snapshotrate.ToCurrencyIDEQ(hc.CurrencyID),
+					snapshotrate.HasFromCurrencyWith(householdcurrency.ID(hc.ID)),
+					snapshotrate.HasToCurrencyWith(householdcurrency.ID(hc.ID)),
 				),
 			).
 			Exec(ctx)
@@ -1801,8 +1752,8 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 	}
 
 	type entryKey struct {
-		UserID     int
-		CurrencyID int
+		UserID              int
+		HouseholdCurrencyID int
 	}
 	type entryValues struct {
 		Liquidity  decimal.Decimal
@@ -1816,7 +1767,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 	zero := decimal.NewFromInt(0)
 
 	for _, acc := range accounts {
-		key := entryKey{UserID: acc.UserID, CurrencyID: acc.CurrencyID}
+		key := entryKey{UserID: acc.UserID, HouseholdCurrencyID: acc.Edges.Currency.ID}
 		vals, ok := grouped[key]
 		if !ok {
 			vals = &entryValues{
@@ -1849,7 +1800,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 			SetSnapshotID(snap.ID).
 			SetHouseholdID(householdID).
 			SetUserID(key.UserID).
-			SetCurrencyID(key.CurrencyID).
+			SetCurrencyID(key.HouseholdCurrencyID).
 			SetLiquidity(vals.Liquidity).
 			SetInvestment(vals.Investment).
 			SetProperty(vals.Property).
@@ -1870,11 +1821,12 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 	currencyIDByCode := make(map[string]int)
 	seen := make(map[int]bool)
 	for _, acc := range accounts {
-		if !seen[acc.CurrencyID] {
-			seen[acc.CurrencyID] = true
-			currencyIDs = append(currencyIDs, acc.CurrencyID)
-			currencyCodeByID[acc.CurrencyID] = acc.Edges.Currency.Code
-			currencyIDByCode[acc.Edges.Currency.Code] = acc.CurrencyID
+		currencyID := acc.Edges.Currency.ID
+		if !seen[currencyID] {
+			seen[currencyID] = true
+			currencyIDs = append(currencyIDs, currencyID)
+			currencyCodeByID[currencyID] = acc.Edges.Currency.Code
+			currencyIDByCode[acc.Edges.Currency.Code] = currencyID
 		}
 	}
 
