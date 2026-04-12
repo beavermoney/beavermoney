@@ -28,6 +28,7 @@
     "@tanstack/react-store": "^0.8.1",
     "@tanstack/react-virtual": "^3.13.23",
     "@tanstack/router-plugin": "^1.167.12",
+    "@tanstack/store": "^0.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
