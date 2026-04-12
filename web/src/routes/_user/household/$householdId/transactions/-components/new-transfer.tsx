@@ -519,7 +519,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         value={field.state.value}
                         locale={household.locale}
                         currency={
-                          fromAccount?.currency.code ?? household.currency.code
+                          fromAccount?.currency.code ?? household.currencyCode
                         }
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
@@ -566,8 +566,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           value={field.state.value}
                           locale={household.locale}
                           currency={
-                            fromAccount?.currency.code ??
-                            household.currency.code
+                            fromAccount?.currency.code ?? household.currencyCode
                           }
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
@@ -613,7 +612,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           value={field.state.value}
                           locale={household.locale}
                           currency={
-                            toAccount?.currency.code ?? household.currency.code
+                            toAccount?.currency.code ?? household.currencyCode
                           }
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}

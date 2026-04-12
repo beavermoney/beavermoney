@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b213fdcb958786315a3cb3daefe0a18f>>
+ * @generated SignedSource<<925d4a76cad5a5f054f2abfd50ccc406>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,13 +11,9 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type useDisplayCurrencyFragment$data = {
-  readonly currency: {
-    readonly code: string;
-  };
+  readonly currencyCode: string;
   readonly householdCurrencies: ReadonlyArray<{
-    readonly currency: {
-      readonly code: string;
-    };
+    readonly code: string;
     readonly id: string;
     readonly important: boolean;
   }> | null | undefined;
@@ -32,9 +28,7 @@ export type useDisplayCurrencyFragment$data = {
   }> | null | undefined;
   readonly userHouseholds: ReadonlyArray<{
     readonly defaultCurrency: {
-      readonly currency: {
-        readonly code: string;
-      };
+      readonly code: string;
     } | null | undefined;
     readonly user: {
       readonly id: string;
@@ -48,39 +42,36 @@ export type useDisplayCurrencyFragment$key = {
 };
 
 const node: ReaderFragment = (function(){
-var v0 = [
-  {
-    "alias": null,
-    "args": null,
-    "kind": "ScalarField",
-    "name": "code",
-    "storageKey": null
-  }
-],
-v1 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "Currency",
-  "kind": "LinkedField",
-  "name": "currency",
-  "plural": false,
-  "selections": (v0/*: any*/),
-  "storageKey": null
-},
-v2 = {
+var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
-};
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "code",
+  "storageKey": null
+},
+v2 = [
+  (v1/*: any*/)
+];
 return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "useDisplayCurrencyFragment",
   "selections": [
-    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "currencyCode",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": null,
@@ -89,7 +80,7 @@ return {
       "name": "householdCurrencies",
       "plural": true,
       "selections": [
-        (v2/*: any*/),
+        (v0/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -119,21 +110,21 @@ return {
         {
           "alias": null,
           "args": null,
-          "concreteType": "Currency",
+          "concreteType": "HouseholdCurrency",
           "kind": "LinkedField",
           "name": "fromCurrency",
           "plural": false,
-          "selections": (v0/*: any*/),
+          "selections": (v2/*: any*/),
           "storageKey": null
         },
         {
           "alias": null,
           "args": null,
-          "concreteType": "Currency",
+          "concreteType": "HouseholdCurrency",
           "kind": "LinkedField",
           "name": "toCurrency",
           "plural": false,
-          "selections": (v0/*: any*/),
+          "selections": (v2/*: any*/),
           "storageKey": null
         }
       ],
@@ -155,7 +146,7 @@ return {
           "name": "user",
           "plural": false,
           "selections": [
-            (v2/*: any*/)
+            (v0/*: any*/)
           ],
           "storageKey": null
         },
@@ -166,9 +157,7 @@ return {
           "kind": "LinkedField",
           "name": "defaultCurrency",
           "plural": false,
-          "selections": [
-            (v1/*: any*/)
-          ],
+          "selections": (v2/*: any*/),
           "storageKey": null
         }
       ],
@@ -180,6 +169,6 @@ return {
 };
 })();
 
-(node as any).hash = "3cd6bd53a15ddb390f4d925554c0eeab";
+(node as any).hash = "475618a435bcc605428113e90c640ba8";
 
 export default node;

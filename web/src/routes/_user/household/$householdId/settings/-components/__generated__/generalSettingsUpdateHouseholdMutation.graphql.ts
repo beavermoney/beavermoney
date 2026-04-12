@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e8ce0aae90bd1ed0f82a4b78f1347f88>>
+ * @generated SignedSource<<4fa5c57a8689a0df750cbd208719db68>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type UpdateHouseholdInput = {
-  currencyID?: string | null | undefined;
+  currencyCode?: string | null | undefined;
   locale?: string | null | undefined;
   name?: string | null | undefined;
 };
@@ -20,10 +20,7 @@ export type generalSettingsUpdateHouseholdMutation$variables = {
 };
 export type generalSettingsUpdateHouseholdMutation$data = {
   readonly updateHousehold: {
-    readonly currency: {
-      readonly code: string;
-      readonly id: string;
-    };
+    readonly currencyCode: string;
     readonly id: string;
     readonly locale: string;
     readonly name: string;
@@ -47,14 +44,7 @@ var v0 = [
     "name": "input"
   }
 ],
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v2 = [
+v1 = [
   {
     "alias": null,
     "args": [
@@ -74,7 +64,13 @@ v2 = [
     "name": "updateHousehold",
     "plural": false,
     "selections": [
-      (v1/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "id",
+        "storageKey": null
+      },
       {
         "alias": null,
         "args": null,
@@ -92,20 +88,8 @@ v2 = [
       {
         "alias": null,
         "args": null,
-        "concreteType": "Currency",
-        "kind": "LinkedField",
-        "name": "currency",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "code",
-            "storageKey": null
-          }
-        ],
+        "kind": "ScalarField",
+        "name": "currencyCode",
         "storageKey": null
       }
     ],
@@ -118,7 +102,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "generalSettingsUpdateHouseholdMutation",
-    "selections": (v2/*: any*/),
+    "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
@@ -127,19 +111,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "generalSettingsUpdateHouseholdMutation",
-    "selections": (v2/*: any*/)
+    "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "c86b10aff72b36ce48ad4f90bf1b20c9",
+    "cacheID": "0e8e050f548839e0a842ea84bb479f72",
     "id": null,
     "metadata": {},
     "name": "generalSettingsUpdateHouseholdMutation",
     "operationKind": "mutation",
-    "text": "mutation generalSettingsUpdateHouseholdMutation(\n  $id: ID!\n  $input: UpdateHouseholdInput!\n) {\n  updateHousehold(id: $id, input: $input) {\n    id\n    name\n    locale\n    currency {\n      id\n      code\n    }\n  }\n}\n"
+    "text": "mutation generalSettingsUpdateHouseholdMutation(\n  $id: ID!\n  $input: UpdateHouseholdInput!\n) {\n  updateHousehold(id: $id, input: $input) {\n    id\n    name\n    locale\n    currencyCode\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d075b5b254d0670eb97267881dc3f75c";
+(node as any).hash = "f3d6754569915944b6d0c6a5279f7972";
 
 export default node;

@@ -4,16 +4,15 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
 
-// Currency holds the schema definition for the Currency entity.
+// Currency is a legacy entity kept for data migration only.
+// Phase 2 cleanup will delete this schema and drop the currencies table.
 type Currency struct {
 	ent.Schema
 }
 
-// Fields of the Currency.
 func (Currency) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("code").NotEmpty().Unique(),
@@ -21,25 +20,12 @@ func (Currency) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Currency.
 func (Currency) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.To("accounts", Account.Type),
-		edge.To("investments", Investment.Type),
-		edge.To("transaction_entries", TransactionEntry.Type),
-		edge.To("households", Household.Type),
-		edge.To("recurring_subscriptions", RecurringSubscription.Type),
-		edge.To("snapshot_entries", SnapshotEntry.Type),
-		edge.To("snapshot_rates_from", SnapshotRate.Type),
-		edge.To("snapshot_rates_to", SnapshotRate.Type),
-		edge.To("household_currencies", HouseholdCurrency.Type),
-		edge.To("household_rates_from", HouseholdRate.Type),
-		edge.To("household_rates_to", HouseholdRate.Type),
-	}
+	return nil
 }
 
 func (Currency) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entgql.QueryField(),
+		entgql.Skip(entgql.SkipAll),
 	}
 }

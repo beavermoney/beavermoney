@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent/dialect/sql"
@@ -134,9 +134,23 @@ func (_c *RecurringSubscriptionCreate) SetNillableCost(v *decimal.Decimal) *Recu
 	return _c
 }
 
-// SetCurrencyID sets the "currency_id" field.
-func (_c *RecurringSubscriptionCreate) SetCurrencyID(v int) *RecurringSubscriptionCreate {
-	_c.mutation.SetCurrencyID(v)
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_c *RecurringSubscriptionCreate) SetHouseholdCurrencyID(v int) *RecurringSubscriptionCreate {
+	_c.mutation.SetHouseholdCurrencyID(v)
+	return _c
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (_c *RecurringSubscriptionCreate) SetLegacyCurrencyID(v int) *RecurringSubscriptionCreate {
+	_c.mutation.SetLegacyCurrencyID(v)
+	return _c
+}
+
+// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
+func (_c *RecurringSubscriptionCreate) SetNillableLegacyCurrencyID(v *int) *RecurringSubscriptionCreate {
+	if v != nil {
+		_c.SetLegacyCurrencyID(*v)
+	}
 	return _c
 }
 
@@ -151,8 +165,14 @@ func (_c *RecurringSubscriptionCreate) SetHousehold(v *Household) *RecurringSubs
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrency sets the "currency" edge to the Currency entity.
-func (_c *RecurringSubscriptionCreate) SetCurrency(v *Currency) *RecurringSubscriptionCreate {
+// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
+func (_c *RecurringSubscriptionCreate) SetCurrencyID(id int) *RecurringSubscriptionCreate {
+	_c.mutation.SetCurrencyID(id)
+	return _c
+}
+
+// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
+func (_c *RecurringSubscriptionCreate) SetCurrency(v *HouseholdCurrency) *RecurringSubscriptionCreate {
 	return _c.SetCurrencyID(v.ID)
 }
 
@@ -274,12 +294,12 @@ func (_c *RecurringSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.Cost(); !ok {
 		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "RecurringSubscription.cost"`)}
 	}
-	if _, ok := _c.mutation.CurrencyID(); !ok {
-		return &ValidationError{Name: "currency_id", err: errors.New(`ent: missing required field "RecurringSubscription.currency_id"`)}
+	if _, ok := _c.mutation.HouseholdCurrencyID(); !ok {
+		return &ValidationError{Name: "household_currency_id", err: errors.New(`ent: missing required field "RecurringSubscription.household_currency_id"`)}
 	}
-	if v, ok := _c.mutation.CurrencyID(); ok {
-		if err := recurringsubscription.CurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "RecurringSubscription.currency_id": %w`, err)}
+	if v, ok := _c.mutation.HouseholdCurrencyID(); ok {
+		if err := recurringsubscription.HouseholdCurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "RecurringSubscription.household_currency_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.UserID(); !ok {
@@ -362,6 +382,10 @@ func (_c *RecurringSubscriptionCreate) createSpec() (*RecurringSubscription, *sq
 		_spec.SetField(recurringsubscription.FieldCost, field.TypeFloat64, value)
 		_node.Cost = value
 	}
+	if value, ok := _c.mutation.LegacyCurrencyID(); ok {
+		_spec.SetField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt, value)
+		_node.LegacyCurrencyID = &value
+	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -387,13 +411,13 @@ func (_c *RecurringSubscriptionCreate) createSpec() (*RecurringSubscription, *sq
 			Columns: []string{recurringsubscription.CurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CurrencyID = nodes[0]
+		_node.HouseholdCurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
@@ -579,15 +603,39 @@ func (u *RecurringSubscriptionUpsert) AddCost(v decimal.Decimal) *RecurringSubsc
 	return u
 }
 
-// SetCurrencyID sets the "currency_id" field.
-func (u *RecurringSubscriptionUpsert) SetCurrencyID(v int) *RecurringSubscriptionUpsert {
-	u.Set(recurringsubscription.FieldCurrencyID, v)
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *RecurringSubscriptionUpsert) SetHouseholdCurrencyID(v int) *RecurringSubscriptionUpsert {
+	u.Set(recurringsubscription.FieldHouseholdCurrencyID, v)
 	return u
 }
 
-// UpdateCurrencyID sets the "currency_id" field to the value that was provided on create.
-func (u *RecurringSubscriptionUpsert) UpdateCurrencyID() *RecurringSubscriptionUpsert {
-	u.SetExcluded(recurringsubscription.FieldCurrencyID)
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsert) UpdateHouseholdCurrencyID() *RecurringSubscriptionUpsert {
+	u.SetExcluded(recurringsubscription.FieldHouseholdCurrencyID)
+	return u
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsert) SetLegacyCurrencyID(v int) *RecurringSubscriptionUpsert {
+	u.Set(recurringsubscription.FieldLegacyCurrencyID, v)
+	return u
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsert) UpdateLegacyCurrencyID() *RecurringSubscriptionUpsert {
+	u.SetExcluded(recurringsubscription.FieldLegacyCurrencyID)
+	return u
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsert) AddLegacyCurrencyID(v int) *RecurringSubscriptionUpsert {
+	u.Add(recurringsubscription.FieldLegacyCurrencyID, v)
+	return u
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsert) ClearLegacyCurrencyID() *RecurringSubscriptionUpsert {
+	u.SetNull(recurringsubscription.FieldLegacyCurrencyID)
 	return u
 }
 
@@ -775,17 +823,45 @@ func (u *RecurringSubscriptionUpsertOne) UpdateCost() *RecurringSubscriptionUpse
 	})
 }
 
-// SetCurrencyID sets the "currency_id" field.
-func (u *RecurringSubscriptionUpsertOne) SetCurrencyID(v int) *RecurringSubscriptionUpsertOne {
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *RecurringSubscriptionUpsertOne) SetHouseholdCurrencyID(v int) *RecurringSubscriptionUpsertOne {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.SetCurrencyID(v)
+		s.SetHouseholdCurrencyID(v)
 	})
 }
 
-// UpdateCurrencyID sets the "currency_id" field to the value that was provided on create.
-func (u *RecurringSubscriptionUpsertOne) UpdateCurrencyID() *RecurringSubscriptionUpsertOne {
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsertOne) UpdateHouseholdCurrencyID() *RecurringSubscriptionUpsertOne {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.UpdateCurrencyID()
+		s.UpdateHouseholdCurrencyID()
+	})
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsertOne) SetLegacyCurrencyID(v int) *RecurringSubscriptionUpsertOne {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.SetLegacyCurrencyID(v)
+	})
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsertOne) AddLegacyCurrencyID(v int) *RecurringSubscriptionUpsertOne {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.AddLegacyCurrencyID(v)
+	})
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsertOne) UpdateLegacyCurrencyID() *RecurringSubscriptionUpsertOne {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.UpdateLegacyCurrencyID()
+	})
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsertOne) ClearLegacyCurrencyID() *RecurringSubscriptionUpsertOne {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.ClearLegacyCurrencyID()
 	})
 }
 
@@ -1139,17 +1215,45 @@ func (u *RecurringSubscriptionUpsertBulk) UpdateCost() *RecurringSubscriptionUps
 	})
 }
 
-// SetCurrencyID sets the "currency_id" field.
-func (u *RecurringSubscriptionUpsertBulk) SetCurrencyID(v int) *RecurringSubscriptionUpsertBulk {
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *RecurringSubscriptionUpsertBulk) SetHouseholdCurrencyID(v int) *RecurringSubscriptionUpsertBulk {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.SetCurrencyID(v)
+		s.SetHouseholdCurrencyID(v)
 	})
 }
 
-// UpdateCurrencyID sets the "currency_id" field to the value that was provided on create.
-func (u *RecurringSubscriptionUpsertBulk) UpdateCurrencyID() *RecurringSubscriptionUpsertBulk {
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsertBulk) UpdateHouseholdCurrencyID() *RecurringSubscriptionUpsertBulk {
 	return u.Update(func(s *RecurringSubscriptionUpsert) {
-		s.UpdateCurrencyID()
+		s.UpdateHouseholdCurrencyID()
+	})
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsertBulk) SetLegacyCurrencyID(v int) *RecurringSubscriptionUpsertBulk {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.SetLegacyCurrencyID(v)
+	})
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsertBulk) AddLegacyCurrencyID(v int) *RecurringSubscriptionUpsertBulk {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.AddLegacyCurrencyID(v)
+	})
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *RecurringSubscriptionUpsertBulk) UpdateLegacyCurrencyID() *RecurringSubscriptionUpsertBulk {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.UpdateLegacyCurrencyID()
+	})
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *RecurringSubscriptionUpsertBulk) ClearLegacyCurrencyID() *RecurringSubscriptionUpsertBulk {
+	return u.Update(func(s *RecurringSubscriptionUpsert) {
+		s.ClearLegacyCurrencyID()
 	})
 }
 

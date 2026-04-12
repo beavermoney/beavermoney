@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"math"
 
-	"beavermoney.app/ent/currency"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotrate"
@@ -25,8 +25,8 @@ type SnapshotRateQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.SnapshotRate
 	withSnapshot     *SnapshotQuery
-	withFromCurrency *CurrencyQuery
-	withToCurrency   *CurrencyQuery
+	withFromCurrency *HouseholdCurrencyQuery
+	withToCurrency   *HouseholdCurrencyQuery
 	loadTotal        []func(context.Context, []*SnapshotRate) error
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -88,8 +88,8 @@ func (_q *SnapshotRateQuery) QuerySnapshot() *SnapshotQuery {
 }
 
 // QueryFromCurrency chains the current query on the "from_currency" edge.
-func (_q *SnapshotRateQuery) QueryFromCurrency() *CurrencyQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *SnapshotRateQuery) QueryFromCurrency() *HouseholdCurrencyQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -100,7 +100,7 @@ func (_q *SnapshotRateQuery) QueryFromCurrency() *CurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, selector),
-			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.FromCurrencyTable, snapshotrate.FromCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -110,8 +110,8 @@ func (_q *SnapshotRateQuery) QueryFromCurrency() *CurrencyQuery {
 }
 
 // QueryToCurrency chains the current query on the "to_currency" edge.
-func (_q *SnapshotRateQuery) QueryToCurrency() *CurrencyQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *SnapshotRateQuery) QueryToCurrency() *HouseholdCurrencyQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -122,7 +122,7 @@ func (_q *SnapshotRateQuery) QueryToCurrency() *CurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, selector),
-			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.ToCurrencyTable, snapshotrate.ToCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -346,8 +346,8 @@ func (_q *SnapshotRateQuery) WithSnapshot(opts ...func(*SnapshotQuery)) *Snapsho
 
 // WithFromCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "from_currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *SnapshotRateQuery) WithFromCurrency(opts ...func(*CurrencyQuery)) *SnapshotRateQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *SnapshotRateQuery) WithFromCurrency(opts ...func(*HouseholdCurrencyQuery)) *SnapshotRateQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -357,8 +357,8 @@ func (_q *SnapshotRateQuery) WithFromCurrency(opts ...func(*CurrencyQuery)) *Sna
 
 // WithToCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "to_currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *SnapshotRateQuery) WithToCurrency(opts ...func(*CurrencyQuery)) *SnapshotRateQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *SnapshotRateQuery) WithToCurrency(opts ...func(*HouseholdCurrencyQuery)) *SnapshotRateQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -479,13 +479,13 @@ func (_q *SnapshotRateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	}
 	if query := _q.withFromCurrency; query != nil {
 		if err := _q.loadFromCurrency(ctx, query, nodes, nil,
-			func(n *SnapshotRate, e *Currency) { n.Edges.FromCurrency = e }); err != nil {
+			func(n *SnapshotRate, e *HouseholdCurrency) { n.Edges.FromCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
 	if query := _q.withToCurrency; query != nil {
 		if err := _q.loadToCurrency(ctx, query, nodes, nil,
-			func(n *SnapshotRate, e *Currency) { n.Edges.ToCurrency = e }); err != nil {
+			func(n *SnapshotRate, e *HouseholdCurrency) { n.Edges.ToCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -526,11 +526,11 @@ func (_q *SnapshotRateQuery) loadSnapshot(ctx context.Context, query *SnapshotQu
 	}
 	return nil
 }
-func (_q *SnapshotRateQuery) loadFromCurrency(ctx context.Context, query *CurrencyQuery, nodes []*SnapshotRate, init func(*SnapshotRate), assign func(*SnapshotRate, *Currency)) error {
+func (_q *SnapshotRateQuery) loadFromCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*SnapshotRate, init func(*SnapshotRate), assign func(*SnapshotRate, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*SnapshotRate)
 	for i := range nodes {
-		fk := nodes[i].FromCurrencyID
+		fk := nodes[i].FromHouseholdCurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -539,7 +539,7 @@ func (_q *SnapshotRateQuery) loadFromCurrency(ctx context.Context, query *Curren
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(currency.IDIn(ids...))
+	query.Where(householdcurrency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -547,7 +547,7 @@ func (_q *SnapshotRateQuery) loadFromCurrency(ctx context.Context, query *Curren
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "from_currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "from_household_currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -555,11 +555,11 @@ func (_q *SnapshotRateQuery) loadFromCurrency(ctx context.Context, query *Curren
 	}
 	return nil
 }
-func (_q *SnapshotRateQuery) loadToCurrency(ctx context.Context, query *CurrencyQuery, nodes []*SnapshotRate, init func(*SnapshotRate), assign func(*SnapshotRate, *Currency)) error {
+func (_q *SnapshotRateQuery) loadToCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*SnapshotRate, init func(*SnapshotRate), assign func(*SnapshotRate, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*SnapshotRate)
 	for i := range nodes {
-		fk := nodes[i].ToCurrencyID
+		fk := nodes[i].ToHouseholdCurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -568,7 +568,7 @@ func (_q *SnapshotRateQuery) loadToCurrency(ctx context.Context, query *Currency
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(currency.IDIn(ids...))
+	query.Where(householdcurrency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -576,7 +576,7 @@ func (_q *SnapshotRateQuery) loadToCurrency(ctx context.Context, query *Currency
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "to_currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "to_household_currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -617,10 +617,10 @@ func (_q *SnapshotRateQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(snapshotrate.FieldSnapshotID)
 		}
 		if _q.withFromCurrency != nil {
-			_spec.Node.AddColumnOnce(snapshotrate.FieldFromCurrencyID)
+			_spec.Node.AddColumnOnce(snapshotrate.FieldFromHouseholdCurrencyID)
 		}
 		if _q.withToCurrency != nil {
-			_spec.Node.AddColumnOnce(snapshotrate.FieldToCurrencyID)
+			_spec.Node.AddColumnOnce(snapshotrate.FieldToHouseholdCurrencyID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

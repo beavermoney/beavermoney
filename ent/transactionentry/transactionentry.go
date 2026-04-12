@@ -25,8 +25,10 @@ const (
 	FieldAmount = "amount"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
-	// FieldCurrencyID holds the string denoting the currency_id field in the database.
-	FieldCurrencyID = "currency_id"
+	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
+	FieldHouseholdCurrencyID = "household_currency_id"
+	// FieldLegacyCurrencyID holds the string denoting the legacy_currency_id field in the database.
+	FieldLegacyCurrencyID = "currency_id"
 	// FieldTransactionID holds the string denoting the transaction_id field in the database.
 	FieldTransactionID = "transaction_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
@@ -55,11 +57,11 @@ const (
 	AccountColumn = "account_id"
 	// CurrencyTable is the table that holds the currency relation/edge.
 	CurrencyTable = "transaction_entries"
-	// CurrencyInverseTable is the table name for the Currency entity.
-	// It exists in this package in order to avoid circular dependency with the "currency" package.
-	CurrencyInverseTable = "currencies"
+	// CurrencyInverseTable is the table name for the HouseholdCurrency entity.
+	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
+	CurrencyInverseTable = "household_currencies"
 	// CurrencyColumn is the table column denoting the currency relation/edge.
-	CurrencyColumn = "currency_id"
+	CurrencyColumn = "household_currency_id"
 	// TransactionTable is the table that holds the transaction relation/edge.
 	TransactionTable = "transaction_entries"
 	// TransactionInverseTable is the table name for the Transaction entity.
@@ -77,7 +79,8 @@ var Columns = []string{
 	FieldHouseholdID,
 	FieldAmount,
 	FieldAccountID,
-	FieldCurrencyID,
+	FieldHouseholdCurrencyID,
+	FieldLegacyCurrencyID,
 	FieldTransactionID,
 }
 
@@ -107,8 +110,8 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	AccountIDValidator func(int) error
-	// CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	CurrencyIDValidator func(int) error
+	// HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
+	HouseholdCurrencyIDValidator func(int) error
 	// TransactionIDValidator is a validator for the "transaction_id" field. It is called by the builders before save.
 	TransactionIDValidator func(int) error
 )
@@ -146,9 +149,14 @@ func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAccountID, opts...).ToFunc()
 }
 
-// ByCurrencyID orders the results by the currency_id field.
-func ByCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCurrencyID, opts...).ToFunc()
+// ByHouseholdCurrencyID orders the results by the household_currency_id field.
+func ByHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHouseholdCurrencyID, opts...).ToFunc()
+}
+
+// ByLegacyCurrencyID orders the results by the legacy_currency_id field.
+func ByLegacyCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLegacyCurrencyID, opts...).ToFunc()
 }
 
 // ByTransactionID orders the results by the transaction_id field.

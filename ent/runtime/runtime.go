@@ -70,16 +70,16 @@ func init() {
 	accountDescValue := accountFields[5].Descriptor()
 	// account.DefaultValue holds the default value on creation for the value field.
 	account.DefaultValue = accountDescValue.Default.(func() decimal.Decimal)
-	// accountDescCurrencyID is the schema descriptor for currency_id field.
-	accountDescCurrencyID := accountFields[6].Descriptor()
-	// account.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	account.CurrencyIDValidator = accountDescCurrencyID.Validators[0].(func(int) error)
+	// accountDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
+	accountDescHouseholdCurrencyID := accountFields[6].Descriptor()
+	// account.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
+	account.HouseholdCurrencyIDValidator = accountDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// accountDescUserID is the schema descriptor for user_id field.
-	accountDescUserID := accountFields[7].Descriptor()
+	accountDescUserID := accountFields[8].Descriptor()
 	// account.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	account.UserIDValidator = accountDescUserID.Validators[0].(func(int) error)
 	// accountDescArchived is the schema descriptor for archived field.
-	accountDescArchived := accountFields[8].Descriptor()
+	accountDescArchived := accountFields[9].Descriptor()
 	// account.DefaultArchived holds the default value on creation for the archived field.
 	account.DefaultArchived = accountDescArchived.Default.(bool)
 	currencyFields := schema.Currency{}.Fields()
@@ -120,12 +120,12 @@ func init() {
 	householdDescLocale := householdFields[1].Descriptor()
 	// household.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
 	household.LocaleValidator = householdDescLocale.Validators[0].(func(string) error)
-	// householdDescCurrencyID is the schema descriptor for currency_id field.
-	householdDescCurrencyID := householdFields[2].Descriptor()
-	// household.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	household.CurrencyIDValidator = householdDescCurrencyID.Validators[0].(func(int) error)
+	// householdDescCurrencyCode is the schema descriptor for currency_code field.
+	householdDescCurrencyCode := householdFields[2].Descriptor()
+	// household.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
+	household.CurrencyCodeValidator = householdDescCurrencyCode.Validators[0].(func(string) error)
 	// householdDescIsDemo is the schema descriptor for is_demo field.
-	householdDescIsDemo := householdFields[3].Descriptor()
+	householdDescIsDemo := householdFields[4].Descriptor()
 	// household.DefaultIsDemo holds the default value on creation for the is_demo field.
 	household.DefaultIsDemo = householdDescIsDemo.Default.(bool)
 	householdcurrencyMixin := schema.HouseholdCurrency{}.Mixin()
@@ -152,14 +152,14 @@ func init() {
 	householdcurrency.DefaultUpdateTime = householdcurrencyDescUpdateTime.Default.(func() time.Time)
 	// householdcurrency.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	householdcurrency.UpdateDefaultUpdateTime = householdcurrencyDescUpdateTime.UpdateDefault.(func() time.Time)
+	// householdcurrencyDescCode is the schema descriptor for code field.
+	householdcurrencyDescCode := householdcurrencyFields[0].Descriptor()
+	// householdcurrency.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	householdcurrency.CodeValidator = householdcurrencyDescCode.Validators[0].(func(string) error)
 	// householdcurrencyDescImportant is the schema descriptor for important field.
-	householdcurrencyDescImportant := householdcurrencyFields[0].Descriptor()
+	householdcurrencyDescImportant := householdcurrencyFields[1].Descriptor()
 	// householdcurrency.DefaultImportant holds the default value on creation for the important field.
 	householdcurrency.DefaultImportant = householdcurrencyDescImportant.Default.(bool)
-	// householdcurrencyDescCurrencyID is the schema descriptor for currency_id field.
-	householdcurrencyDescCurrencyID := householdcurrencyFields[1].Descriptor()
-	// householdcurrency.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	householdcurrency.CurrencyIDValidator = householdcurrencyDescCurrencyID.Validators[0].(func(int) error)
 	householdrateMixin := schema.HouseholdRate{}.Mixin()
 	householdrate.Policy = privacy.NewPolicies(householdrateMixin[0], schema.HouseholdRate{})
 	householdrate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -184,14 +184,14 @@ func init() {
 	householdrate.DefaultUpdateTime = householdrateDescUpdateTime.Default.(func() time.Time)
 	// householdrate.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	householdrate.UpdateDefaultUpdateTime = householdrateDescUpdateTime.UpdateDefault.(func() time.Time)
-	// householdrateDescFromCurrencyID is the schema descriptor for from_currency_id field.
-	householdrateDescFromCurrencyID := householdrateFields[1].Descriptor()
-	// householdrate.FromCurrencyIDValidator is a validator for the "from_currency_id" field. It is called by the builders before save.
-	householdrate.FromCurrencyIDValidator = householdrateDescFromCurrencyID.Validators[0].(func(int) error)
-	// householdrateDescToCurrencyID is the schema descriptor for to_currency_id field.
-	householdrateDescToCurrencyID := householdrateFields[2].Descriptor()
-	// householdrate.ToCurrencyIDValidator is a validator for the "to_currency_id" field. It is called by the builders before save.
-	householdrate.ToCurrencyIDValidator = householdrateDescToCurrencyID.Validators[0].(func(int) error)
+	// householdrateDescFromHouseholdCurrencyID is the schema descriptor for from_household_currency_id field.
+	householdrateDescFromHouseholdCurrencyID := householdrateFields[1].Descriptor()
+	// householdrate.FromHouseholdCurrencyIDValidator is a validator for the "from_household_currency_id" field. It is called by the builders before save.
+	householdrate.FromHouseholdCurrencyIDValidator = householdrateDescFromHouseholdCurrencyID.Validators[0].(func(int) error)
+	// householdrateDescToHouseholdCurrencyID is the schema descriptor for to_household_currency_id field.
+	householdrateDescToHouseholdCurrencyID := householdrateFields[3].Descriptor()
+	// householdrate.ToHouseholdCurrencyIDValidator is a validator for the "to_household_currency_id" field. It is called by the builders before save.
+	householdrate.ToHouseholdCurrencyIDValidator = householdrateDescToHouseholdCurrencyID.Validators[0].(func(int) error)
 	investmentMixin := schema.Investment{}.Mixin()
 	investment.Policy = privacy.NewPolicies(investmentMixin[1], schema.Investment{})
 	investment.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -232,10 +232,10 @@ func init() {
 	investmentDescAccountID := investmentFields[6].Descriptor()
 	// investment.AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	investment.AccountIDValidator = investmentDescAccountID.Validators[0].(func(int) error)
-	// investmentDescCurrencyID is the schema descriptor for currency_id field.
-	investmentDescCurrencyID := investmentFields[7].Descriptor()
-	// investment.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	investment.CurrencyIDValidator = investmentDescCurrencyID.Validators[0].(func(int) error)
+	// investmentDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
+	investmentDescHouseholdCurrencyID := investmentFields[7].Descriptor()
+	// investment.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
+	investment.HouseholdCurrencyIDValidator = investmentDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	investmentlotMixin := schema.InvestmentLot{}.Mixin()
 	investmentlot.Policy = privacy.NewPolicies(investmentlotMixin[1], schema.InvestmentLot{})
 	investmentlot.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -310,12 +310,12 @@ func init() {
 	recurringsubscriptionDescCost := recurringsubscriptionFields[6].Descriptor()
 	// recurringsubscription.DefaultCost holds the default value on creation for the cost field.
 	recurringsubscription.DefaultCost = recurringsubscriptionDescCost.Default.(func() decimal.Decimal)
-	// recurringsubscriptionDescCurrencyID is the schema descriptor for currency_id field.
-	recurringsubscriptionDescCurrencyID := recurringsubscriptionFields[7].Descriptor()
-	// recurringsubscription.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	recurringsubscription.CurrencyIDValidator = recurringsubscriptionDescCurrencyID.Validators[0].(func(int) error)
+	// recurringsubscriptionDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
+	recurringsubscriptionDescHouseholdCurrencyID := recurringsubscriptionFields[7].Descriptor()
+	// recurringsubscription.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
+	recurringsubscription.HouseholdCurrencyIDValidator = recurringsubscriptionDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// recurringsubscriptionDescUserID is the schema descriptor for user_id field.
-	recurringsubscriptionDescUserID := recurringsubscriptionFields[8].Descriptor()
+	recurringsubscriptionDescUserID := recurringsubscriptionFields[9].Descriptor()
 	// recurringsubscription.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	recurringsubscription.UserIDValidator = recurringsubscriptionDescUserID.Validators[0].(func(int) error)
 	snapshotMixin := schema.Snapshot{}.Mixin()
@@ -366,16 +366,16 @@ func init() {
 	snapshotentry.DefaultUpdateTime = snapshotentryDescUpdateTime.Default.(func() time.Time)
 	// snapshotentry.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	snapshotentry.UpdateDefaultUpdateTime = snapshotentryDescUpdateTime.UpdateDefault.(func() time.Time)
-	// snapshotentryDescCurrencyID is the schema descriptor for currency_id field.
-	snapshotentryDescCurrencyID := snapshotentryFields[5].Descriptor()
-	// snapshotentry.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	snapshotentry.CurrencyIDValidator = snapshotentryDescCurrencyID.Validators[0].(func(int) error)
+	// snapshotentryDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
+	snapshotentryDescHouseholdCurrencyID := snapshotentryFields[5].Descriptor()
+	// snapshotentry.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
+	snapshotentry.HouseholdCurrencyIDValidator = snapshotentryDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// snapshotentryDescUserID is the schema descriptor for user_id field.
-	snapshotentryDescUserID := snapshotentryFields[6].Descriptor()
+	snapshotentryDescUserID := snapshotentryFields[7].Descriptor()
 	// snapshotentry.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	snapshotentry.UserIDValidator = snapshotentryDescUserID.Validators[0].(func(int) error)
 	// snapshotentryDescSnapshotID is the schema descriptor for snapshot_id field.
-	snapshotentryDescSnapshotID := snapshotentryFields[7].Descriptor()
+	snapshotentryDescSnapshotID := snapshotentryFields[8].Descriptor()
 	// snapshotentry.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
 	snapshotentry.SnapshotIDValidator = snapshotentryDescSnapshotID.Validators[0].(func(int) error)
 	snapshotrateMixin := schema.SnapshotRate{}.Mixin()
@@ -397,14 +397,14 @@ func init() {
 	snapshotrateDescSnapshotID := snapshotrateFields[1].Descriptor()
 	// snapshotrate.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
 	snapshotrate.SnapshotIDValidator = snapshotrateDescSnapshotID.Validators[0].(func(int) error)
-	// snapshotrateDescFromCurrencyID is the schema descriptor for from_currency_id field.
-	snapshotrateDescFromCurrencyID := snapshotrateFields[2].Descriptor()
-	// snapshotrate.FromCurrencyIDValidator is a validator for the "from_currency_id" field. It is called by the builders before save.
-	snapshotrate.FromCurrencyIDValidator = snapshotrateDescFromCurrencyID.Validators[0].(func(int) error)
-	// snapshotrateDescToCurrencyID is the schema descriptor for to_currency_id field.
-	snapshotrateDescToCurrencyID := snapshotrateFields[3].Descriptor()
-	// snapshotrate.ToCurrencyIDValidator is a validator for the "to_currency_id" field. It is called by the builders before save.
-	snapshotrate.ToCurrencyIDValidator = snapshotrateDescToCurrencyID.Validators[0].(func(int) error)
+	// snapshotrateDescFromHouseholdCurrencyID is the schema descriptor for from_household_currency_id field.
+	snapshotrateDescFromHouseholdCurrencyID := snapshotrateFields[2].Descriptor()
+	// snapshotrate.FromHouseholdCurrencyIDValidator is a validator for the "from_household_currency_id" field. It is called by the builders before save.
+	snapshotrate.FromHouseholdCurrencyIDValidator = snapshotrateDescFromHouseholdCurrencyID.Validators[0].(func(int) error)
+	// snapshotrateDescToHouseholdCurrencyID is the schema descriptor for to_household_currency_id field.
+	snapshotrateDescToHouseholdCurrencyID := snapshotrateFields[4].Descriptor()
+	// snapshotrate.ToHouseholdCurrencyIDValidator is a validator for the "to_household_currency_id" field. It is called by the builders before save.
+	snapshotrate.ToHouseholdCurrencyIDValidator = snapshotrateDescToHouseholdCurrencyID.Validators[0].(func(int) error)
 	transactionMixin := schema.Transaction{}.Mixin()
 	transaction.Policy = privacy.NewPolicies(transactionMixin[1], schema.Transaction{})
 	transaction.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -501,12 +501,12 @@ func init() {
 	transactionentryDescAccountID := transactionentryFields[1].Descriptor()
 	// transactionentry.AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	transactionentry.AccountIDValidator = transactionentryDescAccountID.Validators[0].(func(int) error)
-	// transactionentryDescCurrencyID is the schema descriptor for currency_id field.
-	transactionentryDescCurrencyID := transactionentryFields[2].Descriptor()
-	// transactionentry.CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
-	transactionentry.CurrencyIDValidator = transactionentryDescCurrencyID.Validators[0].(func(int) error)
+	// transactionentryDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
+	transactionentryDescHouseholdCurrencyID := transactionentryFields[2].Descriptor()
+	// transactionentry.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
+	transactionentry.HouseholdCurrencyIDValidator = transactionentryDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// transactionentryDescTransactionID is the schema descriptor for transaction_id field.
-	transactionentryDescTransactionID := transactionentryFields[3].Descriptor()
+	transactionentryDescTransactionID := transactionentryFields[4].Descriptor()
 	// transactionentry.TransactionIDValidator is a validator for the "transaction_id" field. It is called by the builders before save.
 	transactionentry.TransactionIDValidator = transactionentryDescTransactionID.Validators[0].(func(int) error)
 	userMixin := schema.User{}.Mixin()

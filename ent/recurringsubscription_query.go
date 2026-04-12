@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"math"
 
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/user"
@@ -27,7 +27,7 @@ type RecurringSubscriptionQuery struct {
 	inters        []Interceptor
 	predicates    []predicate.RecurringSubscription
 	withHousehold *HouseholdQuery
-	withCurrency  *CurrencyQuery
+	withCurrency  *HouseholdCurrencyQuery
 	withUser      *UserQuery
 	loadTotal     []func(context.Context, []*RecurringSubscription) error
 	modifiers     []func(*sql.Selector)
@@ -90,8 +90,8 @@ func (_q *RecurringSubscriptionQuery) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency chains the current query on the "currency" edge.
-func (_q *RecurringSubscriptionQuery) QueryCurrency() *CurrencyQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *RecurringSubscriptionQuery) QueryCurrency() *HouseholdCurrencyQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -102,7 +102,7 @@ func (_q *RecurringSubscriptionQuery) QueryCurrency() *CurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(recurringsubscription.Table, recurringsubscription.FieldID, selector),
-			sqlgraph.To(currency.Table, currency.FieldID),
+			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, recurringsubscription.CurrencyTable, recurringsubscription.CurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -348,8 +348,8 @@ func (_q *RecurringSubscriptionQuery) WithHousehold(opts ...func(*HouseholdQuery
 
 // WithCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *RecurringSubscriptionQuery) WithCurrency(opts ...func(*CurrencyQuery)) *RecurringSubscriptionQuery {
-	query := (&CurrencyClient{config: _q.config}).Query()
+func (_q *RecurringSubscriptionQuery) WithCurrency(opts ...func(*HouseholdCurrencyQuery)) *RecurringSubscriptionQuery {
+	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -487,7 +487,7 @@ func (_q *RecurringSubscriptionQuery) sqlAll(ctx context.Context, hooks ...query
 	}
 	if query := _q.withCurrency; query != nil {
 		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *RecurringSubscription, e *Currency) { n.Edges.Currency = e }); err != nil {
+			func(n *RecurringSubscription, e *HouseholdCurrency) { n.Edges.Currency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -534,11 +534,11 @@ func (_q *RecurringSubscriptionQuery) loadHousehold(ctx context.Context, query *
 	}
 	return nil
 }
-func (_q *RecurringSubscriptionQuery) loadCurrency(ctx context.Context, query *CurrencyQuery, nodes []*RecurringSubscription, init func(*RecurringSubscription), assign func(*RecurringSubscription, *Currency)) error {
+func (_q *RecurringSubscriptionQuery) loadCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*RecurringSubscription, init func(*RecurringSubscription), assign func(*RecurringSubscription, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*RecurringSubscription)
 	for i := range nodes {
-		fk := nodes[i].CurrencyID
+		fk := nodes[i].HouseholdCurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -547,7 +547,7 @@ func (_q *RecurringSubscriptionQuery) loadCurrency(ctx context.Context, query *C
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(currency.IDIn(ids...))
+	query.Where(householdcurrency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -555,7 +555,7 @@ func (_q *RecurringSubscriptionQuery) loadCurrency(ctx context.Context, query *C
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "household_currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -625,7 +625,7 @@ func (_q *RecurringSubscriptionQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(recurringsubscription.FieldHouseholdID)
 		}
 		if _q.withCurrency != nil {
-			_spec.Node.AddColumnOnce(recurringsubscription.FieldCurrencyID)
+			_spec.Node.AddColumnOnce(recurringsubscription.FieldHouseholdCurrencyID)
 		}
 		if _q.withUser != nil {
 			_spec.Node.AddColumnOnce(recurringsubscription.FieldUserID)

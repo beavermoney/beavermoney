@@ -58,7 +58,7 @@ import { useHousehold } from '@/hooks/use-household'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { CurrencyInput } from '@/components/currency-input'
-import { editSubscriptionCurrenciesFragment$key } from './__generated__/editSubscriptionCurrenciesFragment.graphql'
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { NodeType, useDeleteNode } from '@/lib/relay'
@@ -89,15 +89,6 @@ const formSchema = z.object({
   currencyCode: z.string(),
   active: z.boolean(),
 })
-
-const editSubscriptionCurrenciesFragment = graphql`
-  fragment editSubscriptionCurrenciesFragment on Query {
-    currencies {
-      id
-      code
-    }
-  }
-`
 
 const editSubscriptionFragment = graphql`
   fragment editSubscriptionFragment on RecurringSubscription {
@@ -150,18 +141,10 @@ const editSubscriptionDeleteMutation = graphql`
 
 type EditSubscriptionProps = {
   fragmentRef: editSubscriptionFragment$key
-  currenciesRef: editSubscriptionCurrenciesFragment$key
 }
 
-export function EditSubscription({
-  fragmentRef,
-  currenciesRef,
-}: EditSubscriptionProps) {
+export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
   const data = useFragment(editSubscriptionFragment, fragmentRef)
-  const currencies = useFragment(
-    editSubscriptionCurrenciesFragment,
-    currenciesRef,
-  )
 
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
   const navigate = useNavigate()
@@ -193,9 +176,8 @@ export function EditSubscription({
     onSubmit: async ({ value }) => {
       const formData = formSchema.parse(value)
 
-      const currencyID = currencies.currencies.find(
-        (curr: { id: string; code: string }) =>
-          curr.code === formData.currencyCode,
+      const currencyID = household.householdCurrencies?.find(
+        (hc) => hc.code === formData.currencyCode,
       )?.id
       invariant(currencyID, 'Currency not found')
 
@@ -266,7 +248,7 @@ export function EditSubscription({
   }
 
   const currencyCode = useStore(form.store, (state) => {
-    return state.values.currencyCode || household.currency.code
+    return state.values.currencyCode || household.currencyCode
   })
 
   return (
@@ -502,9 +484,7 @@ export function EditSubscription({
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
                     <Combobox
-                      items={currencies.currencies.map(
-                        (c: { id: string; code: string }) => c.code,
-                      )}
+                      items={SUPPORTED_CURRENCIES.map((c) => c.code)}
                       value={field.state.value}
                       onValueChange={(value) => {
                         field.handleChange(value || '')
