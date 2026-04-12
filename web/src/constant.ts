@@ -180,7 +180,7 @@ export const NAV: Array<{
   {
     name: 'Settings',
     link: {
-      to: '/household/$householdId/settings/general',
+      to: '/household/$householdId/settings',
       activeOptions: {
         exact: false,
         includeSearch: false,
