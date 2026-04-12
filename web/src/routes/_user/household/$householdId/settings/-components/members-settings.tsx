@@ -12,6 +12,7 @@ import {
   ItemTitle,
 } from '@/components/ui/item'
 import { useUser } from '@/hooks/use-user'
+import invariant from 'tiny-invariant'
 
 const membersSettingsFragment = graphql`
   fragment membersSettingsFragment on Household {
@@ -38,12 +39,12 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
   const { userHouseholds } = useFragment(membersSettingsFragment, householdRef)
   const user = useUser()
 
-  const members = userHouseholds ?? []
+  invariant(userHouseholds, 'userHouseholds is required')
 
   return (
     <div className="flex max-w-md flex-col gap-3">
       <ItemGroup>
-        {members.map((uh) => {
+        {userHouseholds.map((uh) => {
           const isCurrentUser = uh.user.id === user.id
           return (
             <Item key={uh.id} variant="outline" size="sm">
