@@ -88,10 +88,7 @@ const routeHouseholdIdQuery = graphql`
       householdCurrencies {
         id
         important
-        currency {
-          id
-          code
-        }
+        code
       }
     }
   }
@@ -173,8 +170,8 @@ function RouteComponent() {
   )
   const displayCurrencyId = useStore(displayCurrencyIdStore)
   const activeCurrencyCode =
-    currencies.find((c) => c.id === displayCurrencyId)?.currency.code ??
-    currencies[0]?.currency.code ??
+    currencies.find((c) => c.id === displayCurrencyId)?.code ??
+    currencies[0]?.code ??
     ''
   const handleCurrencyChange = useCallback(
     (hcId: string) => {
@@ -287,7 +284,7 @@ function RouteComponent() {
                             hc.id === displayCurrencyId && 'font-bold',
                           )}
                         >
-                          {hc.currency.code}
+                          {hc.code}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>

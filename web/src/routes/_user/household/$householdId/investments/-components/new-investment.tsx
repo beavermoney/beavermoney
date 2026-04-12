@@ -620,7 +620,7 @@ export function NewInvestment({
                   investmentType === 'crypto'
                     ? cryptoQuoteData.cryptoQuote
                     : stockQuoteData.stockQuote
-                const currencyCode = quote?.currency || household.currency.code
+                const currencyCode = quote?.currency || household.currencyCode
 
                 return (
                   <Field data-invalid={isInvalid}>

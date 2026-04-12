@@ -8,9 +8,15 @@ import (
 	"fmt"
 	"time"
 
-	"beavermoney.app/ent/currency"
+	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/householdrate"
+	"beavermoney.app/ent/investment"
+	"beavermoney.app/ent/recurringsubscription"
+	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
+	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -58,6 +64,12 @@ func (_c *HouseholdCurrencyCreate) SetNillableUpdateTime(v *time.Time) *Househol
 	return _c
 }
 
+// SetCode sets the "code" field.
+func (_c *HouseholdCurrencyCreate) SetCode(v string) *HouseholdCurrencyCreate {
+	_c.mutation.SetCode(v)
+	return _c
+}
+
 // SetImportant sets the "important" field.
 func (_c *HouseholdCurrencyCreate) SetImportant(v bool) *HouseholdCurrencyCreate {
 	_c.mutation.SetImportant(v)
@@ -72,9 +84,17 @@ func (_c *HouseholdCurrencyCreate) SetNillableImportant(v *bool) *HouseholdCurre
 	return _c
 }
 
-// SetCurrencyID sets the "currency_id" field.
-func (_c *HouseholdCurrencyCreate) SetCurrencyID(v int) *HouseholdCurrencyCreate {
-	_c.mutation.SetCurrencyID(v)
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (_c *HouseholdCurrencyCreate) SetLegacyCurrencyID(v int) *HouseholdCurrencyCreate {
+	_c.mutation.SetLegacyCurrencyID(v)
+	return _c
+}
+
+// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
+func (_c *HouseholdCurrencyCreate) SetNillableLegacyCurrencyID(v *int) *HouseholdCurrencyCreate {
+	if v != nil {
+		_c.SetLegacyCurrencyID(*v)
+	}
 	return _c
 }
 
@@ -83,9 +103,139 @@ func (_c *HouseholdCurrencyCreate) SetHousehold(v *Household) *HouseholdCurrency
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrency sets the "currency" edge to the Currency entity.
-func (_c *HouseholdCurrencyCreate) SetCurrency(v *Currency) *HouseholdCurrencyCreate {
-	return _c.SetCurrencyID(v.ID)
+// AddAccountIDs adds the "accounts" edge to the Account entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddAccountIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddAccountIDs(ids...)
+	return _c
+}
+
+// AddAccounts adds the "accounts" edges to the Account entity.
+func (_c *HouseholdCurrencyCreate) AddAccounts(v ...*Account) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddAccountIDs(ids...)
+}
+
+// AddInvestmentIDs adds the "investments" edge to the Investment entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddInvestmentIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddInvestmentIDs(ids...)
+	return _c
+}
+
+// AddInvestments adds the "investments" edges to the Investment entity.
+func (_c *HouseholdCurrencyCreate) AddInvestments(v ...*Investment) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddInvestmentIDs(ids...)
+}
+
+// AddTransactionEntryIDs adds the "transaction_entries" edge to the TransactionEntry entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddTransactionEntryIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddTransactionEntryIDs(ids...)
+	return _c
+}
+
+// AddTransactionEntries adds the "transaction_entries" edges to the TransactionEntry entity.
+func (_c *HouseholdCurrencyCreate) AddTransactionEntries(v ...*TransactionEntry) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTransactionEntryIDs(ids...)
+}
+
+// AddRecurringSubscriptionIDs adds the "recurring_subscriptions" edge to the RecurringSubscription entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddRecurringSubscriptionIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddRecurringSubscriptionIDs(ids...)
+	return _c
+}
+
+// AddRecurringSubscriptions adds the "recurring_subscriptions" edges to the RecurringSubscription entity.
+func (_c *HouseholdCurrencyCreate) AddRecurringSubscriptions(v ...*RecurringSubscription) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddRecurringSubscriptionIDs(ids...)
+}
+
+// AddSnapshotEntryIDs adds the "snapshot_entries" edge to the SnapshotEntry entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddSnapshotEntryIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddSnapshotEntryIDs(ids...)
+	return _c
+}
+
+// AddSnapshotEntries adds the "snapshot_entries" edges to the SnapshotEntry entity.
+func (_c *HouseholdCurrencyCreate) AddSnapshotEntries(v ...*SnapshotEntry) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotEntryIDs(ids...)
+}
+
+// AddSnapshotRatesFromIDs adds the "snapshot_rates_from" edge to the SnapshotRate entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddSnapshotRatesFromIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddSnapshotRatesFromIDs(ids...)
+	return _c
+}
+
+// AddSnapshotRatesFrom adds the "snapshot_rates_from" edges to the SnapshotRate entity.
+func (_c *HouseholdCurrencyCreate) AddSnapshotRatesFrom(v ...*SnapshotRate) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotRatesFromIDs(ids...)
+}
+
+// AddSnapshotRatesToIDs adds the "snapshot_rates_to" edge to the SnapshotRate entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddSnapshotRatesToIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddSnapshotRatesToIDs(ids...)
+	return _c
+}
+
+// AddSnapshotRatesTo adds the "snapshot_rates_to" edges to the SnapshotRate entity.
+func (_c *HouseholdCurrencyCreate) AddSnapshotRatesTo(v ...*SnapshotRate) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotRatesToIDs(ids...)
+}
+
+// AddHouseholdRatesFromIDs adds the "household_rates_from" edge to the HouseholdRate entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddHouseholdRatesFromIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddHouseholdRatesFromIDs(ids...)
+	return _c
+}
+
+// AddHouseholdRatesFrom adds the "household_rates_from" edges to the HouseholdRate entity.
+func (_c *HouseholdCurrencyCreate) AddHouseholdRatesFrom(v ...*HouseholdRate) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddHouseholdRatesFromIDs(ids...)
+}
+
+// AddHouseholdRatesToIDs adds the "household_rates_to" edge to the HouseholdRate entity by IDs.
+func (_c *HouseholdCurrencyCreate) AddHouseholdRatesToIDs(ids ...int) *HouseholdCurrencyCreate {
+	_c.mutation.AddHouseholdRatesToIDs(ids...)
+	return _c
+}
+
+// AddHouseholdRatesTo adds the "household_rates_to" edges to the HouseholdRate entity.
+func (_c *HouseholdCurrencyCreate) AddHouseholdRatesTo(v ...*HouseholdRate) *HouseholdCurrencyCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddHouseholdRatesToIDs(ids...)
 }
 
 // Mutation returns the HouseholdCurrencyMutation object of the builder.
@@ -157,22 +307,19 @@ func (_c *HouseholdCurrencyCreate) check() error {
 	if _, ok := _c.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "HouseholdCurrency.update_time"`)}
 	}
+	if _, ok := _c.mutation.Code(); !ok {
+		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "HouseholdCurrency.code"`)}
+	}
+	if v, ok := _c.mutation.Code(); ok {
+		if err := householdcurrency.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "HouseholdCurrency.code": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Important(); !ok {
 		return &ValidationError{Name: "important", err: errors.New(`ent: missing required field "HouseholdCurrency.important"`)}
 	}
-	if _, ok := _c.mutation.CurrencyID(); !ok {
-		return &ValidationError{Name: "currency_id", err: errors.New(`ent: missing required field "HouseholdCurrency.currency_id"`)}
-	}
-	if v, ok := _c.mutation.CurrencyID(); ok {
-		if err := householdcurrency.CurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "currency_id", err: fmt.Errorf(`ent: validator failed for field "HouseholdCurrency.currency_id": %w`, err)}
-		}
-	}
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "HouseholdCurrency.household"`)}
-	}
-	if len(_c.mutation.CurrencyIDs()) == 0 {
-		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "HouseholdCurrency.currency"`)}
 	}
 	return nil
 }
@@ -209,9 +356,17 @@ func (_c *HouseholdCurrencyCreate) createSpec() (*HouseholdCurrency, *sqlgraph.C
 		_spec.SetField(householdcurrency.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
+	if value, ok := _c.mutation.Code(); ok {
+		_spec.SetField(householdcurrency.FieldCode, field.TypeString, value)
+		_node.Code = value
+	}
 	if value, ok := _c.mutation.Important(); ok {
 		_spec.SetField(householdcurrency.FieldImportant, field.TypeBool, value)
 		_node.Important = value
+	}
+	if value, ok := _c.mutation.LegacyCurrencyID(); ok {
+		_spec.SetField(householdcurrency.FieldLegacyCurrencyID, field.TypeInt, value)
+		_node.LegacyCurrencyID = &value
 	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -230,21 +385,148 @@ func (_c *HouseholdCurrencyCreate) createSpec() (*HouseholdCurrency, *sqlgraph.C
 		_node.HouseholdID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   householdcurrency.CurrencyTable,
-			Columns: []string{householdcurrency.CurrencyColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.AccountsTable,
+			Columns: []string{householdcurrency.AccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CurrencyID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.InvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.InvestmentsTable,
+			Columns: []string{householdcurrency.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TransactionEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.TransactionEntriesTable,
+			Columns: []string{householdcurrency.TransactionEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.RecurringSubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.RecurringSubscriptionsTable,
+			Columns: []string{householdcurrency.RecurringSubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(recurringsubscription.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.SnapshotEntriesTable,
+			Columns: []string{householdcurrency.SnapshotEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotRatesFromIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.SnapshotRatesFromTable,
+			Columns: []string{householdcurrency.SnapshotRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotRatesToIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.SnapshotRatesToTable,
+			Columns: []string{householdcurrency.SnapshotRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HouseholdRatesFromIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.HouseholdRatesFromTable,
+			Columns: []string{householdcurrency.HouseholdRatesFromColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HouseholdRatesToIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   householdcurrency.HouseholdRatesToTable,
+			Columns: []string{householdcurrency.HouseholdRatesToColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdrate.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -323,6 +605,30 @@ func (u *HouseholdCurrencyUpsert) UpdateImportant() *HouseholdCurrencyUpsert {
 	return u
 }
 
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsert) SetLegacyCurrencyID(v int) *HouseholdCurrencyUpsert {
+	u.Set(householdcurrency.FieldLegacyCurrencyID, v)
+	return u
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *HouseholdCurrencyUpsert) UpdateLegacyCurrencyID() *HouseholdCurrencyUpsert {
+	u.SetExcluded(householdcurrency.FieldLegacyCurrencyID)
+	return u
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsert) AddLegacyCurrencyID(v int) *HouseholdCurrencyUpsert {
+	u.Add(householdcurrency.FieldLegacyCurrencyID, v)
+	return u
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsert) ClearLegacyCurrencyID() *HouseholdCurrencyUpsert {
+	u.SetNull(householdcurrency.FieldLegacyCurrencyID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -340,8 +646,8 @@ func (u *HouseholdCurrencyUpsertOne) UpdateNewValues() *HouseholdCurrencyUpsertO
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(householdcurrency.FieldCreateTime)
 		}
-		if _, exists := u.create.mutation.CurrencyID(); exists {
-			s.SetIgnore(householdcurrency.FieldCurrencyID)
+		if _, exists := u.create.mutation.Code(); exists {
+			s.SetIgnore(householdcurrency.FieldCode)
 		}
 	}))
 	return u
@@ -399,6 +705,34 @@ func (u *HouseholdCurrencyUpsertOne) SetImportant(v bool) *HouseholdCurrencyUpse
 func (u *HouseholdCurrencyUpsertOne) UpdateImportant() *HouseholdCurrencyUpsertOne {
 	return u.Update(func(s *HouseholdCurrencyUpsert) {
 		s.UpdateImportant()
+	})
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsertOne) SetLegacyCurrencyID(v int) *HouseholdCurrencyUpsertOne {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.SetLegacyCurrencyID(v)
+	})
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsertOne) AddLegacyCurrencyID(v int) *HouseholdCurrencyUpsertOne {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.AddLegacyCurrencyID(v)
+	})
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *HouseholdCurrencyUpsertOne) UpdateLegacyCurrencyID() *HouseholdCurrencyUpsertOne {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.UpdateLegacyCurrencyID()
+	})
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsertOne) ClearLegacyCurrencyID() *HouseholdCurrencyUpsertOne {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.ClearLegacyCurrencyID()
 	})
 }
 
@@ -584,8 +918,8 @@ func (u *HouseholdCurrencyUpsertBulk) UpdateNewValues() *HouseholdCurrencyUpsert
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(householdcurrency.FieldCreateTime)
 			}
-			if _, exists := b.mutation.CurrencyID(); exists {
-				s.SetIgnore(householdcurrency.FieldCurrencyID)
+			if _, exists := b.mutation.Code(); exists {
+				s.SetIgnore(householdcurrency.FieldCode)
 			}
 		}
 	}))
@@ -644,6 +978,34 @@ func (u *HouseholdCurrencyUpsertBulk) SetImportant(v bool) *HouseholdCurrencyUps
 func (u *HouseholdCurrencyUpsertBulk) UpdateImportant() *HouseholdCurrencyUpsertBulk {
 	return u.Update(func(s *HouseholdCurrencyUpsert) {
 		s.UpdateImportant()
+	})
+}
+
+// SetLegacyCurrencyID sets the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsertBulk) SetLegacyCurrencyID(v int) *HouseholdCurrencyUpsertBulk {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.SetLegacyCurrencyID(v)
+	})
+}
+
+// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsertBulk) AddLegacyCurrencyID(v int) *HouseholdCurrencyUpsertBulk {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.AddLegacyCurrencyID(v)
+	})
+}
+
+// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
+func (u *HouseholdCurrencyUpsertBulk) UpdateLegacyCurrencyID() *HouseholdCurrencyUpsertBulk {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.UpdateLegacyCurrencyID()
+	})
+}
+
+// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
+func (u *HouseholdCurrencyUpsertBulk) ClearLegacyCurrencyID() *HouseholdCurrencyUpsertBulk {
+	return u.Update(func(s *HouseholdCurrencyUpsert) {
+		s.ClearLegacyCurrencyID()
 	})
 }
 
