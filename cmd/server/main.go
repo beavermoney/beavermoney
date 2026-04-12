@@ -124,6 +124,12 @@ func main() {
 	}
 	marketClient := market.NewClient(marketProvider)
 
+	if !cfg.IsProd {
+		if err := seed.Seed(ctx, entClient, frankfurterClient, marketClient); err != nil {
+			logger.Error("seeding database failed", slog.String("error", err.Error()))
+		}
+	}
+
 	// Setup router
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
