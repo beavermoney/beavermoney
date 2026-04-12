@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"beavermoney.app/ent"
-	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/userhousehold"
@@ -24,10 +23,10 @@ type migrateCurrency struct {
 	Code string
 }
 
-// migrateHouseholdCurrencies is a one-time idempotent data migration.
-// For each household: adds primary currency (important=true), gathers account
-// currencies (important=false), populates household_rates, and sets each
-// user_household's display_currency_id to the primary household_currency.
+// migrateHouseholdCurrencies is an idempotent backfill.
+// For each household: ensures the primary household currency exists, populates
+// household_rates for existing household currencies, and sets each
+// user_household's default_currency_id to the primary household_currency.
 func migrateHouseholdCurrencies(
 	ctx context.Context,
 	client *ent.Client,
@@ -37,25 +36,12 @@ func migrateHouseholdCurrencies(
 	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
 
 	households, err := client.Household.Query().
-		WithCurrency().
 		All(bypassCtx)
 	if err != nil {
 		return fmt.Errorf("failed to query households: %w", err)
 	}
 
 	for _, hh := range households {
-		hhCtx := context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), hh.ID)
-		exists, err := client.HouseholdCurrency.Query().
-			Where(householdcurrency.HouseholdIDEQ(hh.ID)).
-			Exist(hhCtx)
-		if err != nil {
-			return fmt.Errorf("failed to check existing household currencies for household %d: %w", hh.ID, err)
-		}
-		if exists {
-			logger.Debug("Household currencies already migrated, skipping", "householdID", hh.ID)
-			continue
-		}
-
 		logger.Info("Migrating household currencies", "householdID", hh.ID, "householdName", hh.Name)
 
 		if err := migrateOneHousehold(bypassCtx, client, frankfurterClient, logger, hh); err != nil {
@@ -64,7 +50,7 @@ func migrateHouseholdCurrencies(
 
 		logger.Info("Household currencies migrated",
 			"householdID", hh.ID,
-			"primaryCurrency", hh.Edges.Currency.Code,
+			"primaryCurrency", hh.CurrencyCode,
 		)
 	}
 
@@ -85,60 +71,22 @@ func migrateOneHousehold(
 	txClient := tx.Client()
 	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), hh.ID)
 
-	primaryHCID, err := txClient.HouseholdCurrency.Create().
-		SetHouseholdID(hh.ID).
-		SetCurrencyID(hh.CurrencyID).
-		SetImportant(true).
-		OnConflict(
-			sql.ConflictColumns(householdcurrency.FieldHouseholdID, householdcurrency.FieldCurrencyID),
-		).
-		Ignore().
-		ID(householdCtx)
+	primaryHC, err := getOrCreateHouseholdCurrency(householdCtx, txClient, hh.ID, hh.CurrencyCode, true)
 	if err != nil {
 		return rollback(tx, fmt.Errorf("failed to create primary household currency: %w", err))
 	}
 
-	accounts, err := txClient.Account.Query().
-		Where(account.HouseholdIDEQ(hh.ID)).
-		WithCurrency().
+	householdCurrencies, err := txClient.HouseholdCurrency.Query().
+		Where(householdcurrency.HouseholdIDEQ(hh.ID)).
 		All(householdCtx)
 	if err != nil {
-		return rollback(tx, fmt.Errorf("failed to query accounts: %w", err))
+		return rollback(tx, fmt.Errorf("failed to query household currencies: %w", err))
 	}
 
-	seen := map[int]bool{hh.CurrencyID: true}
-	var additionalCurrencies []migrateCurrency
-	for _, acc := range accounts {
-		if !seen[acc.CurrencyID] {
-			seen[acc.CurrencyID] = true
-			additionalCurrencies = append(additionalCurrencies, migrateCurrency{
-				ID:   acc.CurrencyID,
-				Code: acc.Edges.Currency.Code,
-			})
-		}
+	allCurrencies := make([]migrateCurrency, 0, len(householdCurrencies))
+	for _, hc := range householdCurrencies {
+		allCurrencies = append(allCurrencies, migrateCurrency{ID: hc.ID, Code: hc.Code})
 	}
-
-	if len(additionalCurrencies) > 0 {
-		bulk := make([]*ent.HouseholdCurrencyCreate, len(additionalCurrencies))
-		for i, curr := range additionalCurrencies {
-			bulk[i] = txClient.HouseholdCurrency.Create().
-				SetHouseholdID(hh.ID).
-				SetCurrencyID(curr.ID).
-				SetImportant(false)
-		}
-		err = txClient.HouseholdCurrency.CreateBulk(bulk...).
-			OnConflict(
-				sql.ConflictColumns(householdcurrency.FieldHouseholdID, householdcurrency.FieldCurrencyID),
-			).
-			Ignore().
-			Exec(householdCtx)
-		if err != nil {
-			return rollback(tx, fmt.Errorf("failed to create additional household currencies: %w", err))
-		}
-	}
-
-	allCurrencies := []migrateCurrency{{ID: hh.CurrencyID, Code: hh.Edges.Currency.Code}}
-	allCurrencies = append(allCurrencies, additionalCurrencies...)
 
 	if len(allCurrencies) > 1 {
 		if err := populateHouseholdRates(householdCtx, txClient, frankfurterClient, hh.ID, allCurrencies); err != nil {
@@ -158,7 +106,7 @@ func migrateOneHousehold(
 			continue
 		}
 		err = txClient.UserHousehold.UpdateOneID(uh.ID).
-			SetDefaultCurrencyID(primaryHCID).
+			SetDefaultCurrencyID(primaryHC.ID).
 			Exec(ctx)
 		if err != nil {
 			return rollback(tx, fmt.Errorf("failed to set display_currency_id for user_household %d: %w", uh.ID, err))
@@ -234,8 +182,8 @@ func populateHouseholdRates(
 			OnConflict(
 				sql.ConflictColumns(
 					householdrate.FieldHouseholdID,
-					householdrate.FieldFromCurrencyID,
-					householdrate.FieldToCurrencyID,
+					householdrate.FieldFromHouseholdCurrencyID,
+					householdrate.FieldToHouseholdCurrencyID,
 				),
 			).
 			Ignore().

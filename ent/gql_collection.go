@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
@@ -70,15 +69,15 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withCurrency = query
-			if _, ok := fieldSeen[account.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, account.FieldCurrencyID)
-				fieldSeen[account.FieldCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[account.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, account.FieldHouseholdCurrencyID)
+				fieldSeen[account.FieldHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "user":
@@ -166,10 +165,10 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 				selectedFields = append(selectedFields, account.FieldValue)
 				fieldSeen[account.FieldValue] = struct{}{}
 			}
-		case "currencyID":
-			if _, ok := fieldSeen[account.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, account.FieldCurrencyID)
-				fieldSeen[account.FieldCurrencyID] = struct{}{}
+		case "householdCurrencyID":
+			if _, ok := fieldSeen[account.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, account.FieldHouseholdCurrencyID)
+				fieldSeen[account.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "userID":
 			if _, ok := fieldSeen[account.FieldUserID]; !ok {
@@ -223,221 +222,6 @@ func newAccountPaginateArgs(rv map[string]any) *accountPaginateArgs {
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (_q *CurrencyQuery) CollectFields(ctx context.Context, satisfies ...string) (*CurrencyQuery, error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc == nil {
-		return _q, nil
-	}
-	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
-		return nil, err
-	}
-	return _q, nil
-}
-
-func (_q *CurrencyQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
-	path = append([]string(nil), path...)
-	var (
-		unknownSeen    bool
-		fieldSeen      = make(map[string]struct{}, len(currency.Columns))
-		selectedFields = []string{currency.FieldID}
-	)
-	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
-		switch field.Name {
-
-		case "accounts":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&AccountClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, accountImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedAccounts(alias, func(wq *AccountQuery) {
-				*wq = *query
-			})
-
-		case "investments":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&InvestmentClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, investmentImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedInvestments(alias, func(wq *InvestmentQuery) {
-				*wq = *query
-			})
-
-		case "transactionEntries":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&TransactionEntryClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, transactionentryImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedTransactionEntries(alias, func(wq *TransactionEntryQuery) {
-				*wq = *query
-			})
-
-		case "households":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&HouseholdClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedHouseholds(alias, func(wq *HouseholdQuery) {
-				*wq = *query
-			})
-
-		case "recurringSubscriptions":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&RecurringSubscriptionClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, recurringsubscriptionImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedRecurringSubscriptions(alias, func(wq *RecurringSubscriptionQuery) {
-				*wq = *query
-			})
-
-		case "snapshotEntries":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&SnapshotEntryClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotentryImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
-				*wq = *query
-			})
-
-		case "snapshotRatesFrom":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&SnapshotRateClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedSnapshotRatesFrom(alias, func(wq *SnapshotRateQuery) {
-				*wq = *query
-			})
-
-		case "snapshotRatesTo":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&SnapshotRateClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedSnapshotRatesTo(alias, func(wq *SnapshotRateQuery) {
-				*wq = *query
-			})
-
-		case "householdCurrencies":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedHouseholdCurrencies(alias, func(wq *HouseholdCurrencyQuery) {
-				*wq = *query
-			})
-
-		case "householdRatesFrom":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&HouseholdRateClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedHouseholdRatesFrom(alias, func(wq *HouseholdRateQuery) {
-				*wq = *query
-			})
-
-		case "householdRatesTo":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&HouseholdRateClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedHouseholdRatesTo(alias, func(wq *HouseholdRateQuery) {
-				*wq = *query
-			})
-		case "code":
-			if _, ok := fieldSeen[currency.FieldCode]; !ok {
-				selectedFields = append(selectedFields, currency.FieldCode)
-				fieldSeen[currency.FieldCode] = struct{}{}
-			}
-		case "locales":
-			if _, ok := fieldSeen[currency.FieldLocales]; !ok {
-				selectedFields = append(selectedFields, currency.FieldLocales)
-				fieldSeen[currency.FieldLocales] = struct{}{}
-			}
-		case "id":
-		case "__typename":
-		default:
-			unknownSeen = true
-		}
-	}
-	if !unknownSeen {
-		_q.Select(selectedFields...)
-	}
-	return nil
-}
-
-type currencyPaginateArgs struct {
-	first, last   *int
-	after, before *Cursor
-	opts          []CurrencyPaginateOption
-}
-
-func newCurrencyPaginateArgs(rv map[string]any) *currencyPaginateArgs {
-	args := &currencyPaginateArgs{}
-	if rv == nil {
-		return args
-	}
-	if v := rv[firstField]; v != nil {
-		args.first = v.(*int)
-	}
-	if v := rv[lastField]; v != nil {
-		args.last = v.(*int)
-	}
-	if v := rv[afterField]; v != nil {
-		args.after = v.(*Cursor)
-	}
-	if v := rv[beforeField]; v != nil {
-		args.before = v.(*Cursor)
-	}
-	if v, ok := rv[whereField].(*CurrencyWhereInput); ok {
-		args.opts = append(args.opts, WithCurrencyFilter(v.Filter))
-	}
-	return args
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (_q *HouseholdQuery) CollectFields(ctx context.Context, satisfies ...string) (*HouseholdQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
@@ -458,21 +242,6 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
-
-		case "currency":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
-				return err
-			}
-			_q.withCurrency = query
-			if _, ok := fieldSeen[household.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, household.FieldCurrencyID)
-				fieldSeen[household.FieldCurrencyID] = struct{}{}
-			}
 
 		case "users":
 			var (
@@ -530,10 +299,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[2] == nil {
-								nodes[i].Edges.totalCount[2] = make(map[string]int)
+							if nodes[i].Edges.totalCount[1] == nil {
+								nodes[i].Edges.totalCount[1] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[2][alias] = n
+							nodes[i].Edges.totalCount[1][alias] = n
 						}
 						return nil
 					})
@@ -541,10 +310,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Accounts)
-							if nodes[i].Edges.totalCount[2] == nil {
-								nodes[i].Edges.totalCount[2] = make(map[string]int)
+							if nodes[i].Edges.totalCount[1] == nil {
+								nodes[i].Edges.totalCount[1] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[2][alias] = n
+							nodes[i].Edges.totalCount[1][alias] = n
 						}
 						return nil
 					})
@@ -619,10 +388,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[3][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -630,10 +399,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Transactions)
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[3][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -708,10 +477,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[4] == nil {
-								nodes[i].Edges.totalCount[4] = make(map[string]int)
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[4][alias] = n
+							nodes[i].Edges.totalCount[3][alias] = n
 						}
 						return nil
 					})
@@ -719,10 +488,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Investments)
-							if nodes[i].Edges.totalCount[4] == nil {
-								nodes[i].Edges.totalCount[4] = make(map[string]int)
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[4][alias] = n
+							nodes[i].Edges.totalCount[3][alias] = n
 						}
 						return nil
 					})
@@ -797,10 +566,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[5] == nil {
-								nodes[i].Edges.totalCount[5] = make(map[string]int)
+							if nodes[i].Edges.totalCount[4] == nil {
+								nodes[i].Edges.totalCount[4] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[5][alias] = n
+							nodes[i].Edges.totalCount[4][alias] = n
 						}
 						return nil
 					})
@@ -808,10 +577,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.InvestmentLots)
-							if nodes[i].Edges.totalCount[5] == nil {
-								nodes[i].Edges.totalCount[5] = make(map[string]int)
+							if nodes[i].Edges.totalCount[4] == nil {
+								nodes[i].Edges.totalCount[4] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[5][alias] = n
+							nodes[i].Edges.totalCount[4][alias] = n
 						}
 						return nil
 					})
@@ -886,10 +655,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[6] == nil {
-								nodes[i].Edges.totalCount[6] = make(map[string]int)
+							if nodes[i].Edges.totalCount[5] == nil {
+								nodes[i].Edges.totalCount[5] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[6][alias] = n
+							nodes[i].Edges.totalCount[5][alias] = n
 						}
 						return nil
 					})
@@ -897,10 +666,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.TransactionCategories)
-							if nodes[i].Edges.totalCount[6] == nil {
-								nodes[i].Edges.totalCount[6] = make(map[string]int)
+							if nodes[i].Edges.totalCount[5] == nil {
+								nodes[i].Edges.totalCount[5] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[6][alias] = n
+							nodes[i].Edges.totalCount[5][alias] = n
 						}
 						return nil
 					})
@@ -975,10 +744,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[7] == nil {
-								nodes[i].Edges.totalCount[7] = make(map[string]int)
+							if nodes[i].Edges.totalCount[6] == nil {
+								nodes[i].Edges.totalCount[6] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[7][alias] = n
+							nodes[i].Edges.totalCount[6][alias] = n
 						}
 						return nil
 					})
@@ -986,10 +755,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.TransactionEntries)
-							if nodes[i].Edges.totalCount[7] == nil {
-								nodes[i].Edges.totalCount[7] = make(map[string]int)
+							if nodes[i].Edges.totalCount[6] == nil {
+								nodes[i].Edges.totalCount[6] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[7][alias] = n
+							nodes[i].Edges.totalCount[6][alias] = n
 						}
 						return nil
 					})
@@ -1064,10 +833,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[8] == nil {
-								nodes[i].Edges.totalCount[8] = make(map[string]int)
+							if nodes[i].Edges.totalCount[7] == nil {
+								nodes[i].Edges.totalCount[7] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[8][alias] = n
+							nodes[i].Edges.totalCount[7][alias] = n
 						}
 						return nil
 					})
@@ -1075,10 +844,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.RecurringSubscriptions)
-							if nodes[i].Edges.totalCount[8] == nil {
-								nodes[i].Edges.totalCount[8] = make(map[string]int)
+							if nodes[i].Edges.totalCount[7] == nil {
+								nodes[i].Edges.totalCount[7] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[8][alias] = n
+							nodes[i].Edges.totalCount[7][alias] = n
 						}
 						return nil
 					})
@@ -1153,10 +922,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[9] == nil {
-								nodes[i].Edges.totalCount[9] = make(map[string]int)
+							if nodes[i].Edges.totalCount[8] == nil {
+								nodes[i].Edges.totalCount[8] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[9][alias] = n
+							nodes[i].Edges.totalCount[8][alias] = n
 						}
 						return nil
 					})
@@ -1164,10 +933,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Snapshots)
-							if nodes[i].Edges.totalCount[9] == nil {
-								nodes[i].Edges.totalCount[9] = make(map[string]int)
+							if nodes[i].Edges.totalCount[8] == nil {
+								nodes[i].Edges.totalCount[8] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[9][alias] = n
+							nodes[i].Edges.totalCount[8][alias] = n
 						}
 						return nil
 					})
@@ -1242,10 +1011,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[10] == nil {
-								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							if nodes[i].Edges.totalCount[9] == nil {
+								nodes[i].Edges.totalCount[9] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[10][alias] = n
+							nodes[i].Edges.totalCount[9][alias] = n
 						}
 						return nil
 					})
@@ -1253,10 +1022,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.SnapshotEntries)
-							if nodes[i].Edges.totalCount[10] == nil {
-								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							if nodes[i].Edges.totalCount[9] == nil {
+								nodes[i].Edges.totalCount[9] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[10][alias] = n
+							nodes[i].Edges.totalCount[9][alias] = n
 						}
 						return nil
 					})
@@ -1346,10 +1115,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				selectedFields = append(selectedFields, household.FieldLocale)
 				fieldSeen[household.FieldLocale] = struct{}{}
 			}
-		case "currencyID":
-			if _, ok := fieldSeen[household.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, household.FieldCurrencyID)
-				fieldSeen[household.FieldCurrencyID] = struct{}{}
+		case "currencyCode":
+			if _, ok := fieldSeen[household.FieldCurrencyCode]; !ok {
+				selectedFields = append(selectedFields, household.FieldCurrencyCode)
+				fieldSeen[household.FieldCurrencyCode] = struct{}{}
 			}
 		case "isDemo":
 			if _, ok := fieldSeen[household.FieldIsDemo]; !ok {
@@ -1434,20 +1203,122 @@ func (_q *HouseholdCurrencyQuery) collectField(ctx context.Context, oneNode bool
 				fieldSeen[householdcurrency.FieldHouseholdID] = struct{}{}
 			}
 
-		case "currency":
+		case "accounts":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&AccountClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, accountImplementors)...); err != nil {
 				return err
 			}
-			_q.withCurrency = query
-			if _, ok := fieldSeen[householdcurrency.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, householdcurrency.FieldCurrencyID)
-				fieldSeen[householdcurrency.FieldCurrencyID] = struct{}{}
+			_q.WithNamedAccounts(alias, func(wq *AccountQuery) {
+				*wq = *query
+			})
+
+		case "investments":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&InvestmentClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, investmentImplementors)...); err != nil {
+				return err
 			}
+			_q.WithNamedInvestments(alias, func(wq *InvestmentQuery) {
+				*wq = *query
+			})
+
+		case "transactionEntries":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&TransactionEntryClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, transactionentryImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedTransactionEntries(alias, func(wq *TransactionEntryQuery) {
+				*wq = *query
+			})
+
+		case "recurringSubscriptions":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&RecurringSubscriptionClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, recurringsubscriptionImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedRecurringSubscriptions(alias, func(wq *RecurringSubscriptionQuery) {
+				*wq = *query
+			})
+
+		case "snapshotEntries":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotEntryClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotentryImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotEntries(alias, func(wq *SnapshotEntryQuery) {
+				*wq = *query
+			})
+
+		case "snapshotRatesFrom":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotRatesFrom(alias, func(wq *SnapshotRateQuery) {
+				*wq = *query
+			})
+
+		case "snapshotRatesTo":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedSnapshotRatesTo(alias, func(wq *SnapshotRateQuery) {
+				*wq = *query
+			})
+
+		case "householdRatesFrom":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdRatesFrom(alias, func(wq *HouseholdRateQuery) {
+				*wq = *query
+			})
+
+		case "householdRatesTo":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdRateClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, householdrateImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedHouseholdRatesTo(alias, func(wq *HouseholdRateQuery) {
+				*wq = *query
+			})
 		case "householdID":
 			if _, ok := fieldSeen[householdcurrency.FieldHouseholdID]; !ok {
 				selectedFields = append(selectedFields, householdcurrency.FieldHouseholdID)
@@ -1463,15 +1334,15 @@ func (_q *HouseholdCurrencyQuery) collectField(ctx context.Context, oneNode bool
 				selectedFields = append(selectedFields, householdcurrency.FieldUpdateTime)
 				fieldSeen[householdcurrency.FieldUpdateTime] = struct{}{}
 			}
+		case "code":
+			if _, ok := fieldSeen[householdcurrency.FieldCode]; !ok {
+				selectedFields = append(selectedFields, householdcurrency.FieldCode)
+				fieldSeen[householdcurrency.FieldCode] = struct{}{}
+			}
 		case "important":
 			if _, ok := fieldSeen[householdcurrency.FieldImportant]; !ok {
 				selectedFields = append(selectedFields, householdcurrency.FieldImportant)
 				fieldSeen[householdcurrency.FieldImportant] = struct{}{}
-			}
-		case "currencyID":
-			if _, ok := fieldSeen[householdcurrency.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, householdcurrency.FieldCurrencyID)
-				fieldSeen[householdcurrency.FieldCurrencyID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -1555,30 +1426,30 @@ func (_q *HouseholdRateQuery) collectField(ctx context.Context, oneNode bool, op
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withFromCurrency = query
-			if _, ok := fieldSeen[householdrate.FieldFromCurrencyID]; !ok {
-				selectedFields = append(selectedFields, householdrate.FieldFromCurrencyID)
-				fieldSeen[householdrate.FieldFromCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[householdrate.FieldFromHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldFromHouseholdCurrencyID)
+				fieldSeen[householdrate.FieldFromHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "toCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withToCurrency = query
-			if _, ok := fieldSeen[householdrate.FieldToCurrencyID]; !ok {
-				selectedFields = append(selectedFields, householdrate.FieldToCurrencyID)
-				fieldSeen[householdrate.FieldToCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[householdrate.FieldToHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldToHouseholdCurrencyID)
+				fieldSeen[householdrate.FieldToHouseholdCurrencyID] = struct{}{}
 			}
 		case "householdID":
 			if _, ok := fieldSeen[householdrate.FieldHouseholdID]; !ok {
@@ -1600,15 +1471,15 @@ func (_q *HouseholdRateQuery) collectField(ctx context.Context, oneNode bool, op
 				selectedFields = append(selectedFields, householdrate.FieldRate)
 				fieldSeen[householdrate.FieldRate] = struct{}{}
 			}
-		case "fromCurrencyID":
-			if _, ok := fieldSeen[householdrate.FieldFromCurrencyID]; !ok {
-				selectedFields = append(selectedFields, householdrate.FieldFromCurrencyID)
-				fieldSeen[householdrate.FieldFromCurrencyID] = struct{}{}
+		case "fromHouseholdCurrencyID":
+			if _, ok := fieldSeen[householdrate.FieldFromHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldFromHouseholdCurrencyID)
+				fieldSeen[householdrate.FieldFromHouseholdCurrencyID] = struct{}{}
 			}
-		case "toCurrencyID":
-			if _, ok := fieldSeen[householdrate.FieldToCurrencyID]; !ok {
-				selectedFields = append(selectedFields, householdrate.FieldToCurrencyID)
-				fieldSeen[householdrate.FieldToCurrencyID] = struct{}{}
+		case "toHouseholdCurrencyID":
+			if _, ok := fieldSeen[householdrate.FieldToHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, householdrate.FieldToHouseholdCurrencyID)
+				fieldSeen[householdrate.FieldToHouseholdCurrencyID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -1707,15 +1578,15 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withCurrency = query
-			if _, ok := fieldSeen[investment.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, investment.FieldCurrencyID)
-				fieldSeen[investment.FieldCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[investment.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, investment.FieldHouseholdCurrencyID)
+				fieldSeen[investment.FieldHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "investmentLots":
@@ -1780,10 +1651,10 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				selectedFields = append(selectedFields, investment.FieldAccountID)
 				fieldSeen[investment.FieldAccountID] = struct{}{}
 			}
-		case "currencyID":
-			if _, ok := fieldSeen[investment.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, investment.FieldCurrencyID)
-				fieldSeen[investment.FieldCurrencyID] = struct{}{}
+		case "householdCurrencyID":
+			if _, ok := fieldSeen[investment.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, investment.FieldHouseholdCurrencyID)
+				fieldSeen[investment.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -2009,15 +1880,15 @@ func (_q *RecurringSubscriptionQuery) collectField(ctx context.Context, oneNode 
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withCurrency = query
-			if _, ok := fieldSeen[recurringsubscription.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, recurringsubscription.FieldCurrencyID)
-				fieldSeen[recurringsubscription.FieldCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[recurringsubscription.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, recurringsubscription.FieldHouseholdCurrencyID)
+				fieldSeen[recurringsubscription.FieldHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "user":
@@ -2084,10 +1955,10 @@ func (_q *RecurringSubscriptionQuery) collectField(ctx context.Context, oneNode 
 				selectedFields = append(selectedFields, recurringsubscription.FieldCost)
 				fieldSeen[recurringsubscription.FieldCost] = struct{}{}
 			}
-		case "currencyID":
-			if _, ok := fieldSeen[recurringsubscription.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, recurringsubscription.FieldCurrencyID)
-				fieldSeen[recurringsubscription.FieldCurrencyID] = struct{}{}
+		case "householdCurrencyID":
+			if _, ok := fieldSeen[recurringsubscription.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, recurringsubscription.FieldHouseholdCurrencyID)
+				fieldSeen[recurringsubscription.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "userID":
 			if _, ok := fieldSeen[recurringsubscription.FieldUserID]; !ok {
@@ -2299,15 +2170,15 @@ func (_q *SnapshotEntryQuery) collectField(ctx context.Context, oneNode bool, op
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withCurrency = query
-			if _, ok := fieldSeen[snapshotentry.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, snapshotentry.FieldCurrencyID)
-				fieldSeen[snapshotentry.FieldCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[snapshotentry.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldHouseholdCurrencyID)
+				fieldSeen[snapshotentry.FieldHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "user":
@@ -2379,10 +2250,10 @@ func (_q *SnapshotEntryQuery) collectField(ctx context.Context, oneNode bool, op
 				selectedFields = append(selectedFields, snapshotentry.FieldLiability)
 				fieldSeen[snapshotentry.FieldLiability] = struct{}{}
 			}
-		case "currencyID":
-			if _, ok := fieldSeen[snapshotentry.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, snapshotentry.FieldCurrencyID)
-				fieldSeen[snapshotentry.FieldCurrencyID] = struct{}{}
+		case "householdCurrencyID":
+			if _, ok := fieldSeen[snapshotentry.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldHouseholdCurrencyID)
+				fieldSeen[snapshotentry.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "userID":
 			if _, ok := fieldSeen[snapshotentry.FieldUserID]; !ok {
@@ -2476,30 +2347,30 @@ func (_q *SnapshotRateQuery) collectField(ctx context.Context, oneNode bool, opC
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withFromCurrency = query
-			if _, ok := fieldSeen[snapshotrate.FieldFromCurrencyID]; !ok {
-				selectedFields = append(selectedFields, snapshotrate.FieldFromCurrencyID)
-				fieldSeen[snapshotrate.FieldFromCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[snapshotrate.FieldFromHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldFromHouseholdCurrencyID)
+				fieldSeen[snapshotrate.FieldFromHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "toCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withToCurrency = query
-			if _, ok := fieldSeen[snapshotrate.FieldToCurrencyID]; !ok {
-				selectedFields = append(selectedFields, snapshotrate.FieldToCurrencyID)
-				fieldSeen[snapshotrate.FieldToCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[snapshotrate.FieldToHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldToHouseholdCurrencyID)
+				fieldSeen[snapshotrate.FieldToHouseholdCurrencyID] = struct{}{}
 			}
 		case "createTime":
 			if _, ok := fieldSeen[snapshotrate.FieldCreateTime]; !ok {
@@ -2521,15 +2392,15 @@ func (_q *SnapshotRateQuery) collectField(ctx context.Context, oneNode bool, opC
 				selectedFields = append(selectedFields, snapshotrate.FieldSnapshotID)
 				fieldSeen[snapshotrate.FieldSnapshotID] = struct{}{}
 			}
-		case "fromCurrencyID":
-			if _, ok := fieldSeen[snapshotrate.FieldFromCurrencyID]; !ok {
-				selectedFields = append(selectedFields, snapshotrate.FieldFromCurrencyID)
-				fieldSeen[snapshotrate.FieldFromCurrencyID] = struct{}{}
+		case "fromHouseholdCurrencyID":
+			if _, ok := fieldSeen[snapshotrate.FieldFromHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldFromHouseholdCurrencyID)
+				fieldSeen[snapshotrate.FieldFromHouseholdCurrencyID] = struct{}{}
 			}
-		case "toCurrencyID":
-			if _, ok := fieldSeen[snapshotrate.FieldToCurrencyID]; !ok {
-				selectedFields = append(selectedFields, snapshotrate.FieldToCurrencyID)
-				fieldSeen[snapshotrate.FieldToCurrencyID] = struct{}{}
+		case "toHouseholdCurrencyID":
+			if _, ok := fieldSeen[snapshotrate.FieldToHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldToHouseholdCurrencyID)
+				fieldSeen[snapshotrate.FieldToHouseholdCurrencyID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -2948,15 +2819,15 @@ func (_q *TransactionEntryQuery) collectField(ctx context.Context, oneNode bool,
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CurrencyClient{config: _q.config}).Query()
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, currencyImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
 			_q.withCurrency = query
-			if _, ok := fieldSeen[transactionentry.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, transactionentry.FieldCurrencyID)
-				fieldSeen[transactionentry.FieldCurrencyID] = struct{}{}
+			if _, ok := fieldSeen[transactionentry.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, transactionentry.FieldHouseholdCurrencyID)
+				fieldSeen[transactionentry.FieldHouseholdCurrencyID] = struct{}{}
 			}
 
 		case "transaction":
@@ -2998,10 +2869,10 @@ func (_q *TransactionEntryQuery) collectField(ctx context.Context, oneNode bool,
 				selectedFields = append(selectedFields, transactionentry.FieldAccountID)
 				fieldSeen[transactionentry.FieldAccountID] = struct{}{}
 			}
-		case "currencyID":
-			if _, ok := fieldSeen[transactionentry.FieldCurrencyID]; !ok {
-				selectedFields = append(selectedFields, transactionentry.FieldCurrencyID)
-				fieldSeen[transactionentry.FieldCurrencyID] = struct{}{}
+		case "householdCurrencyID":
+			if _, ok := fieldSeen[transactionentry.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, transactionentry.FieldHouseholdCurrencyID)
+				fieldSeen[transactionentry.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "transactionID":
 			if _, ok := fieldSeen[transactionentry.FieldTransactionID]; !ok {

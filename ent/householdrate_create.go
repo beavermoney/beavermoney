@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -65,15 +65,43 @@ func (_c *HouseholdRateCreate) SetRate(v decimal.Decimal) *HouseholdRateCreate {
 	return _c
 }
 
-// SetFromCurrencyID sets the "from_currency_id" field.
-func (_c *HouseholdRateCreate) SetFromCurrencyID(v int) *HouseholdRateCreate {
-	_c.mutation.SetFromCurrencyID(v)
+// SetFromHouseholdCurrencyID sets the "from_household_currency_id" field.
+func (_c *HouseholdRateCreate) SetFromHouseholdCurrencyID(v int) *HouseholdRateCreate {
+	_c.mutation.SetFromHouseholdCurrencyID(v)
 	return _c
 }
 
-// SetToCurrencyID sets the "to_currency_id" field.
-func (_c *HouseholdRateCreate) SetToCurrencyID(v int) *HouseholdRateCreate {
-	_c.mutation.SetToCurrencyID(v)
+// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
+func (_c *HouseholdRateCreate) SetLegacyFromCurrencyID(v int) *HouseholdRateCreate {
+	_c.mutation.SetLegacyFromCurrencyID(v)
+	return _c
+}
+
+// SetNillableLegacyFromCurrencyID sets the "legacy_from_currency_id" field if the given value is not nil.
+func (_c *HouseholdRateCreate) SetNillableLegacyFromCurrencyID(v *int) *HouseholdRateCreate {
+	if v != nil {
+		_c.SetLegacyFromCurrencyID(*v)
+	}
+	return _c
+}
+
+// SetToHouseholdCurrencyID sets the "to_household_currency_id" field.
+func (_c *HouseholdRateCreate) SetToHouseholdCurrencyID(v int) *HouseholdRateCreate {
+	_c.mutation.SetToHouseholdCurrencyID(v)
+	return _c
+}
+
+// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
+func (_c *HouseholdRateCreate) SetLegacyToCurrencyID(v int) *HouseholdRateCreate {
+	_c.mutation.SetLegacyToCurrencyID(v)
+	return _c
+}
+
+// SetNillableLegacyToCurrencyID sets the "legacy_to_currency_id" field if the given value is not nil.
+func (_c *HouseholdRateCreate) SetNillableLegacyToCurrencyID(v *int) *HouseholdRateCreate {
+	if v != nil {
+		_c.SetLegacyToCurrencyID(*v)
+	}
 	return _c
 }
 
@@ -82,13 +110,25 @@ func (_c *HouseholdRateCreate) SetHousehold(v *Household) *HouseholdRateCreate {
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetFromCurrency sets the "from_currency" edge to the Currency entity.
-func (_c *HouseholdRateCreate) SetFromCurrency(v *Currency) *HouseholdRateCreate {
+// SetFromCurrencyID sets the "from_currency" edge to the HouseholdCurrency entity by ID.
+func (_c *HouseholdRateCreate) SetFromCurrencyID(id int) *HouseholdRateCreate {
+	_c.mutation.SetFromCurrencyID(id)
+	return _c
+}
+
+// SetFromCurrency sets the "from_currency" edge to the HouseholdCurrency entity.
+func (_c *HouseholdRateCreate) SetFromCurrency(v *HouseholdCurrency) *HouseholdRateCreate {
 	return _c.SetFromCurrencyID(v.ID)
 }
 
-// SetToCurrency sets the "to_currency" edge to the Currency entity.
-func (_c *HouseholdRateCreate) SetToCurrency(v *Currency) *HouseholdRateCreate {
+// SetToCurrencyID sets the "to_currency" edge to the HouseholdCurrency entity by ID.
+func (_c *HouseholdRateCreate) SetToCurrencyID(id int) *HouseholdRateCreate {
+	_c.mutation.SetToCurrencyID(id)
+	return _c
+}
+
+// SetToCurrency sets the "to_currency" edge to the HouseholdCurrency entity.
+func (_c *HouseholdRateCreate) SetToCurrency(v *HouseholdCurrency) *HouseholdRateCreate {
 	return _c.SetToCurrencyID(v.ID)
 }
 
@@ -160,20 +200,20 @@ func (_c *HouseholdRateCreate) check() error {
 	if _, ok := _c.mutation.Rate(); !ok {
 		return &ValidationError{Name: "rate", err: errors.New(`ent: missing required field "HouseholdRate.rate"`)}
 	}
-	if _, ok := _c.mutation.FromCurrencyID(); !ok {
-		return &ValidationError{Name: "from_currency_id", err: errors.New(`ent: missing required field "HouseholdRate.from_currency_id"`)}
+	if _, ok := _c.mutation.FromHouseholdCurrencyID(); !ok {
+		return &ValidationError{Name: "from_household_currency_id", err: errors.New(`ent: missing required field "HouseholdRate.from_household_currency_id"`)}
 	}
-	if v, ok := _c.mutation.FromCurrencyID(); ok {
-		if err := householdrate.FromCurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "from_currency_id", err: fmt.Errorf(`ent: validator failed for field "HouseholdRate.from_currency_id": %w`, err)}
+	if v, ok := _c.mutation.FromHouseholdCurrencyID(); ok {
+		if err := householdrate.FromHouseholdCurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "from_household_currency_id", err: fmt.Errorf(`ent: validator failed for field "HouseholdRate.from_household_currency_id": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.ToCurrencyID(); !ok {
-		return &ValidationError{Name: "to_currency_id", err: errors.New(`ent: missing required field "HouseholdRate.to_currency_id"`)}
+	if _, ok := _c.mutation.ToHouseholdCurrencyID(); !ok {
+		return &ValidationError{Name: "to_household_currency_id", err: errors.New(`ent: missing required field "HouseholdRate.to_household_currency_id"`)}
 	}
-	if v, ok := _c.mutation.ToCurrencyID(); ok {
-		if err := householdrate.ToCurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "to_currency_id", err: fmt.Errorf(`ent: validator failed for field "HouseholdRate.to_currency_id": %w`, err)}
+	if v, ok := _c.mutation.ToHouseholdCurrencyID(); ok {
+		if err := householdrate.ToHouseholdCurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "to_household_currency_id", err: fmt.Errorf(`ent: validator failed for field "HouseholdRate.to_household_currency_id": %w`, err)}
 		}
 	}
 	if len(_c.mutation.HouseholdIDs()) == 0 {
@@ -224,6 +264,14 @@ func (_c *HouseholdRateCreate) createSpec() (*HouseholdRate, *sqlgraph.CreateSpe
 		_spec.SetField(householdrate.FieldRate, field.TypeFloat64, value)
 		_node.Rate = value
 	}
+	if value, ok := _c.mutation.LegacyFromCurrencyID(); ok {
+		_spec.SetField(householdrate.FieldLegacyFromCurrencyID, field.TypeInt, value)
+		_node.LegacyFromCurrencyID = &value
+	}
+	if value, ok := _c.mutation.LegacyToCurrencyID(); ok {
+		_spec.SetField(householdrate.FieldLegacyToCurrencyID, field.TypeInt, value)
+		_node.LegacyToCurrencyID = &value
+	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -249,13 +297,13 @@ func (_c *HouseholdRateCreate) createSpec() (*HouseholdRate, *sqlgraph.CreateSpe
 			Columns: []string{householdrate.FromCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.FromCurrencyID = nodes[0]
+		_node.FromHouseholdCurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.ToCurrencyIDs(); len(nodes) > 0 {
@@ -266,13 +314,13 @@ func (_c *HouseholdRateCreate) createSpec() (*HouseholdRate, *sqlgraph.CreateSpe
 			Columns: []string{householdrate.ToCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(currency.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ToCurrencyID = nodes[0]
+		_node.ToHouseholdCurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -357,6 +405,54 @@ func (u *HouseholdRateUpsert) AddRate(v decimal.Decimal) *HouseholdRateUpsert {
 	return u
 }
 
+// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsert) SetLegacyFromCurrencyID(v int) *HouseholdRateUpsert {
+	u.Set(householdrate.FieldLegacyFromCurrencyID, v)
+	return u
+}
+
+// UpdateLegacyFromCurrencyID sets the "legacy_from_currency_id" field to the value that was provided on create.
+func (u *HouseholdRateUpsert) UpdateLegacyFromCurrencyID() *HouseholdRateUpsert {
+	u.SetExcluded(householdrate.FieldLegacyFromCurrencyID)
+	return u
+}
+
+// AddLegacyFromCurrencyID adds v to the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsert) AddLegacyFromCurrencyID(v int) *HouseholdRateUpsert {
+	u.Add(householdrate.FieldLegacyFromCurrencyID, v)
+	return u
+}
+
+// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsert) ClearLegacyFromCurrencyID() *HouseholdRateUpsert {
+	u.SetNull(householdrate.FieldLegacyFromCurrencyID)
+	return u
+}
+
+// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsert) SetLegacyToCurrencyID(v int) *HouseholdRateUpsert {
+	u.Set(householdrate.FieldLegacyToCurrencyID, v)
+	return u
+}
+
+// UpdateLegacyToCurrencyID sets the "legacy_to_currency_id" field to the value that was provided on create.
+func (u *HouseholdRateUpsert) UpdateLegacyToCurrencyID() *HouseholdRateUpsert {
+	u.SetExcluded(householdrate.FieldLegacyToCurrencyID)
+	return u
+}
+
+// AddLegacyToCurrencyID adds v to the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsert) AddLegacyToCurrencyID(v int) *HouseholdRateUpsert {
+	u.Add(householdrate.FieldLegacyToCurrencyID, v)
+	return u
+}
+
+// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsert) ClearLegacyToCurrencyID() *HouseholdRateUpsert {
+	u.SetNull(householdrate.FieldLegacyToCurrencyID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -374,11 +470,11 @@ func (u *HouseholdRateUpsertOne) UpdateNewValues() *HouseholdRateUpsertOne {
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(householdrate.FieldCreateTime)
 		}
-		if _, exists := u.create.mutation.FromCurrencyID(); exists {
-			s.SetIgnore(householdrate.FieldFromCurrencyID)
+		if _, exists := u.create.mutation.FromHouseholdCurrencyID(); exists {
+			s.SetIgnore(householdrate.FieldFromHouseholdCurrencyID)
 		}
-		if _, exists := u.create.mutation.ToCurrencyID(); exists {
-			s.SetIgnore(householdrate.FieldToCurrencyID)
+		if _, exists := u.create.mutation.ToHouseholdCurrencyID(); exists {
+			s.SetIgnore(householdrate.FieldToHouseholdCurrencyID)
 		}
 	}))
 	return u
@@ -443,6 +539,62 @@ func (u *HouseholdRateUpsertOne) AddRate(v decimal.Decimal) *HouseholdRateUpsert
 func (u *HouseholdRateUpsertOne) UpdateRate() *HouseholdRateUpsertOne {
 	return u.Update(func(s *HouseholdRateUpsert) {
 		s.UpdateRate()
+	})
+}
+
+// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsertOne) SetLegacyFromCurrencyID(v int) *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.SetLegacyFromCurrencyID(v)
+	})
+}
+
+// AddLegacyFromCurrencyID adds v to the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsertOne) AddLegacyFromCurrencyID(v int) *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.AddLegacyFromCurrencyID(v)
+	})
+}
+
+// UpdateLegacyFromCurrencyID sets the "legacy_from_currency_id" field to the value that was provided on create.
+func (u *HouseholdRateUpsertOne) UpdateLegacyFromCurrencyID() *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.UpdateLegacyFromCurrencyID()
+	})
+}
+
+// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsertOne) ClearLegacyFromCurrencyID() *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.ClearLegacyFromCurrencyID()
+	})
+}
+
+// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsertOne) SetLegacyToCurrencyID(v int) *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.SetLegacyToCurrencyID(v)
+	})
+}
+
+// AddLegacyToCurrencyID adds v to the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsertOne) AddLegacyToCurrencyID(v int) *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.AddLegacyToCurrencyID(v)
+	})
+}
+
+// UpdateLegacyToCurrencyID sets the "legacy_to_currency_id" field to the value that was provided on create.
+func (u *HouseholdRateUpsertOne) UpdateLegacyToCurrencyID() *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.UpdateLegacyToCurrencyID()
+	})
+}
+
+// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsertOne) ClearLegacyToCurrencyID() *HouseholdRateUpsertOne {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.ClearLegacyToCurrencyID()
 	})
 }
 
@@ -628,11 +780,11 @@ func (u *HouseholdRateUpsertBulk) UpdateNewValues() *HouseholdRateUpsertBulk {
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(householdrate.FieldCreateTime)
 			}
-			if _, exists := b.mutation.FromCurrencyID(); exists {
-				s.SetIgnore(householdrate.FieldFromCurrencyID)
+			if _, exists := b.mutation.FromHouseholdCurrencyID(); exists {
+				s.SetIgnore(householdrate.FieldFromHouseholdCurrencyID)
 			}
-			if _, exists := b.mutation.ToCurrencyID(); exists {
-				s.SetIgnore(householdrate.FieldToCurrencyID)
+			if _, exists := b.mutation.ToHouseholdCurrencyID(); exists {
+				s.SetIgnore(householdrate.FieldToHouseholdCurrencyID)
 			}
 		}
 	}))
@@ -698,6 +850,62 @@ func (u *HouseholdRateUpsertBulk) AddRate(v decimal.Decimal) *HouseholdRateUpser
 func (u *HouseholdRateUpsertBulk) UpdateRate() *HouseholdRateUpsertBulk {
 	return u.Update(func(s *HouseholdRateUpsert) {
 		s.UpdateRate()
+	})
+}
+
+// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsertBulk) SetLegacyFromCurrencyID(v int) *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.SetLegacyFromCurrencyID(v)
+	})
+}
+
+// AddLegacyFromCurrencyID adds v to the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsertBulk) AddLegacyFromCurrencyID(v int) *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.AddLegacyFromCurrencyID(v)
+	})
+}
+
+// UpdateLegacyFromCurrencyID sets the "legacy_from_currency_id" field to the value that was provided on create.
+func (u *HouseholdRateUpsertBulk) UpdateLegacyFromCurrencyID() *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.UpdateLegacyFromCurrencyID()
+	})
+}
+
+// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
+func (u *HouseholdRateUpsertBulk) ClearLegacyFromCurrencyID() *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.ClearLegacyFromCurrencyID()
+	})
+}
+
+// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsertBulk) SetLegacyToCurrencyID(v int) *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.SetLegacyToCurrencyID(v)
+	})
+}
+
+// AddLegacyToCurrencyID adds v to the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsertBulk) AddLegacyToCurrencyID(v int) *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.AddLegacyToCurrencyID(v)
+	})
+}
+
+// UpdateLegacyToCurrencyID sets the "legacy_to_currency_id" field to the value that was provided on create.
+func (u *HouseholdRateUpsertBulk) UpdateLegacyToCurrencyID() *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.UpdateLegacyToCurrencyID()
+	})
+}
+
+// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
+func (u *HouseholdRateUpsertBulk) ClearLegacyToCurrencyID() *HouseholdRateUpsertBulk {
+	return u.Update(func(s *HouseholdRateUpsert) {
+		s.ClearLegacyToCurrencyID()
 	})
 }
 

@@ -2,7 +2,7 @@ import { graphql } from 'relay-runtime'
 import { useForm, useStore } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
-import { useFragment, useMutation } from 'react-relay'
+import { useMutation } from 'react-relay'
 import { capitalize } from 'lodash-es'
 import currency from 'currency.js'
 import invariant from 'tiny-invariant'
@@ -12,7 +12,6 @@ import type {
   newAccountMutation,
   AccountCategory,
 } from './__generated__/newAccountMutation.graphql'
-import type { newAccountFragment$key } from './__generated__/newAccountFragment.graphql'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -50,6 +49,7 @@ import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 
 const formSchema = z.object({
   name: z
@@ -69,15 +69,6 @@ const formSchema = z.object({
   balance: z.number(),
 })
 
-const newAccountFragment = graphql`
-  fragment newAccountFragment on Query {
-    currencies {
-      id
-      code
-    }
-  }
-`
-
 const newAccountMutation = graphql`
   mutation newAccountMutation($input: CreateAccountInput!) {
     createAccount(input: $input) {
@@ -91,12 +82,7 @@ const newAccountMutation = graphql`
   }
 `
 
-type NewAccountProps = {
-  fragmentRef: newAccountFragment$key
-}
-
-export function NewAccount({ fragmentRef }: NewAccountProps) {
-  const data = useFragment(newAccountFragment, fragmentRef)
+export function NewAccount() {
   const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
@@ -110,7 +96,7 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
       icon: '',
       type: '',
       category: '',
-      currencyCode: household.currency.code,
+      currencyCode: household.currencyCode,
       balance: undefined as unknown as number,
     },
     validators: {
@@ -119,8 +105,8 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
     onSubmit: async ({ value }) => {
       const formData = formSchema.parse(value)
 
-      const currencyID = data.currencies.find(
-        (curr) => curr.code === formData.currencyCode,
+      const currencyID = household.householdCurrencies?.find(
+        (hc) => hc.code === formData.currencyCode,
       )?.id
       invariant(currencyID, 'Currency not found')
 
@@ -175,7 +161,7 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
   })
 
   const currencyCode = useStore(form.store, (state) => {
-    return state.values.currencyCode || household.currency.code
+    return state.values.currencyCode || household.currencyCode
   })
 
   const accountType = useStore(form.store, (state) => state.values.type)
@@ -374,7 +360,7 @@ export function NewAccount({ fragmentRef }: NewAccountProps) {
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
                     <Combobox
-                      items={data.currencies.map((c) => c.code)}
+                      items={SUPPORTED_CURRENCIES.map((c) => c.code)}
                       value={field.state.value}
                       onValueChange={(value) => {
                         field.handleChange(value || '')

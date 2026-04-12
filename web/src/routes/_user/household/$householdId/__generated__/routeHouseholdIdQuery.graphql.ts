@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a414ec2b8193171b897010f88f901a58>>
+ * @generated SignedSource<<d3960fdea04452cc3f83464264f95829>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,10 +14,7 @@ export type routeHouseholdIdQuery$variables = Record<PropertyKey, never>;
 export type routeHouseholdIdQuery$data = {
   readonly household: {
     readonly householdCurrencies: ReadonlyArray<{
-      readonly currency: {
-        readonly code: string;
-        readonly id: string;
-      };
+      readonly code: string;
       readonly id: string;
       readonly important: boolean;
     }> | null | undefined;
@@ -58,38 +55,15 @@ v2 = {
 v3 = {
   "alias": null,
   "args": null,
-  "concreteType": "Currency",
-  "kind": "LinkedField",
-  "name": "currency",
-  "plural": false,
-  "selections": [
-    (v0/*: any*/),
-    (v2/*: any*/)
-  ],
-  "storageKey": null
-},
-v4 = {
-  "alias": null,
-  "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v5 = [
+v4 = [
   (v2/*: any*/),
   (v0/*: any*/)
 ],
-v6 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "Currency",
-  "kind": "LinkedField",
-  "name": "currency",
-  "plural": false,
-  "selections": (v5/*: any*/),
-  "storageKey": null
-},
-v7 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -162,7 +136,7 @@ return {
             "selections": [
               (v0/*: any*/),
               (v1/*: any*/),
-              (v3/*: any*/)
+              (v2/*: any*/)
             ],
             "storageKey": null
           }
@@ -188,7 +162,7 @@ return {
         "plural": true,
         "selections": [
           (v0/*: any*/),
-          (v4/*: any*/)
+          (v3/*: any*/)
         ],
         "storageKey": null
       },
@@ -200,7 +174,7 @@ return {
         "name": "user",
         "plural": false,
         "selections": [
-          (v4/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -221,7 +195,7 @@ return {
         "plural": false,
         "selections": [
           (v0/*: any*/),
-          (v4/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -229,7 +203,13 @@ return {
             "name": "locale",
             "storageKey": null
           },
-          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "currencyCode",
+            "storageKey": null
+          },
           {
             "alias": null,
             "args": null,
@@ -239,8 +219,8 @@ return {
             "plural": true,
             "selections": [
               (v0/*: any*/),
-              (v1/*: any*/),
-              (v6/*: any*/)
+              (v2/*: any*/),
+              (v1/*: any*/)
             ],
             "storageKey": null
           },
@@ -262,21 +242,21 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Currency",
+                "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
                 "name": "fromCurrency",
                 "plural": false,
-                "selections": (v5/*: any*/),
+                "selections": (v4/*: any*/),
                 "storageKey": null
               },
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "Currency",
+                "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
                 "name": "toCurrency",
                 "plural": false,
-                "selections": (v5/*: any*/),
+                "selections": (v4/*: any*/),
                 "storageKey": null
               },
               (v0/*: any*/)
@@ -310,10 +290,7 @@ return {
                 "kind": "LinkedField",
                 "name": "defaultCurrency",
                 "plural": false,
-                "selections": [
-                  (v6/*: any*/),
-                  (v0/*: any*/)
-                ],
+                "selections": (v4/*: any*/),
                 "storageKey": null
               },
               (v0/*: any*/)
@@ -353,8 +330,8 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
-                      (v4/*: any*/),
-                      (v7/*: any*/),
+                      (v3/*: any*/),
+                      (v5/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -369,7 +346,16 @@ return {
                         "name": "value",
                         "storageKey": null
                       },
-                      (v6/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "HouseholdCurrency",
+                        "kind": "LinkedField",
+                        "name": "currency",
+                        "plural": false,
+                        "selections": (v4/*: any*/),
+                        "storageKey": null
+                      },
                       {
                         "alias": null,
                         "args": null,
@@ -379,7 +365,7 @@ return {
                         "plural": true,
                         "selections": [
                           (v0/*: any*/),
-                          (v4/*: any*/),
+                          (v3/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -387,7 +373,7 @@ return {
                             "name": "symbol",
                             "storageKey": null
                           },
-                          (v7/*: any*/)
+                          (v5/*: any*/)
                         ],
                         "storageKey": null
                       }
@@ -425,8 +411,8 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
-                      (v4/*: any*/),
-                      (v7/*: any*/)
+                      (v3/*: any*/),
+                      (v5/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -442,16 +428,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0b25f611e893c01ec0ad650d7dcfd8d9",
+    "cacheID": "1f201f0e737d214643436fdc5c33825c",
     "id": null,
     "metadata": {},
     "name": "routeHouseholdIdQuery",
     "operationKind": "query",
-    "text": "query routeHouseholdIdQuery {\n  ...appSidebarFragment\n  user {\n    ...useUserFragment\n    id\n  }\n  household {\n    ...useHouseholdFragment\n    ...useDisplayCurrencyFragment\n    ...logTransactionFragment\n    ...snapshotDialogFragment\n    householdCurrencies {\n      id\n      important\n      currency {\n        id\n        code\n      }\n    }\n    id\n  }\n}\n\nfragment appSidebarFragment on Query {\n  ...householdSwitcherFragment\n  ...navUserFragment\n}\n\nfragment householdSwitcherFragment on Query {\n  households {\n    id\n    name\n  }\n}\n\nfragment logTransactionFragment on Household {\n  ...newExpenseFragment\n  ...newIncomeFragment\n  ...newTransferFragment\n  ...newBuyFragment\n  ...newSellFragment\n  ...newMoveFragment\n}\n\nfragment navUserFragment on Query {\n  user {\n    name\n    email\n    id\n  }\n}\n\nfragment newBuyFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newExpenseFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newIncomeFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newMoveFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        value\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newSellFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newTransferFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment snapshotDialogFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        type\n        value\n        currency {\n          code\n          id\n        }\n        id\n      }\n    }\n  }\n}\n\nfragment useDisplayCurrencyFragment on Household {\n  currency {\n    code\n    id\n  }\n  householdCurrencies {\n    id\n    important\n    currency {\n      code\n      id\n    }\n  }\n  householdRates {\n    rate\n    fromCurrency {\n      code\n      id\n    }\n    toCurrency {\n      code\n      id\n    }\n    id\n  }\n  userHouseholds {\n    user {\n      id\n    }\n    defaultCurrency {\n      currency {\n        code\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment useHouseholdFragment on Household {\n  id\n  name\n  locale\n  currency {\n    id\n    code\n  }\n}\n\nfragment useUserFragment on User {\n  id\n  name\n  email\n}\n"
+    "text": "query routeHouseholdIdQuery {\n  ...appSidebarFragment\n  user {\n    ...useUserFragment\n    id\n  }\n  household {\n    ...useHouseholdFragment\n    ...useDisplayCurrencyFragment\n    ...logTransactionFragment\n    ...snapshotDialogFragment\n    householdCurrencies {\n      id\n      important\n      code\n    }\n    id\n  }\n}\n\nfragment appSidebarFragment on Query {\n  ...householdSwitcherFragment\n  ...navUserFragment\n}\n\nfragment householdSwitcherFragment on Query {\n  households {\n    id\n    name\n  }\n}\n\nfragment logTransactionFragment on Household {\n  ...newExpenseFragment\n  ...newIncomeFragment\n  ...newTransferFragment\n  ...newBuyFragment\n  ...newSellFragment\n  ...newMoveFragment\n}\n\nfragment navUserFragment on Query {\n  user {\n    name\n    email\n    id\n  }\n}\n\nfragment newBuyFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newExpenseFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newIncomeFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newMoveFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        value\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newSellFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment newTransferFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment snapshotDialogFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        type\n        value\n        currency {\n          code\n          id\n        }\n        id\n      }\n    }\n  }\n}\n\nfragment useDisplayCurrencyFragment on Household {\n  currencyCode\n  householdCurrencies {\n    id\n    important\n    code\n  }\n  householdRates {\n    rate\n    fromCurrency {\n      code\n      id\n    }\n    toCurrency {\n      code\n      id\n    }\n    id\n  }\n  userHouseholds {\n    user {\n      id\n    }\n    defaultCurrency {\n      code\n      id\n    }\n    id\n  }\n}\n\nfragment useHouseholdFragment on Household {\n  id\n  name\n  locale\n  currencyCode\n  householdCurrencies {\n    id\n    code\n  }\n}\n\nfragment useUserFragment on User {\n  id\n  name\n  email\n}\n"
   }
 };
 })();
 
-(node as any).hash = "cbb182baa38e530da77186226da11be0";
+(node as any).hash = "26c2159756827ac1120acb83a7adf236";
 
 export default node;

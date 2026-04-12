@@ -8,16 +8,13 @@ import { displayCurrencyIdStore } from './display-currency-store'
 
 const UseDisplayCurrencyFragment = graphql`
   fragment useDisplayCurrencyFragment on Household {
-    currency {
-      code
-    }
+    # eslint-disable-next-line relay/unused-fields
+    currencyCode
     # eslint-disable-next-line relay/unused-fields
     householdCurrencies {
       id
       important
-      currency {
-        code
-      }
+      code
     }
     # eslint-disable-next-line relay/unused-fields
     householdRates {
@@ -35,9 +32,7 @@ const UseDisplayCurrencyFragment = graphql`
         id
       }
       defaultCurrency {
-        currency {
-          code
-        }
+        code
       }
     }
   }
@@ -77,17 +72,17 @@ export const useDisplayCurrency = () => {
       const hc = (data.householdCurrencies ?? []).find(
         (c) => c.id === storedId && c.important,
       )
-      if (hc) return hc.currency.code
+      if (hc) return hc.code
     }
 
     const userHousehold = (data.userHouseholds ?? []).find(
       (uh) => uh.user.id === user.id,
     )
-    if (userHousehold?.defaultCurrency?.currency) {
-      return userHousehold.defaultCurrency.currency.code
+    if (userHousehold?.defaultCurrency?.code) {
+      return userHousehold.defaultCurrency.code
     }
 
-    return data.currency.code
+    return data.currencyCode
   }, [data, user.id, storedId])
 
   const rateMap = useMemo(() => {
