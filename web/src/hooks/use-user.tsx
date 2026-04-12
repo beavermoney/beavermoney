@@ -31,5 +31,6 @@ export const useUser = () => {
   if (ref === null) {
     throw new Error('useUser must be used within a UserProvider')
   }
-  return useFragment(UseUserFragment, ref)
+  const user = useFragment(UseUserFragment, ref)
+  return { user }
 }

@@ -37,7 +37,7 @@ type MembersSettingsProps = {
 
 export function MembersSettings({ householdRef }: MembersSettingsProps) {
   const { userHouseholds } = useFragment(membersSettingsFragment, householdRef)
-  const user = useUser()
+  const { user } = useUser()
 
   invariant(userHouseholds, 'userHouseholds is required')
 

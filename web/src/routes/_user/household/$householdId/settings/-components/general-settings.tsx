@@ -100,7 +100,7 @@ export function GeneralSettings({
     currenciesRef,
   )
 
-  const user = useUser()
+  const { user } = useUser()
   const isAdmin =
     userHouseholds.find((uh) => uh.user.id === user.id)?.role === 'admin'
 
