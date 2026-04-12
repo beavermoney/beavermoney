@@ -1,6 +1,6 @@
 module beavermoney.app
 
-go 1.25.5
+go 1.26.2
 
 require (
 	entgo.io/contrib v0.7.0
