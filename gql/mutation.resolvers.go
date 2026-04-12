@@ -304,6 +304,19 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 	client := ent.FromContext(ctx)
 	zero := decimal.NewFromInt(0)
 
+	isHouseholdCurrency, err := client.HouseholdCurrency.Query().
+		Where(
+			householdcurrency.HouseholdIDEQ(householdID),
+			householdcurrency.CurrencyIDEQ(input.CurrencyID),
+		).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !isHouseholdCurrency {
+		return nil, fmt.Errorf("currency is not a household currency")
+	}
+
 	accountCurrency, err := r.entClient.Currency.Query().Where(currency.IDEQ(input.CurrencyID)).Only(ctx)
 	if err != nil {
 		return nil, err
@@ -684,6 +697,19 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 	defer span.End()
 
 	client := ent.FromContext(ctx)
+
+	isHouseholdCurrency, err := client.HouseholdCurrency.Query().
+		Where(
+			householdcurrency.HouseholdIDEQ(householdID),
+			householdcurrency.CurrencyIDEQ(input.CurrencyID),
+		).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !isHouseholdCurrency {
+		return nil, fmt.Errorf("currency is not a household currency")
+	}
 
 	subscription, err := client.RecurringSubscription.Create().
 		SetHouseholdID(householdID).
