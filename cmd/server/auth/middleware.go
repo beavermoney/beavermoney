@@ -52,7 +52,7 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 						userhousehold.UserID(userID),
 						userhousehold.HouseholdID(hid),
 					).
-					WithDefaultCurrency().
+					WithHouseholdCurrency().
 					Only(bypassCtx)
 				if err != nil {
 					if ent.IsNotFound(err) {
@@ -102,8 +102,8 @@ func resolveDisplayCurrency(
 		}
 	}
 
-	if uh.Edges.DefaultCurrency != nil {
-		dc := uh.Edges.DefaultCurrency
+	if uh.Edges.HouseholdCurrency != nil {
+		dc := uh.Edges.HouseholdCurrency
 		return &contextkeys.DisplayCurrency{
 			HouseholdCurrencyID: dc.ID,
 			Code:                dc.Code,
