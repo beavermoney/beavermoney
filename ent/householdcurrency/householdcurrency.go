@@ -25,8 +25,6 @@ const (
 	FieldCode = "code"
 	// FieldImportant holds the string denoting the important field in the database.
 	FieldImportant = "important"
-	// FieldLegacyCurrencyID holds the string denoting the legacy_currency_id field in the database.
-	FieldLegacyCurrencyID = "currency_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -129,7 +127,6 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldCode,
 	FieldImportant,
-	FieldLegacyCurrencyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -193,11 +190,6 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByImportant orders the results by the important field.
 func ByImportant(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldImportant, opts...).ToFunc()
-}
-
-// ByLegacyCurrencyID orders the results by the legacy_currency_id field.
-func ByLegacyCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyCurrencyID, opts...).ToFunc()
 }
 
 // ByHouseholdField orders the results by household field.

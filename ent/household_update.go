@@ -90,33 +90,6 @@ func (_u *HouseholdUpdate) SetNillableCurrencyCode(v *string) *HouseholdUpdate {
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *HouseholdUpdate) SetLegacyCurrencyID(v int) *HouseholdUpdate {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *HouseholdUpdate) SetNillableLegacyCurrencyID(v *int) *HouseholdUpdate {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *HouseholdUpdate) AddLegacyCurrencyID(v int) *HouseholdUpdate {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *HouseholdUpdate) ClearLegacyCurrencyID() *HouseholdUpdate {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (_u *HouseholdUpdate) AddUserIDs(ids ...int) *HouseholdUpdate {
 	_u.mutation.AddUserIDs(ids...)
@@ -681,15 +654,6 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.CurrencyCode(); ok {
 		_spec.SetField(household.FieldCurrencyCode, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(household.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(household.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(household.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1358,33 +1322,6 @@ func (_u *HouseholdUpdateOne) SetNillableCurrencyCode(v *string) *HouseholdUpdat
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *HouseholdUpdateOne) SetLegacyCurrencyID(v int) *HouseholdUpdateOne {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *HouseholdUpdateOne) SetNillableLegacyCurrencyID(v *int) *HouseholdUpdateOne {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *HouseholdUpdateOne) AddLegacyCurrencyID(v int) *HouseholdUpdateOne {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *HouseholdUpdateOne) ClearLegacyCurrencyID() *HouseholdUpdateOne {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (_u *HouseholdUpdateOne) AddUserIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddUserIDs(ids...)
@@ -1979,15 +1916,6 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 	}
 	if value, ok := _u.mutation.CurrencyCode(); ok {
 		_spec.SetField(household.FieldCurrencyCode, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(household.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(household.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(household.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{

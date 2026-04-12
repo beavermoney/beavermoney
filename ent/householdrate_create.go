@@ -71,37 +71,9 @@ func (_c *HouseholdRateCreate) SetFromHouseholdCurrencyID(v int) *HouseholdRateC
 	return _c
 }
 
-// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
-func (_c *HouseholdRateCreate) SetLegacyFromCurrencyID(v int) *HouseholdRateCreate {
-	_c.mutation.SetLegacyFromCurrencyID(v)
-	return _c
-}
-
-// SetNillableLegacyFromCurrencyID sets the "legacy_from_currency_id" field if the given value is not nil.
-func (_c *HouseholdRateCreate) SetNillableLegacyFromCurrencyID(v *int) *HouseholdRateCreate {
-	if v != nil {
-		_c.SetLegacyFromCurrencyID(*v)
-	}
-	return _c
-}
-
 // SetToHouseholdCurrencyID sets the "to_household_currency_id" field.
 func (_c *HouseholdRateCreate) SetToHouseholdCurrencyID(v int) *HouseholdRateCreate {
 	_c.mutation.SetToHouseholdCurrencyID(v)
-	return _c
-}
-
-// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
-func (_c *HouseholdRateCreate) SetLegacyToCurrencyID(v int) *HouseholdRateCreate {
-	_c.mutation.SetLegacyToCurrencyID(v)
-	return _c
-}
-
-// SetNillableLegacyToCurrencyID sets the "legacy_to_currency_id" field if the given value is not nil.
-func (_c *HouseholdRateCreate) SetNillableLegacyToCurrencyID(v *int) *HouseholdRateCreate {
-	if v != nil {
-		_c.SetLegacyToCurrencyID(*v)
-	}
 	return _c
 }
 
@@ -264,14 +236,6 @@ func (_c *HouseholdRateCreate) createSpec() (*HouseholdRate, *sqlgraph.CreateSpe
 		_spec.SetField(householdrate.FieldRate, field.TypeFloat64, value)
 		_node.Rate = value
 	}
-	if value, ok := _c.mutation.LegacyFromCurrencyID(); ok {
-		_spec.SetField(householdrate.FieldLegacyFromCurrencyID, field.TypeInt, value)
-		_node.LegacyFromCurrencyID = &value
-	}
-	if value, ok := _c.mutation.LegacyToCurrencyID(); ok {
-		_spec.SetField(householdrate.FieldLegacyToCurrencyID, field.TypeInt, value)
-		_node.LegacyToCurrencyID = &value
-	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -405,54 +369,6 @@ func (u *HouseholdRateUpsert) AddRate(v decimal.Decimal) *HouseholdRateUpsert {
 	return u
 }
 
-// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsert) SetLegacyFromCurrencyID(v int) *HouseholdRateUpsert {
-	u.Set(householdrate.FieldLegacyFromCurrencyID, v)
-	return u
-}
-
-// UpdateLegacyFromCurrencyID sets the "legacy_from_currency_id" field to the value that was provided on create.
-func (u *HouseholdRateUpsert) UpdateLegacyFromCurrencyID() *HouseholdRateUpsert {
-	u.SetExcluded(householdrate.FieldLegacyFromCurrencyID)
-	return u
-}
-
-// AddLegacyFromCurrencyID adds v to the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsert) AddLegacyFromCurrencyID(v int) *HouseholdRateUpsert {
-	u.Add(householdrate.FieldLegacyFromCurrencyID, v)
-	return u
-}
-
-// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsert) ClearLegacyFromCurrencyID() *HouseholdRateUpsert {
-	u.SetNull(householdrate.FieldLegacyFromCurrencyID)
-	return u
-}
-
-// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsert) SetLegacyToCurrencyID(v int) *HouseholdRateUpsert {
-	u.Set(householdrate.FieldLegacyToCurrencyID, v)
-	return u
-}
-
-// UpdateLegacyToCurrencyID sets the "legacy_to_currency_id" field to the value that was provided on create.
-func (u *HouseholdRateUpsert) UpdateLegacyToCurrencyID() *HouseholdRateUpsert {
-	u.SetExcluded(householdrate.FieldLegacyToCurrencyID)
-	return u
-}
-
-// AddLegacyToCurrencyID adds v to the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsert) AddLegacyToCurrencyID(v int) *HouseholdRateUpsert {
-	u.Add(householdrate.FieldLegacyToCurrencyID, v)
-	return u
-}
-
-// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsert) ClearLegacyToCurrencyID() *HouseholdRateUpsert {
-	u.SetNull(householdrate.FieldLegacyToCurrencyID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -539,62 +455,6 @@ func (u *HouseholdRateUpsertOne) AddRate(v decimal.Decimal) *HouseholdRateUpsert
 func (u *HouseholdRateUpsertOne) UpdateRate() *HouseholdRateUpsertOne {
 	return u.Update(func(s *HouseholdRateUpsert) {
 		s.UpdateRate()
-	})
-}
-
-// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsertOne) SetLegacyFromCurrencyID(v int) *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.SetLegacyFromCurrencyID(v)
-	})
-}
-
-// AddLegacyFromCurrencyID adds v to the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsertOne) AddLegacyFromCurrencyID(v int) *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.AddLegacyFromCurrencyID(v)
-	})
-}
-
-// UpdateLegacyFromCurrencyID sets the "legacy_from_currency_id" field to the value that was provided on create.
-func (u *HouseholdRateUpsertOne) UpdateLegacyFromCurrencyID() *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.UpdateLegacyFromCurrencyID()
-	})
-}
-
-// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsertOne) ClearLegacyFromCurrencyID() *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.ClearLegacyFromCurrencyID()
-	})
-}
-
-// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsertOne) SetLegacyToCurrencyID(v int) *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.SetLegacyToCurrencyID(v)
-	})
-}
-
-// AddLegacyToCurrencyID adds v to the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsertOne) AddLegacyToCurrencyID(v int) *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.AddLegacyToCurrencyID(v)
-	})
-}
-
-// UpdateLegacyToCurrencyID sets the "legacy_to_currency_id" field to the value that was provided on create.
-func (u *HouseholdRateUpsertOne) UpdateLegacyToCurrencyID() *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.UpdateLegacyToCurrencyID()
-	})
-}
-
-// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsertOne) ClearLegacyToCurrencyID() *HouseholdRateUpsertOne {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.ClearLegacyToCurrencyID()
 	})
 }
 
@@ -850,62 +710,6 @@ func (u *HouseholdRateUpsertBulk) AddRate(v decimal.Decimal) *HouseholdRateUpser
 func (u *HouseholdRateUpsertBulk) UpdateRate() *HouseholdRateUpsertBulk {
 	return u.Update(func(s *HouseholdRateUpsert) {
 		s.UpdateRate()
-	})
-}
-
-// SetLegacyFromCurrencyID sets the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsertBulk) SetLegacyFromCurrencyID(v int) *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.SetLegacyFromCurrencyID(v)
-	})
-}
-
-// AddLegacyFromCurrencyID adds v to the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsertBulk) AddLegacyFromCurrencyID(v int) *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.AddLegacyFromCurrencyID(v)
-	})
-}
-
-// UpdateLegacyFromCurrencyID sets the "legacy_from_currency_id" field to the value that was provided on create.
-func (u *HouseholdRateUpsertBulk) UpdateLegacyFromCurrencyID() *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.UpdateLegacyFromCurrencyID()
-	})
-}
-
-// ClearLegacyFromCurrencyID clears the value of the "legacy_from_currency_id" field.
-func (u *HouseholdRateUpsertBulk) ClearLegacyFromCurrencyID() *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.ClearLegacyFromCurrencyID()
-	})
-}
-
-// SetLegacyToCurrencyID sets the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsertBulk) SetLegacyToCurrencyID(v int) *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.SetLegacyToCurrencyID(v)
-	})
-}
-
-// AddLegacyToCurrencyID adds v to the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsertBulk) AddLegacyToCurrencyID(v int) *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.AddLegacyToCurrencyID(v)
-	})
-}
-
-// UpdateLegacyToCurrencyID sets the "legacy_to_currency_id" field to the value that was provided on create.
-func (u *HouseholdRateUpsertBulk) UpdateLegacyToCurrencyID() *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.UpdateLegacyToCurrencyID()
-	})
-}
-
-// ClearLegacyToCurrencyID clears the value of the "legacy_to_currency_id" field.
-func (u *HouseholdRateUpsertBulk) ClearLegacyToCurrencyID() *HouseholdRateUpsertBulk {
-	return u.Update(func(s *HouseholdRateUpsert) {
-		s.ClearLegacyToCurrencyID()
 	})
 }
 

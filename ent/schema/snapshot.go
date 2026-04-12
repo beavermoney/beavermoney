@@ -175,11 +175,6 @@ func (SnapshotEntry) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 
 		field.Int("user_id").Positive().Immutable().
 			Annotations(
@@ -315,11 +310,6 @@ func (SnapshotRate) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_from_currency_id").
-			StorageKey("from_currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 
 		field.Int("to_household_currency_id").Positive().Immutable().
 			Annotations(
@@ -328,11 +318,6 @@ func (SnapshotRate) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_to_currency_id").
-			StorageKey("to_currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 	}
 }
 

@@ -30,12 +30,8 @@ type HouseholdRate struct {
 	Rate decimal.Decimal `json:"rate,omitempty"`
 	// FromHouseholdCurrencyID holds the value of the "from_household_currency_id" field.
 	FromHouseholdCurrencyID int `json:"from_household_currency_id,omitempty"`
-	// LegacyFromCurrencyID holds the value of the "legacy_from_currency_id" field.
-	LegacyFromCurrencyID *int `json:"legacy_from_currency_id,omitempty"`
 	// ToHouseholdCurrencyID holds the value of the "to_household_currency_id" field.
 	ToHouseholdCurrencyID int `json:"to_household_currency_id,omitempty"`
-	// LegacyToCurrencyID holds the value of the "legacy_to_currency_id" field.
-	LegacyToCurrencyID *int `json:"legacy_to_currency_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the HouseholdRateQuery when eager-loading is set.
 	Edges        HouseholdRateEdges `json:"edges"`
@@ -97,7 +93,7 @@ func (*HouseholdRate) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case householdrate.FieldRate:
 			values[i] = new(decimal.Decimal)
-		case householdrate.FieldID, householdrate.FieldHouseholdID, householdrate.FieldFromHouseholdCurrencyID, householdrate.FieldLegacyFromCurrencyID, householdrate.FieldToHouseholdCurrencyID, householdrate.FieldLegacyToCurrencyID:
+		case householdrate.FieldID, householdrate.FieldHouseholdID, householdrate.FieldFromHouseholdCurrencyID, householdrate.FieldToHouseholdCurrencyID:
 			values[i] = new(sql.NullInt64)
 		case householdrate.FieldCreateTime, householdrate.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -152,25 +148,11 @@ func (_m *HouseholdRate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.FromHouseholdCurrencyID = int(value.Int64)
 			}
-		case householdrate.FieldLegacyFromCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_from_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyFromCurrencyID = new(int)
-				*_m.LegacyFromCurrencyID = int(value.Int64)
-			}
 		case householdrate.FieldToHouseholdCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field to_household_currency_id", values[i])
 			} else if value.Valid {
 				_m.ToHouseholdCurrencyID = int(value.Int64)
-			}
-		case householdrate.FieldLegacyToCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_to_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyToCurrencyID = new(int)
-				*_m.LegacyToCurrencyID = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -238,18 +220,8 @@ func (_m *HouseholdRate) String() string {
 	builder.WriteString("from_household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.FromHouseholdCurrencyID))
 	builder.WriteString(", ")
-	if v := _m.LegacyFromCurrencyID; v != nil {
-		builder.WriteString("legacy_from_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("to_household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ToHouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyToCurrencyID; v != nil {
-		builder.WriteString("legacy_to_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

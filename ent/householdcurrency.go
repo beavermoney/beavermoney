@@ -28,8 +28,6 @@ type HouseholdCurrency struct {
 	Code string `json:"code,omitempty"`
 	// Important holds the value of the "important" field.
 	Important bool `json:"important,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the HouseholdCurrencyQuery when eager-loading is set.
 	Edges        HouseholdCurrencyEdges `json:"edges"`
@@ -174,7 +172,7 @@ func (*HouseholdCurrency) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case householdcurrency.FieldImportant:
 			values[i] = new(sql.NullBool)
-		case householdcurrency.FieldID, householdcurrency.FieldHouseholdID, householdcurrency.FieldLegacyCurrencyID:
+		case householdcurrency.FieldID, householdcurrency.FieldHouseholdID:
 			values[i] = new(sql.NullInt64)
 		case householdcurrency.FieldCode:
 			values[i] = new(sql.NullString)
@@ -230,13 +228,6 @@ func (_m *HouseholdCurrency) assignValues(columns []string, values []any) error 
 				return fmt.Errorf("unexpected type %T for field important", values[i])
 			} else if value.Valid {
 				_m.Important = value.Bool
-			}
-		case householdcurrency.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -338,11 +329,6 @@ func (_m *HouseholdCurrency) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("important=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Important))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

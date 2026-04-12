@@ -25,12 +25,8 @@ const (
 	FieldRate = "rate"
 	// FieldFromHouseholdCurrencyID holds the string denoting the from_household_currency_id field in the database.
 	FieldFromHouseholdCurrencyID = "from_household_currency_id"
-	// FieldLegacyFromCurrencyID holds the string denoting the legacy_from_currency_id field in the database.
-	FieldLegacyFromCurrencyID = "from_currency_id"
 	// FieldToHouseholdCurrencyID holds the string denoting the to_household_currency_id field in the database.
 	FieldToHouseholdCurrencyID = "to_household_currency_id"
-	// FieldLegacyToCurrencyID holds the string denoting the legacy_to_currency_id field in the database.
-	FieldLegacyToCurrencyID = "to_currency_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeFromCurrency holds the string denoting the from_currency edge name in mutations.
@@ -70,9 +66,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldRate,
 	FieldFromHouseholdCurrencyID,
-	FieldLegacyFromCurrencyID,
 	FieldToHouseholdCurrencyID,
-	FieldLegacyToCurrencyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -138,19 +132,9 @@ func ByFromHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFromHouseholdCurrencyID, opts...).ToFunc()
 }
 
-// ByLegacyFromCurrencyID orders the results by the legacy_from_currency_id field.
-func ByLegacyFromCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyFromCurrencyID, opts...).ToFunc()
-}
-
 // ByToHouseholdCurrencyID orders the results by the to_household_currency_id field.
 func ByToHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldToHouseholdCurrencyID, opts...).ToFunc()
-}
-
-// ByLegacyToCurrencyID orders the results by the legacy_to_currency_id field.
-func ByLegacyToCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyToCurrencyID, opts...).ToFunc()
 }
 
 // ByHouseholdField orders the results by household field.

@@ -91,33 +91,6 @@ func (_u *AccountUpdate) ClearIcon() *AccountUpdate {
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *AccountUpdate) SetLegacyCurrencyID(v int) *AccountUpdate {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableLegacyCurrencyID(v *int) *AccountUpdate {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *AccountUpdate) AddLegacyCurrencyID(v int) *AccountUpdate {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *AccountUpdate) ClearLegacyCurrencyID() *AccountUpdate {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // SetArchived sets the "archived" field.
 func (_u *AccountUpdate) SetArchived(v bool) *AccountUpdate {
 	_u.mutation.SetArchived(v)
@@ -311,15 +284,6 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.IconCleared() {
 		_spec.ClearField(account.FieldIcon, field.TypeString)
 	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(account.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(account.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(account.FieldLegacyCurrencyID, field.TypeInt)
-	}
 	if value, ok := _u.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)
 	}
@@ -492,33 +456,6 @@ func (_u *AccountUpdateOne) SetNillableIcon(v *string) *AccountUpdateOne {
 // ClearIcon clears the value of the "icon" field.
 func (_u *AccountUpdateOne) ClearIcon() *AccountUpdateOne {
 	_u.mutation.ClearIcon()
-	return _u
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *AccountUpdateOne) SetLegacyCurrencyID(v int) *AccountUpdateOne {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableLegacyCurrencyID(v *int) *AccountUpdateOne {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *AccountUpdateOne) AddLegacyCurrencyID(v int) *AccountUpdateOne {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *AccountUpdateOne) ClearLegacyCurrencyID() *AccountUpdateOne {
-	_u.mutation.ClearLegacyCurrencyID()
 	return _u
 }
 
@@ -744,15 +681,6 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if _u.mutation.IconCleared() {
 		_spec.ClearField(account.FieldIcon, field.TypeString)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(account.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(account.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(account.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)

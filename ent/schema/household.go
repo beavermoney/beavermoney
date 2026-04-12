@@ -27,11 +27,6 @@ func (Household) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("locale").NotEmpty(),
 		field.String("currency_code").NotEmpty(),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 		field.Bool("is_demo").Default(false).Immutable(),
 	}
 }
@@ -184,11 +179,6 @@ func (HouseholdCurrency) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("code").NotEmpty().Immutable(),
 		field.Bool("important").Default(false),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 	}
 }
 
@@ -269,11 +259,6 @@ func (HouseholdRate) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_from_currency_id").
-			StorageKey("from_currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 
 		field.Int("to_household_currency_id").Positive().Immutable().
 			Annotations(
@@ -282,11 +267,6 @@ func (HouseholdRate) Fields() []ent.Field {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_to_currency_id").
-			StorageKey("to_currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 	}
 }
 

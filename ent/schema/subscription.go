@@ -46,11 +46,6 @@ func (RecurringSubscription) Fields() []ent.Field {
 			}),
 
 		field.Int("household_currency_id").Positive(),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 		field.Int("user_id").Positive().Immutable(),
 	}
 }

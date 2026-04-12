@@ -40,8 +40,6 @@ type SnapshotEntry struct {
 	Liability decimal.Decimal `json:"liability,omitempty"`
 	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
 	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// SnapshotID holds the value of the "snapshot_id" field.
@@ -120,7 +118,7 @@ func (*SnapshotEntry) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case snapshotentry.FieldLiquidity, snapshotentry.FieldInvestment, snapshotentry.FieldProperty, snapshotentry.FieldReceivable, snapshotentry.FieldLiability:
 			values[i] = new(decimal.Decimal)
-		case snapshotentry.FieldID, snapshotentry.FieldHouseholdID, snapshotentry.FieldHouseholdCurrencyID, snapshotentry.FieldLegacyCurrencyID, snapshotentry.FieldUserID, snapshotentry.FieldSnapshotID:
+		case snapshotentry.FieldID, snapshotentry.FieldHouseholdID, snapshotentry.FieldHouseholdCurrencyID, snapshotentry.FieldUserID, snapshotentry.FieldSnapshotID:
 			values[i] = new(sql.NullInt64)
 		case snapshotentry.FieldCreateTime, snapshotentry.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -198,13 +196,6 @@ func (_m *SnapshotEntry) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
 			} else if value.Valid {
 				_m.HouseholdCurrencyID = int(value.Int64)
-			}
-		case snapshotentry.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
 			}
 		case snapshotentry.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -300,11 +291,6 @@ func (_m *SnapshotEntry) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))

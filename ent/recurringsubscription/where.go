@@ -106,11 +106,6 @@ func HouseholdCurrencyID(v int) predicate.RecurringSubscription {
 	return predicate.RecurringSubscription(sql.FieldEQ(FieldHouseholdCurrencyID, v))
 }
 
-// LegacyCurrencyID applies equality check predicate on the "legacy_currency_id" field. It's identical to LegacyCurrencyIDEQ.
-func LegacyCurrencyID(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldEQ(FieldLegacyCurrencyID, v))
-}
-
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
 func UserID(v int) predicate.RecurringSubscription {
 	return predicate.RecurringSubscription(sql.FieldEQ(FieldUserID, v))
@@ -524,56 +519,6 @@ func HouseholdCurrencyIDIn(vs ...int) predicate.RecurringSubscription {
 // HouseholdCurrencyIDNotIn applies the NotIn predicate on the "household_currency_id" field.
 func HouseholdCurrencyIDNotIn(vs ...int) predicate.RecurringSubscription {
 	return predicate.RecurringSubscription(sql.FieldNotIn(FieldHouseholdCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDEQ applies the EQ predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDEQ(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldEQ(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDNEQ applies the NEQ predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNEQ(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldNEQ(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDIn applies the In predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDIn(vs ...int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldIn(FieldLegacyCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDNotIn applies the NotIn predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNotIn(vs ...int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldNotIn(FieldLegacyCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDGT applies the GT predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDGT(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldGT(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDGTE applies the GTE predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDGTE(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldGTE(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDLT applies the LT predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDLT(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldLT(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDLTE applies the LTE predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDLTE(v int) predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldLTE(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDIsNil applies the IsNil predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDIsNil() predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldIsNull(FieldLegacyCurrencyID))
-}
-
-// LegacyCurrencyIDNotNil applies the NotNil predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNotNil() predicate.RecurringSubscription {
-	return predicate.RecurringSubscription(sql.FieldNotNull(FieldLegacyCurrencyID))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.

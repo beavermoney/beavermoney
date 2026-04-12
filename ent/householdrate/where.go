@@ -81,19 +81,9 @@ func FromHouseholdCurrencyID(v int) predicate.HouseholdRate {
 	return predicate.HouseholdRate(sql.FieldEQ(FieldFromHouseholdCurrencyID, v))
 }
 
-// LegacyFromCurrencyID applies equality check predicate on the "legacy_from_currency_id" field. It's identical to LegacyFromCurrencyIDEQ.
-func LegacyFromCurrencyID(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldEQ(FieldLegacyFromCurrencyID, v))
-}
-
 // ToHouseholdCurrencyID applies equality check predicate on the "to_household_currency_id" field. It's identical to ToHouseholdCurrencyIDEQ.
 func ToHouseholdCurrencyID(v int) predicate.HouseholdRate {
 	return predicate.HouseholdRate(sql.FieldEQ(FieldToHouseholdCurrencyID, v))
-}
-
-// LegacyToCurrencyID applies equality check predicate on the "legacy_to_currency_id" field. It's identical to LegacyToCurrencyIDEQ.
-func LegacyToCurrencyID(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldEQ(FieldLegacyToCurrencyID, v))
 }
 
 // HouseholdIDEQ applies the EQ predicate on the "household_id" field.
@@ -256,56 +246,6 @@ func FromHouseholdCurrencyIDNotIn(vs ...int) predicate.HouseholdRate {
 	return predicate.HouseholdRate(sql.FieldNotIn(FieldFromHouseholdCurrencyID, vs...))
 }
 
-// LegacyFromCurrencyIDEQ applies the EQ predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDEQ(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldEQ(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDNEQ applies the NEQ predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDNEQ(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldNEQ(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDIn applies the In predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDIn(vs ...int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldIn(FieldLegacyFromCurrencyID, vs...))
-}
-
-// LegacyFromCurrencyIDNotIn applies the NotIn predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDNotIn(vs ...int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldNotIn(FieldLegacyFromCurrencyID, vs...))
-}
-
-// LegacyFromCurrencyIDGT applies the GT predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDGT(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldGT(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDGTE applies the GTE predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDGTE(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldGTE(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDLT applies the LT predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDLT(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldLT(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDLTE applies the LTE predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDLTE(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldLTE(FieldLegacyFromCurrencyID, v))
-}
-
-// LegacyFromCurrencyIDIsNil applies the IsNil predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDIsNil() predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldIsNull(FieldLegacyFromCurrencyID))
-}
-
-// LegacyFromCurrencyIDNotNil applies the NotNil predicate on the "legacy_from_currency_id" field.
-func LegacyFromCurrencyIDNotNil() predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldNotNull(FieldLegacyFromCurrencyID))
-}
-
 // ToHouseholdCurrencyIDEQ applies the EQ predicate on the "to_household_currency_id" field.
 func ToHouseholdCurrencyIDEQ(v int) predicate.HouseholdRate {
 	return predicate.HouseholdRate(sql.FieldEQ(FieldToHouseholdCurrencyID, v))
@@ -324,56 +264,6 @@ func ToHouseholdCurrencyIDIn(vs ...int) predicate.HouseholdRate {
 // ToHouseholdCurrencyIDNotIn applies the NotIn predicate on the "to_household_currency_id" field.
 func ToHouseholdCurrencyIDNotIn(vs ...int) predicate.HouseholdRate {
 	return predicate.HouseholdRate(sql.FieldNotIn(FieldToHouseholdCurrencyID, vs...))
-}
-
-// LegacyToCurrencyIDEQ applies the EQ predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDEQ(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldEQ(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDNEQ applies the NEQ predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDNEQ(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldNEQ(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDIn applies the In predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDIn(vs ...int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldIn(FieldLegacyToCurrencyID, vs...))
-}
-
-// LegacyToCurrencyIDNotIn applies the NotIn predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDNotIn(vs ...int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldNotIn(FieldLegacyToCurrencyID, vs...))
-}
-
-// LegacyToCurrencyIDGT applies the GT predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDGT(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldGT(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDGTE applies the GTE predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDGTE(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldGTE(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDLT applies the LT predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDLT(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldLT(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDLTE applies the LTE predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDLTE(v int) predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldLTE(FieldLegacyToCurrencyID, v))
-}
-
-// LegacyToCurrencyIDIsNil applies the IsNil predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDIsNil() predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldIsNull(FieldLegacyToCurrencyID))
-}
-
-// LegacyToCurrencyIDNotNil applies the NotNil predicate on the "legacy_to_currency_id" field.
-func LegacyToCurrencyIDNotNil() predicate.HouseholdRate {
-	return predicate.HouseholdRate(sql.FieldNotNull(FieldLegacyToCurrencyID))
 }
 
 // HasHousehold applies the HasEdge predicate on the "household" edge.

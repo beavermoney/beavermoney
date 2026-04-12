@@ -169,33 +169,6 @@ func (_u *RecurringSubscriptionUpdate) SetNillableHouseholdCurrencyID(v *int) *R
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *RecurringSubscriptionUpdate) SetLegacyCurrencyID(v int) *RecurringSubscriptionUpdate {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *RecurringSubscriptionUpdate) SetNillableLegacyCurrencyID(v *int) *RecurringSubscriptionUpdate {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *RecurringSubscriptionUpdate) AddLegacyCurrencyID(v int) *RecurringSubscriptionUpdate {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *RecurringSubscriptionUpdate) ClearLegacyCurrencyID() *RecurringSubscriptionUpdate {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
 func (_u *RecurringSubscriptionUpdate) SetCurrencyID(id int) *RecurringSubscriptionUpdate {
 	_u.mutation.SetCurrencyID(id)
@@ -344,15 +317,6 @@ func (_u *RecurringSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, 
 	}
 	if value, ok := _u.mutation.AddedCost(); ok {
 		_spec.AddField(recurringsubscription.FieldCost, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if _u.mutation.CurrencyCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -543,33 +507,6 @@ func (_u *RecurringSubscriptionUpdateOne) SetNillableHouseholdCurrencyID(v *int)
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *RecurringSubscriptionUpdateOne) SetLegacyCurrencyID(v int) *RecurringSubscriptionUpdateOne {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *RecurringSubscriptionUpdateOne) SetNillableLegacyCurrencyID(v *int) *RecurringSubscriptionUpdateOne {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *RecurringSubscriptionUpdateOne) AddLegacyCurrencyID(v int) *RecurringSubscriptionUpdateOne {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *RecurringSubscriptionUpdateOne) ClearLegacyCurrencyID() *RecurringSubscriptionUpdateOne {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
 func (_u *RecurringSubscriptionUpdateOne) SetCurrencyID(id int) *RecurringSubscriptionUpdateOne {
 	_u.mutation.SetCurrencyID(id)
@@ -748,15 +685,6 @@ func (_u *RecurringSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *R
 	}
 	if value, ok := _u.mutation.AddedCost(); ok {
 		_spec.AddField(recurringsubscription.FieldCost, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(recurringsubscription.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if _u.mutation.CurrencyCleared() {
 		edge := &sqlgraph.EdgeSpec{

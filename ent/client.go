@@ -12,7 +12,6 @@ import (
 	"beavermoney.app/ent/migrate"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
@@ -41,8 +40,6 @@ type Client struct {
 	Schema *migrate.Schema
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
-	// Currency is the client for interacting with the Currency builders.
-	Currency *CurrencyClient
 	// Household is the client for interacting with the Household builders.
 	Household *HouseholdClient
 	// HouseholdCurrency is the client for interacting with the HouseholdCurrency builders.
@@ -85,7 +82,6 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
-	c.Currency = NewCurrencyClient(c.config)
 	c.Household = NewHouseholdClient(c.config)
 	c.HouseholdCurrency = NewHouseholdCurrencyClient(c.config)
 	c.HouseholdRate = NewHouseholdRateClient(c.config)
@@ -194,7 +190,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                   ctx,
 		config:                cfg,
 		Account:               NewAccountClient(cfg),
-		Currency:              NewCurrencyClient(cfg),
 		Household:             NewHouseholdClient(cfg),
 		HouseholdCurrency:     NewHouseholdCurrencyClient(cfg),
 		HouseholdRate:         NewHouseholdRateClient(cfg),
@@ -230,7 +225,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                   ctx,
 		config:                cfg,
 		Account:               NewAccountClient(cfg),
-		Currency:              NewCurrencyClient(cfg),
 		Household:             NewHouseholdClient(cfg),
 		HouseholdCurrency:     NewHouseholdCurrencyClient(cfg),
 		HouseholdRate:         NewHouseholdRateClient(cfg),
@@ -275,10 +269,10 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Account, c.Currency, c.Household, c.HouseholdCurrency, c.HouseholdRate,
-		c.Investment, c.InvestmentLot, c.RecurringSubscription, c.Snapshot,
-		c.SnapshotEntry, c.SnapshotRate, c.Transaction, c.TransactionCategory,
-		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
+		c.Account, c.Household, c.HouseholdCurrency, c.HouseholdRate, c.Investment,
+		c.InvestmentLot, c.RecurringSubscription, c.Snapshot, c.SnapshotEntry,
+		c.SnapshotRate, c.Transaction, c.TransactionCategory, c.TransactionEntry,
+		c.User, c.UserHousehold, c.UserKey,
 	} {
 		n.Use(hooks...)
 	}
@@ -288,10 +282,10 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Account, c.Currency, c.Household, c.HouseholdCurrency, c.HouseholdRate,
-		c.Investment, c.InvestmentLot, c.RecurringSubscription, c.Snapshot,
-		c.SnapshotEntry, c.SnapshotRate, c.Transaction, c.TransactionCategory,
-		c.TransactionEntry, c.User, c.UserHousehold, c.UserKey,
+		c.Account, c.Household, c.HouseholdCurrency, c.HouseholdRate, c.Investment,
+		c.InvestmentLot, c.RecurringSubscription, c.Snapshot, c.SnapshotEntry,
+		c.SnapshotRate, c.Transaction, c.TransactionCategory, c.TransactionEntry,
+		c.User, c.UserHousehold, c.UserKey,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -302,8 +296,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AccountMutation:
 		return c.Account.mutate(ctx, m)
-	case *CurrencyMutation:
-		return c.Currency.mutate(ctx, m)
 	case *HouseholdMutation:
 		return c.Household.mutate(ctx, m)
 	case *HouseholdCurrencyMutation:
@@ -550,139 +542,6 @@ func (c *AccountClient) mutate(ctx context.Context, m *AccountMutation) (Value, 
 		return (&AccountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Account mutation op: %q", m.Op())
-	}
-}
-
-// CurrencyClient is a client for the Currency schema.
-type CurrencyClient struct {
-	config
-}
-
-// NewCurrencyClient returns a client for the Currency from the given config.
-func NewCurrencyClient(c config) *CurrencyClient {
-	return &CurrencyClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `currency.Hooks(f(g(h())))`.
-func (c *CurrencyClient) Use(hooks ...Hook) {
-	c.hooks.Currency = append(c.hooks.Currency, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `currency.Intercept(f(g(h())))`.
-func (c *CurrencyClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Currency = append(c.inters.Currency, interceptors...)
-}
-
-// Create returns a builder for creating a Currency entity.
-func (c *CurrencyClient) Create() *CurrencyCreate {
-	mutation := newCurrencyMutation(c.config, OpCreate)
-	return &CurrencyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Currency entities.
-func (c *CurrencyClient) CreateBulk(builders ...*CurrencyCreate) *CurrencyCreateBulk {
-	return &CurrencyCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *CurrencyClient) MapCreateBulk(slice any, setFunc func(*CurrencyCreate, int)) *CurrencyCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &CurrencyCreateBulk{err: fmt.Errorf("calling to CurrencyClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*CurrencyCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &CurrencyCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Currency.
-func (c *CurrencyClient) Update() *CurrencyUpdate {
-	mutation := newCurrencyMutation(c.config, OpUpdate)
-	return &CurrencyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *CurrencyClient) UpdateOne(_m *Currency) *CurrencyUpdateOne {
-	mutation := newCurrencyMutation(c.config, OpUpdateOne, withCurrency(_m))
-	return &CurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *CurrencyClient) UpdateOneID(id int) *CurrencyUpdateOne {
-	mutation := newCurrencyMutation(c.config, OpUpdateOne, withCurrencyID(id))
-	return &CurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Currency.
-func (c *CurrencyClient) Delete() *CurrencyDelete {
-	mutation := newCurrencyMutation(c.config, OpDelete)
-	return &CurrencyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *CurrencyClient) DeleteOne(_m *Currency) *CurrencyDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *CurrencyClient) DeleteOneID(id int) *CurrencyDeleteOne {
-	builder := c.Delete().Where(currency.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &CurrencyDeleteOne{builder}
-}
-
-// Query returns a query builder for Currency.
-func (c *CurrencyClient) Query() *CurrencyQuery {
-	return &CurrencyQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeCurrency},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Currency entity by its id.
-func (c *CurrencyClient) Get(ctx context.Context, id int) (*Currency, error) {
-	return c.Query().Where(currency.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *CurrencyClient) GetX(ctx context.Context, id int) *Currency {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *CurrencyClient) Hooks() []Hook {
-	return c.hooks.Currency
-}
-
-// Interceptors returns the client interceptors.
-func (c *CurrencyClient) Interceptors() []Interceptor {
-	return c.inters.Currency
-}
-
-func (c *CurrencyClient) mutate(ctx context.Context, m *CurrencyMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&CurrencyCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&CurrencyUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&CurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&CurrencyDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Currency mutation op: %q", m.Op())
 	}
 }
 
@@ -3786,15 +3645,14 @@ func (c *UserKeyClient) mutate(ctx context.Context, m *UserKeyMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Account, Currency, Household, HouseholdCurrency, HouseholdRate, Investment,
-		InvestmentLot, RecurringSubscription, Snapshot, SnapshotEntry, SnapshotRate,
-		Transaction, TransactionCategory, TransactionEntry, User, UserHousehold,
-		UserKey []ent.Hook
+		Account, Household, HouseholdCurrency, HouseholdRate, Investment, InvestmentLot,
+		RecurringSubscription, Snapshot, SnapshotEntry, SnapshotRate, Transaction,
+		TransactionCategory, TransactionEntry, User, UserHousehold, UserKey []ent.Hook
 	}
 	inters struct {
-		Account, Currency, Household, HouseholdCurrency, HouseholdRate, Investment,
-		InvestmentLot, RecurringSubscription, Snapshot, SnapshotEntry, SnapshotRate,
-		Transaction, TransactionCategory, TransactionEntry, User, UserHousehold,
+		Account, Household, HouseholdCurrency, HouseholdRate, Investment, InvestmentLot,
+		RecurringSubscription, Snapshot, SnapshotEntry, SnapshotRate, Transaction,
+		TransactionCategory, TransactionEntry, User, UserHousehold,
 		UserKey []ent.Interceptor
 	}
 )

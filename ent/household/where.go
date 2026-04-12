@@ -80,11 +80,6 @@ func CurrencyCode(v string) predicate.Household {
 	return predicate.Household(sql.FieldEQ(FieldCurrencyCode, v))
 }
 
-// LegacyCurrencyID applies equality check predicate on the "legacy_currency_id" field. It's identical to LegacyCurrencyIDEQ.
-func LegacyCurrencyID(v int) predicate.Household {
-	return predicate.Household(sql.FieldEQ(FieldLegacyCurrencyID, v))
-}
-
 // IsDemo applies equality check predicate on the "is_demo" field. It's identical to IsDemoEQ.
 func IsDemo(v bool) predicate.Household {
 	return predicate.Household(sql.FieldEQ(FieldIsDemo, v))
@@ -363,56 +358,6 @@ func CurrencyCodeEqualFold(v string) predicate.Household {
 // CurrencyCodeContainsFold applies the ContainsFold predicate on the "currency_code" field.
 func CurrencyCodeContainsFold(v string) predicate.Household {
 	return predicate.Household(sql.FieldContainsFold(FieldCurrencyCode, v))
-}
-
-// LegacyCurrencyIDEQ applies the EQ predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDEQ(v int) predicate.Household {
-	return predicate.Household(sql.FieldEQ(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDNEQ applies the NEQ predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNEQ(v int) predicate.Household {
-	return predicate.Household(sql.FieldNEQ(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDIn applies the In predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDIn(vs ...int) predicate.Household {
-	return predicate.Household(sql.FieldIn(FieldLegacyCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDNotIn applies the NotIn predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNotIn(vs ...int) predicate.Household {
-	return predicate.Household(sql.FieldNotIn(FieldLegacyCurrencyID, vs...))
-}
-
-// LegacyCurrencyIDGT applies the GT predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDGT(v int) predicate.Household {
-	return predicate.Household(sql.FieldGT(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDGTE applies the GTE predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDGTE(v int) predicate.Household {
-	return predicate.Household(sql.FieldGTE(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDLT applies the LT predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDLT(v int) predicate.Household {
-	return predicate.Household(sql.FieldLT(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDLTE applies the LTE predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDLTE(v int) predicate.Household {
-	return predicate.Household(sql.FieldLTE(FieldLegacyCurrencyID, v))
-}
-
-// LegacyCurrencyIDIsNil applies the IsNil predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDIsNil() predicate.Household {
-	return predicate.Household(sql.FieldIsNull(FieldLegacyCurrencyID))
-}
-
-// LegacyCurrencyIDNotNil applies the NotNil predicate on the "legacy_currency_id" field.
-func LegacyCurrencyIDNotNil() predicate.Household {
-	return predicate.Household(sql.FieldNotNull(FieldLegacyCurrencyID))
 }
 
 // IsDemoEQ applies the EQ predicate on the "is_demo" field.

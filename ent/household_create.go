@@ -81,20 +81,6 @@ func (_c *HouseholdCreate) SetCurrencyCode(v string) *HouseholdCreate {
 	return _c
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_c *HouseholdCreate) SetLegacyCurrencyID(v int) *HouseholdCreate {
-	_c.mutation.SetLegacyCurrencyID(v)
-	return _c
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_c *HouseholdCreate) SetNillableLegacyCurrencyID(v *int) *HouseholdCreate {
-	if v != nil {
-		_c.SetLegacyCurrencyID(*v)
-	}
-	return _c
-}
-
 // SetIsDemo sets the "is_demo" field.
 func (_c *HouseholdCreate) SetIsDemo(v bool) *HouseholdCreate {
 	_c.mutation.SetIsDemo(v)
@@ -444,10 +430,6 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 		_spec.SetField(household.FieldCurrencyCode, field.TypeString, value)
 		_node.CurrencyCode = value
 	}
-	if value, ok := _c.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(household.FieldLegacyCurrencyID, field.TypeInt, value)
-		_node.LegacyCurrencyID = &value
-	}
 	if value, ok := _c.mutation.IsDemo(); ok {
 		_spec.SetField(household.FieldIsDemo, field.TypeBool, value)
 		_node.IsDemo = value
@@ -764,30 +746,6 @@ func (u *HouseholdUpsert) UpdateCurrencyCode() *HouseholdUpsert {
 	return u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (u *HouseholdUpsert) SetLegacyCurrencyID(v int) *HouseholdUpsert {
-	u.Set(household.FieldLegacyCurrencyID, v)
-	return u
-}
-
-// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
-func (u *HouseholdUpsert) UpdateLegacyCurrencyID() *HouseholdUpsert {
-	u.SetExcluded(household.FieldLegacyCurrencyID)
-	return u
-}
-
-// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
-func (u *HouseholdUpsert) AddLegacyCurrencyID(v int) *HouseholdUpsert {
-	u.Add(household.FieldLegacyCurrencyID, v)
-	return u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (u *HouseholdUpsert) ClearLegacyCurrencyID() *HouseholdUpsert {
-	u.SetNull(household.FieldLegacyCurrencyID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -889,34 +847,6 @@ func (u *HouseholdUpsertOne) SetCurrencyCode(v string) *HouseholdUpsertOne {
 func (u *HouseholdUpsertOne) UpdateCurrencyCode() *HouseholdUpsertOne {
 	return u.Update(func(s *HouseholdUpsert) {
 		s.UpdateCurrencyCode()
-	})
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (u *HouseholdUpsertOne) SetLegacyCurrencyID(v int) *HouseholdUpsertOne {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.SetLegacyCurrencyID(v)
-	})
-}
-
-// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
-func (u *HouseholdUpsertOne) AddLegacyCurrencyID(v int) *HouseholdUpsertOne {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.AddLegacyCurrencyID(v)
-	})
-}
-
-// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
-func (u *HouseholdUpsertOne) UpdateLegacyCurrencyID() *HouseholdUpsertOne {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.UpdateLegacyCurrencyID()
-	})
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (u *HouseholdUpsertOne) ClearLegacyCurrencyID() *HouseholdUpsertOne {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.ClearLegacyCurrencyID()
 	})
 }
 
@@ -1187,34 +1117,6 @@ func (u *HouseholdUpsertBulk) SetCurrencyCode(v string) *HouseholdUpsertBulk {
 func (u *HouseholdUpsertBulk) UpdateCurrencyCode() *HouseholdUpsertBulk {
 	return u.Update(func(s *HouseholdUpsert) {
 		s.UpdateCurrencyCode()
-	})
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (u *HouseholdUpsertBulk) SetLegacyCurrencyID(v int) *HouseholdUpsertBulk {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.SetLegacyCurrencyID(v)
-	})
-}
-
-// AddLegacyCurrencyID adds v to the "legacy_currency_id" field.
-func (u *HouseholdUpsertBulk) AddLegacyCurrencyID(v int) *HouseholdUpsertBulk {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.AddLegacyCurrencyID(v)
-	})
-}
-
-// UpdateLegacyCurrencyID sets the "legacy_currency_id" field to the value that was provided on create.
-func (u *HouseholdUpsertBulk) UpdateLegacyCurrencyID() *HouseholdUpsertBulk {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.UpdateLegacyCurrencyID()
-	})
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (u *HouseholdUpsertBulk) ClearLegacyCurrencyID() *HouseholdUpsertBulk {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.ClearLegacyCurrencyID()
 	})
 }
 

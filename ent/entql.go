@@ -4,7 +4,6 @@ package ent
 
 import (
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
@@ -30,7 +29,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 17)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 16)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   account.Table,
@@ -52,27 +51,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			account.FieldIcon:                {Type: field.TypeString, Column: account.FieldIcon},
 			account.FieldValue:               {Type: field.TypeFloat64, Column: account.FieldValue},
 			account.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: account.FieldHouseholdCurrencyID},
-			account.FieldLegacyCurrencyID:    {Type: field.TypeInt, Column: account.FieldLegacyCurrencyID},
 			account.FieldUserID:              {Type: field.TypeInt, Column: account.FieldUserID},
 			account.FieldArchived:            {Type: field.TypeBool, Column: account.FieldArchived},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   currency.Table,
-			Columns: currency.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: currency.FieldID,
-			},
-		},
-		Type: "Currency",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			currency.FieldCode:    {Type: field.TypeString, Column: currency.FieldCode},
-			currency.FieldLocales: {Type: field.TypeJSON, Column: currency.FieldLocales},
-		},
-	}
-	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   household.Table,
 			Columns: household.Columns,
@@ -83,16 +66,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Household",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			household.FieldCreateTime:       {Type: field.TypeTime, Column: household.FieldCreateTime},
-			household.FieldUpdateTime:       {Type: field.TypeTime, Column: household.FieldUpdateTime},
-			household.FieldName:             {Type: field.TypeString, Column: household.FieldName},
-			household.FieldLocale:           {Type: field.TypeString, Column: household.FieldLocale},
-			household.FieldCurrencyCode:     {Type: field.TypeString, Column: household.FieldCurrencyCode},
-			household.FieldLegacyCurrencyID: {Type: field.TypeInt, Column: household.FieldLegacyCurrencyID},
-			household.FieldIsDemo:           {Type: field.TypeBool, Column: household.FieldIsDemo},
+			household.FieldCreateTime:   {Type: field.TypeTime, Column: household.FieldCreateTime},
+			household.FieldUpdateTime:   {Type: field.TypeTime, Column: household.FieldUpdateTime},
+			household.FieldName:         {Type: field.TypeString, Column: household.FieldName},
+			household.FieldLocale:       {Type: field.TypeString, Column: household.FieldLocale},
+			household.FieldCurrencyCode: {Type: field.TypeString, Column: household.FieldCurrencyCode},
+			household.FieldIsDemo:       {Type: field.TypeBool, Column: household.FieldIsDemo},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   householdcurrency.Table,
 			Columns: householdcurrency.Columns,
@@ -103,15 +85,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "HouseholdCurrency",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			householdcurrency.FieldHouseholdID:      {Type: field.TypeInt, Column: householdcurrency.FieldHouseholdID},
-			householdcurrency.FieldCreateTime:       {Type: field.TypeTime, Column: householdcurrency.FieldCreateTime},
-			householdcurrency.FieldUpdateTime:       {Type: field.TypeTime, Column: householdcurrency.FieldUpdateTime},
-			householdcurrency.FieldCode:             {Type: field.TypeString, Column: householdcurrency.FieldCode},
-			householdcurrency.FieldImportant:        {Type: field.TypeBool, Column: householdcurrency.FieldImportant},
-			householdcurrency.FieldLegacyCurrencyID: {Type: field.TypeInt, Column: householdcurrency.FieldLegacyCurrencyID},
+			householdcurrency.FieldHouseholdID: {Type: field.TypeInt, Column: householdcurrency.FieldHouseholdID},
+			householdcurrency.FieldCreateTime:  {Type: field.TypeTime, Column: householdcurrency.FieldCreateTime},
+			householdcurrency.FieldUpdateTime:  {Type: field.TypeTime, Column: householdcurrency.FieldUpdateTime},
+			householdcurrency.FieldCode:        {Type: field.TypeString, Column: householdcurrency.FieldCode},
+			householdcurrency.FieldImportant:   {Type: field.TypeBool, Column: householdcurrency.FieldImportant},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   householdrate.Table,
 			Columns: householdrate.Columns,
@@ -127,12 +108,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			householdrate.FieldUpdateTime:              {Type: field.TypeTime, Column: householdrate.FieldUpdateTime},
 			householdrate.FieldRate:                    {Type: field.TypeFloat64, Column: householdrate.FieldRate},
 			householdrate.FieldFromHouseholdCurrencyID: {Type: field.TypeInt, Column: householdrate.FieldFromHouseholdCurrencyID},
-			householdrate.FieldLegacyFromCurrencyID:    {Type: field.TypeInt, Column: householdrate.FieldLegacyFromCurrencyID},
 			householdrate.FieldToHouseholdCurrencyID:   {Type: field.TypeInt, Column: householdrate.FieldToHouseholdCurrencyID},
-			householdrate.FieldLegacyToCurrencyID:      {Type: field.TypeInt, Column: householdrate.FieldLegacyToCurrencyID},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   investment.Table,
 			Columns: investment.Columns,
@@ -154,10 +133,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			investment.FieldValue:               {Type: field.TypeFloat64, Column: investment.FieldValue},
 			investment.FieldAccountID:           {Type: field.TypeInt, Column: investment.FieldAccountID},
 			investment.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: investment.FieldHouseholdCurrencyID},
-			investment.FieldLegacyCurrencyID:    {Type: field.TypeInt, Column: investment.FieldLegacyCurrencyID},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   investmentlot.Table,
 			Columns: investmentlot.Columns,
@@ -177,7 +155,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			investmentlot.FieldTransactionID: {Type: field.TypeInt, Column: investmentlot.FieldTransactionID},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   recurringsubscription.Table,
 			Columns: recurringsubscription.Columns,
@@ -199,11 +177,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			recurringsubscription.FieldIcon:                {Type: field.TypeString, Column: recurringsubscription.FieldIcon},
 			recurringsubscription.FieldCost:                {Type: field.TypeFloat64, Column: recurringsubscription.FieldCost},
 			recurringsubscription.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: recurringsubscription.FieldHouseholdCurrencyID},
-			recurringsubscription.FieldLegacyCurrencyID:    {Type: field.TypeInt, Column: recurringsubscription.FieldLegacyCurrencyID},
 			recurringsubscription.FieldUserID:              {Type: field.TypeInt, Column: recurringsubscription.FieldUserID},
 		},
 	}
-	graph.Nodes[8] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   snapshot.Table,
 			Columns: snapshot.Columns,
@@ -220,7 +197,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			snapshot.FieldNote:        {Type: field.TypeString, Column: snapshot.FieldNote},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   snapshotentry.Table,
 			Columns: snapshotentry.Columns,
@@ -240,12 +217,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			snapshotentry.FieldReceivable:          {Type: field.TypeFloat64, Column: snapshotentry.FieldReceivable},
 			snapshotentry.FieldLiability:           {Type: field.TypeFloat64, Column: snapshotentry.FieldLiability},
 			snapshotentry.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: snapshotentry.FieldHouseholdCurrencyID},
-			snapshotentry.FieldLegacyCurrencyID:    {Type: field.TypeInt, Column: snapshotentry.FieldLegacyCurrencyID},
 			snapshotentry.FieldUserID:              {Type: field.TypeInt, Column: snapshotentry.FieldUserID},
 			snapshotentry.FieldSnapshotID:          {Type: field.TypeInt, Column: snapshotentry.FieldSnapshotID},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   snapshotrate.Table,
 			Columns: snapshotrate.Columns,
@@ -261,12 +237,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			snapshotrate.FieldRate:                    {Type: field.TypeFloat64, Column: snapshotrate.FieldRate},
 			snapshotrate.FieldSnapshotID:              {Type: field.TypeInt, Column: snapshotrate.FieldSnapshotID},
 			snapshotrate.FieldFromHouseholdCurrencyID: {Type: field.TypeInt, Column: snapshotrate.FieldFromHouseholdCurrencyID},
-			snapshotrate.FieldLegacyFromCurrencyID:    {Type: field.TypeInt, Column: snapshotrate.FieldLegacyFromCurrencyID},
 			snapshotrate.FieldToHouseholdCurrencyID:   {Type: field.TypeInt, Column: snapshotrate.FieldToHouseholdCurrencyID},
-			snapshotrate.FieldLegacyToCurrencyID:      {Type: field.TypeInt, Column: snapshotrate.FieldLegacyToCurrencyID},
 		},
 	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transaction.Table,
 			Columns: transaction.Columns,
@@ -287,7 +261,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transaction.FieldExcludeFromReports: {Type: field.TypeBool, Column: transaction.FieldExcludeFromReports},
 		},
 	}
-	graph.Nodes[12] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactioncategory.Table,
 			Columns: transactioncategory.Columns,
@@ -307,7 +281,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactioncategory.FieldIsImmutable: {Type: field.TypeBool, Column: transactioncategory.FieldIsImmutable},
 		},
 	}
-	graph.Nodes[13] = &sqlgraph.Node{
+	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactionentry.Table,
 			Columns: transactionentry.Columns,
@@ -324,11 +298,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactionentry.FieldAmount:              {Type: field.TypeFloat64, Column: transactionentry.FieldAmount},
 			transactionentry.FieldAccountID:           {Type: field.TypeInt, Column: transactionentry.FieldAccountID},
 			transactionentry.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: transactionentry.FieldHouseholdCurrencyID},
-			transactionentry.FieldLegacyCurrencyID:    {Type: field.TypeInt, Column: transactionentry.FieldLegacyCurrencyID},
 			transactionentry.FieldTransactionID:       {Type: field.TypeInt, Column: transactionentry.FieldTransactionID},
 		},
 	}
-	graph.Nodes[14] = &sqlgraph.Node{
+	graph.Nodes[13] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -345,7 +318,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldName:       {Type: field.TypeString, Column: user.FieldName},
 		},
 	}
-	graph.Nodes[15] = &sqlgraph.Node{
+	graph.Nodes[14] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userhousehold.Table,
 			Columns: userhousehold.Columns,
@@ -364,7 +337,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userhousehold.FieldDefaultCurrencyID: {Type: field.TypeInt, Column: userhousehold.FieldDefaultCurrencyID},
 		},
 	}
-	graph.Nodes[16] = &sqlgraph.Node{
+	graph.Nodes[15] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userkey.Table,
 			Columns: userkey.Columns,
@@ -1357,11 +1330,6 @@ func (f *AccountFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(account.FieldHouseholdCurrencyID))
 }
 
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *AccountFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(account.FieldLegacyCurrencyID))
-}
-
 // WhereUserID applies the entql int predicate on the user_id field.
 func (f *AccountFilter) WhereUserID(p entql.IntP) {
 	f.Where(p.Field(account.FieldUserID))
@@ -1443,56 +1411,6 @@ func (f *AccountFilter) WhereHasInvestmentsWith(preds ...predicate.Investment) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *CurrencyQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the CurrencyQuery builder.
-func (_q *CurrencyQuery) Filter() *CurrencyFilter {
-	return &CurrencyFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *CurrencyMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the CurrencyMutation builder.
-func (m *CurrencyMutation) Filter() *CurrencyFilter {
-	return &CurrencyFilter{config: m.config, predicateAdder: m}
-}
-
-// CurrencyFilter provides a generic filtering capability at runtime for CurrencyQuery.
-type CurrencyFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *CurrencyFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql int predicate on the id field.
-func (f *CurrencyFilter) WhereID(p entql.IntP) {
-	f.Where(p.Field(currency.FieldID))
-}
-
-// WhereCode applies the entql string predicate on the code field.
-func (f *CurrencyFilter) WhereCode(p entql.StringP) {
-	f.Where(p.Field(currency.FieldCode))
-}
-
-// WhereLocales applies the entql json.RawMessage predicate on the locales field.
-func (f *CurrencyFilter) WhereLocales(p entql.BytesP) {
-	f.Where(p.Field(currency.FieldLocales))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *HouseholdQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -1521,7 +1439,7 @@ type HouseholdFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *HouseholdFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1555,11 +1473,6 @@ func (f *HouseholdFilter) WhereLocale(p entql.StringP) {
 // WhereCurrencyCode applies the entql string predicate on the currency_code field.
 func (f *HouseholdFilter) WhereCurrencyCode(p entql.StringP) {
 	f.Where(p.Field(household.FieldCurrencyCode))
-}
-
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *HouseholdFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(household.FieldLegacyCurrencyID))
 }
 
 // WhereIsDemo applies the entql bool predicate on the is_demo field.
@@ -1778,7 +1691,7 @@ type HouseholdCurrencyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *HouseholdCurrencyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1812,11 +1725,6 @@ func (f *HouseholdCurrencyFilter) WhereCode(p entql.StringP) {
 // WhereImportant applies the entql bool predicate on the important field.
 func (f *HouseholdCurrencyFilter) WhereImportant(p entql.BoolP) {
 	f.Where(p.Field(householdcurrency.FieldImportant))
-}
-
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *HouseholdCurrencyFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(householdcurrency.FieldLegacyCurrencyID))
 }
 
 // WhereHasHousehold applies a predicate to check if query has an edge household.
@@ -1988,7 +1896,7 @@ type HouseholdRateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *HouseholdRateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2024,19 +1932,9 @@ func (f *HouseholdRateFilter) WhereFromHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(householdrate.FieldFromHouseholdCurrencyID))
 }
 
-// WhereLegacyFromCurrencyID applies the entql int predicate on the legacy_from_currency_id field.
-func (f *HouseholdRateFilter) WhereLegacyFromCurrencyID(p entql.IntP) {
-	f.Where(p.Field(householdrate.FieldLegacyFromCurrencyID))
-}
-
 // WhereToHouseholdCurrencyID applies the entql int predicate on the to_household_currency_id field.
 func (f *HouseholdRateFilter) WhereToHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(householdrate.FieldToHouseholdCurrencyID))
-}
-
-// WhereLegacyToCurrencyID applies the entql int predicate on the legacy_to_currency_id field.
-func (f *HouseholdRateFilter) WhereLegacyToCurrencyID(p entql.IntP) {
-	f.Where(p.Field(householdrate.FieldLegacyToCurrencyID))
 }
 
 // WhereHasHousehold applies a predicate to check if query has an edge household.
@@ -2110,7 +2008,7 @@ type InvestmentFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InvestmentFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2174,11 +2072,6 @@ func (f *InvestmentFilter) WhereAccountID(p entql.IntP) {
 // WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
 func (f *InvestmentFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(investment.FieldHouseholdCurrencyID))
-}
-
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *InvestmentFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(investment.FieldLegacyCurrencyID))
 }
 
 // WhereHasAccount applies a predicate to check if query has an edge account.
@@ -2266,7 +2159,7 @@ type InvestmentLotFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *InvestmentLotFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2383,7 +2276,7 @@ type RecurringSubscriptionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RecurringSubscriptionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2447,11 +2340,6 @@ func (f *RecurringSubscriptionFilter) WhereCost(p entql.Float64P) {
 // WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
 func (f *RecurringSubscriptionFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(recurringsubscription.FieldHouseholdCurrencyID))
-}
-
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *RecurringSubscriptionFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(recurringsubscription.FieldLegacyCurrencyID))
 }
 
 // WhereUserID applies the entql int predicate on the user_id field.
@@ -2530,7 +2418,7 @@ type SnapshotFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SnapshotFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2632,7 +2520,7 @@ type SnapshotEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SnapshotEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2686,11 +2574,6 @@ func (f *SnapshotEntryFilter) WhereLiability(p entql.Float64P) {
 // WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
 func (f *SnapshotEntryFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(snapshotentry.FieldHouseholdCurrencyID))
-}
-
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *SnapshotEntryFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(snapshotentry.FieldLegacyCurrencyID))
 }
 
 // WhereUserID applies the entql int predicate on the user_id field.
@@ -2788,7 +2671,7 @@ type SnapshotRateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SnapshotRateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2824,19 +2707,9 @@ func (f *SnapshotRateFilter) WhereFromHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(snapshotrate.FieldFromHouseholdCurrencyID))
 }
 
-// WhereLegacyFromCurrencyID applies the entql int predicate on the legacy_from_currency_id field.
-func (f *SnapshotRateFilter) WhereLegacyFromCurrencyID(p entql.IntP) {
-	f.Where(p.Field(snapshotrate.FieldLegacyFromCurrencyID))
-}
-
 // WhereToHouseholdCurrencyID applies the entql int predicate on the to_household_currency_id field.
 func (f *SnapshotRateFilter) WhereToHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(snapshotrate.FieldToHouseholdCurrencyID))
-}
-
-// WhereLegacyToCurrencyID applies the entql int predicate on the legacy_to_currency_id field.
-func (f *SnapshotRateFilter) WhereLegacyToCurrencyID(p entql.IntP) {
-	f.Where(p.Field(snapshotrate.FieldLegacyToCurrencyID))
 }
 
 // WhereHasSnapshot applies a predicate to check if query has an edge snapshot.
@@ -2910,7 +2783,7 @@ type TransactionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3060,7 +2933,7 @@ type TransactionCategoryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionCategoryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3163,7 +3036,7 @@ type TransactionEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3202,11 +3075,6 @@ func (f *TransactionEntryFilter) WhereAccountID(p entql.IntP) {
 // WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
 func (f *TransactionEntryFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(transactionentry.FieldHouseholdCurrencyID))
-}
-
-// WhereLegacyCurrencyID applies the entql int predicate on the legacy_currency_id field.
-func (f *TransactionEntryFilter) WhereLegacyCurrencyID(p entql.IntP) {
-	f.Where(p.Field(transactionentry.FieldLegacyCurrencyID))
 }
 
 // WhereTransactionID applies the entql int predicate on the transaction_id field.
@@ -3299,7 +3167,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3457,7 +3325,7 @@ type UserHouseholdFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserHouseholdFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3569,7 +3437,7 @@ type UserKeyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserKeyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

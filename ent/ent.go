@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
@@ -90,7 +89,6 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			account.Table:               account.ValidColumn,
-			currency.Table:              currency.ValidColumn,
 			household.Table:             household.ValidColumn,
 			householdcurrency.Table:     householdcurrency.ValidColumn,
 			householdrate.Table:         householdrate.ValidColumn,

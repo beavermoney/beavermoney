@@ -135,30 +135,6 @@ func (f AccountMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AccountMutation", m)
 }
 
-// The CurrencyQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type CurrencyQueryRuleFunc func(context.Context, *ent.CurrencyQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f CurrencyQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.CurrencyQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CurrencyQuery", q)
-}
-
-// The CurrencyMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type CurrencyMutationRuleFunc func(context.Context, *ent.CurrencyMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f CurrencyMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.CurrencyMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CurrencyMutation", m)
-}
-
 // The HouseholdQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type HouseholdQueryRuleFunc func(context.Context, *ent.HouseholdQuery) error
@@ -556,8 +532,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
 	case *ent.AccountQuery:
 		return q.Filter(), nil
-	case *ent.CurrencyQuery:
-		return q.Filter(), nil
 	case *ent.HouseholdQuery:
 		return q.Filter(), nil
 	case *ent.HouseholdCurrencyQuery:
@@ -596,8 +570,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
 	case *ent.AccountMutation:
-		return m.Filter(), nil
-	case *ent.CurrencyMutation:
 		return m.Filter(), nil
 	case *ent.HouseholdMutation:
 		return m.Filter(), nil

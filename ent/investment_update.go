@@ -100,33 +100,6 @@ func (_u *InvestmentUpdate) AddQuote(v decimal.Decimal) *InvestmentUpdate {
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *InvestmentUpdate) SetLegacyCurrencyID(v int) *InvestmentUpdate {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *InvestmentUpdate) SetNillableLegacyCurrencyID(v *int) *InvestmentUpdate {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *InvestmentUpdate) AddLegacyCurrencyID(v int) *InvestmentUpdate {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *InvestmentUpdate) ClearLegacyCurrencyID() *InvestmentUpdate {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by IDs.
 func (_u *InvestmentUpdate) AddInvestmentLotIDs(ids ...int) *InvestmentUpdate {
 	_u.mutation.AddInvestmentLotIDs(ids...)
@@ -270,15 +243,6 @@ func (_u *InvestmentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.AddedQuote(); ok {
 		_spec.AddField(investment.FieldQuote, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(investment.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(investment.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(investment.FieldLegacyCurrencyID, field.TypeInt)
-	}
 	if _u.mutation.InvestmentLotsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -412,33 +376,6 @@ func (_u *InvestmentUpdateOne) SetNillableQuote(v *decimal.Decimal) *InvestmentU
 // AddQuote adds value to the "quote" field.
 func (_u *InvestmentUpdateOne) AddQuote(v decimal.Decimal) *InvestmentUpdateOne {
 	_u.mutation.AddQuote(v)
-	return _u
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *InvestmentUpdateOne) SetLegacyCurrencyID(v int) *InvestmentUpdateOne {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *InvestmentUpdateOne) SetNillableLegacyCurrencyID(v *int) *InvestmentUpdateOne {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *InvestmentUpdateOne) AddLegacyCurrencyID(v int) *InvestmentUpdateOne {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *InvestmentUpdateOne) ClearLegacyCurrencyID() *InvestmentUpdateOne {
-	_u.mutation.ClearLegacyCurrencyID()
 	return _u
 }
 
@@ -614,15 +551,6 @@ func (_u *InvestmentUpdateOne) sqlSave(ctx context.Context) (_node *Investment, 
 	}
 	if value, ok := _u.mutation.AddedQuote(); ok {
 		_spec.AddField(investment.FieldQuote, field.TypeFloat64, value)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(investment.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(investment.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(investment.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	if _u.mutation.InvestmentLotsCleared() {
 		edge := &sqlgraph.EdgeSpec{

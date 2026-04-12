@@ -27,8 +27,6 @@ type Household struct {
 	Locale string `json:"locale,omitempty"`
 	// CurrencyCode holds the value of the "currency_code" field.
 	CurrencyCode string `json:"currency_code,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
 	// IsDemo holds the value of the "is_demo" field.
 	IsDemo bool `json:"is_demo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -210,7 +208,7 @@ func (*Household) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case household.FieldIsDemo:
 			values[i] = new(sql.NullBool)
-		case household.FieldID, household.FieldLegacyCurrencyID:
+		case household.FieldID:
 			values[i] = new(sql.NullInt64)
 		case household.FieldName, household.FieldLocale, household.FieldCurrencyCode:
 			values[i] = new(sql.NullString)
@@ -266,13 +264,6 @@ func (_m *Household) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field currency_code", values[i])
 			} else if value.Valid {
 				_m.CurrencyCode = value.String
-			}
-		case household.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
 			}
 		case household.FieldIsDemo:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -395,11 +386,6 @@ func (_m *Household) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("currency_code=")
 	builder.WriteString(_m.CurrencyCode)
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("is_demo=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsDemo))

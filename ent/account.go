@@ -41,8 +41,6 @@ type Account struct {
 	Value decimal.Decimal `json:"value,omitempty"`
 	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
 	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// Archived holds the value of the "archived" field.
@@ -135,7 +133,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 			values[i] = new(decimal.Decimal)
 		case account.FieldArchived:
 			values[i] = new(sql.NullBool)
-		case account.FieldID, account.FieldHouseholdID, account.FieldHouseholdCurrencyID, account.FieldLegacyCurrencyID, account.FieldUserID:
+		case account.FieldID, account.FieldHouseholdID, account.FieldHouseholdCurrencyID, account.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case account.FieldName, account.FieldType, account.FieldCategory, account.FieldIcon:
 			values[i] = new(sql.NullString)
@@ -222,13 +220,6 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
 			} else if value.Valid {
 				_m.HouseholdCurrencyID = int(value.Int64)
-			}
-		case account.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
 			}
 		case account.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -334,11 +325,6 @@ func (_m *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))

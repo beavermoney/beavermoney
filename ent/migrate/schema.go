@@ -20,7 +20,6 @@ var (
 		{Name: "category", Type: field.TypeEnum, Nullable: true, Enums: []string{"tfsa", "rrsp", "rrif", "resp", "fhsa", "lira", "rdsp", "ira_traditional", "ira_roth", "plan_401k", "roth_401k", "plan_403b", "plan_457b", "sep_ira", "simple_ira", "hsa", "plan_529"}},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "value", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "archived", Type: field.TypeBool, Default: false},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
@@ -34,35 +33,23 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "accounts_households_accounts",
-				Columns:    []*schema.Column{AccountsColumns[11]},
+				Columns:    []*schema.Column{AccountsColumns[10]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "accounts_household_currencies_accounts",
-				Columns:    []*schema.Column{AccountsColumns[12]},
+				Columns:    []*schema.Column{AccountsColumns[11]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "accounts_users_accounts",
-				Columns:    []*schema.Column{AccountsColumns[13]},
+				Columns:    []*schema.Column{AccountsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
-	}
-	// CurrenciesColumns holds the columns for the "currencies" table.
-	CurrenciesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "code", Type: field.TypeString, Unique: true},
-		{Name: "locales", Type: field.TypeJSON},
-	}
-	// CurrenciesTable holds the schema information for the "currencies" table.
-	CurrenciesTable = &schema.Table{
-		Name:       "currencies",
-		Columns:    CurrenciesColumns,
-		PrimaryKey: []*schema.Column{CurrenciesColumns[0]},
 	}
 	// HouseholdsColumns holds the columns for the "households" table.
 	HouseholdsColumns = []*schema.Column{
@@ -72,7 +59,6 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "locale", Type: field.TypeString},
 		{Name: "currency_code", Type: field.TypeString},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "is_demo", Type: field.TypeBool, Default: false},
 	}
 	// HouseholdsTable holds the schema information for the "households" table.
@@ -88,7 +74,6 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "code", Type: field.TypeString},
 		{Name: "important", Type: field.TypeBool, Default: false},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "household_id", Type: field.TypeInt},
 	}
 	// HouseholdCurrenciesTable holds the schema information for the "household_currencies" table.
@@ -99,7 +84,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "household_currencies_households_household_currencies",
-				Columns:    []*schema.Column{HouseholdCurrenciesColumns[6]},
+				Columns:    []*schema.Column{HouseholdCurrenciesColumns[5]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -108,7 +93,7 @@ var (
 			{
 				Name:    "householdcurrency_household_id_code",
 				Unique:  true,
-				Columns: []*schema.Column{HouseholdCurrenciesColumns[6], HouseholdCurrenciesColumns[3]},
+				Columns: []*schema.Column{HouseholdCurrenciesColumns[5], HouseholdCurrenciesColumns[3]},
 			},
 		},
 	}
@@ -118,8 +103,6 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "from_currency_id", Type: field.TypeInt, Nullable: true},
-		{Name: "to_currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "from_household_currency_id", Type: field.TypeInt},
 		{Name: "to_household_currency_id", Type: field.TypeInt},
@@ -132,19 +115,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "household_rates_households_household_rates",
-				Columns:    []*schema.Column{HouseholdRatesColumns[6]},
+				Columns:    []*schema.Column{HouseholdRatesColumns[4]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "household_rates_household_currencies_household_rates_from",
-				Columns:    []*schema.Column{HouseholdRatesColumns[7]},
+				Columns:    []*schema.Column{HouseholdRatesColumns[5]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "household_rates_household_currencies_household_rates_to",
-				Columns:    []*schema.Column{HouseholdRatesColumns[8]},
+				Columns:    []*schema.Column{HouseholdRatesColumns[6]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -153,7 +136,7 @@ var (
 			{
 				Name:    "householdrate_household_id_from_household_currency_id_to_household_currency_id",
 				Unique:  true,
-				Columns: []*schema.Column{HouseholdRatesColumns[6], HouseholdRatesColumns[7], HouseholdRatesColumns[8]},
+				Columns: []*schema.Column{HouseholdRatesColumns[4], HouseholdRatesColumns[5], HouseholdRatesColumns[6]},
 			},
 		},
 	}
@@ -168,7 +151,6 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "quote", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "value", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "account_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
@@ -181,19 +163,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "investments_accounts_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[10]},
+				Columns:    []*schema.Column{InvestmentsColumns[9]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "investments_households_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[11]},
+				Columns:    []*schema.Column{InvestmentsColumns[10]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "investments_household_currencies_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[12]},
+				Columns:    []*schema.Column{InvestmentsColumns[11]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -248,7 +230,6 @@ var (
 		{Name: "active", Type: field.TypeBool, Default: true},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "cost", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
@@ -261,19 +242,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "recurring_subscriptions_households_recurring_subscriptions",
-				Columns:    []*schema.Column{RecurringSubscriptionsColumns[11]},
+				Columns:    []*schema.Column{RecurringSubscriptionsColumns[10]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "recurring_subscriptions_household_currencies_recurring_subscriptions",
-				Columns:    []*schema.Column{RecurringSubscriptionsColumns[12]},
+				Columns:    []*schema.Column{RecurringSubscriptionsColumns[11]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "recurring_subscriptions_users_recurring_subscriptions",
-				Columns:    []*schema.Column{RecurringSubscriptionsColumns[13]},
+				Columns:    []*schema.Column{RecurringSubscriptionsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -318,7 +299,6 @@ var (
 		{Name: "property", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "receivable", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "liability", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
 		{Name: "snapshot_id", Type: field.TypeInt},
@@ -332,25 +312,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "snapshot_entries_households_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[9]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[8]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "snapshot_entries_household_currencies_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[10]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[9]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "snapshot_entries_snapshots_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[11]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[10]},
 				RefColumns: []*schema.Column{SnapshotsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "snapshot_entries_users_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[12]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[11]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -359,12 +339,12 @@ var (
 			{
 				Name:    "snapshotentry_snapshot_id",
 				Unique:  false,
-				Columns: []*schema.Column{SnapshotEntriesColumns[11]},
+				Columns: []*schema.Column{SnapshotEntriesColumns[10]},
 			},
 			{
 				Name:    "snapshotentry_snapshot_id_user_id_household_currency_id",
 				Unique:  true,
-				Columns: []*schema.Column{SnapshotEntriesColumns[11], SnapshotEntriesColumns[12], SnapshotEntriesColumns[10]},
+				Columns: []*schema.Column{SnapshotEntriesColumns[10], SnapshotEntriesColumns[11], SnapshotEntriesColumns[9]},
 			},
 		},
 	}
@@ -374,8 +354,6 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "from_currency_id", Type: field.TypeInt, Nullable: true},
-		{Name: "to_currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "from_household_currency_id", Type: field.TypeInt},
 		{Name: "to_household_currency_id", Type: field.TypeInt},
 		{Name: "snapshot_id", Type: field.TypeInt},
@@ -388,19 +366,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "snapshot_rates_household_currencies_snapshot_rates_from",
-				Columns:    []*schema.Column{SnapshotRatesColumns[6]},
+				Columns:    []*schema.Column{SnapshotRatesColumns[4]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "snapshot_rates_household_currencies_snapshot_rates_to",
-				Columns:    []*schema.Column{SnapshotRatesColumns[7]},
+				Columns:    []*schema.Column{SnapshotRatesColumns[5]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "snapshot_rates_snapshots_snapshot_rates",
-				Columns:    []*schema.Column{SnapshotRatesColumns[8]},
+				Columns:    []*schema.Column{SnapshotRatesColumns[6]},
 				RefColumns: []*schema.Column{SnapshotsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -409,12 +387,12 @@ var (
 			{
 				Name:    "snapshotrate_snapshot_id",
 				Unique:  false,
-				Columns: []*schema.Column{SnapshotRatesColumns[8]},
+				Columns: []*schema.Column{SnapshotRatesColumns[6]},
 			},
 			{
 				Name:    "snapshotrate_snapshot_id_from_household_currency_id_to_household_currency_id",
 				Unique:  true,
-				Columns: []*schema.Column{SnapshotRatesColumns[8], SnapshotRatesColumns[6], SnapshotRatesColumns[7]},
+				Columns: []*schema.Column{SnapshotRatesColumns[6], SnapshotRatesColumns[4], SnapshotRatesColumns[5]},
 			},
 		},
 	}
@@ -501,7 +479,6 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
-		{Name: "currency_id", Type: field.TypeInt, Nullable: true},
 		{Name: "account_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
@@ -515,25 +492,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "transaction_entries_accounts_transaction_entries",
-				Columns:    []*schema.Column{TransactionEntriesColumns[5]},
+				Columns:    []*schema.Column{TransactionEntriesColumns[4]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transaction_entries_households_transaction_entries",
-				Columns:    []*schema.Column{TransactionEntriesColumns[6]},
+				Columns:    []*schema.Column{TransactionEntriesColumns[5]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transaction_entries_household_currencies_transaction_entries",
-				Columns:    []*schema.Column{TransactionEntriesColumns[7]},
+				Columns:    []*schema.Column{TransactionEntriesColumns[6]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transaction_entries_transactions_transaction_entries",
-				Columns:    []*schema.Column{TransactionEntriesColumns[8]},
+				Columns:    []*schema.Column{TransactionEntriesColumns[7]},
 				RefColumns: []*schema.Column{TransactionsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -629,7 +606,6 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
-		CurrenciesTable,
 		HouseholdsTable,
 		HouseholdCurrenciesTable,
 		HouseholdRatesTable,
@@ -654,9 +630,6 @@ func init() {
 	AccountsTable.ForeignKeys[2].RefTable = UsersTable
 	AccountsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(0),
-	}
-	CurrenciesTable.Annotation = &entsql.Annotation{
-		IncrementStart: func(i int) *int { return &i }(4294967296),
 	}
 	HouseholdsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(8589934592),

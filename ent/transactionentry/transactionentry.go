@@ -27,8 +27,6 @@ const (
 	FieldAccountID = "account_id"
 	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
 	FieldHouseholdCurrencyID = "household_currency_id"
-	// FieldLegacyCurrencyID holds the string denoting the legacy_currency_id field in the database.
-	FieldLegacyCurrencyID = "currency_id"
 	// FieldTransactionID holds the string denoting the transaction_id field in the database.
 	FieldTransactionID = "transaction_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
@@ -80,7 +78,6 @@ var Columns = []string{
 	FieldAmount,
 	FieldAccountID,
 	FieldHouseholdCurrencyID,
-	FieldLegacyCurrencyID,
 	FieldTransactionID,
 }
 
@@ -152,11 +149,6 @@ func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
 // ByHouseholdCurrencyID orders the results by the household_currency_id field.
 func ByHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHouseholdCurrencyID, opts...).ToFunc()
-}
-
-// ByLegacyCurrencyID orders the results by the legacy_currency_id field.
-func ByLegacyCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyCurrencyID, opts...).ToFunc()
 }
 
 // ByTransactionID orders the results by the transaction_id field.
