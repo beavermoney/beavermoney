@@ -6,6 +6,7 @@ import {
 import { z } from 'zod'
 
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { GenericError } from '@/components/generic-error'
 
 const SearchSchema = z.object({
   sort_by: z
@@ -23,6 +24,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   validateSearch: SearchSchema,
+  errorComponent: GenericError,
   search: {
     middlewares: [stripSearchParams(defaultValues)],
   },

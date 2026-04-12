@@ -74,6 +74,7 @@ import { NotFoundError } from '@/components/not-found-error'
 import { PrivacyAlertDialog } from '@/components/privacy-alert-dialog'
 import { identity } from 'lodash-es'
 import { UserHouseholdProvider } from '@/hooks/use-user-household'
+import { GenericError } from '@/components/generic-error'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -114,15 +115,12 @@ const defaultValues = {
   edit_transaction_id: null,
 }
 
-function ErrorComponent() {
-  return <NotFoundError />
-}
-
 export const Route = createFileRoute('/_user/household/$householdId')({
   component: RouteComponent,
   validateSearch: searchSchema,
   staleTime: Infinity,
-  errorComponent: ErrorComponent,
+  notFoundComponent: NotFoundError,
+  errorComponent: GenericError,
   loaderDeps: ({ search }) => ({
     editTransactionId: search.edit_transaction_id,
   }),

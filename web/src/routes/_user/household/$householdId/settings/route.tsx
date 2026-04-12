@@ -8,6 +8,7 @@ import { HouseholdContentLayout } from '@/components/layouts/household-content-l
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { identity } from 'lodash-es'
+import { GenericError } from '@/components/generic-error'
 
 const SETTINGS_NAV = [
   {
@@ -32,6 +33,7 @@ const SETTINGS_NAV = [
 
 export const Route = createFileRoute('/_user/household/$householdId/settings')({
   component: RouteComponent,
+  errorComponent: GenericError,
 })
 
 function RouteComponent() {

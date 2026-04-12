@@ -3,6 +3,7 @@ import * as z from 'zod'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { getDateRangeForPreset, DATE_RANGE_PRESETS } from '@/lib/date-range'
 import { format } from 'date-fns'
+import { GenericError } from '@/components/generic-error'
 
 const getDefaultDates = () => {
   const range = getDateRangeForPreset(DATE_RANGE_PRESETS.THIS_MONTH)
@@ -24,6 +25,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   validateSearch: SearchSchema,
+  errorComponent: GenericError,
 })
 
 function RouteComponent() {
