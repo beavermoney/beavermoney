@@ -28,9 +28,11 @@ func seedHouseholdRates(
 	}
 
 	for _, hh := range households {
+		hhCtx := context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), hh.ID)
+
 		currencies, err := client.HouseholdCurrency.Query().
 			Where(householdcurrency.HouseholdIDEQ(hh.ID)).
-			All(bypassCtx)
+			All(hhCtx)
 		if err != nil {
 			return fmt.Errorf("failed to query currencies for household %d: %w", hh.ID, err)
 		}
@@ -43,7 +45,7 @@ func seedHouseholdRates(
 			mc[i] = migrateCurrency{ID: c.ID, Code: c.Code}
 		}
 
-		if err := populateHouseholdRates(bypassCtx, client, frankfurterClient, hh.ID, mc); err != nil {
+		if err := populateHouseholdRates(hhCtx, client, frankfurterClient, hh.ID, mc); err != nil {
 			return fmt.Errorf("failed to seed rates for household %d: %w", hh.ID, err)
 		}
 
