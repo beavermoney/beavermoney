@@ -5,6 +5,7 @@ import currency from 'currency.js'
 import type { useDisplayCurrencyFragment$key } from './__generated__/useDisplayCurrencyFragment.graphql'
 import { useUser } from './use-user'
 import { displayCurrencyIdStore } from './display-currency-store'
+import { identity } from 'lodash-es'
 
 const UseDisplayCurrencyFragment = graphql`
   fragment useDisplayCurrencyFragment on Household {
@@ -65,7 +66,7 @@ export const useDisplayCurrency = () => {
   }
   const data = useFragment(UseDisplayCurrencyFragment, ref)
   const user = useUser()
-  const storedId = useStore(displayCurrencyIdStore)
+  const storedId = useStore(displayCurrencyIdStore, identity)
 
   const code = useMemo(() => {
     if (storedId) {

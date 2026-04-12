@@ -1,7 +1,7 @@
-import { Store } from '@tanstack/store'
+import { createStore } from '@tanstack/store'
 import { LOCAL_STORAGE_DISPLAY_CURRENCY_ID_KEY } from '@/constant'
 
-export const displayCurrencyIdStore = new Store(
+export const displayCurrencyIdStore = createStore(
   localStorage.getItem(LOCAL_STORAGE_DISPLAY_CURRENCY_ID_KEY) ?? '',
 )
 

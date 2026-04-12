@@ -72,6 +72,7 @@ import Hotkeys from './-components/hotkeys'
 import type { editTransactionDialogQuery } from './transactions/-components/__generated__/editTransactionDialogQuery.graphql'
 import { NotFoundError } from '@/components/not-found-error'
 import { PrivacyAlertDialog } from '@/components/privacy-alert-dialog'
+import { identity } from 'lodash-es'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery {
@@ -168,7 +169,7 @@ function RouteComponent() {
   const currencies = (data.household.householdCurrencies ?? []).filter(
     (hc) => hc.important,
   )
-  const displayCurrencyId = useStore(displayCurrencyIdStore)
+  const displayCurrencyId = useStore(displayCurrencyIdStore, identity)
   const activeCurrencyCode =
     currencies.find((c) => c.id === displayCurrencyId)?.code ??
     currencies[0]?.code ??
