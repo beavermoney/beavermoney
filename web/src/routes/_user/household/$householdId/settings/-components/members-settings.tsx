@@ -55,7 +55,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                       (you)
                     </span>
                   )}
-                  <Badge variant={'outline'}>CAD</Badge>
+                  <Badge variant={'outline'}>{uh.householdCurrency.code}</Badge>
                 </ItemTitle>
                 <ItemDescription>{uh.user.email}</ItemDescription>
               </ItemContent>

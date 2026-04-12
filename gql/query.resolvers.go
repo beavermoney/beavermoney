@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
+	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
 	"entgo.io/ent/dialect/sql"
@@ -117,6 +118,25 @@ func (r *queryResolver) Household(ctx context.Context) (*ent.Household, error) {
 	defer span.End()
 
 	return r.entClient.Household.Get(ctx, householdID)
+}
+
+// UserHousehold is the resolver for the userHousehold field.
+func (r *queryResolver) UserHousehold(ctx context.Context) (*ent.UserHousehold, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "queryResolver.UserHousehold",
+		trace.WithAttributes(
+			attribute.Int("userID", userID),
+			attribute.Int("householdID", householdID),
+		),
+	)
+	defer span.End()
+
+	return r.entClient.UserHousehold.Query().Where(
+		userhousehold.UserIDEQ(userID),
+		userhousehold.HouseholdIDEQ(householdID),
+	).Only(ctx)
 }
 
 // StockQuote is the resolver for the stockQuote field.

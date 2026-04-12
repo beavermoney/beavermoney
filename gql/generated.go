@@ -360,6 +360,7 @@ type ComplexityRoot struct {
 		TransactionEntries     func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.TransactionEntryWhereInput) int
 		Transactions           func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
 		User                   func(childComplexity int) int
+		UserHousehold          func(childComplexity int) int
 		UserHouseholds         func(childComplexity int) int
 	}
 
@@ -667,6 +668,7 @@ type QueryResolver interface {
 	UserHouseholds(ctx context.Context) ([]*ent.UserHousehold, error)
 	User(ctx context.Context) (*ent.User, error)
 	Household(ctx context.Context) (*ent.Household, error)
+	UserHousehold(ctx context.Context) (*ent.UserHousehold, error)
 	StockQuote(ctx context.Context, symbol string) (*model.StockQuoteResult, error)
 	CryptoQuote(ctx context.Context, symbol string) (*model.CryptoQuoteResult, error)
 }
@@ -2307,6 +2309,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.User(childComplexity), true
+	case "Query.userHousehold":
+		if e.complexity.Query.UserHousehold == nil {
+			break
+		}
+
+		return e.complexity.Query.UserHousehold(childComplexity), true
 	case "Query.userHouseholds":
 		if e.complexity.Query.UserHouseholds == nil {
 			break
@@ -12348,6 +12356,57 @@ func (ec *executionContext) fieldContext_Query_household(_ context.Context, fiel
 				return ec.fieldContext_Household_financialReport(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_userHousehold(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_userHousehold,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().UserHousehold(ctx)
+		},
+		nil,
+		ec.marshalNUserHousehold2ᚖbeavermoneyᚗappᚋentᚐUserHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_userHousehold(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserHousehold_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_UserHousehold_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_UserHousehold_updateTime(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserHousehold_userID(ctx, field)
+			case "householdID":
+				return ec.fieldContext_UserHousehold_householdID(ctx, field)
+			case "role":
+				return ec.fieldContext_UserHousehold_role(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
+			case "user":
+				return ec.fieldContext_UserHousehold_user(ctx, field)
+			case "household":
+				return ec.fieldContext_UserHousehold_household(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserHousehold", field.Name)
 		},
 	}
 	return fc, nil
@@ -33746,6 +33805,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "userHousehold":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userHousehold(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "stockQuote":
 			field := field
 
@@ -38082,6 +38163,10 @@ func (ec *executionContext) marshalNUser2ᚖbeavermoneyᚗappᚋentᚐUser(ctx c
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUserHousehold2beavermoneyᚗappᚋentᚐUserHousehold(ctx context.Context, sel ast.SelectionSet, v ent.UserHousehold) graphql.Marshaler {
+	return ec._UserHousehold(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNUserHousehold2ᚕᚖbeavermoneyᚗappᚋentᚐUserHouseholdᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.UserHousehold) graphql.Marshaler {

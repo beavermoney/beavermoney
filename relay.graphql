@@ -1722,6 +1722,7 @@ type Query {
   userHouseholds: [UserHousehold!]!
   user: User!
   household: Household!
+  userHousehold: UserHousehold!
   stockQuote(symbol: String!): StockQuoteResult
   cryptoQuote(symbol: String!): CryptoQuoteResult
 }
