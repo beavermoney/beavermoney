@@ -168,6 +168,19 @@ func (SnapshotEntry) Fields() []ent.Field {
 			Immutable().
 			Comment("Total liability account values (negative)"),
 
+		field.Float("unrealized_return").GoType(decimal.Decimal{}).
+			SchemaType(map[string]string{
+				dialect.Postgres: "numeric(36,18)",
+			}).
+			Annotations(
+				entgql.Type("String"),
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			).
+			Immutable(),
+
 		field.Int("household_currency_id").Positive().Immutable().
 			Annotations(
 				entgql.Skip(

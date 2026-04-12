@@ -31,6 +31,8 @@ const (
 	FieldReceivable = "receivable"
 	// FieldLiability holds the string denoting the liability field in the database.
 	FieldLiability = "liability"
+	// FieldUnrealizedReturn holds the string denoting the unrealized_return field in the database.
+	FieldUnrealizedReturn = "unrealized_return"
 	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
 	FieldHouseholdCurrencyID = "household_currency_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
@@ -88,6 +90,7 @@ var Columns = []string{
 	FieldProperty,
 	FieldReceivable,
 	FieldLiability,
+	FieldUnrealizedReturn,
 	FieldHouseholdCurrencyID,
 	FieldUserID,
 	FieldSnapshotID,
@@ -171,6 +174,11 @@ func ByReceivable(opts ...sql.OrderTermOption) OrderOption {
 // ByLiability orders the results by the liability field.
 func ByLiability(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLiability, opts...).ToFunc()
+}
+
+// ByUnrealizedReturn orders the results by the unrealized_return field.
+func ByUnrealizedReturn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUnrealizedReturn, opts...).ToFunc()
 }
 
 // ByHouseholdCurrencyID orders the results by the household_currency_id field.

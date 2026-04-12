@@ -2245,6 +2245,11 @@ func (_q *SnapshotEntryQuery) collectField(ctx context.Context, oneNode bool, op
 				selectedFields = append(selectedFields, snapshotentry.FieldLiability)
 				fieldSeen[snapshotentry.FieldLiability] = struct{}{}
 			}
+		case "unrealizedReturn":
+			if _, ok := fieldSeen[snapshotentry.FieldUnrealizedReturn]; !ok {
+				selectedFields = append(selectedFields, snapshotentry.FieldUnrealizedReturn)
+				fieldSeen[snapshotentry.FieldUnrealizedReturn] = struct{}{}
+			}
 		case "householdCurrencyID":
 			if _, ok := fieldSeen[snapshotentry.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, snapshotentry.FieldHouseholdCurrencyID)

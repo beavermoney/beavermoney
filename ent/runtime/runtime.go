@@ -356,15 +356,15 @@ func init() {
 	// snapshotentry.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	snapshotentry.UpdateDefaultUpdateTime = snapshotentryDescUpdateTime.UpdateDefault.(func() time.Time)
 	// snapshotentryDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
-	snapshotentryDescHouseholdCurrencyID := snapshotentryFields[5].Descriptor()
+	snapshotentryDescHouseholdCurrencyID := snapshotentryFields[6].Descriptor()
 	// snapshotentry.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
 	snapshotentry.HouseholdCurrencyIDValidator = snapshotentryDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// snapshotentryDescUserID is the schema descriptor for user_id field.
-	snapshotentryDescUserID := snapshotentryFields[6].Descriptor()
+	snapshotentryDescUserID := snapshotentryFields[7].Descriptor()
 	// snapshotentry.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	snapshotentry.UserIDValidator = snapshotentryDescUserID.Validators[0].(func(int) error)
 	// snapshotentryDescSnapshotID is the schema descriptor for snapshot_id field.
-	snapshotentryDescSnapshotID := snapshotentryFields[7].Descriptor()
+	snapshotentryDescSnapshotID := snapshotentryFields[8].Descriptor()
 	// snapshotentry.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
 	snapshotentry.SnapshotIDValidator = snapshotentryDescSnapshotID.Validators[0].(func(int) error)
 	snapshotrateMixin := schema.SnapshotRate{}.Mixin()

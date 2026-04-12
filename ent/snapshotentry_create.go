@@ -91,6 +91,12 @@ func (_c *SnapshotEntryCreate) SetLiability(v decimal.Decimal) *SnapshotEntryCre
 	return _c
 }
 
+// SetUnrealizedReturn sets the "unrealized_return" field.
+func (_c *SnapshotEntryCreate) SetUnrealizedReturn(v decimal.Decimal) *SnapshotEntryCreate {
+	_c.mutation.SetUnrealizedReturn(v)
+	return _c
+}
+
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (_c *SnapshotEntryCreate) SetHouseholdCurrencyID(v int) *SnapshotEntryCreate {
 	_c.mutation.SetHouseholdCurrencyID(v)
@@ -209,6 +215,9 @@ func (_c *SnapshotEntryCreate) check() error {
 	if _, ok := _c.mutation.Liability(); !ok {
 		return &ValidationError{Name: "liability", err: errors.New(`ent: missing required field "SnapshotEntry.liability"`)}
 	}
+	if _, ok := _c.mutation.UnrealizedReturn(); !ok {
+		return &ValidationError{Name: "unrealized_return", err: errors.New(`ent: missing required field "SnapshotEntry.unrealized_return"`)}
+	}
 	if _, ok := _c.mutation.HouseholdCurrencyID(); !ok {
 		return &ValidationError{Name: "household_currency_id", err: errors.New(`ent: missing required field "SnapshotEntry.household_currency_id"`)}
 	}
@@ -299,6 +308,10 @@ func (_c *SnapshotEntryCreate) createSpec() (*SnapshotEntry, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.Liability(); ok {
 		_spec.SetField(snapshotentry.FieldLiability, field.TypeFloat64, value)
 		_node.Liability = value
+	}
+	if value, ok := _c.mutation.UnrealizedReturn(); ok {
+		_spec.SetField(snapshotentry.FieldUnrealizedReturn, field.TypeFloat64, value)
+		_node.UnrealizedReturn = value
 	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -463,6 +476,9 @@ func (u *SnapshotEntryUpsertOne) UpdateNewValues() *SnapshotEntryUpsertOne {
 		}
 		if _, exists := u.create.mutation.Liability(); exists {
 			s.SetIgnore(snapshotentry.FieldLiability)
+		}
+		if _, exists := u.create.mutation.UnrealizedReturn(); exists {
+			s.SetIgnore(snapshotentry.FieldUnrealizedReturn)
 		}
 		if _, exists := u.create.mutation.HouseholdCurrencyID(); exists {
 			s.SetIgnore(snapshotentry.FieldHouseholdCurrencyID)
@@ -714,6 +730,9 @@ func (u *SnapshotEntryUpsertBulk) UpdateNewValues() *SnapshotEntryUpsertBulk {
 			}
 			if _, exists := b.mutation.Liability(); exists {
 				s.SetIgnore(snapshotentry.FieldLiability)
+			}
+			if _, exists := b.mutation.UnrealizedReturn(); exists {
+				s.SetIgnore(snapshotentry.FieldUnrealizedReturn)
 			}
 			if _, exists := b.mutation.HouseholdCurrencyID(); exists {
 				s.SetIgnore(snapshotentry.FieldHouseholdCurrencyID)
