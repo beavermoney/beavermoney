@@ -6518,6 +6518,12 @@ type UserHouseholdWhereInput struct {
 	DefaultCurrencyIDIsNil  bool  `json:"defaultCurrencyIDIsNil,omitempty"`
 	DefaultCurrencyIDNotNil bool  `json:"defaultCurrencyIDNotNil,omitempty"`
 
+	// "household_currency_id" field predicates.
+	HouseholdCurrencyID      *int  `json:"householdCurrencyID,omitempty"`
+	HouseholdCurrencyIDNEQ   *int  `json:"householdCurrencyIDNEQ,omitempty"`
+	HouseholdCurrencyIDIn    []int `json:"householdCurrencyIDIn,omitempty"`
+	HouseholdCurrencyIDNotIn []int `json:"householdCurrencyIDNotIn,omitempty"`
+
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
 	HasUserWith []*UserWhereInput `json:"hasUserWith,omitempty"`
@@ -6529,6 +6535,10 @@ type UserHouseholdWhereInput struct {
 	// "default_currency" edge predicates.
 	HasDefaultCurrency     *bool                          `json:"hasDefaultCurrency,omitempty"`
 	HasDefaultCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasDefaultCurrencyWith,omitempty"`
+
+	// "household_currency" edge predicates.
+	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
+	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -6728,6 +6738,18 @@ func (i *UserHouseholdWhereInput) P() (predicate.UserHousehold, error) {
 	if i.DefaultCurrencyIDNotNil {
 		predicates = append(predicates, userhousehold.DefaultCurrencyIDNotNil())
 	}
+	if i.HouseholdCurrencyID != nil {
+		predicates = append(predicates, userhousehold.HouseholdCurrencyIDEQ(*i.HouseholdCurrencyID))
+	}
+	if i.HouseholdCurrencyIDNEQ != nil {
+		predicates = append(predicates, userhousehold.HouseholdCurrencyIDNEQ(*i.HouseholdCurrencyIDNEQ))
+	}
+	if len(i.HouseholdCurrencyIDIn) > 0 {
+		predicates = append(predicates, userhousehold.HouseholdCurrencyIDIn(i.HouseholdCurrencyIDIn...))
+	}
+	if len(i.HouseholdCurrencyIDNotIn) > 0 {
+		predicates = append(predicates, userhousehold.HouseholdCurrencyIDNotIn(i.HouseholdCurrencyIDNotIn...))
+	}
 
 	if i.HasUser != nil {
 		p := userhousehold.HasUser()
@@ -6782,6 +6804,24 @@ func (i *UserHouseholdWhereInput) P() (predicate.UserHousehold, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, userhousehold.HasDefaultCurrencyWith(with...))
+	}
+	if i.HasHouseholdCurrency != nil {
+		p := userhousehold.HasHouseholdCurrency()
+		if !*i.HasHouseholdCurrency {
+			p = userhousehold.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrencyWith))
+		for _, w := range i.HasHouseholdCurrencyWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrencyWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, userhousehold.HasHouseholdCurrencyWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

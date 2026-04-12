@@ -538,6 +538,7 @@ var (
 		{Name: "user_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "default_currency_id", Type: field.TypeInt, Nullable: true},
+		{Name: "household_currency_id", Type: field.TypeInt},
 	}
 	// UserHouseholdsTable holds the schema information for the "user_households" table.
 	UserHouseholdsTable = &schema.Table{
@@ -562,6 +563,12 @@ var (
 				Columns:    []*schema.Column{UserHouseholdsColumns[6]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "user_households_household_currencies_household_currency",
+				Columns:    []*schema.Column{UserHouseholdsColumns[7]},
+				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -701,6 +708,7 @@ func init() {
 	UserHouseholdsTable.ForeignKeys[0].RefTable = UsersTable
 	UserHouseholdsTable.ForeignKeys[1].RefTable = HouseholdsTable
 	UserHouseholdsTable.ForeignKeys[2].RefTable = HouseholdCurrenciesTable
+	UserHouseholdsTable.ForeignKeys[3].RefTable = HouseholdCurrenciesTable
 	UserHouseholdsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(25769803776),
 	}

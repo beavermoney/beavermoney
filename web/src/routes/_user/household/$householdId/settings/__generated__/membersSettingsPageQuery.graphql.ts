@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<128e13a56f432150c064bd26880fccec>>
+ * @generated SignedSource<<78fbca412b67e9916d7392db8c9b44a3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -89,6 +89,25 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "concreteType": "HouseholdCurrency",
+                "kind": "LinkedField",
+                "name": "defaultCurrency",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "code",
+                    "storageKey": null
+                  },
+                  (v0/*: any*/)
+                ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "User",
                 "kind": "LinkedField",
                 "name": "user",
@@ -122,12 +141,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3fc05972f17f3a2c01e34293d24e6c32",
+    "cacheID": "350040133229f99c404d3b2a9b673d7c",
     "id": null,
     "metadata": {},
     "name": "membersSettingsPageQuery",
     "operationKind": "query",
-    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
+    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    defaultCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
   }
 };
 })();

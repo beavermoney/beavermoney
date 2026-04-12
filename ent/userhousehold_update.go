@@ -70,9 +70,28 @@ func (_u *UserHouseholdUpdate) ClearDefaultCurrencyID() *UserHouseholdUpdate {
 	return _u
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_u *UserHouseholdUpdate) SetHouseholdCurrencyID(v int) *UserHouseholdUpdate {
+	_u.mutation.SetHouseholdCurrencyID(v)
+	return _u
+}
+
+// SetNillableHouseholdCurrencyID sets the "household_currency_id" field if the given value is not nil.
+func (_u *UserHouseholdUpdate) SetNillableHouseholdCurrencyID(v *int) *UserHouseholdUpdate {
+	if v != nil {
+		_u.SetHouseholdCurrencyID(*v)
+	}
+	return _u
+}
+
 // SetDefaultCurrency sets the "default_currency" edge to the HouseholdCurrency entity.
 func (_u *UserHouseholdUpdate) SetDefaultCurrency(v *HouseholdCurrency) *UserHouseholdUpdate {
 	return _u.SetDefaultCurrencyID(v.ID)
+}
+
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdate) SetHouseholdCurrency(v *HouseholdCurrency) *UserHouseholdUpdate {
+	return _u.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the UserHouseholdMutation object of the builder.
@@ -83,6 +102,12 @@ func (_u *UserHouseholdUpdate) Mutation() *UserHouseholdMutation {
 // ClearDefaultCurrency clears the "default_currency" edge to the HouseholdCurrency entity.
 func (_u *UserHouseholdUpdate) ClearDefaultCurrency() *UserHouseholdUpdate {
 	_u.mutation.ClearDefaultCurrency()
+	return _u
+}
+
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdate) ClearHouseholdCurrency() *UserHouseholdUpdate {
+	_u.mutation.ClearHouseholdCurrency()
 	return _u
 }
 
@@ -141,6 +166,9 @@ func (_u *UserHouseholdUpdate) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserHousehold.household"`)
 	}
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "UserHousehold.household_currency"`)
+	}
 	return nil
 }
 
@@ -187,6 +215,35 @@ func (_u *UserHouseholdUpdate) sqlSave(ctx context.Context) (_node int, err erro
 			Inverse: false,
 			Table:   userhousehold.DefaultCurrencyTable,
 			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdCurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.HouseholdCurrencyTable,
+			Columns: []string{userhousehold.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.HouseholdCurrencyTable,
+			Columns: []string{userhousehold.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
@@ -259,9 +316,28 @@ func (_u *UserHouseholdUpdateOne) ClearDefaultCurrencyID() *UserHouseholdUpdateO
 	return _u
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_u *UserHouseholdUpdateOne) SetHouseholdCurrencyID(v int) *UserHouseholdUpdateOne {
+	_u.mutation.SetHouseholdCurrencyID(v)
+	return _u
+}
+
+// SetNillableHouseholdCurrencyID sets the "household_currency_id" field if the given value is not nil.
+func (_u *UserHouseholdUpdateOne) SetNillableHouseholdCurrencyID(v *int) *UserHouseholdUpdateOne {
+	if v != nil {
+		_u.SetHouseholdCurrencyID(*v)
+	}
+	return _u
+}
+
 // SetDefaultCurrency sets the "default_currency" edge to the HouseholdCurrency entity.
 func (_u *UserHouseholdUpdateOne) SetDefaultCurrency(v *HouseholdCurrency) *UserHouseholdUpdateOne {
 	return _u.SetDefaultCurrencyID(v.ID)
+}
+
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdateOne) SetHouseholdCurrency(v *HouseholdCurrency) *UserHouseholdUpdateOne {
+	return _u.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the UserHouseholdMutation object of the builder.
@@ -272,6 +348,12 @@ func (_u *UserHouseholdUpdateOne) Mutation() *UserHouseholdMutation {
 // ClearDefaultCurrency clears the "default_currency" edge to the HouseholdCurrency entity.
 func (_u *UserHouseholdUpdateOne) ClearDefaultCurrency() *UserHouseholdUpdateOne {
 	_u.mutation.ClearDefaultCurrency()
+	return _u
+}
+
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *UserHouseholdUpdateOne) ClearHouseholdCurrency() *UserHouseholdUpdateOne {
+	_u.mutation.ClearHouseholdCurrency()
 	return _u
 }
 
@@ -343,6 +425,9 @@ func (_u *UserHouseholdUpdateOne) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserHousehold.household"`)
 	}
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "UserHousehold.household_currency"`)
+	}
 	return nil
 }
 
@@ -406,6 +491,35 @@ func (_u *UserHouseholdUpdateOne) sqlSave(ctx context.Context) (_node *UserHouse
 			Inverse: false,
 			Table:   userhousehold.DefaultCurrencyTable,
 			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdCurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.HouseholdCurrencyTable,
+			Columns: []string{userhousehold.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.HouseholdCurrencyTable,
+			Columns: []string{userhousehold.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

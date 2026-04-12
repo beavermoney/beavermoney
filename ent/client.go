@@ -3466,6 +3466,22 @@ func (c *UserHouseholdClient) QueryDefaultCurrency(_m *UserHousehold) *Household
 	return query
 }
 
+// QueryHouseholdCurrency queries the household_currency edge of a UserHousehold.
+func (c *UserHouseholdClient) QueryHouseholdCurrency(_m *UserHousehold) *HouseholdCurrencyQuery {
+	query := (&HouseholdCurrencyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userhousehold.Table, userhousehold.FieldID, id),
+			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, userhousehold.HouseholdCurrencyTable, userhousehold.HouseholdCurrencyColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserHouseholdClient) Hooks() []Hook {
 	hooks := c.hooks.UserHousehold

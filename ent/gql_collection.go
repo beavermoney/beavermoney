@@ -3154,6 +3154,21 @@ func (_q *UserHouseholdQuery) collectField(ctx context.Context, oneNode bool, op
 				selectedFields = append(selectedFields, userhousehold.FieldDefaultCurrencyID)
 				fieldSeen[userhousehold.FieldDefaultCurrencyID] = struct{}{}
 			}
+
+		case "householdCurrency":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
+				return err
+			}
+			_q.withHouseholdCurrency = query
+			if _, ok := fieldSeen[userhousehold.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, userhousehold.FieldHouseholdCurrencyID)
+				fieldSeen[userhousehold.FieldHouseholdCurrencyID] = struct{}{}
+			}
 		case "createTime":
 			if _, ok := fieldSeen[userhousehold.FieldCreateTime]; !ok {
 				selectedFields = append(selectedFields, userhousehold.FieldCreateTime)
@@ -3183,6 +3198,11 @@ func (_q *UserHouseholdQuery) collectField(ctx context.Context, oneNode bool, op
 			if _, ok := fieldSeen[userhousehold.FieldDefaultCurrencyID]; !ok {
 				selectedFields = append(selectedFields, userhousehold.FieldDefaultCurrencyID)
 				fieldSeen[userhousehold.FieldDefaultCurrencyID] = struct{}{}
+			}
+		case "householdCurrencyID":
+			if _, ok := fieldSeen[userhousehold.FieldHouseholdCurrencyID]; !ok {
+				selectedFields = append(selectedFields, userhousehold.FieldHouseholdCurrencyID)
+				fieldSeen[userhousehold.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "id":
 		case "__typename":

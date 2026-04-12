@@ -328,12 +328,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "UserHousehold",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			userhousehold.FieldCreateTime:        {Type: field.TypeTime, Column: userhousehold.FieldCreateTime},
-			userhousehold.FieldUpdateTime:        {Type: field.TypeTime, Column: userhousehold.FieldUpdateTime},
-			userhousehold.FieldUserID:            {Type: field.TypeInt, Column: userhousehold.FieldUserID},
-			userhousehold.FieldHouseholdID:       {Type: field.TypeInt, Column: userhousehold.FieldHouseholdID},
-			userhousehold.FieldRole:              {Type: field.TypeEnum, Column: userhousehold.FieldRole},
-			userhousehold.FieldDefaultCurrencyID: {Type: field.TypeInt, Column: userhousehold.FieldDefaultCurrencyID},
+			userhousehold.FieldCreateTime:          {Type: field.TypeTime, Column: userhousehold.FieldCreateTime},
+			userhousehold.FieldUpdateTime:          {Type: field.TypeTime, Column: userhousehold.FieldUpdateTime},
+			userhousehold.FieldUserID:              {Type: field.TypeInt, Column: userhousehold.FieldUserID},
+			userhousehold.FieldHouseholdID:         {Type: field.TypeInt, Column: userhousehold.FieldHouseholdID},
+			userhousehold.FieldRole:                {Type: field.TypeEnum, Column: userhousehold.FieldRole},
+			userhousehold.FieldDefaultCurrencyID:   {Type: field.TypeInt, Column: userhousehold.FieldDefaultCurrencyID},
+			userhousehold.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: userhousehold.FieldHouseholdCurrencyID},
 		},
 	}
 	graph.Nodes[15] = &sqlgraph.Node{
@@ -1213,6 +1214,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Inverse: false,
 			Table:   userhousehold.DefaultCurrencyTable,
 			Columns: []string{userhousehold.DefaultCurrencyColumn},
+			Bidi:    false,
+		},
+		"UserHousehold",
+		"HouseholdCurrency",
+	)
+	graph.MustAddE(
+		"household_currency",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.HouseholdCurrencyTable,
+			Columns: []string{userhousehold.HouseholdCurrencyColumn},
 			Bidi:    false,
 		},
 		"UserHousehold",
@@ -3360,6 +3373,11 @@ func (f *UserHouseholdFilter) WhereDefaultCurrencyID(p entql.IntP) {
 	f.Where(p.Field(userhousehold.FieldDefaultCurrencyID))
 }
 
+// WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
+func (f *UserHouseholdFilter) WhereHouseholdCurrencyID(p entql.IntP) {
+	f.Where(p.Field(userhousehold.FieldHouseholdCurrencyID))
+}
+
 // WhereHasUser applies a predicate to check if query has an edge user.
 func (f *UserHouseholdFilter) WhereHasUser() {
 	f.Where(entql.HasEdge("user"))
@@ -3396,6 +3414,20 @@ func (f *UserHouseholdFilter) WhereHasDefaultCurrency() {
 // WhereHasDefaultCurrencyWith applies a predicate to check if query has an edge default_currency with a given conditions (other predicates).
 func (f *UserHouseholdFilter) WhereHasDefaultCurrencyWith(preds ...predicate.HouseholdCurrency) {
 	f.Where(entql.HasEdgeWith("default_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
+func (f *UserHouseholdFilter) WhereHasHouseholdCurrency() {
+	f.Where(entql.HasEdge("household_currency"))
+}
+
+// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
+func (f *UserHouseholdFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

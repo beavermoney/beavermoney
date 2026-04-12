@@ -80,6 +80,11 @@ func DefaultCurrencyID(v int) predicate.UserHousehold {
 	return predicate.UserHousehold(sql.FieldEQ(FieldDefaultCurrencyID, v))
 }
 
+// HouseholdCurrencyID applies equality check predicate on the "household_currency_id" field. It's identical to HouseholdCurrencyIDEQ.
+func HouseholdCurrencyID(v int) predicate.UserHousehold {
+	return predicate.UserHousehold(sql.FieldEQ(FieldHouseholdCurrencyID, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.UserHousehold {
 	return predicate.UserHousehold(sql.FieldEQ(FieldCreateTime, v))
@@ -250,6 +255,26 @@ func DefaultCurrencyIDNotNil() predicate.UserHousehold {
 	return predicate.UserHousehold(sql.FieldNotNull(FieldDefaultCurrencyID))
 }
 
+// HouseholdCurrencyIDEQ applies the EQ predicate on the "household_currency_id" field.
+func HouseholdCurrencyIDEQ(v int) predicate.UserHousehold {
+	return predicate.UserHousehold(sql.FieldEQ(FieldHouseholdCurrencyID, v))
+}
+
+// HouseholdCurrencyIDNEQ applies the NEQ predicate on the "household_currency_id" field.
+func HouseholdCurrencyIDNEQ(v int) predicate.UserHousehold {
+	return predicate.UserHousehold(sql.FieldNEQ(FieldHouseholdCurrencyID, v))
+}
+
+// HouseholdCurrencyIDIn applies the In predicate on the "household_currency_id" field.
+func HouseholdCurrencyIDIn(vs ...int) predicate.UserHousehold {
+	return predicate.UserHousehold(sql.FieldIn(FieldHouseholdCurrencyID, vs...))
+}
+
+// HouseholdCurrencyIDNotIn applies the NotIn predicate on the "household_currency_id" field.
+func HouseholdCurrencyIDNotIn(vs ...int) predicate.UserHousehold {
+	return predicate.UserHousehold(sql.FieldNotIn(FieldHouseholdCurrencyID, vs...))
+}
+
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.UserHousehold {
 	return predicate.UserHousehold(func(s *sql.Selector) {
@@ -311,6 +336,29 @@ func HasDefaultCurrency() predicate.UserHousehold {
 func HasDefaultCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.UserHousehold {
 	return predicate.UserHousehold(func(s *sql.Selector) {
 		step := newDefaultCurrencyStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasHouseholdCurrency applies the HasEdge predicate on the "household_currency" edge.
+func HasHouseholdCurrency() predicate.UserHousehold {
+	return predicate.UserHousehold(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, HouseholdCurrencyTable, HouseholdCurrencyColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasHouseholdCurrencyWith applies the HasEdge predicate on the "household_currency" edge with a given conditions (other predicates).
+func HasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.UserHousehold {
+	return predicate.UserHousehold(func(s *sql.Selector) {
+		step := newHouseholdCurrencyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -14966,22 +14966,24 @@ func (m *UserMutation) ResetEdge(name string) error {
 // UserHouseholdMutation represents an operation that mutates the UserHousehold nodes in the graph.
 type UserHouseholdMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *int
-	create_time             *time.Time
-	update_time             *time.Time
-	role                    *userhousehold.Role
-	clearedFields           map[string]struct{}
-	user                    *int
-	cleareduser             bool
-	household               *int
-	clearedhousehold        bool
-	default_currency        *int
-	cleareddefault_currency bool
-	done                    bool
-	oldValue                func(context.Context) (*UserHousehold, error)
-	predicates              []predicate.UserHousehold
+	op                        Op
+	typ                       string
+	id                        *int
+	create_time               *time.Time
+	update_time               *time.Time
+	role                      *userhousehold.Role
+	clearedFields             map[string]struct{}
+	user                      *int
+	cleareduser               bool
+	household                 *int
+	clearedhousehold          bool
+	default_currency          *int
+	cleareddefault_currency   bool
+	household_currency        *int
+	clearedhousehold_currency bool
+	done                      bool
+	oldValue                  func(context.Context) (*UserHousehold, error)
+	predicates                []predicate.UserHousehold
 }
 
 var _ ent.Mutation = (*UserHouseholdMutation)(nil)
@@ -15311,6 +15313,42 @@ func (m *UserHouseholdMutation) ResetDefaultCurrencyID() {
 	delete(m.clearedFields, userhousehold.FieldDefaultCurrencyID)
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (m *UserHouseholdMutation) SetHouseholdCurrencyID(i int) {
+	m.household_currency = &i
+}
+
+// HouseholdCurrencyID returns the value of the "household_currency_id" field in the mutation.
+func (m *UserHouseholdMutation) HouseholdCurrencyID() (r int, exists bool) {
+	v := m.household_currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHouseholdCurrencyID returns the old "household_currency_id" field's value of the UserHousehold entity.
+// If the UserHousehold object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserHouseholdMutation) OldHouseholdCurrencyID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHouseholdCurrencyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHouseholdCurrencyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHouseholdCurrencyID: %w", err)
+	}
+	return oldValue.HouseholdCurrencyID, nil
+}
+
+// ResetHouseholdCurrencyID resets all changes to the "household_currency_id" field.
+func (m *UserHouseholdMutation) ResetHouseholdCurrencyID() {
+	m.household_currency = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *UserHouseholdMutation) ClearUser() {
 	m.cleareduser = true
@@ -15392,6 +15430,33 @@ func (m *UserHouseholdMutation) ResetDefaultCurrency() {
 	m.cleareddefault_currency = false
 }
 
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (m *UserHouseholdMutation) ClearHouseholdCurrency() {
+	m.clearedhousehold_currency = true
+	m.clearedFields[userhousehold.FieldHouseholdCurrencyID] = struct{}{}
+}
+
+// HouseholdCurrencyCleared reports if the "household_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *UserHouseholdMutation) HouseholdCurrencyCleared() bool {
+	return m.clearedhousehold_currency
+}
+
+// HouseholdCurrencyIDs returns the "household_currency" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// HouseholdCurrencyID instead. It exists only for internal usage by the builders.
+func (m *UserHouseholdMutation) HouseholdCurrencyIDs() (ids []int) {
+	if id := m.household_currency; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetHouseholdCurrency resets all changes to the "household_currency" edge.
+func (m *UserHouseholdMutation) ResetHouseholdCurrency() {
+	m.household_currency = nil
+	m.clearedhousehold_currency = false
+}
+
 // Where appends a list predicates to the UserHouseholdMutation builder.
 func (m *UserHouseholdMutation) Where(ps ...predicate.UserHousehold) {
 	m.predicates = append(m.predicates, ps...)
@@ -15426,7 +15491,7 @@ func (m *UserHouseholdMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserHouseholdMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.create_time != nil {
 		fields = append(fields, userhousehold.FieldCreateTime)
 	}
@@ -15444,6 +15509,9 @@ func (m *UserHouseholdMutation) Fields() []string {
 	}
 	if m.default_currency != nil {
 		fields = append(fields, userhousehold.FieldDefaultCurrencyID)
+	}
+	if m.household_currency != nil {
+		fields = append(fields, userhousehold.FieldHouseholdCurrencyID)
 	}
 	return fields
 }
@@ -15465,6 +15533,8 @@ func (m *UserHouseholdMutation) Field(name string) (ent.Value, bool) {
 		return m.Role()
 	case userhousehold.FieldDefaultCurrencyID:
 		return m.DefaultCurrencyID()
+	case userhousehold.FieldHouseholdCurrencyID:
+		return m.HouseholdCurrencyID()
 	}
 	return nil, false
 }
@@ -15486,6 +15556,8 @@ func (m *UserHouseholdMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldRole(ctx)
 	case userhousehold.FieldDefaultCurrencyID:
 		return m.OldDefaultCurrencyID(ctx)
+	case userhousehold.FieldHouseholdCurrencyID:
+		return m.OldHouseholdCurrencyID(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserHousehold field %s", name)
 }
@@ -15536,6 +15608,13 @@ func (m *UserHouseholdMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDefaultCurrencyID(v)
+		return nil
+	case userhousehold.FieldHouseholdCurrencyID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHouseholdCurrencyID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold field %s", name)
@@ -15616,13 +15695,16 @@ func (m *UserHouseholdMutation) ResetField(name string) error {
 	case userhousehold.FieldDefaultCurrencyID:
 		m.ResetDefaultCurrencyID()
 		return nil
+	case userhousehold.FieldHouseholdCurrencyID:
+		m.ResetHouseholdCurrencyID()
+		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserHouseholdMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.user != nil {
 		edges = append(edges, userhousehold.EdgeUser)
 	}
@@ -15631,6 +15713,9 @@ func (m *UserHouseholdMutation) AddedEdges() []string {
 	}
 	if m.default_currency != nil {
 		edges = append(edges, userhousehold.EdgeDefaultCurrency)
+	}
+	if m.household_currency != nil {
+		edges = append(edges, userhousehold.EdgeHouseholdCurrency)
 	}
 	return edges
 }
@@ -15651,13 +15736,17 @@ func (m *UserHouseholdMutation) AddedIDs(name string) []ent.Value {
 		if id := m.default_currency; id != nil {
 			return []ent.Value{*id}
 		}
+	case userhousehold.EdgeHouseholdCurrency:
+		if id := m.household_currency; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserHouseholdMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -15669,7 +15758,7 @@ func (m *UserHouseholdMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserHouseholdMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleareduser {
 		edges = append(edges, userhousehold.EdgeUser)
 	}
@@ -15678,6 +15767,9 @@ func (m *UserHouseholdMutation) ClearedEdges() []string {
 	}
 	if m.cleareddefault_currency {
 		edges = append(edges, userhousehold.EdgeDefaultCurrency)
+	}
+	if m.clearedhousehold_currency {
+		edges = append(edges, userhousehold.EdgeHouseholdCurrency)
 	}
 	return edges
 }
@@ -15692,6 +15784,8 @@ func (m *UserHouseholdMutation) EdgeCleared(name string) bool {
 		return m.clearedhousehold
 	case userhousehold.EdgeDefaultCurrency:
 		return m.cleareddefault_currency
+	case userhousehold.EdgeHouseholdCurrency:
+		return m.clearedhousehold_currency
 	}
 	return false
 }
@@ -15709,6 +15803,9 @@ func (m *UserHouseholdMutation) ClearEdge(name string) error {
 	case userhousehold.EdgeDefaultCurrency:
 		m.ClearDefaultCurrency()
 		return nil
+	case userhousehold.EdgeHouseholdCurrency:
+		m.ClearHouseholdCurrency()
+		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold unique edge %s", name)
 }
@@ -15725,6 +15822,9 @@ func (m *UserHouseholdMutation) ResetEdge(name string) error {
 		return nil
 	case userhousehold.EdgeDefaultCurrency:
 		m.ResetDefaultCurrency()
+		return nil
+	case userhousehold.EdgeHouseholdCurrency:
+		m.ResetHouseholdCurrency()
 		return nil
 	}
 	return fmt.Errorf("unknown UserHousehold edge %s", name)

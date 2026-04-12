@@ -571,16 +571,18 @@ type ComplexityRoot struct {
 	}
 
 	UserHousehold struct {
-		CreateTime        func(childComplexity int) int
-		DefaultCurrency   func(childComplexity int) int
-		DefaultCurrencyID func(childComplexity int) int
-		Household         func(childComplexity int) int
-		HouseholdID       func(childComplexity int) int
-		ID                func(childComplexity int) int
-		Role              func(childComplexity int) int
-		UpdateTime        func(childComplexity int) int
-		User              func(childComplexity int) int
-		UserID            func(childComplexity int) int
+		CreateTime          func(childComplexity int) int
+		DefaultCurrency     func(childComplexity int) int
+		DefaultCurrencyID   func(childComplexity int) int
+		Household           func(childComplexity int) int
+		HouseholdCurrency   func(childComplexity int) int
+		HouseholdCurrencyID func(childComplexity int) int
+		HouseholdID         func(childComplexity int) int
+		ID                  func(childComplexity int) int
+		Role                func(childComplexity int) int
+		UpdateTime          func(childComplexity int) int
+		User                func(childComplexity int) int
+		UserID              func(childComplexity int) int
 	}
 
 	UserKey struct {
@@ -3189,6 +3191,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.UserHousehold.Household(childComplexity), true
+	case "UserHousehold.householdCurrency":
+		if e.complexity.UserHousehold.HouseholdCurrency == nil {
+			break
+		}
+
+		return e.complexity.UserHousehold.HouseholdCurrency(childComplexity), true
+	case "UserHousehold.householdCurrencyID":
+		if e.complexity.UserHousehold.HouseholdCurrencyID == nil {
+			break
+		}
+
+		return e.complexity.UserHousehold.HouseholdCurrencyID(childComplexity), true
 	case "UserHousehold.householdID":
 		if e.complexity.UserHousehold.HouseholdID == nil {
 			break
@@ -6953,12 +6967,16 @@ func (ec *executionContext) fieldContext_Household_userHouseholds(_ context.Cont
 				return ec.fieldContext_UserHousehold_role(ctx, field)
 			case "defaultCurrencyID":
 				return ec.fieldContext_UserHousehold_defaultCurrencyID(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
 			case "user":
 				return ec.fieldContext_UserHousehold_user(ctx, field)
 			case "household":
 				return ec.fieldContext_UserHousehold_household(ctx, field)
 			case "defaultCurrency":
 				return ec.fieldContext_UserHousehold_defaultCurrency(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserHousehold", field.Name)
 		},
@@ -12214,12 +12232,16 @@ func (ec *executionContext) fieldContext_Query_userHouseholds(_ context.Context,
 				return ec.fieldContext_UserHousehold_role(ctx, field)
 			case "defaultCurrencyID":
 				return ec.fieldContext_UserHousehold_defaultCurrencyID(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
 			case "user":
 				return ec.fieldContext_UserHousehold_user(ctx, field)
 			case "household":
 				return ec.fieldContext_UserHousehold_household(ctx, field)
 			case "defaultCurrency":
 				return ec.fieldContext_UserHousehold_defaultCurrency(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserHousehold", field.Name)
 		},
@@ -17832,12 +17854,16 @@ func (ec *executionContext) fieldContext_User_userHouseholds(_ context.Context, 
 				return ec.fieldContext_UserHousehold_role(ctx, field)
 			case "defaultCurrencyID":
 				return ec.fieldContext_UserHousehold_defaultCurrencyID(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
 			case "user":
 				return ec.fieldContext_UserHousehold_user(ctx, field)
 			case "household":
 				return ec.fieldContext_UserHousehold_household(ctx, field)
 			case "defaultCurrency":
 				return ec.fieldContext_UserHousehold_defaultCurrency(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserHousehold", field.Name)
 		},
@@ -18048,6 +18074,35 @@ func (ec *executionContext) fieldContext_UserHousehold_defaultCurrencyID(_ conte
 	return fc, nil
 }
 
+func (ec *executionContext) _UserHousehold_householdCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.UserHousehold) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_UserHousehold_householdCurrencyID,
+		func(ctx context.Context) (any, error) {
+			return obj.HouseholdCurrencyID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_UserHousehold_householdCurrencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserHousehold",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _UserHousehold_user(ctx context.Context, field graphql.CollectedField, obj *ent.UserHousehold) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -18191,6 +18246,69 @@ func (ec *executionContext) _UserHousehold_defaultCurrency(ctx context.Context, 
 }
 
 func (ec *executionContext) fieldContext_UserHousehold_defaultCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserHousehold",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_HouseholdCurrency_id(ctx, field)
+			case "householdID":
+				return ec.fieldContext_HouseholdCurrency_householdID(ctx, field)
+			case "createTime":
+				return ec.fieldContext_HouseholdCurrency_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_HouseholdCurrency_updateTime(ctx, field)
+			case "code":
+				return ec.fieldContext_HouseholdCurrency_code(ctx, field)
+			case "important":
+				return ec.fieldContext_HouseholdCurrency_important(ctx, field)
+			case "household":
+				return ec.fieldContext_HouseholdCurrency_household(ctx, field)
+			case "accounts":
+				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
+			case "transactionEntries":
+				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_HouseholdCurrency_snapshotEntries(ctx, field)
+			case "snapshotRatesFrom":
+				return ec.fieldContext_HouseholdCurrency_snapshotRatesFrom(ctx, field)
+			case "snapshotRatesTo":
+				return ec.fieldContext_HouseholdCurrency_snapshotRatesTo(ctx, field)
+			case "householdRatesFrom":
+				return ec.fieldContext_HouseholdCurrency_householdRatesFrom(ctx, field)
+			case "householdRatesTo":
+				return ec.fieldContext_HouseholdCurrency_householdRatesTo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type HouseholdCurrency", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserHousehold_householdCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.UserHousehold) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_UserHousehold_householdCurrency,
+		func(ctx context.Context) (any, error) {
+			return obj.HouseholdCurrency(ctx)
+		},
+		nil,
+		ec.marshalNHouseholdCurrency2ᚖbeavermoneyᚗappᚋentᚐHouseholdCurrency,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_UserHousehold_householdCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserHousehold",
 		Field:      field,
@@ -36452,6 +36570,11 @@ func (ec *executionContext) _UserHousehold(ctx context.Context, sel ast.Selectio
 			}
 		case "defaultCurrencyID":
 			out.Values[i] = ec._UserHousehold_defaultCurrencyID(ctx, field, obj)
+		case "householdCurrencyID":
+			out.Values[i] = ec._UserHousehold_householdCurrencyID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "user":
 			field := field
 
@@ -36534,6 +36657,42 @@ func (ec *executionContext) _UserHousehold(ctx context.Context, sel ast.Selectio
 					}
 				}()
 				res = ec._UserHousehold_defaultCurrency(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "householdCurrency":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserHousehold_householdCurrency(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 

@@ -85,6 +85,12 @@ func (_c *UserHouseholdCreate) SetNillableDefaultCurrencyID(v *int) *UserHouseho
 	return _c
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_c *UserHouseholdCreate) SetHouseholdCurrencyID(v int) *UserHouseholdCreate {
+	_c.mutation.SetHouseholdCurrencyID(v)
+	return _c
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_c *UserHouseholdCreate) SetUser(v *User) *UserHouseholdCreate {
 	return _c.SetUserID(v.ID)
@@ -98,6 +104,11 @@ func (_c *UserHouseholdCreate) SetHousehold(v *Household) *UserHouseholdCreate {
 // SetDefaultCurrency sets the "default_currency" edge to the HouseholdCurrency entity.
 func (_c *UserHouseholdCreate) SetDefaultCurrency(v *HouseholdCurrency) *UserHouseholdCreate {
 	return _c.SetDefaultCurrencyID(v.ID)
+}
+
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_c *UserHouseholdCreate) SetHouseholdCurrency(v *HouseholdCurrency) *UserHouseholdCreate {
+	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the UserHouseholdMutation object of the builder.
@@ -176,11 +187,17 @@ func (_c *UserHouseholdCreate) check() error {
 			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "UserHousehold.role": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.HouseholdCurrencyID(); !ok {
+		return &ValidationError{Name: "household_currency_id", err: errors.New(`ent: missing required field "UserHousehold.household_currency_id"`)}
+	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserHousehold.user"`)}
 	}
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "UserHousehold.household"`)}
+	}
+	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
+		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "UserHousehold.household_currency"`)}
 	}
 	return nil
 }
@@ -270,6 +287,23 @@ func (_c *UserHouseholdCreate) createSpec() (*UserHousehold, *sqlgraph.CreateSpe
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.DefaultCurrencyID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   userhousehold.HouseholdCurrencyTable,
+			Columns: []string{userhousehold.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.HouseholdCurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -363,6 +397,18 @@ func (u *UserHouseholdUpsert) UpdateDefaultCurrencyID() *UserHouseholdUpsert {
 // ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
 func (u *UserHouseholdUpsert) ClearDefaultCurrencyID() *UserHouseholdUpsert {
 	u.SetNull(userhousehold.FieldDefaultCurrencyID)
+	return u
+}
+
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *UserHouseholdUpsert) SetHouseholdCurrencyID(v int) *UserHouseholdUpsert {
+	u.Set(userhousehold.FieldHouseholdCurrencyID, v)
+	return u
+}
+
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *UserHouseholdUpsert) UpdateHouseholdCurrencyID() *UserHouseholdUpsert {
+	u.SetExcluded(userhousehold.FieldHouseholdCurrencyID)
 	return u
 }
 
@@ -463,6 +509,20 @@ func (u *UserHouseholdUpsertOne) UpdateDefaultCurrencyID() *UserHouseholdUpsertO
 func (u *UserHouseholdUpsertOne) ClearDefaultCurrencyID() *UserHouseholdUpsertOne {
 	return u.Update(func(s *UserHouseholdUpsert) {
 		s.ClearDefaultCurrencyID()
+	})
+}
+
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *UserHouseholdUpsertOne) SetHouseholdCurrencyID(v int) *UserHouseholdUpsertOne {
+	return u.Update(func(s *UserHouseholdUpsert) {
+		s.SetHouseholdCurrencyID(v)
+	})
+}
+
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *UserHouseholdUpsertOne) UpdateHouseholdCurrencyID() *UserHouseholdUpsertOne {
+	return u.Update(func(s *UserHouseholdUpsert) {
+		s.UpdateHouseholdCurrencyID()
 	})
 }
 
@@ -729,6 +789,20 @@ func (u *UserHouseholdUpsertBulk) UpdateDefaultCurrencyID() *UserHouseholdUpsert
 func (u *UserHouseholdUpsertBulk) ClearDefaultCurrencyID() *UserHouseholdUpsertBulk {
 	return u.Update(func(s *UserHouseholdUpsert) {
 		s.ClearDefaultCurrencyID()
+	})
+}
+
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *UserHouseholdUpsertBulk) SetHouseholdCurrencyID(v int) *UserHouseholdUpsertBulk {
+	return u.Update(func(s *UserHouseholdUpsert) {
+		s.SetHouseholdCurrencyID(v)
+	})
+}
+
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *UserHouseholdUpsertBulk) UpdateHouseholdCurrencyID() *UserHouseholdUpsertBulk {
+	return u.Update(func(s *UserHouseholdUpsert) {
+		s.UpdateHouseholdCurrencyID()
 	})
 }
 

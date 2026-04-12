@@ -30,12 +30,16 @@ const (
 	FieldRole = "role"
 	// FieldDefaultCurrencyID holds the string denoting the default_currency_id field in the database.
 	FieldDefaultCurrencyID = "default_currency_id"
+	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
+	FieldHouseholdCurrencyID = "household_currency_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeDefaultCurrency holds the string denoting the default_currency edge name in mutations.
 	EdgeDefaultCurrency = "default_currency"
+	// EdgeHouseholdCurrency holds the string denoting the household_currency edge name in mutations.
+	EdgeHouseholdCurrency = "household_currency"
 	// Table holds the table name of the userhousehold in the database.
 	Table = "user_households"
 	// UserTable is the table that holds the user relation/edge.
@@ -59,6 +63,13 @@ const (
 	DefaultCurrencyInverseTable = "household_currencies"
 	// DefaultCurrencyColumn is the table column denoting the default_currency relation/edge.
 	DefaultCurrencyColumn = "default_currency_id"
+	// HouseholdCurrencyTable is the table that holds the household_currency relation/edge.
+	HouseholdCurrencyTable = "user_households"
+	// HouseholdCurrencyInverseTable is the table name for the HouseholdCurrency entity.
+	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
+	HouseholdCurrencyInverseTable = "household_currencies"
+	// HouseholdCurrencyColumn is the table column denoting the household_currency relation/edge.
+	HouseholdCurrencyColumn = "household_currency_id"
 )
 
 // Columns holds all SQL columns for userhousehold fields.
@@ -70,6 +81,7 @@ var Columns = []string{
 	FieldHouseholdID,
 	FieldRole,
 	FieldDefaultCurrencyID,
+	FieldHouseholdCurrencyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -159,6 +171,11 @@ func ByDefaultCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDefaultCurrencyID, opts...).ToFunc()
 }
 
+// ByHouseholdCurrencyID orders the results by the household_currency_id field.
+func ByHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHouseholdCurrencyID, opts...).ToFunc()
+}
+
 // ByUserField orders the results by user field.
 func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -177,6 +194,13 @@ func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByDefaultCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newDefaultCurrencyStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByHouseholdCurrencyField orders the results by household_currency field.
+func ByHouseholdCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdCurrencyStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newUserStep() *sqlgraph.Step {
@@ -198,6 +222,13 @@ func newDefaultCurrencyStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(DefaultCurrencyInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, DefaultCurrencyTable, DefaultCurrencyColumn),
+	)
+}
+func newHouseholdCurrencyStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdCurrencyInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, HouseholdCurrencyTable, HouseholdCurrencyColumn),
 	)
 }
 

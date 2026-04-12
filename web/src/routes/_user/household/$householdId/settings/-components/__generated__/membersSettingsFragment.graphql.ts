@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ecd4447e40e42f92b06cc037454b4122>>
+ * @generated SignedSource<<2a59053e793b310f0bb3e31173beee0e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,9 @@ export type UserHouseholdRole = "admin" | "member" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type membersSettingsFragment$data = {
   readonly userHouseholds: ReadonlyArray<{
+    readonly defaultCurrency: {
+      readonly code: string;
+    } | null | undefined;
     readonly id: string;
     readonly role: UserHouseholdRole;
     readonly user: {
@@ -61,6 +64,24 @@ return {
         {
           "alias": null,
           "args": null,
+          "concreteType": "HouseholdCurrency",
+          "kind": "LinkedField",
+          "name": "defaultCurrency",
+          "plural": false,
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "code",
+              "storageKey": null
+            }
+          ],
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
           "concreteType": "User",
           "kind": "LinkedField",
           "name": "user",
@@ -93,6 +114,6 @@ return {
 };
 })();
 
-(node as any).hash = "ec7b8f8dbc6c80f5d5175b312b313d69";
+(node as any).hash = "3c2c86b5575cb64c09a969fd3d6f6c13";
 
 export default node;

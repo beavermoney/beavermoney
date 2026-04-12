@@ -18,6 +18,9 @@ const membersSettingsFragment = graphql`
     userHouseholds {
       id
       role
+      defaultCurrency {
+        code
+      }
       user {
         id
         name
@@ -52,6 +55,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                       (you)
                     </span>
                   )}
+                  <Badge variant={'outline'}>CAD</Badge>
                 </ItemTitle>
                 <ItemDescription>{uh.user.email}</ItemDescription>
               </ItemContent>

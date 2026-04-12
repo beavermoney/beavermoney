@@ -3066,9 +3066,11 @@ type UserHousehold implements Node {
   householdID: ID!
   role: UserHouseholdRole!
   defaultCurrencyID: ID
+  householdCurrencyID: ID!
   user: User!
   household: Household!
   defaultCurrency: HouseholdCurrency
+  householdCurrency: HouseholdCurrency!
 }
 """
 UserHouseholdRole is enum for the field role
