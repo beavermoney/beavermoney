@@ -5,6 +5,7 @@ import currency from 'currency.js'
 import { match } from 'ts-pattern'
 import { toast } from 'sonner'
 import { capitalize } from 'lodash-es'
+import invariant from 'tiny-invariant'
 import { FlagIcon } from 'lucide-react'
 import type { snapshotDialogFragment$key } from './__generated__/snapshotDialogFragment.graphql'
 import type { snapshotDialogMutation } from './__generated__/snapshotDialogMutation.graphql'
@@ -87,10 +88,10 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
     (acc, type) => {
       const total = (data.accounts.edges ?? [])
         .filter((e) => e?.node?.type === type)
-        .reduce(
-          (sum, e) => sum.add(convert(e!.node!.value, e!.node!.currency.code)),
-          currency(0),
-        )
+        .reduce((sum, e) => {
+          invariant(e?.node, 'Account edge node is null')
+          return sum.add(convert(e.node.value, e.node.currency.code))
+        }, currency(0))
       acc[type] = total
       return acc
     },
