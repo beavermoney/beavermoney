@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c7c41f73b3150416a898b9b811bb8141>>
+ * @generated SignedSource<<359da1e3eb9d49b773fdeb4766baff61>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,10 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type generalSettingsHouseholdFragment$data = {
-  readonly currencyCode: string;
+  readonly currency: {
+    readonly code: string;
+    readonly id: string;
+  };
   readonly id: string;
   readonly locale: string;
   readonly name: string;
@@ -22,19 +25,21 @@ export type generalSettingsHouseholdFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"generalSettingsHouseholdFragment">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "generalSettingsHouseholdFragment",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -52,15 +57,28 @@ const node: ReaderFragment = {
     {
       "alias": null,
       "args": null,
-      "kind": "ScalarField",
-      "name": "currencyCode",
+      "concreteType": "Currency",
+      "kind": "LinkedField",
+      "name": "currency",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "code",
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
   ],
   "type": "Household",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "12d0e415d625e6c11824b1e1657817bc";
+(node as any).hash = "fe5fd89a81b8ec83904665b9765fd326";
 
 export default node;

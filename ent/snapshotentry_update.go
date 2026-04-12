@@ -35,33 +35,6 @@ func (_u *SnapshotEntryUpdate) SetUpdateTime(v time.Time) *SnapshotEntryUpdate {
 	return _u
 }
 
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *SnapshotEntryUpdate) SetLegacyCurrencyID(v int) *SnapshotEntryUpdate {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *SnapshotEntryUpdate) SetNillableLegacyCurrencyID(v *int) *SnapshotEntryUpdate {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *SnapshotEntryUpdate) AddLegacyCurrencyID(v int) *SnapshotEntryUpdate {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *SnapshotEntryUpdate) ClearLegacyCurrencyID() *SnapshotEntryUpdate {
-	_u.mutation.ClearLegacyCurrencyID()
-	return _u
-}
-
 // Mutation returns the SnapshotEntryMutation object of the builder.
 func (_u *SnapshotEntryUpdate) Mutation() *SnapshotEntryMutation {
 	return _u.mutation
@@ -147,15 +120,6 @@ func (_u *SnapshotEntryUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if value, ok := _u.mutation.UpdateTime(); ok {
 		_spec.SetField(snapshotentry.FieldUpdateTime, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt)
-	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -181,33 +145,6 @@ type SnapshotEntryUpdateOne struct {
 // SetUpdateTime sets the "update_time" field.
 func (_u *SnapshotEntryUpdateOne) SetUpdateTime(v time.Time) *SnapshotEntryUpdateOne {
 	_u.mutation.SetUpdateTime(v)
-	return _u
-}
-
-// SetLegacyCurrencyID sets the "legacy_currency_id" field.
-func (_u *SnapshotEntryUpdateOne) SetLegacyCurrencyID(v int) *SnapshotEntryUpdateOne {
-	_u.mutation.ResetLegacyCurrencyID()
-	_u.mutation.SetLegacyCurrencyID(v)
-	return _u
-}
-
-// SetNillableLegacyCurrencyID sets the "legacy_currency_id" field if the given value is not nil.
-func (_u *SnapshotEntryUpdateOne) SetNillableLegacyCurrencyID(v *int) *SnapshotEntryUpdateOne {
-	if v != nil {
-		_u.SetLegacyCurrencyID(*v)
-	}
-	return _u
-}
-
-// AddLegacyCurrencyID adds value to the "legacy_currency_id" field.
-func (_u *SnapshotEntryUpdateOne) AddLegacyCurrencyID(v int) *SnapshotEntryUpdateOne {
-	_u.mutation.AddLegacyCurrencyID(v)
-	return _u
-}
-
-// ClearLegacyCurrencyID clears the value of the "legacy_currency_id" field.
-func (_u *SnapshotEntryUpdateOne) ClearLegacyCurrencyID() *SnapshotEntryUpdateOne {
-	_u.mutation.ClearLegacyCurrencyID()
 	return _u
 }
 
@@ -325,15 +262,6 @@ func (_u *SnapshotEntryUpdateOne) sqlSave(ctx context.Context) (_node *SnapshotE
 	}
 	if value, ok := _u.mutation.UpdateTime(); ok {
 		_spec.SetField(snapshotentry.FieldUpdateTime, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.LegacyCurrencyID(); ok {
-		_spec.SetField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedLegacyCurrencyID(); ok {
-		_spec.AddField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt, value)
-	}
-	if _u.mutation.LegacyCurrencyIDCleared() {
-		_spec.ClearField(snapshotentry.FieldLegacyCurrencyID, field.TypeInt)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &SnapshotEntry{config: _u.config}

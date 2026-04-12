@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/user"
@@ -38,10 +38,8 @@ type SnapshotEntry struct {
 	Receivable decimal.Decimal `json:"receivable,omitempty"`
 	// Total liability account values (negative)
 	Liability decimal.Decimal `json:"liability,omitempty"`
-	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
-	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
-	// LegacyCurrencyID holds the value of the "legacy_currency_id" field.
-	LegacyCurrencyID *int `json:"legacy_currency_id,omitempty"`
+	// CurrencyID holds the value of the "currency_id" field.
+	CurrencyID int `json:"currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// SnapshotID holds the value of the "snapshot_id" field.
@@ -57,7 +55,7 @@ type SnapshotEntryEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
 	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	Currency *Currency `json:"currency,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// Snapshot holds the value of the snapshot edge.
@@ -82,11 +80,11 @@ func (e SnapshotEntryEdges) HouseholdOrErr() (*Household, error) {
 
 // CurrencyOrErr returns the Currency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e SnapshotEntryEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
+func (e SnapshotEntryEdges) CurrencyOrErr() (*Currency, error) {
 	if e.Currency != nil {
 		return e.Currency, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
+		return nil, &NotFoundError{label: currency.Label}
 	}
 	return nil, &NotLoadedError{edge: "currency"}
 }
@@ -120,7 +118,7 @@ func (*SnapshotEntry) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case snapshotentry.FieldLiquidity, snapshotentry.FieldInvestment, snapshotentry.FieldProperty, snapshotentry.FieldReceivable, snapshotentry.FieldLiability:
 			values[i] = new(decimal.Decimal)
-		case snapshotentry.FieldID, snapshotentry.FieldHouseholdID, snapshotentry.FieldHouseholdCurrencyID, snapshotentry.FieldLegacyCurrencyID, snapshotentry.FieldUserID, snapshotentry.FieldSnapshotID:
+		case snapshotentry.FieldID, snapshotentry.FieldHouseholdID, snapshotentry.FieldCurrencyID, snapshotentry.FieldUserID, snapshotentry.FieldSnapshotID:
 			values[i] = new(sql.NullInt64)
 		case snapshotentry.FieldCreateTime, snapshotentry.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -193,18 +191,11 @@ func (_m *SnapshotEntry) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.Liability = *value
 			}
-		case snapshotentry.FieldHouseholdCurrencyID:
+		case snapshotentry.FieldCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
+				return fmt.Errorf("unexpected type %T for field currency_id", values[i])
 			} else if value.Valid {
-				_m.HouseholdCurrencyID = int(value.Int64)
-			}
-		case snapshotentry.FieldLegacyCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field legacy_currency_id", values[i])
-			} else if value.Valid {
-				_m.LegacyCurrencyID = new(int)
-				*_m.LegacyCurrencyID = int(value.Int64)
+				_m.CurrencyID = int(value.Int64)
 			}
 		case snapshotentry.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -237,7 +228,7 @@ func (_m *SnapshotEntry) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency queries the "currency" edge of the SnapshotEntry entity.
-func (_m *SnapshotEntry) QueryCurrency() *HouseholdCurrencyQuery {
+func (_m *SnapshotEntry) QueryCurrency() *CurrencyQuery {
 	return NewSnapshotEntryClient(_m.config).QueryCurrency(_m)
 }
 
@@ -298,13 +289,8 @@ func (_m *SnapshotEntry) String() string {
 	builder.WriteString("liability=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Liability))
 	builder.WriteString(", ")
-	builder.WriteString("household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
-	builder.WriteString(", ")
-	if v := _m.LegacyCurrencyID; v != nil {
-		builder.WriteString("legacy_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("currency_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CurrencyID))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))

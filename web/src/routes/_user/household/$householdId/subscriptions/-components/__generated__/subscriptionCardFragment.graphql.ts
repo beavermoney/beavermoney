@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<50407698c0a953a569c3cca89e911885>>
+ * @generated SignedSource<<6f3fa9f2867cebf85d6c5e6b687f8eea>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -87,7 +87,7 @@ const node: ReaderFragment = {
     {
       "alias": null,
       "args": null,
-      "concreteType": "HouseholdCurrency",
+      "concreteType": "Currency",
       "kind": "LinkedField",
       "name": "currency",
       "plural": false,

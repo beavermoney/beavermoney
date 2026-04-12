@@ -21,32 +21,14 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
-	// FieldCode holds the string denoting the code field in the database.
-	FieldCode = "code"
 	// FieldImportant holds the string denoting the important field in the database.
 	FieldImportant = "important"
-	// FieldLegacyCurrencyID holds the string denoting the legacy_currency_id field in the database.
-	FieldLegacyCurrencyID = "currency_id"
+	// FieldCurrencyID holds the string denoting the currency_id field in the database.
+	FieldCurrencyID = "currency_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
-	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
-	EdgeAccounts = "accounts"
-	// EdgeInvestments holds the string denoting the investments edge name in mutations.
-	EdgeInvestments = "investments"
-	// EdgeTransactionEntries holds the string denoting the transaction_entries edge name in mutations.
-	EdgeTransactionEntries = "transaction_entries"
-	// EdgeRecurringSubscriptions holds the string denoting the recurring_subscriptions edge name in mutations.
-	EdgeRecurringSubscriptions = "recurring_subscriptions"
-	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
-	EdgeSnapshotEntries = "snapshot_entries"
-	// EdgeSnapshotRatesFrom holds the string denoting the snapshot_rates_from edge name in mutations.
-	EdgeSnapshotRatesFrom = "snapshot_rates_from"
-	// EdgeSnapshotRatesTo holds the string denoting the snapshot_rates_to edge name in mutations.
-	EdgeSnapshotRatesTo = "snapshot_rates_to"
-	// EdgeHouseholdRatesFrom holds the string denoting the household_rates_from edge name in mutations.
-	EdgeHouseholdRatesFrom = "household_rates_from"
-	// EdgeHouseholdRatesTo holds the string denoting the household_rates_to edge name in mutations.
-	EdgeHouseholdRatesTo = "household_rates_to"
+	// EdgeCurrency holds the string denoting the currency edge name in mutations.
+	EdgeCurrency = "currency"
 	// Table holds the table name of the householdcurrency in the database.
 	Table = "household_currencies"
 	// HouseholdTable is the table that holds the household relation/edge.
@@ -56,69 +38,13 @@ const (
 	HouseholdInverseTable = "households"
 	// HouseholdColumn is the table column denoting the household relation/edge.
 	HouseholdColumn = "household_id"
-	// AccountsTable is the table that holds the accounts relation/edge.
-	AccountsTable = "accounts"
-	// AccountsInverseTable is the table name for the Account entity.
-	// It exists in this package in order to avoid circular dependency with the "account" package.
-	AccountsInverseTable = "accounts"
-	// AccountsColumn is the table column denoting the accounts relation/edge.
-	AccountsColumn = "household_currency_id"
-	// InvestmentsTable is the table that holds the investments relation/edge.
-	InvestmentsTable = "investments"
-	// InvestmentsInverseTable is the table name for the Investment entity.
-	// It exists in this package in order to avoid circular dependency with the "investment" package.
-	InvestmentsInverseTable = "investments"
-	// InvestmentsColumn is the table column denoting the investments relation/edge.
-	InvestmentsColumn = "household_currency_id"
-	// TransactionEntriesTable is the table that holds the transaction_entries relation/edge.
-	TransactionEntriesTable = "transaction_entries"
-	// TransactionEntriesInverseTable is the table name for the TransactionEntry entity.
-	// It exists in this package in order to avoid circular dependency with the "transactionentry" package.
-	TransactionEntriesInverseTable = "transaction_entries"
-	// TransactionEntriesColumn is the table column denoting the transaction_entries relation/edge.
-	TransactionEntriesColumn = "household_currency_id"
-	// RecurringSubscriptionsTable is the table that holds the recurring_subscriptions relation/edge.
-	RecurringSubscriptionsTable = "recurring_subscriptions"
-	// RecurringSubscriptionsInverseTable is the table name for the RecurringSubscription entity.
-	// It exists in this package in order to avoid circular dependency with the "recurringsubscription" package.
-	RecurringSubscriptionsInverseTable = "recurring_subscriptions"
-	// RecurringSubscriptionsColumn is the table column denoting the recurring_subscriptions relation/edge.
-	RecurringSubscriptionsColumn = "household_currency_id"
-	// SnapshotEntriesTable is the table that holds the snapshot_entries relation/edge.
-	SnapshotEntriesTable = "snapshot_entries"
-	// SnapshotEntriesInverseTable is the table name for the SnapshotEntry entity.
-	// It exists in this package in order to avoid circular dependency with the "snapshotentry" package.
-	SnapshotEntriesInverseTable = "snapshot_entries"
-	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
-	SnapshotEntriesColumn = "household_currency_id"
-	// SnapshotRatesFromTable is the table that holds the snapshot_rates_from relation/edge.
-	SnapshotRatesFromTable = "snapshot_rates"
-	// SnapshotRatesFromInverseTable is the table name for the SnapshotRate entity.
-	// It exists in this package in order to avoid circular dependency with the "snapshotrate" package.
-	SnapshotRatesFromInverseTable = "snapshot_rates"
-	// SnapshotRatesFromColumn is the table column denoting the snapshot_rates_from relation/edge.
-	SnapshotRatesFromColumn = "from_household_currency_id"
-	// SnapshotRatesToTable is the table that holds the snapshot_rates_to relation/edge.
-	SnapshotRatesToTable = "snapshot_rates"
-	// SnapshotRatesToInverseTable is the table name for the SnapshotRate entity.
-	// It exists in this package in order to avoid circular dependency with the "snapshotrate" package.
-	SnapshotRatesToInverseTable = "snapshot_rates"
-	// SnapshotRatesToColumn is the table column denoting the snapshot_rates_to relation/edge.
-	SnapshotRatesToColumn = "to_household_currency_id"
-	// HouseholdRatesFromTable is the table that holds the household_rates_from relation/edge.
-	HouseholdRatesFromTable = "household_rates"
-	// HouseholdRatesFromInverseTable is the table name for the HouseholdRate entity.
-	// It exists in this package in order to avoid circular dependency with the "householdrate" package.
-	HouseholdRatesFromInverseTable = "household_rates"
-	// HouseholdRatesFromColumn is the table column denoting the household_rates_from relation/edge.
-	HouseholdRatesFromColumn = "from_household_currency_id"
-	// HouseholdRatesToTable is the table that holds the household_rates_to relation/edge.
-	HouseholdRatesToTable = "household_rates"
-	// HouseholdRatesToInverseTable is the table name for the HouseholdRate entity.
-	// It exists in this package in order to avoid circular dependency with the "householdrate" package.
-	HouseholdRatesToInverseTable = "household_rates"
-	// HouseholdRatesToColumn is the table column denoting the household_rates_to relation/edge.
-	HouseholdRatesToColumn = "to_household_currency_id"
+	// CurrencyTable is the table that holds the currency relation/edge.
+	CurrencyTable = "household_currencies"
+	// CurrencyInverseTable is the table name for the Currency entity.
+	// It exists in this package in order to avoid circular dependency with the "currency" package.
+	CurrencyInverseTable = "currencies"
+	// CurrencyColumn is the table column denoting the currency relation/edge.
+	CurrencyColumn = "currency_id"
 )
 
 // Columns holds all SQL columns for householdcurrency fields.
@@ -127,9 +53,8 @@ var Columns = []string{
 	FieldHouseholdID,
 	FieldCreateTime,
 	FieldUpdateTime,
-	FieldCode,
 	FieldImportant,
-	FieldLegacyCurrencyID,
+	FieldCurrencyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -156,10 +81,10 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
-	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
-	CodeValidator func(string) error
 	// DefaultImportant holds the default value on creation for the "important" field.
 	DefaultImportant bool
+	// CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
+	CurrencyIDValidator func(int) error
 )
 
 // OrderOption defines the ordering options for the HouseholdCurrency queries.
@@ -185,19 +110,14 @@ func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
 }
 
-// ByCode orders the results by the code field.
-func ByCode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCode, opts...).ToFunc()
-}
-
 // ByImportant orders the results by the important field.
 func ByImportant(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldImportant, opts...).ToFunc()
 }
 
-// ByLegacyCurrencyID orders the results by the legacy_currency_id field.
-func ByLegacyCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyCurrencyID, opts...).ToFunc()
+// ByCurrencyID orders the results by the currency_id field.
+func ByCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrencyID, opts...).ToFunc()
 }
 
 // ByHouseholdField orders the results by household field.
@@ -207,129 +127,10 @@ func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByAccountsCount orders the results by accounts count.
-func ByAccountsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByCurrencyField orders the results by currency field.
+func ByCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAccountsStep(), opts...)
-	}
-}
-
-// ByAccounts orders the results by accounts terms.
-func ByAccounts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAccountsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByInvestmentsCount orders the results by investments count.
-func ByInvestmentsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newInvestmentsStep(), opts...)
-	}
-}
-
-// ByInvestments orders the results by investments terms.
-func ByInvestments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newInvestmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByTransactionEntriesCount orders the results by transaction_entries count.
-func ByTransactionEntriesCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTransactionEntriesStep(), opts...)
-	}
-}
-
-// ByTransactionEntries orders the results by transaction_entries terms.
-func ByTransactionEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTransactionEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByRecurringSubscriptionsCount orders the results by recurring_subscriptions count.
-func ByRecurringSubscriptionsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newRecurringSubscriptionsStep(), opts...)
-	}
-}
-
-// ByRecurringSubscriptions orders the results by recurring_subscriptions terms.
-func ByRecurringSubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRecurringSubscriptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// BySnapshotEntriesCount orders the results by snapshot_entries count.
-func BySnapshotEntriesCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSnapshotEntriesStep(), opts...)
-	}
-}
-
-// BySnapshotEntries orders the results by snapshot_entries terms.
-func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSnapshotEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// BySnapshotRatesFromCount orders the results by snapshot_rates_from count.
-func BySnapshotRatesFromCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSnapshotRatesFromStep(), opts...)
-	}
-}
-
-// BySnapshotRatesFrom orders the results by snapshot_rates_from terms.
-func BySnapshotRatesFrom(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesFromStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// BySnapshotRatesToCount orders the results by snapshot_rates_to count.
-func BySnapshotRatesToCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSnapshotRatesToStep(), opts...)
-	}
-}
-
-// BySnapshotRatesTo orders the results by snapshot_rates_to terms.
-func BySnapshotRatesTo(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesToStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByHouseholdRatesFromCount orders the results by household_rates_from count.
-func ByHouseholdRatesFromCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newHouseholdRatesFromStep(), opts...)
-	}
-}
-
-// ByHouseholdRatesFrom orders the results by household_rates_from terms.
-func ByHouseholdRatesFrom(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newHouseholdRatesFromStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByHouseholdRatesToCount orders the results by household_rates_to count.
-func ByHouseholdRatesToCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newHouseholdRatesToStep(), opts...)
-	}
-}
-
-// ByHouseholdRatesTo orders the results by household_rates_to terms.
-func ByHouseholdRatesTo(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newHouseholdRatesToStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newCurrencyStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newHouseholdStep() *sqlgraph.Step {
@@ -339,66 +140,10 @@ func newHouseholdStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, HouseholdTable, HouseholdColumn),
 	)
 }
-func newAccountsStep() *sqlgraph.Step {
+func newCurrencyStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AccountsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AccountsTable, AccountsColumn),
-	)
-}
-func newInvestmentsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(InvestmentsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, InvestmentsTable, InvestmentsColumn),
-	)
-}
-func newTransactionEntriesStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TransactionEntriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TransactionEntriesTable, TransactionEntriesColumn),
-	)
-}
-func newRecurringSubscriptionsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RecurringSubscriptionsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, RecurringSubscriptionsTable, RecurringSubscriptionsColumn),
-	)
-}
-func newSnapshotEntriesStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
-	)
-}
-func newSnapshotRatesFromStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SnapshotRatesFromInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesFromTable, SnapshotRatesFromColumn),
-	)
-}
-func newSnapshotRatesToStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SnapshotRatesToInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesToTable, SnapshotRatesToColumn),
-	)
-}
-func newHouseholdRatesFromStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(HouseholdRatesFromInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdRatesFromTable, HouseholdRatesFromColumn),
-	)
-}
-func newHouseholdRatesToStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(HouseholdRatesToInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, HouseholdRatesToTable, HouseholdRatesToColumn),
+		sqlgraph.To(CurrencyInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CurrencyTable, CurrencyColumn),
 	)
 }

@@ -37,10 +37,8 @@ const (
 	FieldIcon = "icon"
 	// FieldValue holds the string denoting the value field in the database.
 	FieldValue = "value"
-	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
-	FieldHouseholdCurrencyID = "household_currency_id"
-	// FieldLegacyCurrencyID holds the string denoting the legacy_currency_id field in the database.
-	FieldLegacyCurrencyID = "currency_id"
+	// FieldCurrencyID holds the string denoting the currency_id field in the database.
+	FieldCurrencyID = "currency_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldArchived holds the string denoting the archived field in the database.
@@ -66,11 +64,11 @@ const (
 	HouseholdColumn = "household_id"
 	// CurrencyTable is the table that holds the currency relation/edge.
 	CurrencyTable = "accounts"
-	// CurrencyInverseTable is the table name for the HouseholdCurrency entity.
-	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
-	CurrencyInverseTable = "household_currencies"
+	// CurrencyInverseTable is the table name for the Currency entity.
+	// It exists in this package in order to avoid circular dependency with the "currency" package.
+	CurrencyInverseTable = "currencies"
 	// CurrencyColumn is the table column denoting the currency relation/edge.
-	CurrencyColumn = "household_currency_id"
+	CurrencyColumn = "currency_id"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "accounts"
 	// UserInverseTable is the table name for the User entity.
@@ -106,8 +104,7 @@ var Columns = []string{
 	FieldCategory,
 	FieldIcon,
 	FieldValue,
-	FieldHouseholdCurrencyID,
-	FieldLegacyCurrencyID,
+	FieldCurrencyID,
 	FieldUserID,
 	FieldArchived,
 }
@@ -142,8 +139,8 @@ var (
 	DefaultBalance func() decimal.Decimal
 	// DefaultValue holds the default value on creation for the "value" field.
 	DefaultValue func() decimal.Decimal
-	// HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
-	HouseholdCurrencyIDValidator func(int) error
+	// CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
+	CurrencyIDValidator func(int) error
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(int) error
 	// DefaultArchived holds the default value on creation for the "archived" field.
@@ -267,14 +264,9 @@ func ByValue(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldValue, opts...).ToFunc()
 }
 
-// ByHouseholdCurrencyID orders the results by the household_currency_id field.
-func ByHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldHouseholdCurrencyID, opts...).ToFunc()
-}
-
-// ByLegacyCurrencyID orders the results by the legacy_currency_id field.
-func ByLegacyCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyCurrencyID, opts...).ToFunc()
+// ByCurrencyID orders the results by the currency_id field.
+func ByCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrencyID, opts...).ToFunc()
 }
 
 // ByUserID orders the results by the user_id field.

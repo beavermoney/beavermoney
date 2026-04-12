@@ -26,12 +26,7 @@ func (Household) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty(),
 		field.String("locale").NotEmpty(),
-		field.String("currency_code").NotEmpty(),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
+		field.Int("currency_id").Positive(),
 		field.Bool("is_demo").Default(false).Immutable(),
 	}
 }
@@ -39,6 +34,11 @@ func (Household) Fields() []ent.Field {
 // Edges of the Household.
 func (Household) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("currency", Currency.Type).
+			Ref("households").
+			Field("currency_id").
+			Unique().
+			Required(),
 		edge.From("users", User.Type).
 			Ref("households").
 			Through("user_households", UserHousehold.Type).
@@ -182,13 +182,16 @@ type HouseholdCurrency struct {
 
 func (HouseholdCurrency) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("code").NotEmpty().Immutable(),
-		field.Bool("important").Default(false),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
+		field.Bool("important").
+			Default(false),
+
+		field.Int("currency_id").Positive().Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 	}
 }
 
@@ -206,21 +209,24 @@ func (HouseholdCurrency) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.To("accounts", Account.Type),
-		edge.To("investments", Investment.Type),
-		edge.To("transaction_entries", TransactionEntry.Type),
-		edge.To("recurring_subscriptions", RecurringSubscription.Type),
-		edge.To("snapshot_entries", SnapshotEntry.Type),
-		edge.To("snapshot_rates_from", SnapshotRate.Type),
-		edge.To("snapshot_rates_to", SnapshotRate.Type),
-		edge.To("household_rates_from", HouseholdRate.Type),
-		edge.To("household_rates_to", HouseholdRate.Type),
+		edge.From("currency", Currency.Type).
+			Field("currency_id").
+			Ref("household_currencies").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 	}
 }
 
 func (HouseholdCurrency) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("household_id", "code").Unique(),
+		index.Fields("household_id", "currency_id").Unique(),
 	}
 }
 
@@ -262,31 +268,21 @@ func (HouseholdRate) Fields() []ent.Field {
 				),
 			),
 
-		field.Int("from_household_currency_id").Positive().Immutable().
+		field.Int("from_currency_id").Positive().Immutable().
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_from_currency_id").
-			StorageKey("from_currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 
-		field.Int("to_household_currency_id").Positive().Immutable().
+		field.Int("to_currency_id").Positive().Immutable().
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		field.Int("legacy_to_currency_id").
-			StorageKey("to_currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
 	}
 }
 
@@ -304,8 +300,8 @@ func (HouseholdRate) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("from_currency", HouseholdCurrency.Type).
-			Field("from_household_currency_id").
+		edge.From("from_currency", Currency.Type).
+			Field("from_currency_id").
 			Ref("household_rates_from").
 			Unique().
 			Immutable().
@@ -316,8 +312,8 @@ func (HouseholdRate) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("to_currency", HouseholdCurrency.Type).
-			Field("to_household_currency_id").
+		edge.From("to_currency", Currency.Type).
+			Field("to_currency_id").
 			Ref("household_rates_to").
 			Unique().
 			Immutable().
@@ -333,7 +329,7 @@ func (HouseholdRate) Edges() []ent.Edge {
 
 func (HouseholdRate) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("household_id", "from_household_currency_id", "to_household_currency_id").Unique(),
+		index.Fields("household_id", "from_currency_id", "to_currency_id").Unique(),
 	}
 }
 

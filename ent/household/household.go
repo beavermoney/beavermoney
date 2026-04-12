@@ -23,12 +23,12 @@ const (
 	FieldName = "name"
 	// FieldLocale holds the string denoting the locale field in the database.
 	FieldLocale = "locale"
-	// FieldCurrencyCode holds the string denoting the currency_code field in the database.
-	FieldCurrencyCode = "currency_code"
-	// FieldLegacyCurrencyID holds the string denoting the legacy_currency_id field in the database.
-	FieldLegacyCurrencyID = "currency_id"
+	// FieldCurrencyID holds the string denoting the currency_id field in the database.
+	FieldCurrencyID = "currency_id"
 	// FieldIsDemo holds the string denoting the is_demo field in the database.
 	FieldIsDemo = "is_demo"
+	// EdgeCurrency holds the string denoting the currency edge name in mutations.
+	EdgeCurrency = "currency"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -57,6 +57,13 @@ const (
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the household in the database.
 	Table = "households"
+	// CurrencyTable is the table that holds the currency relation/edge.
+	CurrencyTable = "households"
+	// CurrencyInverseTable is the table name for the Currency entity.
+	// It exists in this package in order to avoid circular dependency with the "currency" package.
+	CurrencyInverseTable = "currencies"
+	// CurrencyColumn is the table column denoting the currency relation/edge.
+	CurrencyColumn = "currency_id"
 	// UsersTable is the table that holds the users relation/edge. The primary key declared below.
 	UsersTable = "user_households"
 	// UsersInverseTable is the table name for the User entity.
@@ -155,8 +162,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldName,
 	FieldLocale,
-	FieldCurrencyCode,
-	FieldLegacyCurrencyID,
+	FieldCurrencyID,
 	FieldIsDemo,
 }
 
@@ -194,8 +200,8 @@ var (
 	NameValidator func(string) error
 	// LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
 	LocaleValidator func(string) error
-	// CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
-	CurrencyCodeValidator func(string) error
+	// CurrencyIDValidator is a validator for the "currency_id" field. It is called by the builders before save.
+	CurrencyIDValidator func(int) error
 	// DefaultIsDemo holds the default value on creation for the "is_demo" field.
 	DefaultIsDemo bool
 )
@@ -228,19 +234,21 @@ func ByLocale(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocale, opts...).ToFunc()
 }
 
-// ByCurrencyCode orders the results by the currency_code field.
-func ByCurrencyCode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCurrencyCode, opts...).ToFunc()
-}
-
-// ByLegacyCurrencyID orders the results by the legacy_currency_id field.
-func ByLegacyCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyCurrencyID, opts...).ToFunc()
+// ByCurrencyID orders the results by the currency_id field.
+func ByCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrencyID, opts...).ToFunc()
 }
 
 // ByIsDemo orders the results by the is_demo field.
 func ByIsDemo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsDemo, opts...).ToFunc()
+}
+
+// ByCurrencyField orders the results by currency field.
+func ByCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCurrencyStep(), sql.OrderByField(field, opts...))
+	}
 }
 
 // ByUsersCount orders the results by users count.
@@ -423,6 +431,13 @@ func ByUserHouseholds(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUserHouseholdsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newCurrencyStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CurrencyInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CurrencyTable, CurrencyColumn),
+	)
 }
 func newUsersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

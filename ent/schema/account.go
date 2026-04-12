@@ -73,12 +73,7 @@ func (Account) Fields() []ent.Field {
 				return decimal.NewFromInt(0)
 			}),
 
-		field.Int("household_currency_id").Positive().Immutable(),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
+		field.Int("currency_id").Positive().Immutable(),
 		field.Int("user_id").Positive().Immutable(),
 
 		field.Bool("archived").
@@ -107,8 +102,8 @@ func (Account) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("currency", HouseholdCurrency.Type).
-			Field("household_currency_id").
+		edge.From("currency", Currency.Type).
+			Field("currency_id").
 			Ref("accounts").
 			Unique().
 			Immutable().

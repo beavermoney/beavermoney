@@ -2,8 +2,15 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm, useStore } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
-import { graphql } from 'relay-runtime'
-import { useMutation } from 'react-relay'
+import { graphql, ROOT_ID } from 'relay-runtime'
+import {
+  fetchQuery,
+  loadQuery,
+  useFragment,
+  useMutation,
+  usePreloadedQuery,
+  useSubscribeToInvalidationState,
+} from 'react-relay'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -35,9 +42,28 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { commitMutationResult } from '@/lib/relay'
-import { SUPPORTED_CURRENCIES, lookupCurrency } from '@/lib/currencies'
+import { environment } from '@/environment'
+import { PendingComponent } from '@/components/pending-component'
 
+import type { newHouseholdQuery } from './__generated__/newHouseholdQuery.graphql'
+import type { newHouseholdFragment$key } from './__generated__/newHouseholdFragment.graphql'
 import type { newHouseholdMutation } from './__generated__/newHouseholdMutation.graphql'
+
+const newHouseholdQuery = graphql`
+  query newHouseholdQuery {
+    ...newHouseholdFragment
+  }
+`
+
+const newHouseholdFragment = graphql`
+  fragment newHouseholdFragment on Query {
+    currencies {
+      id
+      code
+      locales
+    }
+  }
+`
 
 const newHouseholdMutation = graphql`
   mutation newHouseholdMutation($input: CreateHouseholdInput!) {
@@ -50,6 +76,15 @@ const newHouseholdMutation = graphql`
 
 export const Route = createFileRoute('/_user/household/new')({
   component: RouteComponent,
+  loader: () => {
+    return loadQuery<newHouseholdQuery>(
+      environment,
+      newHouseholdQuery,
+      {},
+      { fetchPolicy: 'store-or-network' },
+    )
+  },
+  pendingComponent: PendingComponent,
 })
 
 const formSchema = z.object({
@@ -81,14 +116,31 @@ function getLocaleDisplayName(locale: string, currencyCode: string): string {
 }
 
 function RouteComponent() {
+  const queryRef = Route.useLoaderData()
+  const data = usePreloadedQuery<newHouseholdQuery>(newHouseholdQuery, queryRef)
+
+  useSubscribeToInvalidationState([ROOT_ID], () => {
+    fetchQuery(
+      environment,
+      newHouseholdQuery,
+      {},
+      { fetchPolicy: 'network-only' },
+    ).subscribe({})
+  })
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-      <NewHouseholdForm />
+      <NewHouseholdForm fragmentRef={data} />
     </div>
   )
 }
 
-function NewHouseholdForm() {
+type NewHouseholdFormProps = {
+  fragmentRef: newHouseholdFragment$key
+}
+
+function NewHouseholdForm({ fragmentRef }: NewHouseholdFormProps) {
+  const data = useFragment(newHouseholdFragment, fragmentRef)
   const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
@@ -103,12 +155,15 @@ function NewHouseholdForm() {
   }
 
   const handleCreateDemo = () => {
+    const cadCurrency = data.currencies.find((c) => c.code === 'CAD')
+    invariant(cadCurrency, 'CAD currency not found')
+
     commitMutationResult<newHouseholdMutation>(commitMutation, {
       variables: {
         input: {
           name: 'Demo Household',
           locale: 'en-CA',
-          currencyCode: 'CAD',
+          currencyID: cadCurrency.id,
           isDemo: true,
         },
       },
@@ -143,6 +198,11 @@ function NewHouseholdForm() {
     onSubmit: async ({ value }) => {
       const formData = formSchema.parse(value)
 
+      const currency = data.currencies.find(
+        (curr) => curr.code === formData.currencyCode,
+      )
+      invariant(currency, 'Currency not found')
+
       const result = await commitMutationResult<newHouseholdMutation>(
         commitMutation,
         {
@@ -150,7 +210,7 @@ function NewHouseholdForm() {
             input: {
               name: formData.name,
               locale: formData.locale,
-              currencyCode: formData.currencyCode,
+              currencyID: currency.id,
               isDemo: false,
             },
           },
@@ -180,7 +240,8 @@ function NewHouseholdForm() {
     form.store,
     (state) => state.values.currencyCode,
   )
-  const availableLocales = lookupCurrency(currencyCode)?.locales ?? []
+  const selectedCurrency = data.currencies.find((c) => c.code === currencyCode)
+  const availableLocales = selectedCurrency?.locales ?? []
 
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
@@ -279,7 +340,7 @@ function NewHouseholdForm() {
                         Your household's primary currency for reporting
                       </FieldDescription>
                       <Combobox
-                        items={SUPPORTED_CURRENCIES.map((c) => c.code)}
+                        items={data.currencies.map((c) => c.code)}
                         value={field.state.value}
                         onValueChange={(value) => {
                           field.handleChange(value || '')

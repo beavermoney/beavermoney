@@ -86,20 +86,20 @@ func (c *AccountUpdateOne) SetInput(i UpdateAccountInput) *AccountUpdateOne {
 
 // CreateHouseholdInput represents a mutation input for creating households.
 type CreateHouseholdInput struct {
-	Name         string
-	Locale       string
-	CurrencyCode string
-	IsDemo       *bool
+	Name       string
+	Locale     string
+	IsDemo     *bool
+	CurrencyID int
 }
 
 // Mutate applies the CreateHouseholdInput on the HouseholdMutation builder.
 func (i *CreateHouseholdInput) Mutate(m *HouseholdMutation) {
 	m.SetName(i.Name)
 	m.SetLocale(i.Locale)
-	m.SetCurrencyCode(i.CurrencyCode)
 	if v := i.IsDemo; v != nil {
 		m.SetIsDemo(*v)
 	}
+	m.SetCurrencyID(i.CurrencyID)
 }
 
 // SetInput applies the change-set in the CreateHouseholdInput on the HouseholdCreate builder.
@@ -110,9 +110,9 @@ func (c *HouseholdCreate) SetInput(i CreateHouseholdInput) *HouseholdCreate {
 
 // UpdateHouseholdInput represents a mutation input for updating households.
 type UpdateHouseholdInput struct {
-	Name         *string
-	Locale       *string
-	CurrencyCode *string
+	Name       *string
+	Locale     *string
+	CurrencyID *int
 }
 
 // Mutate applies the UpdateHouseholdInput on the HouseholdMutation builder.
@@ -123,8 +123,8 @@ func (i *UpdateHouseholdInput) Mutate(m *HouseholdMutation) {
 	if v := i.Locale; v != nil {
 		m.SetLocale(*v)
 	}
-	if v := i.CurrencyCode; v != nil {
-		m.SetCurrencyCode(*v)
+	if v := i.CurrencyID; v != nil {
+		m.SetCurrencyID(*v)
 	}
 }
 
@@ -142,51 +142,13 @@ func (c *HouseholdUpdateOne) SetInput(i UpdateHouseholdInput) *HouseholdUpdateOn
 
 // CreateHouseholdCurrencyInput represents a mutation input for creating householdcurrencies.
 type CreateHouseholdCurrencyInput struct {
-	Code                     string
-	Important                *bool
-	AccountIDs               []int
-	InvestmentIDs            []int
-	TransactionEntryIDs      []int
-	RecurringSubscriptionIDs []int
-	SnapshotEntryIDs         []int
-	SnapshotRatesFromIDs     []int
-	SnapshotRatesToIDs       []int
-	HouseholdRatesFromIDs    []int
-	HouseholdRatesToIDs      []int
+	Important *bool
 }
 
 // Mutate applies the CreateHouseholdCurrencyInput on the HouseholdCurrencyMutation builder.
 func (i *CreateHouseholdCurrencyInput) Mutate(m *HouseholdCurrencyMutation) {
-	m.SetCode(i.Code)
 	if v := i.Important; v != nil {
 		m.SetImportant(*v)
-	}
-	if v := i.AccountIDs; len(v) > 0 {
-		m.AddAccountIDs(v...)
-	}
-	if v := i.InvestmentIDs; len(v) > 0 {
-		m.AddInvestmentIDs(v...)
-	}
-	if v := i.TransactionEntryIDs; len(v) > 0 {
-		m.AddTransactionEntryIDs(v...)
-	}
-	if v := i.RecurringSubscriptionIDs; len(v) > 0 {
-		m.AddRecurringSubscriptionIDs(v...)
-	}
-	if v := i.SnapshotEntryIDs; len(v) > 0 {
-		m.AddSnapshotEntryIDs(v...)
-	}
-	if v := i.SnapshotRatesFromIDs; len(v) > 0 {
-		m.AddSnapshotRatesFromIDs(v...)
-	}
-	if v := i.SnapshotRatesToIDs; len(v) > 0 {
-		m.AddSnapshotRatesToIDs(v...)
-	}
-	if v := i.HouseholdRatesFromIDs; len(v) > 0 {
-		m.AddHouseholdRatesFromIDs(v...)
-	}
-	if v := i.HouseholdRatesToIDs; len(v) > 0 {
-		m.AddHouseholdRatesToIDs(v...)
 	}
 }
 
@@ -198,121 +160,13 @@ func (c *HouseholdCurrencyCreate) SetInput(i CreateHouseholdCurrencyInput) *Hous
 
 // UpdateHouseholdCurrencyInput represents a mutation input for updating householdcurrencies.
 type UpdateHouseholdCurrencyInput struct {
-	Important                      *bool
-	ClearAccounts                  bool
-	AddAccountIDs                  []int
-	RemoveAccountIDs               []int
-	ClearInvestments               bool
-	AddInvestmentIDs               []int
-	RemoveInvestmentIDs            []int
-	ClearTransactionEntries        bool
-	AddTransactionEntryIDs         []int
-	RemoveTransactionEntryIDs      []int
-	ClearRecurringSubscriptions    bool
-	AddRecurringSubscriptionIDs    []int
-	RemoveRecurringSubscriptionIDs []int
-	ClearSnapshotEntries           bool
-	AddSnapshotEntryIDs            []int
-	RemoveSnapshotEntryIDs         []int
-	ClearSnapshotRatesFrom         bool
-	AddSnapshotRatesFromIDs        []int
-	RemoveSnapshotRatesFromIDs     []int
-	ClearSnapshotRatesTo           bool
-	AddSnapshotRatesToIDs          []int
-	RemoveSnapshotRatesToIDs       []int
-	ClearHouseholdRatesFrom        bool
-	AddHouseholdRatesFromIDs       []int
-	RemoveHouseholdRatesFromIDs    []int
-	ClearHouseholdRatesTo          bool
-	AddHouseholdRatesToIDs         []int
-	RemoveHouseholdRatesToIDs      []int
+	Important *bool
 }
 
 // Mutate applies the UpdateHouseholdCurrencyInput on the HouseholdCurrencyMutation builder.
 func (i *UpdateHouseholdCurrencyInput) Mutate(m *HouseholdCurrencyMutation) {
 	if v := i.Important; v != nil {
 		m.SetImportant(*v)
-	}
-	if i.ClearAccounts {
-		m.ClearAccounts()
-	}
-	if v := i.AddAccountIDs; len(v) > 0 {
-		m.AddAccountIDs(v...)
-	}
-	if v := i.RemoveAccountIDs; len(v) > 0 {
-		m.RemoveAccountIDs(v...)
-	}
-	if i.ClearInvestments {
-		m.ClearInvestments()
-	}
-	if v := i.AddInvestmentIDs; len(v) > 0 {
-		m.AddInvestmentIDs(v...)
-	}
-	if v := i.RemoveInvestmentIDs; len(v) > 0 {
-		m.RemoveInvestmentIDs(v...)
-	}
-	if i.ClearTransactionEntries {
-		m.ClearTransactionEntries()
-	}
-	if v := i.AddTransactionEntryIDs; len(v) > 0 {
-		m.AddTransactionEntryIDs(v...)
-	}
-	if v := i.RemoveTransactionEntryIDs; len(v) > 0 {
-		m.RemoveTransactionEntryIDs(v...)
-	}
-	if i.ClearRecurringSubscriptions {
-		m.ClearRecurringSubscriptions()
-	}
-	if v := i.AddRecurringSubscriptionIDs; len(v) > 0 {
-		m.AddRecurringSubscriptionIDs(v...)
-	}
-	if v := i.RemoveRecurringSubscriptionIDs; len(v) > 0 {
-		m.RemoveRecurringSubscriptionIDs(v...)
-	}
-	if i.ClearSnapshotEntries {
-		m.ClearSnapshotEntries()
-	}
-	if v := i.AddSnapshotEntryIDs; len(v) > 0 {
-		m.AddSnapshotEntryIDs(v...)
-	}
-	if v := i.RemoveSnapshotEntryIDs; len(v) > 0 {
-		m.RemoveSnapshotEntryIDs(v...)
-	}
-	if i.ClearSnapshotRatesFrom {
-		m.ClearSnapshotRatesFrom()
-	}
-	if v := i.AddSnapshotRatesFromIDs; len(v) > 0 {
-		m.AddSnapshotRatesFromIDs(v...)
-	}
-	if v := i.RemoveSnapshotRatesFromIDs; len(v) > 0 {
-		m.RemoveSnapshotRatesFromIDs(v...)
-	}
-	if i.ClearSnapshotRatesTo {
-		m.ClearSnapshotRatesTo()
-	}
-	if v := i.AddSnapshotRatesToIDs; len(v) > 0 {
-		m.AddSnapshotRatesToIDs(v...)
-	}
-	if v := i.RemoveSnapshotRatesToIDs; len(v) > 0 {
-		m.RemoveSnapshotRatesToIDs(v...)
-	}
-	if i.ClearHouseholdRatesFrom {
-		m.ClearHouseholdRatesFrom()
-	}
-	if v := i.AddHouseholdRatesFromIDs; len(v) > 0 {
-		m.AddHouseholdRatesFromIDs(v...)
-	}
-	if v := i.RemoveHouseholdRatesFromIDs; len(v) > 0 {
-		m.RemoveHouseholdRatesFromIDs(v...)
-	}
-	if i.ClearHouseholdRatesTo {
-		m.ClearHouseholdRatesTo()
-	}
-	if v := i.AddHouseholdRatesToIDs; len(v) > 0 {
-		m.AddHouseholdRatesToIDs(v...)
-	}
-	if v := i.RemoveHouseholdRatesToIDs; len(v) > 0 {
-		m.RemoveHouseholdRatesToIDs(v...)
 	}
 }
 

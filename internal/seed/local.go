@@ -9,7 +9,7 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/householdcurrency"
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/user"
@@ -35,10 +35,9 @@ func Seed(
 		return nil
 	}
 
-	const (
-		cadCode = "CAD"
-		usdCode = "USD"
-	)
+	cad := entClient.Currency.Query().Where(currency.CodeEQ("CAD")).OnlyX(ctx)
+	entClient.Currency.Query().Where(currency.CodeEQ("CNY")).OnlyX(ctx)
+	usd := entClient.Currency.Query().Where(currency.CodeEQ("USD")).OnlyX(ctx)
 
 	date := openapi_types.Date{Time: time.Now().UTC()}
 	usdToCadResp, err := frankfurterClient.GetRateWithResponse(
@@ -63,18 +62,8 @@ func Seed(
 
 	household := entClient.Household.Create().
 		SetName("Joey's Household").
-		SetCurrencyCode(cadCode).
+		SetCurrency(cad).
 		SetLocale("en-CA").
-		SaveX(ctx)
-	householdCAD := entClient.HouseholdCurrency.Create().
-		SetHouseholdID(household.ID).
-		SetCode(cadCode).
-		SetImportant(true).
-		SaveX(ctx)
-	householdUSD := entClient.HouseholdCurrency.Create().
-		SetHouseholdID(household.ID).
-		SetCode(usdCode).
-		SetImportant(true).
 		SaveX(ctx)
 
 	ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), household.ID)
@@ -85,18 +74,8 @@ func Seed(
 
 	household2 := entClient.Household.Create().
 		SetName("Acme Corp").
-		SetCurrencyCode(cadCode).
+		SetCurrency(cad).
 		SetLocale("en-CA").
-		SaveX(ctx)
-	entClient.HouseholdCurrency.Create().
-		SetHouseholdID(household2.ID).
-		SetCode(cadCode).
-		SetImportant(true).
-		SaveX(ctx)
-	entClient.HouseholdCurrency.Create().
-		SetHouseholdID(household2.ID).
-		SetCode(usdCode).
-		SetImportant(true).
 		SaveX(ctx)
 
 	entClient.UserHousehold.Create().
@@ -120,18 +99,8 @@ func Seed(
 
 	differentHousehold := entClient.Household.Create().
 		SetName("Different Joey's Household").
-		SetCurrencyCode(cadCode).
+		SetCurrency(cad).
 		SetLocale("en-CA").
-		SaveX(ctx)
-	entClient.HouseholdCurrency.Create().
-		SetHouseholdID(differentHousehold.ID).
-		SetCode(cadCode).
-		SetImportant(true).
-		SaveX(ctx)
-	differentHouseholdUSD := entClient.HouseholdCurrency.Create().
-		SetHouseholdID(differentHousehold.ID).
-		SetCode(usdCode).
-		SetImportant(true).
 		SaveX(ctx)
 
 	differentCtx := context.WithValue(
@@ -154,7 +123,7 @@ func Seed(
 
 	entClient.Account.Create().
 		SetName("You should not see this account").
-		SetCurrencyID(differentHouseholdUSD.ID).
+		SetCurrency(usd).
 		SetUser(differentJoey).
 		SetHousehold(differentHousehold).
 		SetType(account.TypeLiquidity).
@@ -164,7 +133,7 @@ func Seed(
 
 	chase := entClient.Account.Create().
 		SetName("Chase Total Checking").
-		SetCurrencyID(householdUSD.ID).
+		SetCurrency(usd).
 		SetIcon("chase.com").
 		SetUser(joey).
 		SetHousehold(household).
@@ -175,7 +144,7 @@ func Seed(
 		SetName("Wealthsimple Visa Infinite").
 		SetUser(joey).
 		SetIcon("wealthsimple.com").
-		SetCurrencyID(householdCAD.ID).
+		SetCurrency(cad).
 		SetHousehold(household).
 		SetType(account.TypeLiability).
 		SaveX(ctx)
@@ -185,7 +154,7 @@ func Seed(
 		SetIcon("webull.ca").
 		SetName("Webull").
 		SetUser(joey).
-		SetCurrencyID(householdCAD.ID).
+		SetCurrency(cad).
 		SetType(account.TypeInvestment).
 		SaveX(ctx)
 
@@ -223,7 +192,7 @@ func Seed(
 			SetAccount(chase).
 			SetHousehold(household).
 			SetTransaction(transaction).
-			SetCurrencyID(householdUSD.ID).
+			SetCurrency(usd).
 			SetAmount(decimal.NewFromInt(1000000)).SaveX(ctx)
 	}
 
@@ -246,7 +215,7 @@ func Seed(
 				SetAccount(chase).
 				SetHousehold(household).
 				SetTransaction(t).
-				SetCurrencyID(householdUSD.ID).
+				SetCurrency(usd).
 				SetAmount(genRandomAmount().Mul(decimal.NewFromInt(-1)))
 		}
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
@@ -271,7 +240,7 @@ func Seed(
 				SetAccount(wealthsimple).
 				SetHousehold(household).
 				SetTransaction(t).
-				SetCurrencyID(householdCAD.ID).
+				SetCurrency(cad).
 				SetAmount(genRandomAmount().Mul(decimal.NewFromInt(-1)))
 		}
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
@@ -287,7 +256,7 @@ func Seed(
 		SetSymbol("XEQT.TO").
 		SetName("XEQT").
 		SetQuote(xeqtQuote.CurrentPrice).
-		SetCurrencyID(householdCAD.ID).
+		SetCurrency(cad).
 		SetType(investment.TypeStock).
 		SetAccount(webull).
 		SaveX(ctx)
@@ -336,14 +305,15 @@ func SeedDemoHousehold(
 	frankfurterClient *frankfurter.ClientWithResponses,
 	marketClient *market.Client,
 ) error {
-	householdCurrency, err := getOrCreateHouseholdCurrency(ctx, client, household.ID, household.CurrencyCode, true)
+	// Load household currency
+	householdCurrency, err := household.QueryCurrency().Only(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to load household currency: %w", err)
 	}
 
-	usdCurrency, err := getOrCreateHouseholdCurrency(ctx, client, household.ID, "USD", true)
+	usdCurrency, err := client.Currency.Query().Where(currency.CodeEQ("USD")).Only(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to load USD household currency: %w", err)
+		return fmt.Errorf("failed to load USD currency: %w", err)
 	}
 
 	config := getDemoConfig()
@@ -500,15 +470,15 @@ func createDemoAccounts(
 	client *ent.Client,
 	household *ent.Household,
 	userID int,
-	householdCurrency *ent.HouseholdCurrency,
+	householdCurrency *ent.Currency,
 	config demoConfig,
 	createdAt time.Time,
-	usdCurrency *ent.HouseholdCurrency,
+	usdCurrency *ent.Currency,
 ) (*demoAccounts, error) {
 	checking, err := client.Account.Create().
 		SetName(config.checkingName).
 		SetIcon(config.checkingIcon).
-		SetCurrencyID(householdCurrency.ID).
+		SetCurrency(householdCurrency).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiquidity).
@@ -522,7 +492,7 @@ func createDemoAccounts(
 	creditCard, err := client.Account.Create().
 		SetName(config.creditCardName).
 		SetIcon(config.creditCardIcon).
-		SetCurrencyID(householdCurrency.ID).
+		SetCurrency(householdCurrency).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiability).
@@ -536,7 +506,7 @@ func createDemoAccounts(
 	investmentAccount, err := client.Account.Create().
 		SetName(config.investmentName).
 		SetIcon(config.investmentIcon).
-		SetCurrencyID(householdCurrency.ID).
+		SetCurrency(householdCurrency).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeInvestment).
@@ -550,7 +520,7 @@ func createDemoAccounts(
 	usdSavings, err := client.Account.Create().
 		SetName("Chase Savings").
 		SetIcon("chase.com").
-		SetCurrencyID(usdCurrency.ID).
+		SetCurrency(usdCurrency).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiquidity).
@@ -685,7 +655,7 @@ func fetchAndCreateInvestments(
 	client *ent.Client,
 	household *ent.Household,
 	investmentAccount *ent.Account,
-	householdCurrency *ent.HouseholdCurrency,
+	householdCurrency *ent.Currency,
 	config demoConfig,
 	marketClient *market.Client,
 	prices historicalPriceMap,
@@ -713,7 +683,7 @@ func fetchAndCreateInvestments(
 		SetSymbol(config.etfSymbol).
 		SetName(config.etfSymbol).
 		SetQuote(etfPrice).
-		SetCurrencyID(householdCurrency.ID).
+		SetCurrency(householdCurrency).
 		SetType(investment.TypeStock).
 		SetAccount(investmentAccount).
 		SetCreateTime(createdAt).
@@ -735,7 +705,7 @@ func fetchAndCreateInvestments(
 			SetSymbol(symbol).
 			SetName(symbol).
 			SetQuote(price).
-			SetCurrencyID(householdCurrency.ID).
+			SetCurrency(householdCurrency).
 			SetType(investment.TypeStock).
 			SetAccount(investmentAccount).
 			SetCreateTime(createdAt).
@@ -811,7 +781,7 @@ func createTransaction(
 		SetAccount(account).
 		SetHouseholdID(household.ID).
 		SetTransaction(tx).
-		SetCurrencyID(account.HouseholdCurrencyID).
+		SetCurrency(account.Edges.Currency).
 		SetAmount(amount).
 		SetCreateTime(date).
 		Save(ctx)
@@ -1026,8 +996,8 @@ func createSnapshotAtDate(
 	}
 
 	type entryKey struct {
-		UserID              int
-		HouseholdCurrencyID int
+		UserID     int
+		CurrencyID int
 	}
 	type entryValues struct {
 		Liquidity  decimal.Decimal
@@ -1041,7 +1011,7 @@ func createSnapshotAtDate(
 	zero := decimal.NewFromInt(0)
 
 	for _, acc := range accounts {
-		key := entryKey{UserID: acc.UserID, HouseholdCurrencyID: acc.HouseholdCurrencyID}
+		key := entryKey{UserID: acc.UserID, CurrencyID: acc.CurrencyID}
 		vals, ok := grouped[key]
 		if !ok {
 			vals = &entryValues{
@@ -1074,7 +1044,7 @@ func createSnapshotAtDate(
 			SetSnapshotID(snap.ID).
 			SetHouseholdID(household.ID).
 			SetUserID(key.UserID).
-			SetCurrencyID(key.HouseholdCurrencyID).
+			SetCurrencyID(key.CurrencyID).
 			SetLiquidity(vals.Liquidity).
 			SetInvestment(vals.Investment).
 			SetProperty(vals.Property).
@@ -1097,10 +1067,9 @@ func createSnapshotAtDate(
 	currencies := make([]currencyInfo, 0)
 	seen := make(map[int]bool)
 	for _, acc := range accounts {
-		currencyID := acc.HouseholdCurrencyID
-		if !seen[currencyID] {
-			seen[currencyID] = true
-			currencies = append(currencies, currencyInfo{ID: currencyID, Code: acc.Edges.Currency.Code})
+		if !seen[acc.CurrencyID] {
+			seen[acc.CurrencyID] = true
+			currencies = append(currencies, currencyInfo{ID: acc.CurrencyID, Code: acc.Edges.Currency.Code})
 		}
 	}
 
@@ -1156,38 +1125,6 @@ func createSnapshotAtDate(
 	}
 
 	return nil
-}
-
-func getOrCreateHouseholdCurrency(
-	ctx context.Context,
-	client *ent.Client,
-	householdID int,
-	code string,
-	important bool,
-) (*ent.HouseholdCurrency, error) {
-	hc, err := client.HouseholdCurrency.Query().
-		Where(
-			householdcurrency.HouseholdIDEQ(householdID),
-			householdcurrency.Code(code),
-		).
-		Only(ctx)
-	if err == nil {
-		if important && !hc.Important {
-			return client.HouseholdCurrency.UpdateOneID(hc.ID).
-				SetImportant(true).
-				Save(ctx)
-		}
-		return hc, nil
-	}
-	if !ent.IsNotFound(err) {
-		return nil, err
-	}
-
-	return client.HouseholdCurrency.Create().
-		SetHouseholdID(householdID).
-		SetCode(code).
-		SetImportant(important).
-		Save(ctx)
 }
 
 // Helper functions for realistic amounts

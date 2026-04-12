@@ -62,12 +62,7 @@ func (Investment) Fields() []ent.Field {
 			}),
 
 		field.Int("account_id").Positive().Immutable(),
-		field.Int("household_currency_id").Positive().Immutable(),
-		field.Int("legacy_currency_id").
-			StorageKey("currency_id").
-			Optional().
-			Nillable().
-			Annotations(entgql.Skip(entgql.SkipAll)),
+		field.Int("currency_id").Positive().Immutable(),
 	}
 }
 
@@ -90,9 +85,9 @@ func (Investment) Edges() []ent.Edge {
 				),
 			).
 			Required(),
-		edge.From("currency", HouseholdCurrency.Type).
+		edge.From("currency", Currency.Type).
 			Ref("investments").
-			Field("household_currency_id").
+			Field("currency_id").
 			Annotations(
 				entgql.Skip(
 					entgql.SkipMutationCreateInput,

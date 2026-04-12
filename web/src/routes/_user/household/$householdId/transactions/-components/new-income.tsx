@@ -375,7 +375,8 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.currency.code ??
+                        household.currency.code
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

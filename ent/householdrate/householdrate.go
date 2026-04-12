@@ -23,14 +23,10 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldRate holds the string denoting the rate field in the database.
 	FieldRate = "rate"
-	// FieldFromHouseholdCurrencyID holds the string denoting the from_household_currency_id field in the database.
-	FieldFromHouseholdCurrencyID = "from_household_currency_id"
-	// FieldLegacyFromCurrencyID holds the string denoting the legacy_from_currency_id field in the database.
-	FieldLegacyFromCurrencyID = "from_currency_id"
-	// FieldToHouseholdCurrencyID holds the string denoting the to_household_currency_id field in the database.
-	FieldToHouseholdCurrencyID = "to_household_currency_id"
-	// FieldLegacyToCurrencyID holds the string denoting the legacy_to_currency_id field in the database.
-	FieldLegacyToCurrencyID = "to_currency_id"
+	// FieldFromCurrencyID holds the string denoting the from_currency_id field in the database.
+	FieldFromCurrencyID = "from_currency_id"
+	// FieldToCurrencyID holds the string denoting the to_currency_id field in the database.
+	FieldToCurrencyID = "to_currency_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeFromCurrency holds the string denoting the from_currency edge name in mutations.
@@ -48,18 +44,18 @@ const (
 	HouseholdColumn = "household_id"
 	// FromCurrencyTable is the table that holds the from_currency relation/edge.
 	FromCurrencyTable = "household_rates"
-	// FromCurrencyInverseTable is the table name for the HouseholdCurrency entity.
-	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
-	FromCurrencyInverseTable = "household_currencies"
+	// FromCurrencyInverseTable is the table name for the Currency entity.
+	// It exists in this package in order to avoid circular dependency with the "currency" package.
+	FromCurrencyInverseTable = "currencies"
 	// FromCurrencyColumn is the table column denoting the from_currency relation/edge.
-	FromCurrencyColumn = "from_household_currency_id"
+	FromCurrencyColumn = "from_currency_id"
 	// ToCurrencyTable is the table that holds the to_currency relation/edge.
 	ToCurrencyTable = "household_rates"
-	// ToCurrencyInverseTable is the table name for the HouseholdCurrency entity.
-	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
-	ToCurrencyInverseTable = "household_currencies"
+	// ToCurrencyInverseTable is the table name for the Currency entity.
+	// It exists in this package in order to avoid circular dependency with the "currency" package.
+	ToCurrencyInverseTable = "currencies"
 	// ToCurrencyColumn is the table column denoting the to_currency relation/edge.
-	ToCurrencyColumn = "to_household_currency_id"
+	ToCurrencyColumn = "to_currency_id"
 )
 
 // Columns holds all SQL columns for householdrate fields.
@@ -69,10 +65,8 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldRate,
-	FieldFromHouseholdCurrencyID,
-	FieldLegacyFromCurrencyID,
-	FieldToHouseholdCurrencyID,
-	FieldLegacyToCurrencyID,
+	FieldFromCurrencyID,
+	FieldToCurrencyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -99,10 +93,10 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
-	// FromHouseholdCurrencyIDValidator is a validator for the "from_household_currency_id" field. It is called by the builders before save.
-	FromHouseholdCurrencyIDValidator func(int) error
-	// ToHouseholdCurrencyIDValidator is a validator for the "to_household_currency_id" field. It is called by the builders before save.
-	ToHouseholdCurrencyIDValidator func(int) error
+	// FromCurrencyIDValidator is a validator for the "from_currency_id" field. It is called by the builders before save.
+	FromCurrencyIDValidator func(int) error
+	// ToCurrencyIDValidator is a validator for the "to_currency_id" field. It is called by the builders before save.
+	ToCurrencyIDValidator func(int) error
 )
 
 // OrderOption defines the ordering options for the HouseholdRate queries.
@@ -133,24 +127,14 @@ func ByRate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRate, opts...).ToFunc()
 }
 
-// ByFromHouseholdCurrencyID orders the results by the from_household_currency_id field.
-func ByFromHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFromHouseholdCurrencyID, opts...).ToFunc()
+// ByFromCurrencyID orders the results by the from_currency_id field.
+func ByFromCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFromCurrencyID, opts...).ToFunc()
 }
 
-// ByLegacyFromCurrencyID orders the results by the legacy_from_currency_id field.
-func ByLegacyFromCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyFromCurrencyID, opts...).ToFunc()
-}
-
-// ByToHouseholdCurrencyID orders the results by the to_household_currency_id field.
-func ByToHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldToHouseholdCurrencyID, opts...).ToFunc()
-}
-
-// ByLegacyToCurrencyID orders the results by the legacy_to_currency_id field.
-func ByLegacyToCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLegacyToCurrencyID, opts...).ToFunc()
+// ByToCurrencyID orders the results by the to_currency_id field.
+func ByToCurrencyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldToCurrencyID, opts...).ToFunc()
 }
 
 // ByHouseholdField orders the results by household field.

@@ -11,7 +11,6 @@ import type { generalSettingsHouseholdFragment$key } from './__generated__/gener
 import type { generalSettingsCurrenciesFragment$key } from './__generated__/generalSettingsCurrenciesFragment.graphql'
 import type { generalSettingsUpdateHouseholdMutation } from './__generated__/generalSettingsUpdateHouseholdMutation.graphql'
 import type { generalSettingsDeleteHouseholdMutation } from './__generated__/generalSettingsDeleteHouseholdMutation.graphql'
-import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 
 import { useUser } from '@/hooks/use-user'
 import { Button } from '@/components/ui/button'
@@ -50,7 +49,7 @@ const formSchema = z.object({
     .min(1, 'Household name is required.')
     .max(64, 'Household name must be at most 64 characters.'),
   locale: z.string().min(1, 'Locale is required.'),
-  currencyCode: z.string().min(1, 'Currency is required.'),
+  currencyId: z.string().min(1, 'Currency is required.'),
 })
 
 const generalSettingsHouseholdFragment = graphql`
@@ -58,12 +57,19 @@ const generalSettingsHouseholdFragment = graphql`
     id
     name
     locale
-    currencyCode
+    currency {
+      id
+      code
+    }
   }
 `
 
 const generalSettingsCurrenciesFragment = graphql`
   fragment generalSettingsCurrenciesFragment on Query {
+    currencies {
+      id
+      code
+    }
     userHouseholds {
       role
       user {
@@ -82,7 +88,10 @@ const updateHouseholdMutation = graphql`
       id
       name
       locale
-      currencyCode
+      currency {
+        id
+        code
+      }
     }
   }
 `
@@ -107,7 +116,7 @@ export function GeneralSettings({
   onDeleted,
 }: GeneralSettingsProps) {
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
-  const { userHouseholds } = useFragment(
+  const { currencies, userHouseholds } = useFragment(
     generalSettingsCurrenciesFragment,
     currenciesRef,
   )
@@ -115,6 +124,11 @@ export function GeneralSettings({
   const user = useUser()
   const isAdmin =
     userHouseholds.find((uh) => uh.user.id === user.id)?.role === 'admin'
+
+  const currencyOptions = currencies.map((c) => ({
+    value: c.id,
+    label: c.code,
+  }))
 
   const [commitUpdate, isUpdateInFlight] =
     useMutation<generalSettingsUpdateHouseholdMutation>(updateHouseholdMutation)
@@ -128,7 +142,7 @@ export function GeneralSettings({
     defaultValues: {
       name: household.name,
       locale: household.locale,
-      currencyCode: household.currencyCode,
+      currencyId: household.currency.id,
     },
     validators: {
       onSubmit: formSchema,
@@ -145,7 +159,6 @@ export function GeneralSettings({
               input: {
                 name: formData.name,
                 locale: formData.locale,
-                currencyCode: formData.currencyCode,
               },
             },
           },
@@ -248,17 +261,22 @@ export function GeneralSettings({
             }}
           />
           <form.Field
-            name="currencyCode"
+            name="currencyId"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
+              const selectedItem =
+                currencyOptions.find((o) => o.value === field.state.value) ??
+                null
               return (
                 <Field data-invalid={isInvalid}>
                   <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
                   <Combobox
-                    items={SUPPORTED_CURRENCIES.map((c) => c.code)}
-                    value={field.state.value}
-                    onValueChange={(value) => field.handleChange(value ?? '')}
+                    items={currencyOptions}
+                    value={selectedItem}
+                    onValueChange={(item) =>
+                      field.handleChange(item?.value ?? '')
+                    }
                   >
                     <ComboboxInput
                       id={field.name}
@@ -270,9 +288,9 @@ export function GeneralSettings({
                     <ComboboxContent>
                       <ComboboxEmpty>No currencies found.</ComboboxEmpty>
                       <ComboboxList>
-                        {(item: string) => (
-                          <ComboboxItem key={item} value={item}>
-                            {item}
+                        {(item: { value: string; label: string }) => (
+                          <ComboboxItem key={item.value} value={item}>
+                            {item.label}
                           </ComboboxItem>
                         )}
                       </ComboboxList>

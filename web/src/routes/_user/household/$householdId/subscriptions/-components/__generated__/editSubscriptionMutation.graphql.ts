@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<37c0d7ad5a84f8e6edeb3255bddd5d11>>
+ * @generated SignedSource<<d953e48165563125f9953d719655685d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -119,7 +119,7 @@ v7 = {
 v8 = {
   "alias": null,
   "args": null,
-  "concreteType": "HouseholdCurrency",
+  "concreteType": "Currency",
   "kind": "LinkedField",
   "name": "currency",
   "plural": false,

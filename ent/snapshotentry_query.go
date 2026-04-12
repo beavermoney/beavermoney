@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"math"
 
+	"beavermoney.app/ent/currency"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
@@ -28,7 +28,7 @@ type SnapshotEntryQuery struct {
 	inters        []Interceptor
 	predicates    []predicate.SnapshotEntry
 	withHousehold *HouseholdQuery
-	withCurrency  *HouseholdCurrencyQuery
+	withCurrency  *CurrencyQuery
 	withUser      *UserQuery
 	withSnapshot  *SnapshotQuery
 	loadTotal     []func(context.Context, []*SnapshotEntry) error
@@ -92,8 +92,8 @@ func (_q *SnapshotEntryQuery) QueryHousehold() *HouseholdQuery {
 }
 
 // QueryCurrency chains the current query on the "currency" edge.
-func (_q *SnapshotEntryQuery) QueryCurrency() *HouseholdCurrencyQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
+func (_q *SnapshotEntryQuery) QueryCurrency() *CurrencyQuery {
+	query := (&CurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -104,7 +104,7 @@ func (_q *SnapshotEntryQuery) QueryCurrency() *HouseholdCurrencyQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, selector),
-			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
+			sqlgraph.To(currency.Table, currency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.CurrencyTable, snapshotentry.CurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -373,8 +373,8 @@ func (_q *SnapshotEntryQuery) WithHousehold(opts ...func(*HouseholdQuery)) *Snap
 
 // WithCurrency tells the query-builder to eager-load the nodes that are connected to
 // the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *SnapshotEntryQuery) WithCurrency(opts ...func(*HouseholdCurrencyQuery)) *SnapshotEntryQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
+func (_q *SnapshotEntryQuery) WithCurrency(opts ...func(*CurrencyQuery)) *SnapshotEntryQuery {
+	query := (&CurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -524,7 +524,7 @@ func (_q *SnapshotEntryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	}
 	if query := _q.withCurrency; query != nil {
 		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *SnapshotEntry, e *HouseholdCurrency) { n.Edges.Currency = e }); err != nil {
+			func(n *SnapshotEntry, e *Currency) { n.Edges.Currency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -577,11 +577,11 @@ func (_q *SnapshotEntryQuery) loadHousehold(ctx context.Context, query *Househol
 	}
 	return nil
 }
-func (_q *SnapshotEntryQuery) loadCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*SnapshotEntry, init func(*SnapshotEntry), assign func(*SnapshotEntry, *HouseholdCurrency)) error {
+func (_q *SnapshotEntryQuery) loadCurrency(ctx context.Context, query *CurrencyQuery, nodes []*SnapshotEntry, init func(*SnapshotEntry), assign func(*SnapshotEntry, *Currency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*SnapshotEntry)
 	for i := range nodes {
-		fk := nodes[i].HouseholdCurrencyID
+		fk := nodes[i].CurrencyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -590,7 +590,7 @@ func (_q *SnapshotEntryQuery) loadCurrency(ctx context.Context, query *Household
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(householdcurrency.IDIn(ids...))
+	query.Where(currency.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -598,7 +598,7 @@ func (_q *SnapshotEntryQuery) loadCurrency(ctx context.Context, query *Household
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "household_currency_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "currency_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -697,7 +697,7 @@ func (_q *SnapshotEntryQuery) querySpec() *sqlgraph.QuerySpec {
 			_spec.Node.AddColumnOnce(snapshotentry.FieldHouseholdID)
 		}
 		if _q.withCurrency != nil {
-			_spec.Node.AddColumnOnce(snapshotentry.FieldHouseholdCurrencyID)
+			_spec.Node.AddColumnOnce(snapshotentry.FieldCurrencyID)
 		}
 		if _q.withUser != nil {
 			_spec.Node.AddColumnOnce(snapshotentry.FieldUserID)

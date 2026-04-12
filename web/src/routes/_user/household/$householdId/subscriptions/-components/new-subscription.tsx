@@ -2,12 +2,13 @@ import { graphql } from 'relay-runtime'
 import { useForm, useStore } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
-import { useMutation } from 'react-relay'
+import { useFragment, useMutation } from 'react-relay'
 import { capitalize } from 'lodash-es'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { useNavigate } from '@tanstack/react-router'
 import type { newSubscriptionMutation } from './__generated__/newSubscriptionMutation.graphql'
+import type { newSubscriptionFragment$key } from './__generated__/newSubscriptionFragment.graphql'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -45,7 +46,6 @@ import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
-import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -73,6 +73,15 @@ const formSchema = z.object({
   active: z.boolean(),
 })
 
+const newSubscriptionFragment = graphql`
+  fragment newSubscriptionFragment on Query {
+    currencies {
+      id
+      code
+    }
+  }
+`
+
 const newSubscriptionMutation = graphql`
   mutation newSubscriptionMutation($input: CreateRecurringSubscriptionInput!) {
     createRecurringSubscription(input: $input) {
@@ -94,7 +103,12 @@ const newSubscriptionMutation = graphql`
   }
 `
 
-export function NewSubscription() {
+type NewSubscriptionProps = {
+  fragmentRef: newSubscriptionFragment$key
+}
+
+export function NewSubscription({ fragmentRef }: NewSubscriptionProps) {
+  const data = useFragment(newSubscriptionFragment, fragmentRef)
   const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
@@ -110,7 +124,7 @@ export function NewSubscription() {
       intervalCount: 1,
       startDate: new Date(),
       cost: '',
-      currencyCode: household.currencyCode,
+      currencyCode: household.currency.code,
       active: true,
     },
     validators: {
@@ -119,8 +133,9 @@ export function NewSubscription() {
     onSubmit: async ({ value }) => {
       const formData = formSchema.parse(value)
 
-      const currencyID = household.householdCurrencies?.find(
-        (hc) => hc.code === formData.currencyCode,
+      const currencyID = data.currencies.find(
+        (curr: { id: string; code: string }) =>
+          curr.code === formData.currencyCode,
       )?.id
       invariant(currencyID, 'Currency not found')
 
@@ -174,7 +189,7 @@ export function NewSubscription() {
   })
 
   const currencyCode = useStore(form.store, (state) => {
-    return state.values.currencyCode || household.currencyCode
+    return state.values.currencyCode || household.currency.code
   })
 
   return (
@@ -412,7 +427,9 @@ export function NewSubscription() {
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
                     <Combobox
-                      items={SUPPORTED_CURRENCIES.map((c) => c.code)}
+                      items={data.currencies.map(
+                        (c: { id: string; code: string }) => c.code,
+                      )}
                       value={field.state.value}
                       onValueChange={(value) => {
                         field.handleChange(value || '')
