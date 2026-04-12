@@ -150,10 +150,12 @@ function NewHouseholdForm() {
         {
           variables: {
             input: {
-              name: formData.name,
-              locale: formData.locale,
+              input: {
+                name: formData.name,
+                locale: formData.locale,
+                isDemo: false,
+              },
               currencyCode: formData.currencyCode,
-              isDemo: false,
             },
           },
         },
