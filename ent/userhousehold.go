@@ -30,8 +30,6 @@ type UserHousehold struct {
 	HouseholdID int `json:"household_id,omitempty"`
 	// Role holds the value of the "role" field.
 	Role userhousehold.Role `json:"role,omitempty"`
-	// DefaultCurrencyID holds the value of the "default_currency_id" field.
-	DefaultCurrencyID *int `json:"default_currency_id,omitempty"`
 	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
 	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -46,15 +44,13 @@ type UserHouseholdEdges struct {
 	User *User `json:"user,omitempty"`
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
-	// DefaultCurrency holds the value of the default_currency edge.
-	DefaultCurrency *HouseholdCurrency `json:"default_currency,omitempty"`
 	// HouseholdCurrency holds the value of the household_currency edge.
 	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [3]map[string]int
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -79,23 +75,12 @@ func (e UserHouseholdEdges) HouseholdOrErr() (*Household, error) {
 	return nil, &NotLoadedError{edge: "household"}
 }
 
-// DefaultCurrencyOrErr returns the DefaultCurrency value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e UserHouseholdEdges) DefaultCurrencyOrErr() (*HouseholdCurrency, error) {
-	if e.DefaultCurrency != nil {
-		return e.DefaultCurrency, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
-	}
-	return nil, &NotLoadedError{edge: "default_currency"}
-}
-
 // HouseholdCurrencyOrErr returns the HouseholdCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserHouseholdEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
 	if e.HouseholdCurrency != nil {
 		return e.HouseholdCurrency, nil
-	} else if e.loadedTypes[3] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
 	return nil, &NotLoadedError{edge: "household_currency"}
@@ -106,7 +91,7 @@ func (*UserHousehold) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case userhousehold.FieldID, userhousehold.FieldUserID, userhousehold.FieldHouseholdID, userhousehold.FieldDefaultCurrencyID, userhousehold.FieldHouseholdCurrencyID:
+		case userhousehold.FieldID, userhousehold.FieldUserID, userhousehold.FieldHouseholdID, userhousehold.FieldHouseholdCurrencyID:
 			values[i] = new(sql.NullInt64)
 		case userhousehold.FieldRole:
 			values[i] = new(sql.NullString)
@@ -163,13 +148,6 @@ func (_m *UserHousehold) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Role = userhousehold.Role(value.String)
 			}
-		case userhousehold.FieldDefaultCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field default_currency_id", values[i])
-			} else if value.Valid {
-				_m.DefaultCurrencyID = new(int)
-				*_m.DefaultCurrencyID = int(value.Int64)
-			}
 		case userhousehold.FieldHouseholdCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
@@ -197,11 +175,6 @@ func (_m *UserHousehold) QueryUser() *UserQuery {
 // QueryHousehold queries the "household" edge of the UserHousehold entity.
 func (_m *UserHousehold) QueryHousehold() *HouseholdQuery {
 	return NewUserHouseholdClient(_m.config).QueryHousehold(_m)
-}
-
-// QueryDefaultCurrency queries the "default_currency" edge of the UserHousehold entity.
-func (_m *UserHousehold) QueryDefaultCurrency() *HouseholdCurrencyQuery {
-	return NewUserHouseholdClient(_m.config).QueryDefaultCurrency(_m)
 }
 
 // QueryHouseholdCurrency queries the "household_currency" edge of the UserHousehold entity.
@@ -246,11 +219,6 @@ func (_m *UserHousehold) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("role=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Role))
-	builder.WriteString(", ")
-	if v := _m.DefaultCurrencyID; v != nil {
-		builder.WriteString("default_currency_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))

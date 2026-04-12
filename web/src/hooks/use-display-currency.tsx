@@ -6,6 +6,7 @@ import type { useDisplayCurrencyFragment$key } from './__generated__/useDisplayC
 import { useUser } from './use-user'
 import { displayCurrencyIdStore } from './display-currency-store'
 import { identity } from 'lodash-es'
+import invariant from 'tiny-invariant'
 
 const UseDisplayCurrencyFragment = graphql`
   fragment useDisplayCurrencyFragment on Household {
@@ -30,7 +31,7 @@ const UseDisplayCurrencyFragment = graphql`
       user {
         id
       }
-      defaultCurrency {
+      householdCurrency {
         code
       }
     }
@@ -77,11 +78,8 @@ export const useDisplayCurrency = () => {
     const userHousehold = (data.userHouseholds ?? []).find(
       (uh) => uh.user.id === user.id,
     )
-    if (userHousehold?.defaultCurrency?.code) {
-      return userHousehold.defaultCurrency.code
-    }
-
-    throw new Error("Couldn't determine display currency")
+    invariant(userHousehold, "User's household not found in data")
+    return userHousehold.householdCurrency.code
   }, [data, user.id, storedId])
 
   const rateMap = useMemo(() => {

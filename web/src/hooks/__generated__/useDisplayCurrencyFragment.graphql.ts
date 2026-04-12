@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e7633e567e965e73eb37ba08a5137099>>
+ * @generated SignedSource<<9fc3841be8bfb2095befa3fc7ce0f52d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,9 +26,9 @@ export type useDisplayCurrencyFragment$data = {
     };
   }> | null | undefined;
   readonly userHouseholds: ReadonlyArray<{
-    readonly defaultCurrency: {
+    readonly householdCurrency: {
       readonly code: string;
-    } | null | undefined;
+    };
     readonly user: {
       readonly id: string;
     };
@@ -147,7 +147,7 @@ return {
           "args": null,
           "concreteType": "HouseholdCurrency",
           "kind": "LinkedField",
-          "name": "defaultCurrency",
+          "name": "householdCurrency",
           "plural": false,
           "selections": (v2/*: any*/),
           "storageKey": null
@@ -161,6 +161,6 @@ return {
 };
 })();
 
-(node as any).hash = "1ac86487f5d3d5529a377b5be69ff7e7";
+(node as any).hash = "88f3c0d52a5e20fd4cc11527c74ef21a";
 
 export default node;

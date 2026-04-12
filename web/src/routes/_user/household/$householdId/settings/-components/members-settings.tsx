@@ -18,7 +18,7 @@ const membersSettingsFragment = graphql`
     userHouseholds {
       id
       role
-      defaultCurrency {
+      householdCurrency {
         code
       }
       user {

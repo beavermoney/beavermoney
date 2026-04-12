@@ -71,20 +71,6 @@ func (_c *UserHouseholdCreate) SetRole(v userhousehold.Role) *UserHouseholdCreat
 	return _c
 }
 
-// SetDefaultCurrencyID sets the "default_currency_id" field.
-func (_c *UserHouseholdCreate) SetDefaultCurrencyID(v int) *UserHouseholdCreate {
-	_c.mutation.SetDefaultCurrencyID(v)
-	return _c
-}
-
-// SetNillableDefaultCurrencyID sets the "default_currency_id" field if the given value is not nil.
-func (_c *UserHouseholdCreate) SetNillableDefaultCurrencyID(v *int) *UserHouseholdCreate {
-	if v != nil {
-		_c.SetDefaultCurrencyID(*v)
-	}
-	return _c
-}
-
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (_c *UserHouseholdCreate) SetHouseholdCurrencyID(v int) *UserHouseholdCreate {
 	_c.mutation.SetHouseholdCurrencyID(v)
@@ -99,11 +85,6 @@ func (_c *UserHouseholdCreate) SetUser(v *User) *UserHouseholdCreate {
 // SetHousehold sets the "household" edge to the Household entity.
 func (_c *UserHouseholdCreate) SetHousehold(v *Household) *UserHouseholdCreate {
 	return _c.SetHouseholdID(v.ID)
-}
-
-// SetDefaultCurrency sets the "default_currency" edge to the HouseholdCurrency entity.
-func (_c *UserHouseholdCreate) SetDefaultCurrency(v *HouseholdCurrency) *UserHouseholdCreate {
-	return _c.SetDefaultCurrencyID(v.ID)
 }
 
 // SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
@@ -272,23 +253,6 @@ func (_c *UserHouseholdCreate) createSpec() (*UserHousehold, *sqlgraph.CreateSpe
 		_node.HouseholdID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.DefaultCurrencyIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   userhousehold.DefaultCurrencyTable,
-			Columns: []string{userhousehold.DefaultCurrencyColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.DefaultCurrencyID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -382,24 +346,6 @@ func (u *UserHouseholdUpsert) UpdateRole() *UserHouseholdUpsert {
 	return u
 }
 
-// SetDefaultCurrencyID sets the "default_currency_id" field.
-func (u *UserHouseholdUpsert) SetDefaultCurrencyID(v int) *UserHouseholdUpsert {
-	u.Set(userhousehold.FieldDefaultCurrencyID, v)
-	return u
-}
-
-// UpdateDefaultCurrencyID sets the "default_currency_id" field to the value that was provided on create.
-func (u *UserHouseholdUpsert) UpdateDefaultCurrencyID() *UserHouseholdUpsert {
-	u.SetExcluded(userhousehold.FieldDefaultCurrencyID)
-	return u
-}
-
-// ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
-func (u *UserHouseholdUpsert) ClearDefaultCurrencyID() *UserHouseholdUpsert {
-	u.SetNull(userhousehold.FieldDefaultCurrencyID)
-	return u
-}
-
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (u *UserHouseholdUpsert) SetHouseholdCurrencyID(v int) *UserHouseholdUpsert {
 	u.Set(userhousehold.FieldHouseholdCurrencyID, v)
@@ -488,27 +434,6 @@ func (u *UserHouseholdUpsertOne) SetRole(v userhousehold.Role) *UserHouseholdUps
 func (u *UserHouseholdUpsertOne) UpdateRole() *UserHouseholdUpsertOne {
 	return u.Update(func(s *UserHouseholdUpsert) {
 		s.UpdateRole()
-	})
-}
-
-// SetDefaultCurrencyID sets the "default_currency_id" field.
-func (u *UserHouseholdUpsertOne) SetDefaultCurrencyID(v int) *UserHouseholdUpsertOne {
-	return u.Update(func(s *UserHouseholdUpsert) {
-		s.SetDefaultCurrencyID(v)
-	})
-}
-
-// UpdateDefaultCurrencyID sets the "default_currency_id" field to the value that was provided on create.
-func (u *UserHouseholdUpsertOne) UpdateDefaultCurrencyID() *UserHouseholdUpsertOne {
-	return u.Update(func(s *UserHouseholdUpsert) {
-		s.UpdateDefaultCurrencyID()
-	})
-}
-
-// ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
-func (u *UserHouseholdUpsertOne) ClearDefaultCurrencyID() *UserHouseholdUpsertOne {
-	return u.Update(func(s *UserHouseholdUpsert) {
-		s.ClearDefaultCurrencyID()
 	})
 }
 
@@ -768,27 +693,6 @@ func (u *UserHouseholdUpsertBulk) SetRole(v userhousehold.Role) *UserHouseholdUp
 func (u *UserHouseholdUpsertBulk) UpdateRole() *UserHouseholdUpsertBulk {
 	return u.Update(func(s *UserHouseholdUpsert) {
 		s.UpdateRole()
-	})
-}
-
-// SetDefaultCurrencyID sets the "default_currency_id" field.
-func (u *UserHouseholdUpsertBulk) SetDefaultCurrencyID(v int) *UserHouseholdUpsertBulk {
-	return u.Update(func(s *UserHouseholdUpsert) {
-		s.SetDefaultCurrencyID(v)
-	})
-}
-
-// UpdateDefaultCurrencyID sets the "default_currency_id" field to the value that was provided on create.
-func (u *UserHouseholdUpsertBulk) UpdateDefaultCurrencyID() *UserHouseholdUpsertBulk {
-	return u.Update(func(s *UserHouseholdUpsert) {
-		s.UpdateDefaultCurrencyID()
-	})
-}
-
-// ClearDefaultCurrencyID clears the value of the "default_currency_id" field.
-func (u *UserHouseholdUpsertBulk) ClearDefaultCurrencyID() *UserHouseholdUpsertBulk {
-	return u.Update(func(s *UserHouseholdUpsert) {
-		s.ClearDefaultCurrencyID()
 	})
 }
 

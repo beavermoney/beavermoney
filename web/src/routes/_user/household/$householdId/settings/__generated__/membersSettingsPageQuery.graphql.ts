@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<78fbca412b67e9916d7392db8c9b44a3>>
+ * @generated SignedSource<<c647964250b84a5d1cd4339b97f0c5ac>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -91,7 +91,7 @@ return {
                 "args": null,
                 "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
-                "name": "defaultCurrency",
+                "name": "householdCurrency",
                 "plural": false,
                 "selections": [
                   {
@@ -141,12 +141,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "350040133229f99c404d3b2a9b673d7c",
+    "cacheID": "1390a55945b53265775dbbe642d84557",
     "id": null,
     "metadata": {},
     "name": "membersSettingsPageQuery",
     "operationKind": "query",
-    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    defaultCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
+    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    householdCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
   }
 };
 })();

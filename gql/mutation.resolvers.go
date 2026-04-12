@@ -79,7 +79,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input model.Crea
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetRole(userhousehold.RoleAdmin).
-		SetDefaultCurrencyID(primaryHC.ID).
+		SetHouseholdCurrencyID(primaryHC.ID).
 		Exec(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to create user-household relationship", "error", err)
@@ -1664,7 +1664,7 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	isUserDefault, err := client.UserHousehold.Query().
 		Where(
 			userhousehold.HouseholdIDEQ(householdID),
-			userhousehold.DefaultCurrencyIDEQ(hc.ID),
+			userhousehold.HouseholdCurrencyIDEQ(hc.ID),
 		).
 		Exist(ctx)
 	if err != nil {

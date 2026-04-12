@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2a59053e793b310f0bb3e31173beee0e>>
+ * @generated SignedSource<<f6b8717fb57321d526242e5f470ae99c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,9 +13,9 @@ export type UserHouseholdRole = "admin" | "member" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type membersSettingsFragment$data = {
   readonly userHouseholds: ReadonlyArray<{
-    readonly defaultCurrency: {
+    readonly householdCurrency: {
       readonly code: string;
-    } | null | undefined;
+    };
     readonly id: string;
     readonly role: UserHouseholdRole;
     readonly user: {
@@ -66,7 +66,7 @@ return {
           "args": null,
           "concreteType": "HouseholdCurrency",
           "kind": "LinkedField",
-          "name": "defaultCurrency",
+          "name": "householdCurrency",
           "plural": false,
           "selections": [
             {
@@ -114,6 +114,6 @@ return {
 };
 })();
 
-(node as any).hash = "3c2c86b5575cb64c09a969fd3d6f6c13";
+(node as any).hash = "53ff442831f91ed2b3762ed60d43fa53";
 
 export default node;

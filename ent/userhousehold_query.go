@@ -28,7 +28,6 @@ type UserHouseholdQuery struct {
 	predicates            []predicate.UserHousehold
 	withUser              *UserQuery
 	withHousehold         *HouseholdQuery
-	withDefaultCurrency   *HouseholdCurrencyQuery
 	withHouseholdCurrency *HouseholdCurrencyQuery
 	loadTotal             []func(context.Context, []*UserHousehold) error
 	modifiers             []func(*sql.Selector)
@@ -105,28 +104,6 @@ func (_q *UserHouseholdQuery) QueryHousehold() *HouseholdQuery {
 			sqlgraph.From(userhousehold.Table, userhousehold.FieldID, selector),
 			sqlgraph.To(household.Table, household.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, userhousehold.HouseholdTable, userhousehold.HouseholdColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryDefaultCurrency chains the current query on the "default_currency" edge.
-func (_q *UserHouseholdQuery) QueryDefaultCurrency() *HouseholdCurrencyQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(userhousehold.Table, userhousehold.FieldID, selector),
-			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, userhousehold.DefaultCurrencyTable, userhousehold.DefaultCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -350,7 +327,6 @@ func (_q *UserHouseholdQuery) Clone() *UserHouseholdQuery {
 		predicates:            append([]predicate.UserHousehold{}, _q.predicates...),
 		withUser:              _q.withUser.Clone(),
 		withHousehold:         _q.withHousehold.Clone(),
-		withDefaultCurrency:   _q.withDefaultCurrency.Clone(),
 		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -378,17 +354,6 @@ func (_q *UserHouseholdQuery) WithHousehold(opts ...func(*HouseholdQuery)) *User
 		opt(query)
 	}
 	_q.withHousehold = query
-	return _q
-}
-
-// WithDefaultCurrency tells the query-builder to eager-load the nodes that are connected to
-// the "default_currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UserHouseholdQuery) WithDefaultCurrency(opts ...func(*HouseholdCurrencyQuery)) *UserHouseholdQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withDefaultCurrency = query
 	return _q
 }
 
@@ -487,10 +452,9 @@ func (_q *UserHouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	var (
 		nodes       = []*UserHousehold{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			_q.withUser != nil,
 			_q.withHousehold != nil,
-			_q.withDefaultCurrency != nil,
 			_q.withHouseholdCurrency != nil,
 		}
 	)
@@ -524,12 +488,6 @@ func (_q *UserHouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if query := _q.withHousehold; query != nil {
 		if err := _q.loadHousehold(ctx, query, nodes, nil,
 			func(n *UserHousehold, e *Household) { n.Edges.Household = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withDefaultCurrency; query != nil {
-		if err := _q.loadDefaultCurrency(ctx, query, nodes, nil,
-			func(n *UserHousehold, e *HouseholdCurrency) { n.Edges.DefaultCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -605,38 +563,6 @@ func (_q *UserHouseholdQuery) loadHousehold(ctx context.Context, query *Househol
 	}
 	return nil
 }
-func (_q *UserHouseholdQuery) loadDefaultCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*UserHousehold, init func(*UserHousehold), assign func(*UserHousehold, *HouseholdCurrency)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*UserHousehold)
-	for i := range nodes {
-		if nodes[i].DefaultCurrencyID == nil {
-			continue
-		}
-		fk := *nodes[i].DefaultCurrencyID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(householdcurrency.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "default_currency_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (_q *UserHouseholdQuery) loadHouseholdCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*UserHousehold, init func(*UserHousehold), assign func(*UserHousehold, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*UserHousehold)
@@ -700,9 +626,6 @@ func (_q *UserHouseholdQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withHousehold != nil {
 			_spec.Node.AddColumnOnce(userhousehold.FieldHouseholdID)
-		}
-		if _q.withDefaultCurrency != nil {
-			_spec.Node.AddColumnOnce(userhousehold.FieldDefaultCurrencyID)
 		}
 		if _q.withHouseholdCurrency != nil {
 			_spec.Node.AddColumnOnce(userhousehold.FieldHouseholdCurrencyID)

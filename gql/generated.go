@@ -572,8 +572,6 @@ type ComplexityRoot struct {
 
 	UserHousehold struct {
 		CreateTime          func(childComplexity int) int
-		DefaultCurrency     func(childComplexity int) int
-		DefaultCurrencyID   func(childComplexity int) int
 		Household           func(childComplexity int) int
 		HouseholdCurrency   func(childComplexity int) int
 		HouseholdCurrencyID func(childComplexity int) int
@@ -3173,18 +3171,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.UserHousehold.CreateTime(childComplexity), true
-	case "UserHousehold.defaultCurrency":
-		if e.complexity.UserHousehold.DefaultCurrency == nil {
-			break
-		}
-
-		return e.complexity.UserHousehold.DefaultCurrency(childComplexity), true
-	case "UserHousehold.defaultCurrencyID":
-		if e.complexity.UserHousehold.DefaultCurrencyID == nil {
-			break
-		}
-
-		return e.complexity.UserHousehold.DefaultCurrencyID(childComplexity), true
 	case "UserHousehold.household":
 		if e.complexity.UserHousehold.Household == nil {
 			break
@@ -6965,16 +6951,12 @@ func (ec *executionContext) fieldContext_Household_userHouseholds(_ context.Cont
 				return ec.fieldContext_UserHousehold_householdID(ctx, field)
 			case "role":
 				return ec.fieldContext_UserHousehold_role(ctx, field)
-			case "defaultCurrencyID":
-				return ec.fieldContext_UserHousehold_defaultCurrencyID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
 			case "user":
 				return ec.fieldContext_UserHousehold_user(ctx, field)
 			case "household":
 				return ec.fieldContext_UserHousehold_household(ctx, field)
-			case "defaultCurrency":
-				return ec.fieldContext_UserHousehold_defaultCurrency(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
 			}
@@ -12230,16 +12212,12 @@ func (ec *executionContext) fieldContext_Query_userHouseholds(_ context.Context,
 				return ec.fieldContext_UserHousehold_householdID(ctx, field)
 			case "role":
 				return ec.fieldContext_UserHousehold_role(ctx, field)
-			case "defaultCurrencyID":
-				return ec.fieldContext_UserHousehold_defaultCurrencyID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
 			case "user":
 				return ec.fieldContext_UserHousehold_user(ctx, field)
 			case "household":
 				return ec.fieldContext_UserHousehold_household(ctx, field)
-			case "defaultCurrency":
-				return ec.fieldContext_UserHousehold_defaultCurrency(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
 			}
@@ -17852,16 +17830,12 @@ func (ec *executionContext) fieldContext_User_userHouseholds(_ context.Context, 
 				return ec.fieldContext_UserHousehold_householdID(ctx, field)
 			case "role":
 				return ec.fieldContext_UserHousehold_role(ctx, field)
-			case "defaultCurrencyID":
-				return ec.fieldContext_UserHousehold_defaultCurrencyID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
 			case "user":
 				return ec.fieldContext_UserHousehold_user(ctx, field)
 			case "household":
 				return ec.fieldContext_UserHousehold_household(ctx, field)
-			case "defaultCurrency":
-				return ec.fieldContext_UserHousehold_defaultCurrency(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
 			}
@@ -18045,35 +18019,6 @@ func (ec *executionContext) fieldContext_UserHousehold_role(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _UserHousehold_defaultCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.UserHousehold) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_UserHousehold_defaultCurrencyID,
-		func(ctx context.Context) (any, error) {
-			return obj.DefaultCurrencyID, nil
-		},
-		nil,
-		ec.marshalOID2ᚖint,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_UserHousehold_defaultCurrencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "UserHousehold",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _UserHousehold_householdCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.UserHousehold) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -18224,69 +18169,6 @@ func (ec *executionContext) fieldContext_UserHousehold_household(_ context.Conte
 				return ec.fieldContext_Household_financialReport(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Household", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _UserHousehold_defaultCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.UserHousehold) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_UserHousehold_defaultCurrency,
-		func(ctx context.Context) (any, error) {
-			return obj.DefaultCurrency(ctx)
-		},
-		nil,
-		ec.marshalOHouseholdCurrency2ᚖbeavermoneyᚗappᚋentᚐHouseholdCurrency,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_UserHousehold_defaultCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "UserHousehold",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_HouseholdCurrency_id(ctx, field)
-			case "householdID":
-				return ec.fieldContext_HouseholdCurrency_householdID(ctx, field)
-			case "createTime":
-				return ec.fieldContext_HouseholdCurrency_createTime(ctx, field)
-			case "updateTime":
-				return ec.fieldContext_HouseholdCurrency_updateTime(ctx, field)
-			case "code":
-				return ec.fieldContext_HouseholdCurrency_code(ctx, field)
-			case "important":
-				return ec.fieldContext_HouseholdCurrency_important(ctx, field)
-			case "household":
-				return ec.fieldContext_HouseholdCurrency_household(ctx, field)
-			case "accounts":
-				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
-			case "investments":
-				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
-			case "recurringSubscriptions":
-				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
-			case "snapshotEntries":
-				return ec.fieldContext_HouseholdCurrency_snapshotEntries(ctx, field)
-			case "snapshotRatesFrom":
-				return ec.fieldContext_HouseholdCurrency_snapshotRatesFrom(ctx, field)
-			case "snapshotRatesTo":
-				return ec.fieldContext_HouseholdCurrency_snapshotRatesTo(ctx, field)
-			case "householdRatesFrom":
-				return ec.fieldContext_HouseholdCurrency_householdRatesFrom(ctx, field)
-			case "householdRatesTo":
-				return ec.fieldContext_HouseholdCurrency_householdRatesTo(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type HouseholdCurrency", field.Name)
 		},
 	}
 	return fc, nil
@@ -36568,8 +36450,6 @@ func (ec *executionContext) _UserHousehold(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "defaultCurrencyID":
-			out.Values[i] = ec._UserHousehold_defaultCurrencyID(ctx, field, obj)
 		case "householdCurrencyID":
 			out.Values[i] = ec._UserHousehold_householdCurrencyID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -36624,39 +36504,6 @@ func (ec *executionContext) _UserHousehold(ctx context.Context, sel ast.Selectio
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "defaultCurrency":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._UserHousehold_defaultCurrency(ctx, field, obj)
 				return res
 			}
 

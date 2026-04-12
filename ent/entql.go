@@ -333,7 +333,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userhousehold.FieldUserID:              {Type: field.TypeInt, Column: userhousehold.FieldUserID},
 			userhousehold.FieldHouseholdID:         {Type: field.TypeInt, Column: userhousehold.FieldHouseholdID},
 			userhousehold.FieldRole:                {Type: field.TypeEnum, Column: userhousehold.FieldRole},
-			userhousehold.FieldDefaultCurrencyID:   {Type: field.TypeInt, Column: userhousehold.FieldDefaultCurrencyID},
 			userhousehold.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: userhousehold.FieldHouseholdCurrencyID},
 		},
 	}
@@ -1206,18 +1205,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"UserHousehold",
 		"Household",
-	)
-	graph.MustAddE(
-		"default_currency",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   userhousehold.DefaultCurrencyTable,
-			Columns: []string{userhousehold.DefaultCurrencyColumn},
-			Bidi:    false,
-		},
-		"UserHousehold",
-		"HouseholdCurrency",
 	)
 	graph.MustAddE(
 		"household_currency",
@@ -3368,11 +3355,6 @@ func (f *UserHouseholdFilter) WhereRole(p entql.StringP) {
 	f.Where(p.Field(userhousehold.FieldRole))
 }
 
-// WhereDefaultCurrencyID applies the entql int predicate on the default_currency_id field.
-func (f *UserHouseholdFilter) WhereDefaultCurrencyID(p entql.IntP) {
-	f.Where(p.Field(userhousehold.FieldDefaultCurrencyID))
-}
-
 // WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
 func (f *UserHouseholdFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(userhousehold.FieldHouseholdCurrencyID))
@@ -3400,20 +3382,6 @@ func (f *UserHouseholdFilter) WhereHasHousehold() {
 // WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
 func (f *UserHouseholdFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
 	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasDefaultCurrency applies a predicate to check if query has an edge default_currency.
-func (f *UserHouseholdFilter) WhereHasDefaultCurrency() {
-	f.Where(entql.HasEdge("default_currency"))
-}
-
-// WhereHasDefaultCurrencyWith applies a predicate to check if query has an edge default_currency with a given conditions (other predicates).
-func (f *UserHouseholdFilter) WhereHasDefaultCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("default_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
