@@ -164,7 +164,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         invariant(investment?.node, 'Investment node is null')
         return convert(
           investment.node.value,
-          investment.node.account.currency.code,
+          investment.node.account.householdCurrency.code,
         )
       })
       .reduce((a, b) => a.add(b), currency(0))
@@ -244,7 +244,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
               invariant(investment?.node, 'Investment node is null')
               return convert(
                 investment.node.value,
-                investment.node.account.currency.code,
+                investment.node.account.householdCurrency.code,
               )
             })
             .reduce((a, b) => a.add(b), currency(0))

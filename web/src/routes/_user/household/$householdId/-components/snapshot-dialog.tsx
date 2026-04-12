@@ -90,7 +90,7 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
         .filter((e) => e?.node?.type === type)
         .reduce((sum, e) => {
           invariant(e?.node, 'Account edge node is null')
-          return sum.add(convert(e.node.value, e.node.currency.code))
+          return sum.add(convert(e.node.value, e.node.householdCurrency.code))
         }, currency(0))
       acc[type] = total
       return acc

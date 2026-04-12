@@ -327,7 +327,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
-                                      currencyCode: account.currency.code,
+                                      currencyCode:
+                                        account.householdCurrency.code,
                                       liability: account.type === 'liability',
                                     })}
                                 </span>
@@ -447,7 +448,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                     </FieldLabel>
                     <FieldDescription>
                       {selectedAccount
-                        ? `Currency: ${selectedAccount.currency.code}`
+                        ? `Currency: ${selectedAccount.householdCurrency.code}`
                         : 'Select an account to see currency'}
                     </FieldDescription>
                     <CurrencyInput
@@ -460,7 +461,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.householdCurrency.code ??
+                        household.currencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
@@ -484,7 +486,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                     <FieldLabel htmlFor={field.name}>Total Received</FieldLabel>
                     <FieldDescription>
                       {selectedAccount
-                        ? `Currency: ${selectedAccount.currency.code}`
+                        ? `Currency: ${selectedAccount.householdCurrency.code}`
                         : 'Computed from shares × price'}
                     </FieldDescription>
                     <CurrencyInput
@@ -497,7 +499,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.householdCurrency.code ??
+                        household.currencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

@@ -330,7 +330,8 @@ export function NewInvestment({
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
-                                      currencyCode: account.currency.code,
+                                      currencyCode:
+                                        account.householdCurrency.code,
                                       liability: account.type === 'liability',
                                     })}
                                 </span>

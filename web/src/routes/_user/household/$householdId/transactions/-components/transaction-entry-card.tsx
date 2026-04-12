@@ -93,7 +93,7 @@ export function TransactionEntryCard({
           <span className="font-semibold tabular-nums">
             {formatCurrency({
               value: data.amount,
-              currencyCode: data.account.currency.code,
+              currencyCode: data.account.householdCurrency.code,
             })}
           </span>
         </ItemTitle>

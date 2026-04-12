@@ -324,7 +324,8 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
-                                      currencyCode: account.currency.code,
+                                      currencyCode:
+                                        account.householdCurrency.code,
                                       liability: account.type === 'liability',
                                     })}
                                 </span>
@@ -444,7 +445,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                     </FieldLabel>
                     <FieldDescription>
                       {selectedAccount
-                        ? `Currency: ${selectedAccount.currency.code}`
+                        ? `Currency: ${selectedAccount.householdCurrency.code}`
                         : 'Select an account to see currency'}
                     </FieldDescription>
                     <CurrencyInput
@@ -457,7 +458,8 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.householdCurrency.code ??
+                        household.currencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
@@ -481,7 +483,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                     <FieldLabel htmlFor={field.name}>Total Paid</FieldLabel>
                     <FieldDescription>
                       {selectedAccount
-                        ? `Currency: ${selectedAccount.currency.code}`
+                        ? `Currency: ${selectedAccount.householdCurrency.code}`
                         : 'Computed from shares × price'}
                     </FieldDescription>
                     <CurrencyInput
@@ -494,7 +496,8 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.householdCurrency.code ??
+                        household.currencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

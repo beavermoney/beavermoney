@@ -87,7 +87,7 @@ export function AccountCard({
         <span className="text-sm font-semibold tabular-nums">
           {formatCurrencyWithPrivacyMode({
             value: data.value,
-            currencyCode: data.currency.code,
+            currencyCode: data.householdCurrency.code,
             liability: data.type === 'liability',
           })}
         </span>
@@ -105,7 +105,7 @@ export function AccountCard({
             <span className="tabular-nums">
               {formatCurrencyWithPrivacyMode({
                 value: data.balance,
-                currencyCode: data.currency.code,
+                currencyCode: data.householdCurrency.code,
               })}{' '}
               cash
             </span>

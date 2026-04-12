@@ -334,7 +334,8 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
-                                      currencyCode: account.currency.code,
+                                      currencyCode:
+                                        account.householdCurrency.code,
                                       liability: account.type === 'liability',
                                     })}
                                 </span>
@@ -362,7 +363,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                     <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
                     <FieldDescription>
                       {selectedAccount
-                        ? `Currency: ${selectedAccount.currency.code}`
+                        ? `Currency: ${selectedAccount.householdCurrency.code}`
                         : 'Select an account to see currency'}
                     </FieldDescription>
                     <CurrencyInput
@@ -375,7 +376,8 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                       value={field.state.value}
                       locale={household.locale}
                       currency={
-                        selectedAccount?.currency.code ?? household.currencyCode
+                        selectedAccount?.householdCurrency.code ??
+                        household.currencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

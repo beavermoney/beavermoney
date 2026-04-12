@@ -167,7 +167,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
       intervalCount: data.intervalCount,
       startDate: new Date(data.startDate),
       cost: data.cost,
-      currencyCode: data.currency.code,
+      currencyCode: data.householdCurrency.code,
       active: data.active,
     },
     validators: {
@@ -192,7 +192,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
               intervalCount: formData.intervalCount,
               startDate: formData.startDate.toISOString(),
               cost: formData.cost,
-              currencyID: currencyID,
+              householdCurrencyID: currencyID,
               icon: formData.icon || null,
               active: formData.active,
             },

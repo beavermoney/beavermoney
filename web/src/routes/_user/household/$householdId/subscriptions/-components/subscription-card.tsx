@@ -107,7 +107,7 @@ export function SubscriptionCard({
                 <ItemTitle className="font-semibold tabular-nums">
                   {formatCurrencyWithPrivacyMode({
                     value: data.cost,
-                    currencyCode: data.currency.code,
+                    currencyCode: data.householdCurrency.code,
                   })}
                 </ItemTitle>
                 <ItemDescription>

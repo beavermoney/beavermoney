@@ -117,7 +117,10 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         })
 
       const getYearlyEquivalent = (sub: (typeof activeSubscriptions)[0]) => {
-        const costInDisplayCurrency = convert(sub.cost, sub.currency.code)
+        const costInDisplayCurrency = convert(
+          sub.cost,
+          sub.householdCurrency.code,
+        )
         switch (sub.interval) {
           case 'week':
             return costInDisplayCurrency.divide(sub.intervalCount).multiply(52)

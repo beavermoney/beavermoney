@@ -154,7 +154,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
       invariant(toAccount, 'To account not found')
 
       const isDifferentCurrency =
-        fromAccount.currency.code !== toAccount.currency.code
+        fromAccount.householdCurrency.code !== toAccount.householdCurrency.code
 
       // For transfers:
       // - From account gets negative amount (money going out)
@@ -225,7 +225,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
   const isDifferentCurrency =
     fromAccount &&
     toAccount &&
-    fromAccount.currency.code !== toAccount.currency.code
+    fromAccount.householdCurrency.code !== toAccount.householdCurrency.code
 
   return (
     <Card className="w-full">
@@ -382,7 +382,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
-                                      currencyCode: account.currency.code,
+                                      currencyCode:
+                                        account.householdCurrency.code,
                                       liability: account.type === 'liability',
                                     })}
                                 </span>
@@ -469,7 +470,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                                   {account &&
                                     formatCurrencyWithPrivacyMode({
                                       value: account.value,
-                                      currencyCode: account.currency.code,
+                                      currencyCode:
+                                        account.householdCurrency.code,
                                       liability: account.type === 'liability',
                                     })}
                                 </span>
@@ -506,7 +508,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                       <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
                       <FieldDescription>
                         {fromAccount
-                          ? `Currency: ${fromAccount.currency.code}`
+                          ? `Currency: ${fromAccount.householdCurrency.code}`
                           : 'Select from account to see currency'}
                       </FieldDescription>
                       <CurrencyInput
@@ -519,7 +521,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         value={field.state.value}
                         locale={household.locale}
                         currency={
-                          fromAccount?.currency.code ?? household.currencyCode
+                          fromAccount?.householdCurrency.code ??
+                          household.currencyCode
                         }
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
@@ -553,7 +556,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         </FieldLabel>
                         <FieldDescription>
                           {fromAccount
-                            ? `Currency: ${fromAccount.currency.code}`
+                            ? `Currency: ${fromAccount.householdCurrency.code}`
                             : 'Select from account to see currency'}
                         </FieldDescription>
                         <CurrencyInput
@@ -566,7 +569,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           value={field.state.value}
                           locale={household.locale}
                           currency={
-                            fromAccount?.currency.code ?? household.currencyCode
+                            fromAccount?.householdCurrency.code ??
+                            household.currencyCode
                           }
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
@@ -599,7 +603,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         </FieldLabel>
                         <FieldDescription>
                           {toAccount
-                            ? `Currency: ${toAccount.currency.code}`
+                            ? `Currency: ${toAccount.householdCurrency.code}`
                             : 'Select to account to see currency'}
                         </FieldDescription>
                         <CurrencyInput
@@ -612,7 +616,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           value={field.state.value}
                           locale={household.locale}
                           currency={
-                            toAccount?.currency.code ?? household.currencyCode
+                            toAccount?.householdCurrency.code ??
+                            household.currencyCode
                           }
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}

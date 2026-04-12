@@ -74,7 +74,7 @@ export function InvestmentCard({
                   {data.amount} @{' '}
                   {formatCurrency({
                     value: data.quote,
-                    currencyCode: data.currency.code,
+                    currencyCode: data.householdCurrency.code,
                   })}
                 </ItemDescription>
               </ItemContent>
@@ -83,7 +83,7 @@ export function InvestmentCard({
                   <span className="font-semibold tabular-nums">
                     {formatCurrencyWithPrivacyMode({
                       value: data.value,
-                      currencyCode: data.currency.code,
+                      currencyCode: data.householdCurrency.code,
                     })}
                   </span>
                 </ItemTitle>

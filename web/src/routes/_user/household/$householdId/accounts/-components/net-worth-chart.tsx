@@ -200,7 +200,11 @@ export function NetWorthChart() {
 
         const totals = (snap.snapshotEntries ?? []).reduce(
           (acc, entry) => {
-            const rate = getRate(rateMap, entry.currency.code, displayCurrency)
+            const rate = getRate(
+              rateMap,
+              entry.householdCurrency.code,
+              displayCurrency,
+            )
             return {
               liquidity:
                 acc.liquidity +

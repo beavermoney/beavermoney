@@ -134,7 +134,7 @@ export function NewSubscription() {
               intervalCount: formData.intervalCount,
               startDate: formData.startDate.toISOString(),
               cost: formData.cost,
-              currencyID: currencyID,
+              householdCurrencyID: currencyID,
               icon: formData.icon || null,
               active: formData.active,
             },

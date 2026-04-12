@@ -193,7 +193,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       })
       .map((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return convert(edge.node.value, edge.node.currency.code)
+        return convert(edge.node.value, edge.node.householdCurrency.code)
       })
       .reduce((a, b) => a.add(b), currency(0))
 
@@ -204,7 +204,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       })
       .map((edge) => {
         invariant(edge?.node, 'Account node is null')
-        return convert(edge.node.value, edge.node.currency.code)
+        return convert(edge.node.value, edge.node.householdCurrency.code)
       })
       .reduce((a, b) => a.add(b), currency(0))
 
@@ -361,7 +361,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                         invariant(account?.node, 'Account node is null')
                         return convert(
                           account.node.value,
-                          account.node.currency.code,
+                          account.node.householdCurrency.code,
                         )
                       })
                       .reduce((a, b) => a.add(b), currency(0)),
