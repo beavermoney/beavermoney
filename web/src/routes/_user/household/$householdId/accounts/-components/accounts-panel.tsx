@@ -94,7 +94,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const environment = useRelayEnvironment()
   const { household: _household } = useHousehold()
-  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
+  const { displayCurrencyCode, convert } = useDisplayCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
 

@@ -58,6 +58,7 @@ import { useEffect, useState, useTransition } from 'react'
 import { Spinner } from '@/components/ui/spinner'
 import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
 import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
   name: z
@@ -164,6 +165,8 @@ export function NewInvestment({
   const [queriedSymbol, setQueriedSymbol] = useState('')
 
   const navigate = useNavigate()
+
+  const { displayCurrencyCode } = useDisplayCurrency()
 
   const { formatCurrency, formatCurrencyWithPrivacyMode } = useCurrency()
 
@@ -621,7 +624,7 @@ export function NewInvestment({
                   investmentType === 'crypto'
                     ? cryptoQuoteData.cryptoQuote
                     : stockQuoteData.stockQuote
-                const currencyCode = quote?.currency || household.currencyCode
+                const currencyCode = quote?.currency ?? displayCurrencyCode
 
                 return (
                   <Field data-invalid={isInvalid}>

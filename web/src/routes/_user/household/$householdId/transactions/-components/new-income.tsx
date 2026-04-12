@@ -42,6 +42,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
   description: z
@@ -126,6 +127,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
         return category.node
       })
       .filter((category) => category.type === 'income') ?? []
+  const { displayCurrencyCode } = useDisplayCurrency()
 
   const form = useForm({
     defaultValues: {
@@ -377,7 +379,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                       locale={household.locale}
                       currency={
                         selectedAccount?.householdCurrency.code ??
-                        household.currencyCode
+                        displayCurrencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

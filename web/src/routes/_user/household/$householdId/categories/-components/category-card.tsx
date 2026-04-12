@@ -71,7 +71,7 @@ export function CategoryCard({
     financialReportRef,
   )
   const { formatCurrencyWithPrivacyMode } = useCurrency()
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { displayCurrencyCode } = useDisplayCurrency()
 
   // Look up this category's aggregate data
   const { total, transactionCount } = useMemo(() => {

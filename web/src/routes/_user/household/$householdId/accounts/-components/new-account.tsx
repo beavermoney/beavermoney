@@ -50,6 +50,7 @@ import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
   name: z
@@ -88,6 +89,8 @@ export function NewAccount() {
   const [commitMutation, isMutationInFlight] =
     useMutation<newAccountMutation>(newAccountMutation)
 
+  const { displayCurrencyCode } = useDisplayCurrency()
+
   const { household } = useHousehold()
 
   const form = useForm({
@@ -96,7 +99,7 @@ export function NewAccount() {
       icon: '',
       type: '',
       category: '',
-      currencyCode: household.currencyCode,
+      currencyCode: displayCurrencyCode,
       balance: undefined as unknown as number,
     },
     validators: {
@@ -161,7 +164,7 @@ export function NewAccount() {
   })
 
   const currencyCode = useStore(form.store, (state) => {
-    return state.values.currencyCode || household.currencyCode
+    return state.values.currencyCode ?? displayCurrencyCode
   })
 
   const accountType = useStore(form.store, (state) => state.values.type)

@@ -42,6 +42,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
   description: z
@@ -107,6 +108,8 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newExpenseMutation>(newExpenseMutation)
+
+  const { displayCurrencyCode } = useDisplayCurrency()
 
   const { household } = useHousehold()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
@@ -376,7 +379,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                       locale={household.locale}
                       currency={
                         selectedAccount?.householdCurrency.code ??
-                        household.currencyCode
+                        displayCurrencyCode
                       }
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}

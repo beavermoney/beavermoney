@@ -39,6 +39,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
   description: z
@@ -211,6 +212,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
         .exhaustive()
     },
   })
+
+  const { displayCurrencyCode } = useDisplayCurrency()
 
   const fromAccountId = useStore(
     form.store,
@@ -522,7 +525,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         locale={household.locale}
                         currency={
                           fromAccount?.householdCurrency.code ??
-                          household.currencyCode
+                          displayCurrencyCode
                         }
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
@@ -570,7 +573,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           locale={household.locale}
                           currency={
                             fromAccount?.householdCurrency.code ??
-                            household.currencyCode
+                            displayCurrencyCode
                           }
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
@@ -617,7 +620,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           locale={household.locale}
                           currency={
                             toAccount?.householdCurrency.code ??
-                            household.currencyCode
+                            displayCurrencyCode
                           }
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}

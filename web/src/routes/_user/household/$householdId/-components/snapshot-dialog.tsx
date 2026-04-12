@@ -75,7 +75,7 @@ type SnapshotDialogProps = {
 export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
   const data = useFragment(SnapshotDialogFragment, fragmentRef)
   const { household } = useHousehold()
-  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
+  const { displayCurrencyCode, convert } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const [open, setOpen] = useState(false)

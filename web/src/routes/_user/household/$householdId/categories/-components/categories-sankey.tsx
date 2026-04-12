@@ -271,7 +271,7 @@ interface CategoriesSankeyProps {
 
 export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
   const data = useFragment(CategoriesSankeyFragment, fragmentRef)
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
   const nodeColors = useMemo(() => resolveNodeColors(), [])

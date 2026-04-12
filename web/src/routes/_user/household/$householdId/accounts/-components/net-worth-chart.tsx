@@ -160,7 +160,7 @@ const chartConfig = {
 
 export function NetWorthChart() {
   const { household } = useHousehold()
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
 

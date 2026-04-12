@@ -46,6 +46,7 @@ import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoDomainURL } from '@/lib/logo'
 import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -100,6 +101,8 @@ export function NewSubscription() {
   const [commitMutation, isMutationInFlight] =
     useMutation<newSubscriptionMutation>(newSubscriptionMutation)
 
+  const { displayCurrencyCode } = useDisplayCurrency()
+
   const { household } = useHousehold()
 
   const form = useForm({
@@ -110,7 +113,7 @@ export function NewSubscription() {
       intervalCount: 1,
       startDate: new Date(),
       cost: '',
-      currencyCode: household.currencyCode,
+      currencyCode: displayCurrencyCode,
       active: true,
     },
     validators: {
@@ -174,7 +177,7 @@ export function NewSubscription() {
   })
 
   const currencyCode = useStore(form.store, (state) => {
-    return state.values.currencyCode || household.currencyCode
+    return state.values.currencyCode ?? displayCurrencyCode
   })
 
   return (

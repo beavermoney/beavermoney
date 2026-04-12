@@ -81,7 +81,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const endDate = parseISO(search.end).toISOString()
   const data = useFragment(CategoriesPanelFragment, fragmentRef)
   const { household } = useHousehold()
-  const { code: displayCurrencyCode } = useDisplayCurrency()
+  const { displayCurrencyCode } = useDisplayCurrency()
   const environment = useRelayEnvironment()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
 

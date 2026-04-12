@@ -66,7 +66,7 @@ export const useDisplayCurrency = () => {
   const user = useUser()
   const storedId = useStore(displayCurrencyIdStore, identity)
 
-  const code = useMemo(() => {
+  const displayCurrencyCode = useMemo(() => {
     if (storedId) {
       const hc = (data.householdCurrencies ?? []).find(
         (c) => c.id === storedId && c.important,
@@ -97,15 +97,17 @@ export const useDisplayCurrency = () => {
 
   const convert = useCallback(
     (amount: currency | string | number, fromCurrencyCode: string) => {
-      if (fromCurrencyCode === code) return currency(amount)
-      const rate = rateMap.get(`${fromCurrencyCode}->${code}`)
+      if (fromCurrencyCode === displayCurrencyCode) return currency(amount)
+      const rate = rateMap.get(`${fromCurrencyCode}->${displayCurrencyCode}`)
       if (rate == null) {
-        throw new Error(`Missing exchange rate: ${fromCurrencyCode} → ${code}`)
+        throw new Error(
+          `Missing exchange rate: ${fromCurrencyCode} → ${displayCurrencyCode}`,
+        )
       }
       return currency(amount).multiply(rate.value)
     },
-    [code, rateMap],
+    [displayCurrencyCode, rateMap],
   )
 
-  return { code, convert }
+  return { displayCurrencyCode, convert }
 }

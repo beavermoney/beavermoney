@@ -63,6 +63,9 @@ jobs:
       - name: Run Prettier check
         run: pnpm format . --check
 
+      - name: Run TSC check
+        run: pnpm tsc --noEmit
+
       - name: Run ESLint check
         run: pnpm lint
 

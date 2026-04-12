@@ -63,6 +63,7 @@ import { AlertTriangleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { NodeType, useDeleteNode } from '@/lib/relay'
 import { commitMutationResult } from '@/lib/relay'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -157,6 +158,8 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
 
   const deleteNode = useDeleteNode(NodeType.RecurringSubscription)
 
+  const { displayCurrencyCode } = useDisplayCurrency()
+
   const { household } = useHousehold()
 
   const form = useForm({
@@ -248,7 +251,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
   }
 
   const currencyCode = useStore(form.store, (state) => {
-    return state.values.currencyCode || household.currencyCode
+    return state.values.currencyCode ?? displayCurrencyCode
   })
 
   return (

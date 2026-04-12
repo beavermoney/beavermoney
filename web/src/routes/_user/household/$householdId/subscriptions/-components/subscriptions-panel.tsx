@@ -73,7 +73,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     SubscriptionsPanelFragment,
     fragmentRef,
   )
-  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
+  const { displayCurrencyCode, convert } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })

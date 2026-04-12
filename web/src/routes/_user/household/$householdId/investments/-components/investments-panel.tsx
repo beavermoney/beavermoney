@@ -87,7 +87,7 @@ type InvestmentsPanelProps = {
 export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const data = useFragment(InvestmentsPanelFragment, fragmentRef)
   const { household: _household } = useHousehold()
-  const { code: displayCurrencyCode, convert } = useDisplayCurrency()
+  const { displayCurrencyCode, convert } = useDisplayCurrency()
   const environment = useRelayEnvironment()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
