@@ -42,5 +42,6 @@ export const useHousehold = () => {
   if (ref === null) {
     throw new Error('useHousehold must be used within a HouseholdProvider')
   }
-  return useFragment(UseHouseholdFragment, ref)
+  const household = useFragment(UseHouseholdFragment, ref)
+  return { household }
 }
