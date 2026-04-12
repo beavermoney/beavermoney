@@ -29,7 +29,6 @@ export function FinancialSummaryCards({
   const data = useFragment(FinancialSummaryCardsFragment, fragmentRef)
   const { household: _household } = useHousehold()
   const { code: displayCurrencyCode } = useDisplayCurrency()
-  console.log('displayCurrencyCode', displayCurrencyCode)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const { isPrivacyModeEnabled } = usePrivacyMode()
