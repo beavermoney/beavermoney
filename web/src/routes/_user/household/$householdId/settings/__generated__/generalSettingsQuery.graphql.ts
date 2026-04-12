@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4af22506abfffbc0d858b6a61fb99616>>
+ * @generated SignedSource<<481cc253036bab364ead1e69d59c0882>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -90,13 +90,6 @@ return {
             "kind": "ScalarField",
             "name": "locale",
             "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "currencyCode",
-            "storageKey": null
           }
         ],
         "storageKey": null
@@ -135,12 +128,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "410530dd28f373b03ba9f9ae73339a36",
+    "cacheID": "d52744838f1838271a2c3b1cf2807b03",
     "id": null,
     "metadata": {},
     "name": "generalSettingsQuery",
     "operationKind": "query",
-    "text": "query generalSettingsQuery {\n  household {\n    ...generalSettingsHouseholdFragment\n    id\n  }\n  ...generalSettingsCurrenciesFragment\n}\n\nfragment generalSettingsCurrenciesFragment on Query {\n  userHouseholds {\n    role\n    user {\n      id\n    }\n    id\n  }\n}\n\nfragment generalSettingsHouseholdFragment on Household {\n  id\n  name\n  locale\n  currencyCode\n}\n"
+    "text": "query generalSettingsQuery {\n  household {\n    ...generalSettingsHouseholdFragment\n    id\n  }\n  ...generalSettingsCurrenciesFragment\n}\n\nfragment generalSettingsCurrenciesFragment on Query {\n  userHouseholds {\n    role\n    user {\n      id\n    }\n    id\n  }\n}\n\nfragment generalSettingsHouseholdFragment on Household {\n  id\n  name\n  locale\n}\n"
   }
 };
 })();

@@ -76,20 +76,6 @@ func (_u *HouseholdUpdate) SetNillableLocale(v *string) *HouseholdUpdate {
 	return _u
 }
 
-// SetCurrencyCode sets the "currency_code" field.
-func (_u *HouseholdUpdate) SetCurrencyCode(v string) *HouseholdUpdate {
-	_u.mutation.SetCurrencyCode(v)
-	return _u
-}
-
-// SetNillableCurrencyCode sets the "currency_code" field if the given value is not nil.
-func (_u *HouseholdUpdate) SetNillableCurrencyCode(v *string) *HouseholdUpdate {
-	if v != nil {
-		_u.SetCurrencyCode(*v)
-	}
-	return _u
-}
-
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (_u *HouseholdUpdate) AddUserIDs(ids ...int) *HouseholdUpdate {
 	_u.mutation.AddUserIDs(ids...)
@@ -617,11 +603,6 @@ func (_u *HouseholdUpdate) check() error {
 			return &ValidationError{Name: "locale", err: fmt.Errorf(`ent: validator failed for field "Household.locale": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.CurrencyCode(); ok {
-		if err := household.CurrencyCodeValidator(v); err != nil {
-			return &ValidationError{Name: "currency_code", err: fmt.Errorf(`ent: validator failed for field "Household.currency_code": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -651,9 +632,6 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.CurrencyCode(); ok {
-		_spec.SetField(household.FieldCurrencyCode, field.TypeString, value)
 	}
 	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1308,20 +1286,6 @@ func (_u *HouseholdUpdateOne) SetNillableLocale(v *string) *HouseholdUpdateOne {
 	return _u
 }
 
-// SetCurrencyCode sets the "currency_code" field.
-func (_u *HouseholdUpdateOne) SetCurrencyCode(v string) *HouseholdUpdateOne {
-	_u.mutation.SetCurrencyCode(v)
-	return _u
-}
-
-// SetNillableCurrencyCode sets the "currency_code" field if the given value is not nil.
-func (_u *HouseholdUpdateOne) SetNillableCurrencyCode(v *string) *HouseholdUpdateOne {
-	if v != nil {
-		_u.SetCurrencyCode(*v)
-	}
-	return _u
-}
-
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (_u *HouseholdUpdateOne) AddUserIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddUserIDs(ids...)
@@ -1862,11 +1826,6 @@ func (_u *HouseholdUpdateOne) check() error {
 			return &ValidationError{Name: "locale", err: fmt.Errorf(`ent: validator failed for field "Household.locale": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.CurrencyCode(); ok {
-		if err := household.CurrencyCodeValidator(v); err != nil {
-			return &ValidationError{Name: "currency_code", err: fmt.Errorf(`ent: validator failed for field "Household.currency_code": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -1913,9 +1872,6 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 	}
 	if value, ok := _u.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.CurrencyCode(); ok {
-		_spec.SetField(household.FieldCurrencyCode, field.TypeString, value)
 	}
 	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{

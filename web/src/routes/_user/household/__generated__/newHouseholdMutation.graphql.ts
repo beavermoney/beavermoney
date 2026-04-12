@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d7c8c2a6a479b97bda978bae49fca60f>>
+ * @generated SignedSource<<3ddcd2f76aa5458bbb14f08eae8b0db9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,14 +9,17 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from 'relay-runtime';
-export type CreateHouseholdInput = {
+export type CreateHouseholdInputCustom = {
   currencyCode: string;
+  input: CreateHouseholdInput;
+};
+export type CreateHouseholdInput = {
   isDemo?: boolean | null | undefined;
   locale: string;
   name: string;
 };
 export type newHouseholdMutation$variables = {
-  input: CreateHouseholdInput;
+  input: CreateHouseholdInputCustom;
 };
 export type newHouseholdMutation$data = {
   readonly createHousehold: {
@@ -88,16 +91,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "24e9cf3abd8b2c162e827208083f8382",
+    "cacheID": "a9707cf5ce073e6df7372c94d523d6c9",
     "id": null,
     "metadata": {},
     "name": "newHouseholdMutation",
     "operationKind": "mutation",
-    "text": "mutation newHouseholdMutation(\n  $input: CreateHouseholdInput!\n) {\n  createHousehold(input: $input) {\n    id\n    name\n  }\n}\n"
+    "text": "mutation newHouseholdMutation(\n  $input: CreateHouseholdInputCustom!\n) {\n  createHousehold(input: $input) {\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "fd79d164d5bd6d4ea5c5475280ba026a";
+(node as any).hash = "5a6be08e1953ca2c679f68ee4b30bc26";
 
 export default node;

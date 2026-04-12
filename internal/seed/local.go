@@ -68,7 +68,6 @@ func Seed(
 
 	household := entClient.Household.Create().
 		SetName("Joey's Household").
-		SetCurrencyCode(cadCode).
 		SetLocale("en-CA").
 		SaveX(ctx)
 	householdCAD := entClient.HouseholdCurrency.Create().
@@ -90,7 +89,6 @@ func Seed(
 
 	household2 := entClient.Household.Create().
 		SetName("Acme Corp").
-		SetCurrencyCode(cadCode).
 		SetLocale("en-CA").
 		SaveX(ctx)
 	entClient.HouseholdCurrency.Create().
@@ -125,7 +123,6 @@ func Seed(
 
 	differentHousehold := entClient.Household.Create().
 		SetName("Different Joey's Household").
-		SetCurrencyCode(cadCode).
 		SetLocale("en-CA").
 		SaveX(ctx)
 	entClient.HouseholdCurrency.Create().
@@ -345,7 +342,7 @@ func SeedDemoHousehold(
 		ctx,
 		client,
 		household.ID,
-		household.CurrencyCode,
+		"CAD",
 		true,
 	)
 	if err != nil {

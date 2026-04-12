@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<925d4a76cad5a5f054f2abfd50ccc406>>
+ * @generated SignedSource<<e7633e567e965e73eb37ba08a5137099>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,6 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type useDisplayCurrencyFragment$data = {
-  readonly currencyCode: string;
   readonly householdCurrencies: ReadonlyArray<{
     readonly code: string;
     readonly id: string;
@@ -65,13 +64,6 @@ return {
   "metadata": null,
   "name": "useDisplayCurrencyFragment",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "currencyCode",
-      "storageKey": null
-    },
     {
       "alias": null,
       "args": null,
@@ -169,6 +161,6 @@ return {
 };
 })();
 
-(node as any).hash = "475618a435bcc605428113e90c640ba8";
+(node as any).hash = "1ac86487f5d3d5529a377b5be69ff7e7";
 
 export default node;

@@ -10,8 +10,6 @@ import { identity } from 'lodash-es'
 const UseDisplayCurrencyFragment = graphql`
   fragment useDisplayCurrencyFragment on Household {
     # eslint-disable-next-line relay/unused-fields
-    currencyCode
-    # eslint-disable-next-line relay/unused-fields
     householdCurrencies {
       id
       important
@@ -83,7 +81,7 @@ export const useDisplayCurrency = () => {
       return userHousehold.defaultCurrency.code
     }
 
-    return data.currencyCode
+    throw new Error("Couldn't determine display currency")
   }, [data, user.id, storedId])
 
   const rateMap = useMemo(() => {

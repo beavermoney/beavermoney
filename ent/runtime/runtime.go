@@ -113,12 +113,8 @@ func init() {
 	householdDescLocale := householdFields[1].Descriptor()
 	// household.LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
 	household.LocaleValidator = householdDescLocale.Validators[0].(func(string) error)
-	// householdDescCurrencyCode is the schema descriptor for currency_code field.
-	householdDescCurrencyCode := householdFields[2].Descriptor()
-	// household.CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
-	household.CurrencyCodeValidator = householdDescCurrencyCode.Validators[0].(func(string) error)
 	// householdDescIsDemo is the schema descriptor for is_demo field.
-	householdDescIsDemo := householdFields[3].Descriptor()
+	householdDescIsDemo := householdFields[2].Descriptor()
 	// household.DefaultIsDemo holds the default value on creation for the is_demo field.
 	household.DefaultIsDemo = householdDescIsDemo.Default.(bool)
 	householdcurrencyMixin := schema.HouseholdCurrency{}.Mixin()

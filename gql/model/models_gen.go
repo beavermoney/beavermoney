@@ -35,6 +35,11 @@ type CreateExpenseInputCustom struct {
 	Fees             []*ent.CreateTransactionEntryInput `json:"fees"`
 }
 
+type CreateHouseholdInputCustom struct {
+	Input        *ent.CreateHouseholdInput `json:"input"`
+	CurrencyCode string                    `json:"currencyCode"`
+}
+
 type CreateIncomeInputCustom struct {
 	Transaction      *ent.CreateTransactionInput        `json:"transaction"`
 	TransactionEntry *ent.CreateTransactionEntryInput   `json:"transactionEntry"`

@@ -40,7 +40,7 @@ import { SUPPORTED_CURRENCIES, lookupCurrency } from '@/lib/currencies'
 import type { newHouseholdMutation } from './__generated__/newHouseholdMutation.graphql'
 
 const newHouseholdMutation = graphql`
-  mutation newHouseholdMutation($input: CreateHouseholdInput!) {
+  mutation newHouseholdMutation($input: CreateHouseholdInputCustom!) {
     createHousehold(input: $input) {
       id
       name
@@ -106,10 +106,12 @@ function NewHouseholdForm() {
     commitMutationResult<newHouseholdMutation>(commitMutation, {
       variables: {
         input: {
-          name: 'Demo Household',
-          locale: 'en-CA',
+          input: {
+            name: 'Demo Household',
+            locale: 'en-CA',
+            isDemo: true,
+          },
           currencyCode: 'CAD',
-          isDemo: true,
         },
       },
     }).then((result) => {

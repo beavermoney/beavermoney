@@ -8,7 +8,6 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/account"
-	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/snapshotrate"
@@ -39,22 +38,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 	client := r.entClient
 
 	dc := contextkeys.GetDisplayCurrency(ctx)
-	var (
-		targetCurrencyCode string
-		err                error
-	)
-	if dc != nil {
-		targetCurrencyCode = dc.Code
-	} else {
-		hh, err := client.Household.Query().
-			Where(household.IDEQ(householdID)).
-			Only(ctx)
-		if err != nil {
-			r.logger.Error("Failed to get household", "error", err)
-			return nil, err
-		}
-		targetCurrencyCode = hh.CurrencyCode
-	}
+	targetCurrencyCode := dc.Code
 
 	// Query grouped by category and currency
 	var res []struct {
@@ -64,7 +48,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 		Count        int             `sql:"count"`
 	}
 
-	err = client.Transaction.Query().
+	err := client.Transaction.Query().
 		Modify(func(s *sql.Selector) {
 			te := sql.Table(transactionentry.Table)
 			tc := sql.Table(transactioncategory.Table)
@@ -451,7 +435,7 @@ func (r *mutationResolver) syncHouseholdCurrenciesFromAccounts(
 		return err
 	}
 
-	seen := map[string]bool{hh.CurrencyCode: true}
+	seen := map[string]bool{}
 	allHCs := []*ent.HouseholdCurrency{primaryHC}
 	for _, acc := range accounts {
 		hc, err := acc.QueryHouseholdCurrency().Only(ctx)

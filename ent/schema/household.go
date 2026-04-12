@@ -26,7 +26,6 @@ func (Household) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty(),
 		field.String("locale").NotEmpty(),
-		field.String("currency_code").NotEmpty(),
 		field.Bool("is_demo").Default(false).Immutable(),
 	}
 }

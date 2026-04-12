@@ -23,8 +23,6 @@ const (
 	FieldName = "name"
 	// FieldLocale holds the string denoting the locale field in the database.
 	FieldLocale = "locale"
-	// FieldCurrencyCode holds the string denoting the currency_code field in the database.
-	FieldCurrencyCode = "currency_code"
 	// FieldIsDemo holds the string denoting the is_demo field in the database.
 	FieldIsDemo = "is_demo"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
@@ -153,7 +151,6 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldName,
 	FieldLocale,
-	FieldCurrencyCode,
 	FieldIsDemo,
 }
 
@@ -191,8 +188,6 @@ var (
 	NameValidator func(string) error
 	// LocaleValidator is a validator for the "locale" field. It is called by the builders before save.
 	LocaleValidator func(string) error
-	// CurrencyCodeValidator is a validator for the "currency_code" field. It is called by the builders before save.
-	CurrencyCodeValidator func(string) error
 	// DefaultIsDemo holds the default value on creation for the "is_demo" field.
 	DefaultIsDemo bool
 )
@@ -223,11 +218,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByLocale orders the results by the locale field.
 func ByLocale(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocale, opts...).ToFunc()
-}
-
-// ByCurrencyCode orders the results by the currency_code field.
-func ByCurrencyCode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCurrencyCode, opts...).ToFunc()
 }
 
 // ByIsDemo orders the results by the is_demo field.

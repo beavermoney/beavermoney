@@ -86,17 +86,15 @@ func (c *AccountUpdateOne) SetInput(i UpdateAccountInput) *AccountUpdateOne {
 
 // CreateHouseholdInput represents a mutation input for creating households.
 type CreateHouseholdInput struct {
-	Name         string
-	Locale       string
-	CurrencyCode string
-	IsDemo       *bool
+	Name   string
+	Locale string
+	IsDemo *bool
 }
 
 // Mutate applies the CreateHouseholdInput on the HouseholdMutation builder.
 func (i *CreateHouseholdInput) Mutate(m *HouseholdMutation) {
 	m.SetName(i.Name)
 	m.SetLocale(i.Locale)
-	m.SetCurrencyCode(i.CurrencyCode)
 	if v := i.IsDemo; v != nil {
 		m.SetIsDemo(*v)
 	}
@@ -110,9 +108,8 @@ func (c *HouseholdCreate) SetInput(i CreateHouseholdInput) *HouseholdCreate {
 
 // UpdateHouseholdInput represents a mutation input for updating households.
 type UpdateHouseholdInput struct {
-	Name         *string
-	Locale       *string
-	CurrencyCode *string
+	Name   *string
+	Locale *string
 }
 
 // Mutate applies the UpdateHouseholdInput on the HouseholdMutation builder.
@@ -122,9 +119,6 @@ func (i *UpdateHouseholdInput) Mutate(m *HouseholdMutation) {
 	}
 	if v := i.Locale; v != nil {
 		m.SetLocale(*v)
-	}
-	if v := i.CurrencyCode; v != nil {
-		m.SetCurrencyCode(*v)
 	}
 }
 

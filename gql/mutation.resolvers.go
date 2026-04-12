@@ -36,7 +36,7 @@ import (
 )
 
 // CreateHousehold is the resolver for the createHousehold field.
-func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.CreateHouseholdInput) (*ent.Household, error) {
+func (r *mutationResolver) CreateHousehold(ctx context.Context, input model.CreateHouseholdInputCustom) (*ent.Household, error) {
 	userID := contextkeys.GetUserID(ctx)
 
 	ctx, span := r.tracer.Start(ctx, "mutationResolver.CreateHousehold",
@@ -55,7 +55,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 
 	// Create household
 	household, err := client.Household.Create().
-		SetInput(input).
+		SetInput(*input.Input).
 		Save(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to create household", "error", err)
@@ -93,7 +93,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input ent.Create
 	}
 
 	// Seed demo data if requested
-	if input.IsDemo != nil && *input.IsDemo {
+	if input.Input != nil && input.Input.IsDemo != nil && *input.Input.IsDemo {
 		if err := seed.SeedDemoHousehold(
 			householdCtx,
 			client,

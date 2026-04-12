@@ -1115,11 +1115,6 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				selectedFields = append(selectedFields, household.FieldLocale)
 				fieldSeen[household.FieldLocale] = struct{}{}
 			}
-		case "currencyCode":
-			if _, ok := fieldSeen[household.FieldCurrencyCode]; !ok {
-				selectedFields = append(selectedFields, household.FieldCurrencyCode)
-				fieldSeen[household.FieldCurrencyCode] = struct{}{}
-			}
 		case "isDemo":
 			if _, ok := fieldSeen[household.FieldIsDemo]; !ok {
 				selectedFields = append(selectedFields, household.FieldIsDemo)

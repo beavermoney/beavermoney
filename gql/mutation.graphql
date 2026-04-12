@@ -1,5 +1,5 @@
 type Mutation {
-  createHousehold(input: CreateHouseholdInput!): Household!
+  createHousehold(input: CreateHouseholdInputCustom!): Household!
   updateHousehold(id: ID!, input: UpdateHouseholdInput!): Household!
   deleteHousehold(id: ID!): DeleteHouseholdPayload!
 
@@ -130,4 +130,9 @@ input MoveInvestmentInputCustom {
   transaction: CreateTransactionInput!
   investmentLots: [CreateInvestmentLotInput!]!
   fees: [CreateTransactionEntryInput!]! = []
+}
+
+input CreateHouseholdInputCustom {
+  input: CreateHouseholdInput!
+  currencyCode: String!
 }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9d6fde6033b9efd4bb00c2b626fb83d8>>
+ * @generated SignedSource<<a358337ba9fc75427573355f73bf8b83>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -172,19 +172,6 @@ export type HouseholdWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  currencyCode?: string | null | undefined;
-  currencyCodeContains?: string | null | undefined;
-  currencyCodeContainsFold?: string | null | undefined;
-  currencyCodeEqualFold?: string | null | undefined;
-  currencyCodeGT?: string | null | undefined;
-  currencyCodeGTE?: string | null | undefined;
-  currencyCodeHasPrefix?: string | null | undefined;
-  currencyCodeHasSuffix?: string | null | undefined;
-  currencyCodeIn?: ReadonlyArray<string> | null | undefined;
-  currencyCodeLT?: string | null | undefined;
-  currencyCodeLTE?: string | null | undefined;
-  currencyCodeNEQ?: string | null | undefined;
-  currencyCodeNotIn?: ReadonlyArray<string> | null | undefined;
   hasAccounts?: boolean | null | undefined;
   hasAccountsWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
   hasHouseholdCurrencies?: boolean | null | undefined;

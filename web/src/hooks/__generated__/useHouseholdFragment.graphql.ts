@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<93076e1e3411c61bf5931779276ec9dc>>
+ * @generated SignedSource<<046a2e8a77de65242e1a7a50d0519694>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,6 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type useHouseholdFragment$data = {
-  readonly currencyCode: string;
   readonly householdCurrencies: ReadonlyArray<{
     readonly code: string;
     readonly id: string;
@@ -58,13 +57,6 @@ return {
     {
       "alias": null,
       "args": null,
-      "kind": "ScalarField",
-      "name": "currencyCode",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
       "concreteType": "HouseholdCurrency",
       "kind": "LinkedField",
       "name": "householdCurrencies",
@@ -87,6 +79,6 @@ return {
 };
 })();
 
-(node as any).hash = "e7594c70b45a3ac1b218b78dfc9c3aa8";
+(node as any).hash = "687ba2f8c6a408105b9deffa723e7cfb";
 
 export default node;

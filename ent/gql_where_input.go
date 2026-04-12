@@ -688,21 +688,6 @@ type HouseholdWhereInput struct {
 	LocaleEqualFold    *string  `json:"localeEqualFold,omitempty"`
 	LocaleContainsFold *string  `json:"localeContainsFold,omitempty"`
 
-	// "currency_code" field predicates.
-	CurrencyCode             *string  `json:"currencyCode,omitempty"`
-	CurrencyCodeNEQ          *string  `json:"currencyCodeNEQ,omitempty"`
-	CurrencyCodeIn           []string `json:"currencyCodeIn,omitempty"`
-	CurrencyCodeNotIn        []string `json:"currencyCodeNotIn,omitempty"`
-	CurrencyCodeGT           *string  `json:"currencyCodeGT,omitempty"`
-	CurrencyCodeGTE          *string  `json:"currencyCodeGTE,omitempty"`
-	CurrencyCodeLT           *string  `json:"currencyCodeLT,omitempty"`
-	CurrencyCodeLTE          *string  `json:"currencyCodeLTE,omitempty"`
-	CurrencyCodeContains     *string  `json:"currencyCodeContains,omitempty"`
-	CurrencyCodeHasPrefix    *string  `json:"currencyCodeHasPrefix,omitempty"`
-	CurrencyCodeHasSuffix    *string  `json:"currencyCodeHasSuffix,omitempty"`
-	CurrencyCodeEqualFold    *string  `json:"currencyCodeEqualFold,omitempty"`
-	CurrencyCodeContainsFold *string  `json:"currencyCodeContainsFold,omitempty"`
-
 	// "is_demo" field predicates.
 	IsDemo    *bool `json:"isDemo,omitempty"`
 	IsDemoNEQ *bool `json:"isDemoNEQ,omitempty"`
@@ -980,45 +965,6 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 	}
 	if i.LocaleContainsFold != nil {
 		predicates = append(predicates, household.LocaleContainsFold(*i.LocaleContainsFold))
-	}
-	if i.CurrencyCode != nil {
-		predicates = append(predicates, household.CurrencyCodeEQ(*i.CurrencyCode))
-	}
-	if i.CurrencyCodeNEQ != nil {
-		predicates = append(predicates, household.CurrencyCodeNEQ(*i.CurrencyCodeNEQ))
-	}
-	if len(i.CurrencyCodeIn) > 0 {
-		predicates = append(predicates, household.CurrencyCodeIn(i.CurrencyCodeIn...))
-	}
-	if len(i.CurrencyCodeNotIn) > 0 {
-		predicates = append(predicates, household.CurrencyCodeNotIn(i.CurrencyCodeNotIn...))
-	}
-	if i.CurrencyCodeGT != nil {
-		predicates = append(predicates, household.CurrencyCodeGT(*i.CurrencyCodeGT))
-	}
-	if i.CurrencyCodeGTE != nil {
-		predicates = append(predicates, household.CurrencyCodeGTE(*i.CurrencyCodeGTE))
-	}
-	if i.CurrencyCodeLT != nil {
-		predicates = append(predicates, household.CurrencyCodeLT(*i.CurrencyCodeLT))
-	}
-	if i.CurrencyCodeLTE != nil {
-		predicates = append(predicates, household.CurrencyCodeLTE(*i.CurrencyCodeLTE))
-	}
-	if i.CurrencyCodeContains != nil {
-		predicates = append(predicates, household.CurrencyCodeContains(*i.CurrencyCodeContains))
-	}
-	if i.CurrencyCodeHasPrefix != nil {
-		predicates = append(predicates, household.CurrencyCodeHasPrefix(*i.CurrencyCodeHasPrefix))
-	}
-	if i.CurrencyCodeHasSuffix != nil {
-		predicates = append(predicates, household.CurrencyCodeHasSuffix(*i.CurrencyCodeHasSuffix))
-	}
-	if i.CurrencyCodeEqualFold != nil {
-		predicates = append(predicates, household.CurrencyCodeEqualFold(*i.CurrencyCodeEqualFold))
-	}
-	if i.CurrencyCodeContainsFold != nil {
-		predicates = append(predicates, household.CurrencyCodeContainsFold(*i.CurrencyCodeContainsFold))
 	}
 	if i.IsDemo != nil {
 		predicates = append(predicates, household.IsDemoEQ(*i.IsDemo))

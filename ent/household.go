@@ -25,8 +25,6 @@ type Household struct {
 	Name string `json:"name,omitempty"`
 	// Locale holds the value of the "locale" field.
 	Locale string `json:"locale,omitempty"`
-	// CurrencyCode holds the value of the "currency_code" field.
-	CurrencyCode string `json:"currency_code,omitempty"`
 	// IsDemo holds the value of the "is_demo" field.
 	IsDemo bool `json:"is_demo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -210,7 +208,7 @@ func (*Household) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case household.FieldID:
 			values[i] = new(sql.NullInt64)
-		case household.FieldName, household.FieldLocale, household.FieldCurrencyCode:
+		case household.FieldName, household.FieldLocale:
 			values[i] = new(sql.NullString)
 		case household.FieldCreateTime, household.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -258,12 +256,6 @@ func (_m *Household) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field locale", values[i])
 			} else if value.Valid {
 				_m.Locale = value.String
-			}
-		case household.FieldCurrencyCode:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field currency_code", values[i])
-			} else if value.Valid {
-				_m.CurrencyCode = value.String
 			}
 		case household.FieldIsDemo:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -383,9 +375,6 @@ func (_m *Household) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("locale=")
 	builder.WriteString(_m.Locale)
-	builder.WriteString(", ")
-	builder.WriteString("currency_code=")
-	builder.WriteString(_m.CurrencyCode)
 	builder.WriteString(", ")
 	builder.WriteString("is_demo=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsDemo))

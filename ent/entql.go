@@ -66,12 +66,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Household",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			household.FieldCreateTime:   {Type: field.TypeTime, Column: household.FieldCreateTime},
-			household.FieldUpdateTime:   {Type: field.TypeTime, Column: household.FieldUpdateTime},
-			household.FieldName:         {Type: field.TypeString, Column: household.FieldName},
-			household.FieldLocale:       {Type: field.TypeString, Column: household.FieldLocale},
-			household.FieldCurrencyCode: {Type: field.TypeString, Column: household.FieldCurrencyCode},
-			household.FieldIsDemo:       {Type: field.TypeBool, Column: household.FieldIsDemo},
+			household.FieldCreateTime: {Type: field.TypeTime, Column: household.FieldCreateTime},
+			household.FieldUpdateTime: {Type: field.TypeTime, Column: household.FieldUpdateTime},
+			household.FieldName:       {Type: field.TypeString, Column: household.FieldName},
+			household.FieldLocale:     {Type: field.TypeString, Column: household.FieldLocale},
+			household.FieldIsDemo:     {Type: field.TypeBool, Column: household.FieldIsDemo},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -1468,11 +1467,6 @@ func (f *HouseholdFilter) WhereName(p entql.StringP) {
 // WhereLocale applies the entql string predicate on the locale field.
 func (f *HouseholdFilter) WhereLocale(p entql.StringP) {
 	f.Where(p.Field(household.FieldLocale))
-}
-
-// WhereCurrencyCode applies the entql string predicate on the currency_code field.
-func (f *HouseholdFilter) WhereCurrencyCode(p entql.StringP) {
-	f.Where(p.Field(household.FieldCurrencyCode))
 }
 
 // WhereIsDemo applies the entql bool predicate on the is_demo field.

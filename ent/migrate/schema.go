@@ -58,7 +58,6 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "locale", Type: field.TypeString},
-		{Name: "currency_code", Type: field.TypeString},
 		{Name: "is_demo", Type: field.TypeBool, Default: false},
 	}
 	// HouseholdsTable holds the schema information for the "households" table.

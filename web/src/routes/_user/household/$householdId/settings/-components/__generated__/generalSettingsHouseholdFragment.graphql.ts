@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c7c41f73b3150416a898b9b811bb8141>>
+ * @generated SignedSource<<7d43a41d3f04c7f8e60bf7dc90f2ca11>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,6 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type generalSettingsHouseholdFragment$data = {
-  readonly currencyCode: string;
   readonly id: string;
   readonly locale: string;
   readonly name: string;
@@ -48,19 +47,12 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "locale",
       "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "currencyCode",
-      "storageKey": null
     }
   ],
   "type": "Household",
   "abstractKey": null
 };
 
-(node as any).hash = "12d0e415d625e6c11824b1e1657817bc";
+(node as any).hash = "984cb71d6c2be966a0b0a4ed427f120e";
 
 export default node;

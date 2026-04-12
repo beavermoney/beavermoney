@@ -75,12 +75,6 @@ func (_c *HouseholdCreate) SetLocale(v string) *HouseholdCreate {
 	return _c
 }
 
-// SetCurrencyCode sets the "currency_code" field.
-func (_c *HouseholdCreate) SetCurrencyCode(v string) *HouseholdCreate {
-	_c.mutation.SetCurrencyCode(v)
-	return _c
-}
-
 // SetIsDemo sets the "is_demo" field.
 func (_c *HouseholdCreate) SetIsDemo(v bool) *HouseholdCreate {
 	_c.mutation.SetIsDemo(v)
@@ -372,14 +366,6 @@ func (_c *HouseholdCreate) check() error {
 			return &ValidationError{Name: "locale", err: fmt.Errorf(`ent: validator failed for field "Household.locale": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.CurrencyCode(); !ok {
-		return &ValidationError{Name: "currency_code", err: errors.New(`ent: missing required field "Household.currency_code"`)}
-	}
-	if v, ok := _c.mutation.CurrencyCode(); ok {
-		if err := household.CurrencyCodeValidator(v); err != nil {
-			return &ValidationError{Name: "currency_code", err: fmt.Errorf(`ent: validator failed for field "Household.currency_code": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.IsDemo(); !ok {
 		return &ValidationError{Name: "is_demo", err: errors.New(`ent: missing required field "Household.is_demo"`)}
 	}
@@ -425,10 +411,6 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
 		_node.Locale = value
-	}
-	if value, ok := _c.mutation.CurrencyCode(); ok {
-		_spec.SetField(household.FieldCurrencyCode, field.TypeString, value)
-		_node.CurrencyCode = value
 	}
 	if value, ok := _c.mutation.IsDemo(); ok {
 		_spec.SetField(household.FieldIsDemo, field.TypeBool, value)
@@ -734,18 +716,6 @@ func (u *HouseholdUpsert) UpdateLocale() *HouseholdUpsert {
 	return u
 }
 
-// SetCurrencyCode sets the "currency_code" field.
-func (u *HouseholdUpsert) SetCurrencyCode(v string) *HouseholdUpsert {
-	u.Set(household.FieldCurrencyCode, v)
-	return u
-}
-
-// UpdateCurrencyCode sets the "currency_code" field to the value that was provided on create.
-func (u *HouseholdUpsert) UpdateCurrencyCode() *HouseholdUpsert {
-	u.SetExcluded(household.FieldCurrencyCode)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -833,20 +803,6 @@ func (u *HouseholdUpsertOne) SetLocale(v string) *HouseholdUpsertOne {
 func (u *HouseholdUpsertOne) UpdateLocale() *HouseholdUpsertOne {
 	return u.Update(func(s *HouseholdUpsert) {
 		s.UpdateLocale()
-	})
-}
-
-// SetCurrencyCode sets the "currency_code" field.
-func (u *HouseholdUpsertOne) SetCurrencyCode(v string) *HouseholdUpsertOne {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.SetCurrencyCode(v)
-	})
-}
-
-// UpdateCurrencyCode sets the "currency_code" field to the value that was provided on create.
-func (u *HouseholdUpsertOne) UpdateCurrencyCode() *HouseholdUpsertOne {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.UpdateCurrencyCode()
 	})
 }
 
@@ -1103,20 +1059,6 @@ func (u *HouseholdUpsertBulk) SetLocale(v string) *HouseholdUpsertBulk {
 func (u *HouseholdUpsertBulk) UpdateLocale() *HouseholdUpsertBulk {
 	return u.Update(func(s *HouseholdUpsert) {
 		s.UpdateLocale()
-	})
-}
-
-// SetCurrencyCode sets the "currency_code" field.
-func (u *HouseholdUpsertBulk) SetCurrencyCode(v string) *HouseholdUpsertBulk {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.SetCurrencyCode(v)
-	})
-}
-
-// UpdateCurrencyCode sets the "currency_code" field to the value that was provided on create.
-func (u *HouseholdUpsertBulk) UpdateCurrencyCode() *HouseholdUpsertBulk {
-	return u.Update(func(s *HouseholdUpsert) {
-		s.UpdateCurrencyCode()
 	})
 }
 

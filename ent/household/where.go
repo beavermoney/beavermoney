@@ -75,11 +75,6 @@ func Locale(v string) predicate.Household {
 	return predicate.Household(sql.FieldEQ(FieldLocale, v))
 }
 
-// CurrencyCode applies equality check predicate on the "currency_code" field. It's identical to CurrencyCodeEQ.
-func CurrencyCode(v string) predicate.Household {
-	return predicate.Household(sql.FieldEQ(FieldCurrencyCode, v))
-}
-
 // IsDemo applies equality check predicate on the "is_demo" field. It's identical to IsDemoEQ.
 func IsDemo(v bool) predicate.Household {
 	return predicate.Household(sql.FieldEQ(FieldIsDemo, v))
@@ -293,71 +288,6 @@ func LocaleEqualFold(v string) predicate.Household {
 // LocaleContainsFold applies the ContainsFold predicate on the "locale" field.
 func LocaleContainsFold(v string) predicate.Household {
 	return predicate.Household(sql.FieldContainsFold(FieldLocale, v))
-}
-
-// CurrencyCodeEQ applies the EQ predicate on the "currency_code" field.
-func CurrencyCodeEQ(v string) predicate.Household {
-	return predicate.Household(sql.FieldEQ(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeNEQ applies the NEQ predicate on the "currency_code" field.
-func CurrencyCodeNEQ(v string) predicate.Household {
-	return predicate.Household(sql.FieldNEQ(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeIn applies the In predicate on the "currency_code" field.
-func CurrencyCodeIn(vs ...string) predicate.Household {
-	return predicate.Household(sql.FieldIn(FieldCurrencyCode, vs...))
-}
-
-// CurrencyCodeNotIn applies the NotIn predicate on the "currency_code" field.
-func CurrencyCodeNotIn(vs ...string) predicate.Household {
-	return predicate.Household(sql.FieldNotIn(FieldCurrencyCode, vs...))
-}
-
-// CurrencyCodeGT applies the GT predicate on the "currency_code" field.
-func CurrencyCodeGT(v string) predicate.Household {
-	return predicate.Household(sql.FieldGT(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeGTE applies the GTE predicate on the "currency_code" field.
-func CurrencyCodeGTE(v string) predicate.Household {
-	return predicate.Household(sql.FieldGTE(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeLT applies the LT predicate on the "currency_code" field.
-func CurrencyCodeLT(v string) predicate.Household {
-	return predicate.Household(sql.FieldLT(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeLTE applies the LTE predicate on the "currency_code" field.
-func CurrencyCodeLTE(v string) predicate.Household {
-	return predicate.Household(sql.FieldLTE(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeContains applies the Contains predicate on the "currency_code" field.
-func CurrencyCodeContains(v string) predicate.Household {
-	return predicate.Household(sql.FieldContains(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeHasPrefix applies the HasPrefix predicate on the "currency_code" field.
-func CurrencyCodeHasPrefix(v string) predicate.Household {
-	return predicate.Household(sql.FieldHasPrefix(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeHasSuffix applies the HasSuffix predicate on the "currency_code" field.
-func CurrencyCodeHasSuffix(v string) predicate.Household {
-	return predicate.Household(sql.FieldHasSuffix(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeEqualFold applies the EqualFold predicate on the "currency_code" field.
-func CurrencyCodeEqualFold(v string) predicate.Household {
-	return predicate.Household(sql.FieldEqualFold(FieldCurrencyCode, v))
-}
-
-// CurrencyCodeContainsFold applies the ContainsFold predicate on the "currency_code" field.
-func CurrencyCodeContainsFold(v string) predicate.Household {
-	return predicate.Household(sql.FieldContainsFold(FieldCurrencyCode, v))
 }
 
 // IsDemoEQ applies the EQ predicate on the "is_demo" field.

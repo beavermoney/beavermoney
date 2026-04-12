@@ -11,7 +11,6 @@ import type { generalSettingsHouseholdFragment$key } from './__generated__/gener
 import type { generalSettingsCurrenciesFragment$key } from './__generated__/generalSettingsCurrenciesFragment.graphql'
 import type { generalSettingsUpdateHouseholdMutation } from './__generated__/generalSettingsUpdateHouseholdMutation.graphql'
 import type { generalSettingsDeleteHouseholdMutation } from './__generated__/generalSettingsDeleteHouseholdMutation.graphql'
-import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 
 import { useUser } from '@/hooks/use-user'
 import { Button } from '@/components/ui/button'
@@ -22,14 +21,6 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
 import { Separator } from '@/components/ui/separator'
 import {
   AlertDialog,
@@ -50,7 +41,6 @@ const formSchema = z.object({
     .min(1, 'Household name is required.')
     .max(64, 'Household name must be at most 64 characters.'),
   locale: z.string().min(1, 'Locale is required.'),
-  currencyCode: z.string().min(1, 'Currency is required.'),
 })
 
 const generalSettingsHouseholdFragment = graphql`
@@ -58,7 +48,6 @@ const generalSettingsHouseholdFragment = graphql`
     id
     name
     locale
-    currencyCode
   }
 `
 
@@ -82,7 +71,6 @@ const updateHouseholdMutation = graphql`
       id
       name
       locale
-      currencyCode
     }
   }
 `
@@ -128,7 +116,6 @@ export function GeneralSettings({
     defaultValues: {
       name: household.name,
       locale: household.locale,
-      currencyCode: household.currencyCode,
     },
     validators: {
       onSubmit: formSchema,
@@ -145,7 +132,6 @@ export function GeneralSettings({
               input: {
                 name: formData.name,
                 locale: formData.locale,
-                currencyCode: formData.currencyCode,
               },
             },
           },
@@ -242,42 +228,6 @@ export function GeneralSettings({
                     placeholder="en-CA"
                     autoComplete="off"
                   />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
-            }}
-          />
-          <form.Field
-            name="currencyCode"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
-                  <Combobox
-                    items={SUPPORTED_CURRENCIES.map((c) => c.code)}
-                    value={field.state.value}
-                    onValueChange={(value) => field.handleChange(value ?? '')}
-                  >
-                    <ComboboxInput
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Select currency"
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No currencies found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: string) => (
-                          <ComboboxItem key={item} value={item}>
-                            {item}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               )

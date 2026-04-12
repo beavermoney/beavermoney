@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4fa5c57a8689a0df750cbd208719db68>>
+ * @generated SignedSource<<51660e6f2e1fa041ad36b52f9c8bfce2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,6 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type UpdateHouseholdInput = {
-  currencyCode?: string | null | undefined;
   locale?: string | null | undefined;
   name?: string | null | undefined;
 };
@@ -20,7 +19,6 @@ export type generalSettingsUpdateHouseholdMutation$variables = {
 };
 export type generalSettingsUpdateHouseholdMutation$data = {
   readonly updateHousehold: {
-    readonly currencyCode: string;
     readonly id: string;
     readonly locale: string;
     readonly name: string;
@@ -84,13 +82,6 @@ v1 = [
         "kind": "ScalarField",
         "name": "locale",
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "currencyCode",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -114,16 +105,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "0e8e050f548839e0a842ea84bb479f72",
+    "cacheID": "46253d3c720e142f91282c1bcead4512",
     "id": null,
     "metadata": {},
     "name": "generalSettingsUpdateHouseholdMutation",
     "operationKind": "mutation",
-    "text": "mutation generalSettingsUpdateHouseholdMutation(\n  $id: ID!\n  $input: UpdateHouseholdInput!\n) {\n  updateHousehold(id: $id, input: $input) {\n    id\n    name\n    locale\n    currencyCode\n  }\n}\n"
+    "text": "mutation generalSettingsUpdateHouseholdMutation(\n  $id: ID!\n  $input: UpdateHouseholdInput!\n) {\n  updateHousehold(id: $id, input: $input) {\n    id\n    name\n    locale\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f3d6754569915944b6d0c6a5279f7972";
+(node as any).hash = "b452576cedef0c2b8467394230f3a697";
 
 export default node;
