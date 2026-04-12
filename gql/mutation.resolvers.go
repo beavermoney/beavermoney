@@ -27,7 +27,6 @@ import (
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
-	"beavermoney.app/internal/frankfurter"
 	"beavermoney.app/internal/gqlutil"
 	"beavermoney.app/internal/seed"
 	"github.com/samber/lo"
@@ -1816,62 +1815,22 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 		}
 	}
 
-	currencyIDs := make([]int, 0)
-	currencyCodeByID := make(map[int]string)
-	currencyIDByCode := make(map[string]int)
-	seen := make(map[int]bool)
-	for _, acc := range accounts {
-		currencyID := acc.Edges.Currency.ID
-		if !seen[currencyID] {
-			seen[currencyID] = true
-			currencyIDs = append(currencyIDs, currencyID)
-			currencyCodeByID[currencyID] = acc.Edges.Currency.Code
-			currencyIDByCode[acc.Edges.Currency.Code] = currencyID
-		}
+	householdRates, err := client.HouseholdRate.Query().All(ctx)
+	if err != nil {
+		r.logger.Error("Failed to fetch household rates", "error", err)
+		return nil, err
 	}
 
-	rateBuilders := make([]*ent.SnapshotRateCreate, 0)
-	for _, fromID := range currencyIDs {
-		baseCode := currencyCodeByID[fromID]
-		quoteCodes := make([]string, 0, len(currencyIDs)-1)
-		for _, toID := range currencyIDs {
-			if toID != fromID {
-				quoteCodes = append(quoteCodes, currencyCodeByID[toID])
-			}
-		}
-		if len(quoteCodes) == 0 {
-			continue
-		}
-		quotes := strings.Join(quoteCodes, ",")
-
-		resp, err := r.frankfurterClient.GetRatesWithResponse(ctx, &frankfurter.GetRatesParams{
-			Base:   &baseCode,
-			Quotes: &quotes,
-		})
-		if err != nil {
-			r.logger.Error("Failed to get FX rates", "error", err, "base", baseCode)
-			return nil, err
-		}
-		if resp.JSON200 == nil {
-			r.logger.Error("No rates returned", "base", baseCode)
-			return nil, fmt.Errorf("no rates returned for base %s", baseCode)
-		}
-
-		for _, rate := range *resp.JSON200 {
-			toCurrencyID, ok := currencyIDByCode[rate.Quote]
-			if !ok {
-				continue
-			}
+	if len(householdRates) > 0 {
+		rateBuilders := make([]*ent.SnapshotRateCreate, 0, len(householdRates))
+		for _, hr := range householdRates {
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
 				SetSnapshotID(snap.ID).
-				SetFromCurrencyID(fromID).
-				SetToCurrencyID(toCurrencyID).
-				SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
+				SetFromCurrencyID(hr.FromHouseholdCurrencyID).
+				SetToCurrencyID(hr.ToHouseholdCurrencyID).
+				SetRate(hr.Rate),
 			)
 		}
-	}
-
-	if len(rateBuilders) > 0 {
 		if _, err := client.SnapshotRate.CreateBulk(rateBuilders...).Save(ctx); err != nil {
 			r.logger.Error("Failed to create snapshot rates", "error", err)
 			return nil, err
