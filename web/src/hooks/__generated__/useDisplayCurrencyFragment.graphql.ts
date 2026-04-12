@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9fc3841be8bfb2095befa3fc7ce0f52d>>
+ * @generated SignedSource<<65e3be038645061778937b6d78e09550>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,14 +25,6 @@ export type useDisplayCurrencyFragment$data = {
       readonly code: string;
     };
   }> | null | undefined;
-  readonly userHouseholds: ReadonlyArray<{
-    readonly householdCurrency: {
-      readonly code: string;
-    };
-    readonly user: {
-      readonly id: string;
-    };
-  }> | null | undefined;
   readonly " $fragmentType": "useDisplayCurrencyFragment";
 };
 export type useDisplayCurrencyFragment$key = {
@@ -45,18 +37,11 @@ var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
   "name": "code",
   "storageKey": null
 },
-v2 = [
-  (v1/*: any*/)
+v1 = [
+  (v0/*: any*/)
 ];
 return {
   "argumentDefinitions": [],
@@ -72,7 +57,13 @@ return {
       "name": "householdCurrencies",
       "plural": true,
       "selections": [
-        (v0/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "id",
+          "storageKey": null
+        },
         {
           "alias": null,
           "args": null,
@@ -80,7 +71,7 @@ return {
           "name": "important",
           "storageKey": null
         },
-        (v1/*: any*/)
+        (v0/*: any*/)
       ],
       "storageKey": null
     },
@@ -106,7 +97,7 @@ return {
           "kind": "LinkedField",
           "name": "fromCurrency",
           "plural": false,
-          "selections": (v2/*: any*/),
+          "selections": (v1/*: any*/),
           "storageKey": null
         },
         {
@@ -116,40 +107,7 @@ return {
           "kind": "LinkedField",
           "name": "toCurrency",
           "plural": false,
-          "selections": (v2/*: any*/),
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "UserHousehold",
-      "kind": "LinkedField",
-      "name": "userHouseholds",
-      "plural": true,
-      "selections": [
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "User",
-          "kind": "LinkedField",
-          "name": "user",
-          "plural": false,
-          "selections": [
-            (v0/*: any*/)
-          ],
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "HouseholdCurrency",
-          "kind": "LinkedField",
-          "name": "householdCurrency",
-          "plural": false,
-          "selections": (v2/*: any*/),
+          "selections": (v1/*: any*/),
           "storageKey": null
         }
       ],
@@ -161,6 +119,6 @@ return {
 };
 })();
 
-(node as any).hash = "88f3c0d52a5e20fd4cc11527c74ef21a";
+(node as any).hash = "0a5795b789945f69378a95e88e76aac9";
 
 export default node;

@@ -3,10 +3,10 @@ import { graphql, useFragment } from 'react-relay'
 import { useStore } from '@tanstack/react-store'
 import currency from 'currency.js'
 import type { useDisplayCurrencyFragment$key } from './__generated__/useDisplayCurrencyFragment.graphql'
-import { useUser } from './use-user'
 import { displayCurrencyIdStore } from './display-currency-store'
 import { identity } from 'lodash-es'
 import invariant from 'tiny-invariant'
+import { useUserHousehold } from './use-user-household'
 
 const UseDisplayCurrencyFragment = graphql`
   fragment useDisplayCurrencyFragment on Household {
@@ -23,15 +23,6 @@ const UseDisplayCurrencyFragment = graphql`
         code
       }
       toCurrency {
-        code
-      }
-    }
-    # eslint-disable-next-line relay/unused-fields
-    userHouseholds {
-      user {
-        id
-      }
-      householdCurrency {
         code
       }
     }
@@ -64,44 +55,45 @@ export const useDisplayCurrency = () => {
     )
   }
   const data = useFragment(UseDisplayCurrencyFragment, ref)
-  const user = useUser()
   const storedId = useStore(displayCurrencyIdStore, identity)
 
+  const { userHousehold } = useUserHousehold()
+
   const displayCurrencyCode = useMemo(() => {
+    invariant(data.householdCurrencies, 'householdCurrencies is required')
+
     if (storedId) {
-      const hc = (data.householdCurrencies ?? []).find(
+      const hc = data.householdCurrencies.find(
         (c) => c.id === storedId && c.important,
       )
       if (hc) return hc.code
     }
 
-    const userHousehold = (data.userHouseholds ?? []).find(
-      (uh) => uh.user.id === user.id,
-    )
-    invariant(userHousehold, "User's household not found in data")
     return userHousehold.householdCurrency.code
-  }, [data, user.id, storedId])
+  }, [data.householdCurrencies, storedId, userHousehold.householdCurrency.code])
 
   const rateMap = useMemo(() => {
-    const map = new Map<string, currency>()
-    for (const rate of data.householdRates ?? []) {
-      map.set(
+    invariant(data.householdRates, 'householdRates is required')
+
+    return new Map(
+      data.householdRates.map((rate) => [
         `${rate.fromCurrency.code}->${rate.toCurrency.code}`,
         currency(rate.rate, { precision: 8 }),
-      )
-    }
-    return map
+      ]),
+    )
   }, [data.householdRates])
 
   const convert = useCallback(
     (amount: currency | string | number, fromCurrencyCode: string) => {
       if (fromCurrencyCode === displayCurrencyCode) return currency(amount)
+
       const rate = rateMap.get(`${fromCurrencyCode}->${displayCurrencyCode}`)
-      if (rate == null) {
-        throw new Error(
-          `Missing exchange rate: ${fromCurrencyCode} → ${displayCurrencyCode}`,
-        )
-      }
+
+      invariant(
+        rate,
+        `Missing exchange rate: ${fromCurrencyCode} → ${displayCurrencyCode}`,
+      )
+
       return currency(amount).multiply(rate.value)
     },
     [displayCurrencyCode, rateMap],
