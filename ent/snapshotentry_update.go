@@ -87,8 +87,8 @@ func (_u *SnapshotEntryUpdate) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.household"`)
 	}
-	if _u.mutation.CurrencyCleared() && len(_u.mutation.CurrencyIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.currency"`)
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.household_currency"`)
 	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.user"`)
@@ -213,8 +213,8 @@ func (_u *SnapshotEntryUpdateOne) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.household"`)
 	}
-	if _u.mutation.CurrencyCleared() && len(_u.mutation.CurrencyIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.currency"`)
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.household_currency"`)
 	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SnapshotEntry.user"`)

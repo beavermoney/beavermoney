@@ -76,7 +76,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 			s.Join(tc).
 				On(s.C(transaction.CategoryColumn), tc.C(transactioncategory.FieldID))
 			s.Join(cu).
-				On(te.C(transactionentry.CurrencyColumn), cu.C(householdcurrency.FieldID))
+				On(te.C(transactionentry.HouseholdCurrencyColumn), cu.C(householdcurrency.FieldID))
 
 			// Filter by household
 			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
@@ -378,7 +378,13 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 			Quotes: &quotes,
 		})
 		if err != nil {
-			r.logger.Error("Failed to fetch historical rates for snapshot", "error", err, "snapshotID", snap.ID)
+			r.logger.Error(
+				"Failed to fetch historical rates for snapshot",
+				"error",
+				err,
+				"snapshotID",
+				snap.ID,
+			)
 			continue
 		}
 		if resp.JSON200 == nil {
@@ -417,7 +423,13 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 				Ignore().
 				Exec(ctx)
 			if err != nil {
-				r.logger.Error("Failed to create snapshot rates", "error", err, "snapshotID", snap.ID)
+				r.logger.Error(
+					"Failed to create snapshot rates",
+					"error",
+					err,
+					"snapshotID",
+					snap.ID,
+				)
 				continue
 			}
 		}
@@ -442,7 +454,7 @@ func (r *mutationResolver) syncHouseholdCurrenciesFromAccounts(
 	seen := map[string]bool{hh.CurrencyCode: true}
 	allHCs := []*ent.HouseholdCurrency{primaryHC}
 	for _, acc := range accounts {
-		hc, err := acc.QueryCurrency().Only(ctx)
+		hc, err := acc.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return err
 		}
@@ -465,7 +477,13 @@ func (r *mutationResolver) syncHouseholdCurrenciesFromAccounts(
 			}
 		}
 		if err := r.syncHouseholdRatesForCurrency(ctx, client, hh.ID, hc, existing); err != nil {
-			r.logger.Error("Failed to sync rates for currency", "error", err, "householdCurrencyID", hc.ID)
+			r.logger.Error(
+				"Failed to sync rates for currency",
+				"error",
+				err,
+				"householdCurrencyID",
+				hc.ID,
+			)
 		}
 	}
 

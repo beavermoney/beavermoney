@@ -455,15 +455,15 @@ func (c *AccountClient) QueryHousehold(_m *Account) *HouseholdQuery {
 	return query
 }
 
-// QueryCurrency queries the currency edge of a Account.
-func (c *AccountClient) QueryCurrency(_m *Account) *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency queries the household_currency edge of a Account.
+func (c *AccountClient) QueryHouseholdCurrency(_m *Account) *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(account.Table, account.FieldID, id),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, account.CurrencyTable, account.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, account.HouseholdCurrencyTable, account.HouseholdCurrencyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1503,15 +1503,15 @@ func (c *InvestmentClient) QueryHousehold(_m *Investment) *HouseholdQuery {
 	return query
 }
 
-// QueryCurrency queries the currency edge of a Investment.
-func (c *InvestmentClient) QueryCurrency(_m *Investment) *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency queries the household_currency edge of a Investment.
+func (c *InvestmentClient) QueryHouseholdCurrency(_m *Investment) *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(investment.Table, investment.FieldID, id),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, investment.CurrencyTable, investment.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, investment.HouseholdCurrencyTable, investment.HouseholdCurrencyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1867,15 +1867,15 @@ func (c *RecurringSubscriptionClient) QueryHousehold(_m *RecurringSubscription) 
 	return query
 }
 
-// QueryCurrency queries the currency edge of a RecurringSubscription.
-func (c *RecurringSubscriptionClient) QueryCurrency(_m *RecurringSubscription) *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency queries the household_currency edge of a RecurringSubscription.
+func (c *RecurringSubscriptionClient) QueryHouseholdCurrency(_m *RecurringSubscription) *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(recurringsubscription.Table, recurringsubscription.FieldID, id),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, recurringsubscription.CurrencyTable, recurringsubscription.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, recurringsubscription.HouseholdCurrencyTable, recurringsubscription.HouseholdCurrencyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2231,15 +2231,15 @@ func (c *SnapshotEntryClient) QueryHousehold(_m *SnapshotEntry) *HouseholdQuery 
 	return query
 }
 
-// QueryCurrency queries the currency edge of a SnapshotEntry.
-func (c *SnapshotEntryClient) QueryCurrency(_m *SnapshotEntry) *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency queries the household_currency edge of a SnapshotEntry.
+func (c *SnapshotEntryClient) QueryHouseholdCurrency(_m *SnapshotEntry) *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, id),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.CurrencyTable, snapshotentry.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.HouseholdCurrencyTable, snapshotentry.HouseholdCurrencyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3006,15 +3006,15 @@ func (c *TransactionEntryClient) QueryAccount(_m *TransactionEntry) *AccountQuer
 	return query
 }
 
-// QueryCurrency queries the currency edge of a TransactionEntry.
-func (c *TransactionEntryClient) QueryCurrency(_m *TransactionEntry) *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency queries the household_currency edge of a TransactionEntry.
+func (c *TransactionEntryClient) QueryHouseholdCurrency(_m *TransactionEntry) *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transactionentry.Table, transactionentry.FieldID, id),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, transactionentry.CurrencyTable, transactionentry.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transactionentry.HouseholdCurrencyTable, transactionentry.HouseholdCurrencyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bd36707b87152dd93bc9b8b028b5ab1d>>
+ * @generated SignedSource<<36d4bbf40787ef37ebd557b47a40aeca>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type AccountType = "investment" | "liability" | "liquidity" | "property" 
 export type CreateAccountInput = {
   balance?: string | null | undefined;
   category?: AccountCategory | null | undefined;
-  currencyID: string;
+  householdCurrencyID: string;
   icon?: string | null | undefined;
   name: string;
   type: AccountType;
@@ -159,7 +159,7 @@ return {
                 "args": null,
                 "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
-                "name": "currency",
+                "name": "householdCurrency",
                 "plural": false,
                 "selections": [
                   {
@@ -209,12 +209,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a01ad2949e95b5269c61d945081be00c",
+    "cacheID": "566aab0acf68293efa73d4c807ede128",
     "id": null,
     "metadata": {},
     "name": "newAccountMutation",
     "operationKind": "mutation",
-    "text": "mutation newAccountMutation(\n  $input: CreateAccountInput!\n) {\n  createAccount(input: $input) {\n    node {\n      id\n      type\n      name\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
+    "text": "mutation newAccountMutation(\n  $input: CreateAccountInput!\n) {\n  createAccount(input: $input) {\n    node {\n      id\n      type\n      name\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();

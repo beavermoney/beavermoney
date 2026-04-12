@@ -156,9 +156,9 @@ type AccountWhereInput struct {
 	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
 	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
 
-	// "currency" edge predicates.
-	HasCurrency     *bool                          `json:"hasCurrency,omitempty"`
-	HasCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+	// "household_currency" edge predicates.
+	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
+	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
 
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
@@ -539,23 +539,23 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 		}
 		predicates = append(predicates, account.HasHouseholdWith(with...))
 	}
-	if i.HasCurrency != nil {
-		p := account.HasCurrency()
-		if !*i.HasCurrency {
+	if i.HasHouseholdCurrency != nil {
+		p := account.HasHouseholdCurrency()
+		if !*i.HasHouseholdCurrency {
 			p = account.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasCurrencyWith) > 0 {
-		with := make([]predicate.HouseholdCurrency, 0, len(i.HasCurrencyWith))
-		for _, w := range i.HasCurrencyWith {
+	if len(i.HasHouseholdCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrencyWith))
+		for _, w := range i.HasHouseholdCurrencyWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrencyWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, account.HasCurrencyWith(with...))
+		predicates = append(predicates, account.HasHouseholdCurrencyWith(with...))
 	}
 	if i.HasUser != nil {
 		p := account.HasUser()
@@ -2240,9 +2240,9 @@ type InvestmentWhereInput struct {
 	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
 	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
 
-	// "currency" edge predicates.
-	HasCurrency     *bool                          `json:"hasCurrency,omitempty"`
-	HasCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+	// "household_currency" edge predicates.
+	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
+	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
 
 	// "investment_lots" edge predicates.
 	HasInvestmentLots     *bool                      `json:"hasInvestmentLots,omitempty"`
@@ -2627,23 +2627,23 @@ func (i *InvestmentWhereInput) P() (predicate.Investment, error) {
 		}
 		predicates = append(predicates, investment.HasHouseholdWith(with...))
 	}
-	if i.HasCurrency != nil {
-		p := investment.HasCurrency()
-		if !*i.HasCurrency {
+	if i.HasHouseholdCurrency != nil {
+		p := investment.HasHouseholdCurrency()
+		if !*i.HasHouseholdCurrency {
 			p = investment.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasCurrencyWith) > 0 {
-		with := make([]predicate.HouseholdCurrency, 0, len(i.HasCurrencyWith))
-		for _, w := range i.HasCurrencyWith {
+	if len(i.HasHouseholdCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrencyWith))
+		for _, w := range i.HasHouseholdCurrencyWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrencyWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, investment.HasCurrencyWith(with...))
+		predicates = append(predicates, investment.HasHouseholdCurrencyWith(with...))
 	}
 	if i.HasInvestmentLots != nil {
 		p := investment.HasInvestmentLots()
@@ -3184,9 +3184,9 @@ type RecurringSubscriptionWhereInput struct {
 	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
 	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
 
-	// "currency" edge predicates.
-	HasCurrency     *bool                          `json:"hasCurrency,omitempty"`
-	HasCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+	// "household_currency" edge predicates.
+	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
+	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
 
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
@@ -3565,23 +3565,23 @@ func (i *RecurringSubscriptionWhereInput) P() (predicate.RecurringSubscription, 
 		}
 		predicates = append(predicates, recurringsubscription.HasHouseholdWith(with...))
 	}
-	if i.HasCurrency != nil {
-		p := recurringsubscription.HasCurrency()
-		if !*i.HasCurrency {
+	if i.HasHouseholdCurrency != nil {
+		p := recurringsubscription.HasHouseholdCurrency()
+		if !*i.HasHouseholdCurrency {
 			p = recurringsubscription.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasCurrencyWith) > 0 {
-		with := make([]predicate.HouseholdCurrency, 0, len(i.HasCurrencyWith))
-		for _, w := range i.HasCurrencyWith {
+	if len(i.HasHouseholdCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrencyWith))
+		for _, w := range i.HasHouseholdCurrencyWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrencyWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, recurringsubscription.HasCurrencyWith(with...))
+		predicates = append(predicates, recurringsubscription.HasHouseholdCurrencyWith(with...))
 	}
 	if i.HasUser != nil {
 		p := recurringsubscription.HasUser()
@@ -4064,9 +4064,9 @@ type SnapshotEntryWhereInput struct {
 	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
 	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
 
-	// "currency" edge predicates.
-	HasCurrency     *bool                          `json:"hasCurrency,omitempty"`
-	HasCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+	// "household_currency" edge predicates.
+	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
+	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
 
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
@@ -4407,23 +4407,23 @@ func (i *SnapshotEntryWhereInput) P() (predicate.SnapshotEntry, error) {
 		}
 		predicates = append(predicates, snapshotentry.HasHouseholdWith(with...))
 	}
-	if i.HasCurrency != nil {
-		p := snapshotentry.HasCurrency()
-		if !*i.HasCurrency {
+	if i.HasHouseholdCurrency != nil {
+		p := snapshotentry.HasHouseholdCurrency()
+		if !*i.HasHouseholdCurrency {
 			p = snapshotentry.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasCurrencyWith) > 0 {
-		with := make([]predicate.HouseholdCurrency, 0, len(i.HasCurrencyWith))
-		for _, w := range i.HasCurrencyWith {
+	if len(i.HasHouseholdCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrencyWith))
+		for _, w := range i.HasHouseholdCurrencyWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrencyWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, snapshotentry.HasCurrencyWith(with...))
+		predicates = append(predicates, snapshotentry.HasHouseholdCurrencyWith(with...))
 	}
 	if i.HasUser != nil {
 		p := snapshotentry.HasUser()
@@ -5748,9 +5748,9 @@ type TransactionEntryWhereInput struct {
 	HasAccount     *bool                `json:"hasAccount,omitempty"`
 	HasAccountWith []*AccountWhereInput `json:"hasAccountWith,omitempty"`
 
-	// "currency" edge predicates.
-	HasCurrency     *bool                          `json:"hasCurrency,omitempty"`
-	HasCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasCurrencyWith,omitempty"`
+	// "household_currency" edge predicates.
+	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
+	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
 
 	// "transaction" edge predicates.
 	HasTransaction     *bool                    `json:"hasTransaction,omitempty"`
@@ -6009,23 +6009,23 @@ func (i *TransactionEntryWhereInput) P() (predicate.TransactionEntry, error) {
 		}
 		predicates = append(predicates, transactionentry.HasAccountWith(with...))
 	}
-	if i.HasCurrency != nil {
-		p := transactionentry.HasCurrency()
-		if !*i.HasCurrency {
+	if i.HasHouseholdCurrency != nil {
+		p := transactionentry.HasHouseholdCurrency()
+		if !*i.HasHouseholdCurrency {
 			p = transactionentry.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasCurrencyWith) > 0 {
-		with := make([]predicate.HouseholdCurrency, 0, len(i.HasCurrencyWith))
-		for _, w := range i.HasCurrencyWith {
+	if len(i.HasHouseholdCurrencyWith) > 0 {
+		with := make([]predicate.HouseholdCurrency, 0, len(i.HasHouseholdCurrencyWith))
+		for _, w := range i.HasHouseholdCurrencyWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasCurrencyWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasHouseholdCurrencyWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, transactionentry.HasCurrencyWith(with...))
+		predicates = append(predicates, transactionentry.HasHouseholdCurrencyWith(with...))
 	}
 	if i.HasTransaction != nil {
 		p := transactionentry.HasTransaction()

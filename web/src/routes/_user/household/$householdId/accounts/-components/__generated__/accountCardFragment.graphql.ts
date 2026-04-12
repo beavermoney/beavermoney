@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<32e633d615e4fc14cba50a8f427f7ca4>>
+ * @generated SignedSource<<a8385fd832f62773dfd45e3286f6e82e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ export type AccountType = "investment" | "liability" | "liquidity" | "property" 
 import { FragmentRefs } from "relay-runtime";
 export type accountCardFragment$data = {
   readonly balance: string;
-  readonly currency: {
+  readonly householdCurrency: {
     readonly code: string;
   };
   readonly icon: string | null | undefined;
@@ -80,7 +80,7 @@ return {
       "args": null,
       "concreteType": "HouseholdCurrency",
       "kind": "LinkedField",
-      "name": "currency",
+      "name": "householdCurrency",
       "plural": false,
       "selections": [
         {
@@ -125,6 +125,6 @@ return {
 };
 })();
 
-(node as any).hash = "ba4c73a6e7260ce562dc96aac6ba72a3";
+(node as any).hash = "f993e9bda8479dead614775114c20761";
 
 export default node;

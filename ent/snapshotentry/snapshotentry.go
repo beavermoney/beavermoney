@@ -39,8 +39,8 @@ const (
 	FieldSnapshotID = "snapshot_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
-	// EdgeCurrency holds the string denoting the currency edge name in mutations.
-	EdgeCurrency = "currency"
+	// EdgeHouseholdCurrency holds the string denoting the household_currency edge name in mutations.
+	EdgeHouseholdCurrency = "household_currency"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeSnapshot holds the string denoting the snapshot edge name in mutations.
@@ -54,13 +54,13 @@ const (
 	HouseholdInverseTable = "households"
 	// HouseholdColumn is the table column denoting the household relation/edge.
 	HouseholdColumn = "household_id"
-	// CurrencyTable is the table that holds the currency relation/edge.
-	CurrencyTable = "snapshot_entries"
-	// CurrencyInverseTable is the table name for the HouseholdCurrency entity.
+	// HouseholdCurrencyTable is the table that holds the household_currency relation/edge.
+	HouseholdCurrencyTable = "snapshot_entries"
+	// HouseholdCurrencyInverseTable is the table name for the HouseholdCurrency entity.
 	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
-	CurrencyInverseTable = "household_currencies"
-	// CurrencyColumn is the table column denoting the currency relation/edge.
-	CurrencyColumn = "household_currency_id"
+	HouseholdCurrencyInverseTable = "household_currencies"
+	// HouseholdCurrencyColumn is the table column denoting the household_currency relation/edge.
+	HouseholdCurrencyColumn = "household_currency_id"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "snapshot_entries"
 	// UserInverseTable is the table name for the User entity.
@@ -195,10 +195,10 @@ func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByCurrencyField orders the results by currency field.
-func ByCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByHouseholdCurrencyField orders the results by household_currency field.
+func ByHouseholdCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCurrencyStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdCurrencyStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -222,11 +222,11 @@ func newHouseholdStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, HouseholdTable, HouseholdColumn),
 	)
 }
-func newCurrencyStep() *sqlgraph.Step {
+func newHouseholdCurrencyStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CurrencyInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, CurrencyTable, CurrencyColumn),
+		sqlgraph.To(HouseholdCurrencyInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, HouseholdCurrencyTable, HouseholdCurrencyColumn),
 	)
 }
 func newUserStep() *sqlgraph.Step {

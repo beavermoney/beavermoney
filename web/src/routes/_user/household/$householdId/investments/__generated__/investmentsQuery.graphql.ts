@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e8e4be384ef7f6db4a45cbaa05060b6b>>
+ * @generated SignedSource<<77469d336086b28038dd3fa5ae59f269>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -48,7 +48,7 @@ v3 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     {
@@ -255,12 +255,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b73b5708316b7decb1e455e7cf9aaea2",
+    "cacheID": "97731e4fe0e8f9a31a8506683a807ffa",
     "id": null,
     "metadata": {},
     "name": "investmentsQuery",
     "operationKind": "query",
-    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          currency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

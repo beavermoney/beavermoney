@@ -19,7 +19,7 @@ const accountCardFragment = graphql`
     type
     icon
     updateTime
-    currency {
+    householdCurrency {
       code
     }
     user {

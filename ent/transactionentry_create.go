@@ -95,15 +95,9 @@ func (_c *TransactionEntryCreate) SetAccount(v *Account) *TransactionEntryCreate
 	return _c.SetAccountID(v.ID)
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_c *TransactionEntryCreate) SetCurrencyID(id int) *TransactionEntryCreate {
-	_c.mutation.SetCurrencyID(id)
-	return _c
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_c *TransactionEntryCreate) SetCurrency(v *HouseholdCurrency) *TransactionEntryCreate {
-	return _c.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_c *TransactionEntryCreate) SetHouseholdCurrency(v *HouseholdCurrency) *TransactionEntryCreate {
+	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // SetTransaction sets the "transaction" edge to the Transaction entity.
@@ -209,8 +203,8 @@ func (_c *TransactionEntryCreate) check() error {
 	if len(_c.mutation.AccountIDs()) == 0 {
 		return &ValidationError{Name: "account", err: errors.New(`ent: missing required edge "TransactionEntry.account"`)}
 	}
-	if len(_c.mutation.CurrencyIDs()) == 0 {
-		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "TransactionEntry.currency"`)}
+	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
+		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "TransactionEntry.household_currency"`)}
 	}
 	if len(_c.mutation.TransactionIDs()) == 0 {
 		return &ValidationError{Name: "transaction", err: errors.New(`ent: missing required edge "TransactionEntry.transaction"`)}
@@ -288,12 +282,12 @@ func (_c *TransactionEntryCreate) createSpec() (*TransactionEntry, *sqlgraph.Cre
 		_node.AccountID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   transactionentry.CurrencyTable,
-			Columns: []string{transactionentry.CurrencyColumn},
+			Table:   transactionentry.HouseholdCurrencyTable,
+			Columns: []string{transactionentry.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

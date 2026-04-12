@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<18225b710e44534e315f3e5b5b33dbf3>>
+ * @generated SignedSource<<42949aa239fa951d684eb6a35e487f3e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -101,7 +101,7 @@ v7 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     {
@@ -345,12 +345,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "152141ba058866a8e274b865abd549af",
+    "cacheID": "dc03397e5b88b184bc3fc13663c13967",
     "id": null,
     "metadata": {},
     "name": "newIncomeMutation",
     "operationKind": "mutation",
-    "text": "mutation newIncomeMutation(\n  $input: CreateIncomeInputCustom!\n) {\n  createIncome(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "mutation newIncomeMutation(\n  $input: CreateIncomeInputCustom!\n) {\n  createIncome(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();

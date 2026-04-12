@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e03b57a647cc750796424d8dcbf3190f>>
+ * @generated SignedSource<<dd94bc2e610f30c5c22a5d07c96a5bd7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type RecurringSubscriptionInterval = "month" | "week" | "year" | "%future
 export type CreateRecurringSubscriptionInput = {
   active?: boolean | null | undefined;
   cost?: string | null | undefined;
-  currencyID: string;
+  householdCurrencyID: string;
   icon?: string | null | undefined;
   interval: RecurringSubscriptionInterval;
   intervalCount?: number | null | undefined;
@@ -29,7 +29,7 @@ export type newSubscriptionMutation$data = {
     readonly node: {
       readonly active: boolean;
       readonly cost: string;
-      readonly currency: {
+      readonly householdCurrency: {
         readonly code: string;
         readonly id: string;
       };
@@ -109,7 +109,7 @@ v8 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     (v2/*: any*/),
@@ -222,16 +222,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f6d3464c51f1ae81be329d11f92df95c",
+    "cacheID": "3583015b3279c7fdf0c95f3f775f975e",
     "id": null,
     "metadata": {},
     "name": "newSubscriptionMutation",
     "operationKind": "mutation",
-    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "mutation newSubscriptionMutation(\n  $input: CreateRecurringSubscriptionInput!\n) {\n  createRecurringSubscription(input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      householdCurrency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1670ef55e43b1c8cf776d3803ad82242";
+(node as any).hash = "9bd0e92ba9c508a56e958a3ade083dfe";
 
 export default node;

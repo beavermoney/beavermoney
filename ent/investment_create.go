@@ -135,15 +135,9 @@ func (_c *InvestmentCreate) SetHousehold(v *Household) *InvestmentCreate {
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_c *InvestmentCreate) SetCurrencyID(id int) *InvestmentCreate {
-	_c.mutation.SetCurrencyID(id)
-	return _c
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_c *InvestmentCreate) SetCurrency(v *HouseholdCurrency) *InvestmentCreate {
-	return _c.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_c *InvestmentCreate) SetHouseholdCurrency(v *HouseholdCurrency) *InvestmentCreate {
+	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by IDs.
@@ -290,8 +284,8 @@ func (_c *InvestmentCreate) check() error {
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "Investment.household"`)}
 	}
-	if len(_c.mutation.CurrencyIDs()) == 0 {
-		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "Investment.currency"`)}
+	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
+		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "Investment.household_currency"`)}
 	}
 	return nil
 }
@@ -386,12 +380,12 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 		_node.HouseholdID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   investment.CurrencyTable,
-			Columns: []string{investment.CurrencyColumn},
+			Table:   investment.HouseholdCurrencyTable,
+			Columns: []string{investment.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

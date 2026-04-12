@@ -22,7 +22,7 @@ const investmentCardFragment = graphql`
     symbol
     quote
     updateTime
-    currency {
+    householdCurrency {
       code
     }
     amount

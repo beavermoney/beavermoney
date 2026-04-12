@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f8034bccbf001701601a1427720df542>>
+ * @generated SignedSource<<aa2ef3209df94c7ea8fbd6be53067a17>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -187,7 +187,7 @@ v14 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     {
@@ -438,12 +438,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "aa922da989a65c8710a0866a5cc33989",
+    "cacheID": "bbb7fd41206079ec63d422e247a981e0",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogQuery",
     "operationKind": "query",
-    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      id\n      description\n      datetime\n      categoryID\n      excludeFromReports\n      category {\n        id\n        name\n        type\n      }\n      investmentLots {\n        ...investmentLotCardFragment\n        id\n        amount\n      }\n      transactionEntries {\n        ...transactionEntryCardFragment\n        id\n        amount\n      }\n    }\n    id\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      id\n      description\n      datetime\n      categoryID\n      excludeFromReports\n      category {\n        id\n        name\n        type\n      }\n      investmentLots {\n        ...investmentLotCardFragment\n        id\n        amount\n      }\n      transactionEntries {\n        ...transactionEntryCardFragment\n        id\n        amount\n      }\n    }\n    id\n  }\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();

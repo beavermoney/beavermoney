@@ -84,7 +84,7 @@ const newInvestmentFragment = graphql`
           name
           icon
           value
-          currency {
+          householdCurrency {
             code
           }
         }

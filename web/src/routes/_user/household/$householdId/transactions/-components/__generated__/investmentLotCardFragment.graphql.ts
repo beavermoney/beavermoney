@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2f5368277ac7b18d9c783f8ab8b401b1>>
+ * @generated SignedSource<<ef745f5fca6d284190c1cac74351cb28>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type investmentLotCardFragment$data = {
   readonly amount: string;
   readonly id: string;
   readonly investment: {
-    readonly currency: {
+    readonly householdCurrency: {
       readonly code: string;
     };
     readonly name: string;
@@ -92,7 +92,7 @@ return {
           "args": null,
           "concreteType": "HouseholdCurrency",
           "kind": "LinkedField",
-          "name": "currency",
+          "name": "householdCurrency",
           "plural": false,
           "selections": [
             {
@@ -145,6 +145,6 @@ return {
 };
 })();
 
-(node as any).hash = "7f1502b553c7af9a7a38659706d589c6";
+(node as any).hash = "7eba68caa5ca988dfc34db0128a2372a";
 
 export default node;

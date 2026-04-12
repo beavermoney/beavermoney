@@ -209,7 +209,7 @@ func (SnapshotEntry) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("currency", HouseholdCurrency.Type).
+		edge.From("household_currency", HouseholdCurrency.Type).
 			Field("household_currency_id").
 			Ref("snapshot_entries").
 			Unique().
@@ -365,7 +365,8 @@ func (SnapshotRate) Edges() []ent.Edge {
 func (SnapshotRate) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("snapshot_id"),
-		index.Fields("snapshot_id", "from_household_currency_id", "to_household_currency_id").Unique(),
+		index.Fields("snapshot_id", "from_household_currency_id", "to_household_currency_id").
+			Unique(),
 	}
 }
 

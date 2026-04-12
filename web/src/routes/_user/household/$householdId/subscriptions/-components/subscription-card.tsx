@@ -30,7 +30,7 @@ const SubscriptionCardFragment = graphql`
     interval
     intervalCount
     startDate
-    currency {
+    householdCurrency {
       code
     }
   }

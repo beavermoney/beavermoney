@@ -65,7 +65,7 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 				fieldSeen[account.FieldHouseholdID] = struct{}{}
 			}
 
-		case "currency":
+		case "householdCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -74,7 +74,7 @@ func (_q *AccountQuery) collectField(ctx context.Context, oneNode bool, opCtx *g
 			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
-			_q.withCurrency = query
+			_q.withHouseholdCurrency = query
 			if _, ok := fieldSeen[account.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, account.FieldHouseholdCurrencyID)
 				fieldSeen[account.FieldHouseholdCurrencyID] = struct{}{}
@@ -1574,7 +1574,7 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				fieldSeen[investment.FieldHouseholdID] = struct{}{}
 			}
 
-		case "currency":
+		case "householdCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -1583,7 +1583,7 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
-			_q.withCurrency = query
+			_q.withHouseholdCurrency = query
 			if _, ok := fieldSeen[investment.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, investment.FieldHouseholdCurrencyID)
 				fieldSeen[investment.FieldHouseholdCurrencyID] = struct{}{}
@@ -1876,7 +1876,7 @@ func (_q *RecurringSubscriptionQuery) collectField(ctx context.Context, oneNode 
 				fieldSeen[recurringsubscription.FieldHouseholdID] = struct{}{}
 			}
 
-		case "currency":
+		case "householdCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -1885,7 +1885,7 @@ func (_q *RecurringSubscriptionQuery) collectField(ctx context.Context, oneNode 
 			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
-			_q.withCurrency = query
+			_q.withHouseholdCurrency = query
 			if _, ok := fieldSeen[recurringsubscription.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, recurringsubscription.FieldHouseholdCurrencyID)
 				fieldSeen[recurringsubscription.FieldHouseholdCurrencyID] = struct{}{}
@@ -2166,7 +2166,7 @@ func (_q *SnapshotEntryQuery) collectField(ctx context.Context, oneNode bool, op
 				fieldSeen[snapshotentry.FieldHouseholdID] = struct{}{}
 			}
 
-		case "currency":
+		case "householdCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -2175,7 +2175,7 @@ func (_q *SnapshotEntryQuery) collectField(ctx context.Context, oneNode bool, op
 			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
-			_q.withCurrency = query
+			_q.withHouseholdCurrency = query
 			if _, ok := fieldSeen[snapshotentry.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, snapshotentry.FieldHouseholdCurrencyID)
 				fieldSeen[snapshotentry.FieldHouseholdCurrencyID] = struct{}{}
@@ -2815,7 +2815,7 @@ func (_q *TransactionEntryQuery) collectField(ctx context.Context, oneNode bool,
 				fieldSeen[transactionentry.FieldAccountID] = struct{}{}
 			}
 
-		case "currency":
+		case "householdCurrency":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -2824,7 +2824,7 @@ func (_q *TransactionEntryQuery) collectField(ctx context.Context, oneNode bool,
 			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
 				return err
 			}
-			_q.withCurrency = query
+			_q.withHouseholdCurrency = query
 			if _, ok := fieldSeen[transactionentry.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, transactionentry.FieldHouseholdCurrencyID)
 				fieldSeen[transactionentry.FieldHouseholdCurrencyID] = struct{}{}

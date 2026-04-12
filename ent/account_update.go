@@ -239,8 +239,8 @@ func (_u *AccountUpdate) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.household"`)
 	}
-	if _u.mutation.CurrencyCleared() && len(_u.mutation.CurrencyIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Account.currency"`)
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Account.household_currency"`)
 	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.user"`)
@@ -620,8 +620,8 @@ func (_u *AccountUpdateOne) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.household"`)
 	}
-	if _u.mutation.CurrencyCleared() && len(_u.mutation.CurrencyIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Account.currency"`)
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Account.household_currency"`)
 	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.user"`)

@@ -78,8 +78,8 @@ type AccountMutation struct {
 	clearedFields              map[string]struct{}
 	household                  *int
 	clearedhousehold           bool
-	currency                   *int
-	clearedcurrency            bool
+	household_currency         *int
+	clearedhousehold_currency  bool
 	user                       *int
 	cleareduser                bool
 	transaction_entries        map[int]struct{}
@@ -493,7 +493,7 @@ func (m *AccountMutation) Icon() (r string, exists bool) {
 // OldIcon returns the old "icon" field's value of the Account entity.
 // If the Account object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountMutation) OldIcon(ctx context.Context) (v string, err error) {
+func (m *AccountMutation) OldIcon(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIcon is only allowed on UpdateOne operations")
 	}
@@ -583,12 +583,12 @@ func (m *AccountMutation) ResetValue() {
 
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (m *AccountMutation) SetHouseholdCurrencyID(i int) {
-	m.currency = &i
+	m.household_currency = &i
 }
 
 // HouseholdCurrencyID returns the value of the "household_currency_id" field in the mutation.
 func (m *AccountMutation) HouseholdCurrencyID() (r int, exists bool) {
-	v := m.currency
+	v := m.household_currency
 	if v == nil {
 		return
 	}
@@ -614,7 +614,7 @@ func (m *AccountMutation) OldHouseholdCurrencyID(ctx context.Context) (v int, er
 
 // ResetHouseholdCurrencyID resets all changes to the "household_currency_id" field.
 func (m *AccountMutation) ResetHouseholdCurrencyID() {
-	m.currency = nil
+	m.household_currency = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -716,44 +716,31 @@ func (m *AccountMutation) ResetHousehold() {
 	m.clearedhousehold = false
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by id.
-func (m *AccountMutation) SetCurrencyID(id int) {
-	m.currency = &id
-}
-
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (m *AccountMutation) ClearCurrency() {
-	m.clearedcurrency = true
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (m *AccountMutation) ClearHouseholdCurrency() {
+	m.clearedhousehold_currency = true
 	m.clearedFields[account.FieldHouseholdCurrencyID] = struct{}{}
 }
 
-// CurrencyCleared reports if the "currency" edge to the HouseholdCurrency entity was cleared.
-func (m *AccountMutation) CurrencyCleared() bool {
-	return m.clearedcurrency
+// HouseholdCurrencyCleared reports if the "household_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *AccountMutation) HouseholdCurrencyCleared() bool {
+	return m.clearedhousehold_currency
 }
 
-// CurrencyID returns the "currency" edge ID in the mutation.
-func (m *AccountMutation) CurrencyID() (id int, exists bool) {
-	if m.currency != nil {
-		return *m.currency, true
-	}
-	return
-}
-
-// CurrencyIDs returns the "currency" edge IDs in the mutation.
+// HouseholdCurrencyIDs returns the "household_currency" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CurrencyID instead. It exists only for internal usage by the builders.
-func (m *AccountMutation) CurrencyIDs() (ids []int) {
-	if id := m.currency; id != nil {
+// HouseholdCurrencyID instead. It exists only for internal usage by the builders.
+func (m *AccountMutation) HouseholdCurrencyIDs() (ids []int) {
+	if id := m.household_currency; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCurrency resets all changes to the "currency" edge.
-func (m *AccountMutation) ResetCurrency() {
-	m.currency = nil
-	m.clearedcurrency = false
+// ResetHouseholdCurrency resets all changes to the "household_currency" edge.
+func (m *AccountMutation) ResetHouseholdCurrency() {
+	m.household_currency = nil
+	m.clearedhousehold_currency = false
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -953,7 +940,7 @@ func (m *AccountMutation) Fields() []string {
 	if m.value != nil {
 		fields = append(fields, account.FieldValue)
 	}
-	if m.currency != nil {
+	if m.household_currency != nil {
 		fields = append(fields, account.FieldHouseholdCurrencyID)
 	}
 	if m.user != nil {
@@ -1257,8 +1244,8 @@ func (m *AccountMutation) AddedEdges() []string {
 	if m.household != nil {
 		edges = append(edges, account.EdgeHousehold)
 	}
-	if m.currency != nil {
-		edges = append(edges, account.EdgeCurrency)
+	if m.household_currency != nil {
+		edges = append(edges, account.EdgeHouseholdCurrency)
 	}
 	if m.user != nil {
 		edges = append(edges, account.EdgeUser)
@@ -1280,8 +1267,8 @@ func (m *AccountMutation) AddedIDs(name string) []ent.Value {
 		if id := m.household; id != nil {
 			return []ent.Value{*id}
 		}
-	case account.EdgeCurrency:
-		if id := m.currency; id != nil {
+	case account.EdgeHouseholdCurrency:
+		if id := m.household_currency; id != nil {
 			return []ent.Value{*id}
 		}
 	case account.EdgeUser:
@@ -1342,8 +1329,8 @@ func (m *AccountMutation) ClearedEdges() []string {
 	if m.clearedhousehold {
 		edges = append(edges, account.EdgeHousehold)
 	}
-	if m.clearedcurrency {
-		edges = append(edges, account.EdgeCurrency)
+	if m.clearedhousehold_currency {
+		edges = append(edges, account.EdgeHouseholdCurrency)
 	}
 	if m.cleareduser {
 		edges = append(edges, account.EdgeUser)
@@ -1363,8 +1350,8 @@ func (m *AccountMutation) EdgeCleared(name string) bool {
 	switch name {
 	case account.EdgeHousehold:
 		return m.clearedhousehold
-	case account.EdgeCurrency:
-		return m.clearedcurrency
+	case account.EdgeHouseholdCurrency:
+		return m.clearedhousehold_currency
 	case account.EdgeUser:
 		return m.cleareduser
 	case account.EdgeTransactionEntries:
@@ -1382,8 +1369,8 @@ func (m *AccountMutation) ClearEdge(name string) error {
 	case account.EdgeHousehold:
 		m.ClearHousehold()
 		return nil
-	case account.EdgeCurrency:
-		m.ClearCurrency()
+	case account.EdgeHouseholdCurrency:
+		m.ClearHouseholdCurrency()
 		return nil
 	case account.EdgeUser:
 		m.ClearUser()
@@ -1399,8 +1386,8 @@ func (m *AccountMutation) ResetEdge(name string) error {
 	case account.EdgeHousehold:
 		m.ResetHousehold()
 		return nil
-	case account.EdgeCurrency:
-		m.ResetCurrency()
+	case account.EdgeHouseholdCurrency:
+		m.ResetHouseholdCurrency()
 		return nil
 	case account.EdgeUser:
 		m.ResetUser()
@@ -5255,33 +5242,33 @@ func (m *HouseholdRateMutation) ResetEdge(name string) error {
 // InvestmentMutation represents an operation that mutates the Investment nodes in the graph.
 type InvestmentMutation struct {
 	config
-	op                     Op
-	typ                    string
-	id                     *int
-	create_time            *time.Time
-	update_time            *time.Time
-	name                   *string
-	_type                  *investment.Type
-	symbol                 *string
-	amount                 *decimal.Decimal
-	addamount              *decimal.Decimal
-	quote                  *decimal.Decimal
-	addquote               *decimal.Decimal
-	value                  *decimal.Decimal
-	addvalue               *decimal.Decimal
-	clearedFields          map[string]struct{}
-	account                *int
-	clearedaccount         bool
-	household              *int
-	clearedhousehold       bool
-	currency               *int
-	clearedcurrency        bool
-	investment_lots        map[int]struct{}
-	removedinvestment_lots map[int]struct{}
-	clearedinvestment_lots bool
-	done                   bool
-	oldValue               func(context.Context) (*Investment, error)
-	predicates             []predicate.Investment
+	op                        Op
+	typ                       string
+	id                        *int
+	create_time               *time.Time
+	update_time               *time.Time
+	name                      *string
+	_type                     *investment.Type
+	symbol                    *string
+	amount                    *decimal.Decimal
+	addamount                 *decimal.Decimal
+	quote                     *decimal.Decimal
+	addquote                  *decimal.Decimal
+	value                     *decimal.Decimal
+	addvalue                  *decimal.Decimal
+	clearedFields             map[string]struct{}
+	account                   *int
+	clearedaccount            bool
+	household                 *int
+	clearedhousehold          bool
+	household_currency        *int
+	clearedhousehold_currency bool
+	investment_lots           map[int]struct{}
+	removedinvestment_lots    map[int]struct{}
+	clearedinvestment_lots    bool
+	done                      bool
+	oldValue                  func(context.Context) (*Investment, error)
+	predicates                []predicate.Investment
 }
 
 var _ ent.Mutation = (*InvestmentMutation)(nil)
@@ -5804,12 +5791,12 @@ func (m *InvestmentMutation) ResetAccountID() {
 
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (m *InvestmentMutation) SetHouseholdCurrencyID(i int) {
-	m.currency = &i
+	m.household_currency = &i
 }
 
 // HouseholdCurrencyID returns the value of the "household_currency_id" field in the mutation.
 func (m *InvestmentMutation) HouseholdCurrencyID() (r int, exists bool) {
-	v := m.currency
+	v := m.household_currency
 	if v == nil {
 		return
 	}
@@ -5835,7 +5822,7 @@ func (m *InvestmentMutation) OldHouseholdCurrencyID(ctx context.Context) (v int,
 
 // ResetHouseholdCurrencyID resets all changes to the "household_currency_id" field.
 func (m *InvestmentMutation) ResetHouseholdCurrencyID() {
-	m.currency = nil
+	m.household_currency = nil
 }
 
 // ClearAccount clears the "account" edge to the Account entity.
@@ -5892,44 +5879,31 @@ func (m *InvestmentMutation) ResetHousehold() {
 	m.clearedhousehold = false
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by id.
-func (m *InvestmentMutation) SetCurrencyID(id int) {
-	m.currency = &id
-}
-
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (m *InvestmentMutation) ClearCurrency() {
-	m.clearedcurrency = true
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (m *InvestmentMutation) ClearHouseholdCurrency() {
+	m.clearedhousehold_currency = true
 	m.clearedFields[investment.FieldHouseholdCurrencyID] = struct{}{}
 }
 
-// CurrencyCleared reports if the "currency" edge to the HouseholdCurrency entity was cleared.
-func (m *InvestmentMutation) CurrencyCleared() bool {
-	return m.clearedcurrency
+// HouseholdCurrencyCleared reports if the "household_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *InvestmentMutation) HouseholdCurrencyCleared() bool {
+	return m.clearedhousehold_currency
 }
 
-// CurrencyID returns the "currency" edge ID in the mutation.
-func (m *InvestmentMutation) CurrencyID() (id int, exists bool) {
-	if m.currency != nil {
-		return *m.currency, true
-	}
-	return
-}
-
-// CurrencyIDs returns the "currency" edge IDs in the mutation.
+// HouseholdCurrencyIDs returns the "household_currency" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CurrencyID instead. It exists only for internal usage by the builders.
-func (m *InvestmentMutation) CurrencyIDs() (ids []int) {
-	if id := m.currency; id != nil {
+// HouseholdCurrencyID instead. It exists only for internal usage by the builders.
+func (m *InvestmentMutation) HouseholdCurrencyIDs() (ids []int) {
+	if id := m.household_currency; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCurrency resets all changes to the "currency" edge.
-func (m *InvestmentMutation) ResetCurrency() {
-	m.currency = nil
-	m.clearedcurrency = false
+// ResetHouseholdCurrency resets all changes to the "household_currency" edge.
+func (m *InvestmentMutation) ResetHouseholdCurrency() {
+	m.household_currency = nil
+	m.clearedhousehold_currency = false
 }
 
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by ids.
@@ -6051,7 +6025,7 @@ func (m *InvestmentMutation) Fields() []string {
 	if m.account != nil {
 		fields = append(fields, investment.FieldAccountID)
 	}
-	if m.currency != nil {
+	if m.household_currency != nil {
 		fields = append(fields, investment.FieldHouseholdCurrencyID)
 	}
 	return fields
@@ -6335,8 +6309,8 @@ func (m *InvestmentMutation) AddedEdges() []string {
 	if m.household != nil {
 		edges = append(edges, investment.EdgeHousehold)
 	}
-	if m.currency != nil {
-		edges = append(edges, investment.EdgeCurrency)
+	if m.household_currency != nil {
+		edges = append(edges, investment.EdgeHouseholdCurrency)
 	}
 	if m.investment_lots != nil {
 		edges = append(edges, investment.EdgeInvestmentLots)
@@ -6356,8 +6330,8 @@ func (m *InvestmentMutation) AddedIDs(name string) []ent.Value {
 		if id := m.household; id != nil {
 			return []ent.Value{*id}
 		}
-	case investment.EdgeCurrency:
-		if id := m.currency; id != nil {
+	case investment.EdgeHouseholdCurrency:
+		if id := m.household_currency; id != nil {
 			return []ent.Value{*id}
 		}
 	case investment.EdgeInvestmentLots:
@@ -6402,8 +6376,8 @@ func (m *InvestmentMutation) ClearedEdges() []string {
 	if m.clearedhousehold {
 		edges = append(edges, investment.EdgeHousehold)
 	}
-	if m.clearedcurrency {
-		edges = append(edges, investment.EdgeCurrency)
+	if m.clearedhousehold_currency {
+		edges = append(edges, investment.EdgeHouseholdCurrency)
 	}
 	if m.clearedinvestment_lots {
 		edges = append(edges, investment.EdgeInvestmentLots)
@@ -6419,8 +6393,8 @@ func (m *InvestmentMutation) EdgeCleared(name string) bool {
 		return m.clearedaccount
 	case investment.EdgeHousehold:
 		return m.clearedhousehold
-	case investment.EdgeCurrency:
-		return m.clearedcurrency
+	case investment.EdgeHouseholdCurrency:
+		return m.clearedhousehold_currency
 	case investment.EdgeInvestmentLots:
 		return m.clearedinvestment_lots
 	}
@@ -6437,8 +6411,8 @@ func (m *InvestmentMutation) ClearEdge(name string) error {
 	case investment.EdgeHousehold:
 		m.ClearHousehold()
 		return nil
-	case investment.EdgeCurrency:
-		m.ClearCurrency()
+	case investment.EdgeHouseholdCurrency:
+		m.ClearHouseholdCurrency()
 		return nil
 	}
 	return fmt.Errorf("unknown Investment unique edge %s", name)
@@ -6454,8 +6428,8 @@ func (m *InvestmentMutation) ResetEdge(name string) error {
 	case investment.EdgeHousehold:
 		m.ResetHousehold()
 		return nil
-	case investment.EdgeCurrency:
-		m.ResetCurrency()
+	case investment.EdgeHouseholdCurrency:
+		m.ResetHouseholdCurrency()
 		return nil
 	case investment.EdgeInvestmentLots:
 		m.ResetInvestmentLots()
@@ -7332,30 +7306,30 @@ func (m *InvestmentLotMutation) ResetEdge(name string) error {
 // RecurringSubscriptionMutation represents an operation that mutates the RecurringSubscription nodes in the graph.
 type RecurringSubscriptionMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	create_time       *time.Time
-	update_time       *time.Time
-	name              *string
-	interval          *recurringsubscription.Interval
-	interval_count    *int
-	addinterval_count *int
-	start_date        *time.Time
-	active            *bool
-	icon              *string
-	cost              *decimal.Decimal
-	addcost           *decimal.Decimal
-	clearedFields     map[string]struct{}
-	household         *int
-	clearedhousehold  bool
-	currency          *int
-	clearedcurrency   bool
-	user              *int
-	cleareduser       bool
-	done              bool
-	oldValue          func(context.Context) (*RecurringSubscription, error)
-	predicates        []predicate.RecurringSubscription
+	op                        Op
+	typ                       string
+	id                        *int
+	create_time               *time.Time
+	update_time               *time.Time
+	name                      *string
+	interval                  *recurringsubscription.Interval
+	interval_count            *int
+	addinterval_count         *int
+	start_date                *time.Time
+	active                    *bool
+	icon                      *string
+	cost                      *decimal.Decimal
+	addcost                   *decimal.Decimal
+	clearedFields             map[string]struct{}
+	household                 *int
+	clearedhousehold          bool
+	household_currency        *int
+	clearedhousehold_currency bool
+	user                      *int
+	cleareduser               bool
+	done                      bool
+	oldValue                  func(context.Context) (*RecurringSubscription, error)
+	predicates                []predicate.RecurringSubscription
 }
 
 var _ ent.Mutation = (*RecurringSubscriptionMutation)(nil)
@@ -7871,12 +7845,12 @@ func (m *RecurringSubscriptionMutation) ResetCost() {
 
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (m *RecurringSubscriptionMutation) SetHouseholdCurrencyID(i int) {
-	m.currency = &i
+	m.household_currency = &i
 }
 
 // HouseholdCurrencyID returns the value of the "household_currency_id" field in the mutation.
 func (m *RecurringSubscriptionMutation) HouseholdCurrencyID() (r int, exists bool) {
-	v := m.currency
+	v := m.household_currency
 	if v == nil {
 		return
 	}
@@ -7902,7 +7876,7 @@ func (m *RecurringSubscriptionMutation) OldHouseholdCurrencyID(ctx context.Conte
 
 // ResetHouseholdCurrencyID resets all changes to the "household_currency_id" field.
 func (m *RecurringSubscriptionMutation) ResetHouseholdCurrencyID() {
-	m.currency = nil
+	m.household_currency = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -7968,44 +7942,31 @@ func (m *RecurringSubscriptionMutation) ResetHousehold() {
 	m.clearedhousehold = false
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by id.
-func (m *RecurringSubscriptionMutation) SetCurrencyID(id int) {
-	m.currency = &id
-}
-
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (m *RecurringSubscriptionMutation) ClearCurrency() {
-	m.clearedcurrency = true
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (m *RecurringSubscriptionMutation) ClearHouseholdCurrency() {
+	m.clearedhousehold_currency = true
 	m.clearedFields[recurringsubscription.FieldHouseholdCurrencyID] = struct{}{}
 }
 
-// CurrencyCleared reports if the "currency" edge to the HouseholdCurrency entity was cleared.
-func (m *RecurringSubscriptionMutation) CurrencyCleared() bool {
-	return m.clearedcurrency
+// HouseholdCurrencyCleared reports if the "household_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *RecurringSubscriptionMutation) HouseholdCurrencyCleared() bool {
+	return m.clearedhousehold_currency
 }
 
-// CurrencyID returns the "currency" edge ID in the mutation.
-func (m *RecurringSubscriptionMutation) CurrencyID() (id int, exists bool) {
-	if m.currency != nil {
-		return *m.currency, true
-	}
-	return
-}
-
-// CurrencyIDs returns the "currency" edge IDs in the mutation.
+// HouseholdCurrencyIDs returns the "household_currency" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CurrencyID instead. It exists only for internal usage by the builders.
-func (m *RecurringSubscriptionMutation) CurrencyIDs() (ids []int) {
-	if id := m.currency; id != nil {
+// HouseholdCurrencyID instead. It exists only for internal usage by the builders.
+func (m *RecurringSubscriptionMutation) HouseholdCurrencyIDs() (ids []int) {
+	if id := m.household_currency; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCurrency resets all changes to the "currency" edge.
-func (m *RecurringSubscriptionMutation) ResetCurrency() {
-	m.currency = nil
-	m.clearedcurrency = false
+// ResetHouseholdCurrency resets all changes to the "household_currency" edge.
+func (m *RecurringSubscriptionMutation) ResetHouseholdCurrency() {
+	m.household_currency = nil
+	m.clearedhousehold_currency = false
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -8100,7 +8061,7 @@ func (m *RecurringSubscriptionMutation) Fields() []string {
 	if m.cost != nil {
 		fields = append(fields, recurringsubscription.FieldCost)
 	}
-	if m.currency != nil {
+	if m.household_currency != nil {
 		fields = append(fields, recurringsubscription.FieldHouseholdCurrencyID)
 	}
 	if m.user != nil {
@@ -8395,8 +8356,8 @@ func (m *RecurringSubscriptionMutation) AddedEdges() []string {
 	if m.household != nil {
 		edges = append(edges, recurringsubscription.EdgeHousehold)
 	}
-	if m.currency != nil {
-		edges = append(edges, recurringsubscription.EdgeCurrency)
+	if m.household_currency != nil {
+		edges = append(edges, recurringsubscription.EdgeHouseholdCurrency)
 	}
 	if m.user != nil {
 		edges = append(edges, recurringsubscription.EdgeUser)
@@ -8412,8 +8373,8 @@ func (m *RecurringSubscriptionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.household; id != nil {
 			return []ent.Value{*id}
 		}
-	case recurringsubscription.EdgeCurrency:
-		if id := m.currency; id != nil {
+	case recurringsubscription.EdgeHouseholdCurrency:
+		if id := m.household_currency; id != nil {
 			return []ent.Value{*id}
 		}
 	case recurringsubscription.EdgeUser:
@@ -8442,8 +8403,8 @@ func (m *RecurringSubscriptionMutation) ClearedEdges() []string {
 	if m.clearedhousehold {
 		edges = append(edges, recurringsubscription.EdgeHousehold)
 	}
-	if m.clearedcurrency {
-		edges = append(edges, recurringsubscription.EdgeCurrency)
+	if m.clearedhousehold_currency {
+		edges = append(edges, recurringsubscription.EdgeHouseholdCurrency)
 	}
 	if m.cleareduser {
 		edges = append(edges, recurringsubscription.EdgeUser)
@@ -8457,8 +8418,8 @@ func (m *RecurringSubscriptionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case recurringsubscription.EdgeHousehold:
 		return m.clearedhousehold
-	case recurringsubscription.EdgeCurrency:
-		return m.clearedcurrency
+	case recurringsubscription.EdgeHouseholdCurrency:
+		return m.clearedhousehold_currency
 	case recurringsubscription.EdgeUser:
 		return m.cleareduser
 	}
@@ -8472,8 +8433,8 @@ func (m *RecurringSubscriptionMutation) ClearEdge(name string) error {
 	case recurringsubscription.EdgeHousehold:
 		m.ClearHousehold()
 		return nil
-	case recurringsubscription.EdgeCurrency:
-		m.ClearCurrency()
+	case recurringsubscription.EdgeHouseholdCurrency:
+		m.ClearHouseholdCurrency()
 		return nil
 	case recurringsubscription.EdgeUser:
 		m.ClearUser()
@@ -8489,8 +8450,8 @@ func (m *RecurringSubscriptionMutation) ResetEdge(name string) error {
 	case recurringsubscription.EdgeHousehold:
 		m.ResetHousehold()
 		return nil
-	case recurringsubscription.EdgeCurrency:
-		m.ResetCurrency()
+	case recurringsubscription.EdgeHouseholdCurrency:
+		m.ResetHouseholdCurrency()
 		return nil
 	case recurringsubscription.EdgeUser:
 		m.ResetUser()
@@ -9237,33 +9198,33 @@ func (m *SnapshotMutation) ResetEdge(name string) error {
 // SnapshotEntryMutation represents an operation that mutates the SnapshotEntry nodes in the graph.
 type SnapshotEntryMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *int
-	create_time      *time.Time
-	update_time      *time.Time
-	liquidity        *decimal.Decimal
-	addliquidity     *decimal.Decimal
-	investment       *decimal.Decimal
-	addinvestment    *decimal.Decimal
-	property         *decimal.Decimal
-	addproperty      *decimal.Decimal
-	receivable       *decimal.Decimal
-	addreceivable    *decimal.Decimal
-	liability        *decimal.Decimal
-	addliability     *decimal.Decimal
-	clearedFields    map[string]struct{}
-	household        *int
-	clearedhousehold bool
-	currency         *int
-	clearedcurrency  bool
-	user             *int
-	cleareduser      bool
-	snapshot         *int
-	clearedsnapshot  bool
-	done             bool
-	oldValue         func(context.Context) (*SnapshotEntry, error)
-	predicates       []predicate.SnapshotEntry
+	op                        Op
+	typ                       string
+	id                        *int
+	create_time               *time.Time
+	update_time               *time.Time
+	liquidity                 *decimal.Decimal
+	addliquidity              *decimal.Decimal
+	investment                *decimal.Decimal
+	addinvestment             *decimal.Decimal
+	property                  *decimal.Decimal
+	addproperty               *decimal.Decimal
+	receivable                *decimal.Decimal
+	addreceivable             *decimal.Decimal
+	liability                 *decimal.Decimal
+	addliability              *decimal.Decimal
+	clearedFields             map[string]struct{}
+	household                 *int
+	clearedhousehold          bool
+	household_currency        *int
+	clearedhousehold_currency bool
+	user                      *int
+	cleareduser               bool
+	snapshot                  *int
+	clearedsnapshot           bool
+	done                      bool
+	oldValue                  func(context.Context) (*SnapshotEntry, error)
+	predicates                []predicate.SnapshotEntry
 }
 
 var _ ent.Mutation = (*SnapshotEntryMutation)(nil)
@@ -9754,12 +9715,12 @@ func (m *SnapshotEntryMutation) ResetLiability() {
 
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (m *SnapshotEntryMutation) SetHouseholdCurrencyID(i int) {
-	m.currency = &i
+	m.household_currency = &i
 }
 
 // HouseholdCurrencyID returns the value of the "household_currency_id" field in the mutation.
 func (m *SnapshotEntryMutation) HouseholdCurrencyID() (r int, exists bool) {
-	v := m.currency
+	v := m.household_currency
 	if v == nil {
 		return
 	}
@@ -9785,7 +9746,7 @@ func (m *SnapshotEntryMutation) OldHouseholdCurrencyID(ctx context.Context) (v i
 
 // ResetHouseholdCurrencyID resets all changes to the "household_currency_id" field.
 func (m *SnapshotEntryMutation) ResetHouseholdCurrencyID() {
-	m.currency = nil
+	m.household_currency = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -9887,44 +9848,31 @@ func (m *SnapshotEntryMutation) ResetHousehold() {
 	m.clearedhousehold = false
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by id.
-func (m *SnapshotEntryMutation) SetCurrencyID(id int) {
-	m.currency = &id
-}
-
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (m *SnapshotEntryMutation) ClearCurrency() {
-	m.clearedcurrency = true
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (m *SnapshotEntryMutation) ClearHouseholdCurrency() {
+	m.clearedhousehold_currency = true
 	m.clearedFields[snapshotentry.FieldHouseholdCurrencyID] = struct{}{}
 }
 
-// CurrencyCleared reports if the "currency" edge to the HouseholdCurrency entity was cleared.
-func (m *SnapshotEntryMutation) CurrencyCleared() bool {
-	return m.clearedcurrency
+// HouseholdCurrencyCleared reports if the "household_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *SnapshotEntryMutation) HouseholdCurrencyCleared() bool {
+	return m.clearedhousehold_currency
 }
 
-// CurrencyID returns the "currency" edge ID in the mutation.
-func (m *SnapshotEntryMutation) CurrencyID() (id int, exists bool) {
-	if m.currency != nil {
-		return *m.currency, true
-	}
-	return
-}
-
-// CurrencyIDs returns the "currency" edge IDs in the mutation.
+// HouseholdCurrencyIDs returns the "household_currency" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CurrencyID instead. It exists only for internal usage by the builders.
-func (m *SnapshotEntryMutation) CurrencyIDs() (ids []int) {
-	if id := m.currency; id != nil {
+// HouseholdCurrencyID instead. It exists only for internal usage by the builders.
+func (m *SnapshotEntryMutation) HouseholdCurrencyIDs() (ids []int) {
+	if id := m.household_currency; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCurrency resets all changes to the "currency" edge.
-func (m *SnapshotEntryMutation) ResetCurrency() {
-	m.currency = nil
-	m.clearedcurrency = false
+// ResetHouseholdCurrency resets all changes to the "household_currency" edge.
+func (m *SnapshotEntryMutation) ResetHouseholdCurrency() {
+	m.household_currency = nil
+	m.clearedhousehold_currency = false
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -10040,7 +9988,7 @@ func (m *SnapshotEntryMutation) Fields() []string {
 	if m.liability != nil {
 		fields = append(fields, snapshotentry.FieldLiability)
 	}
-	if m.currency != nil {
+	if m.household_currency != nil {
 		fields = append(fields, snapshotentry.FieldHouseholdCurrencyID)
 	}
 	if m.user != nil {
@@ -10351,8 +10299,8 @@ func (m *SnapshotEntryMutation) AddedEdges() []string {
 	if m.household != nil {
 		edges = append(edges, snapshotentry.EdgeHousehold)
 	}
-	if m.currency != nil {
-		edges = append(edges, snapshotentry.EdgeCurrency)
+	if m.household_currency != nil {
+		edges = append(edges, snapshotentry.EdgeHouseholdCurrency)
 	}
 	if m.user != nil {
 		edges = append(edges, snapshotentry.EdgeUser)
@@ -10371,8 +10319,8 @@ func (m *SnapshotEntryMutation) AddedIDs(name string) []ent.Value {
 		if id := m.household; id != nil {
 			return []ent.Value{*id}
 		}
-	case snapshotentry.EdgeCurrency:
-		if id := m.currency; id != nil {
+	case snapshotentry.EdgeHouseholdCurrency:
+		if id := m.household_currency; id != nil {
 			return []ent.Value{*id}
 		}
 	case snapshotentry.EdgeUser:
@@ -10405,8 +10353,8 @@ func (m *SnapshotEntryMutation) ClearedEdges() []string {
 	if m.clearedhousehold {
 		edges = append(edges, snapshotentry.EdgeHousehold)
 	}
-	if m.clearedcurrency {
-		edges = append(edges, snapshotentry.EdgeCurrency)
+	if m.clearedhousehold_currency {
+		edges = append(edges, snapshotentry.EdgeHouseholdCurrency)
 	}
 	if m.cleareduser {
 		edges = append(edges, snapshotentry.EdgeUser)
@@ -10423,8 +10371,8 @@ func (m *SnapshotEntryMutation) EdgeCleared(name string) bool {
 	switch name {
 	case snapshotentry.EdgeHousehold:
 		return m.clearedhousehold
-	case snapshotentry.EdgeCurrency:
-		return m.clearedcurrency
+	case snapshotentry.EdgeHouseholdCurrency:
+		return m.clearedhousehold_currency
 	case snapshotentry.EdgeUser:
 		return m.cleareduser
 	case snapshotentry.EdgeSnapshot:
@@ -10440,8 +10388,8 @@ func (m *SnapshotEntryMutation) ClearEdge(name string) error {
 	case snapshotentry.EdgeHousehold:
 		m.ClearHousehold()
 		return nil
-	case snapshotentry.EdgeCurrency:
-		m.ClearCurrency()
+	case snapshotentry.EdgeHouseholdCurrency:
+		m.ClearHouseholdCurrency()
 		return nil
 	case snapshotentry.EdgeUser:
 		m.ClearUser()
@@ -10460,8 +10408,8 @@ func (m *SnapshotEntryMutation) ResetEdge(name string) error {
 	case snapshotentry.EdgeHousehold:
 		m.ResetHousehold()
 		return nil
-	case snapshotentry.EdgeCurrency:
-		m.ResetCurrency()
+	case snapshotentry.EdgeHouseholdCurrency:
+		m.ResetHouseholdCurrency()
 		return nil
 	case snapshotentry.EdgeUser:
 		m.ResetUser()
@@ -13115,25 +13063,25 @@ func (m *TransactionCategoryMutation) ResetEdge(name string) error {
 // TransactionEntryMutation represents an operation that mutates the TransactionEntry nodes in the graph.
 type TransactionEntryMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int
-	create_time        *time.Time
-	update_time        *time.Time
-	amount             *decimal.Decimal
-	addamount          *decimal.Decimal
-	clearedFields      map[string]struct{}
-	household          *int
-	clearedhousehold   bool
-	account            *int
-	clearedaccount     bool
-	currency           *int
-	clearedcurrency    bool
-	transaction        *int
-	clearedtransaction bool
-	done               bool
-	oldValue           func(context.Context) (*TransactionEntry, error)
-	predicates         []predicate.TransactionEntry
+	op                        Op
+	typ                       string
+	id                        *int
+	create_time               *time.Time
+	update_time               *time.Time
+	amount                    *decimal.Decimal
+	addamount                 *decimal.Decimal
+	clearedFields             map[string]struct{}
+	household                 *int
+	clearedhousehold          bool
+	account                   *int
+	clearedaccount            bool
+	household_currency        *int
+	clearedhousehold_currency bool
+	transaction               *int
+	clearedtransaction        bool
+	done                      bool
+	oldValue                  func(context.Context) (*TransactionEntry, error)
+	predicates                []predicate.TransactionEntry
 }
 
 var _ ent.Mutation = (*TransactionEntryMutation)(nil)
@@ -13436,12 +13384,12 @@ func (m *TransactionEntryMutation) ResetAccountID() {
 
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (m *TransactionEntryMutation) SetHouseholdCurrencyID(i int) {
-	m.currency = &i
+	m.household_currency = &i
 }
 
 // HouseholdCurrencyID returns the value of the "household_currency_id" field in the mutation.
 func (m *TransactionEntryMutation) HouseholdCurrencyID() (r int, exists bool) {
-	v := m.currency
+	v := m.household_currency
 	if v == nil {
 		return
 	}
@@ -13467,7 +13415,7 @@ func (m *TransactionEntryMutation) OldHouseholdCurrencyID(ctx context.Context) (
 
 // ResetHouseholdCurrencyID resets all changes to the "household_currency_id" field.
 func (m *TransactionEntryMutation) ResetHouseholdCurrencyID() {
-	m.currency = nil
+	m.household_currency = nil
 }
 
 // SetTransactionID sets the "transaction_id" field.
@@ -13560,44 +13508,31 @@ func (m *TransactionEntryMutation) ResetAccount() {
 	m.clearedaccount = false
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by id.
-func (m *TransactionEntryMutation) SetCurrencyID(id int) {
-	m.currency = &id
-}
-
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (m *TransactionEntryMutation) ClearCurrency() {
-	m.clearedcurrency = true
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (m *TransactionEntryMutation) ClearHouseholdCurrency() {
+	m.clearedhousehold_currency = true
 	m.clearedFields[transactionentry.FieldHouseholdCurrencyID] = struct{}{}
 }
 
-// CurrencyCleared reports if the "currency" edge to the HouseholdCurrency entity was cleared.
-func (m *TransactionEntryMutation) CurrencyCleared() bool {
-	return m.clearedcurrency
+// HouseholdCurrencyCleared reports if the "household_currency" edge to the HouseholdCurrency entity was cleared.
+func (m *TransactionEntryMutation) HouseholdCurrencyCleared() bool {
+	return m.clearedhousehold_currency
 }
 
-// CurrencyID returns the "currency" edge ID in the mutation.
-func (m *TransactionEntryMutation) CurrencyID() (id int, exists bool) {
-	if m.currency != nil {
-		return *m.currency, true
-	}
-	return
-}
-
-// CurrencyIDs returns the "currency" edge IDs in the mutation.
+// HouseholdCurrencyIDs returns the "household_currency" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CurrencyID instead. It exists only for internal usage by the builders.
-func (m *TransactionEntryMutation) CurrencyIDs() (ids []int) {
-	if id := m.currency; id != nil {
+// HouseholdCurrencyID instead. It exists only for internal usage by the builders.
+func (m *TransactionEntryMutation) HouseholdCurrencyIDs() (ids []int) {
+	if id := m.household_currency; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCurrency resets all changes to the "currency" edge.
-func (m *TransactionEntryMutation) ResetCurrency() {
-	m.currency = nil
-	m.clearedcurrency = false
+// ResetHouseholdCurrency resets all changes to the "household_currency" edge.
+func (m *TransactionEntryMutation) ResetHouseholdCurrency() {
+	m.household_currency = nil
+	m.clearedhousehold_currency = false
 }
 
 // ClearTransaction clears the "transaction" edge to the Transaction entity.
@@ -13677,7 +13612,7 @@ func (m *TransactionEntryMutation) Fields() []string {
 	if m.account != nil {
 		fields = append(fields, transactionentry.FieldAccountID)
 	}
-	if m.currency != nil {
+	if m.household_currency != nil {
 		fields = append(fields, transactionentry.FieldHouseholdCurrencyID)
 	}
 	if m.transaction != nil {
@@ -13884,8 +13819,8 @@ func (m *TransactionEntryMutation) AddedEdges() []string {
 	if m.account != nil {
 		edges = append(edges, transactionentry.EdgeAccount)
 	}
-	if m.currency != nil {
-		edges = append(edges, transactionentry.EdgeCurrency)
+	if m.household_currency != nil {
+		edges = append(edges, transactionentry.EdgeHouseholdCurrency)
 	}
 	if m.transaction != nil {
 		edges = append(edges, transactionentry.EdgeTransaction)
@@ -13905,8 +13840,8 @@ func (m *TransactionEntryMutation) AddedIDs(name string) []ent.Value {
 		if id := m.account; id != nil {
 			return []ent.Value{*id}
 		}
-	case transactionentry.EdgeCurrency:
-		if id := m.currency; id != nil {
+	case transactionentry.EdgeHouseholdCurrency:
+		if id := m.household_currency; id != nil {
 			return []ent.Value{*id}
 		}
 	case transactionentry.EdgeTransaction:
@@ -13938,8 +13873,8 @@ func (m *TransactionEntryMutation) ClearedEdges() []string {
 	if m.clearedaccount {
 		edges = append(edges, transactionentry.EdgeAccount)
 	}
-	if m.clearedcurrency {
-		edges = append(edges, transactionentry.EdgeCurrency)
+	if m.clearedhousehold_currency {
+		edges = append(edges, transactionentry.EdgeHouseholdCurrency)
 	}
 	if m.clearedtransaction {
 		edges = append(edges, transactionentry.EdgeTransaction)
@@ -13955,8 +13890,8 @@ func (m *TransactionEntryMutation) EdgeCleared(name string) bool {
 		return m.clearedhousehold
 	case transactionentry.EdgeAccount:
 		return m.clearedaccount
-	case transactionentry.EdgeCurrency:
-		return m.clearedcurrency
+	case transactionentry.EdgeHouseholdCurrency:
+		return m.clearedhousehold_currency
 	case transactionentry.EdgeTransaction:
 		return m.clearedtransaction
 	}
@@ -13973,8 +13908,8 @@ func (m *TransactionEntryMutation) ClearEdge(name string) error {
 	case transactionentry.EdgeAccount:
 		m.ClearAccount()
 		return nil
-	case transactionentry.EdgeCurrency:
-		m.ClearCurrency()
+	case transactionentry.EdgeHouseholdCurrency:
+		m.ClearHouseholdCurrency()
 		return nil
 	case transactionentry.EdgeTransaction:
 		m.ClearTransaction()
@@ -13993,8 +13928,8 @@ func (m *TransactionEntryMutation) ResetEdge(name string) error {
 	case transactionentry.EdgeAccount:
 		m.ResetAccount()
 		return nil
-	case transactionentry.EdgeCurrency:
-		m.ResetCurrency()
+	case transactionentry.EdgeHouseholdCurrency:
+		m.ResetHouseholdCurrency()
 		return nil
 	case transactionentry.EdgeTransaction:
 		m.ResetTransaction()

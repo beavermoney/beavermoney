@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6d48ab70744aa432285af8a06d1e98c2>>
+ * @generated SignedSource<<9baad568602e4a47a7b0f88c2a7474bb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -143,7 +143,7 @@ return {
                         "args": null,
                         "concreteType": "HouseholdCurrency",
                         "kind": "LinkedField",
-                        "name": "currency",
+                        "name": "householdCurrency",
                         "plural": false,
                         "selections": [
                           {
@@ -269,12 +269,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b1666b7f273989705b6d74a5c5b254f2",
+    "cacheID": "0150529ec72c4babc1c3f365066e1920",
     "id": null,
     "metadata": {},
     "name": "accountsQuery",
     "operationKind": "query",
-    "text": "query accountsQuery {\n  household {\n    ...accountsPanelFragment\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Household {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        currency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsQuery {\n  household {\n    ...accountsPanelFragment\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment on Household {\n  accounts(first: 50, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

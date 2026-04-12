@@ -229,7 +229,7 @@ func (TransactionEntry) Edges() []ent.Edge {
 			Ref("transaction_entries").
 			Unique().
 			Required(),
-		edge.From("currency", HouseholdCurrency.Type).
+		edge.From("household_currency", HouseholdCurrency.Type).
 			Field("household_currency_id").
 			Ref("transaction_entries").
 			Unique().

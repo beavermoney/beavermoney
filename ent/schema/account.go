@@ -38,7 +38,7 @@ func (Account) Fields() []ent.Field {
 			).
 			Immutable().
 			DefaultFunc(func() decimal.Decimal {
-				return decimal.NewFromInt(0)
+				return decimal.Zero
 			}),
 
 		field.Enum("category").
@@ -54,7 +54,7 @@ func (Account) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.String("icon").Optional(),
+		field.String("icon").Optional().Nillable(),
 
 		field.Float("value").GoType(decimal.Decimal{}).
 			Comment("Value is the total value of the account including investments").
@@ -70,7 +70,7 @@ func (Account) Fields() []ent.Field {
 			).
 			Immutable().
 			DefaultFunc(func() decimal.Decimal {
-				return decimal.NewFromInt(0)
+				return decimal.Zero
 			}),
 
 		field.Int("household_currency_id").Positive().Immutable(),
@@ -102,12 +102,17 @@ func (Account) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("currency", HouseholdCurrency.Type).
+		edge.From("household_currency", HouseholdCurrency.Type).
 			Field("household_currency_id").
 			Ref("accounts").
 			Unique().
 			Immutable().
-			Required(),
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 		edge.From("user", User.Type).
 			Ref("accounts").
 			Field("user_id").

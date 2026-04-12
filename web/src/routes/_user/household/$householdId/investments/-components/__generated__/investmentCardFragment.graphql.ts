@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<589f84084bdaaa8aff96acc92cd794b6>>
+ * @generated SignedSource<<85135e840dd467d3d9e6245ec759c5f2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,7 @@ import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type investmentCardFragment$data = {
   readonly amount: string;
-  readonly currency: {
+  readonly householdCurrency: {
     readonly code: string;
   };
   readonly id: string;
@@ -74,7 +74,7 @@ const node: ReaderFragment = {
       "args": null,
       "concreteType": "HouseholdCurrency",
       "kind": "LinkedField",
-      "name": "currency",
+      "name": "householdCurrency",
       "plural": false,
       "selections": [
         {
@@ -106,6 +106,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "b580224d3b2437bbc6ba2b343c114e99";
+(node as any).hash = "2c976021f07fb06228e1d0f09e31a84f";
 
 export default node;

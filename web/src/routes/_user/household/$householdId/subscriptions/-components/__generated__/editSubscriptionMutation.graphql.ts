@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<37c0d7ad5a84f8e6edeb3255bddd5d11>>
+ * @generated SignedSource<<364fe1d7def75fab766143157bfeaad7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type UpdateRecurringSubscriptionInput = {
   active?: boolean | null | undefined;
   clearIcon?: boolean | null | undefined;
   cost?: string | null | undefined;
-  currencyID?: string | null | undefined;
+  householdCurrencyID?: string | null | undefined;
   icon?: string | null | undefined;
   interval?: RecurringSubscriptionInterval | null | undefined;
   intervalCount?: number | null | undefined;
@@ -31,7 +31,7 @@ export type editSubscriptionMutation$data = {
     readonly node: {
       readonly active: boolean;
       readonly cost: string;
-      readonly currency: {
+      readonly householdCurrency: {
         readonly code: string;
         readonly id: string;
       };
@@ -121,7 +121,7 @@ v8 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     (v2/*: any*/),
@@ -234,16 +234,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b0d4453a3c3fd6c1949295380282262f",
+    "cacheID": "c5b1b1363aa03f64e4171b905c53ae40",
     "id": null,
     "metadata": {},
     "name": "editSubscriptionMutation",
     "operationKind": "mutation",
-    "text": "mutation editSubscriptionMutation(\n  $id: ID!\n  $input: UpdateRecurringSubscriptionInput!\n) {\n  updateRecurringSubscription(id: $id, input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      currency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "mutation editSubscriptionMutation(\n  $id: ID!\n  $input: UpdateRecurringSubscriptionInput!\n) {\n  updateRecurringSubscription(id: $id, input: $input) {\n    node {\n      id\n      name\n      interval\n      intervalCount\n      startDate\n      cost\n      householdCurrency {\n        id\n        code\n      }\n      active\n      ...subscriptionCardFragment\n    }\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8f4bfeac40c607f394f2512446596015";
+(node as any).hash = "8c3d309893313a605aac07a5653582fb";
 
 export default node;

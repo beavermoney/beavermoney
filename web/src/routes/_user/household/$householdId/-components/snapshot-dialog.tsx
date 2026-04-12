@@ -32,7 +32,7 @@ const SnapshotDialogFragment = graphql`
         node {
           type
           value
-          currency {
+          householdCurrency {
             code
           }
         }

@@ -161,15 +161,9 @@ func (_c *AccountCreate) SetHousehold(v *Household) *AccountCreate {
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_c *AccountCreate) SetCurrencyID(id int) *AccountCreate {
-	_c.mutation.SetCurrencyID(id)
-	return _c
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_c *AccountCreate) SetCurrency(v *HouseholdCurrency) *AccountCreate {
-	return _c.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_c *AccountCreate) SetHouseholdCurrency(v *HouseholdCurrency) *AccountCreate {
+	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // SetUser sets the "user" edge to the User entity.
@@ -339,8 +333,8 @@ func (_c *AccountCreate) check() error {
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "Account.household"`)}
 	}
-	if len(_c.mutation.CurrencyIDs()) == 0 {
-		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "Account.currency"`)}
+	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
+		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "Account.household_currency"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Account.user"`)}
@@ -398,7 +392,7 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := _c.mutation.Icon(); ok {
 		_spec.SetField(account.FieldIcon, field.TypeString, value)
-		_node.Icon = value
+		_node.Icon = &value
 	}
 	if value, ok := _c.mutation.Value(); ok {
 		_spec.SetField(account.FieldValue, field.TypeFloat64, value)
@@ -425,12 +419,12 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		_node.HouseholdID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   account.CurrencyTable,
-			Columns: []string{account.CurrencyColumn},
+			Table:   account.HouseholdCurrencyTable,
+			Columns: []string{account.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

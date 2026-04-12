@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ccc6b8c634f48804b094de849b79da04>>
+ * @generated SignedSource<<95cdfcd4737c8c6e6beee25eac848bf2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ import { FragmentRefs } from "relay-runtime";
 export type editSubscriptionFragment$data = {
   readonly active: boolean;
   readonly cost: string;
-  readonly currency: {
+  readonly householdCurrency: {
     readonly code: string;
     readonly id: string;
   };
@@ -93,7 +93,7 @@ return {
       "args": null,
       "concreteType": "HouseholdCurrency",
       "kind": "LinkedField",
-      "name": "currency",
+      "name": "householdCurrency",
       "plural": false,
       "selections": [
         (v0/*: any*/),
@@ -120,6 +120,6 @@ return {
 };
 })();
 
-(node as any).hash = "db9e0d14c588577049f68a067ca636b9";
+(node as any).hash = "85722dc368901209d11725fd0ebf7901";
 
 export default node;

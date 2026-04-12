@@ -83,7 +83,7 @@ const newSubscriptionMutation = graphql`
         intervalCount
         startDate
         cost
-        currency {
+        householdCurrency {
           id
           code
         }

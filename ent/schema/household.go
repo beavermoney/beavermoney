@@ -313,7 +313,8 @@ func (HouseholdRate) Edges() []ent.Edge {
 
 func (HouseholdRate) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("household_id", "from_household_currency_id", "to_household_currency_id").Unique(),
+		index.Fields("household_id", "from_household_currency_id", "to_household_currency_id").
+			Unique(),
 	}
 }
 

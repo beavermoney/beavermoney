@@ -63,7 +63,7 @@ const InvestmentsPanelFragment = graphql`
           account {
             name
             id
-            currency {
+            householdCurrency {
               code
             }
           }

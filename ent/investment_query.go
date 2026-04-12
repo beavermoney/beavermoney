@@ -30,7 +30,7 @@ type InvestmentQuery struct {
 	predicates              []predicate.Investment
 	withAccount             *AccountQuery
 	withHousehold           *HouseholdQuery
-	withCurrency            *HouseholdCurrencyQuery
+	withHouseholdCurrency   *HouseholdCurrencyQuery
 	withInvestmentLots      *InvestmentLotQuery
 	loadTotal               []func(context.Context, []*Investment) error
 	modifiers               []func(*sql.Selector)
@@ -115,8 +115,8 @@ func (_q *InvestmentQuery) QueryHousehold() *HouseholdQuery {
 	return query
 }
 
-// QueryCurrency chains the current query on the "currency" edge.
-func (_q *InvestmentQuery) QueryCurrency() *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency chains the current query on the "household_currency" edge.
+func (_q *InvestmentQuery) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -129,7 +129,7 @@ func (_q *InvestmentQuery) QueryCurrency() *HouseholdCurrencyQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(investment.Table, investment.FieldID, selector),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, investment.CurrencyTable, investment.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, investment.HouseholdCurrencyTable, investment.HouseholdCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -346,15 +346,15 @@ func (_q *InvestmentQuery) Clone() *InvestmentQuery {
 		return nil
 	}
 	return &InvestmentQuery{
-		config:             _q.config,
-		ctx:                _q.ctx.Clone(),
-		order:              append([]investment.OrderOption{}, _q.order...),
-		inters:             append([]Interceptor{}, _q.inters...),
-		predicates:         append([]predicate.Investment{}, _q.predicates...),
-		withAccount:        _q.withAccount.Clone(),
-		withHousehold:      _q.withHousehold.Clone(),
-		withCurrency:       _q.withCurrency.Clone(),
-		withInvestmentLots: _q.withInvestmentLots.Clone(),
+		config:                _q.config,
+		ctx:                   _q.ctx.Clone(),
+		order:                 append([]investment.OrderOption{}, _q.order...),
+		inters:                append([]Interceptor{}, _q.inters...),
+		predicates:            append([]predicate.Investment{}, _q.predicates...),
+		withAccount:           _q.withAccount.Clone(),
+		withHousehold:         _q.withHousehold.Clone(),
+		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
+		withInvestmentLots:    _q.withInvestmentLots.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -384,14 +384,14 @@ func (_q *InvestmentQuery) WithHousehold(opts ...func(*HouseholdQuery)) *Investm
 	return _q
 }
 
-// WithCurrency tells the query-builder to eager-load the nodes that are connected to
-// the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *InvestmentQuery) WithCurrency(opts ...func(*HouseholdCurrencyQuery)) *InvestmentQuery {
+// WithHouseholdCurrency tells the query-builder to eager-load the nodes that are connected to
+// the "household_currency" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *InvestmentQuery) WithHouseholdCurrency(opts ...func(*HouseholdCurrencyQuery)) *InvestmentQuery {
 	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCurrency = query
+	_q.withHouseholdCurrency = query
 	return _q
 }
 
@@ -493,7 +493,7 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 		loadedTypes = [4]bool{
 			_q.withAccount != nil,
 			_q.withHousehold != nil,
-			_q.withCurrency != nil,
+			_q.withHouseholdCurrency != nil,
 			_q.withInvestmentLots != nil,
 		}
 	)
@@ -530,9 +530,9 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 			return nil, err
 		}
 	}
-	if query := _q.withCurrency; query != nil {
-		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *Investment, e *HouseholdCurrency) { n.Edges.Currency = e }); err != nil {
+	if query := _q.withHouseholdCurrency; query != nil {
+		if err := _q.loadHouseholdCurrency(ctx, query, nodes, nil,
+			func(n *Investment, e *HouseholdCurrency) { n.Edges.HouseholdCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -616,7 +616,7 @@ func (_q *InvestmentQuery) loadHousehold(ctx context.Context, query *HouseholdQu
 	}
 	return nil
 }
-func (_q *InvestmentQuery) loadCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *HouseholdCurrency)) error {
+func (_q *InvestmentQuery) loadHouseholdCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Investment)
 	for i := range nodes {
@@ -710,7 +710,7 @@ func (_q *InvestmentQuery) querySpec() *sqlgraph.QuerySpec {
 		if _q.withHousehold != nil {
 			_spec.Node.AddColumnOnce(investment.FieldHouseholdID)
 		}
-		if _q.withCurrency != nil {
+		if _q.withHouseholdCurrency != nil {
 			_spec.Node.AddColumnOnce(investment.FieldHouseholdCurrencyID)
 		}
 	}

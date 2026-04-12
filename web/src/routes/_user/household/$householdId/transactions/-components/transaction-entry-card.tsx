@@ -29,7 +29,7 @@ const transactionEntryCardFragment = graphql`
     amount
     account {
       name
-      currency {
+      householdCurrency {
         code
       }
     }

@@ -99,7 +99,7 @@ const editSubscriptionFragment = graphql`
     intervalCount
     startDate
     cost
-    currency {
+    householdCurrency {
       id
       code
     }
@@ -120,7 +120,7 @@ const editSubscriptionMutation = graphql`
         intervalCount
         startDate
         cost
-        currency {
+        householdCurrency {
           id
           code
         }

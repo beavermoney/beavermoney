@@ -169,15 +169,9 @@ func (_u *RecurringSubscriptionUpdate) SetNillableHouseholdCurrencyID(v *int) *R
 	return _u
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_u *RecurringSubscriptionUpdate) SetCurrencyID(id int) *RecurringSubscriptionUpdate {
-	_u.mutation.SetCurrencyID(id)
-	return _u
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_u *RecurringSubscriptionUpdate) SetCurrency(v *HouseholdCurrency) *RecurringSubscriptionUpdate {
-	return _u.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *RecurringSubscriptionUpdate) SetHouseholdCurrency(v *HouseholdCurrency) *RecurringSubscriptionUpdate {
+	return _u.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the RecurringSubscriptionMutation object of the builder.
@@ -185,9 +179,9 @@ func (_u *RecurringSubscriptionUpdate) Mutation() *RecurringSubscriptionMutation
 	return _u.mutation
 }
 
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (_u *RecurringSubscriptionUpdate) ClearCurrency() *RecurringSubscriptionUpdate {
-	_u.mutation.ClearCurrency()
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *RecurringSubscriptionUpdate) ClearHouseholdCurrency() *RecurringSubscriptionUpdate {
+	_u.mutation.ClearHouseholdCurrency()
 	return _u
 }
 
@@ -258,8 +252,8 @@ func (_u *RecurringSubscriptionUpdate) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.household"`)
 	}
-	if _u.mutation.CurrencyCleared() && len(_u.mutation.CurrencyIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.currency"`)
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.household_currency"`)
 	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.user"`)
@@ -318,12 +312,12 @@ func (_u *RecurringSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, 
 	if value, ok := _u.mutation.AddedCost(); ok {
 		_spec.AddField(recurringsubscription.FieldCost, field.TypeFloat64, value)
 	}
-	if _u.mutation.CurrencyCleared() {
+	if _u.mutation.HouseholdCurrencyCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   recurringsubscription.CurrencyTable,
-			Columns: []string{recurringsubscription.CurrencyColumn},
+			Table:   recurringsubscription.HouseholdCurrencyTable,
+			Columns: []string{recurringsubscription.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
@@ -331,12 +325,12 @@ func (_u *RecurringSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   recurringsubscription.CurrencyTable,
-			Columns: []string{recurringsubscription.CurrencyColumn},
+			Table:   recurringsubscription.HouseholdCurrencyTable,
+			Columns: []string{recurringsubscription.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
@@ -507,15 +501,9 @@ func (_u *RecurringSubscriptionUpdateOne) SetNillableHouseholdCurrencyID(v *int)
 	return _u
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_u *RecurringSubscriptionUpdateOne) SetCurrencyID(id int) *RecurringSubscriptionUpdateOne {
-	_u.mutation.SetCurrencyID(id)
-	return _u
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_u *RecurringSubscriptionUpdateOne) SetCurrency(v *HouseholdCurrency) *RecurringSubscriptionUpdateOne {
-	return _u.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *RecurringSubscriptionUpdateOne) SetHouseholdCurrency(v *HouseholdCurrency) *RecurringSubscriptionUpdateOne {
+	return _u.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the RecurringSubscriptionMutation object of the builder.
@@ -523,9 +511,9 @@ func (_u *RecurringSubscriptionUpdateOne) Mutation() *RecurringSubscriptionMutat
 	return _u.mutation
 }
 
-// ClearCurrency clears the "currency" edge to the HouseholdCurrency entity.
-func (_u *RecurringSubscriptionUpdateOne) ClearCurrency() *RecurringSubscriptionUpdateOne {
-	_u.mutation.ClearCurrency()
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *RecurringSubscriptionUpdateOne) ClearHouseholdCurrency() *RecurringSubscriptionUpdateOne {
+	_u.mutation.ClearHouseholdCurrency()
 	return _u
 }
 
@@ -609,8 +597,8 @@ func (_u *RecurringSubscriptionUpdateOne) check() error {
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.household"`)
 	}
-	if _u.mutation.CurrencyCleared() && len(_u.mutation.CurrencyIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.currency"`)
+	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.household_currency"`)
 	}
 	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RecurringSubscription.user"`)
@@ -686,12 +674,12 @@ func (_u *RecurringSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *R
 	if value, ok := _u.mutation.AddedCost(); ok {
 		_spec.AddField(recurringsubscription.FieldCost, field.TypeFloat64, value)
 	}
-	if _u.mutation.CurrencyCleared() {
+	if _u.mutation.HouseholdCurrencyCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   recurringsubscription.CurrencyTable,
-			Columns: []string{recurringsubscription.CurrencyColumn},
+			Table:   recurringsubscription.HouseholdCurrencyTable,
+			Columns: []string{recurringsubscription.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
@@ -699,12 +687,12 @@ func (_u *RecurringSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *R
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   recurringsubscription.CurrencyTable,
-			Columns: []string{recurringsubscription.CurrencyColumn},
+			Table:   recurringsubscription.HouseholdCurrencyTable,
+			Columns: []string{recurringsubscription.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

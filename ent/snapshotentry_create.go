@@ -114,15 +114,9 @@ func (_c *SnapshotEntryCreate) SetHousehold(v *Household) *SnapshotEntryCreate {
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_c *SnapshotEntryCreate) SetCurrencyID(id int) *SnapshotEntryCreate {
-	_c.mutation.SetCurrencyID(id)
-	return _c
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_c *SnapshotEntryCreate) SetCurrency(v *HouseholdCurrency) *SnapshotEntryCreate {
-	return _c.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_c *SnapshotEntryCreate) SetHouseholdCurrency(v *HouseholdCurrency) *SnapshotEntryCreate {
+	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // SetUser sets the "user" edge to the User entity.
@@ -242,8 +236,8 @@ func (_c *SnapshotEntryCreate) check() error {
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "SnapshotEntry.household"`)}
 	}
-	if len(_c.mutation.CurrencyIDs()) == 0 {
-		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "SnapshotEntry.currency"`)}
+	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
+		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "SnapshotEntry.household_currency"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "SnapshotEntry.user"`)}
@@ -323,12 +317,12 @@ func (_c *SnapshotEntryCreate) createSpec() (*SnapshotEntry, *sqlgraph.CreateSpe
 		_node.HouseholdID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   snapshotentry.CurrencyTable,
-			Columns: []string{snapshotentry.CurrencyColumn},
+			Table:   snapshotentry.HouseholdCurrencyTable,
+			Columns: []string{snapshotentry.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

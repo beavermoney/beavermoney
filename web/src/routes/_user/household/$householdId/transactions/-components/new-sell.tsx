@@ -63,7 +63,7 @@ const newSellFragment = graphql`
           type
           icon
           value
-          currency {
+          householdCurrency {
             code
           }
           investments {

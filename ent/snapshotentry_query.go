@@ -23,16 +23,16 @@ import (
 // SnapshotEntryQuery is the builder for querying SnapshotEntry entities.
 type SnapshotEntryQuery struct {
 	config
-	ctx           *QueryContext
-	order         []snapshotentry.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.SnapshotEntry
-	withHousehold *HouseholdQuery
-	withCurrency  *HouseholdCurrencyQuery
-	withUser      *UserQuery
-	withSnapshot  *SnapshotQuery
-	loadTotal     []func(context.Context, []*SnapshotEntry) error
-	modifiers     []func(*sql.Selector)
+	ctx                   *QueryContext
+	order                 []snapshotentry.OrderOption
+	inters                []Interceptor
+	predicates            []predicate.SnapshotEntry
+	withHousehold         *HouseholdQuery
+	withHouseholdCurrency *HouseholdCurrencyQuery
+	withUser              *UserQuery
+	withSnapshot          *SnapshotQuery
+	loadTotal             []func(context.Context, []*SnapshotEntry) error
+	modifiers             []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -91,8 +91,8 @@ func (_q *SnapshotEntryQuery) QueryHousehold() *HouseholdQuery {
 	return query
 }
 
-// QueryCurrency chains the current query on the "currency" edge.
-func (_q *SnapshotEntryQuery) QueryCurrency() *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency chains the current query on the "household_currency" edge.
+func (_q *SnapshotEntryQuery) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -105,7 +105,7 @@ func (_q *SnapshotEntryQuery) QueryCurrency() *HouseholdCurrencyQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(snapshotentry.Table, snapshotentry.FieldID, selector),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.CurrencyTable, snapshotentry.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotentry.HouseholdCurrencyTable, snapshotentry.HouseholdCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -344,15 +344,15 @@ func (_q *SnapshotEntryQuery) Clone() *SnapshotEntryQuery {
 		return nil
 	}
 	return &SnapshotEntryQuery{
-		config:        _q.config,
-		ctx:           _q.ctx.Clone(),
-		order:         append([]snapshotentry.OrderOption{}, _q.order...),
-		inters:        append([]Interceptor{}, _q.inters...),
-		predicates:    append([]predicate.SnapshotEntry{}, _q.predicates...),
-		withHousehold: _q.withHousehold.Clone(),
-		withCurrency:  _q.withCurrency.Clone(),
-		withUser:      _q.withUser.Clone(),
-		withSnapshot:  _q.withSnapshot.Clone(),
+		config:                _q.config,
+		ctx:                   _q.ctx.Clone(),
+		order:                 append([]snapshotentry.OrderOption{}, _q.order...),
+		inters:                append([]Interceptor{}, _q.inters...),
+		predicates:            append([]predicate.SnapshotEntry{}, _q.predicates...),
+		withHousehold:         _q.withHousehold.Clone(),
+		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
+		withUser:              _q.withUser.Clone(),
+		withSnapshot:          _q.withSnapshot.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -371,14 +371,14 @@ func (_q *SnapshotEntryQuery) WithHousehold(opts ...func(*HouseholdQuery)) *Snap
 	return _q
 }
 
-// WithCurrency tells the query-builder to eager-load the nodes that are connected to
-// the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *SnapshotEntryQuery) WithCurrency(opts ...func(*HouseholdCurrencyQuery)) *SnapshotEntryQuery {
+// WithHouseholdCurrency tells the query-builder to eager-load the nodes that are connected to
+// the "household_currency" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *SnapshotEntryQuery) WithHouseholdCurrency(opts ...func(*HouseholdCurrencyQuery)) *SnapshotEntryQuery {
 	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCurrency = query
+	_q.withHouseholdCurrency = query
 	return _q
 }
 
@@ -490,7 +490,7 @@ func (_q *SnapshotEntryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		_spec       = _q.querySpec()
 		loadedTypes = [4]bool{
 			_q.withHousehold != nil,
-			_q.withCurrency != nil,
+			_q.withHouseholdCurrency != nil,
 			_q.withUser != nil,
 			_q.withSnapshot != nil,
 		}
@@ -522,9 +522,9 @@ func (_q *SnapshotEntryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			return nil, err
 		}
 	}
-	if query := _q.withCurrency; query != nil {
-		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *SnapshotEntry, e *HouseholdCurrency) { n.Edges.Currency = e }); err != nil {
+	if query := _q.withHouseholdCurrency; query != nil {
+		if err := _q.loadHouseholdCurrency(ctx, query, nodes, nil,
+			func(n *SnapshotEntry, e *HouseholdCurrency) { n.Edges.HouseholdCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -577,7 +577,7 @@ func (_q *SnapshotEntryQuery) loadHousehold(ctx context.Context, query *Househol
 	}
 	return nil
 }
-func (_q *SnapshotEntryQuery) loadCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*SnapshotEntry, init func(*SnapshotEntry), assign func(*SnapshotEntry, *HouseholdCurrency)) error {
+func (_q *SnapshotEntryQuery) loadHouseholdCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*SnapshotEntry, init func(*SnapshotEntry), assign func(*SnapshotEntry, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*SnapshotEntry)
 	for i := range nodes {
@@ -696,7 +696,7 @@ func (_q *SnapshotEntryQuery) querySpec() *sqlgraph.QuerySpec {
 		if _q.withHousehold != nil {
 			_spec.Node.AddColumnOnce(snapshotentry.FieldHouseholdID)
 		}
-		if _q.withCurrency != nil {
+		if _q.withHouseholdCurrency != nil {
 			_spec.Node.AddColumnOnce(snapshotentry.FieldHouseholdCurrencyID)
 		}
 		if _q.withUser != nil {

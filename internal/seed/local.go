@@ -51,7 +51,12 @@ func Seed(
 		panic(err)
 	}
 	if usdToCadResp.JSON200 == nil {
-		panic(fmt.Errorf("failed to get USD/CAD FX rate: unexpected status %s", usdToCadResp.Status()))
+		panic(
+			fmt.Errorf(
+				"failed to get USD/CAD FX rate: unexpected status %s",
+				usdToCadResp.Status(),
+			),
+		)
 	}
 	usdToCadRate := decimal.NewFromFloat32(usdToCadResp.JSON200.Rate)
 	_ = usdToCadRate
@@ -336,7 +341,13 @@ func SeedDemoHousehold(
 	frankfurterClient *frankfurter.ClientWithResponses,
 	marketClient *market.Client,
 ) error {
-	householdCurrency, err := getOrCreateHouseholdCurrency(ctx, client, household.ID, household.CurrencyCode, true)
+	householdCurrency, err := getOrCreateHouseholdCurrency(
+		ctx,
+		client,
+		household.ID,
+		household.CurrencyCode,
+		true,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to load household currency: %w", err)
 	}
@@ -372,7 +383,13 @@ func SeedDemoHousehold(
 	// Pre-fetch 6-month daily historical prices for all symbols before creating investments.
 	// This gives us accurate per-week prices for lot purchases and snapshot valuation.
 	allSymbols := append([]string{config.etfSymbol}, config.stockSymbols...)
-	historicalPrices, err := fetchHistoricalPrices(ctx, marketClient, allSymbols, startDate, time.Now())
+	historicalPrices, err := fetchHistoricalPrices(
+		ctx,
+		marketClient,
+		allSymbols,
+		startDate,
+		time.Now(),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to fetch historical prices: %w", err)
 	}
@@ -1100,7 +1117,10 @@ func createSnapshotAtDate(
 		currencyID := acc.HouseholdCurrencyID
 		if !seen[currencyID] {
 			seen[currencyID] = true
-			currencies = append(currencies, currencyInfo{ID: currencyID, Code: acc.Edges.Currency.Code})
+			currencies = append(
+				currencies,
+				currencyInfo{ID: currencyID, Code: acc.Edges.Currency.Code},
+			)
 		}
 	}
 

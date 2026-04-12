@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d471b2cb6045c402f6941ab7a23dcd84>>
+ * @generated SignedSource<<7c8c18100caf75f7b63a0bf11b7103af>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -158,7 +158,7 @@ return {
                 "args": null,
                 "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
-                "name": "currency",
+                "name": "householdCurrency",
                 "plural": false,
                 "selections": [
                   {
@@ -189,12 +189,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "165460f85366d01fa3239ffd246df245",
+    "cacheID": "ad90aa68ec2c3cbf1f9eb2dca055af07",
     "id": null,
     "metadata": {},
     "name": "SubscriptionIdQuery",
     "operationKind": "query",
-    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  currency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n"
+    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  householdCurrency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n"
   }
 };
 })();

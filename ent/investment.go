@@ -55,8 +55,8 @@ type InvestmentEdges struct {
 	Account *Account `json:"account,omitempty"`
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
-	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	// HouseholdCurrency holds the value of the household_currency edge.
+	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
 	// InvestmentLots holds the value of the investment_lots edge.
 	InvestmentLots []*InvestmentLot `json:"investment_lots,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -90,15 +90,15 @@ func (e InvestmentEdges) HouseholdOrErr() (*Household, error) {
 	return nil, &NotLoadedError{edge: "household"}
 }
 
-// CurrencyOrErr returns the Currency value or an error if the edge
+// HouseholdCurrencyOrErr returns the HouseholdCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e InvestmentEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
-	if e.Currency != nil {
-		return e.Currency, nil
+func (e InvestmentEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
+	if e.HouseholdCurrency != nil {
+		return e.HouseholdCurrency, nil
 	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
-	return nil, &NotLoadedError{edge: "currency"}
+	return nil, &NotLoadedError{edge: "household_currency"}
 }
 
 // InvestmentLotsOrErr returns the InvestmentLots value or an error if the edge
@@ -233,9 +233,9 @@ func (_m *Investment) QueryHousehold() *HouseholdQuery {
 	return NewInvestmentClient(_m.config).QueryHousehold(_m)
 }
 
-// QueryCurrency queries the "currency" edge of the Investment entity.
-func (_m *Investment) QueryCurrency() *HouseholdCurrencyQuery {
-	return NewInvestmentClient(_m.config).QueryCurrency(_m)
+// QueryHouseholdCurrency queries the "household_currency" edge of the Investment entity.
+func (_m *Investment) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
+	return NewInvestmentClient(_m.config).QueryHouseholdCurrency(_m)
 }
 
 // QueryInvestmentLots queries the "investment_lots" edge of the Investment entity.

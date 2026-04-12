@@ -48,8 +48,8 @@ type TransactionEntryEdges struct {
 	Household *Household `json:"household,omitempty"`
 	// Account holds the value of the account edge.
 	Account *Account `json:"account,omitempty"`
-	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	// HouseholdCurrency holds the value of the household_currency edge.
+	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
 	// Transaction holds the value of the transaction edge.
 	Transaction *Transaction `json:"transaction,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -81,15 +81,15 @@ func (e TransactionEntryEdges) AccountOrErr() (*Account, error) {
 	return nil, &NotLoadedError{edge: "account"}
 }
 
-// CurrencyOrErr returns the Currency value or an error if the edge
+// HouseholdCurrencyOrErr returns the HouseholdCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e TransactionEntryEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
-	if e.Currency != nil {
-		return e.Currency, nil
+func (e TransactionEntryEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
+	if e.HouseholdCurrency != nil {
+		return e.HouseholdCurrency, nil
 	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
-	return nil, &NotLoadedError{edge: "currency"}
+	return nil, &NotLoadedError{edge: "household_currency"}
 }
 
 // TransactionOrErr returns the Transaction value or an error if the edge
@@ -200,9 +200,9 @@ func (_m *TransactionEntry) QueryAccount() *AccountQuery {
 	return NewTransactionEntryClient(_m.config).QueryAccount(_m)
 }
 
-// QueryCurrency queries the "currency" edge of the TransactionEntry entity.
-func (_m *TransactionEntry) QueryCurrency() *HouseholdCurrencyQuery {
-	return NewTransactionEntryClient(_m.config).QueryCurrency(_m)
+// QueryHouseholdCurrency queries the "household_currency" edge of the TransactionEntry entity.
+func (_m *TransactionEntry) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
+	return NewTransactionEntryClient(_m.config).QueryHouseholdCurrency(_m)
 }
 
 // QueryTransaction queries the "transaction" edge of the TransactionEntry entity.

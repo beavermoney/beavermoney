@@ -36,7 +36,7 @@ type Account struct {
 	// Category holds the value of the "category" field.
 	Category *account.Category `json:"category,omitempty"`
 	// Icon holds the value of the "icon" field.
-	Icon string `json:"icon,omitempty"`
+	Icon *string `json:"icon,omitempty"`
 	// Value is the total value of the account including investments
 	Value decimal.Decimal `json:"value,omitempty"`
 	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
@@ -55,8 +55,8 @@ type Account struct {
 type AccountEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
-	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	// HouseholdCurrency holds the value of the household_currency edge.
+	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// TransactionEntries holds the value of the transaction_entries edge.
@@ -84,15 +84,15 @@ func (e AccountEdges) HouseholdOrErr() (*Household, error) {
 	return nil, &NotLoadedError{edge: "household"}
 }
 
-// CurrencyOrErr returns the Currency value or an error if the edge
+// HouseholdCurrencyOrErr returns the HouseholdCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AccountEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
-	if e.Currency != nil {
-		return e.Currency, nil
+func (e AccountEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
+	if e.HouseholdCurrency != nil {
+		return e.HouseholdCurrency, nil
 	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
-	return nil, &NotLoadedError{edge: "currency"}
+	return nil, &NotLoadedError{edge: "household_currency"}
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -207,7 +207,8 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field icon", values[i])
 			} else if value.Valid {
-				_m.Icon = value.String
+				_m.Icon = new(string)
+				*_m.Icon = value.String
 			}
 		case account.FieldValue:
 			if value, ok := values[i].(*decimal.Decimal); !ok {
@@ -251,9 +252,9 @@ func (_m *Account) QueryHousehold() *HouseholdQuery {
 	return NewAccountClient(_m.config).QueryHousehold(_m)
 }
 
-// QueryCurrency queries the "currency" edge of the Account entity.
-func (_m *Account) QueryCurrency() *HouseholdCurrencyQuery {
-	return NewAccountClient(_m.config).QueryCurrency(_m)
+// QueryHouseholdCurrency queries the "household_currency" edge of the Account entity.
+func (_m *Account) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
+	return NewAccountClient(_m.config).QueryHouseholdCurrency(_m)
 }
 
 // QueryUser queries the "user" edge of the Account entity.
@@ -317,8 +318,10 @@ func (_m *Account) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("icon=")
-	builder.WriteString(_m.Icon)
+	if v := _m.Icon; v != nil {
+		builder.WriteString("icon=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("value=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Value))

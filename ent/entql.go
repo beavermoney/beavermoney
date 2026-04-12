@@ -368,12 +368,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Household",
 	)
 	graph.MustAddE(
-		"currency",
+		"household_currency",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   account.CurrencyTable,
-			Columns: []string{account.CurrencyColumn},
+			Table:   account.HouseholdCurrencyTable,
+			Columns: []string{account.HouseholdCurrencyColumn},
 			Bidi:    false,
 		},
 		"Account",
@@ -752,12 +752,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Household",
 	)
 	graph.MustAddE(
-		"currency",
+		"household_currency",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   investment.CurrencyTable,
-			Columns: []string{investment.CurrencyColumn},
+			Table:   investment.HouseholdCurrencyTable,
+			Columns: []string{investment.HouseholdCurrencyColumn},
 			Bidi:    false,
 		},
 		"Investment",
@@ -824,12 +824,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Household",
 	)
 	graph.MustAddE(
-		"currency",
+		"household_currency",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   recurringsubscription.CurrencyTable,
-			Columns: []string{recurringsubscription.CurrencyColumn},
+			Table:   recurringsubscription.HouseholdCurrencyTable,
+			Columns: []string{recurringsubscription.HouseholdCurrencyColumn},
 			Bidi:    false,
 		},
 		"RecurringSubscription",
@@ -896,12 +896,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Household",
 	)
 	graph.MustAddE(
-		"currency",
+		"household_currency",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   snapshotentry.CurrencyTable,
-			Columns: []string{snapshotentry.CurrencyColumn},
+			Table:   snapshotentry.HouseholdCurrencyTable,
+			Columns: []string{snapshotentry.HouseholdCurrencyColumn},
 			Bidi:    false,
 		},
 		"SnapshotEntry",
@@ -1076,12 +1076,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Account",
 	)
 	graph.MustAddE(
-		"currency",
+		"household_currency",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   transactionentry.CurrencyTable,
-			Columns: []string{transactionentry.CurrencyColumn},
+			Table:   transactionentry.HouseholdCurrencyTable,
+			Columns: []string{transactionentry.HouseholdCurrencyColumn},
 			Bidi:    false,
 		},
 		"TransactionEntry",
@@ -1354,14 +1354,14 @@ func (f *AccountFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
 	})))
 }
 
-// WhereHasCurrency applies a predicate to check if query has an edge currency.
-func (f *AccountFilter) WhereHasCurrency() {
-	f.Where(entql.HasEdge("currency"))
+// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
+func (f *AccountFilter) WhereHasHouseholdCurrency() {
+	f.Where(entql.HasEdge("household_currency"))
 }
 
-// WhereHasCurrencyWith applies a predicate to check if query has an edge currency with a given conditions (other predicates).
-func (f *AccountFilter) WhereHasCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
+func (f *AccountFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2102,14 +2102,14 @@ func (f *InvestmentFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
 	})))
 }
 
-// WhereHasCurrency applies a predicate to check if query has an edge currency.
-func (f *InvestmentFilter) WhereHasCurrency() {
-	f.Where(entql.HasEdge("currency"))
+// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
+func (f *InvestmentFilter) WhereHasHouseholdCurrency() {
+	f.Where(entql.HasEdge("household_currency"))
 }
 
-// WhereHasCurrencyWith applies a predicate to check if query has an edge currency with a given conditions (other predicates).
-func (f *InvestmentFilter) WhereHasCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
+func (f *InvestmentFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2361,14 +2361,14 @@ func (f *RecurringSubscriptionFilter) WhereHasHouseholdWith(preds ...predicate.H
 	})))
 }
 
-// WhereHasCurrency applies a predicate to check if query has an edge currency.
-func (f *RecurringSubscriptionFilter) WhereHasCurrency() {
-	f.Where(entql.HasEdge("currency"))
+// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
+func (f *RecurringSubscriptionFilter) WhereHasHouseholdCurrency() {
+	f.Where(entql.HasEdge("household_currency"))
 }
 
-// WhereHasCurrencyWith applies a predicate to check if query has an edge currency with a given conditions (other predicates).
-func (f *RecurringSubscriptionFilter) WhereHasCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
+func (f *RecurringSubscriptionFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2600,14 +2600,14 @@ func (f *SnapshotEntryFilter) WhereHasHouseholdWith(preds ...predicate.Household
 	})))
 }
 
-// WhereHasCurrency applies a predicate to check if query has an edge currency.
-func (f *SnapshotEntryFilter) WhereHasCurrency() {
-	f.Where(entql.HasEdge("currency"))
+// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
+func (f *SnapshotEntryFilter) WhereHasHouseholdCurrency() {
+	f.Where(entql.HasEdge("household_currency"))
 }
 
-// WhereHasCurrencyWith applies a predicate to check if query has an edge currency with a given conditions (other predicates).
-func (f *SnapshotEntryFilter) WhereHasCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
+func (f *SnapshotEntryFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -3110,14 +3110,14 @@ func (f *TransactionEntryFilter) WhereHasAccountWith(preds ...predicate.Account)
 	})))
 }
 
-// WhereHasCurrency applies a predicate to check if query has an edge currency.
-func (f *TransactionEntryFilter) WhereHasCurrency() {
-	f.Where(entql.HasEdge("currency"))
+// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
+func (f *TransactionEntryFilter) WhereHasHouseholdCurrency() {
+	f.Where(entql.HasEdge("household_currency"))
 }
 
-// WhereHasCurrencyWith applies a predicate to check if query has an edge currency with a given conditions (other predicates).
-func (f *TransactionEntryFilter) WhereHasCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
+func (f *TransactionEntryFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
+	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

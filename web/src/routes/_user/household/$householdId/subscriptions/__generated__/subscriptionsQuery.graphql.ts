@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<13418f30106d7d830c300c1dede40ae8>>
+ * @generated SignedSource<<bfdf4747282b148e4192577f0f66d893>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -121,7 +121,7 @@ return {
                         "args": null,
                         "concreteType": "HouseholdCurrency",
                         "kind": "LinkedField",
-                        "name": "currency",
+                        "name": "householdCurrency",
                         "plural": false,
                         "selections": [
                           {
@@ -246,12 +246,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c4d1ad64ba5d1978e2648bdb43217518",
+    "cacheID": "94c865fa92d5e64f2c5c049ea4130c2c",
     "id": null,
     "metadata": {},
     "name": "subscriptionsQuery",
     "operationKind": "query",
-    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  currency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        currency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

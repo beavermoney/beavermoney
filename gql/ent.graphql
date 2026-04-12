@@ -21,7 +21,7 @@ type Account implements Node {
   userID: ID!
   archived: Boolean!
   household: Household!
-  currency: HouseholdCurrency!
+  householdCurrency: HouseholdCurrency!
   user: User!
   transactionEntries: [TransactionEntry!]
   investments: [Investment!]
@@ -233,10 +233,10 @@ input AccountWhereInput {
   hasHousehold: Boolean
   hasHouseholdWith: [HouseholdWhereInput!]
   """
-  currency edge predicates
+  household_currency edge predicates
   """
-  hasCurrency: Boolean
-  hasCurrencyWith: [HouseholdCurrencyWhereInput!]
+  hasHouseholdCurrency: Boolean
+  hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
   """
   user edge predicates
   """
@@ -266,7 +266,7 @@ input CreateAccountInput {
   balance: String
   category: AccountCategory
   icon: String
-  currencyID: ID!
+  householdCurrencyID: ID!
 }
 """
 CreateHouseholdCurrencyInput is used for create HouseholdCurrency object.
@@ -327,7 +327,7 @@ input CreateRecurringSubscriptionInput {
   active: Boolean
   icon: String
   cost: String
-  currencyID: ID!
+  householdCurrencyID: ID!
 }
 """
 CreateSnapshotInput is used for create Snapshot object.
@@ -1097,7 +1097,7 @@ type Investment implements Node {
   householdCurrencyID: ID!
   account: Account!
   household: Household!
-  currency: HouseholdCurrency!
+  householdCurrency: HouseholdCurrency!
   investmentLots: [InvestmentLot!]
 }
 """
@@ -1425,10 +1425,10 @@ input InvestmentWhereInput {
   hasHousehold: Boolean
   hasHouseholdWith: [HouseholdWhereInput!]
   """
-  currency edge predicates
+  household_currency edge predicates
   """
-  hasCurrency: Boolean
-  hasCurrencyWith: [HouseholdCurrencyWhereInput!]
+  hasHouseholdCurrency: Boolean
+  hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
   """
   investment_lots edge predicates
   """
@@ -1782,7 +1782,7 @@ type RecurringSubscription implements Node {
   householdCurrencyID: ID!
   userID: ID!
   household: Household!
-  currency: HouseholdCurrency!
+  householdCurrency: HouseholdCurrency!
   user: User!
 }
 """
@@ -1970,10 +1970,10 @@ input RecurringSubscriptionWhereInput {
   hasHousehold: Boolean
   hasHouseholdWith: [HouseholdWhereInput!]
   """
-  currency edge predicates
+  household_currency edge predicates
   """
-  hasCurrency: Boolean
-  hasCurrencyWith: [HouseholdCurrencyWhereInput!]
+  hasHouseholdCurrency: Boolean
+  hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
   """
   user edge predicates
   """
@@ -2052,7 +2052,7 @@ type SnapshotEntry implements Node {
   userID: ID!
   snapshotID: ID!
   household: Household!
-  currency: HouseholdCurrency!
+  householdCurrency: HouseholdCurrency!
   user: User!
   snapshot: Snapshot!
 }
@@ -2216,10 +2216,10 @@ input SnapshotEntryWhereInput {
   hasHousehold: Boolean
   hasHouseholdWith: [HouseholdWhereInput!]
   """
-  currency edge predicates
+  household_currency edge predicates
   """
-  hasCurrency: Boolean
-  hasCurrencyWith: [HouseholdCurrencyWhereInput!]
+  hasHouseholdCurrency: Boolean
+  hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
   """
   user edge predicates
   """
@@ -2660,7 +2660,7 @@ type TransactionEntry implements Node {
   transactionID: ID!
   household: Household!
   account: Account!
-  currency: HouseholdCurrency!
+  householdCurrency: HouseholdCurrency!
   transaction: Transaction!
 }
 """
@@ -2784,10 +2784,10 @@ input TransactionEntryWhereInput {
   hasAccount: Boolean
   hasAccountWith: [AccountWhereInput!]
   """
-  currency edge predicates
+  household_currency edge predicates
   """
-  hasCurrency: Boolean
-  hasCurrencyWith: [HouseholdCurrencyWhereInput!]
+  hasHouseholdCurrency: Boolean
+  hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
   """
   transaction edge predicates
   """
@@ -3019,7 +3019,7 @@ input UpdateRecurringSubscriptionInput {
   icon: String
   clearIcon: Boolean
   cost: String
-  currencyID: ID
+  householdCurrencyID: ID
 }
 """
 UpdateSnapshotInput is used for update Snapshot object.

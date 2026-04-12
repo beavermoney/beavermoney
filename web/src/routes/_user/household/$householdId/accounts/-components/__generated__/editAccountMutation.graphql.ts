@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2600e78ad0a8c69ddfba70ee2b71ed79>>
+ * @generated SignedSource<<6d010d4a7f6cfd7e5a39cc179a9f9560>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -178,7 +178,7 @@ return {
                 "args": null,
                 "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
-                "name": "currency",
+                "name": "householdCurrency",
                 "plural": false,
                 "selections": [
                   {
@@ -228,12 +228,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1f7835da47ae6d1621a072cff91bf7ad",
+    "cacheID": "7e1becc52823b98f222b57a800e518cd",
     "id": null,
     "metadata": {},
     "name": "editAccountMutation",
     "operationKind": "mutation",
-    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      category\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  currency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
+    "text": "mutation editAccountMutation(\n  $id: ID!\n  $input: UpdateAccountInput!\n) {\n  updateAccount(id: $id, input: $input) {\n    node {\n      id\n      name\n      icon\n      category\n      ...accountCardFragment\n    }\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();

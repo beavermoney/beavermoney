@@ -340,7 +340,7 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 		SetAccount(account).
 		SetAmount(*input.Balance).
 		SetTransaction(transaction).
-		SetCurrencyID(input.CurrencyID).
+		SetHouseholdCurrencyID(input.HouseholdCurrencyID).
 		Exec(ctx)
 	if err != nil {
 		return nil, err
@@ -479,7 +479,7 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 	client := ent.FromContext(ctx)
 	zero := decimal.NewFromInt(0)
 
-	account, err := client.Account.Query().Where(account.IDEQ(input.Input.AccountID)).WithCurrency().Only(ctx)
+	account, err := client.Account.Query().Where(account.IDEQ(input.Input.AccountID)).WithHouseholdCurrency().Only(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -499,8 +499,8 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		return nil, err
 	}
 
-	if quote.Currency != account.Edges.Currency.Code {
-		return nil, fmt.Errorf("investment currency %s does not match account currency %s", quote.Currency, account.Edges.Currency.Code)
+	if quote.Currency != account.Edges.HouseholdCurrency.Code {
+		return nil, fmt.Errorf("investment currency %s does not match account currency %s", quote.Currency, account.Edges.HouseholdCurrency.Code)
 	}
 
 	// Set the symbol to uppercase
@@ -513,7 +513,7 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		SetAmount(zero).
 		SetQuote(quote.CurrentPrice).
 		SetValue(zero).
-		SetCurrencyID(account.Edges.Currency.ID).
+		SetHouseholdCurrencyID(account.Edges.HouseholdCurrency.ID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -761,7 +761,7 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 	}
 
 	// Get currency for the account
-	accountCurrency, err := account.QueryCurrency().Only(ctx)
+	accountCurrency, err := account.QueryHouseholdCurrency().Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account currency: %w", err)
 	}
@@ -787,7 +787,7 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 		SetHouseholdID(householdID).
 		SetTransactionID(txn.ID).
 		SetAccountID(account.ID).
-		SetCurrencyID(accountCurrency.ID).
+		SetHouseholdCurrencyID(accountCurrency.ID).
 		SetAmount(input.TransactionEntry.Amount).
 		Exec(ctx)
 	if err != nil {
@@ -804,7 +804,7 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
-		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
+		feeCurrency, err := feeAccount.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get fee account currency: %w", err)
 		}
@@ -813,7 +813,7 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(feeAccount.ID).
-			SetCurrencyID(feeCurrency.ID).
+			SetHouseholdCurrencyID(feeCurrency.ID).
 			SetAmount(fee.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -858,7 +858,7 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 	}
 
 	// Get currency for the account
-	accountCurrency, err := account.QueryCurrency().Only(ctx)
+	accountCurrency, err := account.QueryHouseholdCurrency().Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account currency: %w", err)
 	}
@@ -884,7 +884,7 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 		SetHouseholdID(householdID).
 		SetTransactionID(txn.ID).
 		SetAccountID(account.ID).
-		SetCurrencyID(accountCurrency.ID).
+		SetHouseholdCurrencyID(accountCurrency.ID).
 		SetAmount(amount).
 		Exec(ctx)
 	if err != nil {
@@ -904,7 +904,7 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
-		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
+		feeCurrency, err := feeAccount.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get fee account currency: %w", err)
 		}
@@ -913,7 +913,7 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(feeAccount.ID).
-			SetCurrencyID(feeCurrency.ID).
+			SetHouseholdCurrencyID(feeCurrency.ID).
 			SetAmount(fee.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -995,7 +995,7 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 			return nil, fmt.Errorf("account not found: %w", err)
 		}
 
-		accountCurrency, err := account.QueryCurrency().Only(ctx)
+		accountCurrency, err := account.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get account currency: %w", err)
 		}
@@ -1004,7 +1004,7 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(account.ID).
-			SetCurrencyID(accountCurrency.ID).
+			SetHouseholdCurrencyID(accountCurrency.ID).
 			SetAmount(entry.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -1025,7 +1025,7 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
-		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
+		feeCurrency, err := feeAccount.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get fee account currency: %w", err)
 		}
@@ -1034,7 +1034,7 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(feeAccount.ID).
-			SetCurrencyID(feeCurrency.ID).
+			SetHouseholdCurrencyID(feeCurrency.ID).
 			SetAmount(fee.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -1088,7 +1088,7 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 	}
 
 	// Get currency for the account
-	accountCurrency, err := account.QueryCurrency().Only(ctx)
+	accountCurrency, err := account.QueryHouseholdCurrency().Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account currency: %w", err)
 	}
@@ -1114,7 +1114,7 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 		SetHouseholdID(householdID).
 		SetTransactionID(txn.ID).
 		SetAccountID(account.ID).
-		SetCurrencyID(accountCurrency.ID).
+		SetHouseholdCurrencyID(accountCurrency.ID).
 		SetAmount(amount).
 		Exec(ctx)
 	if err != nil {
@@ -1151,7 +1151,7 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
-		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
+		feeCurrency, err := feeAccount.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get fee account currency: %w", err)
 		}
@@ -1160,7 +1160,7 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(feeAccount.ID).
-			SetCurrencyID(feeCurrency.ID).
+			SetHouseholdCurrencyID(feeCurrency.ID).
 			SetAmount(fee.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -1214,7 +1214,7 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 	}
 
 	// Get currency for the account
-	accountCurrency, err := account.QueryCurrency().Only(ctx)
+	accountCurrency, err := account.QueryHouseholdCurrency().Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get account currency: %w", err)
 	}
@@ -1240,7 +1240,7 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 		SetHouseholdID(householdID).
 		SetTransactionID(txn.ID).
 		SetAccountID(account.ID).
-		SetCurrencyID(accountCurrency.ID).
+		SetHouseholdCurrencyID(accountCurrency.ID).
 		SetAmount(amount).
 		Exec(ctx)
 	if err != nil {
@@ -1277,7 +1277,7 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
-		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
+		feeCurrency, err := feeAccount.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get fee account currency: %w", err)
 		}
@@ -1286,7 +1286,7 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(feeAccount.ID).
-			SetCurrencyID(feeCurrency.ID).
+			SetHouseholdCurrencyID(feeCurrency.ID).
 			SetAmount(fee.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -1463,7 +1463,7 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 			return nil, fmt.Errorf("cannot add transaction to archived account")
 		}
 
-		feeCurrency, err := feeAccount.QueryCurrency().Only(ctx)
+		feeCurrency, err := feeAccount.QueryHouseholdCurrency().Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get fee account currency: %w", err)
 		}
@@ -1472,7 +1472,7 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 			SetHouseholdID(householdID).
 			SetTransactionID(txn.ID).
 			SetAccountID(feeAccount.ID).
-			SetCurrencyID(feeCurrency.ID).
+			SetHouseholdCurrencyID(feeCurrency.ID).
 			SetAmount(fee.Amount).
 			Exec(ctx)
 		if err != nil {
@@ -1638,7 +1638,7 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	hasAccounts, err := client.Account.Query().
 		Where(
 			account.HouseholdIDEQ(householdID),
-			account.HasCurrencyWith(householdcurrency.ID(hc.ID)),
+			account.HasHouseholdCurrencyWith(householdcurrency.ID(hc.ID)),
 		).
 		Exist(ctx)
 	if err != nil {
@@ -1651,7 +1651,7 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	hasSubscriptions, err := client.RecurringSubscription.Query().
 		Where(
 			recurringsubscription.HouseholdIDEQ(householdID),
-			recurringsubscription.HasCurrencyWith(householdcurrency.ID(hc.ID)),
+			recurringsubscription.HasHouseholdCurrencyWith(householdcurrency.ID(hc.ID)),
 		).
 		Exist(ctx)
 	if err != nil {
@@ -1734,7 +1734,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 
 	accounts, err := client.Account.Query().
 		Where(account.ArchivedEQ(false)).
-		WithCurrency().
+		WithHouseholdCurrency().
 		All(ctx)
 	if err != nil {
 		r.logger.Error("Failed to fetch accounts", "error", err)
@@ -1766,7 +1766,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 	zero := decimal.NewFromInt(0)
 
 	for _, acc := range accounts {
-		key := entryKey{UserID: acc.UserID, HouseholdCurrencyID: acc.Edges.Currency.ID}
+		key := entryKey{UserID: acc.UserID, HouseholdCurrencyID: acc.Edges.HouseholdCurrency.ID}
 		vals, ok := grouped[key]
 		if !ok {
 			vals = &entryValues{
@@ -1799,7 +1799,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 			SetSnapshotID(snap.ID).
 			SetHouseholdID(householdID).
 			SetUserID(key.UserID).
-			SetCurrencyID(key.HouseholdCurrencyID).
+			SetHouseholdCurrencyID(key.HouseholdCurrencyID).
 			SetLiquidity(vals.Liquidity).
 			SetInvestment(vals.Investment).
 			SetProperty(vals.Property).

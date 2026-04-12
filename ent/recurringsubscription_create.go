@@ -151,15 +151,9 @@ func (_c *RecurringSubscriptionCreate) SetHousehold(v *Household) *RecurringSubs
 	return _c.SetHouseholdID(v.ID)
 }
 
-// SetCurrencyID sets the "currency" edge to the HouseholdCurrency entity by ID.
-func (_c *RecurringSubscriptionCreate) SetCurrencyID(id int) *RecurringSubscriptionCreate {
-	_c.mutation.SetCurrencyID(id)
-	return _c
-}
-
-// SetCurrency sets the "currency" edge to the HouseholdCurrency entity.
-func (_c *RecurringSubscriptionCreate) SetCurrency(v *HouseholdCurrency) *RecurringSubscriptionCreate {
-	return _c.SetCurrencyID(v.ID)
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_c *RecurringSubscriptionCreate) SetHouseholdCurrency(v *HouseholdCurrency) *RecurringSubscriptionCreate {
+	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // SetUser sets the "user" edge to the User entity.
@@ -299,8 +293,8 @@ func (_c *RecurringSubscriptionCreate) check() error {
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "RecurringSubscription.household"`)}
 	}
-	if len(_c.mutation.CurrencyIDs()) == 0 {
-		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required edge "RecurringSubscription.currency"`)}
+	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
+		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "RecurringSubscription.household_currency"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "RecurringSubscription.user"`)}
@@ -385,12 +379,12 @@ func (_c *RecurringSubscriptionCreate) createSpec() (*RecurringSubscription, *sq
 		_node.HouseholdID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CurrencyIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   recurringsubscription.CurrencyTable,
-			Columns: []string{recurringsubscription.CurrencyColumn},
+			Table:   recurringsubscription.HouseholdCurrencyTable,
+			Columns: []string{recurringsubscription.HouseholdCurrencyColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),

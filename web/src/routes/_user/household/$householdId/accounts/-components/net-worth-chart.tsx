@@ -73,7 +73,7 @@ const NetWorthChartQuery = graphql`
               property
               receivable
               liability
-              currency {
+              householdCurrency {
                 code
               }
             }

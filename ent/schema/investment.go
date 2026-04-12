@@ -85,7 +85,7 @@ func (Investment) Edges() []ent.Edge {
 				),
 			).
 			Required(),
-		edge.From("currency", HouseholdCurrency.Type).
+		edge.From("household_currency", HouseholdCurrency.Type).
 			Ref("investments").
 			Field("household_currency_id").
 			Annotations(

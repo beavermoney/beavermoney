@@ -55,8 +55,8 @@ type RecurringSubscription struct {
 type RecurringSubscriptionEdges struct {
 	// Household holds the value of the household edge.
 	Household *Household `json:"household,omitempty"`
-	// Currency holds the value of the currency edge.
-	Currency *HouseholdCurrency `json:"currency,omitempty"`
+	// HouseholdCurrency holds the value of the household_currency edge.
+	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -77,15 +77,15 @@ func (e RecurringSubscriptionEdges) HouseholdOrErr() (*Household, error) {
 	return nil, &NotLoadedError{edge: "household"}
 }
 
-// CurrencyOrErr returns the Currency value or an error if the edge
+// HouseholdCurrencyOrErr returns the HouseholdCurrency value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e RecurringSubscriptionEdges) CurrencyOrErr() (*HouseholdCurrency, error) {
-	if e.Currency != nil {
-		return e.Currency, nil
+func (e RecurringSubscriptionEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
+	if e.HouseholdCurrency != nil {
+		return e.HouseholdCurrency, nil
 	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
-	return nil, &NotLoadedError{edge: "currency"}
+	return nil, &NotLoadedError{edge: "household_currency"}
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -225,9 +225,9 @@ func (_m *RecurringSubscription) QueryHousehold() *HouseholdQuery {
 	return NewRecurringSubscriptionClient(_m.config).QueryHousehold(_m)
 }
 
-// QueryCurrency queries the "currency" edge of the RecurringSubscription entity.
-func (_m *RecurringSubscription) QueryCurrency() *HouseholdCurrencyQuery {
-	return NewRecurringSubscriptionClient(_m.config).QueryCurrency(_m)
+// QueryHouseholdCurrency queries the "household_currency" edge of the RecurringSubscription entity.
+func (_m *RecurringSubscription) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
+	return NewRecurringSubscriptionClient(_m.config).QueryHouseholdCurrency(_m)
 }
 
 // QueryUser queries the "user" edge of the RecurringSubscription entity.

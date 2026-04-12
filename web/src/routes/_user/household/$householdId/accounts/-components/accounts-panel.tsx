@@ -63,7 +63,7 @@ const AccountsPanelFragment = graphql`
           category
           name
           value
-          currency {
+          householdCurrency {
             code
           }
           ...accountCardFragment

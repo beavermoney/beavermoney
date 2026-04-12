@@ -64,7 +64,7 @@ const newIncomeFragment = graphql`
           type
           icon
           value
-          currency {
+          householdCurrency {
             code
           }
         }

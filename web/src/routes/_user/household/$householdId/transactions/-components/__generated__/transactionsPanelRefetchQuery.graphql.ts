@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<010a2833112876911a5a5b2ffb91b0cf>>
+ * @generated SignedSource<<9d6fde6033b9efd4bb00c2b626fb83d8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -284,9 +284,9 @@ export type AccountWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasInvestments?: boolean | null | undefined;
   hasInvestmentsWith?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
@@ -457,9 +457,9 @@ export type InvestmentWhereInput = {
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
   hasAccount?: boolean | null | undefined;
   hasAccountWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasInvestmentLots?: boolean | null | undefined;
   hasInvestmentLotsWith?: ReadonlyArray<InvestmentLotWhereInput> | null | undefined;
@@ -623,9 +623,9 @@ export type TransactionEntryWhereInput = {
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
   hasAccount?: boolean | null | undefined;
   hasAccountWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasTransaction?: boolean | null | undefined;
   hasTransactionWith?: ReadonlyArray<TransactionWhereInput> | null | undefined;
@@ -680,9 +680,9 @@ export type RecurringSubscriptionWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasUser?: boolean | null | undefined;
   hasUserWith?: ReadonlyArray<UserWhereInput> | null | undefined;
@@ -775,9 +775,9 @@ export type SnapshotEntryWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshot?: boolean | null | undefined;
   hasSnapshotWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
@@ -1284,7 +1284,7 @@ v13 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     {
@@ -1658,12 +1658,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "aaa08bb59530f0f576178e65e31b9eed",
+    "cacheID": "1c961023e1da5eff72da30fe4dda0e3d",
     "id": null,
     "metadata": {},
     "name": "transactionsPanelRefetchQuery",
     "operationKind": "query",
-    "text": "query transactionsPanelRefetchQuery(\n  $endDate: Time!\n  $startDate: Time!\n  $where: TransactionWhereInput\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...transactionsPanelFragment_7P6yy\n    id\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    currency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n  id\n}\n\nfragment transactionsPanelFragment_7P6yy on Household {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n"
+    "text": "query transactionsPanelRefetchQuery(\n  $endDate: Time!\n  $startDate: Time!\n  $where: TransactionWhereInput\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...transactionsPanelFragment_7P6yy\n    id\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n  id\n}\n\nfragment transactionsPanelFragment_7P6yy on Household {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}) {\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n"
   }
 };
 })();

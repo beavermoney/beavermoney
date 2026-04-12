@@ -23,7 +23,7 @@ const investmentLotCardFragment = graphql`
     investment {
       name
       symbol
-      currency {
+      householdCurrency {
         code
       }
     }

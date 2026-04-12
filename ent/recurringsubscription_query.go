@@ -22,15 +22,15 @@ import (
 // RecurringSubscriptionQuery is the builder for querying RecurringSubscription entities.
 type RecurringSubscriptionQuery struct {
 	config
-	ctx           *QueryContext
-	order         []recurringsubscription.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.RecurringSubscription
-	withHousehold *HouseholdQuery
-	withCurrency  *HouseholdCurrencyQuery
-	withUser      *UserQuery
-	loadTotal     []func(context.Context, []*RecurringSubscription) error
-	modifiers     []func(*sql.Selector)
+	ctx                   *QueryContext
+	order                 []recurringsubscription.OrderOption
+	inters                []Interceptor
+	predicates            []predicate.RecurringSubscription
+	withHousehold         *HouseholdQuery
+	withHouseholdCurrency *HouseholdCurrencyQuery
+	withUser              *UserQuery
+	loadTotal             []func(context.Context, []*RecurringSubscription) error
+	modifiers             []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -89,8 +89,8 @@ func (_q *RecurringSubscriptionQuery) QueryHousehold() *HouseholdQuery {
 	return query
 }
 
-// QueryCurrency chains the current query on the "currency" edge.
-func (_q *RecurringSubscriptionQuery) QueryCurrency() *HouseholdCurrencyQuery {
+// QueryHouseholdCurrency chains the current query on the "household_currency" edge.
+func (_q *RecurringSubscriptionQuery) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -103,7 +103,7 @@ func (_q *RecurringSubscriptionQuery) QueryCurrency() *HouseholdCurrencyQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(recurringsubscription.Table, recurringsubscription.FieldID, selector),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, recurringsubscription.CurrencyTable, recurringsubscription.CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, recurringsubscription.HouseholdCurrencyTable, recurringsubscription.HouseholdCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -320,14 +320,14 @@ func (_q *RecurringSubscriptionQuery) Clone() *RecurringSubscriptionQuery {
 		return nil
 	}
 	return &RecurringSubscriptionQuery{
-		config:        _q.config,
-		ctx:           _q.ctx.Clone(),
-		order:         append([]recurringsubscription.OrderOption{}, _q.order...),
-		inters:        append([]Interceptor{}, _q.inters...),
-		predicates:    append([]predicate.RecurringSubscription{}, _q.predicates...),
-		withHousehold: _q.withHousehold.Clone(),
-		withCurrency:  _q.withCurrency.Clone(),
-		withUser:      _q.withUser.Clone(),
+		config:                _q.config,
+		ctx:                   _q.ctx.Clone(),
+		order:                 append([]recurringsubscription.OrderOption{}, _q.order...),
+		inters:                append([]Interceptor{}, _q.inters...),
+		predicates:            append([]predicate.RecurringSubscription{}, _q.predicates...),
+		withHousehold:         _q.withHousehold.Clone(),
+		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
+		withUser:              _q.withUser.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -346,14 +346,14 @@ func (_q *RecurringSubscriptionQuery) WithHousehold(opts ...func(*HouseholdQuery
 	return _q
 }
 
-// WithCurrency tells the query-builder to eager-load the nodes that are connected to
-// the "currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *RecurringSubscriptionQuery) WithCurrency(opts ...func(*HouseholdCurrencyQuery)) *RecurringSubscriptionQuery {
+// WithHouseholdCurrency tells the query-builder to eager-load the nodes that are connected to
+// the "household_currency" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *RecurringSubscriptionQuery) WithHouseholdCurrency(opts ...func(*HouseholdCurrencyQuery)) *RecurringSubscriptionQuery {
 	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCurrency = query
+	_q.withHouseholdCurrency = query
 	return _q
 }
 
@@ -454,7 +454,7 @@ func (_q *RecurringSubscriptionQuery) sqlAll(ctx context.Context, hooks ...query
 		_spec       = _q.querySpec()
 		loadedTypes = [3]bool{
 			_q.withHousehold != nil,
-			_q.withCurrency != nil,
+			_q.withHouseholdCurrency != nil,
 			_q.withUser != nil,
 		}
 	)
@@ -485,9 +485,9 @@ func (_q *RecurringSubscriptionQuery) sqlAll(ctx context.Context, hooks ...query
 			return nil, err
 		}
 	}
-	if query := _q.withCurrency; query != nil {
-		if err := _q.loadCurrency(ctx, query, nodes, nil,
-			func(n *RecurringSubscription, e *HouseholdCurrency) { n.Edges.Currency = e }); err != nil {
+	if query := _q.withHouseholdCurrency; query != nil {
+		if err := _q.loadHouseholdCurrency(ctx, query, nodes, nil,
+			func(n *RecurringSubscription, e *HouseholdCurrency) { n.Edges.HouseholdCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -534,7 +534,7 @@ func (_q *RecurringSubscriptionQuery) loadHousehold(ctx context.Context, query *
 	}
 	return nil
 }
-func (_q *RecurringSubscriptionQuery) loadCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*RecurringSubscription, init func(*RecurringSubscription), assign func(*RecurringSubscription, *HouseholdCurrency)) error {
+func (_q *RecurringSubscriptionQuery) loadHouseholdCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*RecurringSubscription, init func(*RecurringSubscription), assign func(*RecurringSubscription, *HouseholdCurrency)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*RecurringSubscription)
 	for i := range nodes {
@@ -624,7 +624,7 @@ func (_q *RecurringSubscriptionQuery) querySpec() *sqlgraph.QuerySpec {
 		if _q.withHousehold != nil {
 			_spec.Node.AddColumnOnce(recurringsubscription.FieldHouseholdID)
 		}
-		if _q.withCurrency != nil {
+		if _q.withHouseholdCurrency != nil {
 			_spec.Node.AddColumnOnce(recurringsubscription.FieldHouseholdCurrencyID)
 		}
 		if _q.withUser != nil {

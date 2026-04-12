@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3cced82d583ae579f74d0e65d665b34b>>
+ * @generated SignedSource<<8950cfcf0c6d01976a015f2a5881be8b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -88,7 +88,7 @@ v6 = {
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
-  "name": "currency",
+  "name": "householdCurrency",
   "plural": false,
   "selections": [
     {
@@ -308,16 +308,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5d7cbcaa3f85c2d18ab79678ab6221b2",
+    "cacheID": "126f7446201d1f4b338b025aca568145",
     "id": null,
     "metadata": {},
     "name": "investmentsPanelRefetch",
     "operationKind": "query",
-    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  currency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment_1G22uz on Household {\n  investments(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          currency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment_1G22uz on Household {\n  investments(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4ed07be9e201fdeaebabfa8af4b1c6cf";
+(node as any).hash = "3f15fab36516dfc28011a83de7c58b6c";
 
 export default node;

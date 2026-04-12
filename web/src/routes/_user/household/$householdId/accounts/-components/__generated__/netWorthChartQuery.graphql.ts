@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6f7c13c397eff338ea2c4d976afad726>>
+ * @generated SignedSource<<bc7b30de6de570c89983848112ca89fe>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -261,9 +261,9 @@ export type AccountWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasInvestments?: boolean | null | undefined;
   hasInvestmentsWith?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
@@ -434,9 +434,9 @@ export type InvestmentWhereInput = {
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
   hasAccount?: boolean | null | undefined;
   hasAccountWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasInvestmentLots?: boolean | null | undefined;
   hasInvestmentLotsWith?: ReadonlyArray<InvestmentLotWhereInput> | null | undefined;
@@ -745,9 +745,9 @@ export type TransactionEntryWhereInput = {
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
   hasAccount?: boolean | null | undefined;
   hasAccountWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasTransaction?: boolean | null | undefined;
   hasTransactionWith?: ReadonlyArray<TransactionWhereInput> | null | undefined;
@@ -802,9 +802,9 @@ export type RecurringSubscriptionWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasUser?: boolean | null | undefined;
   hasUserWith?: ReadonlyArray<UserWhereInput> | null | undefined;
@@ -897,9 +897,9 @@ export type SnapshotEntryWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
-  hasCurrency?: boolean | null | undefined;
-  hasCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHousehold?: boolean | null | undefined;
+  hasHouseholdCurrency?: boolean | null | undefined;
+  hasHouseholdCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshot?: boolean | null | undefined;
   hasSnapshotWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
@@ -1185,7 +1185,7 @@ export type netWorthChartQuery$data = {
         readonly node: {
           readonly createTime: any;
           readonly snapshotEntries: ReadonlyArray<{
-            readonly currency: {
+            readonly householdCurrency: {
               readonly code: string;
             };
             readonly investment: string;
@@ -1361,7 +1361,7 @@ return {
                             "args": null,
                             "concreteType": "HouseholdCurrency",
                             "kind": "LinkedField",
-                            "name": "currency",
+                            "name": "householdCurrency",
                             "plural": false,
                             "selections": (v9/*: any*/),
                             "storageKey": null
@@ -1474,7 +1474,7 @@ return {
                             "args": null,
                             "concreteType": "HouseholdCurrency",
                             "kind": "LinkedField",
-                            "name": "currency",
+                            "name": "householdCurrency",
                             "plural": false,
                             "selections": (v12/*: any*/),
                             "storageKey": null
@@ -1533,16 +1533,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "28b5e1dff790195e2e4c89c088e4c495",
+    "cacheID": "ec16ba1f40363791055130418615f229",
     "id": null,
     "metadata": {},
     "name": "netWorthChartQuery",
     "operationKind": "query",
-    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          snapshotEntries {\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            currency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          snapshotEntries {\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            householdCurrency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0f98887f3e99fb9fb3c1efbe93d9550a";
+(node as any).hash = "400980ca85964cf3add20f1e9d709f54";
 
 export default node;

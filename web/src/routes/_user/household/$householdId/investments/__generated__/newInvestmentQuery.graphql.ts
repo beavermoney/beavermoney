@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<45829b7901fe62358da54e79e4c6f18d>>
+ * @generated SignedSource<<2c7e81c1434c89a8e1eb42a8937b45e2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -186,7 +186,7 @@ return {
                         "args": null,
                         "concreteType": "HouseholdCurrency",
                         "kind": "LinkedField",
-                        "name": "currency",
+                        "name": "householdCurrency",
                         "plural": false,
                         "selections": [
                           {
@@ -236,12 +236,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b7513d87d3fba0f4879546597099265a",
+    "cacheID": "8ea0496d111c682b37ba7dd689e2ccb3",
     "id": null,
     "metadata": {},
     "name": "newInvestmentQuery",
     "operationKind": "query",
-    "text": "query newInvestmentQuery {\n  household {\n    ...newInvestmentFragment\n    id\n  }\n  ...newInvestmentStockQuoteFragment\n  ...newInvestmentCryptoQuoteFragment\n}\n\nfragment newInvestmentCryptoQuoteFragment on Query {\n  cryptoQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n\nfragment newInvestmentFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        icon\n        value\n        currency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment newInvestmentStockQuoteFragment on Query {\n  stockQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
+    "text": "query newInvestmentQuery {\n  household {\n    ...newInvestmentFragment\n    id\n  }\n  ...newInvestmentStockQuoteFragment\n  ...newInvestmentCryptoQuoteFragment\n}\n\nfragment newInvestmentCryptoQuoteFragment on Query {\n  cryptoQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n\nfragment newInvestmentFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        name\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment newInvestmentStockQuoteFragment on Query {\n  stockQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
   }
 };
 })();

@@ -337,21 +337,21 @@ func HasAccountWith(preds ...predicate.Account) predicate.TransactionEntry {
 	})
 }
 
-// HasCurrency applies the HasEdge predicate on the "currency" edge.
-func HasCurrency() predicate.TransactionEntry {
+// HasHouseholdCurrency applies the HasEdge predicate on the "household_currency" edge.
+func HasHouseholdCurrency() predicate.TransactionEntry {
 	return predicate.TransactionEntry(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CurrencyTable, CurrencyColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, HouseholdCurrencyTable, HouseholdCurrencyColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCurrencyWith applies the HasEdge predicate on the "currency" edge with a given conditions (other predicates).
-func HasCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.TransactionEntry {
+// HasHouseholdCurrencyWith applies the HasEdge predicate on the "household_currency" edge with a given conditions (other predicates).
+func HasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.TransactionEntry {
 	return predicate.TransactionEntry(func(s *sql.Selector) {
-		step := newCurrencyStep()
+		step := newHouseholdCurrencyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

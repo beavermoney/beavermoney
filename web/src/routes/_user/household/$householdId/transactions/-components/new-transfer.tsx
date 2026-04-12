@@ -63,7 +63,7 @@ const newTransferFragment = graphql`
           type
           icon
           value
-          currency {
+          householdCurrency {
             code
           }
         }

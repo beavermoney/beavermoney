@@ -16,10 +16,10 @@ func (_m *Account) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *Account) Currency(ctx context.Context) (*HouseholdCurrency, error) {
-	result, err := _m.Edges.CurrencyOrErr()
+func (_m *Account) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+	result, err := _m.Edges.HouseholdCurrencyOrErr()
 	if IsNotLoaded(err) {
-		result, err = _m.QueryCurrency().Only(ctx)
+		result, err = _m.QueryHouseholdCurrency().Only(ctx)
 	}
 	return result, err
 }
@@ -441,10 +441,10 @@ func (_m *Investment) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *Investment) Currency(ctx context.Context) (*HouseholdCurrency, error) {
-	result, err := _m.Edges.CurrencyOrErr()
+func (_m *Investment) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+	result, err := _m.Edges.HouseholdCurrencyOrErr()
 	if IsNotLoaded(err) {
-		result, err = _m.QueryCurrency().Only(ctx)
+		result, err = _m.QueryHouseholdCurrency().Only(ctx)
 	}
 	return result, err
 }
@@ -493,10 +493,10 @@ func (_m *RecurringSubscription) Household(ctx context.Context) (*Household, err
 	return result, err
 }
 
-func (_m *RecurringSubscription) Currency(ctx context.Context) (*HouseholdCurrency, error) {
-	result, err := _m.Edges.CurrencyOrErr()
+func (_m *RecurringSubscription) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+	result, err := _m.Edges.HouseholdCurrencyOrErr()
 	if IsNotLoaded(err) {
-		result, err = _m.QueryCurrency().Only(ctx)
+		result, err = _m.QueryHouseholdCurrency().Only(ctx)
 	}
 	return result, err
 }
@@ -549,10 +549,10 @@ func (_m *SnapshotEntry) Household(ctx context.Context) (*Household, error) {
 	return result, err
 }
 
-func (_m *SnapshotEntry) Currency(ctx context.Context) (*HouseholdCurrency, error) {
-	result, err := _m.Edges.CurrencyOrErr()
+func (_m *SnapshotEntry) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+	result, err := _m.Edges.HouseholdCurrencyOrErr()
 	if IsNotLoaded(err) {
-		result, err = _m.QueryCurrency().Only(ctx)
+		result, err = _m.QueryHouseholdCurrency().Only(ctx)
 	}
 	return result, err
 }
@@ -681,10 +681,10 @@ func (_m *TransactionEntry) Account(ctx context.Context) (*Account, error) {
 	return result, err
 }
 
-func (_m *TransactionEntry) Currency(ctx context.Context) (*HouseholdCurrency, error) {
-	result, err := _m.Edges.CurrencyOrErr()
+func (_m *TransactionEntry) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency, error) {
+	result, err := _m.Edges.HouseholdCurrencyOrErr()
 	if IsNotLoaded(err) {
-		result, err = _m.QueryCurrency().Only(ctx)
+		result, err = _m.QueryHouseholdCurrency().Only(ctx)
 	}
 	return result, err
 }

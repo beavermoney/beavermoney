@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c16fa324e62a2a4bc7c3e4ceff7d146f>>
+ * @generated SignedSource<<f2b9e961ccf16059207b988e81e21762>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type newIncomeFragment$data = {
   readonly accounts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly currency: {
+        readonly householdCurrency: {
           readonly code: string;
         };
         readonly icon: string | null | undefined;
@@ -125,7 +125,7 @@ return {
                   "args": null,
                   "concreteType": "HouseholdCurrency",
                   "kind": "LinkedField",
-                  "name": "currency",
+                  "name": "householdCurrency",
                   "plural": false,
                   "selections": [
                     {
@@ -189,6 +189,6 @@ return {
 };
 })();
 
-(node as any).hash = "0b21311b2157cd75408d9e61f7de364e";
+(node as any).hash = "f3d63b7603c63a1f789a2f57214fd32d";
 
 export default node;

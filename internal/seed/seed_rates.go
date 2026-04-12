@@ -49,7 +49,13 @@ func seedHouseholdRates(
 			return fmt.Errorf("failed to seed rates for household %d: %w", hh.ID, err)
 		}
 
-		logger.Info("Household rates seeded", "householdID", hh.ID, "pairs", len(currencies)*(len(currencies)-1))
+		logger.Info(
+			"Household rates seeded",
+			"householdID",
+			hh.ID,
+			"pairs",
+			len(currencies)*(len(currencies)-1),
+		)
 	}
 
 	return nil

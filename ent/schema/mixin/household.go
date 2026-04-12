@@ -1,11 +1,11 @@
 package mixin
 
 import (
+	"beavermoney.app/ent/privacy"
+	"beavermoney.app/ent/rules"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
-	"beavermoney.app/ent/privacy"
-	"beavermoney.app/ent/rules"
 )
 
 type HouseholdMixin struct {

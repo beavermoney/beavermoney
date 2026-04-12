@@ -42,7 +42,13 @@ func migrateHouseholdCurrencies(
 	}
 
 	for _, hh := range households {
-		logger.Info("Migrating household currencies", "householdID", hh.ID, "householdName", hh.Name)
+		logger.Info(
+			"Migrating household currencies",
+			"householdID",
+			hh.ID,
+			"householdName",
+			hh.Name,
+		)
 
 		if err := migrateOneHousehold(bypassCtx, client, frankfurterClient, logger, hh); err != nil {
 			return fmt.Errorf("failed to migrate household %d: %w", hh.ID, err)
@@ -71,7 +77,13 @@ func migrateOneHousehold(
 	txClient := tx.Client()
 	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), hh.ID)
 
-	primaryHC, err := getOrCreateHouseholdCurrency(householdCtx, txClient, hh.ID, hh.CurrencyCode, true)
+	primaryHC, err := getOrCreateHouseholdCurrency(
+		householdCtx,
+		txClient,
+		hh.ID,
+		hh.CurrencyCode,
+		true,
+	)
 	if err != nil {
 		return rollback(tx, fmt.Errorf("failed to create primary household currency: %w", err))
 	}
@@ -90,7 +102,13 @@ func migrateOneHousehold(
 
 	if len(allCurrencies) > 1 {
 		if err := populateHouseholdRates(householdCtx, txClient, frankfurterClient, hh.ID, allCurrencies); err != nil {
-			logger.Error("Failed to populate household rates (non-fatal)", "error", err, "householdID", hh.ID)
+			logger.Error(
+				"Failed to populate household rates (non-fatal)",
+				"error",
+				err,
+				"householdID",
+				hh.ID,
+			)
 		}
 	}
 
@@ -109,7 +127,14 @@ func migrateOneHousehold(
 			SetDefaultCurrencyID(primaryHC.ID).
 			Exec(ctx)
 		if err != nil {
-			return rollback(tx, fmt.Errorf("failed to set display_currency_id for user_household %d: %w", uh.ID, err))
+			return rollback(
+				tx,
+				fmt.Errorf(
+					"failed to set display_currency_id for user_household %d: %w",
+					uh.ID,
+					err,
+				),
+			)
 		}
 	}
 
@@ -160,7 +185,11 @@ func populateHouseholdRates(
 			return fmt.Errorf("failed to fetch FX rates for base %s: %w", from.Code, err)
 		}
 		if resp.JSON200 == nil {
-			return fmt.Errorf("no rates returned for base %s (status: %s)", from.Code, resp.Status())
+			return fmt.Errorf(
+				"no rates returned for base %s (status: %s)",
+				from.Code,
+				resp.Status(),
+			)
 		}
 
 		for _, rate := range *resp.JSON200 {

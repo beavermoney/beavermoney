@@ -65,7 +65,7 @@ func (RecurringSubscription) Edges() []ent.Edge {
 					entgql.SkipMutationUpdateInput,
 				),
 			),
-		edge.From("currency", HouseholdCurrency.Type).
+		edge.From("household_currency", HouseholdCurrency.Type).
 			Field("household_currency_id").
 			Ref("recurring_subscriptions").
 			Unique().

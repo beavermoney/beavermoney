@@ -40,7 +40,7 @@ const SubscriptionsPanelFragment = graphql`
           id
           active
           cost
-          currency {
+          householdCurrency {
             code
           }
           interval

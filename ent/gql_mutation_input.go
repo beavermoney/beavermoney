@@ -14,12 +14,12 @@ import (
 
 // CreateAccountInput represents a mutation input for creating accounts.
 type CreateAccountInput struct {
-	Name       string
-	Type       account.Type
-	Balance    *decimal.Decimal
-	Category   *account.Category
-	Icon       *string
-	CurrencyID int
+	Name                string
+	Type                account.Type
+	Balance             *decimal.Decimal
+	Category            *account.Category
+	Icon                *string
+	HouseholdCurrencyID int
 }
 
 // Mutate applies the CreateAccountInput on the AccountMutation builder.
@@ -35,7 +35,7 @@ func (i *CreateAccountInput) Mutate(m *AccountMutation) {
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
 	}
-	m.SetCurrencyID(i.CurrencyID)
+	m.SetHouseholdCurrencyID(i.HouseholdCurrencyID)
 }
 
 // SetInput applies the change-set in the CreateAccountInput on the AccountCreate builder.
@@ -436,14 +436,14 @@ func (c *InvestmentLotUpdateOne) SetInput(i UpdateInvestmentLotInput) *Investmen
 
 // CreateRecurringSubscriptionInput represents a mutation input for creating recurringsubscriptions.
 type CreateRecurringSubscriptionInput struct {
-	Name          string
-	Interval      recurringsubscription.Interval
-	IntervalCount *int
-	StartDate     time.Time
-	Active        *bool
-	Icon          *string
-	Cost          *decimal.Decimal
-	CurrencyID    int
+	Name                string
+	Interval            recurringsubscription.Interval
+	IntervalCount       *int
+	StartDate           time.Time
+	Active              *bool
+	Icon                *string
+	Cost                *decimal.Decimal
+	HouseholdCurrencyID int
 }
 
 // Mutate applies the CreateRecurringSubscriptionInput on the RecurringSubscriptionMutation builder.
@@ -463,7 +463,7 @@ func (i *CreateRecurringSubscriptionInput) Mutate(m *RecurringSubscriptionMutati
 	if v := i.Cost; v != nil {
 		m.SetCost(*v)
 	}
-	m.SetCurrencyID(i.CurrencyID)
+	m.SetHouseholdCurrencyID(i.HouseholdCurrencyID)
 }
 
 // SetInput applies the change-set in the CreateRecurringSubscriptionInput on the RecurringSubscriptionCreate builder.
@@ -474,15 +474,15 @@ func (c *RecurringSubscriptionCreate) SetInput(i CreateRecurringSubscriptionInpu
 
 // UpdateRecurringSubscriptionInput represents a mutation input for updating recurringsubscriptions.
 type UpdateRecurringSubscriptionInput struct {
-	Name          *string
-	Interval      *recurringsubscription.Interval
-	IntervalCount *int
-	StartDate     *time.Time
-	Active        *bool
-	ClearIcon     bool
-	Icon          *string
-	Cost          *decimal.Decimal
-	CurrencyID    *int
+	Name                *string
+	Interval            *recurringsubscription.Interval
+	IntervalCount       *int
+	StartDate           *time.Time
+	Active              *bool
+	ClearIcon           bool
+	Icon                *string
+	Cost                *decimal.Decimal
+	HouseholdCurrencyID *int
 }
 
 // Mutate applies the UpdateRecurringSubscriptionInput on the RecurringSubscriptionMutation builder.
@@ -511,8 +511,8 @@ func (i *UpdateRecurringSubscriptionInput) Mutate(m *RecurringSubscriptionMutati
 	if v := i.Cost; v != nil {
 		m.SetCost(*v)
 	}
-	if v := i.CurrencyID; v != nil {
-		m.SetCurrencyID(*v)
+	if v := i.HouseholdCurrencyID; v != nil {
+		m.SetHouseholdCurrencyID(*v)
 	}
 }
 

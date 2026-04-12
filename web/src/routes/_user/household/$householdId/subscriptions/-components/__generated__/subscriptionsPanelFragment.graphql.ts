@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4dcb9754a99f2dce439bbc6f71d4385e>>
+ * @generated SignedSource<<bb938366e0f96741d5e4a87d8110fe6a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type subscriptionsPanelFragment$data = {
       readonly node: {
         readonly active: boolean;
         readonly cost: string;
-        readonly currency: {
+        readonly householdCurrency: {
           readonly code: string;
         };
         readonly id: string;
@@ -139,7 +139,7 @@ return {
                   "args": null,
                   "concreteType": "HouseholdCurrency",
                   "kind": "LinkedField",
-                  "name": "currency",
+                  "name": "householdCurrency",
                   "plural": false,
                   "selections": [
                     {
@@ -252,6 +252,6 @@ return {
 };
 })();
 
-(node as any).hash = "71db342553c16da7a34d1037cd7fa6bf";
+(node as any).hash = "c9366896406654c40f48c02283de1608";
 
 export default node;

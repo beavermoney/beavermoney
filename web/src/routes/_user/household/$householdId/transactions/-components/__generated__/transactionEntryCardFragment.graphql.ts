@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<52f83d8f189c3e399b02c33fcdb5f431>>
+ * @generated SignedSource<<c0d21097817866949cf555f3d05c12ba>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ export type TransactionCategoryType = "expense" | "income" | "investment" | "set
 import { FragmentRefs } from "relay-runtime";
 export type transactionEntryCardFragment$data = {
   readonly account: {
-    readonly currency: {
+    readonly householdCurrency: {
       readonly code: string;
     };
     readonly name: string;
@@ -80,7 +80,7 @@ return {
           "args": null,
           "concreteType": "HouseholdCurrency",
           "kind": "LinkedField",
-          "name": "currency",
+          "name": "householdCurrency",
           "plural": false,
           "selections": [
             {
@@ -154,6 +154,6 @@ return {
 };
 })();
 
-(node as any).hash = "867caab77fa05f244a722b2a840863a4";
+(node as any).hash = "76248a770a4d7c2f42e9e1717d3199f0";
 
 export default node;
