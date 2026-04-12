@@ -123,7 +123,7 @@ export function NewAccount() {
               name: formData.name,
               type: formData.type,
               category: (formData.category || null) as AccountCategory | null,
-              currencyID: currencyID,
+              householdCurrencyID: currencyID,
               balance: balance.toString(),
               icon: formData.icon || null,
             },
