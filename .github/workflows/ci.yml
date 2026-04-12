@@ -79,13 +79,13 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.25"
+          go-version: "1.26.2"
           cache-dependency-path: go.sum
 
       - name: Run golangci-lint check
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.6
+          version: v2.11.4
 
       - name: Tidy Go modules
         run: go mod tidy && git diff --exit-code go.mod go.sum
