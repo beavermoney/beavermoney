@@ -159,7 +159,7 @@ func Seed(
 
 	entClient.Account.Create().
 		SetName("You should not see this account").
-		SetCurrencyID(differentHouseholdUSD.ID).
+		SetHouseholdCurrencyID(differentHouseholdUSD.ID).
 		SetUser(differentJoey).
 		SetHousehold(differentHousehold).
 		SetType(account.TypeLiquidity).
@@ -169,7 +169,7 @@ func Seed(
 
 	chase := entClient.Account.Create().
 		SetName("Chase Total Checking").
-		SetCurrencyID(householdUSD.ID).
+		SetHouseholdCurrencyID(householdUSD.ID).
 		SetIcon("chase.com").
 		SetUser(joey).
 		SetHousehold(household).
@@ -180,7 +180,7 @@ func Seed(
 		SetName("Wealthsimple Visa Infinite").
 		SetUser(joey).
 		SetIcon("wealthsimple.com").
-		SetCurrencyID(householdCAD.ID).
+		SetHouseholdCurrencyID(householdCAD.ID).
 		SetHousehold(household).
 		SetType(account.TypeLiability).
 		SaveX(ctx)
@@ -190,7 +190,7 @@ func Seed(
 		SetIcon("webull.ca").
 		SetName("Webull").
 		SetUser(joey).
-		SetCurrencyID(householdCAD.ID).
+		SetHouseholdCurrencyID(householdCAD.ID).
 		SetType(account.TypeInvestment).
 		SaveX(ctx)
 
@@ -228,7 +228,7 @@ func Seed(
 			SetAccount(chase).
 			SetHousehold(household).
 			SetTransaction(transaction).
-			SetCurrencyID(householdUSD.ID).
+			SetHouseholdCurrencyID(householdUSD.ID).
 			SetAmount(decimal.NewFromInt(1000000)).SaveX(ctx)
 	}
 
@@ -251,7 +251,7 @@ func Seed(
 				SetAccount(chase).
 				SetHousehold(household).
 				SetTransaction(t).
-				SetCurrencyID(householdUSD.ID).
+				SetHouseholdCurrencyID(householdUSD.ID).
 				SetAmount(genRandomAmount().Mul(decimal.NewFromInt(-1)))
 		}
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
@@ -276,7 +276,7 @@ func Seed(
 				SetAccount(wealthsimple).
 				SetHousehold(household).
 				SetTransaction(t).
-				SetCurrencyID(householdCAD.ID).
+				SetHouseholdCurrencyID(householdCAD.ID).
 				SetAmount(genRandomAmount().Mul(decimal.NewFromInt(-1)))
 		}
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
@@ -292,7 +292,7 @@ func Seed(
 		SetSymbol("XEQT.TO").
 		SetName("XEQT").
 		SetQuote(xeqtQuote.CurrentPrice).
-		SetCurrencyID(householdCAD.ID).
+		SetHouseholdCurrencyID(householdCAD.ID).
 		SetType(investment.TypeStock).
 		SetAccount(webull).
 		SaveX(ctx)
@@ -525,7 +525,7 @@ func createDemoAccounts(
 	checking, err := client.Account.Create().
 		SetName(config.checkingName).
 		SetIcon(config.checkingIcon).
-		SetCurrencyID(householdCurrency.ID).
+		SetHouseholdCurrencyID(householdCurrency.ID).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiquidity).
@@ -534,12 +534,12 @@ func createDemoAccounts(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create checking account: %w", err)
 	}
-	checking.Edges.Currency = householdCurrency
+	checking.Edges.HouseholdCurrency = householdCurrency
 
 	creditCard, err := client.Account.Create().
 		SetName(config.creditCardName).
 		SetIcon(config.creditCardIcon).
-		SetCurrencyID(householdCurrency.ID).
+		SetHouseholdCurrencyID(householdCurrency.ID).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiability).
@@ -548,12 +548,12 @@ func createDemoAccounts(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create credit card account: %w", err)
 	}
-	creditCard.Edges.Currency = householdCurrency
+	creditCard.Edges.HouseholdCurrency = householdCurrency
 
 	investmentAccount, err := client.Account.Create().
 		SetName(config.investmentName).
 		SetIcon(config.investmentIcon).
-		SetCurrencyID(householdCurrency.ID).
+		SetHouseholdCurrencyID(householdCurrency.ID).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeInvestment).
@@ -562,12 +562,12 @@ func createDemoAccounts(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create investment account: %w", err)
 	}
-	investmentAccount.Edges.Currency = householdCurrency
+	investmentAccount.Edges.HouseholdCurrency = householdCurrency
 
 	usdSavings, err := client.Account.Create().
 		SetName("Chase Savings").
 		SetIcon("chase.com").
-		SetCurrencyID(usdCurrency.ID).
+		SetHouseholdCurrencyID(usdCurrency.ID).
 		SetUserID(userID).
 		SetHouseholdID(household.ID).
 		SetType(account.TypeLiquidity).
@@ -577,7 +577,7 @@ func createDemoAccounts(
 	if err != nil {
 		return nil, fmt.Errorf("failed to create USD savings account: %w", err)
 	}
-	usdSavings.Edges.Currency = usdCurrency
+	usdSavings.Edges.HouseholdCurrency = usdCurrency
 
 	return &demoAccounts{
 		checking:   checking,
@@ -730,7 +730,7 @@ func fetchAndCreateInvestments(
 		SetSymbol(config.etfSymbol).
 		SetName(config.etfSymbol).
 		SetQuote(etfPrice).
-		SetCurrencyID(householdCurrency.ID).
+		SetHouseholdCurrencyID(householdCurrency.ID).
 		SetType(investment.TypeStock).
 		SetAccount(investmentAccount).
 		SetCreateTime(createdAt).
@@ -752,7 +752,7 @@ func fetchAndCreateInvestments(
 			SetSymbol(symbol).
 			SetName(symbol).
 			SetQuote(price).
-			SetCurrencyID(householdCurrency.ID).
+			SetHouseholdCurrencyID(householdCurrency.ID).
 			SetType(investment.TypeStock).
 			SetAccount(investmentAccount).
 			SetCreateTime(createdAt).
@@ -828,7 +828,7 @@ func createTransaction(
 		SetAccount(account).
 		SetHouseholdID(household.ID).
 		SetTransaction(tx).
-		SetCurrencyID(account.HouseholdCurrencyID).
+		SetHouseholdCurrencyID(account.HouseholdCurrencyID).
 		SetAmount(amount).
 		SetCreateTime(date).
 		Save(ctx)
@@ -1028,7 +1028,7 @@ func createSnapshotAtDate(
 ) error {
 	accounts, err := client.Account.Query().
 		Where(account.HouseholdIDEQ(household.ID)).
-		WithCurrency().
+		WithHouseholdCurrency().
 		All(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to query accounts: %w", err)
@@ -1091,7 +1091,7 @@ func createSnapshotAtDate(
 			SetSnapshotID(snap.ID).
 			SetHouseholdID(household.ID).
 			SetUserID(key.UserID).
-			SetCurrencyID(key.HouseholdCurrencyID).
+			SetHouseholdCurrencyID(key.HouseholdCurrencyID).
 			SetLiquidity(vals.Liquidity).
 			SetInvestment(vals.Investment).
 			SetProperty(vals.Property).
@@ -1119,7 +1119,7 @@ func createSnapshotAtDate(
 			seen[currencyID] = true
 			currencies = append(
 				currencies,
-				currencyInfo{ID: currencyID, Code: acc.Edges.Currency.Code},
+				currencyInfo{ID: currencyID, Code: acc.Edges.HouseholdCurrency.Code},
 			)
 		}
 	}
