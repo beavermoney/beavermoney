@@ -34,7 +34,9 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
+import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { Calendar } from '@/components/ui/calendar'
 
 const formSchema = z.object({
@@ -42,6 +44,7 @@ const formSchema = z.object({
     .string()
     .max(256, 'Description must be at most 256 characters.'),
   shares: z.number().positive('Shares must be positive'),
+  pricePerShare: z.number().positive('Price per share must be positive'),
   datetime: z.date(),
   fromInvestmentId: z.string().min(1, 'Please select a from investment'),
   toInvestmentId: z.string().min(1, 'Please select a to investment'),
@@ -56,6 +59,9 @@ const newMoveFragment = graphql`
           name
           type
           value
+          householdCurrency {
+            code
+          }
           investments {
             id
             name
@@ -104,6 +110,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     useMutation<newMoveMutation>(newMoveMutation)
 
   const { household } = useHousehold()
+  const { displayCurrencyCode } = useDisplayCurrency()
 
   // Get all investments from all investment accounts
   const allInvestments = useMemo(() => {
@@ -118,6 +125,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           (account.investments ?? []).map((investment) => ({
             ...investment,
             accountName: account.name,
+            currencyCode: account.householdCurrency.code,
           })),
         ) ?? []
     )
@@ -137,6 +145,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     defaultValues: {
       description: '',
       shares: undefined as unknown as number,
+      pricePerShare: undefined as unknown as number,
       datetime: new Date(),
       fromInvestmentId: '',
       toInvestmentId: '',
@@ -173,18 +182,14 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               },
               investmentLots: [
                 {
-                  // Negative amount - shares going out
                   amount: currency(value.shares).multiply(-1).toString(),
                   investmentID: value.fromInvestmentId,
-                  // Price will be calculated as average price by backend
-                  price: '0',
+                  price: value.pricePerShare.toString(),
                 },
                 {
-                  // Positive amount - shares coming in
                   amount: currency(value.shares).toString(),
                   investmentID: value.toInvestmentId,
-                  // Price will be calculated as average price by backend
-                  price: '0',
+                  price: value.pricePerShare.toString(),
                 },
               ],
               fees: [],
@@ -453,6 +458,45 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                         field.handleChange(value === '' ? 0 : Number(value))
                       }}
                       aria-invalid={isInvalid}
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+
+            <form.Field
+              name="pricePerShare"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Price per Share
+                    </FieldLabel>
+                    <FieldDescription>
+                      {fromInvestment
+                        ? `Currency: ${fromInvestment.currencyCode}`
+                        : 'Select from investment to see currency'}
+                    </FieldDescription>
+                    <CurrencyInput
+                      id={field.name}
+                      name={field.name}
+                      placeholder="Please enter a price"
+                      onValueChange={(e) => {
+                        field.handleChange(e.floatValue!)
+                      }}
+                      value={field.state.value}
+                      locale={household.locale}
+                      currency={
+                        fromInvestment?.currencyCode ?? displayCurrencyCode
+                      }
+                      onBlur={field.handleBlur}
+                      aria-invalid={isInvalid}
+                      decimalScale={8}
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />

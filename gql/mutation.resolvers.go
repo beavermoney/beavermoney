@@ -1389,32 +1389,21 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 		return nil, fmt.Errorf("investments must have the same symbol")
 	}
 
-	// Calculate average price from fromInvestment
-	// Query all lots for the from investment to calculate average price
-	lots, err := client.InvestmentLot.Query().
-		Where(investmentlot.InvestmentID(fromInvestment.ID)).
-		All(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query investment lots: %w", err)
+	// Validate client-provided prices are positive
+	if fromLot.Price.IsZero() || fromLot.Price.IsNegative() {
+		return nil, fmt.Errorf("from lot price must be positive")
+	}
+	if toLot.Price.IsZero() || toLot.Price.IsNegative() {
+		return nil, fmt.Errorf("to lot price must be positive")
 	}
 
-	totalShares := decimal.Zero
-	totalCost := decimal.Zero
-	for _, lot := range lots {
-		totalShares = totalShares.Add(lot.Amount)
-		totalCost = totalCost.Add(lot.Amount.Mul(lot.Price))
-	}
-
-	if totalShares.IsZero() || totalShares.IsNegative() {
+	if fromInvestment.Amount.IsZero() || fromInvestment.Amount.IsNegative() {
 		return nil, fmt.Errorf("insufficient shares in from investment")
 	}
 
-	// Check if we have enough shares to move
-	if totalShares.LessThan(toLot.Amount) {
-		return nil, fmt.Errorf("insufficient shares: have %s, trying to move %s", totalShares.String(), toLot.Amount.String())
+	if fromInvestment.Amount.LessThan(toLot.Amount) {
+		return nil, fmt.Errorf("insufficient shares: have %s, trying to move %s", fromInvestment.Amount.String(), toLot.Amount.String())
 	}
-
-	averagePrice := totalCost.Div(totalShares)
 
 	// Create transaction
 	txn, err := client.Transaction.Create().
@@ -1432,7 +1421,7 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 		SetTransactionID(txn.ID).
 		SetInvestmentID(fromInvestment.ID).
 		SetAmount(fromLot.Amount).
-		SetPrice(averagePrice).
+		SetPrice(fromLot.Price).
 		Exec(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create from investment lot: %w", err)
@@ -1444,7 +1433,7 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 		SetTransactionID(txn.ID).
 		SetInvestmentID(toInvestment.ID).
 		SetAmount(toLot.Amount).
-		SetPrice(averagePrice).
+		SetPrice(toLot.Price).
 		Exec(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create to investment lot: %w", err)

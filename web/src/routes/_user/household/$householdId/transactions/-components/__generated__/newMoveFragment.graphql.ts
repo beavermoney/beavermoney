@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<82d220f585f7a9d5ce35fd02675f3ad0>>
+ * @generated SignedSource<<27cfa468cbadeda5c96a55315b027292>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,9 @@ export type newMoveFragment$data = {
   readonly accounts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly householdCurrency: {
+          readonly code: string;
+        };
         readonly id: string;
         readonly investments: ReadonlyArray<{
           readonly id: string;
@@ -119,6 +122,24 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "concreteType": "HouseholdCurrency",
+                  "kind": "LinkedField",
+                  "name": "householdCurrency",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "code",
+                      "storageKey": null
+                    }
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "concreteType": "Investment",
                   "kind": "LinkedField",
                   "name": "investments",
@@ -188,6 +209,6 @@ return {
 };
 })();
 
-(node as any).hash = "7044c91c7edf956e37ac56d665300f64";
+(node as any).hash = "831db9cf63bcc6134eae38fd4a098787";
 
 export default node;
