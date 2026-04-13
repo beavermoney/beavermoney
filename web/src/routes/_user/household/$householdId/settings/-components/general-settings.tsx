@@ -111,6 +111,7 @@ export function GeneralSettings({
     useMutation<generalSettingsDeleteHouseholdMutation>(deleteHouseholdMutation)
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
   const form = useForm({
     defaultValues: {
@@ -258,7 +259,10 @@ export function GeneralSettings({
             </div>
             <AlertDialog
               open={deleteDialogOpen}
-              onOpenChange={setDeleteDialogOpen}
+              onOpenChange={(open) => {
+                setDeleteDialogOpen(open)
+                if (!open) setDeleteConfirmText('')
+              }}
             >
               <AlertDialogTrigger
                 render={
@@ -277,13 +281,30 @@ export function GeneralSettings({
                     </span>{' '}
                     and all associated data including accounts, transactions,
                     and categories. This action cannot be undone.
+                    <br />
+                    Type{' '}
+                    <span className="text-destructive font-semibold">
+                      {household.name}
+                    </span>{' '}
+                    to confirm
+                    <Input
+                      data-1p-ignore
+                      id="delete-confirm"
+                      className="mt-1.5"
+                      value={deleteConfirmText}
+                      onChange={(e) => setDeleteConfirmText(e.target.value)}
+                      placeholder={'Enter household name to confirm'}
+                      autoComplete="off"
+                    />
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     variant="destructive"
-                    disabled={isDeleteInFlight}
+                    disabled={
+                      deleteConfirmText !== household.name || isDeleteInFlight
+                    }
                     onClick={handleDelete}
                   >
                     {isDeleteInFlight ? 'Deleting...' : 'Delete'}
