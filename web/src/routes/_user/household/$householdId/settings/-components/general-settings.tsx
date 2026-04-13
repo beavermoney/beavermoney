@@ -34,6 +34,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { commitMutationResult } from '@/lib/relay'
+import { useNavigate } from '@tanstack/react-router'
 
 const formSchema = z.object({
   name: z
@@ -86,19 +87,18 @@ const deleteHouseholdMutation = graphql`
 type GeneralSettingsProps = {
   householdRef: generalSettingsHouseholdFragment$key
   currenciesRef: generalSettingsCurrenciesFragment$key
-  onDeleted: () => void
 }
 
 export function GeneralSettings({
   householdRef,
   currenciesRef,
-  onDeleted,
 }: GeneralSettingsProps) {
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
   const { userHouseholds } = useFragment(
     generalSettingsCurrenciesFragment,
     currenciesRef,
   )
+  const navigate = useNavigate()
 
   const { user } = useUser()
   const isAdmin =
@@ -168,7 +168,10 @@ export function GeneralSettings({
       .with({ status: 'success' }, () => {
         toast.success('Household deleted.')
         setDeleteDialogOpen(false)
-        onDeleted()
+        navigate({
+          to: '/household',
+          reloadDocument: true,
+        })
       })
       .with({ status: 'error' }, ({ error }) => {
         toast.error(error.toString())

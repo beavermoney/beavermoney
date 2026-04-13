@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { graphql } from 'relay-runtime'
 import {
   fetchQuery,
@@ -38,7 +38,6 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
-  const navigate = useNavigate()
 
   const data = usePreloadedQuery<generalSettingsQuery>(query, queryRef)
 
@@ -51,11 +50,5 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  return (
-    <GeneralSettings
-      householdRef={data.household}
-      currenciesRef={data}
-      onDeleted={() => navigate({ to: '/household' })}
-    />
-  )
+  return <GeneralSettings householdRef={data.household} currenciesRef={data} />
 }
