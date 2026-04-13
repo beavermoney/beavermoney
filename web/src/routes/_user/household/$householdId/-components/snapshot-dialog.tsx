@@ -55,7 +55,7 @@ const SnapshotDialogMutation = graphql`
 const CATEGORIES = [
   'liquidity',
   'investment',
-  'property',
+  // 'property',
   'receivable',
   'liability',
 ] as const
@@ -63,7 +63,7 @@ const CATEGORIES = [
 const CATEGORY_COLORS: Record<(typeof CATEGORIES)[number], string> = {
   liquidity: 'var(--chart-liquidity)',
   investment: 'var(--chart-investment)',
-  property: 'var(--chart-property)',
+  // property: 'var(--chart-property)',
   receivable: 'var(--chart-receivable)',
   liability: 'var(--chart-liability)',
 }
