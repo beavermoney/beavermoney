@@ -3988,6 +3988,16 @@ type SnapshotEntryWhereInput struct {
 	LiabilityLT    *decimal.Decimal  `json:"liabilityLT,omitempty"`
 	LiabilityLTE   *decimal.Decimal  `json:"liabilityLTE,omitempty"`
 
+	// "unrealized_return" field predicates.
+	UnrealizedReturn      *decimal.Decimal  `json:"unrealizedReturn,omitempty"`
+	UnrealizedReturnNEQ   *decimal.Decimal  `json:"unrealizedReturnNEQ,omitempty"`
+	UnrealizedReturnIn    []decimal.Decimal `json:"unrealizedReturnIn,omitempty"`
+	UnrealizedReturnNotIn []decimal.Decimal `json:"unrealizedReturnNotIn,omitempty"`
+	UnrealizedReturnGT    *decimal.Decimal  `json:"unrealizedReturnGT,omitempty"`
+	UnrealizedReturnGTE   *decimal.Decimal  `json:"unrealizedReturnGTE,omitempty"`
+	UnrealizedReturnLT    *decimal.Decimal  `json:"unrealizedReturnLT,omitempty"`
+	UnrealizedReturnLTE   *decimal.Decimal  `json:"unrealizedReturnLTE,omitempty"`
+
 	// "household_currency_id" field predicates.
 	HouseholdCurrencyID      *int  `json:"householdCurrencyID,omitempty"`
 	HouseholdCurrencyIDNEQ   *int  `json:"householdCurrencyIDNEQ,omitempty"`
@@ -4297,6 +4307,30 @@ func (i *SnapshotEntryWhereInput) P() (predicate.SnapshotEntry, error) {
 	}
 	if i.LiabilityLTE != nil {
 		predicates = append(predicates, snapshotentry.LiabilityLTE(*i.LiabilityLTE))
+	}
+	if i.UnrealizedReturn != nil {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnEQ(*i.UnrealizedReturn))
+	}
+	if i.UnrealizedReturnNEQ != nil {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnNEQ(*i.UnrealizedReturnNEQ))
+	}
+	if len(i.UnrealizedReturnIn) > 0 {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnIn(i.UnrealizedReturnIn...))
+	}
+	if len(i.UnrealizedReturnNotIn) > 0 {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnNotIn(i.UnrealizedReturnNotIn...))
+	}
+	if i.UnrealizedReturnGT != nil {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnGT(*i.UnrealizedReturnGT))
+	}
+	if i.UnrealizedReturnGTE != nil {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnGTE(*i.UnrealizedReturnGTE))
+	}
+	if i.UnrealizedReturnLT != nil {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnLT(*i.UnrealizedReturnLT))
+	}
+	if i.UnrealizedReturnLTE != nil {
+		predicates = append(predicates, snapshotentry.UnrealizedReturnLTE(*i.UnrealizedReturnLTE))
 	}
 	if i.HouseholdCurrencyID != nil {
 		predicates = append(predicates, snapshotentry.HouseholdCurrencyIDEQ(*i.HouseholdCurrencyID))

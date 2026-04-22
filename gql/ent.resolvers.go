@@ -154,6 +154,11 @@ func (r *snapshotEntryResolver) Liability(ctx context.Context, obj *ent.Snapshot
 	return obj.Liability.String(), nil
 }
 
+// UnrealizedReturn is the resolver for the unrealizedReturn field.
+func (r *snapshotEntryResolver) UnrealizedReturn(ctx context.Context, obj *ent.SnapshotEntry) (string, error) {
+	panic(fmt.Errorf("not implemented: UnrealizedReturn - unrealizedReturn"))
+}
+
 // Rate is the resolver for the rate field.
 func (r *snapshotRateResolver) Rate(ctx context.Context, obj *ent.SnapshotRate) (string, error) {
 	return obj.Rate.String(), nil
@@ -818,6 +823,46 @@ func (r *snapshotEntryWhereInputResolver) LiabilityLt(ctx context.Context, obj *
 // LiabilityLte is the resolver for the liabilityLTE field.
 func (r *snapshotEntryWhereInputResolver) LiabilityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
 	panic(fmt.Errorf("not implemented: LiabilityLte - liabilityLTE"))
+}
+
+// UnrealizedReturn is the resolver for the unrealizedReturn field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturn - unrealizedReturn"))
+}
+
+// UnrealizedReturnNeq is the resolver for the unrealizedReturnNEQ field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnNeq - unrealizedReturnNEQ"))
+}
+
+// UnrealizedReturnIn is the resolver for the unrealizedReturnIn field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnIn - unrealizedReturnIn"))
+}
+
+// UnrealizedReturnNotIn is the resolver for the unrealizedReturnNotIn field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnNotIn - unrealizedReturnNotIn"))
+}
+
+// UnrealizedReturnGt is the resolver for the unrealizedReturnGT field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnGt - unrealizedReturnGT"))
+}
+
+// UnrealizedReturnGte is the resolver for the unrealizedReturnGTE field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnGte - unrealizedReturnGTE"))
+}
+
+// UnrealizedReturnLt is the resolver for the unrealizedReturnLT field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnLt - unrealizedReturnLT"))
+}
+
+// UnrealizedReturnLte is the resolver for the unrealizedReturnLTE field.
+func (r *snapshotEntryWhereInputResolver) UnrealizedReturnLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
+	panic(fmt.Errorf("not implemented: UnrealizedReturnLte - unrealizedReturnLTE"))
 }
 
 // Rate is the resolver for the rate field.

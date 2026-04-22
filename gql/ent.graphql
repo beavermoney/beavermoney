@@ -2030,6 +2030,7 @@ type SnapshotEntry implements Node {
   Total liability account values (negative)
   """
   liability: String!
+  unrealizedReturn: String!
   householdCurrencyID: ID!
   userID: ID!
   snapshotID: ID!
@@ -2171,6 +2172,17 @@ input SnapshotEntryWhereInput {
   liabilityGTE: String
   liabilityLT: String
   liabilityLTE: String
+  """
+  unrealized_return field predicates
+  """
+  unrealizedReturn: String
+  unrealizedReturnNEQ: String
+  unrealizedReturnIn: [String!]
+  unrealizedReturnNotIn: [String!]
+  unrealizedReturnGT: String
+  unrealizedReturnGTE: String
+  unrealizedReturnLT: String
+  unrealizedReturnLTE: String
   """
   household_currency_id field predicates
   """

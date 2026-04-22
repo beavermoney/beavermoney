@@ -430,6 +430,7 @@ type ComplexityRoot struct {
 		Receivable          func(childComplexity int) int
 		Snapshot            func(childComplexity int) int
 		SnapshotID          func(childComplexity int) int
+		UnrealizedReturn    func(childComplexity int) int
 		UpdateTime          func(childComplexity int) int
 		User                func(childComplexity int) int
 		UserID              func(childComplexity int) int
@@ -681,6 +682,7 @@ type SnapshotEntryResolver interface {
 	Property(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
 	Receivable(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
 	Liability(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
+	UnrealizedReturn(ctx context.Context, obj *ent.SnapshotEntry) (string, error)
 }
 type SnapshotRateResolver interface {
 	Rate(ctx context.Context, obj *ent.SnapshotRate) (string, error)
@@ -829,6 +831,14 @@ type SnapshotEntryWhereInputResolver interface {
 	LiabilityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
 	LiabilityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
 	LiabilityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	UnrealizedReturn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	UnrealizedReturnNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	UnrealizedReturnIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	UnrealizedReturnNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error
+	UnrealizedReturnGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	UnrealizedReturnGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	UnrealizedReturnLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
+	UnrealizedReturnLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error
 }
 type SnapshotRateWhereInputResolver interface {
 	Rate(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error
@@ -2610,6 +2620,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.SnapshotEntry.SnapshotID(childComplexity), true
+	case "SnapshotEntry.unrealizedReturn":
+		if e.complexity.SnapshotEntry.UnrealizedReturn == nil {
+			break
+		}
+
+		return e.complexity.SnapshotEntry.UnrealizedReturn(childComplexity), true
 	case "SnapshotEntry.updateTime":
 		if e.complexity.SnapshotEntry.UpdateTime == nil {
 			break
@@ -7562,6 +7578,8 @@ func (ec *executionContext) fieldContext_HouseholdCurrency_snapshotEntries(_ con
 				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
 			case "liability":
 				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_SnapshotEntry_unrealizedReturn(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_SnapshotEntry_householdCurrencyID(ctx, field)
 			case "userID":
@@ -13645,6 +13663,8 @@ func (ec *executionContext) fieldContext_Snapshot_snapshotEntries(_ context.Cont
 				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
 			case "liability":
 				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_SnapshotEntry_unrealizedReturn(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_SnapshotEntry_householdCurrencyID(ctx, field)
 			case "userID":
@@ -14157,6 +14177,35 @@ func (ec *executionContext) fieldContext_SnapshotEntry_liability(_ context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _SnapshotEntry_unrealizedReturn(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SnapshotEntry_unrealizedReturn,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.SnapshotEntry().UnrealizedReturn(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SnapshotEntry_unrealizedReturn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SnapshotEntry",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SnapshotEntry_householdCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.SnapshotEntry) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -14625,6 +14674,8 @@ func (ec *executionContext) fieldContext_SnapshotEntryEdge_node(_ context.Contex
 				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
 			case "liability":
 				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_SnapshotEntry_unrealizedReturn(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_SnapshotEntry_householdCurrencyID(ctx, field)
 			case "userID":
@@ -17832,6 +17883,8 @@ func (ec *executionContext) fieldContext_User_snapshotEntries(_ context.Context,
 				return ec.fieldContext_SnapshotEntry_receivable(ctx, field)
 			case "liability":
 				return ec.fieldContext_SnapshotEntry_liability(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_SnapshotEntry_unrealizedReturn(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_SnapshotEntry_householdCurrencyID(ctx, field)
 			case "userID":
@@ -25138,7 +25191,7 @@ func (ec *executionContext) unmarshalInputSnapshotEntryWhereInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "liquidity", "liquidityNEQ", "liquidityIn", "liquidityNotIn", "liquidityGT", "liquidityGTE", "liquidityLT", "liquidityLTE", "investment", "investmentNEQ", "investmentIn", "investmentNotIn", "investmentGT", "investmentGTE", "investmentLT", "investmentLTE", "property", "propertyNEQ", "propertyIn", "propertyNotIn", "propertyGT", "propertyGTE", "propertyLT", "propertyLTE", "receivable", "receivableNEQ", "receivableIn", "receivableNotIn", "receivableGT", "receivableGTE", "receivableLT", "receivableLTE", "liability", "liabilityNEQ", "liabilityIn", "liabilityNotIn", "liabilityGT", "liabilityGTE", "liabilityLT", "liabilityLTE", "householdCurrencyID", "householdCurrencyIDNEQ", "householdCurrencyIDIn", "householdCurrencyIDNotIn", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "snapshotID", "snapshotIDNEQ", "snapshotIDIn", "snapshotIDNotIn", "hasHousehold", "hasHouseholdWith", "hasHouseholdCurrency", "hasHouseholdCurrencyWith", "hasUser", "hasUserWith", "hasSnapshot", "hasSnapshotWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "liquidity", "liquidityNEQ", "liquidityIn", "liquidityNotIn", "liquidityGT", "liquidityGTE", "liquidityLT", "liquidityLTE", "investment", "investmentNEQ", "investmentIn", "investmentNotIn", "investmentGT", "investmentGTE", "investmentLT", "investmentLTE", "property", "propertyNEQ", "propertyIn", "propertyNotIn", "propertyGT", "propertyGTE", "propertyLT", "propertyLTE", "receivable", "receivableNEQ", "receivableIn", "receivableNotIn", "receivableGT", "receivableGTE", "receivableLT", "receivableLTE", "liability", "liabilityNEQ", "liabilityIn", "liabilityNotIn", "liabilityGT", "liabilityGTE", "liabilityLT", "liabilityLTE", "unrealizedReturn", "unrealizedReturnNEQ", "unrealizedReturnIn", "unrealizedReturnNotIn", "unrealizedReturnGT", "unrealizedReturnGTE", "unrealizedReturnLT", "unrealizedReturnLTE", "householdCurrencyID", "householdCurrencyIDNEQ", "householdCurrencyIDIn", "householdCurrencyIDNotIn", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "snapshotID", "snapshotIDNEQ", "snapshotIDIn", "snapshotIDNotIn", "hasHousehold", "hasHouseholdWith", "hasHouseholdCurrency", "hasHouseholdCurrencyWith", "hasUser", "hasUserWith", "hasSnapshot", "hasSnapshotWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25720,6 +25773,78 @@ func (ec *executionContext) unmarshalInputSnapshotEntryWhereInput(ctx context.Co
 				return it, err
 			}
 			if err = ec.resolvers.SnapshotEntryWhereInput().LiabilityLte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturn"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnNeq(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnNotIn(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnGt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnGte(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnLt(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "unrealizedReturnLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unrealizedReturnLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.SnapshotEntryWhereInput().UnrealizedReturnLte(ctx, &it, data); err != nil {
 				return it, err
 			}
 		case "householdCurrencyID":
@@ -34648,6 +34773,42 @@ func (ec *executionContext) _SnapshotEntry(ctx context.Context, sel ast.Selectio
 					}
 				}()
 				res = ec._SnapshotEntry_liability(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "unrealizedReturn":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._SnapshotEntry_unrealizedReturn(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

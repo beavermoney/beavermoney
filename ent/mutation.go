@@ -9159,6 +9159,8 @@ type SnapshotEntryMutation struct {
 	addreceivable             *decimal.Decimal
 	liability                 *decimal.Decimal
 	addliability              *decimal.Decimal
+	unrealized_return         *decimal.Decimal
+	addunrealized_return      *decimal.Decimal
 	clearedFields             map[string]struct{}
 	household                 *int
 	clearedhousehold          bool
@@ -9659,6 +9661,62 @@ func (m *SnapshotEntryMutation) ResetLiability() {
 	m.addliability = nil
 }
 
+// SetUnrealizedReturn sets the "unrealized_return" field.
+func (m *SnapshotEntryMutation) SetUnrealizedReturn(d decimal.Decimal) {
+	m.unrealized_return = &d
+	m.addunrealized_return = nil
+}
+
+// UnrealizedReturn returns the value of the "unrealized_return" field in the mutation.
+func (m *SnapshotEntryMutation) UnrealizedReturn() (r decimal.Decimal, exists bool) {
+	v := m.unrealized_return
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUnrealizedReturn returns the old "unrealized_return" field's value of the SnapshotEntry entity.
+// If the SnapshotEntry object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotEntryMutation) OldUnrealizedReturn(ctx context.Context) (v decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUnrealizedReturn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUnrealizedReturn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUnrealizedReturn: %w", err)
+	}
+	return oldValue.UnrealizedReturn, nil
+}
+
+// AddUnrealizedReturn adds d to the "unrealized_return" field.
+func (m *SnapshotEntryMutation) AddUnrealizedReturn(d decimal.Decimal) {
+	if m.addunrealized_return != nil {
+		*m.addunrealized_return = m.addunrealized_return.Add(d)
+	} else {
+		m.addunrealized_return = &d
+	}
+}
+
+// AddedUnrealizedReturn returns the value that was added to the "unrealized_return" field in this mutation.
+func (m *SnapshotEntryMutation) AddedUnrealizedReturn() (r decimal.Decimal, exists bool) {
+	v := m.addunrealized_return
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUnrealizedReturn resets all changes to the "unrealized_return" field.
+func (m *SnapshotEntryMutation) ResetUnrealizedReturn() {
+	m.unrealized_return = nil
+	m.addunrealized_return = nil
+}
+
 // SetHouseholdCurrencyID sets the "household_currency_id" field.
 func (m *SnapshotEntryMutation) SetHouseholdCurrencyID(i int) {
 	m.household_currency = &i
@@ -9909,7 +9967,7 @@ func (m *SnapshotEntryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SnapshotEntryMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.household != nil {
 		fields = append(fields, snapshotentry.FieldHouseholdID)
 	}
@@ -9933,6 +9991,9 @@ func (m *SnapshotEntryMutation) Fields() []string {
 	}
 	if m.liability != nil {
 		fields = append(fields, snapshotentry.FieldLiability)
+	}
+	if m.unrealized_return != nil {
+		fields = append(fields, snapshotentry.FieldUnrealizedReturn)
 	}
 	if m.household_currency != nil {
 		fields = append(fields, snapshotentry.FieldHouseholdCurrencyID)
@@ -9967,6 +10028,8 @@ func (m *SnapshotEntryMutation) Field(name string) (ent.Value, bool) {
 		return m.Receivable()
 	case snapshotentry.FieldLiability:
 		return m.Liability()
+	case snapshotentry.FieldUnrealizedReturn:
+		return m.UnrealizedReturn()
 	case snapshotentry.FieldHouseholdCurrencyID:
 		return m.HouseholdCurrencyID()
 	case snapshotentry.FieldUserID:
@@ -9998,6 +10061,8 @@ func (m *SnapshotEntryMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldReceivable(ctx)
 	case snapshotentry.FieldLiability:
 		return m.OldLiability(ctx)
+	case snapshotentry.FieldUnrealizedReturn:
+		return m.OldUnrealizedReturn(ctx)
 	case snapshotentry.FieldHouseholdCurrencyID:
 		return m.OldHouseholdCurrencyID(ctx)
 	case snapshotentry.FieldUserID:
@@ -10069,6 +10134,13 @@ func (m *SnapshotEntryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLiability(v)
 		return nil
+	case snapshotentry.FieldUnrealizedReturn:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUnrealizedReturn(v)
+		return nil
 	case snapshotentry.FieldHouseholdCurrencyID:
 		v, ok := value.(int)
 		if !ok {
@@ -10113,6 +10185,9 @@ func (m *SnapshotEntryMutation) AddedFields() []string {
 	if m.addliability != nil {
 		fields = append(fields, snapshotentry.FieldLiability)
 	}
+	if m.addunrealized_return != nil {
+		fields = append(fields, snapshotentry.FieldUnrealizedReturn)
+	}
 	return fields
 }
 
@@ -10131,6 +10206,8 @@ func (m *SnapshotEntryMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedReceivable()
 	case snapshotentry.FieldLiability:
 		return m.AddedLiability()
+	case snapshotentry.FieldUnrealizedReturn:
+		return m.AddedUnrealizedReturn()
 	}
 	return nil, false
 }
@@ -10174,6 +10251,13 @@ func (m *SnapshotEntryMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddLiability(v)
+		return nil
+	case snapshotentry.FieldUnrealizedReturn:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUnrealizedReturn(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SnapshotEntry numeric field %s", name)
@@ -10225,6 +10309,9 @@ func (m *SnapshotEntryMutation) ResetField(name string) error {
 		return nil
 	case snapshotentry.FieldLiability:
 		m.ResetLiability()
+		return nil
+	case snapshotentry.FieldUnrealizedReturn:
+		m.ResetUnrealizedReturn()
 		return nil
 	case snapshotentry.FieldHouseholdCurrencyID:
 		m.ResetHouseholdCurrencyID()

@@ -96,6 +96,11 @@ func Liability(v decimal.Decimal) predicate.SnapshotEntry {
 	return predicate.SnapshotEntry(sql.FieldEQ(FieldLiability, v))
 }
 
+// UnrealizedReturn applies equality check predicate on the "unrealized_return" field. It's identical to UnrealizedReturnEQ.
+func UnrealizedReturn(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldEQ(FieldUnrealizedReturn, v))
+}
+
 // HouseholdCurrencyID applies equality check predicate on the "household_currency_id" field. It's identical to HouseholdCurrencyIDEQ.
 func HouseholdCurrencyID(v int) predicate.SnapshotEntry {
 	return predicate.SnapshotEntry(sql.FieldEQ(FieldHouseholdCurrencyID, v))
@@ -409,6 +414,46 @@ func LiabilityLT(v decimal.Decimal) predicate.SnapshotEntry {
 // LiabilityLTE applies the LTE predicate on the "liability" field.
 func LiabilityLTE(v decimal.Decimal) predicate.SnapshotEntry {
 	return predicate.SnapshotEntry(sql.FieldLTE(FieldLiability, v))
+}
+
+// UnrealizedReturnEQ applies the EQ predicate on the "unrealized_return" field.
+func UnrealizedReturnEQ(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldEQ(FieldUnrealizedReturn, v))
+}
+
+// UnrealizedReturnNEQ applies the NEQ predicate on the "unrealized_return" field.
+func UnrealizedReturnNEQ(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldNEQ(FieldUnrealizedReturn, v))
+}
+
+// UnrealizedReturnIn applies the In predicate on the "unrealized_return" field.
+func UnrealizedReturnIn(vs ...decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldIn(FieldUnrealizedReturn, vs...))
+}
+
+// UnrealizedReturnNotIn applies the NotIn predicate on the "unrealized_return" field.
+func UnrealizedReturnNotIn(vs ...decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldNotIn(FieldUnrealizedReturn, vs...))
+}
+
+// UnrealizedReturnGT applies the GT predicate on the "unrealized_return" field.
+func UnrealizedReturnGT(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldGT(FieldUnrealizedReturn, v))
+}
+
+// UnrealizedReturnGTE applies the GTE predicate on the "unrealized_return" field.
+func UnrealizedReturnGTE(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldGTE(FieldUnrealizedReturn, v))
+}
+
+// UnrealizedReturnLT applies the LT predicate on the "unrealized_return" field.
+func UnrealizedReturnLT(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldLT(FieldUnrealizedReturn, v))
+}
+
+// UnrealizedReturnLTE applies the LTE predicate on the "unrealized_return" field.
+func UnrealizedReturnLTE(v decimal.Decimal) predicate.SnapshotEntry {
+	return predicate.SnapshotEntry(sql.FieldLTE(FieldUnrealizedReturn, v))
 }
 
 // HouseholdCurrencyIDEQ applies the EQ predicate on the "household_currency_id" field.

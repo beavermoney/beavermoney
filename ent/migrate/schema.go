@@ -298,6 +298,7 @@ var (
 		{Name: "property", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "receivable", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "liability", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "unrealized_return", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
 		{Name: "snapshot_id", Type: field.TypeInt},
@@ -311,25 +312,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "snapshot_entries_households_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[8]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[9]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "snapshot_entries_household_currencies_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[9]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[10]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "snapshot_entries_snapshots_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[10]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[11]},
 				RefColumns: []*schema.Column{SnapshotsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "snapshot_entries_users_snapshot_entries",
-				Columns:    []*schema.Column{SnapshotEntriesColumns[11]},
+				Columns:    []*schema.Column{SnapshotEntriesColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -338,12 +339,12 @@ var (
 			{
 				Name:    "snapshotentry_snapshot_id",
 				Unique:  false,
-				Columns: []*schema.Column{SnapshotEntriesColumns[10]},
+				Columns: []*schema.Column{SnapshotEntriesColumns[11]},
 			},
 			{
 				Name:    "snapshotentry_snapshot_id_user_id_household_currency_id",
 				Unique:  true,
-				Columns: []*schema.Column{SnapshotEntriesColumns[10], SnapshotEntriesColumns[11], SnapshotEntriesColumns[9]},
+				Columns: []*schema.Column{SnapshotEntriesColumns[11], SnapshotEntriesColumns[12], SnapshotEntriesColumns[10]},
 			},
 		},
 	}

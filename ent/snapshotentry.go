@@ -38,6 +38,8 @@ type SnapshotEntry struct {
 	Receivable decimal.Decimal `json:"receivable,omitempty"`
 	// Total liability account values (negative)
 	Liability decimal.Decimal `json:"liability,omitempty"`
+	// UnrealizedReturn holds the value of the "unrealized_return" field.
+	UnrealizedReturn decimal.Decimal `json:"unrealized_return,omitempty"`
 	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
 	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -116,7 +118,7 @@ func (*SnapshotEntry) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case snapshotentry.FieldLiquidity, snapshotentry.FieldInvestment, snapshotentry.FieldProperty, snapshotentry.FieldReceivable, snapshotentry.FieldLiability:
+		case snapshotentry.FieldLiquidity, snapshotentry.FieldInvestment, snapshotentry.FieldProperty, snapshotentry.FieldReceivable, snapshotentry.FieldLiability, snapshotentry.FieldUnrealizedReturn:
 			values[i] = new(decimal.Decimal)
 		case snapshotentry.FieldID, snapshotentry.FieldHouseholdID, snapshotentry.FieldHouseholdCurrencyID, snapshotentry.FieldUserID, snapshotentry.FieldSnapshotID:
 			values[i] = new(sql.NullInt64)
@@ -190,6 +192,12 @@ func (_m *SnapshotEntry) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field liability", values[i])
 			} else if value != nil {
 				_m.Liability = *value
+			}
+		case snapshotentry.FieldUnrealizedReturn:
+			if value, ok := values[i].(*decimal.Decimal); !ok {
+				return fmt.Errorf("unexpected type %T for field unrealized_return", values[i])
+			} else if value != nil {
+				_m.UnrealizedReturn = *value
 			}
 		case snapshotentry.FieldHouseholdCurrencyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -288,6 +296,9 @@ func (_m *SnapshotEntry) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("liability=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Liability))
+	builder.WriteString(", ")
+	builder.WriteString("unrealized_return=")
+	builder.WriteString(fmt.Sprintf("%v", _m.UnrealizedReturn))
 	builder.WriteString(", ")
 	builder.WriteString("household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))

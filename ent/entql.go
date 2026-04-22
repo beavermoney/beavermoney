@@ -215,6 +215,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			snapshotentry.FieldProperty:            {Type: field.TypeFloat64, Column: snapshotentry.FieldProperty},
 			snapshotentry.FieldReceivable:          {Type: field.TypeFloat64, Column: snapshotentry.FieldReceivable},
 			snapshotentry.FieldLiability:           {Type: field.TypeFloat64, Column: snapshotentry.FieldLiability},
+			snapshotentry.FieldUnrealizedReturn:    {Type: field.TypeFloat64, Column: snapshotentry.FieldUnrealizedReturn},
 			snapshotentry.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: snapshotentry.FieldHouseholdCurrencyID},
 			snapshotentry.FieldUserID:              {Type: field.TypeInt, Column: snapshotentry.FieldUserID},
 			snapshotentry.FieldSnapshotID:          {Type: field.TypeInt, Column: snapshotentry.FieldSnapshotID},
@@ -2563,6 +2564,11 @@ func (f *SnapshotEntryFilter) WhereReceivable(p entql.Float64P) {
 // WhereLiability applies the entql float64 predicate on the liability field.
 func (f *SnapshotEntryFilter) WhereLiability(p entql.Float64P) {
 	f.Where(p.Field(snapshotentry.FieldLiability))
+}
+
+// WhereUnrealizedReturn applies the entql float64 predicate on the unrealized_return field.
+func (f *SnapshotEntryFilter) WhereUnrealizedReturn(p entql.Float64P) {
+	f.Where(p.Field(snapshotentry.FieldUnrealizedReturn))
 }
 
 // WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
