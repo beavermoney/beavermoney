@@ -16,6 +16,7 @@ import { parseDateRangeFromURL } from '@/lib/date-range'
 import { TransactionsList } from '../transactions/-components/transactions-list'
 import invariant from 'tiny-invariant'
 import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
+import { identity } from 'lodash-es'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/$categoryId',
@@ -102,7 +103,10 @@ function RouteComponent() {
   return (
     <div className="flex h-full flex-col gap-4">
       <div>
-        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+        <Button
+          variant="secondary"
+          onClick={() => navigate({ to: '..', search: identity })}
+        >
           Back
         </Button>
       </div>

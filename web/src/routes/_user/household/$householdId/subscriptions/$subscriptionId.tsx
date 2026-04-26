@@ -14,6 +14,7 @@ import { Item } from '@/components/ui/item'
 import { Button } from '@/components/ui/button'
 import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
 import invariant from 'tiny-invariant'
+import { identity } from 'lodash-es'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/$subscriptionId',
@@ -67,7 +68,10 @@ function RouteComponent() {
   return (
     <div className="flex h-full flex-col gap-4">
       <div>
-        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+        <Button
+          variant="secondary"
+          onClick={() => navigate({ to: '..', search: identity })}
+        >
           Back
         </Button>
       </div>

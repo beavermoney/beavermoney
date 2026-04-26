@@ -45,6 +45,7 @@ import { AccountIdLayoutArchiveMutation } from './__generated__/AccountIdLayoutA
 import invariant from 'tiny-invariant'
 import { AccountIdLayoutFragment$key } from './__generated__/AccountIdLayoutFragment.graphql'
 import { NodeType, commitMutationResult, useDeleteNode } from '@/lib/relay'
+import { identity } from 'lodash-es'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -200,7 +201,10 @@ function RouteComponent() {
       {/* Fixed header section */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+          <Button
+            variant="secondary"
+            onClick={() => navigate({ to: '..', search: identity })}
+          >
             Back
           </Button>
           <CardTitle>Account Detail</CardTitle>
