@@ -20,7 +20,6 @@ type Investment struct {
 // Fields of the Investment.
 func (Investment) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("id").Immutable(),
 		field.String("name"),
 		field.Enum("type").Values("stock", "crypto"),
 		field.String("symbol").NotEmpty(),

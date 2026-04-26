@@ -1939,8 +1939,6 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 			return false, err
 		}
 
-		builders := make([]*ent.InvestmentCreate, 0)
-
 		// Update investments with new quotes
 		for symbol, invList := range stockInvestments {
 			quote, ok := quotes[symbol]
@@ -1950,14 +1948,14 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 			}
 
 			for _, inv := range invList {
-				builders = append(builders, client.Investment.Create().SetID(inv.ID).SetQuote(quote.CurrentPrice))
+				err := client.Investment.UpdateOneID(inv.ID).
+					SetQuote(quote.CurrentPrice).
+					Exec(ctx)
+				if err != nil {
+					r.logger.Error("Failed to update investment quote", "error", err, "investmentID", inv.ID)
+					return false, err
+				}
 			}
-		}
-
-		err = client.Investment.CreateBulk(builders...).OnConflict().UpdateNewValues().Exec(ctx)
-		if err != nil {
-			r.logger.Error("Failed to update investment quotes", "error", err)
-			return false, err
 		}
 	}
 
@@ -1969,8 +1967,6 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 			return false, err
 		}
 
-		builders := make([]*ent.InvestmentCreate, 0)
-
 		// Update investments with new quotes
 		for symbol, invList := range cryptoInvestments {
 			quote, ok := quotes[symbol]
@@ -1980,14 +1976,14 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 			}
 
 			for _, inv := range invList {
-				builders = append(builders, client.Investment.Create().SetID(inv.ID).SetQuote(quote.CurrentPrice))
+				err := client.Investment.UpdateOneID(inv.ID).
+					SetQuote(quote.CurrentPrice).
+					Exec(ctx)
+				if err != nil {
+					r.logger.Error("Failed to update investment quote", "error", err, "investmentID", inv.ID)
+					return false, err
+				}
 			}
-		}
-
-		err = client.Investment.CreateBulk(builders...).OnConflict().UpdateNewValues().Exec(ctx)
-		if err != nil {
-			r.logger.Error("Failed to update investment quotes", "error", err)
-			return false, err
 		}
 	}
 

@@ -125,12 +125,6 @@ func (_c *InvestmentCreate) SetHouseholdCurrencyID(v int) *InvestmentCreate {
 	return _c
 }
 
-// SetID sets the "id" field.
-func (_c *InvestmentCreate) SetID(v int) *InvestmentCreate {
-	_c.mutation.SetID(v)
-	return _c
-}
-
 // SetAccount sets the "account" edge to the Account entity.
 func (_c *InvestmentCreate) SetAccount(v *Account) *InvestmentCreate {
 	return _c.SetAccountID(v.ID)
@@ -307,10 +301,8 @@ func (_c *InvestmentCreate) sqlSave(ctx context.Context) (*Investment, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -322,10 +314,6 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 		_spec = sqlgraph.NewCreateSpec(investment.Table, sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = _c.conflict
-	if id, ok := _c.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := _c.mutation.CreateTime(); ok {
 		_spec.SetField(investment.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
@@ -543,23 +531,17 @@ func (u *InvestmentUpsert) AddQuote(v decimal.Decimal) *InvestmentUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Investment.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(investment.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 func (u *InvestmentUpsertOne) UpdateNewValues() *InvestmentUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
-		if _, exists := u.create.mutation.ID(); exists {
-			s.SetIgnore(investment.FieldID)
-		}
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(investment.FieldCreateTime)
 		}
@@ -766,7 +748,7 @@ func (_c *InvestmentCreateBulk) Save(ctx context.Context) ([]*Investment, error)
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
@@ -856,18 +838,12 @@ type InvestmentUpsertBulk struct {
 //	client.Investment.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(investment.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 func (u *InvestmentUpsertBulk) UpdateNewValues() *InvestmentUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
-			if _, exists := b.mutation.ID(); exists {
-				s.SetIgnore(investment.FieldID)
-			}
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(investment.FieldCreateTime)
 			}

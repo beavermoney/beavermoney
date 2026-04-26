@@ -206,23 +206,23 @@ func init() {
 	// investment.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	investment.UpdateDefaultUpdateTime = investmentDescUpdateTime.UpdateDefault.(func() time.Time)
 	// investmentDescSymbol is the schema descriptor for symbol field.
-	investmentDescSymbol := investmentFields[3].Descriptor()
+	investmentDescSymbol := investmentFields[2].Descriptor()
 	// investment.SymbolValidator is a validator for the "symbol" field. It is called by the builders before save.
 	investment.SymbolValidator = investmentDescSymbol.Validators[0].(func(string) error)
 	// investmentDescAmount is the schema descriptor for amount field.
-	investmentDescAmount := investmentFields[4].Descriptor()
+	investmentDescAmount := investmentFields[3].Descriptor()
 	// investment.DefaultAmount holds the default value on creation for the amount field.
 	investment.DefaultAmount = investmentDescAmount.Default.(func() decimal.Decimal)
 	// investmentDescValue is the schema descriptor for value field.
-	investmentDescValue := investmentFields[6].Descriptor()
+	investmentDescValue := investmentFields[5].Descriptor()
 	// investment.DefaultValue holds the default value on creation for the value field.
 	investment.DefaultValue = investmentDescValue.Default.(func() decimal.Decimal)
 	// investmentDescAccountID is the schema descriptor for account_id field.
-	investmentDescAccountID := investmentFields[7].Descriptor()
+	investmentDescAccountID := investmentFields[6].Descriptor()
 	// investment.AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	investment.AccountIDValidator = investmentDescAccountID.Validators[0].(func(int) error)
 	// investmentDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
-	investmentDescHouseholdCurrencyID := investmentFields[8].Descriptor()
+	investmentDescHouseholdCurrencyID := investmentFields[7].Descriptor()
 	// investment.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
 	investment.HouseholdCurrencyIDValidator = investmentDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	investmentlotMixin := schema.InvestmentLot{}.Mixin()
