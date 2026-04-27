@@ -8,6 +8,7 @@ import { useCurrency } from '@/hooks/use-currency'
 import { getPrettyTime } from '@/lib/time'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getLogoTickerURL } from '@/lib/logo'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 
 const investmentCardFragment = graphql`
   fragment investmentCardFragment on Investment {
@@ -43,6 +44,7 @@ export function InvestmentCard({
   const data = useFragment(investmentCardFragment, fragmentRef)
 
   const { formatCurrencyWithPrivacyMode, formatCurrency } = useCurrency()
+  const { isPrivacyModeEnabled } = usePrivacyMode()
 
   const hasShares = currency(data.amount).value !== 0
   const unrealizedReturn = currency(data.unrealizedReturn, { precision: 8 })
@@ -54,8 +56,12 @@ export function InvestmentCard({
     value: data.unrealizedReturn,
     currencyCode: data.householdCurrency.code,
   })
-  const signedReturn = isPositive ? `+${formattedReturn}` : formattedReturn
-  const formattedPercent = `${Math.abs(unrealizedReturnPercent).toFixed(2)}%`
+  const signedReturn = isPositive
+    ? `+${formattedReturn}`
+    : `-${formattedReturn}`
+  const formattedPercent = isPrivacyModeEnabled
+    ? '•••'
+    : ` ${Math.abs(unrealizedReturnPercent).toFixed(2)}%`
   const signedPercent = isPositive
     ? `+${formattedPercent}`
     : isNegative
@@ -103,7 +109,7 @@ export function InvestmentCard({
       </div>
       <div className="text-muted-foreground flex items-center gap-1.5 text-[0.6875rem]">
         <span className="tabular-nums">
-          {data.amount} @{' '}
+          {isPrivacyModeEnabled ? '•••' : data.amount} @{' '}
           {formatCurrency({
             value: data.quote,
             currencyCode: data.householdCurrency.code,
