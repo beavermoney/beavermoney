@@ -104,7 +104,7 @@ export function CategoryCard({
       params={{ categoryId: category.id }}
     >
       <div className="flex items-center gap-2">
-        <div className="shrink-0 overflow-hidden rounded-full [&>svg]:size-6 [&>svg]:p-1">
+        <div className="size-6 shrink-0 overflow-hidden rounded-full [&>svg]:size-6 [&>svg]:p-1">
           {getCategoryTypeIcon({
             type: category.type,
             icon: category.icon,
