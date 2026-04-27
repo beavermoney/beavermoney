@@ -10,6 +10,7 @@ import { AccountsPanel } from './-components/accounts-panel'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import type { accountsQuery } from './__generated__/accountsQuery.graphql'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const query = graphql`
   query accountsQuery {
@@ -50,5 +51,9 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  return <AccountsPanel fragmentRef={data.household} />
+  return (
+    <HouseholdContentLayout>
+      <AccountsPanel fragmentRef={data.household} />
+    </HouseholdContentLayout>
+  )
 }

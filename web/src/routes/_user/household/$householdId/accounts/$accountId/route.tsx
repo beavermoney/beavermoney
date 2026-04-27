@@ -48,6 +48,7 @@ import { routeAccountIdDeleteMutation } from './__generated__/routeAccountIdDele
 import { routeAccountIdArchiveMutation } from './__generated__/routeAccountIdArchiveMutation.graphql'
 import { routeAccountIdFragment$key } from './__generated__/routeAccountIdFragment.graphql'
 import { AccountCard } from '../-components/account-card'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -198,123 +199,125 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Fixed header section */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => navigate({ to: '..', search: identity })}
-          >
-            Back
-          </Button>
-          <CardTitle>Account Detail</CardTitle>
-          <div className="grow" />
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={<Button variant="ghost" size="icon" />}
+    <HouseholdContentLayout>
+      <div className="flex h-full flex-col">
+        {/* Fixed header section */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => navigate({ to: '..', search: identity })}
             >
-              <MoreHorizontalIcon className="size-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleEdit}>
-                <EditIcon className="mr-2 size-4" />
-                Edit
-              </DropdownMenuItem>
-              {!accountData.archived && (
-                <DropdownMenuItem onClick={() => setArchiveAlertOpen(true)}>
-                  <ArchiveIcon className="mr-2 size-4" />
-                  Archive
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                onClick={() => setDeleteAlertOpen(true)}
-                className="text-destructive focus:text-destructive"
+              Back
+            </Button>
+            <CardTitle>Account Detail</CardTitle>
+            <div className="grow" />
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={<Button variant="ghost" size="icon" />}
               >
-                <Trash2Icon className="mr-2 size-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <MoreHorizontalIcon className="size-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleEdit}>
+                  <EditIcon className="mr-2 size-4" />
+                  Edit
+                </DropdownMenuItem>
+                {!accountData.archived && (
+                  <DropdownMenuItem onClick={() => setArchiveAlertOpen(true)}>
+                    <ArchiveIcon className="mr-2 size-4" />
+                    Archive
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={() => setDeleteAlertOpen(true)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2Icon className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="bg-muted/50 rounded-md">
+            <AccountCard fragmentRef={data.node} />
+          </div>
+          <Separator />
         </div>
-        <div className="bg-muted/50 rounded-md">
-          <AccountCard fragmentRef={data.node} />
+        <div className="py-2"></div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <Outlet />
         </div>
-        <Separator />
+
+        <div className="fixed right-4 bottom-4 lg:absolute">
+          <Button
+            nativeButton={true}
+            size="icon-xl"
+            className="rounded-full"
+            onClick={() =>
+              openLogTransaction(
+                accountData.type === 'investment' ? 'buy' : 'expense',
+                { accountId: accountData.id },
+              )
+            }
+          >
+            <PlusIcon />
+          </Button>
+        </div>
+
+        {/* Delete Alert Dialog */}
+        <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+          <AlertDialogContent size="sm">
+            <AlertDialogHeader>
+              <AlertDialogMedia>
+                <AlertTriangleIcon className="text-destructive" />
+              </AlertDialogMedia>
+              <AlertDialogTitle>Delete Account</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                account. Delete is only allowed if there are no transactions or
+                investments attached.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isDeleteMutationInFlight}
+              >
+                {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Archive Alert Dialog */}
+        <AlertDialog open={archiveAlertOpen} onOpenChange={setArchiveAlertOpen}>
+          <AlertDialogContent size="sm">
+            <AlertDialogHeader>
+              <AlertDialogMedia>
+                <ArchiveIcon />
+              </AlertDialogMedia>
+              <AlertDialogTitle>Archive Account</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will archive the account and hide it from the main list.
+                Archive is only allowed when the account value is zero.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleArchive}
+                disabled={isArchiveMutationInFlight}
+              >
+                {isArchiveMutationInFlight ? 'Archiving...' : 'Archive'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-      <div className="py-2"></div>
-
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <Outlet />
-      </div>
-
-      <div className="fixed right-4 bottom-4 lg:absolute">
-        <Button
-          nativeButton={true}
-          size="icon-xl"
-          className="rounded-full"
-          onClick={() =>
-            openLogTransaction(
-              accountData.type === 'investment' ? 'buy' : 'expense',
-              { accountId: accountData.id },
-            )
-          }
-        >
-          <PlusIcon />
-        </Button>
-      </div>
-
-      {/* Delete Alert Dialog */}
-      <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogMedia>
-              <AlertTriangleIcon className="text-destructive" />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Delete Account</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              account. Delete is only allowed if there are no transactions or
-              investments attached.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isDeleteMutationInFlight}
-            >
-              {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Archive Alert Dialog */}
-      <AlertDialog open={archiveAlertOpen} onOpenChange={setArchiveAlertOpen}>
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogMedia>
-              <ArchiveIcon />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Archive Account</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will archive the account and hide it from the main list.
-              Archive is only allowed when the account value is zero.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleArchive}
-              disabled={isArchiveMutationInFlight}
-            >
-              {isArchiveMutationInFlight ? 'Archiving...' : 'Archive'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    </HouseholdContentLayout>
   )
 }
