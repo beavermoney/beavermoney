@@ -6,8 +6,10 @@ import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
+import { useEffect } from 'react'
 import type { newExpenseMutation } from './__generated__/newExpenseMutation.graphql'
 import type { newExpenseFragment$key } from './__generated__/newExpenseFragment.graphql'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -196,6 +198,15 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
   const selectedAccount = availableAccounts.find(
     (acc) => acc.id === selectedAccountId,
   )
+
+  const { defaults, setDefaults } = useLogTransaction()
+  useEffect(() => {
+    if (!defaults) return
+    if (defaults.accountId !== undefined) {
+      form.setFieldValue('accountId', defaults.accountId)
+    }
+    setDefaults(undefined)
+  }, [defaults, form, setDefaults])
 
   return (
     <Card className="w-full">

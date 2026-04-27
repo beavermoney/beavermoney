@@ -12,10 +12,7 @@ import { graphql } from 'relay-runtime'
 import { LogTransaction } from './-components/log-transaction'
 import { type newTransactionQuery } from './__generated__/newTransactionQuery.graphql'
 import { useIsMobile } from '@/hooks/use-mobile'
-import {
-  logTransactionStore,
-  setLogTransactionType,
-} from '@/hooks/log-transaction-store'
+import { logTransactionStore } from '@/hooks/log-transaction-store'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { identity } from 'lodash-es'
 import { useEffect } from 'react'
@@ -65,10 +62,10 @@ function RouteComponent() {
 
   useEffect(() => {
     if (logTransactionStore.state.type === null) {
-      setLogTransactionType('expense')
+      logTransactionStore.setState(() => ({ type: 'expense' }))
     }
     return () => {
-      setLogTransactionType(null)
+      logTransactionStore.setState(() => ({ type: null }))
     }
   }, [])
 

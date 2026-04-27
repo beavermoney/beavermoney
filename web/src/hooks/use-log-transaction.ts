@@ -4,7 +4,9 @@ import { useCallback } from 'react'
 import { useIsMobile } from './use-mobile'
 import {
   logTransactionStore,
+  setLogTransactionDefaults,
   setLogTransactionType,
+  type LogTransactionDefaults,
   type LogTransactionType,
 } from './log-transaction-store'
 
@@ -13,13 +15,20 @@ export function useLogTransaction() {
   const isMobile = useIsMobile()
 
   const type = useStore(logTransactionStore, (s) => s.type)
+  const defaults = useStore(logTransactionStore, (s) => s.defaults)
 
   const open = useCallback(
-    (nextType: LogTransactionType = 'expense') => {
-      setLogTransactionType(nextType)
+    (
+      nextType: LogTransactionType = 'expense',
+      nextDefaults?: LogTransactionDefaults,
+    ) => {
+      logTransactionStore.setState(() => ({
+        type: nextType,
+        defaults: nextDefaults,
+      }))
       if (isMobile) {
         navigate({
-          from: '/household/$householdId/',
+          from: '/household/$householdId',
           to: '/household/$householdId/transactions/new',
         })
       }
@@ -28,7 +37,7 @@ export function useLogTransaction() {
   )
 
   const close = useCallback(() => {
-    setLogTransactionType(null)
+    logTransactionStore.setState(() => ({ type: null }))
     if (isMobile) {
       navigate({ to: '..' })
     }
@@ -36,9 +45,11 @@ export function useLogTransaction() {
 
   return {
     type,
+    defaults,
     isOpen: type !== null,
     open,
     close,
     setType: setLogTransactionType,
+    setDefaults: setLogTransactionDefaults,
   }
 }

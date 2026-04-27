@@ -9,6 +9,7 @@ import { match } from 'ts-pattern'
 import { useEffect, useMemo } from 'react'
 import type { newBuyMutation } from './__generated__/newBuyMutation.graphql'
 import type { newBuyFragment$key } from './__generated__/newBuyFragment.graphql'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -232,6 +233,15 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
       form.setFieldValue('totalPaid', computed.value)
     }
   }, [shares, pricePerShare, form])
+
+  const { defaults, setDefaults } = useLogTransaction()
+  useEffect(() => {
+    if (!defaults) return
+    if (defaults.accountId !== undefined) {
+      form.setFieldValue('accountId', defaults.accountId)
+    }
+    setDefaults(undefined)
+  }, [defaults, form, setDefaults])
 
   return (
     <Card className="w-full">

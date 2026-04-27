@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<33c0d4c42f2c86aea5e98b492dfbe5e3>>
+ * @generated SignedSource<<28ef0e8bf59c5601c3b5acdc405a0de4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -201,12 +201,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3245054bc13445fa3d38f62070fbd76e",
+    "cacheID": "1d978eb3ac4d0ebee4da6ebef6609019",
     "id": null,
     "metadata": {},
     "name": "AccountIdLayoutQuery",
     "operationKind": "query",
-    "text": "query AccountIdLayoutQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      ...accountCardFragment\n      ...AccountIdLayoutFragment\n    }\n    id\n  }\n}\n\nfragment AccountIdLayoutFragment on Account {\n  id\n  archived\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
+    "text": "query AccountIdLayoutQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      ...accountCardFragment\n      ...AccountIdLayoutFragment\n    }\n    id\n  }\n}\n\nfragment AccountIdLayoutFragment on Account {\n  id\n  type\n  archived\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n"
   }
 };
 })();
