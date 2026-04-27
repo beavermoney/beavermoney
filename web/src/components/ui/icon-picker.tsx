@@ -212,6 +212,7 @@ const IconPicker = React.forwardRef<
 
     const parentRef = React.useRef<HTMLDivElement>(null)
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const virtualizer = useVirtualizer({
       count: virtualItems.length,
       getScrollElement: () => parentRef.current,
