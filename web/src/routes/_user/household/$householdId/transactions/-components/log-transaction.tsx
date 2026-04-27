@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { logTransactionFragment$key } from './__generated__/logTransactionFragment.graphql'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import invariant from 'tiny-invariant'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 
 const logTransactionFragment = graphql`
   fragment logTransactionFragment on Household {
@@ -25,14 +25,6 @@ const logTransactionFragment = graphql`
   }
 `
 
-type TransactionType =
-  | 'expense'
-  | 'income'
-  | 'transfer'
-  | 'buy'
-  | 'sell'
-  | 'move'
-
 type NewTransactionProps = {
   fragmentRef: logTransactionFragment$key
 }
@@ -40,27 +32,11 @@ type NewTransactionProps = {
 export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   const data = useFragment(logTransactionFragment, fragmentRef)
   const panelRef = useRef<HTMLDivElement>(null)
-  const search = useSearch({
-    from: '/_user/household/$householdId',
-    select: (s) => ({
-      logType: s.log_type,
-    }),
-  })
-  const navigate = useNavigate()
-  const selectedType = search.logType
+  const { type: selectedType, setType, close } = useLogTransaction()
   invariant(
     selectedType,
     'selectedType should be defined when rendering LogTransaction',
   )
-  const setSelectedType = (type: TransactionType) => {
-    navigate({
-      to: '.',
-      search: (prev) => ({
-        ...prev,
-        log_type: type,
-      }),
-    })
-  }
 
   useHotkey('Escape', () => {
     const activeElement = document.activeElement as HTMLElement | null
@@ -70,13 +46,7 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
       return
     }
 
-    navigate({
-      to: '.',
-      search: (prev) => ({
-        ...prev,
-        log_type: null,
-      }),
-    })
+    close()
   })
 
   useEffect(() => {
@@ -98,42 +68,42 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
           <Button
             size="sm"
             variant={selectedType === 'expense' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('expense')}
+            onClick={() => setType('expense')}
           >
             Expense
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'income' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('income')}
+            onClick={() => setType('income')}
           >
             Income
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'transfer' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('transfer')}
+            onClick={() => setType('transfer')}
           >
             Transfer
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'buy' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('buy')}
+            onClick={() => setType('buy')}
           >
             Buy
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'sell' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('sell')}
+            onClick={() => setType('sell')}
           >
             Sell
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'move' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('move')}
+            onClick={() => setType('move')}
           >
             Move
           </Button>

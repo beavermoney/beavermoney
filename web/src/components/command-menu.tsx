@@ -7,7 +7,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 import {
   LinkOptions,
   useNavigate,
@@ -26,7 +26,7 @@ export function CommandMenu() {
   })
 
   const [value, setValue] = useState('')
-  const isMobile = useIsMobile()
+  const { open: openLogTransaction } = useLogTransaction()
 
   const open = search.command_open
   const setOpen = useCallback(
@@ -149,19 +149,10 @@ export function CommandMenu() {
 
           <CommandGroup heading="Create">
             <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: isMobile
-                    ? '/household/$householdId/transactions/new'
-                    : '.',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                    log_type: 'expense',
-                  }),
-                })
-              }
+              onSelect={() => {
+                setOpen(false)
+                openLogTransaction('expense')
+              }}
             >
               New Transaction
             </CommandItem>

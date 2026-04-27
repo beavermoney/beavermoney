@@ -78,7 +78,7 @@ feature/
 
 ### Search Params by Feature
 
-- **transactions**: `start`, `end` (date range), `edit_transaction_id`, `log_type` (modal triggers)
+- **transactions**: `start`, `end` (date range), `edit_transaction_id` (modal trigger)
 - **accounts**: `accounts_group_by` (type | category)
 - **investments**: `investments_group_by` (account | symbol)
 - **subscriptions**: `sort_by` (cost_high | cost_low | next_payment | name_az | name_za)
@@ -216,4 +216,5 @@ Provider hierarchy in `$householdId/route.tsx`: UserProvider → HouseholdProvid
 - Tests: Vitest + Testing Library, colocated (`*.test.ts`), minimal coverage currently
 - `pnpm check` runs Prettier → ESLint → TSC (all must pass)
 - React Compiler enabled via `babel-plugin-react-compiler`
-- Modals triggered via search params (`edit_transaction_id`, `log_type`) in household layout
+- `edit_transaction_id` search param triggers the edit dialog in household layout
+- Log Transaction window state lives in `@/hooks/log-transaction-store` (TanStack Store) and is consumed via `useLogTransaction()` — desktop renders a floating Rnd window, mobile navigates to `/transactions/new`

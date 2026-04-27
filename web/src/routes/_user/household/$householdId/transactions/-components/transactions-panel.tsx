@@ -1,7 +1,7 @@
 import { fetchQuery, graphql } from 'relay-runtime'
 import { useFragment, useRelayEnvironment } from 'react-relay'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import type { LinkOptions } from '@tanstack/react-router'
+import { PlusIcon } from 'lucide-react'
 import { TransactionsList } from './transactions-list'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
 import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
@@ -10,9 +10,9 @@ import { DateRangeFilter } from '../../categories/-components/date-range-filter'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { useHousehold } from '@/hooks/use-household'
-import { Fragment, useMemo } from 'react'
-import { PlusButton } from '@/components/plus-button'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { Fragment } from 'react'
+import { Button } from '@/components/ui/button'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { parseISO } from 'date-fns'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
@@ -44,7 +44,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const navigate = useNavigate()
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
-  const isMobile = useIsMobile()
+  const { open: openLogTransaction } = useLogTransaction()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
@@ -76,25 +76,17 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
     })
   }
 
-  const plusButtonLinkOptions = useMemo<LinkOptions>(
-    () =>
-      isMobile
-        ? {
-            from: '/household/$householdId/transactions',
-            to: '/household/$householdId/transactions/new',
-            search: (prev) => ({ ...prev, log_type: 'expense' }),
-          }
-        : {
-            to: '.',
-            search: (prev) => ({ ...prev, log_type: 'expense' }),
-          },
-    [isMobile],
-  )
-
   return (
     <Fragment>
       <div className="fixed right-4 bottom-4 lg:absolute">
-        <PlusButton {...plusButtonLinkOptions} />
+        <Button
+          nativeButton={true}
+          size="icon-xl"
+          className="rounded-full"
+          onClick={() => openLogTransaction('expense')}
+        >
+          <PlusIcon />
+        </Button>
       </div>
       <FinancialSummaryCards fragmentRef={data.financialReport} />
       <div className="py-2"></div>

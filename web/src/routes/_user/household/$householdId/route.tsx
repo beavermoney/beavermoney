@@ -63,6 +63,7 @@ import { CommandMenu } from '@/components/command-menu'
 import { LogTransaction } from './transactions/-components/log-transaction'
 import { SnapshotDialog } from './-components/snapshot-dialog'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
 import { EditTransactionDialogQuery } from './transactions/-components/edit-transaction-dialog-query'
@@ -101,16 +102,11 @@ const routeHouseholdIdQuery = graphql`
 `
 
 const searchSchema = z.object({
-  log_type: z
-    .enum(['expense', 'income', 'transfer', 'buy', 'sell', 'move'])
-    .nullable()
-    .default(null),
   command_open: z.boolean().optional().default(false),
   edit_transaction_id: z.string().nullable().default(null),
 })
 
 const defaultValues = {
-  log_type: null,
   command_open: false,
   edit_transaction_id: null,
 }
@@ -164,6 +160,8 @@ function RouteComponent() {
   const search = Route.useSearch()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const { type: logTransactionType, close: closeLogTransaction } =
+    useLogTransaction()
   const { isPrivacyModeEnabled, togglePrivacyMode } = usePrivacyMode()
   const { setTheme } = useTheme()
   const router = useRouter()
@@ -217,13 +215,6 @@ function RouteComponent() {
 
     // Hide dialog
     setShowPrivacyDialog(false)
-  }
-
-  const setLogTransactionOpen = (open: boolean) => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: open ? 'expense' : null }),
-    })
   }
 
   if (showPrivacyDialog) {
@@ -391,13 +382,12 @@ function RouteComponent() {
                   dragHandleClassName="drag-handle"
                   style={{ zIndex: 50 }}
                 >
-                  {search.log_type && (
+                  {logTransactionType && (
                     <Item
                       className={cn(
                         'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
                       )}
                     >
-                      {/* Drag Handle Header */}
                       <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
                         <div className="flex items-center gap-2">
                           <GripVertical className="text-muted-foreground h-5 w-5" />
@@ -409,13 +399,12 @@ function RouteComponent() {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={() => setLogTransactionOpen(false)}
+                          onClick={closeLogTransaction}
                         >
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
 
-                      {/* Transaction Form */}
                       <LogTransaction fragmentRef={data.household} />
                     </Item>
                   )}

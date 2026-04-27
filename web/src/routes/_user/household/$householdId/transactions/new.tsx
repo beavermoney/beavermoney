@@ -12,7 +12,13 @@ import { graphql } from 'relay-runtime'
 import { LogTransaction } from './-components/log-transaction'
 import { type newTransactionQuery } from './__generated__/newTransactionQuery.graphql'
 import { useIsMobile } from '@/hooks/use-mobile'
+import {
+  logTransactionStore,
+  setLogTransactionType,
+} from '@/hooks/log-transaction-store'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { identity } from 'lodash-es'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/new',
@@ -55,9 +61,24 @@ function RouteComponent() {
     ).subscribe({})
   })
 
+  const { type: logType } = useLogTransaction()
+
+  useEffect(() => {
+    if (logTransactionStore.state.type === null) {
+      setLogTransactionType('expense')
+    }
+    return () => {
+      setLogTransactionType(null)
+    }
+  }, [])
+
   const isMobile = useIsMobile()
   if (!isMobile) {
     return <Navigate to=".." search={identity} />
+  }
+
+  if (logType === null) {
+    return null
   }
 
   return (

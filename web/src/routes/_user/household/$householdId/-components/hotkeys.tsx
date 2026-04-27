@@ -1,50 +1,34 @@
 import { useHotkeySequence } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
 import { identity } from 'lodash-es'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 
 const Hotkeys = () => {
   const navigate = useNavigate()
+  const { open } = useLogTransaction()
 
   useHotkeySequence(['N', 'E'], () => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: 'expense' }),
-    })
+    open('expense')
   })
 
   useHotkeySequence(['N', 'I'], () => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: 'income' }),
-    })
+    open('income')
   })
 
   useHotkeySequence(['N', 'T'], () => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: 'transfer' }),
-    })
+    open('transfer')
   })
 
   useHotkeySequence(['N', 'B'], () => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: 'buy' }),
-    })
+    open('buy')
   })
 
   useHotkeySequence(['N', 'S'], () => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: 'sell' }),
-    })
+    open('sell')
   })
 
   useHotkeySequence(['N', 'M'], () => {
-    navigate({
-      to: '.',
-      search: (prev) => ({ ...prev, log_type: 'move' }),
-    })
+    open('move')
   })
 
   useHotkeySequence(['G', 'T'], () => {
