@@ -18,7 +18,6 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion'
-import { ItemGroup } from '@/components/ui/item'
 import {
   Select,
   SelectContent,
@@ -287,7 +286,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="-mx-2 pb-0">
-                <ItemGroup className="gap-0">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
                   {investments.map((investment) => {
                     invariant(investment?.node, 'Investment node is null')
                     return (
@@ -298,7 +297,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                       />
                     )
                   })}
-                </ItemGroup>
+                </div>
               </AccordionContent>
             </AccordionItem>
           )

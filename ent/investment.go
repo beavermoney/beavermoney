@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
+	"beavermoney.app/ent/user"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/shopspring/decimal"
@@ -43,6 +44,8 @@ type Investment struct {
 	AccountID int `json:"account_id,omitempty"`
 	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
 	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID int `json:"user_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InvestmentQuery when eager-loading is set.
 	Edges        InvestmentEdges `json:"edges"`
@@ -57,13 +60,15 @@ type InvestmentEdges struct {
 	Household *Household `json:"household,omitempty"`
 	// HouseholdCurrency holds the value of the household_currency edge.
 	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// InvestmentLots holds the value of the investment_lots edge.
 	InvestmentLots []*InvestmentLot `json:"investment_lots,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [5]map[string]int
 
 	namedInvestmentLots map[string][]*InvestmentLot
 }
@@ -101,10 +106,21 @@ func (e InvestmentEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
 	return nil, &NotLoadedError{edge: "household_currency"}
 }
 
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e InvestmentEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "user"}
+}
+
 // InvestmentLotsOrErr returns the InvestmentLots value or an error if the edge
 // was not loaded in eager-loading.
 func (e InvestmentEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.InvestmentLots, nil
 	}
 	return nil, &NotLoadedError{edge: "investment_lots"}
@@ -117,7 +133,7 @@ func (*Investment) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case investment.FieldAmount, investment.FieldQuote, investment.FieldValue:
 			values[i] = new(decimal.Decimal)
-		case investment.FieldID, investment.FieldHouseholdID, investment.FieldAccountID, investment.FieldHouseholdCurrencyID:
+		case investment.FieldID, investment.FieldHouseholdID, investment.FieldAccountID, investment.FieldHouseholdCurrencyID, investment.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case investment.FieldName, investment.FieldType, investment.FieldSymbol:
 			values[i] = new(sql.NullString)
@@ -210,6 +226,12 @@ func (_m *Investment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.HouseholdCurrencyID = int(value.Int64)
 			}
+		case investment.FieldUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				_m.UserID = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -236,6 +258,11 @@ func (_m *Investment) QueryHousehold() *HouseholdQuery {
 // QueryHouseholdCurrency queries the "household_currency" edge of the Investment entity.
 func (_m *Investment) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
 	return NewInvestmentClient(_m.config).QueryHouseholdCurrency(_m)
+}
+
+// QueryUser queries the "user" edge of the Investment entity.
+func (_m *Investment) QueryUser() *UserQuery {
+	return NewInvestmentClient(_m.config).QueryUser(_m)
 }
 
 // QueryInvestmentLots queries the "investment_lots" edge of the Investment entity.
@@ -298,6 +325,9 @@ func (_m *Investment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("household_currency_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

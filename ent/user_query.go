@@ -11,6 +11,7 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshotentry"
@@ -33,6 +34,7 @@ type UserQuery struct {
 	predicates                      []predicate.User
 	withHouseholds                  *HouseholdQuery
 	withAccounts                    *AccountQuery
+	withInvestments                 *InvestmentQuery
 	withTransactions                *TransactionQuery
 	withUserKeys                    *UserKeyQuery
 	withRecurringSubscriptions      *RecurringSubscriptionQuery
@@ -42,6 +44,7 @@ type UserQuery struct {
 	modifiers                       []func(*sql.Selector)
 	withNamedHouseholds             map[string]*HouseholdQuery
 	withNamedAccounts               map[string]*AccountQuery
+	withNamedInvestments            map[string]*InvestmentQuery
 	withNamedTransactions           map[string]*TransactionQuery
 	withNamedUserKeys               map[string]*UserKeyQuery
 	withNamedRecurringSubscriptions map[string]*RecurringSubscriptionQuery
@@ -120,6 +123,28 @@ func (_q *UserQuery) QueryAccounts() *AccountQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(account.Table, account.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AccountsTable, user.AccountsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInvestments chains the current query on the "investments" edge.
+func (_q *UserQuery) QueryInvestments() *InvestmentQuery {
+	query := (&InvestmentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(investment.Table, investment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.InvestmentsTable, user.InvestmentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -431,6 +456,7 @@ func (_q *UserQuery) Clone() *UserQuery {
 		predicates:                 append([]predicate.User{}, _q.predicates...),
 		withHouseholds:             _q.withHouseholds.Clone(),
 		withAccounts:               _q.withAccounts.Clone(),
+		withInvestments:            _q.withInvestments.Clone(),
 		withTransactions:           _q.withTransactions.Clone(),
 		withUserKeys:               _q.withUserKeys.Clone(),
 		withRecurringSubscriptions: _q.withRecurringSubscriptions.Clone(),
@@ -462,6 +488,17 @@ func (_q *UserQuery) WithAccounts(opts ...func(*AccountQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withAccounts = query
+	return _q
+}
+
+// WithInvestments tells the query-builder to eager-load the nodes that are connected to
+// the "investments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithInvestments(opts ...func(*InvestmentQuery)) *UserQuery {
+	query := (&InvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withInvestments = query
 	return _q
 }
 
@@ -604,9 +641,10 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			_q.withHouseholds != nil,
 			_q.withAccounts != nil,
+			_q.withInvestments != nil,
 			_q.withTransactions != nil,
 			_q.withUserKeys != nil,
 			_q.withRecurringSubscriptions != nil,
@@ -646,6 +684,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadAccounts(ctx, query, nodes,
 			func(n *User) { n.Edges.Accounts = []*Account{} },
 			func(n *User, e *Account) { n.Edges.Accounts = append(n.Edges.Accounts, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withInvestments; query != nil {
+		if err := _q.loadInvestments(ctx, query, nodes,
+			func(n *User) { n.Edges.Investments = []*Investment{} },
+			func(n *User, e *Investment) { n.Edges.Investments = append(n.Edges.Investments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -697,6 +742,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadAccounts(ctx, query, nodes,
 			func(n *User) { n.appendNamedAccounts(name) },
 			func(n *User, e *Account) { n.appendNamedAccounts(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedInvestments {
+		if err := _q.loadInvestments(ctx, query, nodes,
+			func(n *User) { n.appendNamedInvestments(name) },
+			func(n *User, e *Investment) { n.appendNamedInvestments(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -819,6 +871,36 @@ func (_q *UserQuery) loadAccounts(ctx context.Context, query *AccountQuery, node
 	}
 	query.Where(predicate.Account(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.AccountsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadInvestments(ctx context.Context, query *InvestmentQuery, nodes []*User, init func(*User), assign func(*User, *Investment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(investment.FieldUserID)
+	}
+	query.Where(predicate.Investment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.InvestmentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1103,6 +1185,20 @@ func (_q *UserQuery) WithNamedAccounts(name string, opts ...func(*AccountQuery))
 		_q.withNamedAccounts = make(map[string]*AccountQuery)
 	}
 	_q.withNamedAccounts[name] = query
+	return _q
+}
+
+// WithNamedInvestments tells the query-builder to eager-load the nodes that are connected to the "investments"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithNamedInvestments(name string, opts ...func(*InvestmentQuery)) *UserQuery {
+	query := (&InvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedInvestments == nil {
+		_q.withNamedInvestments = make(map[string]*InvestmentQuery)
+	}
+	_q.withNamedInvestments[name] = query
 	return _q
 }
 

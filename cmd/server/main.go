@@ -126,7 +126,7 @@ func main() {
 
 	if !cfg.IsProd {
 		if err := seed.Seed(ctx, entClient, frankfurterClient, marketClient); err != nil {
-			logger.Error("seeding database failed", slog.String("error", err.Error()))
+			panic(err)
 		}
 	}
 

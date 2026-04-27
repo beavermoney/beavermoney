@@ -510,6 +510,7 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		Create().
 		SetInput(*input.Input).
 		SetHouseholdID(householdID).
+		SetUserID(userID).
 		SetAmount(zero).
 		SetQuote(quote.CurrentPrice).
 		SetValue(zero).

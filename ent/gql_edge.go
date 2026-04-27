@@ -449,6 +449,14 @@ func (_m *Investment) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency
 	return result, err
 }
 
+func (_m *Investment) User(ctx context.Context) (*User, error) {
+	result, err := _m.Edges.UserOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryUser().Only(ctx)
+	}
+	return result, err
+}
+
 func (_m *Investment) InvestmentLots(ctx context.Context) (result []*InvestmentLot, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedInvestmentLots(graphql.GetFieldContext(ctx).Field.Alias)
@@ -717,6 +725,18 @@ func (_m *User) Accounts(ctx context.Context) (result []*Account, err error) {
 	}
 	if IsNotLoaded(err) {
 		result, err = _m.QueryAccounts().All(ctx)
+	}
+	return result, err
+}
+
+func (_m *User) Investments(ctx context.Context) (result []*Investment, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = _m.NamedInvestments(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = _m.Edges.InvestmentsOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = _m.QueryInvestments().All(ctx)
 	}
 	return result, err
 }

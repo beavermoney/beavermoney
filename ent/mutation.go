@@ -5209,6 +5209,8 @@ type InvestmentMutation struct {
 	clearedhousehold          bool
 	household_currency        *int
 	clearedhousehold_currency bool
+	user                      *int
+	cleareduser               bool
 	investment_lots           map[int]struct{}
 	removedinvestment_lots    map[int]struct{}
 	clearedinvestment_lots    bool
@@ -5771,6 +5773,42 @@ func (m *InvestmentMutation) ResetHouseholdCurrencyID() {
 	m.household_currency = nil
 }
 
+// SetUserID sets the "user_id" field.
+func (m *InvestmentMutation) SetUserID(i int) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *InvestmentMutation) UserID() (r int, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Investment entity.
+// If the Investment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InvestmentMutation) OldUserID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *InvestmentMutation) ResetUserID() {
+	m.user = nil
+}
+
 // ClearAccount clears the "account" edge to the Account entity.
 func (m *InvestmentMutation) ClearAccount() {
 	m.clearedaccount = true
@@ -5850,6 +5888,33 @@ func (m *InvestmentMutation) HouseholdCurrencyIDs() (ids []int) {
 func (m *InvestmentMutation) ResetHouseholdCurrency() {
 	m.household_currency = nil
 	m.clearedhousehold_currency = false
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *InvestmentMutation) ClearUser() {
+	m.cleareduser = true
+	m.clearedFields[investment.FieldUserID] = struct{}{}
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *InvestmentMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *InvestmentMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *InvestmentMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
 }
 
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by ids.
@@ -5940,7 +6005,7 @@ func (m *InvestmentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InvestmentMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.create_time != nil {
 		fields = append(fields, investment.FieldCreateTime)
 	}
@@ -5974,6 +6039,9 @@ func (m *InvestmentMutation) Fields() []string {
 	if m.household_currency != nil {
 		fields = append(fields, investment.FieldHouseholdCurrencyID)
 	}
+	if m.user != nil {
+		fields = append(fields, investment.FieldUserID)
+	}
 	return fields
 }
 
@@ -6004,6 +6072,8 @@ func (m *InvestmentMutation) Field(name string) (ent.Value, bool) {
 		return m.AccountID()
 	case investment.FieldHouseholdCurrencyID:
 		return m.HouseholdCurrencyID()
+	case investment.FieldUserID:
+		return m.UserID()
 	}
 	return nil, false
 }
@@ -6035,6 +6105,8 @@ func (m *InvestmentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldAccountID(ctx)
 	case investment.FieldHouseholdCurrencyID:
 		return m.OldHouseholdCurrencyID(ctx)
+	case investment.FieldUserID:
+		return m.OldUserID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Investment field %s", name)
 }
@@ -6120,6 +6192,13 @@ func (m *InvestmentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHouseholdCurrencyID(v)
+		return nil
+	case investment.FieldUserID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Investment field %s", name)
@@ -6242,13 +6321,16 @@ func (m *InvestmentMutation) ResetField(name string) error {
 	case investment.FieldHouseholdCurrencyID:
 		m.ResetHouseholdCurrencyID()
 		return nil
+	case investment.FieldUserID:
+		m.ResetUserID()
+		return nil
 	}
 	return fmt.Errorf("unknown Investment field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *InvestmentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.account != nil {
 		edges = append(edges, investment.EdgeAccount)
 	}
@@ -6257,6 +6339,9 @@ func (m *InvestmentMutation) AddedEdges() []string {
 	}
 	if m.household_currency != nil {
 		edges = append(edges, investment.EdgeHouseholdCurrency)
+	}
+	if m.user != nil {
+		edges = append(edges, investment.EdgeUser)
 	}
 	if m.investment_lots != nil {
 		edges = append(edges, investment.EdgeInvestmentLots)
@@ -6280,6 +6365,10 @@ func (m *InvestmentMutation) AddedIDs(name string) []ent.Value {
 		if id := m.household_currency; id != nil {
 			return []ent.Value{*id}
 		}
+	case investment.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
 	case investment.EdgeInvestmentLots:
 		ids := make([]ent.Value, 0, len(m.investment_lots))
 		for id := range m.investment_lots {
@@ -6292,7 +6381,7 @@ func (m *InvestmentMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *InvestmentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedinvestment_lots != nil {
 		edges = append(edges, investment.EdgeInvestmentLots)
 	}
@@ -6315,7 +6404,7 @@ func (m *InvestmentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *InvestmentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedaccount {
 		edges = append(edges, investment.EdgeAccount)
 	}
@@ -6324,6 +6413,9 @@ func (m *InvestmentMutation) ClearedEdges() []string {
 	}
 	if m.clearedhousehold_currency {
 		edges = append(edges, investment.EdgeHouseholdCurrency)
+	}
+	if m.cleareduser {
+		edges = append(edges, investment.EdgeUser)
 	}
 	if m.clearedinvestment_lots {
 		edges = append(edges, investment.EdgeInvestmentLots)
@@ -6341,6 +6433,8 @@ func (m *InvestmentMutation) EdgeCleared(name string) bool {
 		return m.clearedhousehold
 	case investment.EdgeHouseholdCurrency:
 		return m.clearedhousehold_currency
+	case investment.EdgeUser:
+		return m.cleareduser
 	case investment.EdgeInvestmentLots:
 		return m.clearedinvestment_lots
 	}
@@ -6360,6 +6454,9 @@ func (m *InvestmentMutation) ClearEdge(name string) error {
 	case investment.EdgeHouseholdCurrency:
 		m.ClearHouseholdCurrency()
 		return nil
+	case investment.EdgeUser:
+		m.ClearUser()
+		return nil
 	}
 	return fmt.Errorf("unknown Investment unique edge %s", name)
 }
@@ -6376,6 +6473,9 @@ func (m *InvestmentMutation) ResetEdge(name string) error {
 		return nil
 	case investment.EdgeHouseholdCurrency:
 		m.ResetHouseholdCurrency()
+		return nil
+	case investment.EdgeUser:
+		m.ResetUser()
 		return nil
 	case investment.EdgeInvestmentLots:
 		m.ResetInvestmentLots()
@@ -13901,6 +14001,9 @@ type UserMutation struct {
 	accounts                       map[int]struct{}
 	removedaccounts                map[int]struct{}
 	clearedaccounts                bool
+	investments                    map[int]struct{}
+	removedinvestments             map[int]struct{}
+	clearedinvestments             bool
 	transactions                   map[int]struct{}
 	removedtransactions            map[int]struct{}
 	clearedtransactions            bool
@@ -14269,6 +14372,60 @@ func (m *UserMutation) ResetAccounts() {
 	m.accounts = nil
 	m.clearedaccounts = false
 	m.removedaccounts = nil
+}
+
+// AddInvestmentIDs adds the "investments" edge to the Investment entity by ids.
+func (m *UserMutation) AddInvestmentIDs(ids ...int) {
+	if m.investments == nil {
+		m.investments = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.investments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearInvestments clears the "investments" edge to the Investment entity.
+func (m *UserMutation) ClearInvestments() {
+	m.clearedinvestments = true
+}
+
+// InvestmentsCleared reports if the "investments" edge to the Investment entity was cleared.
+func (m *UserMutation) InvestmentsCleared() bool {
+	return m.clearedinvestments
+}
+
+// RemoveInvestmentIDs removes the "investments" edge to the Investment entity by IDs.
+func (m *UserMutation) RemoveInvestmentIDs(ids ...int) {
+	if m.removedinvestments == nil {
+		m.removedinvestments = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.investments, ids[i])
+		m.removedinvestments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedInvestments returns the removed IDs of the "investments" edge to the Investment entity.
+func (m *UserMutation) RemovedInvestmentsIDs() (ids []int) {
+	for id := range m.removedinvestments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// InvestmentsIDs returns the "investments" edge IDs in the mutation.
+func (m *UserMutation) InvestmentsIDs() (ids []int) {
+	for id := range m.investments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetInvestments resets all changes to the "investments" edge.
+func (m *UserMutation) ResetInvestments() {
+	m.investments = nil
+	m.clearedinvestments = false
+	m.removedinvestments = nil
 }
 
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by ids.
@@ -14725,12 +14882,15 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.households != nil {
 		edges = append(edges, user.EdgeHouseholds)
 	}
 	if m.accounts != nil {
 		edges = append(edges, user.EdgeAccounts)
+	}
+	if m.investments != nil {
+		edges = append(edges, user.EdgeInvestments)
 	}
 	if m.transactions != nil {
 		edges = append(edges, user.EdgeTransactions)
@@ -14763,6 +14923,12 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	case user.EdgeAccounts:
 		ids := make([]ent.Value, 0, len(m.accounts))
 		for id := range m.accounts {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeInvestments:
+		ids := make([]ent.Value, 0, len(m.investments))
+		for id := range m.investments {
 			ids = append(ids, id)
 		}
 		return ids
@@ -14802,12 +14968,15 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedhouseholds != nil {
 		edges = append(edges, user.EdgeHouseholds)
 	}
 	if m.removedaccounts != nil {
 		edges = append(edges, user.EdgeAccounts)
+	}
+	if m.removedinvestments != nil {
+		edges = append(edges, user.EdgeInvestments)
 	}
 	if m.removedtransactions != nil {
 		edges = append(edges, user.EdgeTransactions)
@@ -14840,6 +15009,12 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 	case user.EdgeAccounts:
 		ids := make([]ent.Value, 0, len(m.removedaccounts))
 		for id := range m.removedaccounts {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeInvestments:
+		ids := make([]ent.Value, 0, len(m.removedinvestments))
+		for id := range m.removedinvestments {
 			ids = append(ids, id)
 		}
 		return ids
@@ -14879,12 +15054,15 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedhouseholds {
 		edges = append(edges, user.EdgeHouseholds)
 	}
 	if m.clearedaccounts {
 		edges = append(edges, user.EdgeAccounts)
+	}
+	if m.clearedinvestments {
+		edges = append(edges, user.EdgeInvestments)
 	}
 	if m.clearedtransactions {
 		edges = append(edges, user.EdgeTransactions)
@@ -14912,6 +15090,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedhouseholds
 	case user.EdgeAccounts:
 		return m.clearedaccounts
+	case user.EdgeInvestments:
+		return m.clearedinvestments
 	case user.EdgeTransactions:
 		return m.clearedtransactions
 	case user.EdgeUserKeys:
@@ -14943,6 +15123,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeAccounts:
 		m.ResetAccounts()
+		return nil
+	case user.EdgeInvestments:
+		m.ResetInvestments()
 		return nil
 	case user.EdgeTransactions:
 		m.ResetTransactions()

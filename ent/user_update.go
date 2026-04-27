@@ -10,6 +10,7 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshotentry"
@@ -98,6 +99,21 @@ func (_u *UserUpdate) AddAccounts(v ...*Account) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.AddAccountIDs(ids...)
+}
+
+// AddInvestmentIDs adds the "investments" edge to the Investment entity by IDs.
+func (_u *UserUpdate) AddInvestmentIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddInvestmentIDs(ids...)
+	return _u
+}
+
+// AddInvestments adds the "investments" edges to the Investment entity.
+func (_u *UserUpdate) AddInvestments(v ...*Investment) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddInvestmentIDs(ids...)
 }
 
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
@@ -220,6 +236,27 @@ func (_u *UserUpdate) RemoveAccounts(v ...*Account) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAccountIDs(ids...)
+}
+
+// ClearInvestments clears all "investments" edges to the Investment entity.
+func (_u *UserUpdate) ClearInvestments() *UserUpdate {
+	_u.mutation.ClearInvestments()
+	return _u
+}
+
+// RemoveInvestmentIDs removes the "investments" edge to Investment entities by IDs.
+func (_u *UserUpdate) RemoveInvestmentIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveInvestmentIDs(ids...)
+	return _u
+}
+
+// RemoveInvestments removes "investments" edges to Investment entities.
+func (_u *UserUpdate) RemoveInvestments(v ...*Investment) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveInvestmentIDs(ids...)
 }
 
 // ClearTransactions clears all "transactions" edges to the Transaction entity.
@@ -506,6 +543,51 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.InvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedInvestmentsIDs(); len(nodes) > 0 && !_u.mutation.InvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.InvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -824,6 +906,21 @@ func (_u *UserUpdateOne) AddAccounts(v ...*Account) *UserUpdateOne {
 	return _u.AddAccountIDs(ids...)
 }
 
+// AddInvestmentIDs adds the "investments" edge to the Investment entity by IDs.
+func (_u *UserUpdateOne) AddInvestmentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddInvestmentIDs(ids...)
+	return _u
+}
+
+// AddInvestments adds the "investments" edges to the Investment entity.
+func (_u *UserUpdateOne) AddInvestments(v ...*Investment) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddInvestmentIDs(ids...)
+}
+
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
 func (_u *UserUpdateOne) AddTransactionIDs(ids ...int) *UserUpdateOne {
 	_u.mutation.AddTransactionIDs(ids...)
@@ -944,6 +1041,27 @@ func (_u *UserUpdateOne) RemoveAccounts(v ...*Account) *UserUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAccountIDs(ids...)
+}
+
+// ClearInvestments clears all "investments" edges to the Investment entity.
+func (_u *UserUpdateOne) ClearInvestments() *UserUpdateOne {
+	_u.mutation.ClearInvestments()
+	return _u
+}
+
+// RemoveInvestmentIDs removes the "investments" edge to Investment entities by IDs.
+func (_u *UserUpdateOne) RemoveInvestmentIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveInvestmentIDs(ids...)
+	return _u
+}
+
+// RemoveInvestments removes "investments" edges to Investment entities.
+func (_u *UserUpdateOne) RemoveInvestments(v ...*Investment) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveInvestmentIDs(ids...)
 }
 
 // ClearTransactions clears all "transactions" edges to the Transaction entity.
@@ -1260,6 +1378,51 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.InvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedInvestmentsIDs(); len(nodes) > 0 && !_u.mutation.InvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.InvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

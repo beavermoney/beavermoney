@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/user"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -125,6 +126,12 @@ func (_c *InvestmentCreate) SetHouseholdCurrencyID(v int) *InvestmentCreate {
 	return _c
 }
 
+// SetUserID sets the "user_id" field.
+func (_c *InvestmentCreate) SetUserID(v int) *InvestmentCreate {
+	_c.mutation.SetUserID(v)
+	return _c
+}
+
 // SetAccount sets the "account" edge to the Account entity.
 func (_c *InvestmentCreate) SetAccount(v *Account) *InvestmentCreate {
 	return _c.SetAccountID(v.ID)
@@ -138,6 +145,11 @@ func (_c *InvestmentCreate) SetHousehold(v *Household) *InvestmentCreate {
 // SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
 func (_c *InvestmentCreate) SetHouseholdCurrency(v *HouseholdCurrency) *InvestmentCreate {
 	return _c.SetHouseholdCurrencyID(v.ID)
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (_c *InvestmentCreate) SetUser(v *User) *InvestmentCreate {
+	return _c.SetUserID(v.ID)
 }
 
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by IDs.
@@ -278,6 +290,14 @@ func (_c *InvestmentCreate) check() error {
 			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "Investment.household_currency_id": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Investment.user_id"`)}
+	}
+	if v, ok := _c.mutation.UserID(); ok {
+		if err := investment.UserIDValidator(v); err != nil {
+			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "Investment.user_id": %w`, err)}
+		}
+	}
 	if len(_c.mutation.AccountIDs()) == 0 {
 		return &ValidationError{Name: "account", err: errors.New(`ent: missing required edge "Investment.account"`)}
 	}
@@ -286,6 +306,9 @@ func (_c *InvestmentCreate) check() error {
 	}
 	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
 		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "Investment.household_currency"`)}
+	}
+	if len(_c.mutation.UserIDs()) == 0 {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Investment.user"`)}
 	}
 	return nil
 }
@@ -395,6 +418,23 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.HouseholdCurrencyID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   investment.UserTable,
+			Columns: []string{investment.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.InvestmentLotsIDs(); len(nodes) > 0 {
@@ -559,6 +599,9 @@ func (u *InvestmentUpsertOne) UpdateNewValues() *InvestmentUpsertOne {
 		}
 		if _, exists := u.create.mutation.HouseholdCurrencyID(); exists {
 			s.SetIgnore(investment.FieldHouseholdCurrencyID)
+		}
+		if _, exists := u.create.mutation.UserID(); exists {
+			s.SetIgnore(investment.FieldUserID)
 		}
 	}))
 	return u
@@ -861,6 +904,9 @@ func (u *InvestmentUpsertBulk) UpdateNewValues() *InvestmentUpsertBulk {
 			}
 			if _, exists := b.mutation.HouseholdCurrencyID(); exists {
 				s.SetIgnore(investment.FieldHouseholdCurrencyID)
+			}
+			if _, exists := b.mutation.UserID(); exists {
+				s.SetIgnore(investment.FieldUserID)
 			}
 		}
 	}))

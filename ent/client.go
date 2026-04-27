@@ -1519,6 +1519,22 @@ func (c *InvestmentClient) QueryHouseholdCurrency(_m *Investment) *HouseholdCurr
 	return query
 }
 
+// QueryUser queries the user edge of a Investment.
+func (c *InvestmentClient) QueryUser(_m *Investment) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(investment.Table, investment.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, investment.UserTable, investment.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryInvestmentLots queries the investment_lots edge of a Investment.
 func (c *InvestmentClient) QueryInvestmentLots(_m *Investment) *InvestmentLotQuery {
 	query := (&InvestmentLotClient{config: c.config}).Query()
@@ -3197,6 +3213,22 @@ func (c *UserClient) QueryAccounts(_m *User) *AccountQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(account.Table, account.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AccountsTable, user.AccountsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInvestments queries the investments edge of a User.
+func (c *UserClient) QueryInvestments(_m *User) *InvestmentQuery {
+	query := (&InvestmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(investment.Table, investment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.InvestmentsTable, user.InvestmentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

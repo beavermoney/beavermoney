@@ -63,6 +63,7 @@ func (Investment) Fields() []ent.Field {
 
 		field.Int("account_id").Positive().Immutable(),
 		field.Int("household_currency_id").Positive().Immutable(),
+		field.Int("user_id").Positive().Immutable(),
 	}
 }
 
@@ -97,6 +98,18 @@ func (Investment) Edges() []ent.Edge {
 			Unique().
 			Immutable().
 			Required(),
+		edge.From("user", User.Type).
+			Ref("investments").
+			Field("user_id").
+			Unique().
+			Required().
+			Immutable().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 
 		edge.To("investment_lots", InvestmentLot.Type).
 			Annotations(

@@ -1,3 +1,34 @@
 extend type Household {
   financialReport(period: TimePeriodInput!): FinancialReport!
 }
+
+extend type Investment {
+  """
+  Cost basis of currently held shares using the moving-average-cost method.
+  Recomputed on read by replaying lots in chronological order. Sells reduce
+  the basis proportionally at the current average cost (not at the sell price),
+  so realized gains/losses do not affect this value. Denominated in the
+  investment's household currency.
+  """
+  costBasis: String!
+
+  """
+  Average cost per held share (costBasis / amount). Returns "0" when no
+  shares are held, to avoid divide-by-zero.
+  """
+  averageCost: String!
+
+  """
+  Unrealized return on currently held shares: value - costBasis. Positive
+  means unrealized gain, negative means unrealized loss. Denominated in the
+  investment's household currency.
+  """
+  unrealizedReturn: String!
+
+  """
+  Unrealized return as a decimal fraction: (value - costBasis) / costBasis.
+  E.g. "0.15" represents a 15% unrealized gain. Returns "0" when costBasis
+  is zero, to avoid divide-by-zero.
+  """
+  unrealizedReturnPercent: String!
+}

@@ -2178,6 +2178,12 @@ type InvestmentWhereInput struct {
 	HouseholdCurrencyIDIn    []int `json:"householdCurrencyIDIn,omitempty"`
 	HouseholdCurrencyIDNotIn []int `json:"householdCurrencyIDNotIn,omitempty"`
 
+	// "user_id" field predicates.
+	UserID      *int  `json:"userID,omitempty"`
+	UserIDNEQ   *int  `json:"userIDNEQ,omitempty"`
+	UserIDIn    []int `json:"userIDIn,omitempty"`
+	UserIDNotIn []int `json:"userIDNotIn,omitempty"`
+
 	// "account" edge predicates.
 	HasAccount     *bool                `json:"hasAccount,omitempty"`
 	HasAccountWith []*AccountWhereInput `json:"hasAccountWith,omitempty"`
@@ -2189,6 +2195,10 @@ type InvestmentWhereInput struct {
 	// "household_currency" edge predicates.
 	HasHouseholdCurrency     *bool                          `json:"hasHouseholdCurrency,omitempty"`
 	HasHouseholdCurrencyWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrencyWith,omitempty"`
+
+	// "user" edge predicates.
+	HasUser     *bool             `json:"hasUser,omitempty"`
+	HasUserWith []*UserWhereInput `json:"hasUserWith,omitempty"`
 
 	// "investment_lots" edge predicates.
 	HasInvestmentLots     *bool                      `json:"hasInvestmentLots,omitempty"`
@@ -2536,6 +2546,18 @@ func (i *InvestmentWhereInput) P() (predicate.Investment, error) {
 	if len(i.HouseholdCurrencyIDNotIn) > 0 {
 		predicates = append(predicates, investment.HouseholdCurrencyIDNotIn(i.HouseholdCurrencyIDNotIn...))
 	}
+	if i.UserID != nil {
+		predicates = append(predicates, investment.UserIDEQ(*i.UserID))
+	}
+	if i.UserIDNEQ != nil {
+		predicates = append(predicates, investment.UserIDNEQ(*i.UserIDNEQ))
+	}
+	if len(i.UserIDIn) > 0 {
+		predicates = append(predicates, investment.UserIDIn(i.UserIDIn...))
+	}
+	if len(i.UserIDNotIn) > 0 {
+		predicates = append(predicates, investment.UserIDNotIn(i.UserIDNotIn...))
+	}
 
 	if i.HasAccount != nil {
 		p := investment.HasAccount()
@@ -2590,6 +2612,24 @@ func (i *InvestmentWhereInput) P() (predicate.Investment, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, investment.HasHouseholdCurrencyWith(with...))
+	}
+	if i.HasUser != nil {
+		p := investment.HasUser()
+		if !*i.HasUser {
+			p = investment.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasUserWith) > 0 {
+		with := make([]predicate.User, 0, len(i.HasUserWith))
+		for _, w := range i.HasUserWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasUserWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, investment.HasUserWith(with...))
 	}
 	if i.HasInvestmentLots != nil {
 		p := investment.HasInvestmentLots()
@@ -6076,6 +6116,10 @@ type UserWhereInput struct {
 	HasAccounts     *bool                `json:"hasAccounts,omitempty"`
 	HasAccountsWith []*AccountWhereInput `json:"hasAccountsWith,omitempty"`
 
+	// "investments" edge predicates.
+	HasInvestments     *bool                   `json:"hasInvestments,omitempty"`
+	HasInvestmentsWith []*InvestmentWhereInput `json:"hasInvestmentsWith,omitempty"`
+
 	// "transactions" edge predicates.
 	HasTransactions     *bool                    `json:"hasTransactions,omitempty"`
 	HasTransactionsWith []*TransactionWhereInput `json:"hasTransactionsWith,omitempty"`
@@ -6354,6 +6398,24 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, user.HasAccountsWith(with...))
+	}
+	if i.HasInvestments != nil {
+		p := user.HasInvestments()
+		if !*i.HasInvestments {
+			p = user.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasInvestmentsWith) > 0 {
+		with := make([]predicate.Investment, 0, len(i.HasInvestmentsWith))
+		for _, w := range i.HasInvestmentsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasInvestmentsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, user.HasInvestmentsWith(with...))
 	}
 	if i.HasTransactions != nil {
 		p := user.HasTransactions()

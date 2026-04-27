@@ -1077,9 +1077,11 @@ type Investment implements Node {
   value: String!
   accountID: ID!
   householdCurrencyID: ID!
+  userID: ID!
   account: Account!
   household: Household!
   householdCurrency: HouseholdCurrency!
+  user: User!
   investmentLots: [InvestmentLot!]
 }
 """
@@ -1397,6 +1399,13 @@ input InvestmentWhereInput {
   householdCurrencyIDIn: [ID!]
   householdCurrencyIDNotIn: [ID!]
   """
+  user_id field predicates
+  """
+  userID: ID
+  userIDNEQ: ID
+  userIDIn: [ID!]
+  userIDNotIn: [ID!]
+  """
   account edge predicates
   """
   hasAccount: Boolean
@@ -1411,6 +1420,11 @@ input InvestmentWhereInput {
   """
   hasHouseholdCurrency: Boolean
   hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
+  """
+  user edge predicates
+  """
+  hasUser: Boolean
+  hasUserWith: [UserWhereInput!]
   """
   investment_lots edge predicates
   """
@@ -3052,6 +3066,7 @@ type User implements Node {
   name: String!
   households: [Household!]
   accounts: [Account!]
+  investments: [Investment!]
   transactions: [Transaction!]
   userKeys: [UserKey!]
   recurringSubscriptions: [RecurringSubscription!]
@@ -3301,6 +3316,11 @@ input UserWhereInput {
   """
   hasAccounts: Boolean
   hasAccountsWith: [AccountWhereInput!]
+  """
+  investments edge predicates
+  """
+  hasInvestments: Boolean
+  hasInvestmentsWith: [InvestmentWhereInput!]
   """
   transactions edge predicates
   """

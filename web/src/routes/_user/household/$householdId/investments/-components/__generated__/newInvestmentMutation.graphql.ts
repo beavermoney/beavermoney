@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d8cf04c310ba269d76e262834752e849>>
+ * @generated SignedSource<<d3904716af4d3563328e585eaeb13c04>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -72,17 +72,18 @@ v3 = {
   "name": "name",
   "storageKey": null
 },
-v4 = {
+v4 = [
+  (v3/*: any*/),
+  (v2/*: any*/)
+],
+v5 = {
   "alias": null,
   "args": null,
   "concreteType": "Account",
   "kind": "LinkedField",
   "name": "account",
   "plural": false,
-  "selections": [
-    (v3/*: any*/),
-    (v2/*: any*/)
-  ],
+  "selections": (v4/*: any*/),
   "storageKey": null
 };
 return {
@@ -110,7 +111,7 @@ return {
             "selections": [
               (v2/*: any*/),
               (v3/*: any*/),
-              (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -150,7 +151,7 @@ return {
             "selections": [
               (v2/*: any*/),
               (v3/*: any*/),
-              (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -194,6 +195,16 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "concreteType": "User",
+                "kind": "LinkedField",
+                "name": "user",
+                "plural": false,
+                "selections": (v4/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "kind": "ScalarField",
                 "name": "amount",
                 "storageKey": null
@@ -203,6 +214,20 @@ return {
                 "args": null,
                 "kind": "ScalarField",
                 "name": "value",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "unrealizedReturn",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "unrealizedReturnPercent",
                 "storageKey": null
               }
             ],
@@ -214,12 +239,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3a79236c145aff82410f35348f8b0ed4",
+    "cacheID": "ec5c92f7436c9e31d1d30a4f8b823fba",
     "id": null,
     "metadata": {},
     "name": "newInvestmentMutation",
     "operationKind": "mutation",
-    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  amount\n  value\n}\n"
+    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n"
   }
 };
 })();

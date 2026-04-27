@@ -249,22 +249,28 @@ type ComplexityRoot struct {
 	}
 
 	Investment struct {
-		Account             func(childComplexity int) int
-		AccountID           func(childComplexity int) int
-		Amount              func(childComplexity int) int
-		CreateTime          func(childComplexity int) int
-		Household           func(childComplexity int) int
-		HouseholdCurrency   func(childComplexity int) int
-		HouseholdCurrencyID func(childComplexity int) int
-		HouseholdID         func(childComplexity int) int
-		ID                  func(childComplexity int) int
-		InvestmentLots      func(childComplexity int) int
-		Name                func(childComplexity int) int
-		Quote               func(childComplexity int) int
-		Symbol              func(childComplexity int) int
-		Type                func(childComplexity int) int
-		UpdateTime          func(childComplexity int) int
-		Value               func(childComplexity int) int
+		Account                 func(childComplexity int) int
+		AccountID               func(childComplexity int) int
+		Amount                  func(childComplexity int) int
+		AverageCost             func(childComplexity int) int
+		CostBasis               func(childComplexity int) int
+		CreateTime              func(childComplexity int) int
+		Household               func(childComplexity int) int
+		HouseholdCurrency       func(childComplexity int) int
+		HouseholdCurrencyID     func(childComplexity int) int
+		HouseholdID             func(childComplexity int) int
+		ID                      func(childComplexity int) int
+		InvestmentLots          func(childComplexity int) int
+		Name                    func(childComplexity int) int
+		Quote                   func(childComplexity int) int
+		Symbol                  func(childComplexity int) int
+		Type                    func(childComplexity int) int
+		UnrealizedReturn        func(childComplexity int) int
+		UnrealizedReturnPercent func(childComplexity int) int
+		UpdateTime              func(childComplexity int) int
+		User                    func(childComplexity int) int
+		UserID                  func(childComplexity int) int
+		Value                   func(childComplexity int) int
 	}
 
 	InvestmentConnection struct {
@@ -562,6 +568,7 @@ type ComplexityRoot struct {
 		Email                  func(childComplexity int) int
 		Households             func(childComplexity int) int
 		ID                     func(childComplexity int) int
+		Investments            func(childComplexity int) int
 		Name                   func(childComplexity int) int
 		RecurringSubscriptions func(childComplexity int) int
 		SnapshotEntries        func(childComplexity int) int
@@ -615,6 +622,11 @@ type InvestmentResolver interface {
 	Amount(ctx context.Context, obj *ent.Investment) (string, error)
 	Quote(ctx context.Context, obj *ent.Investment) (string, error)
 	Value(ctx context.Context, obj *ent.Investment) (string, error)
+
+	CostBasis(ctx context.Context, obj *ent.Investment) (string, error)
+	AverageCost(ctx context.Context, obj *ent.Investment) (string, error)
+	UnrealizedReturn(ctx context.Context, obj *ent.Investment) (string, error)
+	UnrealizedReturnPercent(ctx context.Context, obj *ent.Investment) (string, error)
 }
 type InvestmentLotResolver interface {
 	Amount(ctx context.Context, obj *ent.InvestmentLot) (string, error)
@@ -1587,6 +1599,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Investment.Amount(childComplexity), true
+	case "Investment.averageCost":
+		if e.complexity.Investment.AverageCost == nil {
+			break
+		}
+
+		return e.complexity.Investment.AverageCost(childComplexity), true
+	case "Investment.costBasis":
+		if e.complexity.Investment.CostBasis == nil {
+			break
+		}
+
+		return e.complexity.Investment.CostBasis(childComplexity), true
 	case "Investment.createTime":
 		if e.complexity.Investment.CreateTime == nil {
 			break
@@ -1653,12 +1677,36 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Investment.Type(childComplexity), true
+	case "Investment.unrealizedReturn":
+		if e.complexity.Investment.UnrealizedReturn == nil {
+			break
+		}
+
+		return e.complexity.Investment.UnrealizedReturn(childComplexity), true
+	case "Investment.unrealizedReturnPercent":
+		if e.complexity.Investment.UnrealizedReturnPercent == nil {
+			break
+		}
+
+		return e.complexity.Investment.UnrealizedReturnPercent(childComplexity), true
 	case "Investment.updateTime":
 		if e.complexity.Investment.UpdateTime == nil {
 			break
 		}
 
 		return e.complexity.Investment.UpdateTime(childComplexity), true
+	case "Investment.user":
+		if e.complexity.Investment.User == nil {
+			break
+		}
+
+		return e.complexity.Investment.User(childComplexity), true
+	case "Investment.userID":
+		if e.complexity.Investment.UserID == nil {
+			break
+		}
+
+		return e.complexity.Investment.UserID(childComplexity), true
 	case "Investment.value":
 		if e.complexity.Investment.Value == nil {
 			break
@@ -3130,6 +3178,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.User.ID(childComplexity), true
+	case "User.investments":
+		if e.complexity.User.Investments == nil {
+			break
+		}
+
+		return e.complexity.User.Investments(childComplexity), true
 	case "User.name":
 		if e.complexity.User.Name == nil {
 			break
@@ -5059,6 +5113,8 @@ func (ec *executionContext) fieldContext_Account_user(_ context.Context, field g
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -5179,14 +5235,26 @@ func (ec *executionContext) fieldContext_Account_investments(_ context.Context, 
 				return ec.fieldContext_Investment_accountID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_Investment_householdCurrencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_Investment_userID(ctx, field)
 			case "account":
 				return ec.fieldContext_Investment_account(ctx, field)
 			case "household":
 				return ec.fieldContext_Investment_household(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_Investment_householdCurrency(ctx, field)
+			case "user":
+				return ec.fieldContext_Investment_user(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
+			case "costBasis":
+				return ec.fieldContext_Investment_costBasis(ctx, field)
+			case "averageCost":
+				return ec.fieldContext_Investment_averageCost(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_Investment_unrealizedReturn(ctx, field)
+			case "unrealizedReturnPercent":
+				return ec.fieldContext_Investment_unrealizedReturnPercent(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -6351,6 +6419,8 @@ func (ec *executionContext) fieldContext_Household_users(_ context.Context, fiel
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -7387,14 +7457,26 @@ func (ec *executionContext) fieldContext_HouseholdCurrency_investments(_ context
 				return ec.fieldContext_Investment_accountID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_Investment_householdCurrencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_Investment_userID(ctx, field)
 			case "account":
 				return ec.fieldContext_Investment_account(ctx, field)
 			case "household":
 				return ec.fieldContext_Investment_household(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_Investment_householdCurrency(ctx, field)
+			case "user":
+				return ec.fieldContext_Investment_user(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
+			case "costBasis":
+				return ec.fieldContext_Investment_costBasis(ctx, field)
+			case "averageCost":
+				return ec.fieldContext_Investment_averageCost(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_Investment_unrealizedReturn(ctx, field)
+			case "unrealizedReturnPercent":
+				return ec.fieldContext_Investment_unrealizedReturnPercent(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -8913,6 +8995,35 @@ func (ec *executionContext) fieldContext_Investment_householdCurrencyID(_ contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Investment_userID(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Investment_userID,
+		func(ctx context.Context) (any, error) {
+			return obj.UserID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Investment_userID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Investment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Investment_account(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -9114,6 +9225,63 @@ func (ec *executionContext) fieldContext_Investment_householdCurrency(_ context.
 	return fc, nil
 }
 
+func (ec *executionContext) _Investment_user(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Investment_user,
+		func(ctx context.Context) (any, error) {
+			return obj.User(ctx)
+		},
+		nil,
+		ec.marshalNUser2ᚖbeavermoneyᚗappᚋentᚐUser,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Investment_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Investment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_User_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_User_updateTime(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "households":
+				return ec.fieldContext_User_households(ctx, field)
+			case "accounts":
+				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
+			case "transactions":
+				return ec.fieldContext_User_transactions(ctx, field)
+			case "userKeys":
+				return ec.fieldContext_User_userKeys(ctx, field)
+			case "recurringSubscriptions":
+				return ec.fieldContext_User_recurringSubscriptions(ctx, field)
+			case "snapshotEntries":
+				return ec.fieldContext_User_snapshotEntries(ctx, field)
+			case "userHouseholds":
+				return ec.fieldContext_User_userHouseholds(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Investment_investmentLots(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -9162,6 +9330,122 @@ func (ec *executionContext) fieldContext_Investment_investmentLots(_ context.Con
 				return ec.fieldContext_InvestmentLot_transaction(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type InvestmentLot", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Investment_costBasis(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Investment_costBasis,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Investment().CostBasis(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Investment_costBasis(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Investment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Investment_averageCost(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Investment_averageCost,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Investment().AverageCost(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Investment_averageCost(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Investment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Investment_unrealizedReturn(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Investment_unrealizedReturn,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Investment().UnrealizedReturn(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Investment_unrealizedReturn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Investment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Investment_unrealizedReturnPercent(ctx context.Context, field graphql.CollectedField, obj *ent.Investment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Investment_unrealizedReturnPercent,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Investment().UnrealizedReturnPercent(ctx, obj)
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Investment_unrealizedReturnPercent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Investment",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9318,14 +9602,26 @@ func (ec *executionContext) fieldContext_InvestmentEdge_node(_ context.Context, 
 				return ec.fieldContext_Investment_accountID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_Investment_householdCurrencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_Investment_userID(ctx, field)
 			case "account":
 				return ec.fieldContext_Investment_account(ctx, field)
 			case "household":
 				return ec.fieldContext_Investment_household(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_Investment_householdCurrency(ctx, field)
+			case "user":
+				return ec.fieldContext_Investment_user(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
+			case "costBasis":
+				return ec.fieldContext_Investment_costBasis(ctx, field)
+			case "averageCost":
+				return ec.fieldContext_Investment_averageCost(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_Investment_unrealizedReturn(ctx, field)
+			case "unrealizedReturnPercent":
+				return ec.fieldContext_Investment_unrealizedReturnPercent(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -9713,14 +10009,26 @@ func (ec *executionContext) fieldContext_InvestmentLot_investment(_ context.Cont
 				return ec.fieldContext_Investment_accountID(ctx, field)
 			case "householdCurrencyID":
 				return ec.fieldContext_Investment_householdCurrencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_Investment_userID(ctx, field)
 			case "account":
 				return ec.fieldContext_Investment_account(ctx, field)
 			case "household":
 				return ec.fieldContext_Investment_household(ctx, field)
 			case "householdCurrency":
 				return ec.fieldContext_Investment_householdCurrency(ctx, field)
+			case "user":
+				return ec.fieldContext_Investment_user(ctx, field)
 			case "investmentLots":
 				return ec.fieldContext_Investment_investmentLots(ctx, field)
+			case "costBasis":
+				return ec.fieldContext_Investment_costBasis(ctx, field)
+			case "averageCost":
+				return ec.fieldContext_Investment_averageCost(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_Investment_unrealizedReturn(ctx, field)
+			case "unrealizedReturnPercent":
+				return ec.fieldContext_Investment_unrealizedReturnPercent(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
 		},
@@ -12273,6 +12581,8 @@ func (ec *executionContext) fieldContext_Query_user(_ context.Context, field gra
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -13175,6 +13485,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_user(_ context.Co
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -14416,6 +14728,8 @@ func (ec *executionContext) fieldContext_SnapshotEntry_user(_ context.Context, f
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -15678,6 +15992,8 @@ func (ec *executionContext) fieldContext_Transaction_user(_ context.Context, fie
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -17623,6 +17939,81 @@ func (ec *executionContext) fieldContext_User_accounts(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _User_investments(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_investments,
+		func(ctx context.Context) (any, error) {
+			return obj.Investments(ctx)
+		},
+		nil,
+		ec.marshalOInvestment2ᚕᚖbeavermoneyᚗappᚋentᚐInvestmentᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_investments(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Investment_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_Investment_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_Investment_updateTime(ctx, field)
+			case "householdID":
+				return ec.fieldContext_Investment_householdID(ctx, field)
+			case "name":
+				return ec.fieldContext_Investment_name(ctx, field)
+			case "type":
+				return ec.fieldContext_Investment_type(ctx, field)
+			case "symbol":
+				return ec.fieldContext_Investment_symbol(ctx, field)
+			case "amount":
+				return ec.fieldContext_Investment_amount(ctx, field)
+			case "quote":
+				return ec.fieldContext_Investment_quote(ctx, field)
+			case "value":
+				return ec.fieldContext_Investment_value(ctx, field)
+			case "accountID":
+				return ec.fieldContext_Investment_accountID(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_Investment_householdCurrencyID(ctx, field)
+			case "userID":
+				return ec.fieldContext_Investment_userID(ctx, field)
+			case "account":
+				return ec.fieldContext_Investment_account(ctx, field)
+			case "household":
+				return ec.fieldContext_Investment_household(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_Investment_householdCurrency(ctx, field)
+			case "user":
+				return ec.fieldContext_Investment_user(ctx, field)
+			case "investmentLots":
+				return ec.fieldContext_Investment_investmentLots(ctx, field)
+			case "costBasis":
+				return ec.fieldContext_Investment_costBasis(ctx, field)
+			case "averageCost":
+				return ec.fieldContext_Investment_averageCost(ctx, field)
+			case "unrealizedReturn":
+				return ec.fieldContext_Investment_unrealizedReturn(ctx, field)
+			case "unrealizedReturnPercent":
+				return ec.fieldContext_Investment_unrealizedReturnPercent(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Investment", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _User_transactions(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -18145,6 +18536,8 @@ func (ec *executionContext) fieldContext_UserHousehold_user(_ context.Context, f
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -18508,6 +18901,8 @@ func (ec *executionContext) fieldContext_UserKey_user(_ context.Context, field g
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
 				return ec.fieldContext_User_accounts(ctx, field)
+			case "investments":
+				return ec.fieldContext_User_investments(ctx, field)
 			case "transactions":
 				return ec.fieldContext_User_transactions(ctx, field)
 			case "userKeys":
@@ -23509,7 +23904,7 @@ func (ec *executionContext) unmarshalInputInvestmentWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "symbol", "symbolNEQ", "symbolIn", "symbolNotIn", "symbolGT", "symbolGTE", "symbolLT", "symbolLTE", "symbolContains", "symbolHasPrefix", "symbolHasSuffix", "symbolEqualFold", "symbolContainsFold", "amount", "amountNEQ", "amountIn", "amountNotIn", "amountGT", "amountGTE", "amountLT", "amountLTE", "quote", "quoteNEQ", "quoteIn", "quoteNotIn", "quoteGT", "quoteGTE", "quoteLT", "quoteLTE", "value", "valueNEQ", "valueIn", "valueNotIn", "valueGT", "valueGTE", "valueLT", "valueLTE", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "householdCurrencyID", "householdCurrencyIDNEQ", "householdCurrencyIDIn", "householdCurrencyIDNotIn", "hasAccount", "hasAccountWith", "hasHousehold", "hasHouseholdWith", "hasHouseholdCurrency", "hasHouseholdCurrencyWith", "hasInvestmentLots", "hasInvestmentLotsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "type", "typeNEQ", "typeIn", "typeNotIn", "symbol", "symbolNEQ", "symbolIn", "symbolNotIn", "symbolGT", "symbolGTE", "symbolLT", "symbolLTE", "symbolContains", "symbolHasPrefix", "symbolHasSuffix", "symbolEqualFold", "symbolContainsFold", "amount", "amountNEQ", "amountIn", "amountNotIn", "amountGT", "amountGTE", "amountLT", "amountLTE", "quote", "quoteNEQ", "quoteIn", "quoteNotIn", "quoteGT", "quoteGTE", "quoteLT", "quoteLTE", "value", "valueNEQ", "valueIn", "valueNotIn", "valueGT", "valueGTE", "valueLT", "valueLTE", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "householdCurrencyID", "householdCurrencyIDNEQ", "householdCurrencyIDIn", "householdCurrencyIDNotIn", "userID", "userIDNEQ", "userIDIn", "userIDNotIn", "hasAccount", "hasAccountWith", "hasHousehold", "hasHouseholdWith", "hasHouseholdCurrency", "hasHouseholdCurrencyWith", "hasUser", "hasUserWith", "hasInvestmentLots", "hasInvestmentLotsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24215,6 +24610,34 @@ func (ec *executionContext) unmarshalInputInvestmentWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.HouseholdCurrencyIDNotIn = data
+		case "userID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
+		case "userIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDNEQ"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserIDNEQ = data
+		case "userIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserIDIn = data
+		case "userIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDNotIn"))
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserIDNotIn = data
 		case "hasAccount":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAccount"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -24257,6 +24680,20 @@ func (ec *executionContext) unmarshalInputInvestmentWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.HasHouseholdCurrencyWith = data
+		case "hasUser":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUser"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasUser = data
+		case "hasUserWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUserWith"))
+			data, err := ec.unmarshalOUserWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasUserWith = data
 		case "hasInvestmentLots":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInvestmentLots"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -29477,7 +29914,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasHouseholds", "hasHouseholdsWith", "hasAccounts", "hasAccountsWith", "hasTransactions", "hasTransactionsWith", "hasUserKeys", "hasUserKeysWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasHouseholds", "hasHouseholdsWith", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactions", "hasTransactionsWith", "hasUserKeys", "hasUserKeysWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -29883,6 +30320,20 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.HasAccountsWith = data
+		case "hasInvestments":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInvestments"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasInvestments = data
+		case "hasInvestmentsWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInvestmentsWith"))
+			data, err := ec.unmarshalOInvestmentWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐInvestmentWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasInvestmentsWith = data
 		case "hasTransactions":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactions"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -32562,6 +33013,11 @@ func (ec *executionContext) _Investment(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "userID":
+			out.Values[i] = ec._Investment_userID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "account":
 			field := field
 
@@ -32670,6 +33126,42 @@ func (ec *executionContext) _Investment(ctx context.Context, sel ast.SelectionSe
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "user":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Investment_user(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "investmentLots":
 			field := field
 
@@ -32680,6 +33172,150 @@ func (ec *executionContext) _Investment(ctx context.Context, sel ast.SelectionSe
 					}
 				}()
 				res = ec._Investment_investmentLots(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "costBasis":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Investment_costBasis(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "averageCost":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Investment_averageCost(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "unrealizedReturn":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Investment_unrealizedReturn(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "unrealizedReturnPercent":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Investment_unrealizedReturnPercent(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -36279,6 +36915,39 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._User_accounts(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "investments":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_investments(ctx, field, obj)
 				return res
 			}
 

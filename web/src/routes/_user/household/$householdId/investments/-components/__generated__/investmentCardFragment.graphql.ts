@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<85135e840dd467d3d9e6245ec759c5f2>>
+ * @generated SignedSource<<b6ec6aab1ac6a450dc13eb4914be923a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,12 @@ export type investmentCardFragment$data = {
   readonly name: string;
   readonly quote: string;
   readonly symbol: string;
+  readonly unrealizedReturn: string;
+  readonly unrealizedReturnPercent: string;
   readonly updateTime: any;
+  readonly user: {
+    readonly name: string;
+  };
   readonly value: string;
   readonly " $fragmentType": "investmentCardFragment";
 };
@@ -28,7 +33,15 @@ export type investmentCardFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"investmentCardFragment">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
@@ -41,13 +54,7 @@ const node: ReaderFragment = {
       "name": "id",
       "storageKey": null
     },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "name",
-      "storageKey": null
-    },
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -90,6 +97,18 @@ const node: ReaderFragment = {
     {
       "alias": null,
       "args": null,
+      "concreteType": "User",
+      "kind": "LinkedField",
+      "name": "user",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/)
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "kind": "ScalarField",
       "name": "amount",
       "storageKey": null
@@ -100,12 +119,27 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "value",
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "unrealizedReturn",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "unrealizedReturnPercent",
+      "storageKey": null
     }
   ],
   "type": "Investment",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "2c976021f07fb06228e1d0f09e31a84f";
+(node as any).hash = "7670a93cacf9dbe9e0adeb9f3f626b5f";
 
 export default node;

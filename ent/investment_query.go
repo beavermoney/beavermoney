@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/user"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -31,6 +32,7 @@ type InvestmentQuery struct {
 	withAccount             *AccountQuery
 	withHousehold           *HouseholdQuery
 	withHouseholdCurrency   *HouseholdCurrencyQuery
+	withUser                *UserQuery
 	withInvestmentLots      *InvestmentLotQuery
 	loadTotal               []func(context.Context, []*Investment) error
 	modifiers               []func(*sql.Selector)
@@ -130,6 +132,28 @@ func (_q *InvestmentQuery) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
 			sqlgraph.From(investment.Table, investment.FieldID, selector),
 			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, investment.HouseholdCurrencyTable, investment.HouseholdCurrencyColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (_q *InvestmentQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(investment.Table, investment.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, investment.UserTable, investment.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -354,6 +378,7 @@ func (_q *InvestmentQuery) Clone() *InvestmentQuery {
 		withAccount:           _q.withAccount.Clone(),
 		withHousehold:         _q.withHousehold.Clone(),
 		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
+		withUser:              _q.withUser.Clone(),
 		withInvestmentLots:    _q.withInvestmentLots.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -392,6 +417,17 @@ func (_q *InvestmentQuery) WithHouseholdCurrency(opts ...func(*HouseholdCurrency
 		opt(query)
 	}
 	_q.withHouseholdCurrency = query
+	return _q
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *InvestmentQuery) WithUser(opts ...func(*UserQuery)) *InvestmentQuery {
+	query := (&UserClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withUser = query
 	return _q
 }
 
@@ -490,10 +526,11 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	var (
 		nodes       = []*Investment{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			_q.withAccount != nil,
 			_q.withHousehold != nil,
 			_q.withHouseholdCurrency != nil,
+			_q.withUser != nil,
 			_q.withInvestmentLots != nil,
 		}
 	)
@@ -533,6 +570,12 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	if query := _q.withHouseholdCurrency; query != nil {
 		if err := _q.loadHouseholdCurrency(ctx, query, nodes, nil,
 			func(n *Investment, e *HouseholdCurrency) { n.Edges.HouseholdCurrency = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withUser; query != nil {
+		if err := _q.loadUser(ctx, query, nodes, nil,
+			func(n *Investment, e *User) { n.Edges.User = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -645,6 +688,35 @@ func (_q *InvestmentQuery) loadHouseholdCurrency(ctx context.Context, query *Hou
 	}
 	return nil
 }
+func (_q *InvestmentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Investment)
+	for i := range nodes {
+		fk := nodes[i].UserID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (_q *InvestmentQuery) loadInvestmentLots(ctx context.Context, query *InvestmentLotQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *InvestmentLot)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Investment)
@@ -712,6 +784,9 @@ func (_q *InvestmentQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withHouseholdCurrency != nil {
 			_spec.Node.AddColumnOnce(investment.FieldHouseholdCurrencyID)
+		}
+		if _q.withUser != nil {
+			_spec.Node.AddColumnOnce(investment.FieldUserID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

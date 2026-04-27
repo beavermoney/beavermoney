@@ -153,6 +153,7 @@ var (
 		{Name: "account_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "household_currency_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeInt},
 	}
 	// InvestmentsTable holds the schema information for the "investments" table.
 	InvestmentsTable = &schema.Table{
@@ -176,6 +177,12 @@ var (
 				Symbol:     "investments_household_currencies_investments",
 				Columns:    []*schema.Column{InvestmentsColumns[11]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "investments_users_investments",
+				Columns:    []*schema.Column{InvestmentsColumns[12]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -646,6 +653,7 @@ func init() {
 	InvestmentsTable.ForeignKeys[0].RefTable = AccountsTable
 	InvestmentsTable.ForeignKeys[1].RefTable = HouseholdsTable
 	InvestmentsTable.ForeignKeys[2].RefTable = HouseholdCurrenciesTable
+	InvestmentsTable.ForeignKeys[3].RefTable = UsersTable
 	InvestmentsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(30064771072),
 	}

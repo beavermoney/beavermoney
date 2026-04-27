@@ -132,6 +132,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			investment.FieldValue:               {Type: field.TypeFloat64, Column: investment.FieldValue},
 			investment.FieldAccountID:           {Type: field.TypeInt, Column: investment.FieldAccountID},
 			investment.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: investment.FieldHouseholdCurrencyID},
+			investment.FieldUserID:              {Type: field.TypeInt, Column: investment.FieldUserID},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -763,6 +764,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"HouseholdCurrency",
 	)
 	graph.MustAddE(
+		"user",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   investment.UserTable,
+			Columns: []string{investment.UserColumn},
+			Bidi:    false,
+		},
+		"Investment",
+		"User",
+	)
+	graph.MustAddE(
 		"investment_lots",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1121,6 +1134,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"User",
 		"Account",
+	)
+	graph.MustAddE(
+		"investments",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+		},
+		"User",
+		"Investment",
 	)
 	graph.MustAddE(
 		"transactions",
@@ -2068,6 +2093,11 @@ func (f *InvestmentFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(investment.FieldHouseholdCurrencyID))
 }
 
+// WhereUserID applies the entql int predicate on the user_id field.
+func (f *InvestmentFilter) WhereUserID(p entql.IntP) {
+	f.Where(p.Field(investment.FieldUserID))
+}
+
 // WhereHasAccount applies a predicate to check if query has an edge account.
 func (f *InvestmentFilter) WhereHasAccount() {
 	f.Where(entql.HasEdge("account"))
@@ -2104,6 +2134,20 @@ func (f *InvestmentFilter) WhereHasHouseholdCurrency() {
 // WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
 func (f *InvestmentFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
 	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasUser applies a predicate to check if query has an edge user.
+func (f *InvestmentFilter) WhereHasUser() {
+	f.Where(entql.HasEdge("user"))
+}
+
+// WhereHasUserWith applies a predicate to check if query has an edge user with a given conditions (other predicates).
+func (f *InvestmentFilter) WhereHasUserWith(preds ...predicate.User) {
+	f.Where(entql.HasEdgeWith("user", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -3214,6 +3258,20 @@ func (f *UserFilter) WhereHasAccounts() {
 // WhereHasAccountsWith applies a predicate to check if query has an edge accounts with a given conditions (other predicates).
 func (f *UserFilter) WhereHasAccountsWith(preds ...predicate.Account) {
 	f.Where(entql.HasEdgeWith("accounts", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInvestments applies a predicate to check if query has an edge investments.
+func (f *UserFilter) WhereHasInvestments() {
+	f.Where(entql.HasEdge("investments"))
+}
+
+// WhereHasInvestmentsWith applies a predicate to check if query has an edge investments with a given conditions (other predicates).
+func (f *UserFilter) WhereHasInvestmentsWith(preds ...predicate.Investment) {
+	f.Where(entql.HasEdgeWith("investments", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

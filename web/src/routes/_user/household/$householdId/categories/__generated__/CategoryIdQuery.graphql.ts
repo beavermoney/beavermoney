@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<03f779cd4552614808350468a915d7b4>>
+ * @generated SignedSource<<6bc7603883b874fb3c21b9004eb21931>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -120,6 +120,8 @@ export type UserWhereInput = {
   hasAccountsWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
   hasHouseholds?: boolean | null | undefined;
   hasHouseholdsWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
+  hasInvestments?: boolean | null | undefined;
+  hasInvestmentsWith?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
   hasRecurringSubscriptions?: boolean | null | undefined;
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
@@ -450,6 +452,8 @@ export type InvestmentWhereInput = {
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasInvestmentLots?: boolean | null | undefined;
   hasInvestmentLotsWith?: ReadonlyArray<InvestmentLotWhereInput> | null | undefined;
+  hasUser?: boolean | null | undefined;
+  hasUserWith?: ReadonlyArray<UserWhereInput> | null | undefined;
   householdCurrencyID?: string | null | undefined;
   householdCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
   householdCurrencyIDNEQ?: string | null | undefined;
@@ -514,6 +518,10 @@ export type InvestmentWhereInput = {
   updateTimeLTE?: any | null | undefined;
   updateTimeNEQ?: any | null | undefined;
   updateTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  userID?: string | null | undefined;
+  userIDIn?: ReadonlyArray<string> | null | undefined;
+  userIDNEQ?: string | null | undefined;
+  userIDNotIn?: ReadonlyArray<string> | null | undefined;
   value?: string | null | undefined;
   valueGT?: string | null | undefined;
   valueGTE?: string | null | undefined;

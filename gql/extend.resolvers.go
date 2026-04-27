@@ -10,6 +10,7 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/gql/model"
+	"github.com/shopspring/decimal"
 )
 
 // FinancialReport is the resolver for the financialReport field.
@@ -21,4 +22,46 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 		StartDate: start,
 		EndDate:   end,
 	}, nil
+}
+
+// CostBasis is the resolver for the costBasis field.
+func (r *investmentResolver) CostBasis(ctx context.Context, obj *ent.Investment) (string, error) {
+	basis, _, err := r.computeAvgCostBasis(ctx, obj)
+	if err != nil {
+		return "", err
+	}
+	return basis.String(), nil
+}
+
+// AverageCost is the resolver for the averageCost field.
+func (r *investmentResolver) AverageCost(ctx context.Context, obj *ent.Investment) (string, error) {
+	basis, shares, err := r.computeAvgCostBasis(ctx, obj)
+	if err != nil {
+		return "", err
+	}
+	if !shares.IsPositive() {
+		return decimal.Zero.String(), nil
+	}
+	return basis.Div(shares).String(), nil
+}
+
+// UnrealizedReturn is the resolver for the unrealizedReturn field.
+func (r *investmentResolver) UnrealizedReturn(ctx context.Context, obj *ent.Investment) (string, error) {
+	basis, _, err := r.computeAvgCostBasis(ctx, obj)
+	if err != nil {
+		return "", err
+	}
+	return obj.Value.Sub(basis).String(), nil
+}
+
+// UnrealizedReturnPercent is the resolver for the unrealizedReturnPercent field.
+func (r *investmentResolver) UnrealizedReturnPercent(ctx context.Context, obj *ent.Investment) (string, error) {
+	basis, _, err := r.computeAvgCostBasis(ctx, obj)
+	if err != nil {
+		return "", err
+	}
+	if !basis.IsPositive() {
+		return decimal.Zero.String(), nil
+	}
+	return obj.Value.Sub(basis).Div(basis).String(), nil
 }

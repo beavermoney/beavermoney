@@ -225,6 +225,10 @@ func init() {
 	investmentDescHouseholdCurrencyID := investmentFields[7].Descriptor()
 	// investment.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
 	investment.HouseholdCurrencyIDValidator = investmentDescHouseholdCurrencyID.Validators[0].(func(int) error)
+	// investmentDescUserID is the schema descriptor for user_id field.
+	investmentDescUserID := investmentFields[8].Descriptor()
+	// investment.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	investment.UserIDValidator = investmentDescUserID.Validators[0].(func(int) error)
 	investmentlotMixin := schema.InvestmentLot{}.Mixin()
 	investmentlot.Policy = privacy.NewPolicies(investmentlotMixin[1], schema.InvestmentLot{})
 	investmentlot.Hooks[0] = func(next ent.Mutator) ent.Mutator {

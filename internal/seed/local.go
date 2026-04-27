@@ -292,6 +292,7 @@ func Seed(
 		SetHouseholdCurrencyID(householdCAD.ID).
 		SetType(investment.TypeStock).
 		SetAccount(webull).
+		SetUserID(webull.UserID).
 		SaveX(ctx)
 
 	{
@@ -730,6 +731,7 @@ func fetchAndCreateInvestments(
 		SetHouseholdCurrencyID(householdCurrency.ID).
 		SetType(investment.TypeStock).
 		SetAccount(investmentAccount).
+		SetUserID(investmentAccount.UserID).
 		SetCreateTime(createdAt).
 		Save(ctx)
 	if err != nil {
@@ -752,6 +754,7 @@ func fetchAndCreateInvestments(
 			SetHouseholdCurrencyID(householdCurrency.ID).
 			SetType(investment.TypeStock).
 			SetAccount(investmentAccount).
+			SetUserID(investmentAccount.UserID).
 			SetCreateTime(createdAt).
 			Save(ctx)
 		if err != nil {

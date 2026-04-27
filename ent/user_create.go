@@ -10,6 +10,7 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/transaction"
@@ -97,6 +98,21 @@ func (_c *UserCreate) AddAccounts(v ...*Account) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddAccountIDs(ids...)
+}
+
+// AddInvestmentIDs adds the "investments" edge to the Investment entity by IDs.
+func (_c *UserCreate) AddInvestmentIDs(ids ...int) *UserCreate {
+	_c.mutation.AddInvestmentIDs(ids...)
+	return _c
+}
+
+// AddInvestments adds the "investments" edges to the Investment entity.
+func (_c *UserCreate) AddInvestments(v ...*Investment) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddInvestmentIDs(ids...)
 }
 
 // AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
@@ -324,6 +340,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.InvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.InvestmentsTable,
+			Columns: []string{user.InvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

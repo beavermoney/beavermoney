@@ -204,6 +204,9 @@ func (_u *InvestmentUpdate) check() error {
 	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Investment.household_currency"`)
 	}
+	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Investment.user"`)
+	}
 	return nil
 }
 
@@ -495,6 +498,9 @@ func (_u *InvestmentUpdateOne) check() error {
 	}
 	if _u.mutation.HouseholdCurrencyCleared() && len(_u.mutation.HouseholdCurrencyIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Investment.household_currency"`)
+	}
+	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Investment.user"`)
 	}
 	return nil
 }

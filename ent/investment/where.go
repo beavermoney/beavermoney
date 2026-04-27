@@ -106,6 +106,11 @@ func HouseholdCurrencyID(v int) predicate.Investment {
 	return predicate.Investment(sql.FieldEQ(FieldHouseholdCurrencyID, v))
 }
 
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v int) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldUserID, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Investment {
 	return predicate.Investment(sql.FieldEQ(FieldCreateTime, v))
@@ -516,6 +521,26 @@ func HouseholdCurrencyIDNotIn(vs ...int) predicate.Investment {
 	return predicate.Investment(sql.FieldNotIn(FieldHouseholdCurrencyID, vs...))
 }
 
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v int) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldUserID, v))
+}
+
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v int) predicate.Investment {
+	return predicate.Investment(sql.FieldNEQ(FieldUserID, v))
+}
+
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...int) predicate.Investment {
+	return predicate.Investment(sql.FieldIn(FieldUserID, vs...))
+}
+
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...int) predicate.Investment {
+	return predicate.Investment(sql.FieldNotIn(FieldUserID, vs...))
+}
+
 // HasAccount applies the HasEdge predicate on the "account" edge.
 func HasAccount() predicate.Investment {
 	return predicate.Investment(func(s *sql.Selector) {
@@ -577,6 +602,29 @@ func HasHouseholdCurrency() predicate.Investment {
 func HasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.Investment {
 	return predicate.Investment(func(s *sql.Selector) {
 		step := newHouseholdCurrencyStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUser applies the HasEdge predicate on the "user" edge.
+func HasUser() predicate.Investment {
+	return predicate.Investment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
+func HasUserWith(preds ...predicate.User) predicate.Investment {
+	return predicate.Investment(func(s *sql.Selector) {
+		step := newUserStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

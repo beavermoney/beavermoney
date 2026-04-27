@@ -1584,6 +1584,21 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				fieldSeen[investment.FieldHouseholdCurrencyID] = struct{}{}
 			}
 
+		case "user":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&UserClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, userImplementors)...); err != nil {
+				return err
+			}
+			_q.withUser = query
+			if _, ok := fieldSeen[investment.FieldUserID]; !ok {
+				selectedFields = append(selectedFields, investment.FieldUserID)
+				fieldSeen[investment.FieldUserID] = struct{}{}
+			}
+
 		case "investmentLots":
 			var (
 				alias = field.Alias
@@ -1650,6 +1665,11 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 			if _, ok := fieldSeen[investment.FieldHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, investment.FieldHouseholdCurrencyID)
 				fieldSeen[investment.FieldHouseholdCurrencyID] = struct{}{}
+			}
+		case "userID":
+			if _, ok := fieldSeen[investment.FieldUserID]; !ok {
+				selectedFields = append(selectedFields, investment.FieldUserID)
+				fieldSeen[investment.FieldUserID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -2960,6 +2980,19 @@ func (_q *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				return err
 			}
 			_q.WithNamedAccounts(alias, func(wq *AccountQuery) {
+				*wq = *query
+			})
+
+		case "investments":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&InvestmentClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, investmentImplementors)...); err != nil {
+				return err
+			}
+			_q.WithNamedInvestments(alias, func(wq *InvestmentQuery) {
 				*wq = *query
 			})
 

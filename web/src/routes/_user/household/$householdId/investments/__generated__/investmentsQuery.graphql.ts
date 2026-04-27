@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<77469d336086b28038dd3fa5ae59f269>>
+ * @generated SignedSource<<430028fde5b1a775b39fd42c65bc03e1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -182,6 +182,33 @@ return {
                       {
                         "alias": null,
                         "args": null,
+                        "concreteType": "User",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": [
+                          (v2/*: any*/),
+                          (v1/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "unrealizedReturn",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "unrealizedReturnPercent",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
                         "kind": "ScalarField",
                         "name": "__typename",
                         "storageKey": null
@@ -255,12 +282,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "97731e4fe0e8f9a31a8506683a807ffa",
+    "cacheID": "a61aa929b458cc47bee5feceabe75c13",
     "id": null,
     "metadata": {},
     "name": "investmentsQuery",
     "operationKind": "query",
-    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  amount\n  value\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsQuery {\n  household {\n    ...investmentsPanelFragment\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment on Household {\n  investments(first: 50) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

@@ -31,6 +31,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("households", Household.Type).
 			Through("user_households", UserHousehold.Type),
 		edge.To("accounts", Account.Type),
+		edge.To("investments", Investment.Type),
 		edge.To("transactions", Transaction.Type),
 		edge.To("user_keys", UserKey.Type),
 		edge.To("recurring_subscriptions", RecurringSubscription.Type),

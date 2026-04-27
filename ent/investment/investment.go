@@ -41,12 +41,16 @@ const (
 	FieldAccountID = "account_id"
 	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
 	FieldHouseholdCurrencyID = "household_currency_id"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// EdgeAccount holds the string denoting the account edge name in mutations.
 	EdgeAccount = "account"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeHouseholdCurrency holds the string denoting the household_currency edge name in mutations.
 	EdgeHouseholdCurrency = "household_currency"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// EdgeInvestmentLots holds the string denoting the investment_lots edge name in mutations.
 	EdgeInvestmentLots = "investment_lots"
 	// Table holds the table name of the investment in the database.
@@ -72,6 +76,13 @@ const (
 	HouseholdCurrencyInverseTable = "household_currencies"
 	// HouseholdCurrencyColumn is the table column denoting the household_currency relation/edge.
 	HouseholdCurrencyColumn = "household_currency_id"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "investments"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
 	// InvestmentLotsTable is the table that holds the investment_lots relation/edge.
 	InvestmentLotsTable = "investment_lots"
 	// InvestmentLotsInverseTable is the table name for the InvestmentLot entity.
@@ -95,6 +106,7 @@ var Columns = []string{
 	FieldValue,
 	FieldAccountID,
 	FieldHouseholdCurrencyID,
+	FieldUserID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -131,6 +143,8 @@ var (
 	AccountIDValidator func(int) error
 	// HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
 	HouseholdCurrencyIDValidator func(int) error
+	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	UserIDValidator func(int) error
 )
 
 // Type defines the type for the "type" enum field.
@@ -219,6 +233,11 @@ func ByHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHouseholdCurrencyID, opts...).ToFunc()
 }
 
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+}
+
 // ByAccountField orders the results by account field.
 func ByAccountField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -237,6 +256,13 @@ func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByHouseholdCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newHouseholdCurrencyStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByUserField orders the results by user field.
+func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -272,6 +298,13 @@ func newHouseholdCurrencyStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(HouseholdCurrencyInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, HouseholdCurrencyTable, HouseholdCurrencyColumn),
+	)
+}
+func newUserStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
 func newInvestmentLotsStep() *sqlgraph.Step {

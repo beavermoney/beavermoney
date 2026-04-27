@@ -10,6 +10,7 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/householdrate"
+	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -541,4 +542,57 @@ func (r *mutationResolver) refreshHouseholdRates(
 		).
 		UpdateNewValues().
 		Exec(ctx)
+}
+
+// computeAvgCostBasis replays the investment's lots in chronological order using
+// the moving-average-cost method and returns (cost_basis, shares_held).
+//
+// Algorithm per lot:
+//   - Buy (positive amount):  basis += amount * price; shares += amount
+//   - Sell (negative amount): basis += amount * (basis/shares); shares += amount
+//     (sells reduce basis at the current average, not at the sell price, so
+//     realized gains/losses are excluded)
+//   - Zero-amount lots are skipped defensively.
+//
+// Performance note: this issues one query per call. Each computed field on
+// Investment that uses this helper triggers an independent query, so a
+// portfolio query that selects all four return fields hits investment_lots four
+// times per investment. For larger portfolios consider request-scoped caching
+// or a dataloader; that's an optimization for when reads become a bottleneck.
+func (r *investmentResolver) computeAvgCostBasis(
+	ctx context.Context,
+	obj *ent.Investment,
+) (decimal.Decimal, decimal.Decimal, error) {
+	lots, err := obj.QueryInvestmentLots().
+		Order(
+			ent.Asc(investmentlot.FieldCreateTime),
+			ent.Asc(investmentlot.FieldID),
+		).
+		All(ctx)
+	if err != nil {
+		return decimal.Zero, decimal.Zero, err
+	}
+
+	basis := decimal.Zero
+	shares := decimal.Zero
+	for _, lot := range lots {
+		switch {
+		case lot.Amount.IsPositive():
+			basis = basis.Add(lot.Amount.Mul(lot.Price))
+			shares = shares.Add(lot.Amount)
+		case lot.Amount.IsNegative():
+			if shares.IsPositive() {
+				avg := basis.Div(shares)
+				// lot.Amount is negative, so this subtracts proportionally.
+				basis = basis.Add(lot.Amount.Mul(avg))
+			}
+			shares = shares.Add(lot.Amount)
+		}
+	}
+
+	// Defensive: clamp tiny negative residuals from decimal arithmetic to zero.
+	if basis.IsNegative() {
+		basis = decimal.Zero
+	}
+	return basis, shares, nil
 }
