@@ -185,3 +185,4 @@ dist
 tmp/
 
 .idea/
+.opencode/
