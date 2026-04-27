@@ -19,7 +19,6 @@ import { match } from 'ts-pattern'
 import { useFragment, useMutation } from 'react-relay'
 import { environment } from '@/environment'
 import { PendingComponent } from '@/components/pending-component'
-import { AccountCard } from './-components/account-card'
 import { Separator } from '@/components/ui/separator'
 import { CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -41,22 +40,23 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { AccountIdLayoutQuery } from './__generated__/AccountIdLayoutQuery.graphql'
-import { AccountIdLayoutDeleteMutation } from './__generated__/AccountIdLayoutDeleteMutation.graphql'
-import { AccountIdLayoutArchiveMutation } from './__generated__/AccountIdLayoutArchiveMutation.graphql'
 import invariant from 'tiny-invariant'
-import { AccountIdLayoutFragment$key } from './__generated__/AccountIdLayoutFragment.graphql'
 import { NodeType, commitMutationResult, useDeleteNode } from '@/lib/relay'
 import { identity } from 'lodash-es'
+import { routeAccountIdQuery } from './__generated__/routeAccountIdQuery.graphql'
+import { routeAccountIdDeleteMutation } from './__generated__/routeAccountIdDeleteMutation.graphql'
+import { routeAccountIdArchiveMutation } from './__generated__/routeAccountIdArchiveMutation.graphql'
+import { routeAccountIdFragment$key } from './__generated__/routeAccountIdFragment.graphql'
+import { AccountCard } from '../-components/account-card'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<AccountIdLayoutQuery>(
+    return loadQuery<routeAccountIdQuery>(
       environment,
-      accountIdLayoutQuery,
+      RouteAccountIdQuery,
       { id: params.accountId },
       { fetchPolicy: 'store-or-network' },
     )
@@ -64,35 +64,35 @@ export const Route = createFileRoute(
   pendingComponent: PendingComponent,
 })
 
-const accountIdLayoutQuery = graphql`
-  query AccountIdLayoutQuery($id: ID!) {
+const RouteAccountIdQuery = graphql`
+  query routeAccountIdQuery($id: ID!) {
     node(id: $id) {
       ... on Account {
         ...accountCardFragment
-        ...AccountIdLayoutFragment
+        ...routeAccountIdFragment
       }
     }
   }
 `
 
-const accountIdLayoutFragment = graphql`
-  fragment AccountIdLayoutFragment on Account {
+const RouteAccountIdFragment = graphql`
+  fragment routeAccountIdFragment on Account {
     id
     type
     archived
   }
 `
 
-const accountIdLayoutDeleteMutation = graphql`
-  mutation AccountIdLayoutDeleteMutation($id: ID!, $connections: [ID!]!) {
+const RouteAccountIdDeleteMutation = graphql`
+  mutation routeAccountIdDeleteMutation($id: ID!, $connections: [ID!]!) {
     deleteAccount(id: $id) {
       deletedAccountId @deleteEdge(connections: $connections)
     }
   }
 `
 
-const accountIdLayoutArchiveMutation = graphql`
-  mutation AccountIdLayoutArchiveMutation($id: ID!) {
+const RouteAccountIdArchiveMutation = graphql`
+  mutation routeAccountIdArchiveMutation($id: ID!) {
     archiveAccount(id: $id)
   }
 `
@@ -103,8 +103,8 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { open: openLogTransaction } = useLogTransaction()
 
-  const data = usePreloadedQuery<AccountIdLayoutQuery>(
-    accountIdLayoutQuery,
+  const data = usePreloadedQuery<routeAccountIdQuery>(
+    RouteAccountIdQuery,
     queryRef,
   )
 
@@ -112,17 +112,17 @@ function RouteComponent() {
   const [archiveAlertOpen, setArchiveAlertOpen] = useState(false)
 
   const [commitDeleteMutation, isDeleteMutationInFlight] =
-    useMutation<AccountIdLayoutDeleteMutation>(accountIdLayoutDeleteMutation)
+    useMutation<routeAccountIdDeleteMutation>(RouteAccountIdDeleteMutation)
 
   const [commitArchiveMutation, isArchiveMutationInFlight] =
-    useMutation<AccountIdLayoutArchiveMutation>(accountIdLayoutArchiveMutation)
+    useMutation<routeAccountIdArchiveMutation>(RouteAccountIdArchiveMutation)
 
   const deleteNode = useDeleteNode(NodeType.Account)
 
   useSubscribeToInvalidationState([params.householdId], () => {
     fetchQuery(
       environment,
-      accountIdLayoutQuery,
+      RouteAccountIdQuery,
       { id: params.accountId },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
@@ -130,8 +130,8 @@ function RouteComponent() {
 
   invariant(data.node, 'Account not found')
 
-  const accountData = useFragment<AccountIdLayoutFragment$key>(
-    accountIdLayoutFragment,
+  const accountData = useFragment<routeAccountIdFragment$key>(
+    RouteAccountIdFragment,
     data.node,
   )
 
@@ -144,12 +144,9 @@ function RouteComponent() {
 
   const handleDelete = async () => {
     const result = await deleteNode((connections) =>
-      commitMutationResult<AccountIdLayoutDeleteMutation>(
-        commitDeleteMutation,
-        {
-          variables: { id: accountData.id, connections },
-        },
-      ),
+      commitMutationResult<routeAccountIdDeleteMutation>(commitDeleteMutation, {
+        variables: { id: accountData.id, connections },
+      }),
     )
 
     match(result)
@@ -173,7 +170,7 @@ function RouteComponent() {
   }
 
   const handleArchive = async () => {
-    const result = await commitMutationResult<AccountIdLayoutArchiveMutation>(
+    const result = await commitMutationResult<routeAccountIdArchiveMutation>(
       commitArchiveMutation,
       {
         variables: { id: accountData.id },
