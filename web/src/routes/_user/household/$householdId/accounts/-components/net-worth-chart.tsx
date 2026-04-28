@@ -60,6 +60,16 @@ function niceStep(rawStep: number): number {
   return nice * Math.pow(10, exponent)
 }
 
+function isImproving(series: SeriesKey | null, change: number): boolean {
+  if (series === 'liability') return change < 0
+  return change > 0
+}
+
+function isWorsening(series: SeriesKey | null, change: number): boolean {
+  if (series === 'liability') return change > 0
+  return change < 0
+}
+
 const NetWorthChartQuery = graphql`
   query netWorthChartQuery($where: SnapshotWhereInput) {
     household {
@@ -232,6 +242,8 @@ export function NetWorthChart() {
           },
         )
 
+        // `totals.liability` is negative (DB convention). Keep it negative for the
+        // net-worth sum, but flip to positive for the standalone liability series.
         const asset =
           totals.liquidity +
           totals.investment +
@@ -241,7 +253,11 @@ export function NetWorthChart() {
           date: new Date(snap.createTime).getTime(),
           netWorth: asset + totals.liability,
           asset,
-          ...totals,
+          liquidity: totals.liquidity,
+          investment: totals.investment,
+          property: totals.property,
+          receivable: totals.receivable,
+          liability: -totals.liability,
         }
       })
       .sort((a, b) => a.date - b.date)
@@ -487,9 +503,9 @@ export function NetWorthChart() {
           <div
             className={cn(
               'text-muted-foreground min-w-0 text-xs tabular-nums',
-              singleSeriesStats.absoluteChange > 0 &&
+              isImproving(selectedSeries, singleSeriesStats.absoluteChange) &&
                 'text-emerald-600 dark:text-emerald-400',
-              singleSeriesStats.absoluteChange < 0 &&
+              isWorsening(selectedSeries, singleSeriesStats.absoluteChange) &&
                 'text-red-600 dark:text-red-400',
             )}
           >
