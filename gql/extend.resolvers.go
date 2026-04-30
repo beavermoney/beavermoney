@@ -9,19 +9,70 @@ import (
 	"context"
 
 	"beavermoney.app/ent"
+	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/gql/model"
+	"beavermoney.app/internal/contextkeys"
 	"github.com/shopspring/decimal"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // FinancialReport is the resolver for the financialReport field.
 func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserID *int) (*model.FinancialReport, error) {
+	userID := contextkeys.GetUserID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "householdResolver.FinancialReport",
+		trace.WithAttributes(
+			attribute.Int("householdID", obj.ID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	if err := r.validateViewUserID(ctx, obj.ID, viewUserID); err != nil {
+		return nil, err
+	}
+
 	// Parse time period
 	start, end := parseTimePeriod(period)
 
-	return &model.FinancialReport{
+	report := &model.FinancialReport{
 		StartDate: start,
 		EndDate:   end,
-	}, nil
+	}
+
+	financialReport := &financialReportResolver{r.Resolver}
+
+	incomeBreakdown, err := financialReport.aggregateByCategoryType(
+		ctx,
+		report,
+		transactioncategory.TypeIncome,
+		viewUserID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	expensesBreakdown, err := financialReport.aggregateByCategoryType(
+		ctx,
+		report,
+		transactioncategory.TypeExpense,
+		viewUserID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	transactionCount, err := financialReport.transactionCount(ctx, report, viewUserID)
+	if err != nil {
+		return nil, err
+	}
+
+	report.IncomeBreakdown = incomeBreakdown
+	report.ExpensesBreakdown = expensesBreakdown
+	report.TransactionCount = transactionCount
+
+	return report, nil
 }
 
 // CostBasis is the resolver for the costBasis field.

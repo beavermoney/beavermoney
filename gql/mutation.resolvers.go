@@ -24,6 +24,7 @@ import (
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
+	"beavermoney.app/ent/user"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
@@ -1709,17 +1710,277 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 
 // AddHouseholdUser is the resolver for the addHouseholdUser field.
 func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.AddHouseholdUserInput) (*ent.UserHousehold, error) {
-	panic(fmt.Errorf("not implemented: AddHouseholdUser - addHouseholdUser"))
+	callerID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.AddHouseholdUser",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("callerID", callerID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	isAdmin, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(callerID),
+			userhousehold.HouseholdIDEQ(householdID),
+			userhousehold.RoleEQ(userhousehold.RoleAdmin),
+		).
+		Exist(ctx)
+	if err != nil {
+		r.logger.Error("Failed to verify household admin", "error", err)
+		return nil, err
+	}
+	if !isAdmin {
+		return nil, fmt.Errorf("NOT_HOUSEHOLD_ADMIN")
+	}
+
+	h, err := client.Household.Get(ctx, householdID)
+	if err != nil {
+		return nil, err
+	}
+	if h.IsDemo {
+		return nil, fmt.Errorf("MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD")
+	}
+
+	if err := userhousehold.RoleValidator(input.Role); err != nil {
+		return nil, fmt.Errorf("invalid role")
+	}
+
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+
+	normalizedEmail := strings.ToLower(strings.TrimSpace(input.Email))
+	targetUser, err := client.User.Query().
+		Where(user.EmailEQ(normalizedEmail)).
+		Only(bypassCtx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("MEMBER_EMAIL_NOT_REGISTERED")
+		}
+		return nil, err
+	}
+	span.SetAttributes(attribute.Int("targetUserID", targetUser.ID))
+
+	alreadyMember, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(targetUser.ID),
+			userhousehold.HouseholdIDEQ(householdID),
+		).
+		Exist(bypassCtx)
+	if err != nil {
+		return nil, err
+	}
+	if alreadyMember {
+		return nil, fmt.Errorf("MEMBER_ALREADY_EXISTS")
+	}
+
+	hc, err := client.HouseholdCurrency.Get(bypassCtx, input.HouseholdCurrencyID)
+	if err != nil || hc.HouseholdID != householdID {
+		return nil, fmt.Errorf("invalid household currency")
+	}
+
+	uh, err := client.UserHousehold.Create().
+		SetUserID(targetUser.ID).
+		SetHouseholdID(householdID).
+		SetRole(input.Role).
+		SetHouseholdCurrencyID(input.HouseholdCurrencyID).
+		Save(bypassCtx)
+	if err != nil {
+		r.logger.Error("Failed to add household user", "error", err)
+		return nil, fmt.Errorf("failed to add household user: %w", err)
+	}
+
+	return uh, nil
 }
 
 // RemoveHouseholdUser is the resolver for the removeHouseholdUser field.
 func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*model.RemoveHouseholdUserPayload, error) {
-	panic(fmt.Errorf("not implemented: RemoveHouseholdUser - removeHouseholdUser"))
+	callerID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.RemoveHouseholdUser",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("callerID", callerID),
+			attribute.Int("targetUserHouseholdID", id),
+		),
+	)
+	defer span.End()
+
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+	client := ent.FromContext(ctx)
+
+	target, err := client.UserHousehold.Get(bypassCtx, id)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return &model.RemoveHouseholdUserPayload{RemovedUserHouseholdID: id}, nil
+		}
+		return nil, err
+	}
+
+	isAdmin, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(callerID),
+			userhousehold.HouseholdIDEQ(target.HouseholdID),
+			userhousehold.RoleEQ(userhousehold.RoleAdmin),
+		).
+		Exist(bypassCtx)
+	if err != nil {
+		return nil, err
+	}
+	if !isAdmin {
+		return nil, fmt.Errorf("NOT_HOUSEHOLD_ADMIN")
+	}
+
+	if target.UserID == callerID {
+		return nil, fmt.Errorf("SELF_REMOVAL_NOT_ALLOWED")
+	}
+
+	household, err := client.Household.Get(bypassCtx, target.HouseholdID)
+	if err != nil {
+		return nil, err
+	}
+	if household.IsDemo {
+		return nil, fmt.Errorf("MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD")
+	}
+
+	if target.Role == userhousehold.RoleAdmin {
+		adminCount, err := client.UserHousehold.Query().
+			Where(
+				userhousehold.HouseholdIDEQ(target.HouseholdID),
+				userhousehold.RoleEQ(userhousehold.RoleAdmin),
+			).
+			Count(bypassCtx)
+		if err != nil {
+			return nil, err
+		}
+		if adminCount <= 1 {
+			return nil, fmt.Errorf("LAST_ADMIN_PROTECTED")
+		}
+	}
+
+	accountCount, err := client.Account.Query().
+		Where(
+			account.HouseholdIDEQ(target.HouseholdID),
+			account.UserIDEQ(target.UserID),
+			account.ArchivedEQ(false),
+		).
+		Count(bypassCtx)
+	if err != nil {
+		return nil, err
+	}
+
+	investmentCount, err := client.Investment.Query().
+		Where(
+			investment.HouseholdIDEQ(target.HouseholdID),
+			investment.UserIDEQ(target.UserID),
+		).
+		Count(bypassCtx)
+	if err != nil {
+		return nil, err
+	}
+
+	subscriptionCount, err := client.RecurringSubscription.Query().
+		Where(
+			recurringsubscription.HouseholdIDEQ(target.HouseholdID),
+			recurringsubscription.UserIDEQ(target.UserID),
+		).
+		Count(bypassCtx)
+	if err != nil {
+		return nil, err
+	}
+
+	if accountCount+investmentCount+subscriptionCount > 0 {
+		return nil, fmt.Errorf("MEMBER_HAS_OWNED_RECORDS: %d accounts, %d investments, %d subscriptions",
+			accountCount, investmentCount, subscriptionCount)
+	}
+
+	if err := client.UserHousehold.DeleteOneID(id).Exec(bypassCtx); err != nil {
+		r.logger.Error("Failed to remove household user", "error", err)
+		return nil, fmt.Errorf("failed to remove household user: %w", err)
+	}
+
+	return &model.RemoveHouseholdUserPayload{RemovedUserHouseholdID: id}, nil
 }
 
 // UpdateHouseholdUserRole is the resolver for the updateHouseholdUserRole field.
 func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, role userhousehold.Role) (*ent.UserHousehold, error) {
-	panic(fmt.Errorf("not implemented: UpdateHouseholdUserRole - updateHouseholdUserRole"))
+	callerID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateHouseholdUserRole",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("callerID", callerID),
+			attribute.Int("targetUserHouseholdID", id),
+		),
+	)
+	defer span.End()
+
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+	client := ent.FromContext(ctx)
+
+	target, err := client.UserHousehold.Get(bypassCtx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	isAdmin, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(callerID),
+			userhousehold.HouseholdIDEQ(target.HouseholdID),
+			userhousehold.RoleEQ(userhousehold.RoleAdmin),
+		).
+		Exist(bypassCtx)
+	if err != nil {
+		return nil, err
+	}
+	if !isAdmin {
+		return nil, fmt.Errorf("NOT_HOUSEHOLD_ADMIN")
+	}
+
+	household, err := client.Household.Get(bypassCtx, target.HouseholdID)
+	if err != nil {
+		return nil, err
+	}
+	if household.IsDemo {
+		return nil, fmt.Errorf("MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD")
+	}
+
+	if target.Role == role {
+		return target, nil
+	}
+
+	if target.Role == userhousehold.RoleAdmin && role == userhousehold.RoleMember {
+		adminCount, err := client.UserHousehold.Query().
+			Where(
+				userhousehold.HouseholdIDEQ(target.HouseholdID),
+				userhousehold.RoleEQ(userhousehold.RoleAdmin),
+			).
+			Count(bypassCtx)
+		if err != nil {
+			return nil, err
+		}
+		if adminCount <= 1 {
+			return nil, fmt.Errorf("LAST_ADMIN_PROTECTED")
+		}
+	}
+
+	updated, err := client.UserHousehold.UpdateOneID(id).
+		SetRole(role).
+		Save(bypassCtx)
+	if err != nil {
+		r.logger.Error("Failed to update household user role", "error", err)
+		return nil, fmt.Errorf("failed to update household user role: %w", err)
+	}
+
+	return updated, nil
 }
 
 // CreateSnapshot is the resolver for the createSnapshot field.
