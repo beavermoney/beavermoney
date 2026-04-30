@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"beavermoney.app/ent"
+	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/privacy"
 	"beavermoney.app/ent/user"
@@ -146,6 +147,62 @@ func FilterAdminHousehold() privacy.QueryMutationRule {
 				userhousehold.UserIDEQ(uid),
 				userhousehold.RoleEQ(userhousehold.RoleAdmin),
 			)
+
+			return privacy.Skip
+		},
+	)
+}
+
+// FilterAdminOfTargetHousehold restricts UserHousehold mutations to admins of the target household.
+// Unlike FilterAdminHousehold (which filters Household rows), this rule operates on UserHousehold
+// rows and checks that the caller is admin of the same household_id as the row being mutated.
+func FilterAdminOfTargetHousehold() privacy.QueryMutationRule {
+	type AdminOfHouseholdFilter interface {
+		WhereHasHouseholdWith(preds ...predicate.Household)
+	}
+
+	return privacy.FilterFunc(
+		func(ctx context.Context, f privacy.Filter) error {
+			uid, ok := ctx.Value(contextkeys.UserIDKey()).(int)
+			if !ok {
+				return privacy.Denyf("unauthenticated admin of target household")
+			}
+
+			tf, ok := f.(AdminOfHouseholdFilter)
+			if !ok {
+				return privacy.Denyf("cannot apply admin of target household filter")
+			}
+
+			tf.WhereHasHouseholdWith(
+				household.HasUserHouseholdsWith(
+					userhousehold.UserIDEQ(uid),
+					userhousehold.RoleEQ(userhousehold.RoleAdmin),
+				),
+			)
+
+			return privacy.Skip
+		},
+	)
+}
+
+// BlockDemoHouseholdMutation prevents member management mutations on demo households.
+func BlockDemoHouseholdMutation() privacy.QueryMutationRule {
+	type DemoHouseholdFilter interface {
+		WhereHasHouseholdWith(preds ...predicate.Household)
+	}
+
+	return privacy.FilterFunc(
+		func(ctx context.Context, f privacy.Filter) error {
+			if contextkeys.IsPrivacyBypass(ctx) {
+				return privacy.Skip
+			}
+
+			tf, ok := f.(DemoHouseholdFilter)
+			if !ok {
+				return privacy.Denyf("cannot apply demo household mutation block")
+			}
+
+			tf.WhereHasHouseholdWith(household.IsDemoEQ(false))
 
 			return privacy.Skip
 		},
