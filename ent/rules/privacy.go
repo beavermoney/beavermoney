@@ -72,6 +72,40 @@ func FilterMe() privacy.QueryMutationRule {
 	)
 }
 
+// FilterMeOrCoMember allows a user to see their own User record.
+// When a household context is set, it also allows seeing other members of that household.
+func FilterMeOrCoMember() privacy.QueryMutationRule {
+	type CoMemberUserFilter interface {
+		WhereHasUserHouseholdsWith(preds ...predicate.UserHousehold)
+		WhereID(entql.IntP)
+	}
+
+	return privacy.FilterFunc(
+		func(ctx context.Context, f privacy.Filter) error {
+			uid, ok := ctx.Value(contextkeys.UserIDKey()).(int)
+			if !ok {
+				return privacy.Denyf("unauthenticated filter me-or-co-member")
+			}
+
+			tf, ok := f.(CoMemberUserFilter)
+			if !ok {
+				return privacy.Denyf("cannot apply me-or-co-member filter")
+			}
+
+			hid, hasHousehold := ctx.Value(contextkeys.HouseholdIDKey()).(int)
+			if hasHousehold && hid > 0 {
+				// Allow all users who are members of the active household.
+				// This includes the current user because they are also a member.
+				tf.WhereHasUserHouseholdsWith(userhousehold.HouseholdIDEQ(hid))
+			} else {
+				tf.WhereID(entql.IntEQ(uid))
+			}
+
+			return privacy.Skip
+		},
+	)
+}
+
 // FilterOwner is used by the UserKey schema, such that anyone can only see their own user keys.
 func FilterOwner() privacy.QueryMutationRule {
 	type OwnerFilter interface {
