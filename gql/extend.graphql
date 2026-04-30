@@ -1,5 +1,5 @@
 extend type Household {
-  financialReport(period: TimePeriodInput!): FinancialReport!
+  financialReport(period: TimePeriodInput!, viewUserID: ID): FinancialReport!
 }
 
 extend type Investment {
