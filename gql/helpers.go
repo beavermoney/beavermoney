@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
+	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
 	"beavermoney.app/internal/frankfurter"
@@ -27,6 +28,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 	ctx context.Context,
 	obj *model.FinancialReport,
 	categoryType transactioncategory.Type,
+	viewUserID *int,
 ) (*model.CategoryTypeAggregate, error) {
 	ctx, span := r.tracer.Start(
 		ctx,
@@ -68,6 +70,8 @@ func (r *financialReportResolver) aggregateByCategoryType(
 
 			// Filter out excluded transactions
 			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
+
+			applyViewUserIDTransactionFilter(s, viewUserID)
 
 			// Apply time filters
 			if !obj.StartDate.IsZero() {
@@ -216,6 +220,79 @@ func (r *financialReportResolver) aggregateByCategoryType(
 		TransactionCount: grandCount,
 		Categories:       categoryAggregates,
 	}, nil
+}
+
+func (r *financialReportResolver) transactionCount(
+	ctx context.Context,
+	obj *model.FinancialReport,
+	viewUserID *int,
+) (int, error) {
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	query := r.entClient.Transaction.Query().
+		Modify(func(s *sql.Selector) {
+			// Filter by household
+			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
+
+			// Filter out excluded transactions
+			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
+
+			applyViewUserIDTransactionFilter(s, viewUserID)
+
+			// Apply time filters
+			if !obj.StartDate.IsZero() {
+				s.Where(sql.GTE(s.C(transaction.FieldDatetime), obj.StartDate))
+			}
+			if !obj.EndDate.IsZero() {
+				s.Where(sql.LT(s.C(transaction.FieldDatetime), obj.EndDate))
+			}
+		})
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		r.logger.Error("Failed to count transactions", "error", err)
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func applyViewUserIDTransactionFilter(s *sql.Selector, viewUserID *int) {
+	if viewUserID == nil {
+		return
+	}
+
+	transaction.HasTransactionEntriesWith(
+		transactionentry.HasAccountWith(
+			account.UserIDEQ(*viewUserID),
+		),
+	)(s)
+}
+
+// validateViewUserID checks that the given userID is a member of the current household.
+// Returns VIEW_USER_NOT_HOUSEHOLD_MEMBER if the user is not a member.
+// Returns nil if viewUserID is nil (combined view).
+func (r *Resolver) validateViewUserID(ctx context.Context, householdID int, viewUserID *int) error {
+	if viewUserID == nil {
+		return nil
+	}
+
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+
+	exists, err := r.entClient.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(*viewUserID),
+			userhousehold.HouseholdIDEQ(householdID),
+		).
+		Exist(bypassCtx)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("VIEW_USER_NOT_HOUSEHOLD_MEMBER")
+	}
+	return nil
 }
 
 func parseTimePeriod(period model.TimePeriodInput) (time.Time, time.Time) {

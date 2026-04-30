@@ -9,12 +9,10 @@ import (
 	"context"
 
 	"beavermoney.app/ent"
-	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
-	"entgo.io/ent/dialect/sql"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -32,7 +30,11 @@ func (r *financialReportResolver) IncomeBreakdown(ctx context.Context, obj *mode
 	)
 	defer span.End()
 
-	return r.aggregateByCategoryType(ctx, obj, transactioncategory.TypeIncome)
+	if obj.IncomeBreakdown != nil {
+		return obj.IncomeBreakdown, nil
+	}
+
+	return r.aggregateByCategoryType(ctx, obj, transactioncategory.TypeIncome, nil)
 }
 
 // ExpensesBreakdown is the resolver for the expensesBreakdown field.
@@ -48,7 +50,11 @@ func (r *financialReportResolver) ExpensesBreakdown(ctx context.Context, obj *mo
 	)
 	defer span.End()
 
-	return r.aggregateByCategoryType(ctx, obj, transactioncategory.TypeExpense)
+	if obj.ExpensesBreakdown != nil {
+		return obj.ExpensesBreakdown, nil
+	}
+
+	return r.aggregateByCategoryType(ctx, obj, transactioncategory.TypeExpense, nil)
 }
 
 // TransactionCount is the resolver for the transactionCount field.
@@ -64,32 +70,7 @@ func (r *financialReportResolver) TransactionCount(ctx context.Context, obj *mod
 	)
 	defer span.End()
 
-	client := r.entClient
-
-	query := client.Transaction.Query().
-		Modify(func(s *sql.Selector) {
-			// Filter by household
-			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
-
-			// Filter out excluded transactions
-			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
-
-			// Apply time filters
-			if !obj.StartDate.IsZero() {
-				s.Where(sql.GTE(s.C(transaction.FieldDatetime), obj.StartDate))
-			}
-			if !obj.EndDate.IsZero() {
-				s.Where(sql.LT(s.C(transaction.FieldDatetime), obj.EndDate))
-			}
-		})
-
-	count, err := query.Count(ctx)
-	if err != nil {
-		r.logger.Error("Failed to count transactions", "error", err)
-		return 0, err
-	}
-
-	return count, nil
+	return obj.TransactionCount, nil
 }
 
 // User is the resolver for the user field.
