@@ -1,5 +1,11 @@
-import { ErrorComponentProps, useNavigate } from '@tanstack/react-router'
+import {
+  ErrorComponentProps,
+  useNavigate,
+  useParams,
+} from '@tanstack/react-router'
 import { SearchXIcon } from 'lucide-react'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -10,9 +16,28 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import {
+  clearHouseholdScopedStorage,
+  isMembershipRevokedError,
+} from '@/lib/auth'
 
 export function GenericError(error: ErrorComponentProps) {
   const navigate = useNavigate()
+  const params = useParams({ strict: false }) as { householdId?: string }
+  const isRevoked = isMembershipRevokedError(error.error)
+
+  useEffect(() => {
+    if (!isRevoked) return
+    if (params.householdId) {
+      clearHouseholdScopedStorage(params.householdId)
+    }
+    toast.error('You no longer have access to this household.')
+    navigate({ to: '/household' })
+  }, [isRevoked, navigate, params.householdId])
+
+  if (isRevoked) {
+    return null
+  }
 
   return (
     <Empty className="w-full">
