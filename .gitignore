@@ -186,3 +186,5 @@ tmp/
 
 .idea/
 .opencode/
+.playwright-mcp/
+.sisyphus/
