@@ -7,7 +7,14 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/ent/transactioncategory"
+	"beavermoney.app/ent/userhousehold"
 )
+
+type AddHouseholdUserInput struct {
+	Email               string             `json:"email"`
+	Role                userhousehold.Role `json:"role"`
+	HouseholdCurrencyID int                `json:"householdCurrencyID"`
+}
 
 type BuyInvestmentInputCustom struct {
 	Transaction      *ent.CreateTransactionInput        `json:"transaction"`
@@ -105,6 +112,10 @@ type MoveInvestmentInputCustom struct {
 	Transaction    *ent.CreateTransactionInput        `json:"transaction"`
 	InvestmentLots []*ent.CreateInvestmentLotInput    `json:"investmentLots"`
 	Fees           []*ent.CreateTransactionEntryInput `json:"fees"`
+}
+
+type RemoveHouseholdUserPayload struct {
+	RemovedUserHouseholdID int `json:"removedUserHouseholdId"`
 }
 
 type SellInvestmentInputCustom struct {

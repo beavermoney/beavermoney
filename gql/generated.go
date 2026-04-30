@@ -174,7 +174,7 @@ type ComplexityRoot struct {
 	Household struct {
 		Accounts               func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) int
 		CreateTime             func(childComplexity int) int
-		FinancialReport        func(childComplexity int, period model.TimePeriodInput) int
+		FinancialReport        func(childComplexity int, period model.TimePeriodInput, viewUserID *int) int
 		HouseholdCurrencies    func(childComplexity int) int
 		HouseholdRates         func(childComplexity int) int
 		ID                     func(childComplexity int) int
@@ -310,6 +310,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		AddHouseholdUser            func(childComplexity int, input model.AddHouseholdUserInput) int
 		ArchiveAccount              func(childComplexity int, id int) int
 		BuyInvestment               func(childComplexity int, input model.BuyInvestmentInputCustom) int
 		CreateAccount               func(childComplexity int, input ent.CreateAccountInput) int
@@ -331,10 +332,12 @@ type ComplexityRoot struct {
 		DeleteTransactionCategory   func(childComplexity int, id int) int
 		MoveInvestment              func(childComplexity int, input model.MoveInvestmentInputCustom) int
 		Refresh                     func(childComplexity int) int
+		RemoveHouseholdUser         func(childComplexity int, id int) int
 		SellInvestment              func(childComplexity int, input model.SellInvestmentInputCustom) int
 		UpdateAccount               func(childComplexity int, id int, input ent.UpdateAccountInput) int
 		UpdateHousehold             func(childComplexity int, id int, input ent.UpdateHouseholdInput) int
 		UpdateHouseholdCurrency     func(childComplexity int, id int, input ent.UpdateHouseholdCurrencyInput) int
+		UpdateHouseholdUserRole     func(childComplexity int, id int, role userhousehold.Role) int
 		UpdateRecurringSubscription func(childComplexity int, id int, input ent.UpdateRecurringSubscriptionInput) int
 		UpdateSnapshot              func(childComplexity int, id int, input ent.UpdateSnapshotInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
@@ -398,6 +401,10 @@ type ComplexityRoot struct {
 	RecurringSubscriptionEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
+	}
+
+	RemoveHouseholdUserPayload struct {
+		RemovedUserHouseholdID func(childComplexity int) int
 	}
 
 	Snapshot struct {
@@ -613,7 +620,7 @@ type FinancialReportResolver interface {
 	TransactionCount(ctx context.Context, obj *model.FinancialReport) (int, error)
 }
 type HouseholdResolver interface {
-	FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) (*model.FinancialReport, error)
+	FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserID *int) (*model.FinancialReport, error)
 }
 type HouseholdRateResolver interface {
 	Rate(ctx context.Context, obj *ent.HouseholdRate) (string, error)
@@ -658,6 +665,9 @@ type MutationResolver interface {
 	CreateHouseholdCurrency(ctx context.Context, input ent.CreateHouseholdCurrencyInput) (*ent.HouseholdCurrency, error)
 	UpdateHouseholdCurrency(ctx context.Context, id int, input ent.UpdateHouseholdCurrencyInput) (*ent.HouseholdCurrency, error)
 	DeleteHouseholdCurrency(ctx context.Context, id int) (*model.DeleteHouseholdCurrencyPayload, error)
+	AddHouseholdUser(ctx context.Context, input model.AddHouseholdUserInput) (*ent.UserHousehold, error)
+	RemoveHouseholdUser(ctx context.Context, id int) (*model.RemoveHouseholdUserPayload, error)
+	UpdateHouseholdUserRole(ctx context.Context, id int, role userhousehold.Role) (*ent.UserHousehold, error)
 	CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput) (*ent.SnapshotEdge, error)
 	UpdateSnapshot(ctx context.Context, id int, input ent.UpdateSnapshotInput) (*ent.SnapshotEdge, error)
 	DeleteSnapshot(ctx context.Context, id int) (*model.DeleteSnapshotPayload, error)
@@ -1215,7 +1225,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Household.FinancialReport(childComplexity, args["period"].(model.TimePeriodInput)), true
+		return e.complexity.Household.FinancialReport(childComplexity, args["period"].(model.TimePeriodInput), args["viewUserID"].(*int)), true
 	case "Household.householdCurrencies":
 		if e.complexity.Household.HouseholdCurrencies == nil {
 			break
@@ -1845,6 +1855,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.InvestmentLotEdge.Node(childComplexity), true
 
+	case "Mutation.addHouseholdUser":
+		if e.complexity.Mutation.AddHouseholdUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addHouseholdUser_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddHouseholdUser(childComplexity, args["input"].(model.AddHouseholdUserInput)), true
 	case "Mutation.archiveAccount":
 		if e.complexity.Mutation.ArchiveAccount == nil {
 			break
@@ -2071,6 +2092,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.Refresh(childComplexity), true
+	case "Mutation.removeHouseholdUser":
+		if e.complexity.Mutation.RemoveHouseholdUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeHouseholdUser_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveHouseholdUser(childComplexity, args["id"].(int)), true
 	case "Mutation.sellInvestment":
 		if e.complexity.Mutation.SellInvestment == nil {
 			break
@@ -2115,6 +2147,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateHouseholdCurrency(childComplexity, args["id"].(int), args["input"].(ent.UpdateHouseholdCurrencyInput)), true
+	case "Mutation.updateHouseholdUserRole":
+		if e.complexity.Mutation.UpdateHouseholdUserRole == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateHouseholdUserRole_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateHouseholdUserRole(childComplexity, args["id"].(int), args["role"].(userhousehold.Role)), true
 	case "Mutation.updateRecurringSubscription":
 		if e.complexity.Mutation.UpdateRecurringSubscription == nil {
 			break
@@ -2498,6 +2541,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.RecurringSubscriptionEdge.Node(childComplexity), true
+
+	case "RemoveHouseholdUserPayload.removedUserHouseholdId":
+		if e.complexity.RemoveHouseholdUserPayload.RemovedUserHouseholdID == nil {
+			break
+		}
+
+		return e.complexity.RemoveHouseholdUserPayload.RemovedUserHouseholdID(childComplexity), true
 
 	case "Snapshot.createTime":
 		if e.complexity.Snapshot.CreateTime == nil {
@@ -3340,6 +3390,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAccountWhereInput,
+		ec.unmarshalInputAddHouseholdUserInput,
 		ec.unmarshalInputBuyInvestmentInputCustom,
 		ec.unmarshalInputCreateAccountInput,
 		ec.unmarshalInputCreateExpenseInputCustom,
@@ -3543,6 +3594,11 @@ func (ec *executionContext) field_Household_financialReport_args(ctx context.Con
 		return nil, err
 	}
 	args["period"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "viewUserID", ec.unmarshalOID2ᚖint)
+	if err != nil {
+		return nil, err
+	}
+	args["viewUserID"] = arg1
 	return args, nil
 }
 
@@ -3799,6 +3855,17 @@ func (ec *executionContext) field_Household_transactions_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_addHouseholdUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNAddHouseholdUserInput2beavermoneyᚗappᚋgqlᚋmodelᚐAddHouseholdUserInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_archiveAccount_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4019,6 +4086,17 @@ func (ec *executionContext) field_Mutation_moveInvestment_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_removeHouseholdUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_sellInvestment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4059,6 +4137,22 @@ func (ec *executionContext) field_Mutation_updateHouseholdCurrency_args(ctx cont
 		return nil, err
 	}
 	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateHouseholdUserRole_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "role", ec.unmarshalNUserHouseholdRole2beavermoneyᚗappᚋentᚋuserhouseholdᚐRole)
+	if err != nil {
+		return nil, err
+	}
+	args["role"] = arg1
 	return args, nil
 }
 
@@ -7052,7 +7146,7 @@ func (ec *executionContext) _Household_financialReport(ctx context.Context, fiel
 		ec.fieldContext_Household_financialReport,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Household().FinancialReport(ctx, obj, fc.Args["period"].(model.TimePeriodInput))
+			return ec.resolvers.Household().FinancialReport(ctx, obj, fc.Args["period"].(model.TimePeriodInput), fc.Args["viewUserID"].(*int))
 		},
 		nil,
 		ec.marshalNFinancialReport2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐFinancialReport,
@@ -11565,6 +11659,177 @@ func (ec *executionContext) fieldContext_Mutation_deleteHouseholdCurrency(ctx co
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_addHouseholdUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_addHouseholdUser,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().AddHouseholdUser(ctx, fc.Args["input"].(model.AddHouseholdUserInput))
+		},
+		nil,
+		ec.marshalNUserHousehold2ᚖbeavermoneyᚗappᚋentᚐUserHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addHouseholdUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserHousehold_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_UserHousehold_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_UserHousehold_updateTime(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserHousehold_userID(ctx, field)
+			case "householdID":
+				return ec.fieldContext_UserHousehold_householdID(ctx, field)
+			case "role":
+				return ec.fieldContext_UserHousehold_role(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
+			case "user":
+				return ec.fieldContext_UserHousehold_user(ctx, field)
+			case "household":
+				return ec.fieldContext_UserHousehold_household(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserHousehold", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addHouseholdUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_removeHouseholdUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_removeHouseholdUser,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().RemoveHouseholdUser(ctx, fc.Args["id"].(int))
+		},
+		nil,
+		ec.marshalNRemoveHouseholdUserPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐRemoveHouseholdUserPayload,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_removeHouseholdUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "removedUserHouseholdId":
+				return ec.fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RemoveHouseholdUserPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_removeHouseholdUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateHouseholdUserRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateHouseholdUserRole,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateHouseholdUserRole(ctx, fc.Args["id"].(int), fc.Args["role"].(userhousehold.Role))
+		},
+		nil,
+		ec.marshalNUserHousehold2ᚖbeavermoneyᚗappᚋentᚐUserHousehold,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateHouseholdUserRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserHousehold_id(ctx, field)
+			case "createTime":
+				return ec.fieldContext_UserHousehold_createTime(ctx, field)
+			case "updateTime":
+				return ec.fieldContext_UserHousehold_updateTime(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserHousehold_userID(ctx, field)
+			case "householdID":
+				return ec.fieldContext_UserHousehold_householdID(ctx, field)
+			case "role":
+				return ec.fieldContext_UserHousehold_role(ctx, field)
+			case "householdCurrencyID":
+				return ec.fieldContext_UserHousehold_householdCurrencyID(ctx, field)
+			case "user":
+				return ec.fieldContext_UserHousehold_user(ctx, field)
+			case "household":
+				return ec.fieldContext_UserHousehold_household(ctx, field)
+			case "householdCurrency":
+				return ec.fieldContext_UserHousehold_householdCurrency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserHousehold", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateHouseholdUserRole_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createSnapshot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -13694,6 +13959,35 @@ func (ec *executionContext) fieldContext_RecurringSubscriptionEdge_cursor(_ cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Cursor does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RemoveHouseholdUserPayload_removedUserHouseholdId(ctx context.Context, field graphql.CollectedField, obj *model.RemoveHouseholdUserPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdId,
+		func(ctx context.Context) (any, error) {
+			return obj.RemovedUserHouseholdID, nil
+		},
+		nil,
+		ec.marshalNID2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RemoveHouseholdUserPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -21147,6 +21441,47 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 				return it, err
 			}
 			it.HasInvestmentsWith = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAddHouseholdUserInput(ctx context.Context, obj any) (model.AddHouseholdUserInput, error) {
+	var it model.AddHouseholdUserInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"email", "role", "householdCurrencyID"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "email":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Email = data
+		case "role":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+			data, err := ec.unmarshalNUserHouseholdRole2beavermoneyᚗappᚋentᚋuserhouseholdᚐRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Role = data
+		case "householdCurrencyID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdCurrencyID"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HouseholdCurrencyID = data
 		}
 	}
 
@@ -33974,6 +34309,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "addHouseholdUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addHouseholdUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "removeHouseholdUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_removeHouseholdUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateHouseholdUserRole":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateHouseholdUserRole(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createSnapshot":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createSnapshot(ctx, field)
@@ -34828,6 +35184,45 @@ func (ec *executionContext) _RecurringSubscriptionEdge(ctx context.Context, sel 
 			out.Values[i] = ec._RecurringSubscriptionEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._RecurringSubscriptionEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var removeHouseholdUserPayloadImplementors = []string{"RemoveHouseholdUserPayload"}
+
+func (ec *executionContext) _RemoveHouseholdUserPayload(ctx context.Context, sel ast.SelectionSet, obj *model.RemoveHouseholdUserPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, removeHouseholdUserPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RemoveHouseholdUserPayload")
+		case "removedUserHouseholdId":
+			out.Values[i] = ec._RemoveHouseholdUserPayload_removedUserHouseholdId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -37834,6 +38229,11 @@ func (ec *executionContext) unmarshalNAccountWhereInput2ᚖbeavermoneyᚗappᚋe
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNAddHouseholdUserInput2beavermoneyᚗappᚋgqlᚋmodelᚐAddHouseholdUserInput(ctx context.Context, v any) (model.AddHouseholdUserInput, error) {
+	res, err := ec.unmarshalInputAddHouseholdUserInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -38513,6 +38913,20 @@ func (ec *executionContext) marshalNRecurringSubscriptionInterval2beavermoneyᚗ
 func (ec *executionContext) unmarshalNRecurringSubscriptionWhereInput2ᚖbeavermoneyᚗappᚋentᚐRecurringSubscriptionWhereInput(ctx context.Context, v any) (*ent.RecurringSubscriptionWhereInput, error) {
 	res, err := ec.unmarshalInputRecurringSubscriptionWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRemoveHouseholdUserPayload2beavermoneyᚗappᚋgqlᚋmodelᚐRemoveHouseholdUserPayload(ctx context.Context, sel ast.SelectionSet, v model.RemoveHouseholdUserPayload) graphql.Marshaler {
+	return ec._RemoveHouseholdUserPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRemoveHouseholdUserPayload2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐRemoveHouseholdUserPayload(ctx context.Context, sel ast.SelectionSet, v *model.RemoveHouseholdUserPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._RemoveHouseholdUserPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNSellInvestmentInputCustom2beavermoneyᚗappᚋgqlᚋmodelᚐSellInvestmentInputCustom(ctx context.Context, v any) (model.SellInvestmentInputCustom, error) {
