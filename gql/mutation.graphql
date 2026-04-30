@@ -47,6 +47,10 @@ type Mutation {
   ): HouseholdCurrency!
   deleteHouseholdCurrency(id: ID!): DeleteHouseholdCurrencyPayload!
 
+  addHouseholdUser(input: AddHouseholdUserInput!): UserHousehold!
+  removeHouseholdUser(id: ID!): RemoveHouseholdUserPayload!
+  updateHouseholdUserRole(id: ID!, role: UserHouseholdRole!): UserHousehold!
+
   createSnapshot(input: CreateSnapshotInput!): SnapshotEdge!
   updateSnapshot(id: ID!, input: UpdateSnapshotInput!): SnapshotEdge!
   deleteSnapshot(id: ID!): DeleteSnapshotPayload!
@@ -80,6 +84,16 @@ type DeleteHouseholdCurrencyPayload {
 
 type DeleteSnapshotPayload {
   deletedSnapshotId: ID!
+}
+
+input AddHouseholdUserInput {
+  email: String!
+  role: UserHouseholdRole!
+  householdCurrencyID: ID!
+}
+
+type RemoveHouseholdUserPayload {
+  removedUserHouseholdId: ID!
 }
 
 input CreateInvestmentInputCustom {
