@@ -573,9 +573,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "userhousehold_user_id_household_id",
+				Name:    "userhousehold_household_id_user_id",
 				Unique:  true,
-				Columns: []*schema.Column{UserHouseholdsColumns[4], UserHouseholdsColumns[5]},
+				Columns: []*schema.Column{UserHouseholdsColumns[5], UserHouseholdsColumns[4]},
 			},
 		},
 	}
