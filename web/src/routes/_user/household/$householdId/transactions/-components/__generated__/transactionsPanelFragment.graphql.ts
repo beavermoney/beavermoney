@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ba68018468f27329782295893e3555c0>>
+ * @generated SignedSource<<3a6790da5e2c540c79b31efb43189812>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -36,6 +36,11 @@ const node: ReaderFragment = {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "startDate"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
     },
     {
       "defaultValue": null,
@@ -88,6 +93,11 @@ const node: ReaderFragment = {
           ],
           "kind": "ObjectValue",
           "name": "period"
+        },
+        {
+          "kind": "Variable",
+          "name": "viewUserID",
+          "variableName": "viewUserId"
         }
       ],
       "concreteType": "FinancialReport",
@@ -115,6 +125,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "fe43fdbce492f83a5dbe3b55a2a5f694";
+(node as any).hash = "56ec3527171c0b1032a3deb970e5d2a9";
 
 export default node;

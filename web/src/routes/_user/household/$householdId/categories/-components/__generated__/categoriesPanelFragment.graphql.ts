@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4e3f76378f1971c734e8a76b7e357b85>>
+ * @generated SignedSource<<09c8d368e86f2dafb3b5df9c378cfc78>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -100,6 +100,11 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "startDate"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
     }
   ],
   "kind": "Fragment",
@@ -248,6 +253,11 @@ return {
           ],
           "kind": "ObjectValue",
           "name": "period"
+        },
+        {
+          "kind": "Variable",
+          "name": "viewUserID",
+          "variableName": "viewUserId"
         }
       ],
       "concreteType": "FinancialReport",
@@ -300,6 +310,6 @@ return {
 };
 })();
 
-(node as any).hash = "4542361f4a318cda6960c06a509e8ab4";
+(node as any).hash = "c759662296ed1a614608f82ce64691e7";
 
 export default node;

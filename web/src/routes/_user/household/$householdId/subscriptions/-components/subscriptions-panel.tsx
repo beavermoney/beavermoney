@@ -32,10 +32,14 @@ const SubscriptionsPanelFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }
+    viewUserId: { type: "ID" }
   )
   @refetchable(queryName: "subscriptionsPanelRefetch") {
-    recurringSubscriptions(first: $count, after: $cursor)
-      @connection(key: "subscriptionsPanel_recurringSubscriptions") {
+    recurringSubscriptions(
+      first: $count
+      after: $cursor
+      where: { userID: $viewUserId }
+    ) @connection(key: "subscriptionsPanel_recurringSubscriptions") {
       __id
       edges {
         node {

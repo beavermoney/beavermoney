@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a58c52751e591344cb6cc848b66117b5>>
+ * @generated SignedSource<<27a290c3073d4c5d4c862dd058529ccb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -61,6 +61,11 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
     }
   ],
   "kind": "Fragment",
@@ -98,11 +103,20 @@ return {
       "alias": "accounts",
       "args": [
         {
-          "kind": "Literal",
-          "name": "where",
-          "value": {
-            "archived": false
-          }
+          "fields": [
+            {
+              "kind": "Literal",
+              "name": "archived",
+              "value": false
+            },
+            {
+              "kind": "Variable",
+              "name": "userID",
+              "variableName": "viewUserId"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
         }
       ],
       "concreteType": "AccountConnection",
@@ -236,7 +250,7 @@ return {
           ]
         }
       ],
-      "storageKey": "__accountsPanel_accounts_connection(where:{\"archived\":false})"
+      "storageKey": null
     },
     (v1/*: any*/)
   ],
@@ -245,6 +259,6 @@ return {
 };
 })();
 
-(node as any).hash = "a7f90878302cec48a0228ad32e254d98";
+(node as any).hash = "50ea58edd27579cc5d0e22abdef75170";
 
 export default node;

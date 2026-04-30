@@ -25,9 +25,13 @@ const transactionsPanelFragment = graphql`
     where: { type: "TransactionWhereInput" }
     startDate: { type: "Time!" }
     endDate: { type: "Time!" }
+    viewUserId: { type: "ID", defaultValue: null }
   ) {
     ...transactionsListFragment @arguments(where: $where)
-    financialReport(period: { startDate: $startDate, endDate: $endDate }) {
+    financialReport(
+      period: { startDate: $startDate, endDate: $endDate }
+      viewUserID: $viewUserId
+    ) {
       ...financialSummaryCardsFragment
     }
   }
@@ -58,6 +62,11 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
     const nextWhere: TransactionWhereInput = {
       datetimeGTE: period.startDate,
       datetimeLT: period.endDate,
+      ...(viewUserId !== null && {
+        hasTransactionEntriesWith: [
+          { hasAccountWith: [{ userID: viewUserId }] },
+        ],
+      }),
     }
 
     await fetchQuery<transactionsPanelRefetchQuery>(

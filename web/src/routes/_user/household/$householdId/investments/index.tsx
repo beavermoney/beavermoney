@@ -12,10 +12,10 @@ import { environment } from '@/environment'
 import type { investmentsQuery } from './__generated__/investmentsQuery.graphql'
 
 const query = graphql`
-  query investmentsQuery {
+  query investmentsQuery($viewUserId: ID) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
-      ...investmentsPanelFragment
+      ...investmentsPanelFragment @arguments(viewUserId: $viewUserId)
     }
   }
 `
@@ -25,11 +25,14 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  loader: () => {
+  loaderDeps: ({ search }) => ({
+    viewUserId: (search as { view_user_id?: string | null }).view_user_id,
+  }),
+  loader: ({ deps }) => {
     return loadQuery<investmentsQuery>(
       environment,
       query,
-      {},
+      { viewUserId: deps.viewUserId ?? null },
       { fetchPolicy: 'store-or-network' },
     )
   },
@@ -38,6 +41,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
+  const { viewUserId } = Route.useLoaderDeps()
 
   const data = usePreloadedQuery<investmentsQuery>(query, queryRef)
 
@@ -45,7 +49,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      {},
+      { viewUserId: viewUserId ?? null },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8fa76e840bd6e6f965071b16e7bc3fc3>>
+ * @generated SignedSource<<3c4245ad28d9cd9646cf7916ac1013fe>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type investmentsPanelRefetch$variables = {
   count?: number | null | undefined;
   cursor?: any | null | undefined;
   id: string;
+  viewUserId?: string | null | undefined;
 };
 export type investmentsPanelRefetch$data = {
   readonly node: {
@@ -26,45 +27,48 @@ export type investmentsPanelRefetch = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 50,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 50,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "viewUserId"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v7 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -74,16 +78,27 @@ v4 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "count"
+  },
+  {
+    "fields": [
+      {
+        "kind": "Variable",
+        "name": "userID",
+        "variableName": "viewUserId"
+      }
+    ],
+    "kind": "ObjectValue",
+    "name": "where"
   }
 ],
-v5 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v6 = {
+v9 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -98,20 +113,25 @@ v6 = {
       "name": "code",
       "storageKey": null
     },
-    (v3/*: any*/)
+    (v6/*: any*/)
   ],
   "storageKey": null
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "investmentsPanelRefetch",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -128,6 +148,11 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
+              },
+              {
+                "kind": "Variable",
+                "name": "viewUserId",
+                "variableName": "viewUserId"
               }
             ],
             "kind": "FragmentSpread",
@@ -142,26 +167,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
     "name": "investmentsPanelRefetch",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v5/*: any*/),
+          (v6/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v7/*: any*/),
                 "concreteType": "InvestmentConnection",
                 "kind": "LinkedField",
                 "name": "investments",
@@ -183,8 +213,8 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
-                          (v5/*: any*/),
+                          (v6/*: any*/),
+                          (v8/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -207,9 +237,9 @@ return {
                             "name": "account",
                             "plural": false,
                             "selections": [
-                              (v5/*: any*/),
-                              (v3/*: any*/),
-                              (v6/*: any*/)
+                              (v8/*: any*/),
+                              (v6/*: any*/),
+                              (v9/*: any*/)
                             ],
                             "storageKey": null
                           },
@@ -234,7 +264,7 @@ return {
                             "name": "updateTime",
                             "storageKey": null
                           },
-                          (v6/*: any*/),
+                          (v9/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -243,8 +273,8 @@ return {
                             "name": "user",
                             "plural": false,
                             "selections": [
-                              (v5/*: any*/),
-                              (v3/*: any*/)
+                              (v8/*: any*/),
+                              (v6/*: any*/)
                             ],
                             "storageKey": null
                           },
@@ -262,7 +292,7 @@ return {
                             "name": "unrealizedReturnPercent",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v5/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -318,8 +348,10 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
-                "filters": null,
+                "args": (v7/*: any*/),
+                "filters": [
+                  "where"
+                ],
                 "handle": "connection",
                 "key": "investmentsPanel_investments",
                 "kind": "LinkedHandle",
@@ -335,16 +367,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "29bba5483edcfccc932609439cfccb5f",
+    "cacheID": "a9069e8eb1ce602406ae88c48557cd79",
     "id": null,
     "metadata": {},
     "name": "investmentsPanelRefetch",
     "operationKind": "query",
-    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_1G22uz on Household {\n  investments(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserId: ID\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_q4eSF\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_q4eSF on Household {\n  investments(first: $count, after: $cursor, where: {userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3f15fab36516dfc28011a83de7c58b6c";
+(node as any).hash = "f5cbff025110a1ee830b8bf939ad85be";
 
 export default node;

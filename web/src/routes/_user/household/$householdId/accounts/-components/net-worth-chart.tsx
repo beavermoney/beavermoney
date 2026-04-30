@@ -19,6 +19,7 @@ import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -78,6 +79,7 @@ const NetWorthChartQuery = graphql`
           node {
             createTime
             snapshotEntries {
+              userID
               liquidity
               investment
               property
@@ -173,6 +175,7 @@ export function NetWorthChart() {
   const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
+  const { viewUserId } = useHouseholdViewScope()
 
   const [duration, setDuration] = useState<Duration>('1M')
   const [isPending, startTransition] = useTransition()
@@ -208,7 +211,11 @@ export function NetWorthChart() {
         const snap = edge.node
         const rateMap = buildRateMap(snap.snapshotRates ?? [])
 
-        const totals = (snap.snapshotEntries ?? []).reduce(
+        const filteredEntries = (snap.snapshotEntries ?? []).filter((entry) =>
+          viewUserId === null ? true : entry.userID === viewUserId,
+        )
+
+        const totals = filteredEntries.reduce(
           (acc, entry) => {
             const rate = getRate(
               rateMap,
@@ -261,7 +268,7 @@ export function NetWorthChart() {
         }
       })
       .sort((a, b) => a.date - b.date)
-  }, [data.household.snapshots.edges, displayCurrency])
+  }, [data.household.snapshots.edges, displayCurrency, viewUserId])
 
   const yDomain = useMemo((): [number, number] => {
     const values = chartData

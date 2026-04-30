@@ -13,11 +13,15 @@ import { CategoriesPanel } from './-components/categories-panel'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 
 const query = graphql`
-  query categoriesQuery($startDate: Time!, $endDate: Time!) {
+  query categoriesQuery($startDate: Time!, $endDate: Time!, $viewUserId: ID) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
       ...categoriesPanelFragment
-        @arguments(startDate: $startDate, endDate: $endDate)
+        @arguments(
+          startDate: $startDate
+          endDate: $endDate
+          viewUserId: $viewUserId
+        )
     }
   }
 `
@@ -27,13 +31,22 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  loaderDeps: ({ search }) => ({ start: search.start, end: search.end }),
-  loader: ({ deps: search }) => {
-    const period = parseDateRangeFromURL(search.start, search.end)
+  loaderDeps: ({ search }) => ({
+    start: search.start,
+    end: search.end,
+    viewUserId: search.view_user_id,
+  }),
+  loader: ({ deps }) => {
+    const period = parseDateRangeFromURL(deps.start, deps.end)
 
-    return loadQuery<categoriesQuery>(environment, query, period, {
-      fetchPolicy: 'store-or-network',
-    })
+    return loadQuery<categoriesQuery>(
+      environment,
+      query,
+      { ...period, viewUserId: deps.viewUserId },
+      {
+        fetchPolicy: 'store-or-network',
+      },
+    )
   },
 })
 
@@ -47,9 +60,14 @@ function RouteComponent() {
   useSubscribeToInvalidationState([params.householdId], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
 
-    fetchQuery(environment, query, period, {
-      fetchPolicy: 'network-only',
-    }).subscribe({})
+    fetchQuery(
+      environment,
+      query,
+      { ...period, viewUserId: search.view_user_id },
+      {
+        fetchPolicy: 'network-only',
+      },
+    ).subscribe({})
   })
 
   return <CategoriesPanel fragmentRef={data.household} />

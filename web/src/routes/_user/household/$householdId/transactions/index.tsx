@@ -10,8 +10,10 @@ import { TransactionsPanel } from './-components/transactions-panel'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import type { transactionsQuery } from './__generated__/transactionsQuery.graphql'
+import type { TransactionWhereInput } from './-components/__generated__/transactionsListRefetch.graphql'
 import { parseDateRangeFromURL } from '@/lib/date-range'
 import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 
 const query = graphql`
   query transactionsQuery(
@@ -27,23 +29,56 @@ const query = graphql`
   }
 `
 
+// Filter transactions by "any entry's account is owned by viewUserId" so
+// cross-user transfers (Alice -> Bob) appear in BOTH users' individual views.
+// Mirrors the backend predicate in gql/helpers.go::applyViewUserIDTransactionFilter.
+function buildTransactionWhere(
+  startDate: string,
+  endDate: string,
+  viewUserId: string | null,
+): TransactionWhereInput {
+  const where: TransactionWhereInput = {
+    datetimeGTE: startDate,
+    datetimeLT: endDate,
+  }
+  if (viewUserId !== null) {
+    where.hasTransactionEntriesWith = [
+      { hasAccountWith: [{ userID: viewUserId }] },
+    ]
+  }
+  return where
+}
+
 export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/',
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  loaderDeps: ({ search }) => ({ start: search.start, end: search.end }),
-  loader: ({ deps: search }) => {
-    const period = parseDateRangeFromURL(search.start, search.end)
+  loaderDeps: ({ search }) => {
+    const fullSearch = search as {
+      start: string
+      end: string
+      view_user_id?: string | null
+    }
+    return {
+      start: fullSearch.start,
+      end: fullSearch.end,
+      viewUserId: fullSearch.view_user_id ?? null,
+    }
+  },
+  loader: ({ deps }) => {
+    const period = parseDateRangeFromURL(deps.start, deps.end)
+    const where = buildTransactionWhere(
+      period.startDate,
+      period.endDate,
+      deps.viewUserId,
+    )
 
     return loadQuery<transactionsQuery>(
       environment,
       query,
       {
-        where: {
-          datetimeGTE: period.startDate,
-          datetimeLT: period.endDate,
-        },
+        where,
         startDate: period.startDate,
         endDate: period.endDate,
       },
@@ -56,20 +91,23 @@ function RouteComponent() {
   const search = Route.useSearch()
   const queryRef = Route.useLoaderData()
   const { household } = useHousehold()
+  const { viewUserId } = useHouseholdViewScope()
 
   const data = usePreloadedQuery<transactionsQuery>(query, queryRef)
 
   useSubscribeToInvalidationState([household.id], () => {
     const period = parseDateRangeFromURL(search.start, search.end)
+    const where = buildTransactionWhere(
+      period.startDate,
+      period.endDate,
+      viewUserId ?? null,
+    )
 
     fetchQuery(
       environment,
       query,
       {
-        where: {
-          datetimeGTE: period.startDate,
-          datetimeLT: period.endDate,
-        },
+        where,
         startDate: period.startDate,
         endDate: period.endDate,
       },

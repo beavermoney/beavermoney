@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5eb652331acdf160b5d6ac1180a269d0>>
+ * @generated SignedSource<<6e8a56dccc440b0d18fa8c5c7ada6822>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type accountsPanelRefetch$variables = {
   count?: number | null | undefined;
   cursor?: any | null | undefined;
   id: string;
+  viewUserId?: string | null | undefined;
 };
 export type accountsPanelRefetch$data = {
   readonly node: {
@@ -26,45 +27,48 @@ export type accountsPanelRefetch = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": 50,
-    "kind": "LocalArgument",
-    "name": "count"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "cursor"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": 50,
+  "kind": "LocalArgument",
+  "name": "count"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "cursor"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "viewUserId"
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v7 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -76,14 +80,23 @@ v4 = [
     "variableName": "count"
   },
   {
-    "kind": "Literal",
-    "name": "where",
-    "value": {
-      "archived": false
-    }
+    "fields": [
+      {
+        "kind": "Literal",
+        "name": "archived",
+        "value": false
+      },
+      {
+        "kind": "Variable",
+        "name": "userID",
+        "variableName": "viewUserId"
+      }
+    ],
+    "kind": "ObjectValue",
+    "name": "where"
   }
 ],
-v5 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -92,14 +105,19 @@ v5 = {
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v3/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "accountsPanelRefetch",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
@@ -116,6 +134,11 @@ return {
                 "kind": "Variable",
                 "name": "cursor",
                 "variableName": "cursor"
+              },
+              {
+                "kind": "Variable",
+                "name": "viewUserId",
+                "variableName": "viewUserId"
               }
             ],
             "kind": "FragmentSpread",
@@ -130,26 +153,31 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v3/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Operation",
     "name": "accountsPanelRefetch",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          (v5/*: any*/),
+          (v6/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v7/*: any*/),
                 "concreteType": "AccountConnection",
                 "kind": "LinkedField",
                 "name": "accounts",
@@ -171,7 +199,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/),
+                          (v6/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -186,7 +214,7 @@ return {
                             "name": "category",
                             "storageKey": null
                           },
-                          (v5/*: any*/),
+                          (v8/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -209,7 +237,7 @@ return {
                                 "name": "code",
                                 "storageKey": null
                               },
-                              (v3/*: any*/)
+                              (v6/*: any*/)
                             ],
                             "storageKey": null
                           },
@@ -235,8 +263,8 @@ return {
                             "name": "user",
                             "plural": false,
                             "selections": [
-                              (v5/*: any*/),
-                              (v3/*: any*/)
+                              (v8/*: any*/),
+                              (v6/*: any*/)
                             ],
                             "storageKey": null
                           },
@@ -247,7 +275,7 @@ return {
                             "name": "balance",
                             "storageKey": null
                           },
-                          (v2/*: any*/)
+                          (v5/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -303,7 +331,7 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v7/*: any*/),
                 "filters": [
                   "where"
                 ],
@@ -322,16 +350,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "55a8a3056e7726a4adce3c75cc8767fe",
+    "cacheID": "a92b58298ebb4f08d4fee36601415d52",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_1G22uz\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_1G22uz on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserId: ID\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_q4eSF\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_q4eSF on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false, userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a7f90878302cec48a0228ad32e254d98";
+(node as any).hash = "50ea58edd27579cc5d0e22abdef75170";
 
 export default node;
