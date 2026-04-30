@@ -12,11 +12,13 @@ import {
 import {
   Outlet,
   createFileRoute,
+  redirect,
   stripSearchParams,
   useNavigate,
   useRouter,
   useRouterState,
 } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { commitLocalUpdate, fetchQuery, graphql } from 'relay-runtime'
 import {
   loadQuery,
@@ -52,18 +54,26 @@ import {
   displayCurrencyIdStore,
   setDisplayCurrencyId,
 } from '@/hooks/display-currency-store'
-import { UserProvider } from '@/hooks/use-user'
+import { UserProvider, useUser } from '@/hooks/use-user'
 import {
   LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
   SESSION_STORAGE_PRIVACY_DIALOG_KEY,
 } from '@/constant'
+import {
+  clearHouseholdScopedStorage,
+  isMembershipRevokedError,
+} from '@/lib/auth'
 import { useTheme } from '@/components/theme-provider'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { CommandMenu } from '@/components/command-menu'
 import { LogTransaction } from './transactions/-components/log-transaction'
+import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
 import { SnapshotDialog } from './-components/snapshot-dialog'
-import { HouseholdViewScopeProvider } from '@/hooks/use-household-view-scope'
+import {
+  HouseholdViewScopeProvider,
+  useHouseholdViewScope,
+} from '@/hooks/use-household-view-scope'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { cn } from '@/lib/utils'
@@ -131,11 +141,20 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   },
   loader: async ({ params, deps }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
-    await fetchQuery<routeHouseholdIdQuery>(
-      environment,
-      routeHouseholdIdQuery,
-      {},
-    ).toPromise()
+    try {
+      await fetchQuery<routeHouseholdIdQuery>(
+        environment,
+        routeHouseholdIdQuery,
+        {},
+      ).toPromise()
+    } catch (error) {
+      if (isMembershipRevokedError(error)) {
+        clearHouseholdScopedStorage(params.householdId)
+        toast.error('You no longer have access to this household.')
+        throw redirect({ to: '/household' })
+      }
+      throw error
+    }
 
     if (deps.editTransactionId) {
       await fetchQuery<editTransactionDialogQuery>(
@@ -167,8 +186,6 @@ function RouteComponent() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const { type: logTransactionType, close: closeLogTransaction } =
-    useLogTransaction()
   const { isPrivacyModeEnabled, togglePrivacyMode } = usePrivacyMode()
   const { setTheme } = useTheme()
   const router = useRouter()
@@ -373,54 +390,7 @@ function RouteComponent() {
 
                 {/* Desktop: Resizable & Draggable New Transaction Form */}
                 {!isMobile && (
-                  <Rnd
-                    enableResizing={{
-                      top: false,
-                      right: false,
-                      bottom: false,
-                      left: false,
-                      topRight: false,
-                      bottomRight: false,
-                      bottomLeft: false,
-                      topLeft: false,
-                    }}
-                    default={{
-                      x: window.innerWidth / 2 - 300,
-                      y: window.innerHeight / 2 - 400,
-                      width: '420',
-                      height: 'auto',
-                    }}
-                    bounds="window"
-                    dragHandleClassName="drag-handle"
-                    style={{ zIndex: 50 }}
-                  >
-                    {logTransactionType && (
-                      <Item
-                        className={cn(
-                          'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
-                        )}
-                      >
-                        <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
-                          <div className="flex items-center gap-2">
-                            <GripVertical className="text-muted-foreground h-5 w-5" />
-                            <span className="text-sm font-semibold">
-                              Log Transaction
-                            </span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={closeLogTransaction}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-
-                        <LogTransaction fragmentRef={data.household} />
-                      </Item>
-                    )}
-                  </Rnd>
+                  <FloatingLogTransactionWindow fragmentRef={data.household} />
                 )}
               </SidebarProvider>
             </DisplayCurrencyProvider>
@@ -428,5 +398,72 @@ function RouteComponent() {
         </UserHouseholdProvider>
       </HouseholdProvider>
     </UserProvider>
+  )
+}
+
+type FloatingLogTransactionWindowProps = {
+  fragmentRef: logTransactionFragment$key
+}
+
+function FloatingLogTransactionWindow({
+  fragmentRef,
+}: FloatingLogTransactionWindowProps) {
+  const { type: logTransactionType, close: closeLogTransaction } =
+    useLogTransaction()
+  const { viewUserId } = useHouseholdViewScope()
+  const { user } = useUser()
+  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
+
+  if (isViewingOtherUser) {
+    return null
+  }
+
+  return (
+    <Rnd
+      enableResizing={{
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+        topRight: false,
+        bottomRight: false,
+        bottomLeft: false,
+        topLeft: false,
+      }}
+      default={{
+        x: window.innerWidth / 2 - 300,
+        y: window.innerHeight / 2 - 400,
+        width: '420',
+        height: 'auto',
+      }}
+      bounds="window"
+      dragHandleClassName="drag-handle"
+      style={{ zIndex: 50 }}
+    >
+      {logTransactionType && (
+        <Item
+          className={cn(
+            'bg-muted h-full w-full gap-0 overflow-hidden p-0 shadow-2xl',
+          )}
+        >
+          <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
+            <div className="flex items-center gap-2">
+              <GripVertical className="text-muted-foreground h-5 w-5" />
+              <span className="text-sm font-semibold">Log Transaction</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={closeLogTransaction}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <LogTransaction fragmentRef={fragmentRef} />
+        </Item>
+      )}
+    </Rnd>
   )
 }
