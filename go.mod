@@ -21,6 +21,7 @@ require (
 	github.com/jackc/pgx/v5 v5.9.0
 	github.com/joho/godotenv v1.5.1
 	github.com/markbates/goth v1.82.0
+	github.com/mattn/go-sqlite3 v1.14.44
 	github.com/oapi-codegen/runtime v1.4.0
 	github.com/samber/lo v1.52.0
 	github.com/shopspring/decimal v1.4.0
