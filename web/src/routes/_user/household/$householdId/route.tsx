@@ -134,6 +134,21 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   staleTime: Infinity,
   notFoundComponent: NotFoundError,
   errorComponent: GenericError,
+  beforeLoad: ({ params, search }) => {
+    if (typeof window !== 'undefined' && !search.view_user_id) {
+      const stored = getViewUserId(params.householdId)
+      if (stored) {
+        throw redirect({
+          to: '.',
+          search: (prev: Record<string, unknown>) => ({
+            ...prev,
+            view_user_id: stored,
+          }),
+          replace: true,
+        })
+      }
+    }
+  },
   loaderDeps: ({ search }) => ({
     editTransactionId: search.edit_transaction_id,
     viewUserId: search.view_user_id,
@@ -143,21 +158,6 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   },
   loader: async ({ params, deps }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
-
-    if (typeof window !== 'undefined' && !deps.viewUserId) {
-      const stored = getViewUserId(params.householdId)
-      if (stored) {
-        throw redirect({
-          to: '/household/$householdId',
-          params: { householdId: params.householdId },
-          search: (prev: Record<string, unknown>) => ({
-            ...prev,
-            view_user_id: stored,
-          }),
-          replace: true,
-        })
-      }
-    }
 
     try {
       await fetchQuery<routeHouseholdIdQuery>(
