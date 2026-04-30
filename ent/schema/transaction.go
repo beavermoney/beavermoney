@@ -88,6 +88,7 @@ func (Transaction) Edges() []ent.Edge {
 func (Transaction) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("datetime"),
+		index.Fields("household_id", "user_id", "datetime"),
 	}
 }
 

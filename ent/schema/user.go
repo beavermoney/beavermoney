@@ -167,8 +167,7 @@ func (UserHousehold) Annotations() []schema.Annotation {
 // Indexes of the UserHousehold.
 func (UserHousehold) Indexes() []ent.Index {
 	return []ent.Index{
-		// Index for querying UserHouseholds by user and household
-		index.Fields("household_id", "user_id").Unique(),
+		index.Fields("user_id", "household_id").Unique(),
 	}
 }
 
@@ -179,8 +178,9 @@ func (UserHousehold) Policy() ent.Policy {
 			rules.FilterCoMembers(),
 		},
 		Mutation: privacy.MutationPolicy{
-			// TODO: allow admin mutate the user list in household
-			privacy.AlwaysAllowRule(),
+			rules.AllowPrivacyBypass(),
+			rules.BlockDemoHouseholdMutation(),
+			rules.FilterAdminOfTargetHousehold(),
 		},
 	}
 }
