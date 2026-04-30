@@ -47,7 +47,7 @@ func (User) Policy() ent.Policy {
 	return privacy.Policy{
 		Query: privacy.QueryPolicy{
 			rules.AllowPrivacyBypass(),
-			rules.FilterMe(),
+			rules.FilterMeOrCoMember(),
 		},
 		Mutation: privacy.MutationPolicy{
 			privacy.OnMutationOperation(
@@ -176,8 +176,7 @@ func (UserHousehold) Policy() ent.Policy {
 		Query: privacy.QueryPolicy{
 			rules.AllowPrivacyBypass(),
 			rules.FilterCoMembers(),
-		},
-		Mutation: privacy.MutationPolicy{
+		}, Mutation: privacy.MutationPolicy{
 			rules.AllowPrivacyBypass(),
 			rules.BlockDemoHouseholdMutation(),
 			rules.FilterAdminOfTargetHousehold(),
