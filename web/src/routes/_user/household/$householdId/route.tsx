@@ -88,6 +88,7 @@ import { PrivacyAlertDialog } from '@/components/privacy-alert-dialog'
 import { identity } from 'lodash-es'
 import { UserHouseholdProvider } from '@/hooks/use-user-household'
 import { GenericError } from '@/components/generic-error'
+import { getViewUserId } from '@/hooks/view-scope-store'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
 
 const routeHouseholdIdQuery = graphql`
@@ -135,12 +136,29 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   errorComponent: GenericError,
   loaderDeps: ({ search }) => ({
     editTransactionId: search.edit_transaction_id,
+    viewUserId: search.view_user_id,
   }),
   search: {
     middlewares: [stripSearchParams(defaultValues)],
   },
   loader: async ({ params, deps }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
+
+    if (typeof window !== 'undefined' && !deps.viewUserId) {
+      const stored = getViewUserId(params.householdId)
+      if (stored) {
+        throw redirect({
+          to: '/household/$householdId',
+          params: { householdId: params.householdId },
+          search: (prev: Record<string, unknown>) => ({
+            ...prev,
+            view_user_id: stored,
+          }),
+          replace: true,
+        })
+      }
+    }
+
     try {
       await fetchQuery<routeHouseholdIdQuery>(
         environment,
