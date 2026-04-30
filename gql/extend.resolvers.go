@@ -14,7 +14,7 @@ import (
 )
 
 // FinancialReport is the resolver for the financialReport field.
-func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput) (*model.FinancialReport, error) {
+func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserID *int) (*model.FinancialReport, error) {
 	// Parse time period
 	start, end := parseTimePeriod(period)
 

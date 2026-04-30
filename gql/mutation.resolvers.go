@@ -1707,6 +1707,21 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	return &model.DeleteHouseholdCurrencyPayload{DeletedHouseholdCurrencyID: id}, nil
 }
 
+// AddHouseholdUser is the resolver for the addHouseholdUser field.
+func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.AddHouseholdUserInput) (*ent.UserHousehold, error) {
+	panic(fmt.Errorf("not implemented: AddHouseholdUser - addHouseholdUser"))
+}
+
+// RemoveHouseholdUser is the resolver for the removeHouseholdUser field.
+func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*model.RemoveHouseholdUserPayload, error) {
+	panic(fmt.Errorf("not implemented: RemoveHouseholdUser - removeHouseholdUser"))
+}
+
+// UpdateHouseholdUserRole is the resolver for the updateHouseholdUserRole field.
+func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, role userhousehold.Role) (*ent.UserHousehold, error) {
+	panic(fmt.Errorf("not implemented: UpdateHouseholdUserRole - updateHouseholdUserRole"))
+}
+
 // CreateSnapshot is the resolver for the createSnapshot field.
 func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput) (*ent.SnapshotEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
