@@ -20,11 +20,17 @@ const query = graphql`
     $where: TransactionWhereInput
     $startDate: Time!
     $endDate: Time!
+    $viewUserId: ID
   ) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
       ...transactionsPanelFragment
-        @arguments(where: $where, startDate: $startDate, endDate: $endDate)
+        @arguments(
+          where: $where
+          startDate: $startDate
+          endDate: $endDate
+          viewUserId: $viewUserId
+        )
     }
   }
 `
@@ -81,6 +87,7 @@ export const Route = createFileRoute(
         where,
         startDate: period.startDate,
         endDate: period.endDate,
+        viewUserId: deps.viewUserId,
       },
       { fetchPolicy: 'store-or-network' },
     )
@@ -110,6 +117,7 @@ function RouteComponent() {
         where,
         startDate: period.startDate,
         endDate: period.endDate,
+        viewUserId: viewUserId ?? null,
       },
       { fetchPolicy: 'network-only' },
     ).subscribe({})

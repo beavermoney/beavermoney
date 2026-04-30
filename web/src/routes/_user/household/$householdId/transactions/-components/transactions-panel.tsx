@@ -77,6 +77,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         where: nextWhere,
         startDate: period.startDate,
         endDate: period.endDate,
+        viewUserId: viewUserId ?? null,
       },
     ).toPromise()
 
