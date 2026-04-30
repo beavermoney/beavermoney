@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c647964250b84a5d1cd4339b97f0c5ac>>
+ * @generated SignedSource<<c6334d4d15f8a1b603cfa34fbf25a39b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,6 +27,13 @@ var v0 = {
   "args": null,
   "kind": "ScalarField",
   "name": "id",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "code",
   "storageKey": null
 };
 return {
@@ -70,6 +77,7 @@ return {
         "name": "household",
         "plural": false,
         "selections": [
+          (v0/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -94,13 +102,7 @@ return {
                 "name": "householdCurrency",
                 "plural": false,
                 "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "code",
-                    "storageKey": null
-                  },
+                  (v1/*: any*/),
                   (v0/*: any*/)
                 ],
                 "storageKey": null
@@ -134,19 +136,31 @@ return {
             ],
             "storageKey": null
           },
-          (v0/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "HouseholdCurrency",
+            "kind": "LinkedField",
+            "name": "householdCurrencies",
+            "plural": true,
+            "selections": [
+              (v0/*: any*/),
+              (v1/*: any*/)
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "1390a55945b53265775dbbe642d84557",
+    "cacheID": "4d7b7de05ee648df37aadbd42c0dedaf",
     "id": null,
     "metadata": {},
     "name": "membersSettingsPageQuery",
     "operationKind": "query",
-    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  userHouseholds {\n    id\n    role\n    householdCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n    }\n  }\n}\n"
+    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment addMemberDialogFragment on Household {\n  id\n  userHouseholds {\n    id\n    user {\n      id\n    }\n  }\n  householdCurrencies {\n    id\n    code\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  id\n  userHouseholds {\n    id\n    role\n    householdCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n    }\n  }\n  ...addMemberDialogFragment\n}\n"
   }
 };
 })();

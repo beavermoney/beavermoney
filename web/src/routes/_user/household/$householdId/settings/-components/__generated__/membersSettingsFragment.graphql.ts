@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f6b8717fb57321d526242e5f470ae99c>>
+ * @generated SignedSource<<aaf6680785e0a89ca53f7b09c244dcca>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ReaderFragment } from 'relay-runtime';
 export type UserHouseholdRole = "admin" | "member" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type membersSettingsFragment$data = {
+  readonly id: string;
   readonly userHouseholds: ReadonlyArray<{
     readonly householdCurrency: {
       readonly code: string;
@@ -24,6 +25,7 @@ export type membersSettingsFragment$data = {
       readonly name: string;
     };
   }> | null | undefined;
+  readonly " $fragmentSpreads": FragmentRefs<"addMemberDialogFragment">;
   readonly " $fragmentType": "membersSettingsFragment";
 };
 export type membersSettingsFragment$key = {
@@ -45,6 +47,7 @@ return {
   "metadata": null,
   "name": "membersSettingsFragment",
   "selections": [
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -107,6 +110,11 @@ return {
         }
       ],
       "storageKey": null
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "addMemberDialogFragment"
     }
   ],
   "type": "Household",
@@ -114,6 +122,6 @@ return {
 };
 })();
 
-(node as any).hash = "53ff442831f91ed2b3762ed60d43fa53";
+(node as any).hash = "c118008a64e7e9e8558a4b71d4a3bd1b";
 
 export default node;
