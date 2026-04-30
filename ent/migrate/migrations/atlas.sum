@@ -1,4 +1,4 @@
-h1:ITgKAXJV2mFQeL9Aev/NTWiQG9p/4r/qL2okZFH77I0=
+h1:0HSfe0b1flnvkMFa8/7IMjGZ89994+5V9jseyJE0OsQ=
 20250114164520_init.up.sql h1:kLD19UMVgiQpXOcjVFQacyoZG9bNFyqN3pOveynp7lQ=
 20251227201721_balance-trigger.up.sql h1:s8dl6hthzA9WTMbpLrWsVYo4bsssRu+Y0ngJF5/EGjM=
 20251228225913_amount-trigger.up.sql h1:KLlttiUI43zcXXLl7oK/9InIhxcuCHEm6t171sA5miI=
@@ -29,3 +29,4 @@ h1:ITgKAXJV2mFQeL9Aev/NTWiQG9p/4r/qL2okZFH77I0=
 20260412204358_drop-default-currency.up.sql h1:Y3bt1Naoa+8w8HQhld2dyK8wyE1r8pt1t8dtLP01H+s=
 20260427031117_investment-user.up.sql h1:51SA+EhFKnwOvFgJ9bvvJYS/ky4+EX2TVxuc2SEXRrM=
 20260430021543_household-user-index.up.sql h1:pmaeHOyqPH9JIbI3u34p5xjU3M+Z/CmpW6IgJEalm/c=
+20260430022559_add_multi_user_household_indexes.up.sql h1:RbtZdFThXRkWb150z6h93+YOquNLf6khUwWuwHVUIKY=

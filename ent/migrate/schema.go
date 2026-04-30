@@ -50,6 +50,13 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "account_household_id_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{AccountsColumns[10], AccountsColumns[12]},
+			},
+		},
 	}
 	// HouseholdsColumns holds the columns for the "households" table.
 	HouseholdsColumns = []*schema.Column{
@@ -186,6 +193,13 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "investment_household_id_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{InvestmentsColumns[10], InvestmentsColumns[12]},
+			},
+		},
 	}
 	// InvestmentLotsColumns holds the columns for the "investment_lots" table.
 	InvestmentLotsColumns = []*schema.Column{
@@ -263,6 +277,13 @@ var (
 				Columns:    []*schema.Column{RecurringSubscriptionsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "recurringsubscription_household_id_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{RecurringSubscriptionsColumns[10], RecurringSubscriptionsColumns[12]},
 			},
 		},
 	}
@@ -445,6 +466,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{TransactionsColumns[4]},
 			},
+			{
+				Name:    "transaction_household_id_user_id_datetime",
+				Unique:  false,
+				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[8], TransactionsColumns[4]},
+			},
 		},
 	}
 	// TransactionCategoriesColumns holds the columns for the "transaction_categories" table.
@@ -573,9 +599,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "userhousehold_household_id_user_id",
+				Name:    "userhousehold_user_id_household_id",
 				Unique:  true,
-				Columns: []*schema.Column{UserHouseholdsColumns[5], UserHouseholdsColumns[4]},
+				Columns: []*schema.Column{UserHouseholdsColumns[4], UserHouseholdsColumns[5]},
 			},
 		},
 	}
