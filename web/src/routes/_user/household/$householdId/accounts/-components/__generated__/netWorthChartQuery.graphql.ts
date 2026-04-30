@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9db426e3a8478ec615db8d3deb31889d>>
+ * @generated SignedSource<<8c97d37f81ad385746b547e9f6ddeb4a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -1188,6 +1188,7 @@ export type netWorthChartQuery$data = {
             readonly liquidity: string;
             readonly property: string;
             readonly receivable: string;
+            readonly userID: string;
           }> | null | undefined;
           readonly snapshotRates: ReadonlyArray<{
             readonly fromCurrency: {
@@ -1239,64 +1240,71 @@ v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "liquidity",
+  "name": "userID",
   "storageKey": null
 },
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "investment",
+  "name": "liquidity",
   "storageKey": null
 },
 v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "property",
+  "name": "investment",
   "storageKey": null
 },
 v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "receivable",
+  "name": "property",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "liability",
+  "name": "receivable",
   "storageKey": null
 },
 v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "liability",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "code",
   "storageKey": null
 },
-v9 = [
-  (v8/*: any*/)
+v10 = [
+  (v9/*: any*/)
 ],
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "rate",
   "storageKey": null
 },
-v11 = {
+v12 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v12 = [
-  (v8/*: any*/),
-  (v11/*: any*/)
+v13 = [
+  (v9/*: any*/),
+  (v12/*: any*/)
 ];
 return {
   "fragment": {
@@ -1351,6 +1359,7 @@ return {
                           (v5/*: any*/),
                           (v6/*: any*/),
                           (v7/*: any*/),
+                          (v8/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -1358,7 +1367,7 @@ return {
                             "kind": "LinkedField",
                             "name": "householdCurrency",
                             "plural": false,
-                            "selections": (v9/*: any*/),
+                            "selections": (v10/*: any*/),
                             "storageKey": null
                           }
                         ],
@@ -1372,7 +1381,7 @@ return {
                         "name": "snapshotRates",
                         "plural": true,
                         "selections": [
-                          (v10/*: any*/),
+                          (v11/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -1380,7 +1389,7 @@ return {
                             "kind": "LinkedField",
                             "name": "fromCurrency",
                             "plural": false,
-                            "selections": (v9/*: any*/),
+                            "selections": (v10/*: any*/),
                             "storageKey": null
                           },
                           {
@@ -1390,7 +1399,7 @@ return {
                             "kind": "LinkedField",
                             "name": "toCurrency",
                             "plural": false,
-                            "selections": (v9/*: any*/),
+                            "selections": (v10/*: any*/),
                             "storageKey": null
                           }
                         ],
@@ -1464,6 +1473,7 @@ return {
                           (v5/*: any*/),
                           (v6/*: any*/),
                           (v7/*: any*/),
+                          (v8/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -1471,10 +1481,10 @@ return {
                             "kind": "LinkedField",
                             "name": "householdCurrency",
                             "plural": false,
-                            "selections": (v12/*: any*/),
+                            "selections": (v13/*: any*/),
                             "storageKey": null
                           },
-                          (v11/*: any*/)
+                          (v12/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -1486,7 +1496,7 @@ return {
                         "name": "snapshotRates",
                         "plural": true,
                         "selections": [
-                          (v10/*: any*/),
+                          (v11/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -1494,7 +1504,7 @@ return {
                             "kind": "LinkedField",
                             "name": "fromCurrency",
                             "plural": false,
-                            "selections": (v12/*: any*/),
+                            "selections": (v13/*: any*/),
                             "storageKey": null
                           },
                           {
@@ -1504,14 +1514,14 @@ return {
                             "kind": "LinkedField",
                             "name": "toCurrency",
                             "plural": false,
-                            "selections": (v12/*: any*/),
+                            "selections": (v13/*: any*/),
                             "storageKey": null
                           },
-                          (v11/*: any*/)
+                          (v12/*: any*/)
                         ],
                         "storageKey": null
                       },
-                      (v11/*: any*/)
+                      (v12/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -1521,23 +1531,23 @@ return {
             ],
             "storageKey": null
           },
-          (v11/*: any*/)
+          (v12/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "ec16ba1f40363791055130418615f229",
+    "cacheID": "53c3ab6bde419ca156aed29e4698779e",
     "id": null,
     "metadata": {},
     "name": "netWorthChartQuery",
     "operationKind": "query",
-    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          snapshotEntries {\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            householdCurrency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query netWorthChartQuery(\n  $where: SnapshotWhereInput\n) {\n  household {\n    snapshots(first: 500, where: $where) {\n      edges {\n        node {\n          createTime\n          snapshotEntries {\n            userID\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            householdCurrency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n          id\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "400980ca85964cf3add20f1e9d709f54";
+(node as any).hash = "6334dcc1787c490fe88d981272ab36ce";
 
 export default node;

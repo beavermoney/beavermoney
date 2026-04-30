@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bfdf4747282b148e4192577f0f66d893>>
+ * @generated SignedSource<<6410b03605a38898909a1d5108316783>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,9 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type subscriptionsQuery$variables = Record<PropertyKey, never>;
+export type subscriptionsQuery$variables = {
+  viewUserId?: string | null | undefined;
+};
 export type subscriptionsQuery$data = {
   readonly household: {
     readonly " $fragmentSpreads": FragmentRefs<"subscriptionsPanelFragment">;
@@ -24,12 +26,30 @@ export type subscriptionsQuery = {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "viewUserId"
+  }
+],
+v1 = [
+  {
     "kind": "Literal",
     "name": "first",
     "value": 50
+  },
+  {
+    "fields": [
+      {
+        "kind": "Variable",
+        "name": "userID",
+        "variableName": "viewUserId"
+      }
+    ],
+    "kind": "ObjectValue",
+    "name": "where"
   }
 ],
-v1 = {
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -38,7 +58,7 @@ v1 = {
 };
 return {
   "fragment": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "subscriptionsQuery",
@@ -52,7 +72,13 @@ return {
         "plural": false,
         "selections": [
           {
-            "args": null,
+            "args": [
+              {
+                "kind": "Variable",
+                "name": "viewUserId",
+                "variableName": "viewUserId"
+              }
+            ],
             "kind": "FragmentSpread",
             "name": "subscriptionsPanelFragment"
           }
@@ -65,7 +91,7 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "subscriptionsQuery",
     "selections": [
@@ -79,7 +105,7 @@ return {
         "selections": [
           {
             "alias": null,
-            "args": (v0/*: any*/),
+            "args": (v1/*: any*/),
             "concreteType": "RecurringSubscriptionConnection",
             "kind": "LinkedField",
             "name": "recurringSubscriptions",
@@ -101,7 +127,7 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v1/*: any*/),
+                      (v2/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -131,7 +157,7 @@ return {
                             "name": "code",
                             "storageKey": null
                           },
-                          (v1/*: any*/)
+                          (v2/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -228,34 +254,36 @@ return {
                 ]
               }
             ],
-            "storageKey": "recurringSubscriptions(first:50)"
+            "storageKey": null
           },
           {
             "alias": null,
-            "args": (v0/*: any*/),
-            "filters": null,
+            "args": (v1/*: any*/),
+            "filters": [
+              "where"
+            ],
             "handle": "connection",
             "key": "subscriptionsPanel_recurringSubscriptions",
             "kind": "LinkedHandle",
             "name": "recurringSubscriptions"
           },
-          (v1/*: any*/)
+          (v2/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "94c865fa92d5e64f2c5c049ea4130c2c",
+    "cacheID": "e6fe841076411abc69b0e5fdda3005d9",
     "id": null,
     "metadata": {},
     "name": "subscriptionsQuery",
     "operationKind": "query",
-    "text": "query subscriptionsQuery {\n  household {\n    ...subscriptionsPanelFragment\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment on Household {\n  recurringSubscriptions(first: 50) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsQuery(\n  $viewUserId: ID\n) {\n  household {\n    ...subscriptionsPanelFragment_9dezq\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_9dezq on Household {\n  recurringSubscriptions(first: 50, where: {userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f6e8472a77d74ec9958c7f35cdb150a0";
+(node as any).hash = "dcbcca2ca1f3f4f87211091982cafb87";
 
 export default node;

@@ -53,10 +53,14 @@ const AccountsPanelFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }
+    viewUserId: { type: "ID" }
   )
   @refetchable(queryName: "accountsPanelRefetch") {
-    accounts(first: $count, after: $cursor, where: { archived: false })
-      @connection(key: "accountsPanel_accounts") {
+    accounts(
+      first: $count
+      after: $cursor
+      where: { archived: false, userID: $viewUserId }
+    ) @connection(key: "accountsPanel_accounts") {
       __id
       edges {
         node {

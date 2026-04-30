@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bb938366e0f96741d5e4a87d8110fe6a>>
+ * @generated SignedSource<<afbdec4952bf4def8b067073a0192842>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -62,6 +62,11 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
     }
   ],
   "kind": "Fragment",
@@ -97,7 +102,19 @@ return {
   "selections": [
     {
       "alias": "recurringSubscriptions",
-      "args": null,
+      "args": [
+        {
+          "fields": [
+            {
+              "kind": "Variable",
+              "name": "userID",
+              "variableName": "viewUserId"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
+        }
+      ],
       "concreteType": "RecurringSubscriptionConnection",
       "kind": "LinkedField",
       "name": "__subscriptionsPanel_recurringSubscriptions_connection",
@@ -252,6 +269,6 @@ return {
 };
 })();
 
-(node as any).hash = "c9366896406654c40f48c02283de1608";
+(node as any).hash = "73d0b8dd833db5e8d85d998db19f38e7";
 
 export default node;

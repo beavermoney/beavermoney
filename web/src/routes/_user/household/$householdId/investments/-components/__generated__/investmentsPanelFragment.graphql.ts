@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8d2dcc6f65175564966c9b266778374c>>
+ * @generated SignedSource<<6d537135d4cfc6559cc5a59508220f66>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -69,6 +69,11 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "cursor"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
     }
   ],
   "kind": "Fragment",
@@ -104,7 +109,19 @@ return {
   "selections": [
     {
       "alias": "investments",
-      "args": null,
+      "args": [
+        {
+          "fields": [
+            {
+              "kind": "Variable",
+              "name": "userID",
+              "variableName": "viewUserId"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
+        }
+      ],
       "concreteType": "InvestmentConnection",
       "kind": "LinkedField",
       "name": "__investmentsPanel_investments_connection",
@@ -245,6 +262,6 @@ return {
 };
 })();
 
-(node as any).hash = "3f15fab36516dfc28011a83de7c58b6c";
+(node as any).hash = "f5cbff025110a1ee830b8bf939ad85be";
 
 export default node;

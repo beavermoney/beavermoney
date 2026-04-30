@@ -50,9 +50,10 @@ const InvestmentsPanelFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }
+    viewUserId: { type: "ID" }
   )
   @refetchable(queryName: "investmentsPanelRefetch") {
-    investments(first: $count, after: $cursor)
+    investments(first: $count, after: $cursor, where: { userID: $viewUserId })
       @connection(key: "investmentsPanel_investments") {
       __id
       edges {

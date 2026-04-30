@@ -13,10 +13,10 @@ import type { accountsQuery } from './__generated__/accountsQuery.graphql'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const query = graphql`
-  query accountsQuery {
+  query accountsQuery($viewUserId: ID) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
-      ...accountsPanelFragment
+      ...accountsPanelFragment @arguments(viewUserId: $viewUserId)
     }
   }
 `
@@ -25,11 +25,18 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
   {
     component: RouteComponent,
     pendingComponent: PendingComponent,
-    loader: () => {
+    loaderDeps: ({ search }) => ({
+      viewUserId:
+        ((search as Record<string, unknown>).view_user_id as
+          | string
+          | null
+          | undefined) ?? null,
+    }),
+    loader: ({ deps }) => {
       return loadQuery<accountsQuery>(
         environment,
         query,
-        {},
+        { viewUserId: deps.viewUserId },
         { fetchPolicy: 'store-or-network' },
       )
     },
@@ -39,6 +46,7 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
 function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
+  const deps = Route.useLoaderDeps()
 
   const data = usePreloadedQuery<accountsQuery>(query, queryRef)
 
@@ -46,7 +54,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      {},
+      { viewUserId: deps.viewUserId },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

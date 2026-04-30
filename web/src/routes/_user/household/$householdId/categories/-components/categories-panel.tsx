@@ -42,6 +42,7 @@ const CategoriesPanelFragment = graphql`
     cursor: { type: "Cursor" }
     startDate: { type: "Time!" }
     endDate: { type: "Time!" }
+    viewUserId: { type: "ID", defaultValue: null }
   )
   @refetchable(queryName: "categoriesPanelRefetch") {
     transactionCategories(first: $count, after: $cursor)
@@ -55,7 +56,10 @@ const CategoriesPanelFragment = graphql`
         }
       }
     }
-    financialReport(period: { startDate: $startDate, endDate: $endDate }) {
+    financialReport(
+      period: { startDate: $startDate, endDate: $endDate }
+      viewUserID: $viewUserId
+    ) {
       incomeBreakdown {
         categoryType
         total
@@ -140,6 +144,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
         id: household.id,
         startDate: period.startDate,
         endDate: period.endDate,
+        viewUserId,
       },
     ).toPromise()
 
