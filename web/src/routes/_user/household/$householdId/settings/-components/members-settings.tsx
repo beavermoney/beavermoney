@@ -1,9 +1,18 @@
 import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
+import { useFragment, useMutation } from 'react-relay'
+import invariant from 'tiny-invariant'
+import { match } from 'ts-pattern'
+import { toast } from 'sonner'
+import { useState } from 'react'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { MoreVerticalIcon } from '@hugeicons/core-free-icons'
 
 import type { membersSettingsFragment$key } from './__generated__/membersSettingsFragment.graphql'
+import type { membersSettingsUpdateRoleMutation } from './__generated__/membersSettingsUpdateRoleMutation.graphql'
+import type { membersSettingsRemoveMutation } from './__generated__/membersSettingsRemoveMutation.graphql'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Item,
   ItemContent,
@@ -11,11 +20,30 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useUser } from '@/hooks/use-user'
-import invariant from 'tiny-invariant'
+import { useUserHousehold } from '@/hooks/use-user-household'
+import { commitMutationResult } from '@/lib/relay'
+import { AddMemberDialog } from './add-member-dialog'
 
 const membersSettingsFragment = graphql`
   fragment membersSettingsFragment on Household {
+    id
     userHouseholds {
       id
       role
@@ -28,24 +56,148 @@ const membersSettingsFragment = graphql`
         email
       }
     }
+    ...addMemberDialogFragment
   }
 `
+
+const updateRoleMutation = graphql`
+  mutation membersSettingsUpdateRoleMutation(
+    $id: ID!
+    $role: UserHouseholdRole!
+  ) {
+    updateHouseholdUserRole(id: $id, role: $role) {
+      id
+      role
+    }
+  }
+`
+
+const removeMutation = graphql`
+  mutation membersSettingsRemoveMutation($id: ID!) {
+    removeHouseholdUser(id: $id) {
+      removedUserHouseholdId
+    }
+  }
+`
+
+function getRoleErrorMessage(error: unknown): string {
+  const msg = String(error)
+  if (msg.includes('LAST_ADMIN_PROTECTED'))
+    return 'At least one admin must remain.'
+  if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
+    return 'Only household admins can change roles.'
+  if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
+    return 'Member changes are disabled on the demo household.'
+  return 'Something went wrong. Please try again.'
+}
+
+function getRemoveErrorMessage(error: unknown): string {
+  const msg = String(error)
+  if (msg.includes('LAST_ADMIN_PROTECTED'))
+    return 'At least one admin must remain.'
+  if (msg.includes('MEMBER_HAS_OWNED_RECORDS'))
+    return 'This member owns accounts, investments, or subscriptions. Remove or archive them first.'
+  if (msg.includes('SELF_REMOVAL_NOT_ALLOWED'))
+    return "You can't remove yourself from the household."
+  if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
+    return 'Only household admins can remove members.'
+  if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
+    return 'Member changes are disabled on the demo household.'
+  return 'Something went wrong. Please try again.'
+}
 
 type MembersSettingsProps = {
   householdRef: membersSettingsFragment$key
 }
 
 export function MembersSettings({ householdRef }: MembersSettingsProps) {
-  const { userHouseholds } = useFragment(membersSettingsFragment, householdRef)
+  const household = useFragment(membersSettingsFragment, householdRef)
   const { user } = useUser()
+  const { userHousehold } = useUserHousehold()
 
-  invariant(userHouseholds, 'userHouseholds is required')
+  invariant(household.userHouseholds, 'userHouseholds is required')
+
+  const isAdmin = userHousehold.role === 'admin'
+  const householdId = household.id
+
+  const [commitUpdateRole, isUpdateRoleInFlight] =
+    useMutation<membersSettingsUpdateRoleMutation>(updateRoleMutation)
+  const [commitRemove, isRemoveInFlight] =
+    useMutation<membersSettingsRemoveMutation>(removeMutation)
+
+  const [removeTargetId, setRemoveTargetId] = useState<string | null>(null)
+
+  const handleRoleChange = async (
+    userHouseholdId: string,
+    nextRole: 'admin' | 'member',
+  ) => {
+    const result =
+      await commitMutationResult<membersSettingsUpdateRoleMutation>(
+        commitUpdateRole,
+        {
+          variables: {
+            id: userHouseholdId,
+            role: nextRole,
+          },
+          updater: (store) => {
+            store.get(householdId)?.invalidateRecord()
+          },
+        },
+      )
+
+    match(result)
+      .with({ status: 'success' }, () => {
+        toast.success(
+          nextRole === 'admin'
+            ? 'Member promoted to admin.'
+            : 'Admin demoted to member.',
+        )
+      })
+      .with({ status: 'error' }, ({ error }) => {
+        toast.error(getRoleErrorMessage(error))
+      })
+      .exhaustive()
+  }
+
+  const handleConfirmRemove = async () => {
+    if (removeTargetId === null) return
+
+    const result = await commitMutationResult<membersSettingsRemoveMutation>(
+      commitRemove,
+      {
+        variables: {
+          id: removeTargetId,
+        },
+        updater: (store) => {
+          store.get(householdId)?.invalidateRecord()
+        },
+      },
+    )
+
+    match(result)
+      .with({ status: 'success' }, () => {
+        toast.success('Member removed.')
+        setRemoveTargetId(null)
+      })
+      .with({ status: 'error' }, ({ error }) => {
+        toast.error(getRemoveErrorMessage(error))
+      })
+      .exhaustive()
+  }
 
   return (
     <div className="flex max-w-md flex-col gap-3">
+      {isAdmin && (
+        <div>
+          <AddMemberDialog householdRef={household} />
+        </div>
+      )}
       <ItemGroup>
-        {userHouseholds.map((uh) => {
+        {household.userHouseholds.map((uh) => {
           const isCurrentUser = uh.user.id === user.id
+          const showActions = isAdmin && !isCurrentUser
+          const nextRole: 'admin' | 'member' =
+            uh.role === 'admin' ? 'member' : 'admin'
           return (
             <Item key={uh.id} variant="outline" size="sm">
               <ItemContent>
@@ -63,13 +215,67 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
               <Badge variant={uh.role === 'admin' ? 'default' : 'secondary'}>
                 {uh.role}
               </Badge>
+              {showActions && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer"
+                        aria-label={`Actions for ${uh.user.name}`}
+                      />
+                    }
+                  >
+                    <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      disabled={isUpdateRoleInFlight}
+                      onClick={() => handleRoleChange(uh.id, nextRole)}
+                    >
+                      {uh.role === 'admin' ? 'Make member' : 'Make admin'}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive"
+                      onClick={() => setRemoveTargetId(uh.id)}
+                    >
+                      Remove from household
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </Item>
           )
         })}
       </ItemGroup>
-      <p className="text-muted-foreground text-xs/relaxed">
-        Invite and role management coming soon.
-      </p>
+
+      <AlertDialog
+        open={removeTargetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setRemoveTargetId(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove member?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove them from the household. They will lose access
+              immediately.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isRemoveInFlight}
+              onClick={handleConfirmRemove}
+            >
+              {isRemoveInFlight ? 'Removing...' : 'Remove'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
