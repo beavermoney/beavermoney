@@ -25,6 +25,8 @@ import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { useUser } from '@/hooks/use-user'
 import {
   Select,
   SelectContent,
@@ -97,6 +99,9 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const { displayCurrencyCode, convert } = useDisplayCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const { viewUserId } = useHouseholdViewScope()
+  const { user } = useUser()
+  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
 
   const search = useSearch({
     from: '/_user/household/$householdId/accounts',
@@ -233,6 +238,9 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <PlusButton
           to="/household/$householdId/accounts/new"
           params={{ householdId }}
+          disabled={isViewingOtherUser}
+          disabledTitle="Switch to your view to create"
+          data-testid="new-account-button"
         />
       </div>
       <div className="flex flex-col gap-1">

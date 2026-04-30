@@ -18,6 +18,8 @@ import {
 
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { useUser } from '@/hooks/use-user'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { CATEGORY_TYPE_LIST } from '@/constant'
@@ -84,6 +86,9 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   const { displayCurrencyCode } = useDisplayCurrency()
   const environment = useRelayEnvironment()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const { viewUserId } = useHouseholdViewScope()
+  const { user } = useUser()
+  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
 
   useRegisterConnection(
     data.transactionCategories.__id,
@@ -154,6 +159,9 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
         <PlusButton
           to="/household/$householdId/categories/new"
           params={{ householdId }}
+          disabled={isViewingOtherUser}
+          disabledTitle="Switch to your view to create"
+          data-testid="new-category-button"
         />
       </div>
       <FinancialSummaryCards fragmentRef={financialReport} />

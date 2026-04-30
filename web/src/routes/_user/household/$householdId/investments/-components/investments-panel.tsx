@@ -29,6 +29,8 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { useUser } from '@/hooks/use-user'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
@@ -90,6 +92,9 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const environment = useRelayEnvironment()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const { viewUserId } = useHouseholdViewScope()
+  const { user } = useUser()
+  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
 
   const search = useSearch({
     from: '/_user/household/$householdId/investments',
@@ -185,6 +190,9 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         <PlusButton
           to="/household/$householdId/investments/new"
           params={{ householdId }}
+          disabled={isViewingOtherUser}
+          disabledTitle="Switch to your view to create"
+          data-testid="new-investment-button"
         />
       </div>
       <div className="flex flex-col gap-1">

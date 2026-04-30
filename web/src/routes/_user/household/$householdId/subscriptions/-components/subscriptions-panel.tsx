@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/select'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { useUser } from '@/hooks/use-user'
 
 import { calculateNextPaymentDate } from '@/lib/date-range'
 import currency from 'currency.js'
@@ -77,6 +79,9 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const { viewUserId } = useHouseholdViewScope()
+  const { user } = useUser()
+  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
 
   useRegisterConnection(
     data.recurringSubscriptions.__id,
@@ -185,6 +190,9 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         <PlusButton
           to="/household/$householdId/subscriptions/new"
           params={{ householdId }}
+          disabled={isViewingOtherUser}
+          disabledTitle="Switch to your view to create"
+          data-testid="new-subscription-button"
         />
       </div>
 

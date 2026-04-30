@@ -13,6 +13,8 @@ import { useHousehold } from '@/hooks/use-household'
 import { Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { useUser } from '@/hooks/use-user'
 import { parseISO } from 'date-fns'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
@@ -45,6 +47,9 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const environment = useRelayEnvironment()
   const { household } = useHousehold()
   const { open: openLogTransaction } = useLogTransaction()
+  const { viewUserId } = useHouseholdViewScope()
+  const { user } = useUser()
+  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
@@ -84,6 +89,12 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
           size="icon-xl"
           className="rounded-full"
           onClick={() => openLogTransaction('expense')}
+          disabled={isViewingOtherUser}
+          aria-disabled={isViewingOtherUser}
+          title={
+            isViewingOtherUser ? 'Switch to your view to create' : undefined
+          }
+          data-testid="log-transaction-button"
         >
           <PlusIcon />
         </Button>
