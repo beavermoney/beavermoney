@@ -75,8 +75,6 @@ Auto-generated stubs with manual implementations for computed fields:
 ### Extended Fields (extend.resolvers.go)
 
 - `Household.financialReport` - Income/expense/net for date range
-- `Household.netWorthOverTime` - Historical net worth from snapshots
-- `FinancialReport.incomeBreakdown`, `expensesBreakdown`, `transactionCount`
 
 ## HELPERS (helpers.go)
 
