@@ -9,69 +9,12 @@ import (
 	"context"
 
 	"beavermoney.app/ent"
-	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
 	"beavermoney.app/internal/contextkeys"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
-
-// IncomeBreakdown is the resolver for the incomeBreakdown field.
-func (r *financialReportResolver) IncomeBreakdown(ctx context.Context, obj *model.FinancialReport) (*model.CategoryTypeAggregate, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "financialReportResolver.IncomeBreakdown",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	if obj.IncomeBreakdown != nil {
-		return obj.IncomeBreakdown, nil
-	}
-
-	return r.aggregateByCategoryType(ctx, obj, transactioncategory.TypeIncome, nil)
-}
-
-// ExpensesBreakdown is the resolver for the expensesBreakdown field.
-func (r *financialReportResolver) ExpensesBreakdown(ctx context.Context, obj *model.FinancialReport) (*model.CategoryTypeAggregate, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "financialReportResolver.ExpensesBreakdown",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	if obj.ExpensesBreakdown != nil {
-		return obj.ExpensesBreakdown, nil
-	}
-
-	return r.aggregateByCategoryType(ctx, obj, transactioncategory.TypeExpense, nil)
-}
-
-// TransactionCount is the resolver for the transactionCount field.
-func (r *financialReportResolver) TransactionCount(ctx context.Context, obj *model.FinancialReport) (int, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	_, span := r.tracer.Start(ctx, "financialReportResolver.TransactionCount",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	return obj.TransactionCount, nil
-}
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context) (*ent.User, error) {
@@ -173,8 +116,3 @@ func (r *queryResolver) CryptoQuote(ctx context.Context, symbol string) (*model.
 		CurrentPrice: cryptoQuote.CurrentPrice.String(),
 	}, nil
 }
-
-// FinancialReport returns FinancialReportResolver implementation.
-func (r *Resolver) FinancialReport() FinancialReportResolver { return &financialReportResolver{r} }
-
-type financialReportResolver struct{ *Resolver }

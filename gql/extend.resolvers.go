@@ -41,9 +41,7 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 		EndDate:   end,
 	}
 
-	financialReport := &financialReportResolver{r.Resolver}
-
-	incomeBreakdown, err := financialReport.aggregateByCategoryType(
+	incomeBreakdown, err := r.aggregateByCategoryType(
 		ctx,
 		report,
 		transactioncategory.TypeIncome,
@@ -53,7 +51,7 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 		return nil, err
 	}
 
-	expensesBreakdown, err := financialReport.aggregateByCategoryType(
+	expensesBreakdown, err := r.aggregateByCategoryType(
 		ctx,
 		report,
 		transactioncategory.TypeExpense,
@@ -63,7 +61,7 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 		return nil, err
 	}
 
-	transactionCount, err := financialReport.transactionCount(ctx, report, viewUserID)
+	transactionCount, err := r.transactionCount(ctx, report, viewUserID)
 	if err != nil {
 		return nil, err
 	}
