@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7a784feebcb5d2eae957524da6959815>>
+ * @generated SignedSource<<c6a0faf5b763b9768bc97ac2fa522ea5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type membersSettingsRemoveMutation$variables = {
 };
 export type membersSettingsRemoveMutation$data = {
   readonly removeHouseholdUser: {
-    readonly removedUserHouseholdId: string;
+    readonly removedUserHouseholdID: string;
   };
 };
 export type membersSettingsRemoveMutation = {
@@ -49,7 +49,7 @@ v1 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "removedUserHouseholdId",
+        "name": "removedUserHouseholdID",
         "storageKey": null
       }
     ],
@@ -74,16 +74,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "584dfe1c7a4a14e973bf1e867a7dc154",
+    "cacheID": "37cc9f598c1dc544845ed26e42de2c10",
     "id": null,
     "metadata": {},
     "name": "membersSettingsRemoveMutation",
     "operationKind": "mutation",
-    "text": "mutation membersSettingsRemoveMutation(\n  $id: ID!\n) {\n  removeHouseholdUser(id: $id) {\n    removedUserHouseholdId\n  }\n}\n"
+    "text": "mutation membersSettingsRemoveMutation(\n  $id: ID!\n) {\n  removeHouseholdUser(id: $id) {\n    removedUserHouseholdID\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "68c2820805d397250954f034f8450df9";
+(node as any).hash = "e4097ee237a1214c160ffb3ca5ad0ab9";
 
 export default node;

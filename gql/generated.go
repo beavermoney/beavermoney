@@ -2550,7 +2550,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.RecurringSubscriptionEdge.Node(childComplexity), true
 
-	case "RemoveHouseholdUserPayload.removedUserHouseholdId":
+	case "RemoveHouseholdUserPayload.removedUserHouseholdID":
 		if e.complexity.RemoveHouseholdUserPayload.RemovedUserHouseholdID == nil {
 			break
 		}
@@ -11869,8 +11869,8 @@ func (ec *executionContext) fieldContext_Mutation_removeHouseholdUser(ctx contex
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "removedUserHouseholdId":
-				return ec.fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdId(ctx, field)
+			case "removedUserHouseholdID":
+				return ec.fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdID(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type RemoveHouseholdUserPayload", field.Name)
 		},
@@ -14092,12 +14092,12 @@ func (ec *executionContext) fieldContext_RecurringSubscriptionEdge_cursor(_ cont
 	return fc, nil
 }
 
-func (ec *executionContext) _RemoveHouseholdUserPayload_removedUserHouseholdId(ctx context.Context, field graphql.CollectedField, obj *model.RemoveHouseholdUserPayload) (ret graphql.Marshaler) {
+func (ec *executionContext) _RemoveHouseholdUserPayload_removedUserHouseholdID(ctx context.Context, field graphql.CollectedField, obj *model.RemoveHouseholdUserPayload) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdId,
+		ec.fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdID,
 		func(ctx context.Context) (any, error) {
 			return obj.RemovedUserHouseholdID, nil
 		},
@@ -14108,7 +14108,7 @@ func (ec *executionContext) _RemoveHouseholdUserPayload_removedUserHouseholdId(c
 	)
 }
 
-func (ec *executionContext) fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_RemoveHouseholdUserPayload_removedUserHouseholdID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "RemoveHouseholdUserPayload",
 		Field:      field,
@@ -35472,8 +35472,8 @@ func (ec *executionContext) _RemoveHouseholdUserPayload(ctx context.Context, sel
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("RemoveHouseholdUserPayload")
-		case "removedUserHouseholdId":
-			out.Values[i] = ec._RemoveHouseholdUserPayload_removedUserHouseholdId(ctx, field, obj)
+		case "removedUserHouseholdID":
+			out.Values[i] = ec._RemoveHouseholdUserPayload_removedUserHouseholdID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

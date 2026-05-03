@@ -74,7 +74,7 @@ const updateRoleMutation = graphql`
 const removeMutation = graphql`
   mutation membersSettingsRemoveMutation($id: ID!) {
     removeHouseholdUser(id: $id) {
-      removedUserHouseholdId
+      removedUserHouseholdID
     }
   }
 `

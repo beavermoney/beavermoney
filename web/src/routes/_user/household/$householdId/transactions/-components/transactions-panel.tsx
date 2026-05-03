@@ -93,21 +93,17 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
 
   return (
     <Fragment>
-      <div className="fixed right-4 bottom-4 lg:absolute">
-        <Button
-          nativeButton={true}
-          size="icon-lg"
-          onClick={() => openLogTransaction('expense')}
-          disabled={isViewingOtherUser}
-          aria-disabled={isViewingOtherUser}
-          title={
-            isViewingOtherUser ? 'Switch to your view to create' : undefined
-          }
-          data-testid="log-transaction-button"
-        >
-          <PlusIcon />
-        </Button>
-      </div>
+      {!isViewingOtherUser && (
+        <div className="fixed right-4 bottom-4 lg:absolute">
+          <Button
+            nativeButton={true}
+            size="icon-lg"
+            onClick={() => openLogTransaction('expense')}
+          >
+            <PlusIcon />
+          </Button>
+        </div>
+      )}
       <FinancialSummaryCards fragmentRef={data.financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter
