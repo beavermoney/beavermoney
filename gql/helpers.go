@@ -71,7 +71,9 @@ func (r *financialReportResolver) aggregateByCategoryType(
 			// Filter out excluded transactions
 			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
 
-			applyViewUserIDTransactionFilter(s, viewUserID)
+			// Entry-level (not transaction-level): SUM must reflect only
+			// viewUserID's own slice of multi-entry transactions.
+			applyViewUserIDEntryFilter(s, te, viewUserID)
 
 			// Apply time filters
 			if !obj.StartDate.IsZero() {
@@ -267,6 +269,27 @@ func applyViewUserIDTransactionFilter(s *sql.Selector, viewUserID *int) {
 			account.UserIDEQ(*viewUserID),
 		),
 	)(s)
+}
+
+// applyViewUserIDEntryFilter restricts the joined transaction_entries (te) to
+// rows whose account belongs to viewUserID. Use this in aggregations where
+// SUM(te.amount) must reflect only the user's own slice of multi-entry
+// transactions (e.g. expense/income with cross-user fees, transfers).
+//
+// Differs from applyViewUserIDTransactionFilter, which decides transaction-level
+// inclusion via EXISTS but lets the outer SUM see all sibling entries — wrong
+// when a transaction spans multiple users' accounts.
+func applyViewUserIDEntryFilter(
+	s *sql.Selector,
+	te *sql.SelectTable,
+	viewUserID *int,
+) {
+	if viewUserID == nil {
+		return
+	}
+	a := sql.Table(account.Table)
+	s.Join(a).On(te.C(transactionentry.AccountColumn), a.C(account.FieldID))
+	s.Where(sql.EQ(a.C(account.FieldUserID), *viewUserID))
 }
 
 // validateViewUserID checks that the given userID is a member of the current household.
