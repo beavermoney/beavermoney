@@ -23,17 +23,17 @@
 
 Beaver Money tracks transactions, accounts, investments (stocks and crypto), recurring subscriptions, and balance snapshots across multiple households and currencies. It is open source and built to be self-hosted.
 
-It exists because the dominant alternatives (Mint and its successors) treat finance as content: ads, insights you didn't ask for, gamified savings. Spreadsheet alternatives treat it as a chore. Beaver Money treats it as a craft. Small, deliberate inputs over time produce an accurate, trustworthy picture, the way a beaver's daily work produces a dam.
+Existing tools fall short. Mint and its successors treat finance as content: ads, unwanted insights, gamified savings. Spreadsheets treat it as a chore. Beaver Money treats it as a craft. Small, deliberate entries accumulate into an accurate picture you can trust, the way a beaver's daily work becomes a dam.
 
-The win, three months in, is simple. You look at your net worth, your cash flow, and your category breakdown, and you feel *this is real, I understand it, no surprises*.
+Three months in, the goal is simple. You open the app, look at your net worth, your cash flow, and your category breakdown, and you feel *this is real, I understand it, no surprises*.
 
 ## Who it's for
 
-1. **Hands-on finance enthusiasts** who log transactions intentionally rather than rely on bank-sync automation.
+1. **Hands-on finance enthusiasts** who log transactions on purpose, instead of relying on bank-sync automation.
 2. **Self-hosters and privacy-conscious users** who want their data on their own infrastructure, with no telemetry and no upsell.
 3. **Multi-person households** who need a shared financial picture across partners, roommates, or families.
 
-Multi-household and multi-currency support cut across all three. They are defining features, not optional extras.
+Multi-household and multi-currency matter to all three groups. They are defining features, not optional extras.
 
 ## Principles
 
@@ -41,23 +41,23 @@ Multi-household and multi-currency support cut across all three. They are defini
 2. **Manual logging is intentional.** Keyboard-first input, considered defaults, no autopilot.
 3. **Builder, not bank.** Sharp corners, dense layouts, type discipline. The aesthetic of a thoughtful tool, not a service sold to you.
 4. **Plural by default.** Multi-household and multi-currency are first-class, not premium add-ons.
-5. **Open about being open.** Self-hostability and AGPL are part of the offer, not fine print.
+5. **Open about being open.** Self-hosting and the AGPL license are not fine print. They are part of why Beaver Money exists.
 
 The full strategic and visual stance lives in [`PRODUCT.md`](./PRODUCT.md) and [`DESIGN.md`](./DESIGN.md).
 
 ## Features
 
-- **Transactions** with categories, multi-entry money movement (so a single transaction can debit one account and credit another), and date-range views.
-- **Accounts** organized by type or custom category, with running balances and inline FX conversion.
-- **Investments** for stocks and crypto, with EODHD or Yahoo Finance quote refresh, lot tracking, and per-account rollups.
-- **Recurring subscriptions** with weekly, monthly, yearly, or custom intervals and next-payment forecasting.
-- **Balance snapshots** with FX rates pinned at snapshot time, so historical net worth stays accurate as currencies move.
-- **Multi-household** with per-household roles (admin, member) and a first-class household switcher.
-- **Multi-currency** with display-currency selection, native-amount preserved alongside, and Frankfurter for FX rates.
+- **Transactions** with categories, date-range views, and multi-entry support, so a single transaction can move money between accounts.
+- **Accounts** organized by type or by your own categories, with running balances and inline FX conversion.
+- **Investments** for stocks and crypto, with live quotes from EODHD or Yahoo Finance, lot tracking, and per-account rollups.
+- **Recurring subscriptions** at weekly, monthly, yearly, or custom intervals, with next-payment forecasting.
+- **Balance snapshots** that pin FX rates at the moment of capture, so historical net worth stays accurate as currencies move.
+- **Multi-household** with per-household roles (admin, member) and a household switcher that is always one click away.
+- **Multi-currency** with a display-currency picker, the original amount shown next to the converted one, and FX rates from Frankfurter.
 - **Privacy mode** that masks values without breaking layouts or chart proportions.
-- **Keyboard-first navigation** including a `cmdk` command menu reachable from anywhere.
+- **Keyboard-first navigation**, including a `cmdk` command menu reachable from anywhere in the app.
 - **Color-blind-aware charts** built on seven semantic roles: net worth, liquidity, investment, property, receivable, liability, asset.
-- **WCAG 2.2 AA target** with `prefers-reduced-motion` honored throughout.
+- **WCAG 2.2 AA** as the accessibility target, with `prefers-reduced-motion` respected throughout.
 
 ## Tech stack
 
@@ -66,7 +66,7 @@ The full strategic and visual stance lives in [`PRODUCT.md`](./PRODUCT.md) and [
 | Backend | Go 1.26, Chi v5, gqlgen, Ent ORM |
 | Database | PostgreSQL 17, Atlas migrations |
 | Cache | Redis 8 |
-| Auth | JWT plus Goth (Google OAuth) |
+| Auth | JWT and Goth (Google OAuth) |
 | Frontend | React 19, Vite 7, TypeScript 5.9 |
 | Routing | TanStack Router |
 | Data | Relay 20 (single GraphQL endpoint) |
@@ -80,7 +80,7 @@ The full strategic and visual stance lives in [`PRODUCT.md`](./PRODUCT.md) and [
 
 ### Prerequisites
 
-[mise](https://mise.jdx.dev/) handles Go, Node, pnpm, just, atlas, watchexec, air, and docker-compose. Install it once, then:
+[mise](https://mise.jdx.dev/) pins every toolchain version this repo expects (Go, Node, pnpm, just, atlas, watchexec, air, docker-compose). Install mise once, then run:
 
 ```bash
 mise install
@@ -114,15 +114,15 @@ just web      # Vite dev server on :5173
 just dev      # GraphQL schema merge + Relay compiler watcher
 ```
 
-Open [http://localhost:5173](http://localhost:5173). In dev mode the server seeds a demo household so the app is usable immediately, and a dev login shortcut signs you in as `joey@beavermoney.app` without configuring OAuth.
+Open [http://localhost:5173](http://localhost:5173). The dev server seeds a demo household on startup, so the app is usable right away. A dev-only login shortcut signs you in as `joey@beavermoney.app`, so you do not need to configure OAuth to try things out.
 
 For more detail, see [`docs/development.md`](./docs/development.md).
 
 ## Self-hosting
 
-Beaver Money is built to be self-hosted. The backend is a single Go binary. The frontend is a static Vite build. You bring PostgreSQL, Redis, and (optionally) a Frankfurter instance for FX rates. Set the env vars from [`.env.example`](./.env.example), build, and run.
+Self-hosting is the intended path. The backend compiles to a single Go binary. The frontend builds to static files via Vite. You bring PostgreSQL, Redis, and (optionally) a Frankfurter instance for FX rates. Copy the env vars from [`.env.example`](./.env.example), build, and run.
 
-A first-class container deployment recipe is on the roadmap. For now, [`docker-compose.dev.yml`](./docker-compose.dev.yml) shows the service shape.
+Official container images are on the roadmap. Until then, [`docker-compose.dev.yml`](./docker-compose.dev.yml) shows which services are involved and how they connect.
 
 ## Project layout
 
@@ -157,15 +157,15 @@ ent/schema/*.go
             → __generated__/*.graphql.ts (Relay artifacts)
 ```
 
-`just dev` watches the GraphQL files and runs the merge plus Relay compiler. After changing schemas, run `just codegen`. Generated files are checked in but never edited by hand.
+`just dev` watches the GraphQL files and runs the merge plus the Relay compiler. After any schema change, run `just codegen`. Generated files are committed to the repo, but never edited by hand.
 
 ## Status
 
-Beaver Money is honest about where it is.
+Where the project stands today:
 
-**Working today.** Transactions, accounts, investments (stocks and crypto), recurring subscriptions, snapshots, multi-household, multi-currency, privacy mode, Google OAuth, keyboard navigation, color-blind-aware charts.
+**Working.** Transactions, accounts, investments (stocks and crypto), recurring subscriptions, snapshots, multi-household, multi-currency, privacy mode, Google OAuth, keyboard navigation, color-blind-aware charts.
 
-**Not yet.** Refresh tokens, GraphQL subscriptions / WebSocket push, background job queue, scheduled tasks, feature flags, A/B tests, packaged self-host containers, complex chart screen-reader summaries.
+**Not yet.** Refresh tokens, GraphQL subscriptions and WebSocket push, background job queue, scheduled tasks, feature flags, A/B tests, packaged self-host containers, screen-reader summaries for complex charts.
 
 **Open todos.** See the "NOTES" section of [`AGENTS.md`](./AGENTS.md).
 
@@ -177,23 +177,23 @@ Before opening a PR:
 
 1. Run `cd web && pnpm check` (Prettier, ESLint, TypeScript).
 2. Run `golangci-lint run` and `go build ./...` for backend changes.
-3. Match the codebase conventions in [`AGENTS.md`](./AGENTS.md), [`web/AGENTS.md`](./web/AGENTS.md), and the design rules in [`DESIGN.md`](./DESIGN.md). Sharp corners, ghost rings, no em dashes in UX copy.
+3. Match the conventions in [`AGENTS.md`](./AGENTS.md), [`web/AGENTS.md`](./web/AGENTS.md), and [`DESIGN.md`](./DESIGN.md). Sharp corners, ghost rings, no em dashes in UX copy.
 4. Keep changes scoped. A bug fix is not a refactor.
 
-For larger changes (new entities, new GraphQL surface, new product surface), open an issue first so we can align on direction.
+For larger changes (new entities, new GraphQL surface, new product surface), open an issue first so we can agree on direction.
 
 ## License
 
 [AGPL-3.0](./LICENSE).
 
-If you self-host Beaver Money for your own household, you are free to do so. If you offer it as a network service to others, the AGPL requires that your modifications be made available under the same license. The choice is deliberate. Open source is part of why this exists.
+Run Beaver Money for your own household with no obligations. If you offer it as a network service to others, the AGPL requires that you publish your modifications under the same license. The license choice is deliberate. Open source is part of what Beaver Money is.
 
 ## Acknowledgements
 
-- [Ent](https://entgo.io) and [gqlgen](https://gqlgen.com) for a backend schema-and-resolver loop that holds up.
-- [Relay](https://relay.dev) for declarative data colocation that scales past the easy cases.
+- [Ent](https://entgo.io) and [gqlgen](https://gqlgen.com) for the schema-driven Go-to-GraphQL pipeline.
+- [Relay](https://relay.dev) for declarative data fetching with fragment colocation.
 - [TanStack Router](https://tanstack.com/router) for type-safe file-based routing.
-- [shadcn/ui](https://ui.shadcn.com) for component primitives that get out of the way.
+- [shadcn/ui](https://ui.shadcn.com) for component primitives we can copy, own, and theme.
 - [Frankfurter](https://www.frankfurter.app) for free, reliable FX rates.
 
 ---
