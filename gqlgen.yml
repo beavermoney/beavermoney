@@ -38,5 +38,3 @@ models:
     fields:
       financialReport:
         resolver: true
-      netWorthOverTime:
-        resolver: true
