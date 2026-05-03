@@ -62,7 +62,7 @@ func (r *financialReportResolver) TransactionCount(ctx context.Context, obj *mod
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
-	ctx, span := r.tracer.Start(ctx, "financialReportResolver.TransactionCount",
+	_, span := r.tracer.Start(ctx, "financialReportResolver.TransactionCount",
 		trace.WithAttributes(
 			attribute.Int("householdID", householdID),
 			attribute.Int("userID", userID),
