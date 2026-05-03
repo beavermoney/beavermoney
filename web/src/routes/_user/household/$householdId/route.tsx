@@ -132,9 +132,9 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   staleTime: Infinity,
   notFoundComponent: NotFoundError,
   errorComponent: GenericError,
-  beforeLoad: ({ params, search }) => {
+  beforeLoad: ({ search }) => {
     if (typeof window !== 'undefined' && !search.view_user_id) {
-      const stored = getViewUserId(params.householdId)
+      const stored = getViewUserId()
       if (stored) {
         throw redirect({
           to: '.',

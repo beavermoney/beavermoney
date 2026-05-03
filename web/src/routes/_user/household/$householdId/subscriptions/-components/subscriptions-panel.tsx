@@ -190,15 +190,14 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
 
   return (
     <Fragment>
-      <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
-        <PlusButton
-          to="/household/$householdId/subscriptions/new"
-          params={{ householdId }}
-          disabled={isViewingOtherUser}
-          disabledTitle="Switch to your view to create"
-          data-testid="new-subscription-button"
-        />
-      </div>
+      {!isViewingOtherUser && (
+        <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
+          <PlusButton
+            to="/household/$householdId/subscriptions/new"
+            params={{ householdId }}
+          />
+        </div>
+      )}
 
       <div className="flex flex-col gap-1">
         <span className="text-[0.6875rem] font-medium tracking-wider uppercase">

@@ -3,36 +3,10 @@ import type { LinkOptions } from '@tanstack/react-router'
 import { Button } from './ui/button'
 import { PlusIcon } from 'lucide-react'
 
-type PlusButtonProps = LinkOptions & {
-  disabled?: boolean
-  disabledTitle?: string
-  'data-testid'?: string
-}
-
-export const PlusButton = ({
-  disabled,
-  disabledTitle,
-  'data-testid': dataTestId,
-  ...linkProps
-}: PlusButtonProps) => {
-  if (disabled) {
-    return (
-      <Button
-        nativeButton={true}
-        disabled
-        size="icon-lg"
-        aria-disabled="true"
-        title={disabledTitle}
-        data-testid={dataTestId}
-      >
-        <PlusIcon />
-      </Button>
-    )
-  }
-
+export const PlusButton = (props: LinkOptions) => {
   return (
-    <Link {...linkProps}>
-      <Button nativeButton={true} data-testid={dataTestId} size="icon-lg">
+    <Link {...props}>
+      <Button nativeButton={true} size="icon-lg">
         <PlusIcon />
       </Button>
     </Link>

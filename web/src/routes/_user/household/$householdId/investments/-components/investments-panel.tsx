@@ -187,13 +187,12 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         >
           <RefreshCwIcon className={isRefreshInFlight ? 'animate-spin' : ''} />
         </Button>
-        <PlusButton
-          to="/household/$householdId/investments/new"
-          params={{ householdId }}
-          disabled={isViewingOtherUser}
-          disabledTitle="Switch to your view to create"
-          data-testid="new-investment-button"
-        />
+        {!isViewingOtherUser && (
+          <PlusButton
+            to="/household/$householdId/investments/new"
+            params={{ householdId }}
+          />
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
