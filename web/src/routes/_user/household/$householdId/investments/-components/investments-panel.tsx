@@ -6,8 +6,7 @@ import { groupBy, map } from 'lodash-es'
 import { Fragment } from 'react/jsx-runtime'
 import { useMemo } from 'react'
 import currency from 'currency.js'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { ArrowDown01Icon, ArrowUp01Icon } from '@hugeicons/core-free-icons'
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { match } from 'ts-pattern'
 import { InvestmentCard } from './investment-card'
@@ -181,8 +180,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         <Button
           variant="outline"
           nativeButton={true}
-          size="icon-xl"
-          className="bg-background dark:bg-card rounded-full"
+          className="bg-background dark:bg-card"
           onClick={handleRefresh}
           disabled={isRefreshInFlight}
         >
@@ -197,7 +195,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-primary text-[0.6875rem] font-medium tracking-wider uppercase">
+        <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
           Total Investment
         </span>
         <div className="text-3xl font-semibold tracking-tight tabular-nums">
@@ -331,14 +329,12 @@ function AccordionTrigger({
         )}
         {...props}
       >
-        <HugeiconsIcon
-          icon={ArrowDown01Icon}
+        <ChevronDownIcon
           strokeWidth={2}
           data-slot="accordion-trigger-icon"
           className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
         />
-        <HugeiconsIcon
-          icon={ArrowUp01Icon}
+        <ChevronUpIcon
           strokeWidth={2}
           data-slot="accordion-trigger-icon"
           className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"

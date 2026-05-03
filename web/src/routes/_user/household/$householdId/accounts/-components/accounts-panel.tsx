@@ -6,9 +6,7 @@ import { capitalize, groupBy, map } from 'lodash-es'
 import { Fragment, Suspense } from 'react'
 import { useMemo, useState } from 'react'
 import currency from 'currency.js'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { ArrowDown01Icon, ArrowUp01Icon } from '@hugeicons/core-free-icons'
-import { RefreshCwIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronUpIcon, RefreshCwIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { match } from 'ts-pattern'
 import { AccountCard } from './account-card'
@@ -232,8 +230,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <Button
           variant="outline"
           nativeButton={true}
-          size="icon-xl"
-          className="bg-background dark:bg-card rounded-full"
+          className="bg-background dark:bg-card"
           onClick={handleRefresh}
           disabled={isRefreshInFlight}
         >
@@ -256,9 +253,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
               onClick={() => setDisplayIndex(index)}
               className={cn(
                 'cursor-pointer text-[0.6875rem] font-medium tracking-wider uppercase transition-colors',
-                index === displayIndex
-                  ? 'text-primary'
-                  : 'text-muted-foreground/40 hover:text-muted-foreground',
+                index === displayIndex ? '' : 'text-muted-foreground',
               )}
             >
               {option.label}
@@ -419,14 +414,12 @@ function AccordionTrigger({
         )}
         {...props}
       >
-        <HugeiconsIcon
-          icon={ArrowDown01Icon}
+        <ChevronDownIcon
           strokeWidth={2}
           data-slot="accordion-trigger-icon"
           className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
         />
-        <HugeiconsIcon
-          icon={ArrowUp01Icon}
+        <ChevronUpIcon
           strokeWidth={2}
           data-slot="accordion-trigger-icon"
           className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"

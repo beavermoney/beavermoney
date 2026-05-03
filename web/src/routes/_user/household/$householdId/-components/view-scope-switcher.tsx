@@ -1,12 +1,6 @@
 import { graphql } from 'relay-runtime'
 import { useFragment } from 'react-relay'
-import { HugeiconsIcon } from '@hugeicons/react'
-import {
-  ArrowDown01Icon,
-  Tick02Icon,
-  User02Icon,
-  UserGroupIcon,
-} from '@hugeicons/core-free-icons'
+import { CheckIcon, ChevronDownIcon, UserIcon, UsersIcon } from 'lucide-react'
 import type { viewScopeSwitcherFragment$key } from './__generated__/viewScopeSwitcherFragment.graphql'
 import {
   DropdownMenu,
@@ -60,16 +54,17 @@ export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
       <DropdownMenuTrigger
         render={
           <Button
-            variant="outline"
-            className="cursor-pointer gap-1 text-xs"
+            variant="ghost"
+            className="h-10 cursor-pointer gap-1 rounded-none px-3 text-xs"
             data-testid="view-scope-switcher-trigger"
           >
-            <HugeiconsIcon
-              icon={activeMember ? User02Icon : UserGroupIcon}
-              className="size-3"
-            />
+            {activeMember ? (
+              <UserIcon className="size-3" />
+            ) : (
+              <UsersIcon className="size-3" />
+            )}
             {activeLabel}
-            <HugeiconsIcon icon={ArrowDown01Icon} className="size-3" />
+            <ChevronDownIcon className="size-3" />
           </Button>
         }
       ></DropdownMenuTrigger>
@@ -78,14 +73,13 @@ export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
           onClick={() => setViewUserId(null)}
           className={cn('gap-2', viewUserId === null && 'font-bold')}
         >
-          <HugeiconsIcon
-            icon={Tick02Icon}
+          <CheckIcon
             className={cn(
               'size-3',
               viewUserId === null ? 'opacity-100' : 'opacity-0',
             )}
           />
-          <HugeiconsIcon icon={UserGroupIcon} className="size-3" />
+          <UsersIcon className="size-3" />
           Combined
         </DropdownMenuItem>
         {userHouseholds.map((uh) => (
@@ -94,14 +88,13 @@ export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
             onClick={() => setViewUserId(uh.user.id)}
             className={cn('gap-2', viewUserId === uh.user.id && 'font-bold')}
           >
-            <HugeiconsIcon
-              icon={Tick02Icon}
+            <CheckIcon
               className={cn(
                 'size-3',
                 viewUserId === uh.user.id ? 'opacity-100' : 'opacity-0',
               )}
             />
-            <HugeiconsIcon icon={User02Icon} className="size-3" />
+            <UserIcon className="size-3" />
             {uh.user.name}
           </DropdownMenuItem>
         ))}

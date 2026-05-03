@@ -53,10 +53,10 @@ function RouteComponent() {
                   params={params}
                   className={cn(
                     'text-muted-foreground rounded-md px-2.5 py-1 text-xs/relaxed font-medium transition-colors',
-                    'hover:text-foreground',
+                    '',
                   )}
                   activeProps={{
-                    className: 'bg-muted text-foreground font-semibold',
+                    className: 'bg-muted font-semibold',
                   }}
                 >
                   {label}
@@ -76,10 +76,10 @@ function RouteComponent() {
                 params={params}
                 className={cn(
                   'text-muted-foreground -ml-px border-l-2 border-transparent py-0.5 pl-2.5 text-xs/relaxed font-medium transition-colors',
-                  'hover:text-foreground',
+                  '',
                 )}
                 activeProps={{
-                  className: 'text-primary font-semibold border-l-primary',
+                  className: 'font-semibold border-l-primary',
                 }}
               >
                 {label}

@@ -6,8 +6,7 @@ import { capitalize, groupBy, map } from 'lodash-es'
 import { Fragment } from 'react/jsx-runtime'
 import { useMemo } from 'react'
 import currency from 'currency.js'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { ArrowDown01Icon, ArrowUp01Icon } from '@hugeicons/core-free-icons'
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import { CategoryCard } from './category-card'
 import type { categoriesPanelFragment$key } from './__generated__/categoriesPanelFragment.graphql'
 import {
@@ -246,14 +245,12 @@ function AccordionTrigger({
         )}
         {...props}
       >
-        <HugeiconsIcon
-          icon={ArrowDown01Icon}
+        <ChevronDownIcon
           strokeWidth={2}
           data-slot="accordion-trigger-icon"
           className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
         />
-        <HugeiconsIcon
-          icon={ArrowUp01Icon}
+        <ChevronUpIcon
           strokeWidth={2}
           data-slot="accordion-trigger-icon"
           className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"

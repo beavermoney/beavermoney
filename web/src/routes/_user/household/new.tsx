@@ -6,8 +6,7 @@ import { graphql } from 'relay-runtime'
 import { useMutation } from 'react-relay'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { Home01Icon, SparklesIcon } from '@hugeicons/core-free-icons'
+import { HomeIcon, SparklesIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -191,11 +190,7 @@ function NewHouseholdForm() {
       {/* Demo banner */}
       <div className="bg-primary/8 border-primary/20 flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3">
         <div className="bg-primary/15 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-          <HugeiconsIcon
-            icon={SparklesIcon}
-            className="text-primary h-4 w-4"
-            strokeWidth={2}
-          />
+          <SparklesIcon className="text-primary h-4 w-4" strokeWidth={2} />
         </div>
         <p className="text-muted-foreground min-w-0 flex-1 text-sm">
           New to Beaver Money?
@@ -219,11 +214,7 @@ function NewHouseholdForm() {
       <Card className="w-full">
         <CardHeader className="text-center">
           <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <HugeiconsIcon
-              icon={Home01Icon}
-              className="text-primary h-8 w-8"
-              strokeWidth={2}
-            />
+            <HomeIcon className="text-primary h-8 w-8" strokeWidth={2} />
           </div>
           <CardTitle className="text-2xl">Create Your Household</CardTitle>
           <CardDescription>

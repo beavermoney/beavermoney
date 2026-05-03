@@ -201,7 +201,7 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-primary text-[0.6875rem] font-medium tracking-wider uppercase">
+        <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
           Monthly Spend
         </span>
         <div className="text-3xl font-semibold tracking-tight tabular-nums">

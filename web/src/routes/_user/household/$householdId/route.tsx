@@ -39,7 +39,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Breadcrumb, BreadcrumbList } from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
   SidebarProvider,
@@ -280,101 +279,92 @@ function RouteComponent() {
               <SidebarProvider>
                 <AppSidebar fragmentRef={data} />
                 <SidebarInset>
-                  <header className="bg-background sticky top-0 z-10 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                    <div className="flex items-center gap-2 px-4">
-                      <SidebarTrigger className="-ml-1 cursor-pointer" />
-                      <Separator orientation="vertical" className="mr-2" />
+                  <header className="bg-background sticky top-0 z-10 flex h-10 shrink-0 items-stretch border-b transition-[width,height] ease-linear">
+                    <SidebarTrigger className="cursor-pointer border-r" />
+                    <div className="flex flex-1 items-center px-3">
                       <Breadcrumb>
-                        <BreadcrumbList>
-                          {/* <BreadcrumbItem className="hidden md:block"> */}
-                          {/*   <BreadcrumbLink href="#"> */}
-                          {/*     Building Your Application */}
-                          {/*   </BreadcrumbLink> */}
-                          {/* </BreadcrumbItem> */}
-                          {/* <BreadcrumbSeparator className="hidden md:block" /> */}
-                          {/* <BreadcrumbItem> */}
-                          {/*   <BreadcrumbPage>Data Fetching</BreadcrumbPage> */}
-                          {/* </BreadcrumbItem> */}
-                        </BreadcrumbList>
+                        <BreadcrumbList></BreadcrumbList>
                       </Breadcrumb>
                     </div>
-                    <div className="grow"></div>
-
-                    {!isOnSettingsPage && (
-                      <ViewScopeSwitcher fragmentRef={data.household} />
-                    )}
-                    {currencies.length > 1 && (
+                    <div className="flex items-stretch divide-x border-l">
+                      {!isOnSettingsPage && (
+                        <ViewScopeSwitcher fragmentRef={data.household} />
+                      )}
+                      {currencies.length > 1 && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                className="h-10 cursor-pointer gap-1 rounded-none px-3 font-mono text-xs"
+                              >
+                                {activeCurrencyCode || 'Currency'}
+                                <ChevronDownIcon />
+                              </Button>
+                            }
+                          ></DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {currencies.map((hc) => (
+                              <DropdownMenuItem
+                                key={hc.id}
+                                onClick={() => handleCurrencyChange(hc.id)}
+                                className={cn(
+                                  'font-mono',
+                                  hc.id === displayCurrencyId && 'font-bold',
+                                )}
+                              >
+                                {hc.code}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                      <SnapshotDialog fragmentRef={data.household} />
+                      <Button
+                        variant="ghost"
+                        className="size-10 shrink-0 cursor-pointer rounded-none"
+                        onClick={() => {
+                          commitLocalUpdate(environment, (store) => {
+                            store.invalidateStore()
+                          })
+                          router.invalidate()
+                        }}
+                      >
+                        <RefreshCwIcon />
+                      </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
                             <Button
-                              variant="outline"
-                              className="cursor-pointer gap-1 font-mono text-xs"
+                              variant="ghost"
+                              className="size-10 shrink-0 cursor-pointer rounded-none"
                             >
-                              {activeCurrencyCode || 'Currency'}
-                              <ChevronDownIcon />
+                              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                              <span className="sr-only">Toggle theme</span>
                             </Button>
                           }
                         ></DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {currencies.map((hc) => (
-                            <DropdownMenuItem
-                              key={hc.id}
-                              onClick={() => handleCurrencyChange(hc.id)}
-                              className={cn(
-                                'font-mono',
-                                hc.id === displayCurrencyId && 'font-bold',
-                              )}
-                            >
-                              {hc.code}
-                            </DropdownMenuItem>
-                          ))}
+                          <DropdownMenuItem onClick={() => setTheme('light')}>
+                            Light
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTheme('dark')}>
+                            Dark
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTheme('system')}>
+                            System
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    )}
-                    <SnapshotDialog fragmentRef={data.household} />
-                    <Button
-                      className="cursor-pointer"
-                      variant="outline"
-                      onClick={() => {
-                        commitLocalUpdate(environment, (store) => {
-                          store.invalidateStore()
-                        })
-                        router.invalidate()
-                      }}
-                    >
-                      <RefreshCwIcon />
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button variant="outline" className="cursor-pointer">
-                            <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                            <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                            <span className="sr-only">Toggle theme</span>
-                          </Button>
-                        }
-                      ></DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setTheme('light')}>
-                          Light
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme('dark')}>
-                          Dark
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme('system')}>
-                          System
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                      className="cursor-pointer"
-                      variant="outline"
-                      onClick={togglePrivacyMode}
-                    >
-                      {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
-                    </Button>
-                    <div className="px-1"></div>
+                      <Button
+                        variant="ghost"
+                        className="size-10 shrink-0 cursor-pointer rounded-none"
+                        onClick={togglePrivacyMode}
+                      >
+                        {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
+                      </Button>
+                    </div>
                   </header>
                   <div className="flex flex-1 flex-col">
                     <Outlet />
