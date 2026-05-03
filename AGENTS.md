@@ -4,6 +4,15 @@
 **Commit:** 7a74cf0
 **Branch:** main
 
+## DESIGN CONTEXT
+
+Strategic and visual stance for any UI work in this repo lives in two files at the project root:
+
+- [`PRODUCT.md`](./PRODUCT.md) — register, users, brand personality, anti-references, design principles, accessibility commitments. Read before designing or writing UX copy.
+- [`DESIGN.md`](./DESIGN.md) (when present) — visual system: color tokens, typography, elevation, components, do's and don'ts. Read before generating new screens or components.
+
+The `$impeccable` skill loads both automatically. Maintain them with `$impeccable teach` (strategic) and `$impeccable document` (visual).
+
 ## OVERVIEW
 
 Full-stack personal finance app. Go backend (Ent ORM + gqlgen GraphQL) serves a React 19 frontend (Vite + TanStack Router + Relay) via a single `/query` GraphQL endpoint. Multi-household, multi-currency.
