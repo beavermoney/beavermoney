@@ -56,9 +56,6 @@ export function InvestmentCard({
     value: data.unrealizedReturn,
     currencyCode: data.householdCurrency.code,
   })
-  const signedReturn = isPositive
-    ? `+${formattedReturn}`
-    : `-${formattedReturn}`
   const formattedPercent = isPrivacyModeEnabled
     ? '•••'
     : ` ${Math.abs(unrealizedReturnPercent).toFixed(2)}%`
@@ -120,7 +117,7 @@ export function InvestmentCard({
       {hasShares && (
         <div className={returnClassName}>
           <span>
-            {signedReturn} ({signedPercent})
+            {formattedReturn} ({signedPercent})
           </span>
         </div>
       )}
