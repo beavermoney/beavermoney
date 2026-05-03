@@ -1,25 +1,19 @@
 import { Store } from '@tanstack/react-store'
 import { LOCAL_STORAGE_VIEW_USER_ID_KEY } from '@/constant'
 
-const storeCache = new Map<string, Store<string | null>>()
+const initial =
+  typeof localStorage !== 'undefined'
+    ? localStorage.getItem(LOCAL_STORAGE_VIEW_USER_ID_KEY)
+    : null
 
-export function viewUserIdStoreFor(householdId: string): Store<string | null> {
-  let store = storeCache.get(householdId)
-  if (!store) {
-    const stored = localStorage.getItem(LOCAL_STORAGE_VIEW_USER_ID_KEY)
-    store = new Store<string | null>(stored ?? null)
-    storeCache.set(householdId, store)
-  }
-  return store
-}
+export const viewUserIdStore = new Store<string | null>(initial)
 
 export function getViewUserId(): string | null {
-  return localStorage.getItem(LOCAL_STORAGE_VIEW_USER_ID_KEY)
+  return viewUserIdStore.state
 }
 
-export function setViewUserId(householdId: string, value: string | null): void {
-  const store = viewUserIdStoreFor(householdId)
-  store.setState(() => value)
+export function setViewUserId(value: string | null): void {
+  viewUserIdStore.setState(() => value)
   if (value === null) {
     localStorage.removeItem(LOCAL_STORAGE_VIEW_USER_ID_KEY)
   } else {
@@ -27,6 +21,6 @@ export function setViewUserId(householdId: string, value: string | null): void {
   }
 }
 
-export function clearViewUserId(householdId: string): void {
-  setViewUserId(householdId, null)
+export function clearViewUserId(): void {
+  setViewUserId(null)
 }
