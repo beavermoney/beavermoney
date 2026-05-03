@@ -71,7 +71,7 @@ Privacy rules enforce access control: `FilterMemberHousehold`, `FilterAdminHouse
 - **Trailing commas** everywhere
 - **Unused vars** must be prefixed with `_`
 - **Path alias**: `@/` maps to `web/src/`
-- **Icons**: Hugeicons library (not Lucide)
+- **Icons**: Lucide (`lucide-react`)
 - **UI components**: shadcn/ui with `base-mira` style
 - **Data fetching**: Relay only (no REST, no Apollo, no TanStack Query)
 - **Routing**: TanStack Router only (not React Router)
