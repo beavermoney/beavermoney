@@ -249,6 +249,26 @@ func (_m *Household) SnapshotEntries(
 	return _m.QuerySnapshotEntries().Paginate(ctx, after, first, before, last, opts...)
 }
 
+func (_m *Household) SnapshotRates(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *SnapshotRateWhereInput,
+) (*SnapshotRateConnection, error) {
+	opts := []SnapshotRatePaginateOption{
+		WithSnapshotRateFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
+	if nodes, err := _m.NamedSnapshotRates(alias); err == nil || hasTotalCount {
+		pager, err := newSnapshotRatePager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &SnapshotRateConnection{Edges: []*SnapshotRateEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return _m.QuerySnapshotRates().Paginate(ctx, after, first, before, last, opts...)
+}
+
 func (_m *Household) HouseholdCurrencies(ctx context.Context) (result []*HouseholdCurrency, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedHouseholdCurrencies(graphql.GetFieldContext(ctx).Field.Alias)
@@ -577,6 +597,14 @@ func (_m *SnapshotEntry) Snapshot(ctx context.Context) (*Snapshot, error) {
 	result, err := _m.Edges.SnapshotOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QuerySnapshot().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *SnapshotRate) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
 	}
 	return result, err
 }

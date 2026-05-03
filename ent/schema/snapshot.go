@@ -323,6 +323,18 @@ func (SnapshotRate) Fields() []ent.Field {
 
 func (SnapshotRate) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("household", Household.Type).
+			Field("household_id").
+			Ref("snapshot_rates").
+			Unique().
+			Immutable().
+			Required().
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+			),
 		edge.From("snapshot", Snapshot.Type).
 			Field("snapshot_id").
 			Ref("snapshot_rates").
@@ -378,6 +390,7 @@ func (SnapshotRate) Annotations() []schema.Annotation {
 
 func (SnapshotRate) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		beavermoney_mixin.HouseholdMixin{},
 		mixin.AnnotateFields(mixin.Time{},
 			entgql.Skip(
 				entgql.SkipMutationCreateInput,

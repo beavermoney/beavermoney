@@ -381,6 +381,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "rate", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "household_id", Type: field.TypeInt},
 		{Name: "from_household_currency_id", Type: field.TypeInt},
 		{Name: "to_household_currency_id", Type: field.TypeInt},
 		{Name: "snapshot_id", Type: field.TypeInt},
@@ -392,20 +393,26 @@ var (
 		PrimaryKey: []*schema.Column{SnapshotRatesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "snapshot_rates_household_currencies_snapshot_rates_from",
+				Symbol:     "snapshot_rates_households_snapshot_rates",
 				Columns:    []*schema.Column{SnapshotRatesColumns[4]},
-				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "snapshot_rates_household_currencies_snapshot_rates_to",
+				Symbol:     "snapshot_rates_household_currencies_snapshot_rates_from",
 				Columns:    []*schema.Column{SnapshotRatesColumns[5]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "snapshot_rates_snapshots_snapshot_rates",
+				Symbol:     "snapshot_rates_household_currencies_snapshot_rates_to",
 				Columns:    []*schema.Column{SnapshotRatesColumns[6]},
+				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_rates_snapshots_snapshot_rates",
+				Columns:    []*schema.Column{SnapshotRatesColumns[7]},
 				RefColumns: []*schema.Column{SnapshotsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -414,12 +421,12 @@ var (
 			{
 				Name:    "snapshotrate_snapshot_id",
 				Unique:  false,
-				Columns: []*schema.Column{SnapshotRatesColumns[6]},
+				Columns: []*schema.Column{SnapshotRatesColumns[7]},
 			},
 			{
 				Name:    "snapshotrate_snapshot_id_from_household_currency_id_to_household_currency_id",
 				Unique:  true,
-				Columns: []*schema.Column{SnapshotRatesColumns[6], SnapshotRatesColumns[4], SnapshotRatesColumns[5]},
+				Columns: []*schema.Column{SnapshotRatesColumns[7], SnapshotRatesColumns[5], SnapshotRatesColumns[6]},
 			},
 		},
 	}
@@ -706,9 +713,10 @@ func init() {
 	SnapshotEntriesTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(64424509440),
 	}
-	SnapshotRatesTable.ForeignKeys[0].RefTable = HouseholdCurrenciesTable
+	SnapshotRatesTable.ForeignKeys[0].RefTable = HouseholdsTable
 	SnapshotRatesTable.ForeignKeys[1].RefTable = HouseholdCurrenciesTable
-	SnapshotRatesTable.ForeignKeys[2].RefTable = SnapshotsTable
+	SnapshotRatesTable.ForeignKeys[2].RefTable = HouseholdCurrenciesTable
+	SnapshotRatesTable.ForeignKeys[3].RefTable = SnapshotsTable
 	SnapshotRatesTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(68719476736),
 	}

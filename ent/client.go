@@ -813,6 +813,22 @@ func (c *HouseholdClient) QuerySnapshotEntries(_m *Household) *SnapshotEntryQuer
 	return query
 }
 
+// QuerySnapshotRates queries the snapshot_rates edge of a Household.
+func (c *HouseholdClient) QuerySnapshotRates(_m *Household) *SnapshotRateQuery {
+	query := (&SnapshotRateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, id),
+			sqlgraph.To(snapshotrate.Table, snapshotrate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.SnapshotRatesTable, household.SnapshotRatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryHouseholdCurrencies queries the household_currencies edge of a Household.
 func (c *HouseholdClient) QueryHouseholdCurrencies(_m *Household) *HouseholdCurrencyQuery {
 	query := (&HouseholdCurrencyClient{config: c.config}).Query()
@@ -2429,6 +2445,22 @@ func (c *SnapshotRateClient) GetX(ctx context.Context, id int) *SnapshotRate {
 	return obj
 }
 
+// QueryHousehold queries the household edge of a SnapshotRate.
+func (c *SnapshotRateClient) QueryHousehold(_m *SnapshotRate) *HouseholdQuery {
+	query := (&HouseholdClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, id),
+			sqlgraph.To(household.Table, household.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.HouseholdTable, snapshotrate.HouseholdColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QuerySnapshot queries the snapshot edge of a SnapshotRate.
 func (c *SnapshotRateClient) QuerySnapshot(_m *SnapshotRate) *SnapshotQuery {
 	query := (&SnapshotClient{config: c.config}).Query()
@@ -2479,7 +2511,8 @@ func (c *SnapshotRateClient) QueryToCurrency(_m *SnapshotRate) *HouseholdCurrenc
 
 // Hooks returns the client hooks.
 func (c *SnapshotRateClient) Hooks() []Hook {
-	return c.hooks.SnapshotRate
+	hooks := c.hooks.SnapshotRate
+	return append(hooks[:len(hooks):len(hooks)], snapshotrate.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

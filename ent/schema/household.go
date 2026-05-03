@@ -116,6 +116,14 @@ func (Household) Edges() []ent.Edge {
 				),
 				entgql.RelayConnection(),
 			),
+		edge.To("snapshot_rates", SnapshotRate.Type).
+			Annotations(
+				entgql.Skip(
+					entgql.SkipMutationCreateInput,
+					entgql.SkipMutationUpdateInput,
+				),
+				entgql.RelayConnection(),
+			),
 		edge.To("household_currencies", HouseholdCurrency.Type).
 			Annotations(
 				entgql.Skip(

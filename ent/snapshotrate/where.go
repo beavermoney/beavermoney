@@ -56,6 +56,11 @@ func IDLTE(id int) predicate.SnapshotRate {
 	return predicate.SnapshotRate(sql.FieldLTE(FieldID, id))
 }
 
+// HouseholdID applies equality check predicate on the "household_id" field. It's identical to HouseholdIDEQ.
+func HouseholdID(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldEQ(FieldHouseholdID, v))
+}
+
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
 func CreateTime(v time.Time) predicate.SnapshotRate {
 	return predicate.SnapshotRate(sql.FieldEQ(FieldCreateTime, v))
@@ -84,6 +89,26 @@ func FromHouseholdCurrencyID(v int) predicate.SnapshotRate {
 // ToHouseholdCurrencyID applies equality check predicate on the "to_household_currency_id" field. It's identical to ToHouseholdCurrencyIDEQ.
 func ToHouseholdCurrencyID(v int) predicate.SnapshotRate {
 	return predicate.SnapshotRate(sql.FieldEQ(FieldToHouseholdCurrencyID, v))
+}
+
+// HouseholdIDEQ applies the EQ predicate on the "household_id" field.
+func HouseholdIDEQ(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldEQ(FieldHouseholdID, v))
+}
+
+// HouseholdIDNEQ applies the NEQ predicate on the "household_id" field.
+func HouseholdIDNEQ(v int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldNEQ(FieldHouseholdID, v))
+}
+
+// HouseholdIDIn applies the In predicate on the "household_id" field.
+func HouseholdIDIn(vs ...int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldIn(FieldHouseholdID, vs...))
+}
+
+// HouseholdIDNotIn applies the NotIn predicate on the "household_id" field.
+func HouseholdIDNotIn(vs ...int) predicate.SnapshotRate {
+	return predicate.SnapshotRate(sql.FieldNotIn(FieldHouseholdID, vs...))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
@@ -264,6 +289,29 @@ func ToHouseholdCurrencyIDIn(vs ...int) predicate.SnapshotRate {
 // ToHouseholdCurrencyIDNotIn applies the NotIn predicate on the "to_household_currency_id" field.
 func ToHouseholdCurrencyIDNotIn(vs ...int) predicate.SnapshotRate {
 	return predicate.SnapshotRate(sql.FieldNotIn(FieldToHouseholdCurrencyID, vs...))
+}
+
+// HasHousehold applies the HasEdge predicate on the "household" edge.
+func HasHousehold() predicate.SnapshotRate {
+	return predicate.SnapshotRate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, HouseholdTable, HouseholdColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasHouseholdWith applies the HasEdge predicate on the "household" edge with a given conditions (other predicates).
+func HasHouseholdWith(preds ...predicate.Household) predicate.SnapshotRate {
+	return predicate.SnapshotRate(func(s *sql.Selector) {
+		step := newHouseholdStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasSnapshot applies the HasEdge predicate on the "snapshot" edge.

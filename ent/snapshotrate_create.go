@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotrate"
@@ -23,6 +24,12 @@ type SnapshotRateCreate struct {
 	mutation *SnapshotRateMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetHouseholdID sets the "household_id" field.
+func (_c *SnapshotRateCreate) SetHouseholdID(v int) *SnapshotRateCreate {
+	_c.mutation.SetHouseholdID(v)
+	return _c
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -77,6 +84,11 @@ func (_c *SnapshotRateCreate) SetToHouseholdCurrencyID(v int) *SnapshotRateCreat
 	return _c
 }
 
+// SetHousehold sets the "household" edge to the Household entity.
+func (_c *SnapshotRateCreate) SetHousehold(v *Household) *SnapshotRateCreate {
+	return _c.SetHouseholdID(v.ID)
+}
+
 // SetSnapshot sets the "snapshot" edge to the Snapshot entity.
 func (_c *SnapshotRateCreate) SetSnapshot(v *Snapshot) *SnapshotRateCreate {
 	return _c.SetSnapshotID(v.ID)
@@ -111,7 +123,9 @@ func (_c *SnapshotRateCreate) Mutation() *SnapshotRateMutation {
 
 // Save creates the SnapshotRate in the database.
 func (_c *SnapshotRateCreate) Save(ctx context.Context) (*SnapshotRate, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -138,19 +152,29 @@ func (_c *SnapshotRateCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *SnapshotRateCreate) defaults() {
+func (_c *SnapshotRateCreate) defaults() error {
 	if _, ok := _c.mutation.CreateTime(); !ok {
+		if snapshotrate.DefaultCreateTime == nil {
+			return fmt.Errorf("ent: uninitialized snapshotrate.DefaultCreateTime (forgotten import ent/runtime?)")
+		}
 		v := snapshotrate.DefaultCreateTime()
 		_c.mutation.SetCreateTime(v)
 	}
 	if _, ok := _c.mutation.UpdateTime(); !ok {
+		if snapshotrate.DefaultUpdateTime == nil {
+			return fmt.Errorf("ent: uninitialized snapshotrate.DefaultUpdateTime (forgotten import ent/runtime?)")
+		}
 		v := snapshotrate.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *SnapshotRateCreate) check() error {
+	if _, ok := _c.mutation.HouseholdID(); !ok {
+		return &ValidationError{Name: "household_id", err: errors.New(`ent: missing required field "SnapshotRate.household_id"`)}
+	}
 	if _, ok := _c.mutation.CreateTime(); !ok {
 		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "SnapshotRate.create_time"`)}
 	}
@@ -183,6 +207,9 @@ func (_c *SnapshotRateCreate) check() error {
 		if err := snapshotrate.ToHouseholdCurrencyIDValidator(v); err != nil {
 			return &ValidationError{Name: "to_household_currency_id", err: fmt.Errorf(`ent: validator failed for field "SnapshotRate.to_household_currency_id": %w`, err)}
 		}
+	}
+	if len(_c.mutation.HouseholdIDs()) == 0 {
+		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "SnapshotRate.household"`)}
 	}
 	if len(_c.mutation.SnapshotIDs()) == 0 {
 		return &ValidationError{Name: "snapshot", err: errors.New(`ent: missing required edge "SnapshotRate.snapshot"`)}
@@ -231,6 +258,23 @@ func (_c *SnapshotRateCreate) createSpec() (*SnapshotRate, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.Rate(); ok {
 		_spec.SetField(snapshotrate.FieldRate, field.TypeFloat64, value)
 		_node.Rate = value
+	}
+	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   snapshotrate.HouseholdTable,
+			Columns: []string{snapshotrate.HouseholdColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(household.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.HouseholdID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.SnapshotIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -290,7 +334,7 @@ func (_c *SnapshotRateCreate) createSpec() (*SnapshotRate, *sqlgraph.CreateSpec)
 // of the `INSERT` statement. For example:
 //
 //	client.SnapshotRate.Create().
-//		SetCreateTime(v).
+//		SetHouseholdID(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -299,7 +343,7 @@ func (_c *SnapshotRateCreate) createSpec() (*SnapshotRate, *sqlgraph.CreateSpec)
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.SnapshotRateUpsert) {
-//			SetCreateTime(v+v).
+//			SetHouseholdID(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *SnapshotRateCreate) OnConflict(opts ...sql.ConflictOption) *SnapshotRateUpsertOne {
@@ -358,6 +402,9 @@ func (u *SnapshotRateUpsert) UpdateUpdateTime() *SnapshotRateUpsert {
 func (u *SnapshotRateUpsertOne) UpdateNewValues() *SnapshotRateUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.HouseholdID(); exists {
+			s.SetIgnore(snapshotrate.FieldHouseholdID)
+		}
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(snapshotrate.FieldCreateTime)
 		}
@@ -553,7 +600,7 @@ func (_c *SnapshotRateCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.SnapshotRateUpsert) {
-//			SetCreateTime(v+v).
+//			SetHouseholdID(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *SnapshotRateCreateBulk) OnConflict(opts ...sql.ConflictOption) *SnapshotRateUpsertBulk {
@@ -594,6 +641,9 @@ func (u *SnapshotRateUpsertBulk) UpdateNewValues() *SnapshotRateUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.HouseholdID(); exists {
+				s.SetIgnore(snapshotrate.FieldHouseholdID)
+			}
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(snapshotrate.FieldCreateTime)
 			}

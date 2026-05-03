@@ -1161,6 +1161,7 @@ func createSnapshotAtDate(
 				continue
 			}
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
+				SetHouseholdID(household.ID).
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(from.ID).
 				SetToCurrencyID(toCurrencyID).
