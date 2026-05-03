@@ -47,26 +47,28 @@ export function NavProjects({
                   setOpenMobile(false)
                 }
               }}
+              tooltip={{
+                children: (
+                  <KbdGroup>
+                    {item.shortcut.map((key) => (
+                      <Kbd key={`${item.name}-${key}`}>{key}</Kbd>
+                    ))}
+                  </KbdGroup>
+                ),
+                hidden: false,
+              }}
               render={
                 <Link
                   {...item.link}
-                  className="group/nav-link"
                   activeProps={{
                     className: 'bg-sidebar-accent',
                   }}
                 >
                   <item.icon />
                   <span>{item.name}</span>
-
-                  <span className="grow"></span>
-                  <KbdGroup className="hidden group-hover/nav-link:inline-flex">
-                    {item.shortcut.map((key) => (
-                      <Kbd key={`${item.name}-${key}`}>{key}</Kbd>
-                    ))}
-                  </KbdGroup>
                 </Link>
               }
-            ></SidebarMenuButton>
+            />
             {/* <DropdownMenu> */}
             {/*   <DropdownMenuTrigger */}
             {/*     render={ */}

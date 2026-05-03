@@ -3,6 +3,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 import '../styles.css'
 import { RelayEnvironmentProvider } from 'react-relay'
@@ -20,20 +21,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <RelayEnvironmentProvider environment={environment}>
       <PrivacyModeProvider>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-        <TailwindIndicator />
-        <Toaster position={isMobile ? 'top-right' : 'bottom-right'} />
+        <TooltipProvider>
+          {children}
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
+          />
+          <TailwindIndicator />
+          <Toaster position={isMobile ? 'top-right' : 'bottom-right'} />
+        </TooltipProvider>
       </PrivacyModeProvider>
     </RelayEnvironmentProvider>
   )

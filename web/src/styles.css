@@ -5,69 +5,73 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Neutrals tinted toward brand hue 92° (Beaver Pelt Amber). See DESIGN.md §Colors. */
+/*
+ * Beaver Money color tokens. Source of truth: DESIGN.md at the project root.
+ * Brand hue 92° (Beaver Pelt Amber). Neutrals are tinted at hue 92 with
+ * chroma 0.005-0.01 per the Warm-Neutrals Rule. No #000, no #fff.
+ */
 :root {
-  --background: oklch(1 0.002 92);
-  --foreground: oklch(0.145 0.005 92);
-  --card: oklch(1 0.002 92);
-  --card-foreground: oklch(0.145 0.005 92);
-  --popover: oklch(1 0.002 92);
-  --popover-foreground: oklch(0.145 0.005 92);
-  --primary: oklch(0.852 0.199 91.936);
-  --primary-foreground: oklch(0.421 0.095 57.708);
-  --secondary: oklch(0.967 0.005 92);
-  --secondary-foreground: oklch(0.21 0.008 92);
-  --muted: oklch(0.97 0.005 92);
-  --muted-foreground: oklch(0.556 0.008 92);
-  --accent: oklch(0.97 0.005 92);
-  --accent-foreground: oklch(0.205 0.008 92);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0.005 92);
-  --input: oklch(0.922 0.005 92);
-  --ring: oklch(0.708 0.008 92);
+  --background: oklch(1 0.002 92);                  /* Paper White */
+  --foreground: oklch(0.145 0.005 92);              /* Ink Near-Black */
+  --card: oklch(1 0.002 92);                        /* Paper White */
+  --card-foreground: oklch(0.145 0.005 92);         /* Ink Near-Black */
+  --popover: oklch(1 0.002 92);                     /* Paper White */
+  --popover-foreground: oklch(0.145 0.005 92);      /* Ink Near-Black */
+  --primary: oklch(0.852 0.199 91.936);             /* Beaver Pelt Amber */
+  --primary-foreground: oklch(0.421 0.095 57.708);  /* Walnut Roast */
+  --secondary: oklch(0.967 0.005 92);               /* Light Vellum */
+  --secondary-foreground: oklch(0.21 0.008 92);     /* Ink Deep */
+  --muted: oklch(0.97 0.005 92);                    /* Light Vellum */
+  --muted-foreground: oklch(0.556 0.008 92);        /* Ink Mid */
+  --accent: oklch(0.97 0.005 92);                   /* Light Vellum */
+  --accent-foreground: oklch(0.205 0.008 92);       /* Ink Deep */
+  --destructive: oklch(0.577 0.245 27.325);         /* Crimson Error */
+  --border: oklch(0.922 0.005 92);                  /* Pencil Grey */
+  --input: oklch(0.922 0.005 92);                   /* Pencil Grey */
+  --ring: oklch(0.708 0.008 92);                    /* Graphite Mid */
   --chart-1: oklch(0.87 0.005 92);
   --chart-2: oklch(0.556 0.008 92);
   --chart-3: oklch(0.439 0.01 92);
   --chart-4: oklch(0.371 0.01 92);
   --chart-5: oklch(0.269 0.008 92);
-  --chart-net-worth: oklch(0.72 0.19 142);
-  --chart-liquidity: oklch(0.67 0.2 258);
-  --chart-investment: oklch(0.78 0.17 55);
-  --chart-property: oklch(0.65 0.22 340);
-  --chart-receivable: oklch(0.7 0.18 200);
-  --chart-liability: oklch(0.65 0.22 25);
-  --chart-asset: oklch(0.72 0.17 300);
+  --chart-net-worth: oklch(0.72 0.19 142);          /* Account Green */
+  --chart-liquidity: oklch(0.67 0.2 258);           /* Account Blue */
+  --chart-investment: oklch(0.78 0.17 55);          /* Account Amber */
+  --chart-property: oklch(0.65 0.22 340);           /* Account Magenta */
+  --chart-receivable: oklch(0.7 0.18 200);          /* Account Cyan */
+  --chart-liability: oklch(0.65 0.22 25);           /* Account Red */
+  --chart-asset: oklch(0.72 0.17 300);              /* Account Purple */
   --radius: 0;
-  --sidebar: oklch(0.985 0.005 92);
-  --sidebar-foreground: oklch(0.145 0.005 92);
-  --sidebar-primary: oklch(0.681 0.162 75.834);
-  --sidebar-primary-foreground: oklch(0.987 0.026 102.212);
-  --sidebar-accent: oklch(0.97 0.005 92);
-  --sidebar-accent-foreground: oklch(0.205 0.008 92);
-  --sidebar-border: oklch(0.922 0.005 92);
-  --sidebar-ring: oklch(0.708 0.008 92);
+  --sidebar: oklch(0.985 0.005 92);                          /* Bone Cream */
+  --sidebar-foreground: oklch(0.145 0.005 92);               /* Ink Near-Black */
+  --sidebar-primary: oklch(0.681 0.162 75.834);              /* Burnished Gold */
+  --sidebar-primary-foreground: oklch(0.987 0.026 102.212);  /* Cream */
+  --sidebar-accent: oklch(0.95 0.007 92);                    /* Worn Vellum (lifted from 0.97 for visible hover/active delta) */
+  --sidebar-accent-foreground: oklch(0.205 0.008 92);        /* Ink Deep */
+  --sidebar-border: oklch(0.922 0.005 92);                   /* Pencil Grey */
+  --sidebar-ring: oklch(0.708 0.008 92);                     /* Graphite Mid */
 }
 
 .dark {
-  --background: oklch(0.145 0.005 92);
-  --foreground: oklch(0.985 0.003 92);
-  --card: oklch(0.205 0.008 92);
-  --card-foreground: oklch(0.985 0.003 92);
-  --popover: oklch(0.205 0.008 92);
-  --popover-foreground: oklch(0.985 0.003 92);
-  --primary: oklch(0.795 0.184 86.047);
-  --primary-foreground: oklch(0.421 0.095 57.708);
-  --secondary: oklch(0.274 0.01 92);
-  --secondary-foreground: oklch(0.985 0.003 92);
-  --muted: oklch(0.269 0.008 92);
-  --muted-foreground: oklch(0.708 0.008 92);
-  --accent: oklch(0.269 0.008 92);
-  --accent-foreground: oklch(0.985 0.003 92);
-  --destructive: oklch(0.704 0.191 22.216);
+  --background: oklch(0.145 0.005 92);              /* Ink Near-Black */
+  --foreground: oklch(0.985 0.003 92);              /* Cream */
+  --card: oklch(0.205 0.008 92);                    /* Ink Deep */
+  --card-foreground: oklch(0.985 0.003 92);         /* Cream */
+  --popover: oklch(0.205 0.008 92);                 /* Ink Deep */
+  --popover-foreground: oklch(0.985 0.003 92);      /* Cream */
+  --primary: oklch(0.795 0.184 86.047);             /* Amber Deep */
+  --primary-foreground: oklch(0.421 0.095 57.708);  /* Walnut Roast */
+  --secondary: oklch(0.274 0.01 92);                /* Warm Walnut */
+  --secondary-foreground: oklch(0.985 0.003 92);    /* Cream */
+  --muted: oklch(0.269 0.008 92);                   /* Warm Walnut */
+  --muted-foreground: oklch(0.708 0.008 92);        /* Graphite Mid */
+  --accent: oklch(0.269 0.008 92);                  /* Warm Walnut */
+  --accent-foreground: oklch(0.985 0.003 92);       /* Cream */
+  --destructive: oklch(0.704 0.191 22.216);         /* Crimson Error (lifted for dark canvas) */
   --border: oklch(1 0.003 92 / 10%);
   --input: oklch(1 0.003 92 / 15%);
-  --ring: oklch(0.556 0.008 92);
-  /* Grey ramp lifted into the readable band on dark canvas (≥0.45). */
+  --ring: oklch(0.556 0.008 92);                    /* Ink Mid */
+  /* Grey ramp lifted into the readable band on dark canvas (>=0.45). */
   --chart-1: oklch(0.97 0.003 92);
   --chart-2: oklch(0.85 0.005 92);
   --chart-3: oklch(0.72 0.008 92);
@@ -80,14 +84,14 @@
   --chart-receivable: oklch(0.73 0.18 200);
   --chart-liability: oklch(0.68 0.22 25);
   --chart-asset: oklch(0.75 0.17 300);
-  --sidebar: oklch(0.205 0.008 92);
-  --sidebar-foreground: oklch(0.985 0.003 92);
-  --sidebar-primary: oklch(0.795 0.184 86.047);
-  --sidebar-primary-foreground: oklch(0.987 0.026 102.212);
-  --sidebar-accent: oklch(0.269 0.008 92);
-  --sidebar-accent-foreground: oklch(0.985 0.003 92);
+  --sidebar: oklch(0.205 0.008 92);                          /* Ink Deep */
+  --sidebar-foreground: oklch(0.985 0.003 92);               /* Cream */
+  --sidebar-primary: oklch(0.795 0.184 86.047);              /* Amber Deep */
+  --sidebar-primary-foreground: oklch(0.987 0.026 102.212);  /* Cream */
+  --sidebar-accent: oklch(0.269 0.008 92);                   /* Warm Walnut */
+  --sidebar-accent-foreground: oklch(0.985 0.003 92);        /* Cream */
   --sidebar-border: oklch(1 0.003 92 / 10%);
-  --sidebar-ring: oklch(0.556 0.008 92);
+  --sidebar-ring: oklch(0.556 0.008 92);                     /* Ink Mid */
 }
 
 @theme inline {

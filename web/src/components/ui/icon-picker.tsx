@@ -13,7 +13,6 @@ import { DynamicIcon, dynamicIconImports, IconName } from 'lucide-react/dynamic'
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { iconsData } from './icons-data'
@@ -313,22 +312,20 @@ const IconPicker = React.forwardRef<
 
     const renderIcon = useCallback(
       (icon: IconData) => (
-        <TooltipProvider key={icon.name}>
-          <Tooltip>
-            <TooltipTrigger
-              className={cn(
-                'hover:bg-foreground/10 rounded-md border p-2 transition',
-                'flex items-center justify-center',
-              )}
-              onClick={() => handleIconClick(icon.name as IconName)}
-            >
-              <IconRenderer name={icon.name as IconName} />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{icon.name}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip key={icon.name}>
+          <TooltipTrigger
+            className={cn(
+              'hover:bg-foreground/10 rounded-md border p-2 transition',
+              'flex items-center justify-center',
+            )}
+            onClick={() => handleIconClick(icon.name as IconName)}
+          >
+            <IconRenderer name={icon.name as IconName} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{icon.name}</p>
+          </TooltipContent>
+        </Tooltip>
       ),
       [handleIconClick],
     )
