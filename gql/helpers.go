@@ -293,15 +293,17 @@ func (r *Resolver) validateViewUserID(ctx context.Context, householdID int, view
 		return nil
 	}
 
-	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
-	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+	// Override active household so FilterByHousehold checks against the household
+	// being validated (which may differ from the request's X-Household-ID for
+	// cross-household Relay node fetches).
+	queryCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), householdID)
 
 	exists, err := r.entClient.UserHousehold.Query().
 		Where(
 			userhousehold.UserIDEQ(*viewUserID),
 			userhousehold.HouseholdIDEQ(householdID),
 		).
-		Exist(bypassCtx)
+		Exist(queryCtx)
 	if err != nil {
 		return err
 	}

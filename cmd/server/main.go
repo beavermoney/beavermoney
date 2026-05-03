@@ -187,6 +187,9 @@ func main() {
 		func(res http.ResponseWriter, req *http.Request) {
 			p := req.PathValue("provider")
 			if !cfg.IsProd && p == "local" {
+				// Bypass required: dev-only login shortcut runs before any JWT
+				// is issued, so there is no UserIDKey/HouseholdIDKey for
+				// FilterMeOrCoMember to use.
 				userID := entClient.User.Query().
 					Where(user.EmailEQ("joey@beavermoney.app")).
 					OnlyIDX(contextkeys.NewPrivacyBypassContext(ctx))
@@ -220,6 +223,9 @@ func main() {
 					return
 				}
 
+				// Bypass required: OAuth callback runs before any JWT is issued,
+				// so there is no UserIDKey for FilterMe to use. Email is already
+				// verified by Google above.
 				userID, err := entClient.User.Create().
 					SetEmail(gothicUser.Email).
 					SetName(gothicUser.Name).
@@ -234,6 +240,8 @@ func main() {
 					return
 				}
 
+				// Bypass required: same reason as the User.Create above —
+				// no UserIDKey is set yet, so FilterOwner cannot match.
 				err = entClient.UserKey.Create().
 					SetUserID(userID).
 					SetKey(gothicUser.UserID).

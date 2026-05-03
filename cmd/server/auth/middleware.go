@@ -44,28 +44,27 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 					return
 				}
 
-				bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
-				bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), hid)
+			householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), hid)
 
-				uh, err := client.UserHousehold.Query().
-					Where(
-						userhousehold.UserID(userID),
-						userhousehold.HouseholdID(hid),
-					).
-					WithHouseholdCurrency().
-					Only(bypassCtx)
-				if err != nil {
-					if ent.IsNotFound(err) {
-						next.ServeHTTP(w, r.WithContext(ctx))
-						return
-					}
-					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			uh, err := client.UserHousehold.Query().
+				Where(
+					userhousehold.UserID(userID),
+					userhousehold.HouseholdID(hid),
+				).
+				WithHouseholdCurrency().
+				Only(householdCtx)
+			if err != nil {
+				if ent.IsNotFound(err) {
+					next.ServeHTTP(w, r.WithContext(ctx))
 					return
 				}
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 
-				ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), hid)
+			ctx = householdCtx
 
-				displayCurrency := resolveDisplayCurrency(r, client, bypassCtx, uh, hid)
+			displayCurrency := resolveDisplayCurrency(r, client, ctx, uh, hid)
 				if displayCurrency != nil {
 					ctx = context.WithValue(ctx, contextkeys.DisplayCurrencyKey(), displayCurrency)
 				}

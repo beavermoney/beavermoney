@@ -49,12 +49,12 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input model.Crea
 
 	client := ent.FromContext(ctx)
 
-	// Create the household with a privacy bypass context since the user doesn't have a
-	// household context yet. The GQL middleware wraps this mutation in a transaction via
-	// entgql.Transactioner, so we use client directly — no nested tx needed.
+	// Bypass required: caller has no household context yet (this IS the first
+	// household being created), so FilterMemberHousehold/FilterAdminHousehold/
+	// FilterAdminOfTargetHousehold cannot be satisfied. The GQL middleware wraps
+	// this mutation in a transaction via entgql.Transactioner.
 	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
 
-	// Create household
 	household, err := client.Household.Create().
 		SetInput(*input.Input).
 		Save(bypassCtx)
@@ -274,8 +274,9 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.
 		return nil, err
 	}
 
-	// 10. Household itself — use privacy bypass because FilterMemberHousehold
-	//     checks the join table, which is now empty.
+	// Bypass required: all UserHousehold rows for this household were just deleted
+	// in step 9, so FilterMemberHousehold (which checks the join table) would deny
+	// the orphaned Household row.
 	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
 	err = client.Household.DeleteOneID(id).Exec(bypassCtx)
 	if err != nil {
@@ -1750,13 +1751,18 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 		return nil, fmt.Errorf("invalid role")
 	}
 
-	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
-	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), householdID)
+
+	// Bypass needed only for the User lookup: target user is not yet a co-member,
+	// so FilterMeOrCoMember would deny the lookup by email. All subsequent
+	// queries use householdCtx so FilterByHousehold and FilterAdminOfTargetHousehold
+	// continue to apply.
+	userLookupCtx := contextkeys.NewPrivacyBypassContext(householdCtx)
 
 	normalizedEmail := strings.ToLower(strings.TrimSpace(input.Email))
 	targetUser, err := client.User.Query().
 		Where(user.EmailEQ(normalizedEmail)).
-		Only(bypassCtx)
+		Only(userLookupCtx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, fmt.Errorf("MEMBER_EMAIL_NOT_REGISTERED")
@@ -1770,7 +1776,7 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 			userhousehold.UserIDEQ(targetUser.ID),
 			userhousehold.HouseholdIDEQ(householdID),
 		).
-		Exist(bypassCtx)
+		Exist(householdCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -1778,7 +1784,7 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 		return nil, fmt.Errorf("MEMBER_ALREADY_EXISTS")
 	}
 
-	hc, err := client.HouseholdCurrency.Get(bypassCtx, input.HouseholdCurrencyID)
+	hc, err := client.HouseholdCurrency.Get(householdCtx, input.HouseholdCurrencyID)
 	if err != nil || hc.HouseholdID != householdID {
 		return nil, fmt.Errorf("invalid household currency")
 	}
@@ -1788,7 +1794,7 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 		SetHouseholdID(householdID).
 		SetRole(input.Role).
 		SetHouseholdCurrencyID(input.HouseholdCurrencyID).
-		Save(bypassCtx)
+		Save(householdCtx)
 	if err != nil {
 		r.logger.Error("Failed to add household user", "error", err)
 		return nil, fmt.Errorf("failed to add household user: %w", err)
@@ -1811,11 +1817,10 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 	)
 	defer span.End()
 
-	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
-	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), householdID)
 	client := ent.FromContext(ctx)
 
-	target, err := client.UserHousehold.Get(bypassCtx, id)
+	target, err := client.UserHousehold.Get(householdCtx, id)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return &model.RemoveHouseholdUserPayload{RemovedUserHouseholdID: id}, nil
@@ -1829,7 +1834,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 			userhousehold.HouseholdIDEQ(target.HouseholdID),
 			userhousehold.RoleEQ(userhousehold.RoleAdmin),
 		).
-		Exist(bypassCtx)
+		Exist(householdCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -1841,7 +1846,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 		return nil, fmt.Errorf("SELF_REMOVAL_NOT_ALLOWED")
 	}
 
-	household, err := client.Household.Get(bypassCtx, target.HouseholdID)
+	household, err := client.Household.Get(householdCtx, target.HouseholdID)
 	if err != nil {
 		return nil, err
 	}
@@ -1855,7 +1860,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 				userhousehold.HouseholdIDEQ(target.HouseholdID),
 				userhousehold.RoleEQ(userhousehold.RoleAdmin),
 			).
-			Count(bypassCtx)
+			Count(householdCtx)
 		if err != nil {
 			return nil, err
 		}
@@ -1870,7 +1875,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 			account.UserIDEQ(target.UserID),
 			account.ArchivedEQ(false),
 		).
-		Count(bypassCtx)
+		Count(householdCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -1880,7 +1885,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 			investment.HouseholdIDEQ(target.HouseholdID),
 			investment.UserIDEQ(target.UserID),
 		).
-		Count(bypassCtx)
+		Count(householdCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -1890,7 +1895,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 			recurringsubscription.HouseholdIDEQ(target.HouseholdID),
 			recurringsubscription.UserIDEQ(target.UserID),
 		).
-		Count(bypassCtx)
+		Count(householdCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -1900,7 +1905,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 			accountCount, investmentCount, subscriptionCount)
 	}
 
-	if err := client.UserHousehold.DeleteOneID(id).Exec(bypassCtx); err != nil {
+	if err := client.UserHousehold.DeleteOneID(id).Exec(householdCtx); err != nil {
 		r.logger.Error("Failed to remove household user", "error", err)
 		return nil, fmt.Errorf("failed to remove household user: %w", err)
 	}
@@ -1922,11 +1927,10 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 	)
 	defer span.End()
 
-	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
-	bypassCtx = context.WithValue(bypassCtx, contextkeys.HouseholdIDKey(), householdID)
+	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), householdID)
 	client := ent.FromContext(ctx)
 
-	target, err := client.UserHousehold.Get(bypassCtx, id)
+	target, err := client.UserHousehold.Get(householdCtx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1937,7 +1941,7 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 			userhousehold.HouseholdIDEQ(target.HouseholdID),
 			userhousehold.RoleEQ(userhousehold.RoleAdmin),
 		).
-		Exist(bypassCtx)
+		Exist(householdCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -1945,7 +1949,7 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 		return nil, fmt.Errorf("NOT_HOUSEHOLD_ADMIN")
 	}
 
-	household, err := client.Household.Get(bypassCtx, target.HouseholdID)
+	household, err := client.Household.Get(householdCtx, target.HouseholdID)
 	if err != nil {
 		return nil, err
 	}
@@ -1963,7 +1967,7 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 				userhousehold.HouseholdIDEQ(target.HouseholdID),
 				userhousehold.RoleEQ(userhousehold.RoleAdmin),
 			).
-			Count(bypassCtx)
+			Count(householdCtx)
 		if err != nil {
 			return nil, err
 		}
@@ -1974,7 +1978,7 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 
 	updated, err := client.UserHousehold.UpdateOneID(id).
 		SetRole(role).
-		Save(bypassCtx)
+		Save(householdCtx)
 	if err != nil {
 		r.logger.Error("Failed to update household user role", "error", err)
 		return nil, fmt.Errorf("failed to update household user role: %w", err)
