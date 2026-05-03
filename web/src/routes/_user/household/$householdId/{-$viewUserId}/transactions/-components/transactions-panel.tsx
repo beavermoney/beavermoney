@@ -98,6 +98,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
           <Button
             nativeButton={true}
             size="icon-lg"
+            className="size-10 [&_svg:not([class*='size-'])]:size-5"
             onClick={() => openLogTransaction('expense')}
           >
             <PlusIcon />

@@ -183,7 +183,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
           variant="outline"
           size="icon-lg"
           nativeButton={true}
-          className="bg-background dark:bg-card"
+          className="bg-background dark:bg-card size-10 [&_svg:not([class*='size-'])]:size-5"
           onClick={handleRefresh}
           disabled={isRefreshInFlight}
         >

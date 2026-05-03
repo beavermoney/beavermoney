@@ -23,7 +23,11 @@ export function MobileFabNav() {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button size="icon-lg" variant="secondary">
+            <Button
+              size="icon-lg"
+              variant="secondary"
+              className="size-10 [&_svg:not([class*='size-'])]:size-5"
+            >
               <Menu className="" />
               <span className="sr-only">Open navigation menu</span>
             </Button>

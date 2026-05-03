@@ -233,7 +233,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           variant="outline"
           nativeButton={true}
           size="icon-lg"
-          className="bg-background dark:bg-card"
+          className="bg-background dark:bg-card size-10 [&_svg:not([class*='size-'])]:size-5"
           onClick={handleRefresh}
           disabled={isRefreshInFlight}
         >
