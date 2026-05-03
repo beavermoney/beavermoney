@@ -274,7 +274,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       <Suspense
         fallback={
           <div className="flex w-full flex-col items-stretch gap-0 rounded-md border border-transparent">
-            <div className="flex gap-1">
+            <div className="flex gap-1 py-px">
               <Skeleton className="h-5 w-16 rounded-md" />
               <Skeleton className="h-5 w-12 rounded-md" />
               <Skeleton className="h-5 w-16 rounded-md" />
