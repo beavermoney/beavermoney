@@ -1,17 +1,18 @@
 # BEAVER MONEY - PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-04-12
-**Commit:** 7a74cf0
+**Generated:** 2026-05-03
+**Commit:** 5e32a5e
 **Branch:** main
 
 ## DESIGN CONTEXT
 
-Strategic and visual stance for any UI work in this repo lives in two files at the project root:
+Strategic and visual stance for any UI work in this repo lives at the project root:
 
-- [`PRODUCT.md`](./PRODUCT.md) — register, users, brand personality, anti-references, design principles, accessibility commitments. Read before designing or writing UX copy.
-- [`DESIGN.md`](./DESIGN.md) (when present) — visual system: color tokens, typography, elevation, components, do's and don'ts. Read before generating new screens or components.
+- [`PRODUCT.md`](./PRODUCT.md) — register, users, brand personality, anti-references, design principles, accessibility commitments (WCAG 2.2 AA target). Read before designing or writing UX copy.
+- [`DESIGN.md`](./DESIGN.md) — visual system: color tokens (oklch), typography (Inter Variable), spacing, components, do's and don'ts. Read before generating new screens or components.
+- [`DESIGN.json`](./DESIGN.json) — same visual system in machine-readable form.
 
-The `$impeccable` skill loads both automatically. Maintain them with `$impeccable teach` (strategic) and `$impeccable document` (visual).
+The `$impeccable` skill loads PRODUCT/DESIGN automatically. Maintain them with `$impeccable teach` (strategic) and `$impeccable document` (visual).
 
 ## OVERVIEW
 
@@ -26,16 +27,19 @@ beavermoney/
 │   ├── config/           # Env-based config loader
 │   └── database/         # PostgreSQL connection + Ent migrations
 ├── ent/                  # Ent ORM (mostly generated)
-│   └── schema/           # MANUAL: entity definitions (7 entities + mixin)
+│   ├── schema/           # MANUAL: 7 schema files defining 16 entity types + 1 mixin
+│   └── rules/            # MANUAL: privacy rules (FilterMember/Admin/Owner/...)
 ├── gql/                  # GraphQL resolvers + schema (see gql/AGENTS.md)
 ├── internal/             # Go internal packages
-│   ├── common/           # Shared types
-│   ├── contextkeys/      # Request context keys
+│   ├── contextkeys/      # Request context keys (UserID, HouseholdID, DisplayCurrencyID, PrivacyBypass)
 │   ├── currencies/       # Currency list + validation
 │   ├── frankfurter/      # FX rates client (OpenAPI-generated)
 │   ├── gqlutil/          # GraphQL helpers
 │   ├── market/           # Stock/crypto quotes (EODHD + Yahoo fallback)
 │   └── seed/             # Demo data seeding (dev only)
+├── scripts/              # merge-graphql.js (combines gql/*.graphql → relay.graphql)
+├── docs/                 # development.md, database-triggers.md
+├── .github/workflows/    # CI: frontend tests/checks + server (golangci-lint, build)
 ├── web/                  # React frontend (see web/AGENTS.md)
 ├── relay.graphql         # Merged GraphQL schema (auto-generated, don't edit)
 ├── generate.go           # `go generate` entry: runs ent codegen + gqlgen
@@ -71,7 +75,7 @@ beavermoney/
 | RecurringSubscription | name, interval, cost, active             | Household, User, Currency                                              |
 | Snapshot              | note                                     | Entries (balance by type), Rates (FX at snapshot time)                 |
 
-Privacy rules enforce access control: `FilterMemberHousehold`, `FilterAdminHousehold`, `FilterOwner`.
+Privacy rules (`ent/rules/privacy.go`) enforce access control: `FilterByHousehold`, `FilterMemberHousehold`, `FilterAdminHousehold`, `FilterOwner`, `FilterMe`, `FilterMeOrCoMember`, `FilterAdminOfTargetHousehold`, `BlockDemoHouseholdMutation`, `AllowPrivacyBypass`. Beyond the 7 top-level entities above, `ent/schema/` also defines junction/value types: `UserKey`, `UserHousehold`, `HouseholdCurrency`, `HouseholdRate`, `TransactionCategory`, `TransactionEntry`, `InvestmentLot`, `SnapshotEntry`, `SnapshotRate`.
 
 ## CONVENTIONS
 
@@ -154,9 +158,9 @@ cd web && pnpm test              # Vitest
 | Language (FE)  | TypeScript                | 5.9.3     |
 | Framework (FE) | React                     | 19.2.5    |
 | Build          | Vite                      | 7.3.2     |
-| Routing        | TanStack Router           | 1.168.18  |
+| Routing        | TanStack Router           | 1.168.24  |
 | Data           | Relay                     | 20.1.1    |
-| Styling        | Tailwind CSS              | 4.2.2     |
+| Styling        | Tailwind CSS              | 4.2.4     |
 | UI Kit         | shadcn/ui                 | base-mira |
 | Testing        | Vitest + Testing Library  | 3.2.4     |
 | Tool Manager   | mise                      | —         |
@@ -164,9 +168,17 @@ cd web && pnpm test              # Vitest
 
 ## NOTES
 
-- Server auto-drops/recreates DB on startup in dev mode and seeds demo data
-- `relay.graphql` is auto-merged from `gql/*.graphql` files - never edit directly
-- React Compiler (babel-plugin-react-compiler) is enabled - manual `memo()`/`useMemo()` rarely needed
-- Frontend uses `ky` HTTP client (not fetch) for GraphQL requests
-- `web/src/components/ui/icons-data.ts` is 17k lines of icon metadata - expected, not a bug
-- 3 open TODOs: refresh tokens (`cmd/server/main.go`), admin user mutations (`ent/schema/user.go`), hardcoded migration string (`ent/migrate/main.go`)
+- Server runs migrations + seeds demo data on startup in dev mode (`!cfg.IsProd`)
+- `relay.graphql` is auto-merged from `gql/*.graphql` files via `scripts/merge-graphql.js` — never edit directly
+- React Compiler (`babel-plugin-react-compiler`) is enabled — manual `memo()`/`useMemo()` rarely needed
+- Frontend uses `ky` HTTP client (not `fetch`) inside `web/src/environment.ts` for the GraphQL transport. App code never calls `ky` or `fetch` directly — Relay only.
+- Data invalidation: Relay `useSubscribeToInvalidationState` + `invalidateRecord()` on the household record (no GraphQL subscriptions, no WebSocket)
+- Observability: Sentry (BE + FE) + OpenTelemetry tracing on the GraphQL handler (`gqlgen-opentelemetry` + Sentry OTel span processor). `SENTRY_DSN` / `VITE_SENTRY_DSN` env vars.
+- Rate limiting: `httprate.LimitByIP(100, time.Minute)` on all routes (Chi middleware)
+- Market data: EODHD provider when `EODHD_API_KEY` is set, otherwise Yahoo Finance fallback (see `internal/market`)
+- Dev login shortcut: `/auth/local/callback` issues a JWT for `joey@beavermoney.app` when `!cfg.IsProd` (uses `PrivacyBypass` context)
+- Tests: 3 Go test files in `gql/` (member mutations, aggregations, view-user resolvers) + `ent/rules/privacy_test.go`. Frontend: Vitest configured, minimal coverage today (`web/src/lib/date-range.test.ts`).
+- CI (`.github/workflows/ci.yml`): frontend Vitest + Prettier + ESLint + TSC + Vite build, server `golangci-lint v2.11.4` + `go mod tidy` + `go build ./...`
+- Not implemented (by design today): GraphQL subscriptions, WebSocket/SSE push, background job queue, cron jobs, feature flags, A/B tests
+- `web/src/components/ui/icons-data.ts` is 17k lines of icon metadata — expected, not a bug
+- 2 open TODOs: refresh tokens (`cmd/server/main.go:260`), hardcoded migration DSN (`ent/migrate/main.go:44`)
