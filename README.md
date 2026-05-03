@@ -45,16 +45,15 @@ This is a niche, on purpose. If you want auto-import from Plaid or your bank, th
 
 **Logging**
 
-- Manual transactions: income, expense, transfer.
-- Custom categories with date-range insights and visual breakdowns.
-- Recurring subscriptions with interval-aware next-payment calculations.
-- Snapshots: capture a point-in-time copy of household balances and FX rates for historical comparison.
+- Manual cash transactions: income, expense, transfer.
+- Manual investment transactions: buy, sell, move.
+- Organize your transactions by categories.
 
 **Accounts and investments**
 
-- Seven account categories: liquidity, investment, property, receivable, liability, asset, plus a household-level net-worth view.
+- Five account categories: liquidity, investment, property, receivable, liability.
 - Lot-level investment tracking with cost basis per lot.
-- Synced market quotes for stocks and crypto via [EODHD](https://eodhd.com/) when configured, with Yahoo Finance as a no-key fallback.
+- Synced market quotes for stocks and crypto.
 
 **Currencies**
 
@@ -68,7 +67,7 @@ This is a niche, on purpose. If you want auto-import from Plaid or your bank, th
 
 **Privacy and ownership**
 
-- Privacy-mode masking: one toggle hides every numeric value for screen sharing or screenshots, without breaking layout.
+- Privacy-mode masking: one toggle hides every numeric value for using the app in public or screensharing.
 - Self-hostable. Your data lives where you put it.
 - Open source under [AGPL v3](LICENSE).
 
@@ -138,18 +137,6 @@ The codebase is intentionally documented for AI-assisted development:
 - [`gql/AGENTS.md`](gql/AGENTS.md): resolver patterns and GraphQL conventions.
 - [`PRODUCT.md`](PRODUCT.md): product strategy, users, anti-references, design principles.
 - [`DESIGN.md`](DESIGN.md): visual system. Brand color, typography, components, named rules.
-
-## Roadmap
-
-Honest list. Edit on GitHub if something here is wrong.
-
-- **Production self-host story.** A real `Dockerfile`, a `docker-compose.prod.yml`, and a hardened env / migrations guide. Today the only supported path is the dev stack.
-- **Refresh tokens.** Auth currently issues a JWT without refresh; long sessions silently drop. ([cmd/server/main.go](cmd/server/main.go))
-- **More OAuth providers.** Google is the only third-party login today; GitHub, Apple, and a self-hosted email/password flow are open questions.
-- **Database connection config.** The migration tool currently hardcodes the dev DSN. ([ent/migrate/main.go](ent/migrate/main.go))
-- **Mobile polish.** The app is responsive but has not been tuned for native-feeling mobile use; PWA install, gestures, and offline-first logging are open.
-
-If you have an opinion on any of these, [open an issue](https://github.com/beavermoney/beavermoney/issues).
 
 ## Why no Plaid?
 
