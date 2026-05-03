@@ -232,6 +232,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "SnapshotRate",
 		Fields: map[string]*sqlgraph.FieldSpec{
+			snapshotrate.FieldHouseholdID:             {Type: field.TypeInt, Column: snapshotrate.FieldHouseholdID},
 			snapshotrate.FieldCreateTime:              {Type: field.TypeTime, Column: snapshotrate.FieldCreateTime},
 			snapshotrate.FieldUpdateTime:              {Type: field.TypeTime, Column: snapshotrate.FieldUpdateTime},
 			snapshotrate.FieldRate:                    {Type: field.TypeFloat64, Column: snapshotrate.FieldRate},
@@ -534,6 +535,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Household",
 		"SnapshotEntry",
+	)
+	graph.MustAddE(
+		"snapshot_rates",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotRatesTable,
+			Columns: []string{household.SnapshotRatesColumn},
+			Bidi:    false,
+		},
+		"Household",
+		"SnapshotRate",
 	)
 	graph.MustAddE(
 		"household_currencies",
@@ -942,6 +955,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SnapshotEntry",
 		"Snapshot",
+	)
+	graph.MustAddE(
+		"household",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   snapshotrate.HouseholdTable,
+			Columns: []string{snapshotrate.HouseholdColumn},
+			Bidi:    false,
+		},
+		"SnapshotRate",
+		"Household",
 	)
 	graph.MustAddE(
 		"snapshot",
@@ -1633,6 +1658,20 @@ func (f *HouseholdFilter) WhereHasSnapshotEntries() {
 // WhereHasSnapshotEntriesWith applies a predicate to check if query has an edge snapshot_entries with a given conditions (other predicates).
 func (f *HouseholdFilter) WhereHasSnapshotEntriesWith(preds ...predicate.SnapshotEntry) {
 	f.Where(entql.HasEdgeWith("snapshot_entries", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSnapshotRates applies a predicate to check if query has an edge snapshot_rates.
+func (f *HouseholdFilter) WhereHasSnapshotRates() {
+	f.Where(entql.HasEdge("snapshot_rates"))
+}
+
+// WhereHasSnapshotRatesWith applies a predicate to check if query has an edge snapshot_rates with a given conditions (other predicates).
+func (f *HouseholdFilter) WhereHasSnapshotRatesWith(preds ...predicate.SnapshotRate) {
+	f.Where(entql.HasEdgeWith("snapshot_rates", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2720,6 +2759,11 @@ func (f *SnapshotRateFilter) WhereID(p entql.IntP) {
 	f.Where(p.Field(snapshotrate.FieldID))
 }
 
+// WhereHouseholdID applies the entql int predicate on the household_id field.
+func (f *SnapshotRateFilter) WhereHouseholdID(p entql.IntP) {
+	f.Where(p.Field(snapshotrate.FieldHouseholdID))
+}
+
 // WhereCreateTime applies the entql time.Time predicate on the create_time field.
 func (f *SnapshotRateFilter) WhereCreateTime(p entql.TimeP) {
 	f.Where(p.Field(snapshotrate.FieldCreateTime))
@@ -2748,6 +2792,20 @@ func (f *SnapshotRateFilter) WhereFromHouseholdCurrencyID(p entql.IntP) {
 // WhereToHouseholdCurrencyID applies the entql int predicate on the to_household_currency_id field.
 func (f *SnapshotRateFilter) WhereToHouseholdCurrencyID(p entql.IntP) {
 	f.Where(p.Field(snapshotrate.FieldToHouseholdCurrencyID))
+}
+
+// WhereHasHousehold applies a predicate to check if query has an edge household.
+func (f *SnapshotRateFilter) WhereHasHousehold() {
+	f.Where(entql.HasEdge("household"))
+}
+
+// WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
+func (f *SnapshotRateFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
+	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasSnapshot applies a predicate to check if query has an edge snapshot.

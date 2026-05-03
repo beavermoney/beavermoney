@@ -1057,6 +1057,95 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 				*wq = *query
 			})
 
+		case "snapshotRates":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SnapshotRateClient{config: _q.config}).Query()
+			)
+			args := newSnapshotRatePaginateArgs(fieldArgs(ctx, new(SnapshotRateWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newSnapshotRatePager(args.opts, args.last != nil)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					_q.loadTotal = append(_q.loadTotal, func(ctx context.Context, nodes []*Household) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"household_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(s.C(household.SnapshotRatesColumn), ids...))
+						})
+						if err := query.GroupBy(household.SnapshotRatesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[10][alias] = n
+						}
+						return nil
+					})
+				} else {
+					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.SnapshotRates)
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[10][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
+				return err
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, false, opCtx, *field, path, mayAddCondition(satisfies, snapshotrateImplementors)...); err != nil {
+					return err
+				}
+			}
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				if oneNode {
+					pager.applyOrder(query.Limit(limit))
+				} else {
+					modify := entgql.LimitPerRow(household.SnapshotRatesColumn, limit, pager.orderExpr(query))
+					query.modifiers = append(query.modifiers, modify)
+				}
+			} else {
+				query = pager.applyOrder(query)
+			}
+			_q.WithNamedSnapshotRates(alias, func(wq *SnapshotRateQuery) {
+				*wq = *query
+			})
+
 		case "householdCurrencies":
 			var (
 				alias = field.Alias
@@ -2343,6 +2432,21 @@ func (_q *SnapshotRateQuery) collectField(ctx context.Context, oneNode bool, opC
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
 
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[snapshotrate.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldHouseholdID)
+				fieldSeen[snapshotrate.FieldHouseholdID] = struct{}{}
+			}
+
 		case "snapshot":
 			var (
 				alias = field.Alias
@@ -2386,6 +2490,11 @@ func (_q *SnapshotRateQuery) collectField(ctx context.Context, oneNode bool, opC
 			if _, ok := fieldSeen[snapshotrate.FieldToHouseholdCurrencyID]; !ok {
 				selectedFields = append(selectedFields, snapshotrate.FieldToHouseholdCurrencyID)
 				fieldSeen[snapshotrate.FieldToHouseholdCurrencyID] = struct{}{}
+			}
+		case "householdID":
+			if _, ok := fieldSeen[snapshotrate.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, snapshotrate.FieldHouseholdID)
+				fieldSeen[snapshotrate.FieldHouseholdID] = struct{}{}
 			}
 		case "createTime":
 			if _, ok := fieldSeen[snapshotrate.FieldCreateTime]; !ok {

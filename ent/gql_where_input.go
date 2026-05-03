@@ -732,6 +732,10 @@ type HouseholdWhereInput struct {
 	HasSnapshotEntries     *bool                      `json:"hasSnapshotEntries,omitempty"`
 	HasSnapshotEntriesWith []*SnapshotEntryWhereInput `json:"hasSnapshotEntriesWith,omitempty"`
 
+	// "snapshot_rates" edge predicates.
+	HasSnapshotRates     *bool                     `json:"hasSnapshotRates,omitempty"`
+	HasSnapshotRatesWith []*SnapshotRateWhereInput `json:"hasSnapshotRatesWith,omitempty"`
+
 	// "household_currencies" edge predicates.
 	HasHouseholdCurrencies     *bool                          `json:"hasHouseholdCurrencies,omitempty"`
 	HasHouseholdCurrenciesWith []*HouseholdCurrencyWhereInput `json:"hasHouseholdCurrenciesWith,omitempty"`
@@ -1152,6 +1156,24 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, household.HasSnapshotEntriesWith(with...))
+	}
+	if i.HasSnapshotRates != nil {
+		p := household.HasSnapshotRates()
+		if !*i.HasSnapshotRates {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSnapshotRatesWith) > 0 {
+		with := make([]predicate.SnapshotRate, 0, len(i.HasSnapshotRatesWith))
+		for _, w := range i.HasSnapshotRatesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSnapshotRatesWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasSnapshotRatesWith(with...))
 	}
 	if i.HasHouseholdCurrencies != nil {
 		p := household.HasHouseholdCurrencies()
@@ -4474,6 +4496,12 @@ type SnapshotRateWhereInput struct {
 	IDLT    *int  `json:"idLT,omitempty"`
 	IDLTE   *int  `json:"idLTE,omitempty"`
 
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
 	// "create_time" field predicates.
 	CreateTime      *time.Time  `json:"createTime,omitempty"`
 	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
@@ -4521,6 +4549,10 @@ type SnapshotRateWhereInput struct {
 	ToHouseholdCurrencyIDNEQ   *int  `json:"toHouseholdCurrencyIDNEQ,omitempty"`
 	ToHouseholdCurrencyIDIn    []int `json:"toHouseholdCurrencyIDIn,omitempty"`
 	ToHouseholdCurrencyIDNotIn []int `json:"toHouseholdCurrencyIDNotIn,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
 
 	// "snapshot" edge predicates.
 	HasSnapshot     *bool                 `json:"hasSnapshot,omitempty"`
@@ -4629,6 +4661,18 @@ func (i *SnapshotRateWhereInput) P() (predicate.SnapshotRate, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, snapshotrate.IDLTE(*i.IDLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, snapshotrate.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, snapshotrate.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, snapshotrate.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, snapshotrate.HouseholdIDNotIn(i.HouseholdIDNotIn...))
 	}
 	if i.CreateTime != nil {
 		predicates = append(predicates, snapshotrate.CreateTimeEQ(*i.CreateTime))
@@ -4739,6 +4783,24 @@ func (i *SnapshotRateWhereInput) P() (predicate.SnapshotRate, error) {
 		predicates = append(predicates, snapshotrate.ToHouseholdCurrencyIDNotIn(i.ToHouseholdCurrencyIDNotIn...))
 	}
 
+	if i.HasHousehold != nil {
+		p := snapshotrate.HasHousehold()
+		if !*i.HasHousehold {
+			p = snapshotrate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, snapshotrate.HasHouseholdWith(with...))
+	}
 	if i.HasSnapshot != nil {
 		p := snapshotrate.HasSnapshot()
 		if !*i.HasSnapshot {

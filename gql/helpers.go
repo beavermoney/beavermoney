@@ -477,11 +477,13 @@ func (r *mutationResolver) backfillSnapshotRatesForCurrency(
 			}
 			builders = append(builders,
 				client.SnapshotRate.Create().
+					SetHouseholdID(householdID).
 					SetSnapshotID(snap.ID).
 					SetFromHouseholdCurrencyID(newHC.ID).
 					SetToHouseholdCurrencyID(toID).
 					SetRate(decimal.NewFromFloat32(rate.Rate).Round(6)),
 				client.SnapshotRate.Create().
+					SetHouseholdID(householdID).
 					SetSnapshotID(snap.ID).
 					SetFromHouseholdCurrencyID(toID).
 					SetToHouseholdCurrencyID(newHC.ID).

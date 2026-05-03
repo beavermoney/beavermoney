@@ -372,16 +372,25 @@ func init() {
 	// snapshotentry.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
 	snapshotentry.SnapshotIDValidator = snapshotentryDescSnapshotID.Validators[0].(func(int) error)
 	snapshotrateMixin := schema.SnapshotRate{}.Mixin()
-	snapshotrateMixinFields0 := snapshotrateMixin[0].Fields()
-	_ = snapshotrateMixinFields0
+	snapshotrate.Policy = privacy.NewPolicies(snapshotrateMixin[0], schema.SnapshotRate{})
+	snapshotrate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := snapshotrate.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	snapshotrateMixinFields1 := snapshotrateMixin[1].Fields()
+	_ = snapshotrateMixinFields1
 	snapshotrateFields := schema.SnapshotRate{}.Fields()
 	_ = snapshotrateFields
 	// snapshotrateDescCreateTime is the schema descriptor for create_time field.
-	snapshotrateDescCreateTime := snapshotrateMixinFields0[0].Descriptor()
+	snapshotrateDescCreateTime := snapshotrateMixinFields1[0].Descriptor()
 	// snapshotrate.DefaultCreateTime holds the default value on creation for the create_time field.
 	snapshotrate.DefaultCreateTime = snapshotrateDescCreateTime.Default.(func() time.Time)
 	// snapshotrateDescUpdateTime is the schema descriptor for update_time field.
-	snapshotrateDescUpdateTime := snapshotrateMixinFields0[1].Descriptor()
+	snapshotrateDescUpdateTime := snapshotrateMixinFields1[1].Descriptor()
 	// snapshotrate.DefaultUpdateTime holds the default value on creation for the update_time field.
 	snapshotrate.DefaultUpdateTime = snapshotrateDescUpdateTime.Default.(func() time.Time)
 	// snapshotrate.UpdateDefaultUpdateTime holds the default value on update for the update_time field.

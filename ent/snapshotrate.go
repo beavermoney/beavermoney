@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotrate"
@@ -20,6 +21,8 @@ type SnapshotRate struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// HouseholdID holds the value of the "household_id" field.
+	HouseholdID int `json:"household_id,omitempty"`
 	// CreateTime holds the value of the "create_time" field.
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
@@ -40,6 +43,8 @@ type SnapshotRate struct {
 
 // SnapshotRateEdges holds the relations/edges for other nodes in the graph.
 type SnapshotRateEdges struct {
+	// Household holds the value of the household edge.
+	Household *Household `json:"household,omitempty"`
 	// Snapshot holds the value of the snapshot edge.
 	Snapshot *Snapshot `json:"snapshot,omitempty"`
 	// FromCurrency holds the value of the from_currency edge.
@@ -48,9 +53,20 @@ type SnapshotRateEdges struct {
 	ToCurrency *HouseholdCurrency `json:"to_currency,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 	// totalCount holds the count of the edges above.
-	totalCount [3]map[string]int
+	totalCount [4]map[string]int
+}
+
+// HouseholdOrErr returns the Household value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SnapshotRateEdges) HouseholdOrErr() (*Household, error) {
+	if e.Household != nil {
+		return e.Household, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: household.Label}
+	}
+	return nil, &NotLoadedError{edge: "household"}
 }
 
 // SnapshotOrErr returns the Snapshot value or an error if the edge
@@ -58,7 +74,7 @@ type SnapshotRateEdges struct {
 func (e SnapshotRateEdges) SnapshotOrErr() (*Snapshot, error) {
 	if e.Snapshot != nil {
 		return e.Snapshot, nil
-	} else if e.loadedTypes[0] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: snapshot.Label}
 	}
 	return nil, &NotLoadedError{edge: "snapshot"}
@@ -69,7 +85,7 @@ func (e SnapshotRateEdges) SnapshotOrErr() (*Snapshot, error) {
 func (e SnapshotRateEdges) FromCurrencyOrErr() (*HouseholdCurrency, error) {
 	if e.FromCurrency != nil {
 		return e.FromCurrency, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
 	return nil, &NotLoadedError{edge: "from_currency"}
@@ -80,7 +96,7 @@ func (e SnapshotRateEdges) FromCurrencyOrErr() (*HouseholdCurrency, error) {
 func (e SnapshotRateEdges) ToCurrencyOrErr() (*HouseholdCurrency, error) {
 	if e.ToCurrency != nil {
 		return e.ToCurrency, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
 	return nil, &NotLoadedError{edge: "to_currency"}
@@ -93,7 +109,7 @@ func (*SnapshotRate) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case snapshotrate.FieldRate:
 			values[i] = new(decimal.Decimal)
-		case snapshotrate.FieldID, snapshotrate.FieldSnapshotID, snapshotrate.FieldFromHouseholdCurrencyID, snapshotrate.FieldToHouseholdCurrencyID:
+		case snapshotrate.FieldID, snapshotrate.FieldHouseholdID, snapshotrate.FieldSnapshotID, snapshotrate.FieldFromHouseholdCurrencyID, snapshotrate.FieldToHouseholdCurrencyID:
 			values[i] = new(sql.NullInt64)
 		case snapshotrate.FieldCreateTime, snapshotrate.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -118,6 +134,12 @@ func (_m *SnapshotRate) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int(value.Int64)
+		case snapshotrate.FieldHouseholdID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field household_id", values[i])
+			} else if value.Valid {
+				_m.HouseholdID = int(value.Int64)
+			}
 		case snapshotrate.FieldCreateTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field create_time", values[i])
@@ -167,6 +189,11 @@ func (_m *SnapshotRate) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
+// QueryHousehold queries the "household" edge of the SnapshotRate entity.
+func (_m *SnapshotRate) QueryHousehold() *HouseholdQuery {
+	return NewSnapshotRateClient(_m.config).QueryHousehold(_m)
+}
+
 // QuerySnapshot queries the "snapshot" edge of the SnapshotRate entity.
 func (_m *SnapshotRate) QuerySnapshot() *SnapshotQuery {
 	return NewSnapshotRateClient(_m.config).QuerySnapshot(_m)
@@ -205,6 +232,9 @@ func (_m *SnapshotRate) String() string {
 	var builder strings.Builder
 	builder.WriteString("SnapshotRate(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("household_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdID))
+	builder.WriteString(", ")
 	builder.WriteString("create_time=")
 	builder.WriteString(_m.CreateTime.Format(time.ANSIC))
 	builder.WriteString(", ")

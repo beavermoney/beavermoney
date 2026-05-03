@@ -1444,6 +1444,9 @@ type HouseholdMutation struct {
 	snapshot_entries               map[int]struct{}
 	removedsnapshot_entries        map[int]struct{}
 	clearedsnapshot_entries        bool
+	snapshot_rates                 map[int]struct{}
+	removedsnapshot_rates          map[int]struct{}
+	clearedsnapshot_rates          bool
 	household_currencies           map[int]struct{}
 	removedhousehold_currencies    map[int]struct{}
 	clearedhousehold_currencies    bool
@@ -2276,6 +2279,60 @@ func (m *HouseholdMutation) ResetSnapshotEntries() {
 	m.removedsnapshot_entries = nil
 }
 
+// AddSnapshotRateIDs adds the "snapshot_rates" edge to the SnapshotRate entity by ids.
+func (m *HouseholdMutation) AddSnapshotRateIDs(ids ...int) {
+	if m.snapshot_rates == nil {
+		m.snapshot_rates = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.snapshot_rates[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSnapshotRates clears the "snapshot_rates" edge to the SnapshotRate entity.
+func (m *HouseholdMutation) ClearSnapshotRates() {
+	m.clearedsnapshot_rates = true
+}
+
+// SnapshotRatesCleared reports if the "snapshot_rates" edge to the SnapshotRate entity was cleared.
+func (m *HouseholdMutation) SnapshotRatesCleared() bool {
+	return m.clearedsnapshot_rates
+}
+
+// RemoveSnapshotRateIDs removes the "snapshot_rates" edge to the SnapshotRate entity by IDs.
+func (m *HouseholdMutation) RemoveSnapshotRateIDs(ids ...int) {
+	if m.removedsnapshot_rates == nil {
+		m.removedsnapshot_rates = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.snapshot_rates, ids[i])
+		m.removedsnapshot_rates[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSnapshotRates returns the removed IDs of the "snapshot_rates" edge to the SnapshotRate entity.
+func (m *HouseholdMutation) RemovedSnapshotRatesIDs() (ids []int) {
+	for id := range m.removedsnapshot_rates {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SnapshotRatesIDs returns the "snapshot_rates" edge IDs in the mutation.
+func (m *HouseholdMutation) SnapshotRatesIDs() (ids []int) {
+	for id := range m.snapshot_rates {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSnapshotRates resets all changes to the "snapshot_rates" edge.
+func (m *HouseholdMutation) ResetSnapshotRates() {
+	m.snapshot_rates = nil
+	m.clearedsnapshot_rates = false
+	m.removedsnapshot_rates = nil
+}
+
 // AddHouseholdCurrencyIDs adds the "household_currencies" edge to the HouseholdCurrency entity by ids.
 func (m *HouseholdMutation) AddHouseholdCurrencyIDs(ids ...int) {
 	if m.household_currencies == nil {
@@ -2639,7 +2696,7 @@ func (m *HouseholdMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *HouseholdMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.users != nil {
 		edges = append(edges, household.EdgeUsers)
 	}
@@ -2669,6 +2726,9 @@ func (m *HouseholdMutation) AddedEdges() []string {
 	}
 	if m.snapshot_entries != nil {
 		edges = append(edges, household.EdgeSnapshotEntries)
+	}
+	if m.snapshot_rates != nil {
+		edges = append(edges, household.EdgeSnapshotRates)
 	}
 	if m.household_currencies != nil {
 		edges = append(edges, household.EdgeHouseholdCurrencies)
@@ -2746,6 +2806,12 @@ func (m *HouseholdMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case household.EdgeSnapshotRates:
+		ids := make([]ent.Value, 0, len(m.snapshot_rates))
+		for id := range m.snapshot_rates {
+			ids = append(ids, id)
+		}
+		return ids
 	case household.EdgeHouseholdCurrencies:
 		ids := make([]ent.Value, 0, len(m.household_currencies))
 		for id := range m.household_currencies {
@@ -2770,7 +2836,7 @@ func (m *HouseholdMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *HouseholdMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removedusers != nil {
 		edges = append(edges, household.EdgeUsers)
 	}
@@ -2800,6 +2866,9 @@ func (m *HouseholdMutation) RemovedEdges() []string {
 	}
 	if m.removedsnapshot_entries != nil {
 		edges = append(edges, household.EdgeSnapshotEntries)
+	}
+	if m.removedsnapshot_rates != nil {
+		edges = append(edges, household.EdgeSnapshotRates)
 	}
 	if m.removedhousehold_currencies != nil {
 		edges = append(edges, household.EdgeHouseholdCurrencies)
@@ -2877,6 +2946,12 @@ func (m *HouseholdMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case household.EdgeSnapshotRates:
+		ids := make([]ent.Value, 0, len(m.removedsnapshot_rates))
+		for id := range m.removedsnapshot_rates {
+			ids = append(ids, id)
+		}
+		return ids
 	case household.EdgeHouseholdCurrencies:
 		ids := make([]ent.Value, 0, len(m.removedhousehold_currencies))
 		for id := range m.removedhousehold_currencies {
@@ -2901,7 +2976,7 @@ func (m *HouseholdMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *HouseholdMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.clearedusers {
 		edges = append(edges, household.EdgeUsers)
 	}
@@ -2931,6 +3006,9 @@ func (m *HouseholdMutation) ClearedEdges() []string {
 	}
 	if m.clearedsnapshot_entries {
 		edges = append(edges, household.EdgeSnapshotEntries)
+	}
+	if m.clearedsnapshot_rates {
+		edges = append(edges, household.EdgeSnapshotRates)
 	}
 	if m.clearedhousehold_currencies {
 		edges = append(edges, household.EdgeHouseholdCurrencies)
@@ -2968,6 +3046,8 @@ func (m *HouseholdMutation) EdgeCleared(name string) bool {
 		return m.clearedsnapshots
 	case household.EdgeSnapshotEntries:
 		return m.clearedsnapshot_entries
+	case household.EdgeSnapshotRates:
+		return m.clearedsnapshot_rates
 	case household.EdgeHouseholdCurrencies:
 		return m.clearedhousehold_currencies
 	case household.EdgeHouseholdRates:
@@ -3019,6 +3099,9 @@ func (m *HouseholdMutation) ResetEdge(name string) error {
 		return nil
 	case household.EdgeSnapshotEntries:
 		m.ResetSnapshotEntries()
+		return nil
+	case household.EdgeSnapshotRates:
+		m.ResetSnapshotRates()
 		return nil
 	case household.EdgeHouseholdCurrencies:
 		m.ResetHouseholdCurrencies()
@@ -10478,6 +10561,8 @@ type SnapshotRateMutation struct {
 	rate                 *decimal.Decimal
 	addrate              *decimal.Decimal
 	clearedFields        map[string]struct{}
+	household            *int
+	clearedhousehold     bool
 	snapshot             *int
 	clearedsnapshot      bool
 	from_currency        *int
@@ -10585,6 +10670,42 @@ func (m *SnapshotRateMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetHouseholdID sets the "household_id" field.
+func (m *SnapshotRateMutation) SetHouseholdID(i int) {
+	m.household = &i
+}
+
+// HouseholdID returns the value of the "household_id" field in the mutation.
+func (m *SnapshotRateMutation) HouseholdID() (r int, exists bool) {
+	v := m.household
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHouseholdID returns the old "household_id" field's value of the SnapshotRate entity.
+// If the SnapshotRate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SnapshotRateMutation) OldHouseholdID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHouseholdID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHouseholdID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHouseholdID: %w", err)
+	}
+	return oldValue.HouseholdID, nil
+}
+
+// ResetHouseholdID resets all changes to the "household_id" field.
+func (m *SnapshotRateMutation) ResetHouseholdID() {
+	m.household = nil
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -10823,6 +10944,33 @@ func (m *SnapshotRateMutation) ResetToHouseholdCurrencyID() {
 	m.to_currency = nil
 }
 
+// ClearHousehold clears the "household" edge to the Household entity.
+func (m *SnapshotRateMutation) ClearHousehold() {
+	m.clearedhousehold = true
+	m.clearedFields[snapshotrate.FieldHouseholdID] = struct{}{}
+}
+
+// HouseholdCleared reports if the "household" edge to the Household entity was cleared.
+func (m *SnapshotRateMutation) HouseholdCleared() bool {
+	return m.clearedhousehold
+}
+
+// HouseholdIDs returns the "household" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// HouseholdID instead. It exists only for internal usage by the builders.
+func (m *SnapshotRateMutation) HouseholdIDs() (ids []int) {
+	if id := m.household; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetHousehold resets all changes to the "household" edge.
+func (m *SnapshotRateMutation) ResetHousehold() {
+	m.household = nil
+	m.clearedhousehold = false
+}
+
 // ClearSnapshot clears the "snapshot" edge to the Snapshot entity.
 func (m *SnapshotRateMutation) ClearSnapshot() {
 	m.clearedsnapshot = true
@@ -10964,7 +11112,10 @@ func (m *SnapshotRateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SnapshotRateMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
+	if m.household != nil {
+		fields = append(fields, snapshotrate.FieldHouseholdID)
+	}
 	if m.create_time != nil {
 		fields = append(fields, snapshotrate.FieldCreateTime)
 	}
@@ -10991,6 +11142,8 @@ func (m *SnapshotRateMutation) Fields() []string {
 // schema.
 func (m *SnapshotRateMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case snapshotrate.FieldHouseholdID:
+		return m.HouseholdID()
 	case snapshotrate.FieldCreateTime:
 		return m.CreateTime()
 	case snapshotrate.FieldUpdateTime:
@@ -11012,6 +11165,8 @@ func (m *SnapshotRateMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SnapshotRateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case snapshotrate.FieldHouseholdID:
+		return m.OldHouseholdID(ctx)
 	case snapshotrate.FieldCreateTime:
 		return m.OldCreateTime(ctx)
 	case snapshotrate.FieldUpdateTime:
@@ -11033,6 +11188,13 @@ func (m *SnapshotRateMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *SnapshotRateMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case snapshotrate.FieldHouseholdID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHouseholdID(v)
+		return nil
 	case snapshotrate.FieldCreateTime:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -11139,6 +11301,9 @@ func (m *SnapshotRateMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SnapshotRateMutation) ResetField(name string) error {
 	switch name {
+	case snapshotrate.FieldHouseholdID:
+		m.ResetHouseholdID()
+		return nil
 	case snapshotrate.FieldCreateTime:
 		m.ResetCreateTime()
 		return nil
@@ -11163,7 +11328,10 @@ func (m *SnapshotRateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SnapshotRateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.household != nil {
+		edges = append(edges, snapshotrate.EdgeHousehold)
+	}
 	if m.snapshot != nil {
 		edges = append(edges, snapshotrate.EdgeSnapshot)
 	}
@@ -11180,6 +11348,10 @@ func (m *SnapshotRateMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *SnapshotRateMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case snapshotrate.EdgeHousehold:
+		if id := m.household; id != nil {
+			return []ent.Value{*id}
+		}
 	case snapshotrate.EdgeSnapshot:
 		if id := m.snapshot; id != nil {
 			return []ent.Value{*id}
@@ -11198,7 +11370,7 @@ func (m *SnapshotRateMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SnapshotRateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -11210,7 +11382,10 @@ func (m *SnapshotRateMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SnapshotRateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.clearedhousehold {
+		edges = append(edges, snapshotrate.EdgeHousehold)
+	}
 	if m.clearedsnapshot {
 		edges = append(edges, snapshotrate.EdgeSnapshot)
 	}
@@ -11227,6 +11402,8 @@ func (m *SnapshotRateMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *SnapshotRateMutation) EdgeCleared(name string) bool {
 	switch name {
+	case snapshotrate.EdgeHousehold:
+		return m.clearedhousehold
 	case snapshotrate.EdgeSnapshot:
 		return m.clearedsnapshot
 	case snapshotrate.EdgeFromCurrency:
@@ -11241,6 +11418,9 @@ func (m *SnapshotRateMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *SnapshotRateMutation) ClearEdge(name string) error {
 	switch name {
+	case snapshotrate.EdgeHousehold:
+		m.ClearHousehold()
+		return nil
 	case snapshotrate.EdgeSnapshot:
 		m.ClearSnapshot()
 		return nil
@@ -11258,6 +11438,9 @@ func (m *SnapshotRateMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *SnapshotRateMutation) ResetEdge(name string) error {
 	switch name {
+	case snapshotrate.EdgeHousehold:
+		m.ResetHousehold()
+		return nil
 	case snapshotrate.EdgeSnapshot:
 		m.ResetSnapshot()
 		return nil

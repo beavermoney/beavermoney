@@ -17,6 +17,7 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -237,6 +238,21 @@ func (_c *HouseholdCreate) AddSnapshotEntries(v ...*SnapshotEntry) *HouseholdCre
 		ids[i] = v[i].ID
 	}
 	return _c.AddSnapshotEntryIDs(ids...)
+}
+
+// AddSnapshotRateIDs adds the "snapshot_rates" edge to the SnapshotRate entity by IDs.
+func (_c *HouseholdCreate) AddSnapshotRateIDs(ids ...int) *HouseholdCreate {
+	_c.mutation.AddSnapshotRateIDs(ids...)
+	return _c
+}
+
+// AddSnapshotRates adds the "snapshot_rates" edges to the SnapshotRate entity.
+func (_c *HouseholdCreate) AddSnapshotRates(v ...*SnapshotRate) *HouseholdCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotRateIDs(ids...)
 }
 
 // AddHouseholdCurrencyIDs adds the "household_currencies" edge to the HouseholdCurrency entity by IDs.
@@ -573,6 +589,22 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(snapshotentry.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotRatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotRatesTable,
+			Columns: []string{household.SnapshotRatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotrate.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

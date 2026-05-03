@@ -42,7 +42,9 @@ func (_u *SnapshotRateUpdate) Mutation() *SnapshotRateMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *SnapshotRateUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -69,15 +71,22 @@ func (_u *SnapshotRateUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SnapshotRateUpdate) defaults() {
+func (_u *SnapshotRateUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdateTime(); !ok {
+		if snapshotrate.UpdateDefaultUpdateTime == nil {
+			return fmt.Errorf("ent: uninitialized snapshotrate.UpdateDefaultUpdateTime (forgotten import ent/runtime?)")
+		}
 		v := snapshotrate.UpdateDefaultUpdateTime()
 		_u.mutation.SetUpdateTime(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SnapshotRateUpdate) check() error {
+	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "SnapshotRate.household"`)
+	}
 	if _u.mutation.SnapshotCleared() && len(_u.mutation.SnapshotIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SnapshotRate.snapshot"`)
 	}
@@ -159,7 +168,9 @@ func (_u *SnapshotRateUpdateOne) Select(field string, fields ...string) *Snapsho
 
 // Save executes the query and returns the updated SnapshotRate entity.
 func (_u *SnapshotRateUpdateOne) Save(ctx context.Context) (*SnapshotRate, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -186,15 +197,22 @@ func (_u *SnapshotRateUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SnapshotRateUpdateOne) defaults() {
+func (_u *SnapshotRateUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdateTime(); !ok {
+		if snapshotrate.UpdateDefaultUpdateTime == nil {
+			return fmt.Errorf("ent: uninitialized snapshotrate.UpdateDefaultUpdateTime (forgotten import ent/runtime?)")
+		}
 		v := snapshotrate.UpdateDefaultUpdateTime()
 		_u.mutation.SetUpdateTime(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SnapshotRateUpdateOne) check() error {
+	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "SnapshotRate.household"`)
+	}
 	if _u.mutation.SnapshotCleared() && len(_u.mutation.SnapshotIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SnapshotRate.snapshot"`)
 	}

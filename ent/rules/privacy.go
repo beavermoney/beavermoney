@@ -243,27 +243,4 @@ func BlockDemoHouseholdMutation() privacy.QueryMutationRule {
 	)
 }
 
-// FilterCoMembers is used to restrict access to co-members within the same household.
-func FilterCoMembers() privacy.QueryMutationRule {
-	type CoMemberFilter interface {
-		WhereHouseholdID(entql.IntP)
-	}
 
-	return privacy.FilterFunc(
-		func(ctx context.Context, f privacy.Filter) error {
-			hid, ok := ctx.Value(contextkeys.HouseholdIDKey()).(int)
-			if !ok || hid == 0 {
-				return privacy.Denyf("security: missing household context")
-			}
-
-			tf, ok := f.(CoMemberFilter)
-			if !ok {
-				return privacy.Denyf("cannot apply co-member filter")
-			}
-
-			tf.WhereHouseholdID(entql.IntEQ(hid))
-
-			return privacy.Skip
-		},
-	)
-}

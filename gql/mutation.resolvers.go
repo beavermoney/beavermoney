@@ -2091,6 +2091,7 @@ func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateS
 		rateBuilders := make([]*ent.SnapshotRateCreate, 0, len(householdRates))
 		for _, hr := range householdRates {
 			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
+				SetHouseholdID(householdID).
 				SetSnapshotID(snap.ID).
 				SetFromCurrencyID(hr.FromHouseholdCurrencyID).
 				SetToCurrencyID(hr.ToHouseholdCurrencyID).

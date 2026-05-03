@@ -5,6 +5,7 @@ package snapshotrate
 import (
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -14,6 +15,8 @@ const (
 	Label = "snapshot_rate"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldHouseholdID holds the string denoting the household_id field in the database.
+	FieldHouseholdID = "household_id"
 	// FieldCreateTime holds the string denoting the create_time field in the database.
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
@@ -26,6 +29,8 @@ const (
 	FieldFromHouseholdCurrencyID = "from_household_currency_id"
 	// FieldToHouseholdCurrencyID holds the string denoting the to_household_currency_id field in the database.
 	FieldToHouseholdCurrencyID = "to_household_currency_id"
+	// EdgeHousehold holds the string denoting the household edge name in mutations.
+	EdgeHousehold = "household"
 	// EdgeSnapshot holds the string denoting the snapshot edge name in mutations.
 	EdgeSnapshot = "snapshot"
 	// EdgeFromCurrency holds the string denoting the from_currency edge name in mutations.
@@ -34,6 +39,13 @@ const (
 	EdgeToCurrency = "to_currency"
 	// Table holds the table name of the snapshotrate in the database.
 	Table = "snapshot_rates"
+	// HouseholdTable is the table that holds the household relation/edge.
+	HouseholdTable = "snapshot_rates"
+	// HouseholdInverseTable is the table name for the Household entity.
+	// It exists in this package in order to avoid circular dependency with the "household" package.
+	HouseholdInverseTable = "households"
+	// HouseholdColumn is the table column denoting the household relation/edge.
+	HouseholdColumn = "household_id"
 	// SnapshotTable is the table that holds the snapshot relation/edge.
 	SnapshotTable = "snapshot_rates"
 	// SnapshotInverseTable is the table name for the Snapshot entity.
@@ -60,6 +72,7 @@ const (
 // Columns holds all SQL columns for snapshotrate fields.
 var Columns = []string{
 	FieldID,
+	FieldHouseholdID,
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldRate,
@@ -78,7 +91,14 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "beavermoney.app/ent/runtime"
 var (
+	Hooks  [1]ent.Hook
+	Policy ent.Policy
 	// DefaultCreateTime holds the default value on creation for the "create_time" field.
 	DefaultCreateTime func() time.Time
 	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
@@ -99,6 +119,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByHouseholdID orders the results by the household_id field.
+func ByHouseholdID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHouseholdID, opts...).ToFunc()
 }
 
 // ByCreateTime orders the results by the create_time field.
@@ -131,6 +156,13 @@ func ByToHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldToHouseholdCurrencyID, opts...).ToFunc()
 }
 
+// ByHouseholdField orders the results by household field.
+func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHouseholdStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // BySnapshotField orders the results by snapshot field.
 func BySnapshotField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -150,6 +182,13 @@ func ByToCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newToCurrencyStep(), sql.OrderByField(field, opts...))
 	}
+}
+func newHouseholdStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HouseholdInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, HouseholdTable, HouseholdColumn),
+	)
 }
 func newSnapshotStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

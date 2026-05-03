@@ -45,6 +45,8 @@ const (
 	EdgeSnapshots = "snapshots"
 	// EdgeSnapshotEntries holds the string denoting the snapshot_entries edge name in mutations.
 	EdgeSnapshotEntries = "snapshot_entries"
+	// EdgeSnapshotRates holds the string denoting the snapshot_rates edge name in mutations.
+	EdgeSnapshotRates = "snapshot_rates"
 	// EdgeHouseholdCurrencies holds the string denoting the household_currencies edge name in mutations.
 	EdgeHouseholdCurrencies = "household_currencies"
 	// EdgeHouseholdRates holds the string denoting the household_rates edge name in mutations.
@@ -121,6 +123,13 @@ const (
 	SnapshotEntriesInverseTable = "snapshot_entries"
 	// SnapshotEntriesColumn is the table column denoting the snapshot_entries relation/edge.
 	SnapshotEntriesColumn = "household_id"
+	// SnapshotRatesTable is the table that holds the snapshot_rates relation/edge.
+	SnapshotRatesTable = "snapshot_rates"
+	// SnapshotRatesInverseTable is the table name for the SnapshotRate entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotrate" package.
+	SnapshotRatesInverseTable = "snapshot_rates"
+	// SnapshotRatesColumn is the table column denoting the snapshot_rates relation/edge.
+	SnapshotRatesColumn = "household_id"
 	// HouseholdCurrenciesTable is the table that holds the household_currencies relation/edge.
 	HouseholdCurrenciesTable = "household_currencies"
 	// HouseholdCurrenciesInverseTable is the table name for the HouseholdCurrency entity.
@@ -365,6 +374,20 @@ func BySnapshotEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// BySnapshotRatesCount orders the results by snapshot_rates count.
+func BySnapshotRatesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotRatesStep(), opts...)
+	}
+}
+
+// BySnapshotRates orders the results by snapshot_rates terms.
+func BySnapshotRates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotRatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByHouseholdCurrenciesCount orders the results by household_currencies count.
 func ByHouseholdCurrenciesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -474,6 +497,13 @@ func newSnapshotEntriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SnapshotEntriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotEntriesTable, SnapshotEntriesColumn),
+	)
+}
+func newSnapshotRatesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotRatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotRatesTable, SnapshotRatesColumn),
 	)
 }
 func newHouseholdCurrenciesStep() *sqlgraph.Step {

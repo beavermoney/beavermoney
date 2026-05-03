@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 
+	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/snapshot"
@@ -24,6 +26,7 @@ type SnapshotRateQuery struct {
 	order            []snapshotrate.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.SnapshotRate
+	withHousehold    *HouseholdQuery
 	withSnapshot     *SnapshotQuery
 	withFromCurrency *HouseholdCurrencyQuery
 	withToCurrency   *HouseholdCurrencyQuery
@@ -63,6 +66,28 @@ func (_q *SnapshotRateQuery) Unique(unique bool) *SnapshotRateQuery {
 func (_q *SnapshotRateQuery) Order(o ...snapshotrate.OrderOption) *SnapshotRateQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QueryHousehold chains the current query on the "household" edge.
+func (_q *SnapshotRateQuery) QueryHousehold() *HouseholdQuery {
+	query := (&HouseholdClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(snapshotrate.Table, snapshotrate.FieldID, selector),
+			sqlgraph.To(household.Table, household.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, snapshotrate.HouseholdTable, snapshotrate.HouseholdColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QuerySnapshot chains the current query on the "snapshot" edge.
@@ -323,6 +348,7 @@ func (_q *SnapshotRateQuery) Clone() *SnapshotRateQuery {
 		order:            append([]snapshotrate.OrderOption{}, _q.order...),
 		inters:           append([]Interceptor{}, _q.inters...),
 		predicates:       append([]predicate.SnapshotRate{}, _q.predicates...),
+		withHousehold:    _q.withHousehold.Clone(),
 		withSnapshot:     _q.withSnapshot.Clone(),
 		withFromCurrency: _q.withFromCurrency.Clone(),
 		withToCurrency:   _q.withToCurrency.Clone(),
@@ -331,6 +357,17 @@ func (_q *SnapshotRateQuery) Clone() *SnapshotRateQuery {
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithHousehold tells the query-builder to eager-load the nodes that are connected to
+// the "household" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *SnapshotRateQuery) WithHousehold(opts ...func(*HouseholdQuery)) *SnapshotRateQuery {
+	query := (&HouseholdClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withHousehold = query
+	return _q
 }
 
 // WithSnapshot tells the query-builder to eager-load the nodes that are connected to
@@ -372,12 +409,12 @@ func (_q *SnapshotRateQuery) WithToCurrency(opts ...func(*HouseholdCurrencyQuery
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		HouseholdID int `json:"household_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.SnapshotRate.Query().
-//		GroupBy(snapshotrate.FieldCreateTime).
+//		GroupBy(snapshotrate.FieldHouseholdID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *SnapshotRateQuery) GroupBy(field string, fields ...string) *SnapshotRateGroupBy {
@@ -395,11 +432,11 @@ func (_q *SnapshotRateQuery) GroupBy(field string, fields ...string) *SnapshotRa
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		HouseholdID int `json:"household_id,omitempty"`
 //	}
 //
 //	client.SnapshotRate.Query().
-//		Select(snapshotrate.FieldCreateTime).
+//		Select(snapshotrate.FieldHouseholdID).
 //		Scan(ctx, &v)
 func (_q *SnapshotRateQuery) Select(fields ...string) *SnapshotRateSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -437,6 +474,12 @@ func (_q *SnapshotRateQuery) prepareQuery(ctx context.Context) error {
 		}
 		_q.sql = prev
 	}
+	if snapshotrate.Policy == nil {
+		return errors.New("ent: uninitialized snapshotrate.Policy (forgotten import ent/runtime?)")
+	}
+	if err := snapshotrate.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -444,7 +487,8 @@ func (_q *SnapshotRateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	var (
 		nodes       = []*SnapshotRate{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
+			_q.withHousehold != nil,
 			_q.withSnapshot != nil,
 			_q.withFromCurrency != nil,
 			_q.withToCurrency != nil,
@@ -470,6 +514,12 @@ func (_q *SnapshotRateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := _q.withHousehold; query != nil {
+		if err := _q.loadHousehold(ctx, query, nodes, nil,
+			func(n *SnapshotRate, e *Household) { n.Edges.Household = e }); err != nil {
+			return nil, err
+		}
 	}
 	if query := _q.withSnapshot; query != nil {
 		if err := _q.loadSnapshot(ctx, query, nodes, nil,
@@ -497,6 +547,35 @@ func (_q *SnapshotRateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	return nodes, nil
 }
 
+func (_q *SnapshotRateQuery) loadHousehold(ctx context.Context, query *HouseholdQuery, nodes []*SnapshotRate, init func(*SnapshotRate), assign func(*SnapshotRate, *Household)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*SnapshotRate)
+	for i := range nodes {
+		fk := nodes[i].HouseholdID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(household.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "household_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (_q *SnapshotRateQuery) loadSnapshot(ctx context.Context, query *SnapshotQuery, nodes []*SnapshotRate, init func(*SnapshotRate), assign func(*SnapshotRate, *Snapshot)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*SnapshotRate)
@@ -612,6 +691,9 @@ func (_q *SnapshotRateQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != snapshotrate.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if _q.withHousehold != nil {
+			_spec.Node.AddColumnOnce(snapshotrate.FieldHouseholdID)
 		}
 		if _q.withSnapshot != nil {
 			_spec.Node.AddColumnOnce(snapshotrate.FieldSnapshotID)

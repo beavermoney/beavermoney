@@ -607,6 +607,28 @@ type Household implements Node {
     """
     where: SnapshotEntryWhereInput
   ): SnapshotEntryConnection!
+  snapshotRates(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: Cursor
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: Cursor
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    """
+    Filtering options for SnapshotRates returned from the connection.
+    """
+    where: SnapshotRateWhereInput
+  ): SnapshotRateConnection!
   householdCurrencies: [HouseholdCurrency!]
   householdRates: [HouseholdRate!]
   userHouseholds: [UserHousehold!]
@@ -1048,6 +1070,11 @@ input HouseholdWhereInput {
   """
   hasSnapshotEntries: Boolean
   hasSnapshotEntriesWith: [SnapshotEntryWhereInput!]
+  """
+  snapshot_rates edge predicates
+  """
+  hasSnapshotRates: Boolean
+  hasSnapshotRatesWith: [SnapshotRateWhereInput!]
   """
   household_currencies edge predicates
   """
@@ -2245,12 +2272,14 @@ input SnapshotEntryWhereInput {
 
 type SnapshotRate implements Node {
   id: ID!
+  householdID: ID!
   createTime: Time!
   updateTime: Time!
   rate: String!
   snapshotID: ID!
   fromHouseholdCurrencyID: ID!
   toHouseholdCurrencyID: ID!
+  household: Household!
   snapshot: Snapshot!
   fromCurrency: HouseholdCurrency!
   toCurrency: HouseholdCurrency!
@@ -2308,6 +2337,13 @@ input SnapshotRateWhereInput {
   idLT: ID
   idLTE: ID
   """
+  household_id field predicates
+  """
+  householdID: ID
+  householdIDNEQ: ID
+  householdIDIn: [ID!]
+  householdIDNotIn: [ID!]
+  """
   create_time field predicates
   """
   createTime: Time
@@ -2361,6 +2397,11 @@ input SnapshotRateWhereInput {
   toHouseholdCurrencyIDNEQ: ID
   toHouseholdCurrencyIDIn: [ID!]
   toHouseholdCurrencyIDNotIn: [ID!]
+  """
+  household edge predicates
+  """
+  hasHousehold: Boolean
+  hasHouseholdWith: [HouseholdWhereInput!]
   """
   snapshot edge predicates
   """
