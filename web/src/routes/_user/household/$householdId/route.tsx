@@ -1,5 +1,4 @@
 import {
-  ChevronDownIcon,
   EyeIcon,
   EyeOffIcon,
   Moon,
@@ -286,30 +285,33 @@ function RouteComponent() {
                         <BreadcrumbList></BreadcrumbList>
                       </Breadcrumb>
                     </div>
-                    <div className="flex items-stretch divide-x border-l">
+                    <div className="border-border flex divide-x divide-solid">
                       {!isOnSettingsPage && (
-                        <ViewScopeSwitcher fragmentRef={data.household} />
+                        <div className="border-y-0">
+                          <ViewScopeSwitcher fragmentRef={data.household} />
+                        </div>
                       )}
                       {currencies.length > 1 && (
                         <DropdownMenu>
                           <DropdownMenuTrigger
                             render={
-                              <Button
-                                variant="ghost"
-                                className="h-10 cursor-pointer gap-1 rounded-none px-3 font-mono text-xs"
-                              >
-                                {activeCurrencyCode || 'Currency'}
-                                <ChevronDownIcon />
-                              </Button>
+                              <div className="border-y-0">
+                                <Button
+                                  variant="ghost"
+                                  className="h-10 cursor-pointer rounded-none px-2 font-mono text-xs"
+                                >
+                                  {activeCurrencyCode || 'Currency'}
+                                </Button>
+                              </div>
                             }
-                          ></DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          />
+                          <DropdownMenuContent align="end" className="min-w-0">
                             {currencies.map((hc) => (
                               <DropdownMenuItem
                                 key={hc.id}
                                 onClick={() => handleCurrencyChange(hc.id)}
                                 className={cn(
-                                  'font-mono',
+                                  'justify-center font-mono',
                                   hc.id === displayCurrencyId && 'font-bold',
                                 )}
                               >
@@ -319,30 +321,36 @@ function RouteComponent() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       )}
-                      <SnapshotDialog fragmentRef={data.household} />
-                      <Button
-                        variant="ghost"
-                        className="size-10 shrink-0 cursor-pointer rounded-none"
-                        onClick={() => {
-                          commitLocalUpdate(environment, (store) => {
-                            store.invalidateStore()
-                          })
-                          router.invalidate()
-                        }}
-                      >
-                        <RefreshCwIcon />
-                      </Button>
+                      <div className="border-y-0">
+                        <SnapshotDialog fragmentRef={data.household} />
+                      </div>
+                      <div className="border-y-0">
+                        <Button
+                          variant="ghost"
+                          className="size-10 shrink-0 cursor-pointer rounded-none"
+                          onClick={() => {
+                            commitLocalUpdate(environment, (store) => {
+                              store.invalidateStore()
+                            })
+                            router.invalidate()
+                          }}
+                        >
+                          <RefreshCwIcon />
+                        </Button>
+                      </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
-                            <Button
-                              variant="ghost"
-                              className="size-10 shrink-0 cursor-pointer rounded-none"
-                            >
-                              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                              <span className="sr-only">Toggle theme</span>
-                            </Button>
+                            <div className="border-y-0">
+                              <Button
+                                variant="ghost"
+                                className="size-10 shrink-0 cursor-pointer rounded-none"
+                              >
+                                <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                                <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                                <span className="sr-only">Toggle theme</span>
+                              </Button>
+                            </div>
                           }
                         ></DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

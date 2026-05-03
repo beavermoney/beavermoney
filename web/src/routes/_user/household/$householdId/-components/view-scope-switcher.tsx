@@ -1,6 +1,6 @@
 import { graphql } from 'relay-runtime'
 import { useFragment } from 'react-relay'
-import { CheckIcon, ChevronDownIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { UserIcon, UsersIcon } from 'lucide-react'
 import type { viewScopeSwitcherFragment$key } from './__generated__/viewScopeSwitcherFragment.graphql'
 import {
   DropdownMenu,
@@ -16,13 +16,9 @@ const ViewScopeSwitcherFragment = graphql`
   fragment viewScopeSwitcherFragment on Household {
     userHouseholds {
       id
-      # eslint-disable-next-line relay/unused-fields
-      role
       user {
         id
         name
-        # eslint-disable-next-line relay/unused-fields
-        email
       }
     }
   }
@@ -59,27 +55,20 @@ export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
             data-testid="view-scope-switcher-trigger"
           >
             {activeMember ? (
-              <UserIcon className="size-3" />
+              <UserIcon className="size-4" />
             ) : (
-              <UsersIcon className="size-3" />
+              <UsersIcon className="size-4" />
             )}
             {activeLabel}
-            <ChevronDownIcon className="size-3" />
           </Button>
         }
-      ></DropdownMenuTrigger>
+      />
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           onClick={() => setViewUserId(null)}
           className={cn('gap-2', viewUserId === null && 'font-bold')}
         >
-          <CheckIcon
-            className={cn(
-              'size-3',
-              viewUserId === null ? 'opacity-100' : 'opacity-0',
-            )}
-          />
-          <UsersIcon className="size-3" />
+          <UsersIcon className="size-4" />
           Combined
         </DropdownMenuItem>
         {userHouseholds.map((uh) => (
@@ -88,13 +77,7 @@ export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
             onClick={() => setViewUserId(uh.user.id)}
             className={cn('gap-2', viewUserId === uh.user.id && 'font-bold')}
           >
-            <CheckIcon
-              className={cn(
-                'size-3',
-                viewUserId === uh.user.id ? 'opacity-100' : 'opacity-0',
-              )}
-            />
-            <UserIcon className="size-3" />
+            <UserIcon className="size-4" />
             {uh.user.name}
           </DropdownMenuItem>
         ))}
