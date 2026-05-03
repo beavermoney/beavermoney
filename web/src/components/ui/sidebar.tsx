@@ -262,7 +262,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       className={cn(
-        'size-10 shrink-0 rounded-none [&_svg:not([class*=size-])]:size-4',
+        'size-10 shrink-0 rounded-none border-0 bg-clip-border [&_svg:not([class*=size-])]:size-4',
         className,
       )}
       onClick={(event) => {
