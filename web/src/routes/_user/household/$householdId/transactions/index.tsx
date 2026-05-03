@@ -37,7 +37,7 @@ const query = graphql`
 
 // Filter transactions by "any entry's account is owned by viewUserId" so
 // cross-user transfers (Alice -> Bob) appear in BOTH users' individual views.
-// Mirrors the backend predicate in gql/helpers.go::applyViewUserIDTransactionFilter.
+// Mirrors the backend predicate in gql/helpers.go::transactionCount.
 function buildTransactionWhere(
   startDate: string,
   endDate: string,

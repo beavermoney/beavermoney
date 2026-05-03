@@ -231,26 +231,30 @@ func (r *financialReportResolver) transactionCount(
 ) (int, error) {
 	householdID := contextkeys.GetHouseholdID(ctx)
 
-	query := r.entClient.Transaction.Query().
-		Modify(func(s *sql.Selector) {
-			// Filter by household
-			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
+	query := r.entClient.Transaction.Query()
+	if viewUserID != nil {
+		query = query.Where(transaction.HasTransactionEntriesWith(
+			transactionentry.HasAccountWith(
+				account.UserIDEQ(*viewUserID),
+			),
+		))
+	}
 
-			// Filter out excluded transactions
-			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
+	count, err := query.Modify(func(s *sql.Selector) {
+		// Filter by household
+		s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
 
-			applyViewUserIDTransactionFilter(s, viewUserID)
+		// Filter out excluded transactions
+		s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
 
-			// Apply time filters
-			if !obj.StartDate.IsZero() {
-				s.Where(sql.GTE(s.C(transaction.FieldDatetime), obj.StartDate))
-			}
-			if !obj.EndDate.IsZero() {
-				s.Where(sql.LT(s.C(transaction.FieldDatetime), obj.EndDate))
-			}
-		})
-
-	count, err := query.Count(ctx)
+		// Apply time filters
+		if !obj.StartDate.IsZero() {
+			s.Where(sql.GTE(s.C(transaction.FieldDatetime), obj.StartDate))
+		}
+		if !obj.EndDate.IsZero() {
+			s.Where(sql.LT(s.C(transaction.FieldDatetime), obj.EndDate))
+		}
+	}).Count(ctx)
 	if err != nil {
 		r.logger.Error("Failed to count transactions", "error", err)
 		return 0, err
@@ -259,26 +263,15 @@ func (r *financialReportResolver) transactionCount(
 	return count, nil
 }
 
-func applyViewUserIDTransactionFilter(s *sql.Selector, viewUserID *int) {
-	if viewUserID == nil {
-		return
-	}
-
-	transaction.HasTransactionEntriesWith(
-		transactionentry.HasAccountWith(
-			account.UserIDEQ(*viewUserID),
-		),
-	)(s)
-}
-
 // applyViewUserIDEntryFilter restricts the joined transaction_entries (te) to
 // rows whose account belongs to viewUserID. Use this in aggregations where
 // SUM(te.amount) must reflect only the user's own slice of multi-entry
 // transactions (e.g. expense/income with cross-user fees, transfers).
 //
-// Differs from applyViewUserIDTransactionFilter, which decides transaction-level
-// inclusion via EXISTS but lets the outer SUM see all sibling entries — wrong
-// when a transaction spans multiple users' accounts.
+// For transaction-level inclusion (counts, lists), use the ent predicate
+// directly: q.Where(transaction.HasTransactionEntriesWith(...)). That form is
+// set-membership only — the outer SUM still sees every sibling entry, which
+// is wrong when a transaction spans multiple users' accounts.
 func applyViewUserIDEntryFilter(
 	s *sql.Selector,
 	te *sql.SelectTable,
