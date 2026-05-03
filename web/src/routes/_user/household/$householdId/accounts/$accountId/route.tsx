@@ -253,8 +253,7 @@ function RouteComponent() {
         <div className="fixed right-4 bottom-4 lg:absolute">
           <Button
             nativeButton={true}
-            size="icon-xl"
-            className="rounded-full"
+            size="icon-lg"
             onClick={() =>
               openLogTransaction(
                 accountData.type === 'investment' ? 'buy' : 'expense',

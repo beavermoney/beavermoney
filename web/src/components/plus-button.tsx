@@ -20,6 +20,7 @@ export const PlusButton = ({
       <Button
         nativeButton={true}
         disabled
+        size="icon-lg"
         aria-disabled="true"
         title={disabledTitle}
         data-testid={dataTestId}
@@ -31,7 +32,7 @@ export const PlusButton = ({
 
   return (
     <Link {...linkProps}>
-      <Button nativeButton={true} data-testid={dataTestId}>
+      <Button nativeButton={true} data-testid={dataTestId} size="icon-lg">
         <PlusIcon />
       </Button>
     </Link>

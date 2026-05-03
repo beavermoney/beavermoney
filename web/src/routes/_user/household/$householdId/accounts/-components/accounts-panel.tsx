@@ -230,6 +230,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <Button
           variant="outline"
           nativeButton={true}
+          size="icon-lg"
           className="bg-background dark:bg-card"
           onClick={handleRefresh}
           disabled={isRefreshInFlight}
