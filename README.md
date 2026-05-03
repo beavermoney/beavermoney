@@ -1,203 +1,140 @@
-<div align="center">
-  <img src="web/public/favicon.svg" alt="Beaver Money" width="96" height="96" />
+<p align="center">
+  <img src="web/public/assets/logo.png" alt="Beaver Money" width="140" height="140" />
+</p>
 
-  <h1>Beaver Money</h1>
+<h1 align="center">Beaver Money</h1>
 
-  <p><strong>Log your transactions. Build your dam.</strong></p>
+<p align="center">Log your transactions. Build your dam.</p>
 
-  <p>An open-source, self-hostable personal finance app for people who want to own and understand their numbers.</p>
+<br />
 
-  <p>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-737373?style=flat" alt="AGPL-3.0" /></a>
-    <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.26-00ADD8?style=flat&logo=go&logoColor=white" alt="Go 1.26" /></a>
-    <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white" alt="React 19" /></a>
-    <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript 5.9" /></a>
-    <a href="https://www.postgresql.org"><img src="https://img.shields.io/badge/Postgres-17-4169E1?style=flat&logo=postgresql&logoColor=white" alt="Postgres 17" /></a>
-    <a href="https://relay.dev"><img src="https://img.shields.io/badge/Data-Relay%2020-F26B00?style=flat" alt="Relay 20" /></a>
-  </p>
-</div>
+A self-hostable personal finance app. You log each transaction yourself, and it tracks accounts, investments, recurring subscriptions, and balance snapshots across as many households and currencies as you need. Open source, AGPL-3.0.
 
----
+The hand-logging is the point. A transaction takes a few seconds to enter, and the act of typing it in is what makes you aware of your spending. Do it for a few weeks and patterns surface on their own; the surprises in your statement stop being surprises. Auto-import would save you those few seconds and cost you the awareness, which is the whole reason to use the app.
 
-## What it is
+## What it does
 
-Beaver Money tracks transactions, accounts, investments (stocks and crypto), recurring subscriptions, and balance snapshots across multiple households and currencies. It is open source and built to be self-hosted.
+- **Multi-household.** Switch between personal, family, or shared finances. Per-household roles for members and admins.
+- **Multi-currency.** Pick a display currency per household. FX conversion happens at the value, with the native amount kept visible. Rates from [Frankfurter](https://www.frankfurter.app/).
+- **Transactions.** Double-entry money movements with category, datetime, description, and per-account entries.
+- **Accounts.** Cash, bank, credit, investment, property, receivable, liability, and generic asset roles. Each with its own currency.
+- **Investments.** Stocks and crypto with live quotes ([EODHD](https://eodhd.com/) when configured, Yahoo Finance fallback). Lots tie back to transactions for accurate cost basis.
+- **Recurring subscriptions.** Track active subscriptions with renewal cadence and cost.
+- **Snapshots.** Point-in-time balances with FX rates captured at that moment, so historical net worth stays accurate to the day it was taken.
+- **Privacy mode.** Mask financial values for shared screens or screen recordings. Charts and totals stay coherent under the mask.
+- **Keyboard-first.** Command menu (cmdk) for navigation. Real focus rings. Every action reachable without a mouse.
 
-Existing tools fall short. Mint and its successors treat finance as content: ads, unwanted insights, gamified savings. Spreadsheets treat it as a chore. Beaver Money treats it as a craft. Small, deliberate entries accumulate into an accurate picture you can trust, the way a beaver's daily work becomes a dam.
+## Tech
 
-Three months in, the goal is simple. You open the app, look at your net worth, your cash flow, and your category breakdown, and you feel *this is real, I understand it, no surprises*.
+| Layer    | Tools                                                                              |
+| -------- | ---------------------------------------------------------------------------------- |
+| Backend  | Go 1.26, Chi, [Ent](https://entgo.io/) (ORM), [gqlgen](https://gqlgen.com/) (GraphQL), JWT + Goth (Google OAuth) |
+| Frontend | React 19, Vite, [TanStack Router](https://tanstack.com/router), [Relay](https://relay.dev/), Tailwind 4, shadcn/ui (`base-mira`) |
+| Data     | PostgreSQL 17, Redis, Frankfurter (FX), EODHD or Yahoo (market quotes)             |
+| Tooling  | [mise](https://mise.jdx.dev/) (toolchain), [just](https://github.com/casey/just) (commands), [Atlas](https://atlasgo.io/) (migrations), Air (hot reload) |
 
-## Who it's for
+GraphQL is the only transport. No REST shims. Relay is the only client. Identity is a JWT bearer token plus `X-Household-ID` and `X-Display-Currency-ID` headers.
 
-1. **Hands-on finance enthusiasts** who log transactions on purpose, instead of relying on bank-sync automation.
-2. **Self-hosters and privacy-conscious users** who want their data on their own infrastructure, with no telemetry and no upsell.
-3. **Multi-person households** who need a shared financial picture across partners, roommates, or families.
+## Quick start
 
-Multi-household and multi-currency matter to all three groups. They are defining features, not optional extras.
-
-## Principles
-
-1. **Accuracy is the feature.** Numbers are true and traceable. Converted values say so. Privacy mode masks; it never lies.
-2. **Manual logging is intentional.** Keyboard-first input, considered defaults, no autopilot.
-3. **Builder, not bank.** Sharp corners, dense layouts, type discipline. The aesthetic of a thoughtful tool, not a service sold to you.
-4. **Plural by default.** Multi-household and multi-currency are first-class, not premium add-ons.
-5. **Open about being open.** Self-hosting and the AGPL license are not fine print. They are part of why Beaver Money exists.
-
-The full strategic and visual stance lives in [`PRODUCT.md`](./PRODUCT.md) and [`DESIGN.md`](./DESIGN.md).
-
-## Features
-
-- **Transactions** with categories, date-range views, and multi-entry support, so a single transaction can move money between accounts.
-- **Accounts** organized by type or by your own categories, with running balances and inline FX conversion.
-- **Investments** for stocks and crypto, with live quotes from EODHD or Yahoo Finance, lot tracking, and per-account rollups.
-- **Recurring subscriptions** at weekly, monthly, yearly, or custom intervals, with next-payment forecasting.
-- **Balance snapshots** that pin FX rates at the moment of capture, so historical net worth stays accurate as currencies move.
-- **Multi-household** with per-household roles (admin, member) and a household switcher that is always one click away.
-- **Multi-currency** with a display-currency picker, the original amount shown next to the converted one, and FX rates from Frankfurter.
-- **Privacy mode** that masks values without breaking layouts or chart proportions.
-- **Keyboard-first navigation**, including a `cmdk` command menu reachable from anywhere in the app.
-- **Color-blind-aware charts** built on seven semantic roles: net worth, liquidity, investment, property, receivable, liability, asset.
-- **WCAG 2.2 AA** as the accessibility target, with `prefers-reduced-motion` respected throughout.
-
-## Tech stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Go 1.26, Chi v5, gqlgen, Ent ORM |
-| Database | PostgreSQL 17, Atlas migrations |
-| Cache | Redis 8 |
-| Auth | JWT and Goth (Google OAuth) |
-| Frontend | React 19, Vite 7, TypeScript 5.9 |
-| Routing | TanStack Router |
-| Data | Relay 20 (single GraphQL endpoint) |
-| Styling | Tailwind CSS 4, shadcn/ui (`base-mira`) |
-| Charts | Recharts, Nivo Sankey |
-| FX rates | Frankfurter |
-| Market data | EODHD or Yahoo Finance |
-| Observability | Sentry, OpenTelemetry |
-
-## Getting started
-
-### Prerequisites
-
-[mise](https://mise.jdx.dev/) pins every toolchain version this repo expects (Go, Node, pnpm, just, atlas, watchexec, air, docker-compose). Install mise once, then run:
+You will need [mise](https://mise.jdx.dev/) and Docker.
 
 ```bash
+# 1. Install all toolchains (Go, Node, pnpm, Atlas, Air, just, watchexec)
 mise install
-```
 
-### First-time setup
-
-```bash
-# 1. Install web dependencies
+# 2. Install web dependencies
 just install-web
 
-# 2. Create env files
+# 3. Copy env files
 cp .env.example .env
 cp web/.env.example web/.env
 
-# 3. Generate secrets and paste them into .env
+# 4. Generate secrets and paste them into .env
 openssl rand -base64 32  # SESSION_SECRET
 openssl rand -base64 32  # JWT_SECRET
 
-# 4. Start Postgres, Redis, and Frankfurter
+# 5. Start Postgres, Redis, and Frankfurter
 just compose up
+
+# 6. Start the Go server (auto-runs migrations and seeds demo data in dev)
+just server
+
+# 7. In another terminal, start the Vite dev server
+just web
+
+# 8. In a third terminal, watch the GraphQL schema and rebuild Relay artifacts
+just dev
 ```
 
-### Run the app
+Open http://localhost:5173. In development, `/auth/local/callback` issues a JWT for the seeded demo user, so you can poke around without configuring OAuth. For full Google OAuth, fill in `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URL` in `.env`.
 
-In three terminals:
+The GraphQL endpoint and playground both live at http://localhost:3000.
 
-```bash
-just server   # Go backend on :3000 (hot-reload via air)
-just web      # Vite dev server on :5173
-just dev      # GraphQL schema merge + Relay compiler watcher
-```
-
-Open [http://localhost:5173](http://localhost:5173). The dev server seeds a demo household on startup, so the app is usable right away. A dev-only login shortcut signs you in as `joey@beavermoney.app`, so you do not need to configure OAuth to try things out.
-
-For more detail, see [`docs/development.md`](./docs/development.md).
-
-## Self-hosting
-
-Self-hosting is the intended path. The backend compiles to a single Go binary. The frontend builds to static files via Vite. You bring PostgreSQL, Redis, and (optionally) a Frankfurter instance for FX rates. Copy the env vars from [`.env.example`](./.env.example), build, and run.
-
-Official container images are on the roadmap. Until then, [`docker-compose.dev.yml`](./docker-compose.dev.yml) shows which services are involved and how they connect.
-
-## Project layout
+## Layout
 
 ```
 beavermoney/
-├── cmd/server/      Go HTTP entry: Chi, JWT, OAuth, migrations, seed
-├── ent/             Ent ORM (schemas in ent/schema/, rest is generated)
-├── gql/             GraphQL resolvers and schema (gqlgen)
-├── internal/        Currencies, FX client, market quotes, seed data
-├── web/             React 19 frontend (Vite + TanStack Router + Relay)
-├── docs/            Development docs
-├── PRODUCT.md       Strategic stance, audiences, principles
-├── DESIGN.md        Visual system: tokens, components, do's and don'ts
-├── relay.graphql    Merged GraphQL schema (auto-generated)
-├── justfile         Task runner commands
-└── docker-compose.dev.yml
+├── cmd/server/        # Go HTTP server (Chi, JWT, OAuth)
+├── ent/schema/        # Database schema (Ent)
+├── ent/rules/         # Privacy rules (multi-household access control)
+├── gql/               # GraphQL schema and resolvers (gqlgen)
+├── internal/          # Frankfurter client, market quotes, currencies, seed data
+├── web/               # React frontend (Vite + Relay)
+├── docs/              # Development guides
+└── relay.graphql      # Merged schema (auto-generated, do not edit)
 ```
 
-Module-level knowledge lives in [`AGENTS.md`](./AGENTS.md) and [`web/AGENTS.md`](./web/AGENTS.md).
+Deeper notes for contributors live in [`AGENTS.md`](./AGENTS.md), with module-specific docs in [`gql/AGENTS.md`](./gql/AGENTS.md) and [`web/AGENTS.md`](./web/AGENTS.md).
 
-## How it works
-
-Schema flows in one direction:
+## Codegen
 
 ```
 ent/schema/*.go
-  → go generate (Ent + entgql)
-    → ent/*.go and gql/ent.graphql
+  → just codegen        # Ent + gqlgen
+    → gql/ent.graphql
       → scripts/merge-graphql.js
         → relay.graphql
-          → relay-compiler
-            → __generated__/*.graphql.ts (Relay artifacts)
+          → just relay  # Relay compiler
+            → **/__generated__/*.graphql.ts
 ```
 
-`just dev` watches the GraphQL files and runs the merge plus the Relay compiler. After any schema change, run `just codegen`. Generated files are committed to the repo, but never edited by hand.
+After changing any schema: run `just codegen && just relay` and commit the regenerated artifacts. During development, `just dev` watches and runs the merge plus Relay compiler automatically.
 
-## Status
+## Design
 
-Where the project stands today:
+The product and visual stance live alongside the code:
 
-**Working.** Transactions, accounts, investments (stocks and crypto), recurring subscriptions, snapshots, multi-household, multi-currency, privacy mode, Google OAuth, keyboard navigation, color-blind-aware charts.
+- [`PRODUCT.md`](./PRODUCT.md): users, brand personality, anti-references, accessibility commitments.
+- [`DESIGN.md`](./DESIGN.md): the visual system. Color tokens (oklch), typography (Inter Variable), spacing, components, do's and don'ts.
+- [`DESIGN.json`](./DESIGN.json): the same system in machine-readable form.
 
-**Not yet.** Refresh tokens, GraphQL subscriptions and WebSocket push, background job queue, scheduled tasks, feature flags, A/B tests, packaged self-host containers, screen-reader summaries for complex charts.
-
-**Open todos.** See the "NOTES" section of [`AGENTS.md`](./AGENTS.md).
+In short: sharp corners, dense type, one warm amber accent, no shadows, no gradients, no SaaS chrome. WCAG 2.2 AA target. `prefers-reduced-motion` respected. Color-blind-safe chart palette.
 
 ## Contributing
 
-Issues and pull requests are welcome.
+Issues and pull requests welcome. Before opening a PR:
 
-Before opening a PR:
+```bash
+cd web && pnpm check    # Prettier, ESLint, TypeScript
+cd web && pnpm test     # Vitest
+golangci-lint run       # Go lint
+go build ./...
+go mod tidy
+```
 
-1. Run `cd web && pnpm check` (Prettier, ESLint, TypeScript).
-2. Run `golangci-lint run` and `go build ./...` for backend changes.
-3. Match the conventions in [`AGENTS.md`](./AGENTS.md), [`web/AGENTS.md`](./web/AGENTS.md), and [`DESIGN.md`](./DESIGN.md). Sharp corners, ghost rings, no em dashes in UX copy.
-4. Keep changes scoped. A bug fix is not a refactor.
+If you changed a schema, run `just codegen` and `just relay` and commit the regenerated artifacts.
 
-For larger changes (new entities, new GraphQL surface, new product surface), open an issue first so we can agree on direction.
+The codebase is opinionated. Keep it that way:
+
+- TypeScript with no `as any` and no `@ts-ignore`.
+- Relay only on the frontend. No `fetch`, no Apollo, no TanStack Query.
+- Tables for tabular data. Cards for summaries. Not the other way around.
+- Tabular numerals on every money value.
+- Don't add bank-sync, auto-categorization, or anything else that bypasses the user typing in a transaction.
+
+The full conventions list is in [`AGENTS.md`](./AGENTS.md).
 
 ## License
 
-[AGPL-3.0](./LICENSE).
-
-Run Beaver Money for your own household with no obligations. If you offer it as a network service to others, the AGPL requires that you publish your modifications under the same license. The license choice is deliberate. Open source is part of what Beaver Money is.
-
-## Acknowledgements
-
-- [Ent](https://entgo.io) and [gqlgen](https://gqlgen.com) for the schema-driven Go-to-GraphQL pipeline.
-- [Relay](https://relay.dev) for declarative data fetching with fragment colocation.
-- [TanStack Router](https://tanstack.com/router) for type-safe file-based routing.
-- [shadcn/ui](https://ui.shadcn.com) for component primitives we can copy, own, and theme.
-- [Frankfurter](https://www.frankfurter.app) for free, reliable FX rates.
-
----
-
-<div align="center">
-  <sub>Built deliberately, in the open.</sub>
-</div>
+[AGPL-3.0](./LICENSE). If you run a modified version as a network service, you must offer the source to your users.
