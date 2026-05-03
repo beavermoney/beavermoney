@@ -68,10 +68,7 @@ import { CommandMenu } from '@/components/command-menu'
 import { LogTransaction } from './transactions/-components/log-transaction'
 import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
 import { SnapshotDialog } from './-components/snapshot-dialog'
-import {
-  HouseholdViewScopeProvider,
-  useHouseholdViewScope,
-} from '@/hooks/use-household-view-scope'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { cn } from '@/lib/utils'
@@ -86,7 +83,7 @@ import { PrivacyAlertDialog } from '@/components/privacy-alert-dialog'
 import { identity } from 'lodash-es'
 import { UserHouseholdProvider } from '@/hooks/use-user-household'
 import { GenericError } from '@/components/generic-error'
-import { getViewUserId } from '@/hooks/view-scope-store'
+import { clearViewUserId, getViewUserId } from '@/hooks/view-scope-store'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
 
 const routeHouseholdIdQuery = graphql`
@@ -132,8 +129,24 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   staleTime: Infinity,
   notFoundComponent: NotFoundError,
   errorComponent: GenericError,
-  beforeLoad: ({ search }) => {
-    if (typeof window !== 'undefined' && !search.view_user_id) {
+  beforeLoad: ({ search, params }) => {
+    if (typeof window === 'undefined') return
+
+    // Wipe view scope when switching to a different household. The view-user-id
+    // belongs to whichever household was active when it was set; carrying it
+    // across households would scope to a user who may not be a member.
+    const previousHouseholdId = localStorage.getItem(
+      LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
+    )
+    if (
+      previousHouseholdId !== null &&
+      previousHouseholdId !== params.householdId
+    ) {
+      clearViewUserId()
+      return
+    }
+
+    if (!search.view_user_id) {
       const stored = getViewUserId()
       if (stored) {
         throw redirect({
@@ -165,7 +178,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
       ).toPromise()
     } catch (error) {
       if (isMembershipRevokedError(error)) {
-        clearHouseholdScopedStorage(params.householdId)
+        clearHouseholdScopedStorage()
         toast.error('You no longer have access to this household.')
         throw redirect({ to: '/household' })
       }
@@ -271,8 +284,7 @@ function RouteComponent() {
     <UserProvider userRef={data.user}>
       <HouseholdProvider householdRef={data.household}>
         <UserHouseholdProvider userHouseholdRef={data.userHousehold}>
-          <HouseholdViewScopeProvider householdId={params.householdId}>
-            <DisplayCurrencyProvider householdRef={data.household}>
+          <DisplayCurrencyProvider householdRef={data.household}>
               <Hotkeys />
               <CommandMenu />
               <SidebarProvider>
@@ -410,8 +422,7 @@ function RouteComponent() {
                   <FloatingLogTransactionWindow fragmentRef={data.household} />
                 )}
               </SidebarProvider>
-            </DisplayCurrencyProvider>
-          </HouseholdViewScopeProvider>
+          </DisplayCurrencyProvider>
         </UserHouseholdProvider>
       </HouseholdProvider>
     </UserProvider>

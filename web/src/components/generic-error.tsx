@@ -1,8 +1,4 @@
-import {
-  ErrorComponentProps,
-  useNavigate,
-  useParams,
-} from '@tanstack/react-router'
+import { ErrorComponentProps, useNavigate } from '@tanstack/react-router'
 import { SearchXIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
@@ -23,17 +19,14 @@ import {
 
 export function GenericError(error: ErrorComponentProps) {
   const navigate = useNavigate()
-  const params = useParams({ strict: false }) as { householdId?: string }
   const isRevoked = isMembershipRevokedError(error.error)
 
   useEffect(() => {
     if (!isRevoked) return
-    if (params.householdId) {
-      clearHouseholdScopedStorage(params.householdId)
-    }
+    clearHouseholdScopedStorage()
     toast.error('You no longer have access to this household.')
     navigate({ to: '/household' })
-  }, [isRevoked, navigate, params.householdId])
+  }, [isRevoked, navigate])
 
   if (isRevoked) {
     return null
