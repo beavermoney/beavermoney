@@ -196,6 +196,7 @@ export function AddMemberDialog({
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                     <Input
+                      data-1p-ignore
                       id={field.name}
                       name={field.name}
                       type="email"
@@ -234,7 +235,7 @@ export function AddMemberDialog({
                         className="w-full"
                         aria-invalid={isInvalid}
                       >
-                        <SelectValue />
+                        <SelectValue className="capitalize" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -255,6 +256,9 @@ export function AddMemberDialog({
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
+                const selectedCurrency = householdCurrencies.find(
+                  (c) => c.id === field.state.value,
+                )
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>
@@ -269,7 +273,9 @@ export function AddMemberDialog({
                         className="w-full"
                         aria-invalid={isInvalid}
                       >
-                        <SelectValue placeholder="Select currency" />
+                        <SelectValue placeholder="Select currency">
+                          {selectedCurrency?.code}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
