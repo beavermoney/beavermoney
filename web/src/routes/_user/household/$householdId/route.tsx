@@ -83,7 +83,7 @@ import { PrivacyAlertDialog } from '@/components/privacy-alert-dialog'
 import { identity } from 'lodash-es'
 import { UserHouseholdProvider } from '@/hooks/use-user-household'
 import { GenericError } from '@/components/generic-error'
-import { clearViewUserId, getViewUserId } from '@/hooks/view-scope-store'
+import { clearViewUserId } from '@/hooks/view-scope-store'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
 
 const routeHouseholdIdQuery = graphql`
@@ -114,13 +114,11 @@ const routeHouseholdIdQuery = graphql`
 const searchSchema = z.object({
   command_open: z.boolean().optional().default(false),
   edit_transaction_id: z.string().nullable().default(null),
-  view_user_id: z.string().nullable().default(null),
 })
 
 const defaultValues = {
   command_open: false,
   edit_transaction_id: null,
-  view_user_id: null,
 }
 
 export const Route = createFileRoute('/_user/household/$householdId')({
@@ -129,7 +127,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   staleTime: Infinity,
   notFoundComponent: NotFoundError,
   errorComponent: GenericError,
-  beforeLoad: ({ search, params }) => {
+  beforeLoad: ({ params }) => {
     if (typeof window === 'undefined') return
 
     // Wipe view scope when switching to a different household. The view-user-id
@@ -143,26 +141,10 @@ export const Route = createFileRoute('/_user/household/$householdId')({
       previousHouseholdId !== params.householdId
     ) {
       clearViewUserId()
-      return
-    }
-
-    if (!search.view_user_id) {
-      const stored = getViewUserId()
-      if (stored) {
-        throw redirect({
-          to: '.',
-          search: (prev: Record<string, unknown>) => ({
-            ...prev,
-            view_user_id: stored,
-          }),
-          replace: true,
-        })
-      }
     }
   },
   loaderDeps: ({ search }) => ({
     editTransactionId: search.edit_transaction_id,
-    viewUserId: search.view_user_id,
   }),
   search: {
     middlewares: [stripSearchParams(defaultValues)],

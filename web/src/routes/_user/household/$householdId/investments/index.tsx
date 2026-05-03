@@ -9,6 +9,7 @@ import { graphql } from 'relay-runtime'
 import { InvestmentsPanel } from './-components/investments-panel'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
+import { getViewUserId } from '@/hooks/view-scope-store'
 import type { investmentsQuery } from './__generated__/investmentsQuery.graphql'
 
 const query = graphql`
@@ -25,14 +26,12 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  loaderDeps: ({ search }) => ({
-    viewUserId: (search as { view_user_id?: string | null }).view_user_id,
-  }),
+  loaderDeps: () => ({ viewUserId: getViewUserId() }),
   loader: ({ deps }) => {
     return loadQuery<investmentsQuery>(
       environment,
       query,
-      { viewUserId: deps.viewUserId ?? null },
+      { viewUserId: deps.viewUserId },
       { fetchPolicy: 'store-or-network' },
     )
   },
@@ -49,7 +48,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      { viewUserId: viewUserId ?? null },
+      { viewUserId },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })
