@@ -23,7 +23,7 @@ export function MobileFabNav() {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button size="icon-lg" className="rounded-full" variant="secondary">
+            <Button size="icon-lg" variant="secondary">
               <Menu className="" />
               <span className="sr-only">Open navigation menu</span>
             </Button>
