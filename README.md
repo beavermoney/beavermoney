@@ -32,8 +32,8 @@ This is a niche, on purpose. If you want auto-import from Plaid or your bank, th
 
 <table>
 <tr>
-<td width="50%"><img src="docs/screenshots/dashboard.png" alt="Household dashboard with net worth, account balances, and a sankey of income vs spending." /></td>
 <td width="50%"><img src="docs/screenshots/transactions.png" alt="Transactions list with date range filtering, category badges, and tabular amounts." /></td>
+<td width="50%"><img src="docs/screenshots/accounts.png" alt="See all of your accounts and stats in one place" /></td>
 </tr>
 <tr>
 <td width="50%"><img src="docs/screenshots/investments.png" alt="Investments view showing holdings grouped by account with lot-level cost basis." /></td>
@@ -44,25 +44,30 @@ This is a niche, on purpose. If you want auto-import from Plaid or your bank, th
 ## Features
 
 **Logging**
+
 - Manual transactions: income, expense, transfer.
 - Custom categories with date-range insights and visual breakdowns.
 - Recurring subscriptions with interval-aware next-payment calculations.
 - Snapshots: capture a point-in-time copy of household balances and FX rates for historical comparison.
 
 **Accounts and investments**
+
 - Seven account categories: liquidity, investment, property, receivable, liability, asset, plus a household-level net-worth view.
 - Lot-level investment tracking with cost basis per lot.
 - Synced market quotes for stocks and crypto via [EODHD](https://eodhd.com/) when configured, with Yahoo Finance as a no-key fallback.
 
 **Currencies**
+
 - Multi-currency accounts with synced FX rates from [Frankfurter](https://github.com/lineofflight/frankfurter).
 - Per-user display currency. Conversion happens on the client from cached household rates, with the original value always one tap away.
 
 **Households**
+
 - Multiple users per household with member, admin, and owner roles.
 - Combined or per-user scope on every value, switchable at the household level.
 
 **Privacy and ownership**
+
 - Privacy-mode masking: one toggle hides every numeric value for screen sharing or screenshots, without breaking layout.
 - Self-hostable. Your data lives where you put it.
 - Open source under [AGPL v3](LICENSE).
@@ -112,19 +117,19 @@ The Go server runs migrations and seeds demo data automatically on startup in de
 
 A monorepo. Go backend serves a single GraphQL endpoint to a React 19 SPA.
 
-| Layer       | Choice                                                       |
-| ----------- | ------------------------------------------------------------ |
-| Backend     | Go 1.26, Chi v5, JWT + Goth (Google OAuth)                   |
-| ORM         | [Ent](https://entgo.io/) with privacy rules per entity       |
-| GraphQL     | [gqlgen](https://gqlgen.com/) (`/query` endpoint)            |
-| Database    | PostgreSQL 17                                                |
-| Cache       | Redis 8.2                                                    |
-| FX rates    | [Frankfurter](https://github.com/lineofflight/frankfurter)   |
-| Market data | [EODHD](https://eodhd.com/) (optional) or Yahoo Finance      |
+| Layer       | Choice                                                         |
+| ----------- | -------------------------------------------------------------- |
+| Backend     | Go 1.26, Chi v5, JWT + Goth (Google OAuth)                     |
+| ORM         | [Ent](https://entgo.io/) with privacy rules per entity         |
+| GraphQL     | [gqlgen](https://gqlgen.com/) (`/query` endpoint)              |
+| Database    | PostgreSQL 17                                                  |
+| Cache       | Redis 8.2                                                      |
+| FX rates    | [Frankfurter](https://github.com/lineofflight/frankfurter)     |
+| Market data | [EODHD](https://eodhd.com/) (optional) or Yahoo Finance        |
 | Frontend    | React 19, Vite, [TanStack Router](https://tanstack.com/router) |
-| Data        | [Relay](https://relay.dev/) (no REST, no Apollo)             |
-| Styling     | Tailwind CSS 4 + shadcn/ui (`base-mira` style)               |
-| Tools       | [mise](https://mise.jdx.dev/) + [just](https://just.systems/) |
+| Data        | [Relay](https://relay.dev/) (no REST, no Apollo)               |
+| Styling     | Tailwind CSS 4 + shadcn/ui (`base-mira` style)                 |
+| Tools       | [mise](https://mise.jdx.dev/) + [just](https://just.systems/)  |
 
 The codebase is intentionally documented for AI-assisted development:
 
