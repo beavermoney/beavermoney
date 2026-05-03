@@ -355,7 +355,7 @@ export function NetWorthChart() {
   return (
     <Item className="w-full flex-col items-stretch gap-0 p-0">
       <ScrollArea className="w-full">
-        <div className="flex gap-1">
+        <div className="flex gap-1 py-px">
           {SERIES.map((s) => {
             const active = activeSeries.has(s.key)
             return (
