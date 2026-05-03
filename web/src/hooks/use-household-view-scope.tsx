@@ -1,23 +1,22 @@
-import { useStore } from '@tanstack/react-store'
-import { useRouter } from '@tanstack/react-router'
-import { identity } from 'lodash-es'
-import {
-  clearViewUserId,
-  setViewUserId as storeSetViewUserId,
-  viewUserIdStore,
-} from './view-scope-store'
+import { useNavigate, useParams } from '@tanstack/react-router'
 
 export function useHouseholdViewScope() {
-  const viewUserId = useStore(viewUserIdStore, identity)
-  const router = useRouter()
+  const params = useParams({
+    from: '/_user/household/$householdId/{-$viewUserId}',
+  })
+  const navigate = useNavigate()
+
+  const viewUserId = params.viewUserId ?? null
 
   const setViewUserId = (next: string | null) => {
-    if (next === null) {
-      clearViewUserId()
-    } else {
-      storeSetViewUserId(next)
-    }
-    void router.invalidate()
+    void navigate({
+      to: '.',
+      params: (prev) => ({
+        ...prev,
+        viewUserId: next ?? undefined,
+      }),
+      replace: true,
+    })
   }
 
   return {

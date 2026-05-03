@@ -95,7 +95,7 @@ function NewHouseholdForm() {
 
   const handleSuccess = (id: string, name: string) => {
     navigate({
-      to: '/household/$householdId',
+      to: '/household/$householdId/{-$viewUserId}',
       params: { householdId: id },
     })
     toast.success(`Welcome to ${name}! Your household is ready.`)
