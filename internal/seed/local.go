@@ -28,6 +28,8 @@ func Seed(
 	frankfurterClient *frankfurter.ClientWithResponses,
 	marketClient *market.Client,
 ) error {
+	// Bypass required: seed runs at server startup before any auth context
+	// exists, so FilterMeOrCoMember has no UserIDKey/HouseholdIDKey to use.
 	alreadySeeded := entClient.User.Query().
 		Where(user.EmailEQ("joey@beavermoney.app")).
 		ExistX(contextkeys.NewPrivacyBypassContext(ctx))
