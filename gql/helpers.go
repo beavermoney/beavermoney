@@ -24,7 +24,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (r *financialReportResolver) aggregateByCategoryType(
+func (r *householdResolver) aggregateByCategoryType(
 	ctx context.Context,
 	obj *model.FinancialReport,
 	categoryType transactioncategory.Type,
@@ -32,7 +32,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 ) (*model.CategoryTypeAggregate, error) {
 	ctx, span := r.tracer.Start(
 		ctx,
-		"financialReportResolver.aggregateByCategoryType",
+		"householdResolver.aggregateByCategoryType",
 	)
 	defer span.End()
 
@@ -224,7 +224,7 @@ func (r *financialReportResolver) aggregateByCategoryType(
 	}, nil
 }
 
-func (r *financialReportResolver) transactionCount(
+func (r *householdResolver) transactionCount(
 	ctx context.Context,
 	obj *model.FinancialReport,
 	viewUserID *int,

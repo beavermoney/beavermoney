@@ -117,7 +117,7 @@ func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 		entClient: client,
 		tracer:    noop.NewTracerProvider().Tracer("test"),
 	}
-	fr := &financialReportResolver{r}
+	fr := &householdResolver{r}
 
 	queryCtx := context.WithValue(
 		bypass,
