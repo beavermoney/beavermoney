@@ -286,6 +286,7 @@ function RouteComponent() {
                       </Breadcrumb>
                     </div>
                     <div className="border-border flex divide-x divide-solid">
+                      <div className="border-y-0" />
                       {!isOnSettingsPage && (
                         <div className="border-y-0">
                           <ViewScopeSwitcher fragmentRef={data.household} />
@@ -298,7 +299,7 @@ function RouteComponent() {
                               <div className="border-y-0">
                                 <Button
                                   variant="ghost"
-                                  className="h-10 cursor-pointer rounded-none px-2 font-mono text-xs"
+                                  className="h-10 cursor-pointer rounded-none border-0 bg-clip-border px-2 font-mono text-xs"
                                 >
                                   {activeCurrencyCode || 'Currency'}
                                 </Button>
@@ -327,7 +328,7 @@ function RouteComponent() {
                       <div className="border-y-0">
                         <Button
                           variant="ghost"
-                          className="size-10 shrink-0 cursor-pointer rounded-none"
+                          className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
                           onClick={() => {
                             commitLocalUpdate(environment, (store) => {
                               store.invalidateStore()
@@ -344,7 +345,7 @@ function RouteComponent() {
                             <div className="border-y-0">
                               <Button
                                 variant="ghost"
-                                className="size-10 shrink-0 cursor-pointer rounded-none"
+                                className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
                               >
                                 <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
                                 <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
@@ -367,7 +368,7 @@ function RouteComponent() {
                       </DropdownMenu>
                       <Button
                         variant="ghost"
-                        className="size-10 shrink-0 cursor-pointer rounded-none"
+                        className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
                         onClick={togglePrivacyMode}
                       >
                         {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}

@@ -132,7 +132,7 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
         render={
           <Button
             variant="ghost"
-            className="size-10 shrink-0 cursor-pointer rounded-none"
+            className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
           >
             <FlagIcon />
           </Button>
