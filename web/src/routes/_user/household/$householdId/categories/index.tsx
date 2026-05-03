@@ -8,6 +8,7 @@ import {
 import { graphql } from 'relay-runtime'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
+import { getViewUserId } from '@/hooks/view-scope-store'
 import type { categoriesQuery } from './__generated__/categoriesQuery.graphql'
 import { CategoriesPanel } from './-components/categories-panel'
 import { parseDateRangeFromURL } from '@/lib/date-range'
@@ -34,7 +35,7 @@ export const Route = createFileRoute(
   loaderDeps: ({ search }) => ({
     start: search.start,
     end: search.end,
-    viewUserId: search.view_user_id,
+    viewUserId: getViewUserId(),
   }),
   loader: ({ deps }) => {
     const period = parseDateRangeFromURL(deps.start, deps.end)
@@ -63,7 +64,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      { ...period, viewUserId: search.view_user_id },
+      { ...period, viewUserId: getViewUserId() },
       {
         fetchPolicy: 'network-only',
       },

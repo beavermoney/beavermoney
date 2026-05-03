@@ -9,6 +9,7 @@ import { graphql } from 'relay-runtime'
 import { AccountsPanel } from './-components/accounts-panel'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
+import { getViewUserId } from '@/hooks/view-scope-store'
 import type { accountsQuery } from './__generated__/accountsQuery.graphql'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
@@ -25,13 +26,7 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
   {
     component: RouteComponent,
     pendingComponent: PendingComponent,
-    loaderDeps: ({ search }) => ({
-      viewUserId:
-        ((search as Record<string, unknown>).view_user_id as
-          | string
-          | null
-          | undefined) ?? null,
-    }),
+    loaderDeps: () => ({ viewUserId: getViewUserId() }),
     loader: ({ deps }) => {
       return loadQuery<accountsQuery>(
         environment,

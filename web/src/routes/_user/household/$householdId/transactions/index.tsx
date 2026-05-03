@@ -9,6 +9,7 @@ import { graphql } from 'relay-runtime'
 import { TransactionsPanel } from './-components/transactions-panel'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
+import { getViewUserId } from '@/hooks/view-scope-store'
 import type { transactionsQuery } from './__generated__/transactionsQuery.graphql'
 import type { TransactionWhereInput } from './-components/__generated__/transactionsListRefetch.graphql'
 import { parseDateRangeFromURL } from '@/lib/date-range'
@@ -60,18 +61,11 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  loaderDeps: ({ search }) => {
-    const fullSearch = search as {
-      start: string
-      end: string
-      view_user_id?: string | null
-    }
-    return {
-      start: fullSearch.start,
-      end: fullSearch.end,
-      viewUserId: fullSearch.view_user_id ?? null,
-    }
-  },
+  loaderDeps: ({ search }) => ({
+    start: search.start,
+    end: search.end,
+    viewUserId: getViewUserId(),
+  }),
   loader: ({ deps }) => {
     const period = parseDateRangeFromURL(deps.start, deps.end)
     const where = buildTransactionWhere(

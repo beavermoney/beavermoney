@@ -9,6 +9,7 @@ import { graphql } from 'relay-runtime'
 
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
+import { getViewUserId } from '@/hooks/view-scope-store'
 
 import { SubscriptionsPanel } from './-components/subscriptions-panel'
 
@@ -28,13 +29,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   pendingComponent: PendingComponent,
-  loaderDeps: ({ search }) => ({
-    viewUserId:
-      ((search as Record<string, unknown>).view_user_id as
-        | string
-        | null
-        | undefined) ?? null,
-  }),
+  loaderDeps: () => ({ viewUserId: getViewUserId() }),
   loader: ({ deps }) => {
     return loadQuery<subscriptionsQuery>(
       environment,
