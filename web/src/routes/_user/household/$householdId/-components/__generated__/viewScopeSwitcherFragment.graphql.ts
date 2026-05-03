@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<485205148d61f38567fa4383e65b925f>>
+ * @generated SignedSource<<8801dbc7551dc05d83d63fdb77ea50a8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,14 +9,11 @@
 // @ts-nocheck
 
 import { ReaderFragment } from 'relay-runtime';
-export type UserHouseholdRole = "admin" | "member" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type viewScopeSwitcherFragment$data = {
   readonly userHouseholds: ReadonlyArray<{
     readonly id: string;
-    readonly role: UserHouseholdRole;
     readonly user: {
-      readonly email: string;
       readonly id: string;
       readonly name: string;
     };
@@ -54,13 +51,6 @@ return {
         {
           "alias": null,
           "args": null,
-          "kind": "ScalarField",
-          "name": "role",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
           "concreteType": "User",
           "kind": "LinkedField",
           "name": "user",
@@ -72,13 +62,6 @@ return {
               "args": null,
               "kind": "ScalarField",
               "name": "name",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "email",
               "storageKey": null
             }
           ],
@@ -93,6 +76,6 @@ return {
 };
 })();
 
-(node as any).hash = "a37b38f1b7c31807c799488e5c0bee66";
+(node as any).hash = "f7466880e7c5ce7526441e8c105556d8";
 
 export default node;
