@@ -115,7 +115,7 @@ type MoveInvestmentInputCustom struct {
 }
 
 type RemoveHouseholdUserPayload struct {
-	RemovedUserHouseholdID int `json:"removedUserHouseholdId"`
+	RemovedUserHouseholdID int `json:"removedUserHouseholdID"`
 }
 
 type SellInvestmentInputCustom struct {

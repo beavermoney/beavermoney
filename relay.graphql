@@ -3530,7 +3530,7 @@ input AddHouseholdUserInput {
 }
 
 type RemoveHouseholdUserPayload {
-  removedUserHouseholdId: ID!
+  removedUserHouseholdID: ID!
 }
 
 input CreateInvestmentInputCustom {
