@@ -285,143 +285,143 @@ function RouteComponent() {
       <HouseholdProvider householdRef={data.household}>
         <UserHouseholdProvider userHouseholdRef={data.userHousehold}>
           <DisplayCurrencyProvider householdRef={data.household}>
-              <Hotkeys />
-              <CommandMenu />
-              <SidebarProvider>
-                <AppSidebar fragmentRef={data} />
-                <SidebarInset>
-                  <header className="bg-background sticky top-0 z-10 flex h-10 shrink-0 items-stretch border-b transition-[width,height] ease-linear">
-                    <SidebarTrigger className="cursor-pointer border-r" />
-                    <div className="flex flex-1 items-center px-3">
-                      <Breadcrumb>
-                        <BreadcrumbList></BreadcrumbList>
-                      </Breadcrumb>
-                    </div>
-                    <div className="border-border flex divide-x divide-solid">
-                      <div className="border-y-0" />
-                      {!isOnSettingsPage && (
-                        <div className="border-y-0">
-                          <ViewScopeSwitcher fragmentRef={data.household} />
-                        </div>
-                      )}
-                      {currencies.length > 1 && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            render={
-                              <div className="border-y-0">
-                                <Button
-                                  variant="ghost"
-                                  className="h-10 cursor-pointer rounded-none border-0 bg-clip-border px-2 font-mono text-xs"
-                                >
-                                  {activeCurrencyCode || 'Currency'}
-                                </Button>
-                              </div>
-                            }
-                          />
-                          <DropdownMenuContent align="end" className="min-w-0">
-                            {currencies.map((hc) => (
-                              <DropdownMenuItem
-                                key={hc.id}
-                                onClick={() => handleCurrencyChange(hc.id)}
-                                className={cn(
-                                  'justify-center font-mono',
-                                  hc.id === displayCurrencyId && 'font-bold',
-                                )}
-                              >
-                                {hc.code}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
+            <Hotkeys />
+            <CommandMenu />
+            <SidebarProvider>
+              <AppSidebar fragmentRef={data} />
+              <SidebarInset>
+                <header className="bg-background sticky top-0 z-10 flex h-10 shrink-0 items-stretch border-b transition-[width,height] ease-linear">
+                  <SidebarTrigger className="cursor-pointer border-r" />
+                  <div className="flex flex-1 items-center px-3">
+                    <Breadcrumb>
+                      <BreadcrumbList></BreadcrumbList>
+                    </Breadcrumb>
+                  </div>
+                  <div className="border-border flex divide-x divide-solid">
+                    <div className="border-y-0" />
+                    {!isOnSettingsPage && (
                       <div className="border-y-0">
-                        <SnapshotDialog fragmentRef={data.household} />
+                        <ViewScopeSwitcher fragmentRef={data.household} />
                       </div>
-                      <div className="border-y-0">
-                        <Button
-                          variant="ghost"
-                          className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
-                          onClick={() => {
-                            commitLocalUpdate(environment, (store) => {
-                              store.invalidateStore()
-                            })
-                            router.invalidate()
-                          }}
-                        >
-                          <RefreshCwIcon />
-                        </Button>
-                      </div>
+                    )}
+                    {currencies.length > 1 && (
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
                             <div className="border-y-0">
                               <Button
                                 variant="ghost"
-                                className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
+                                className="h-10 cursor-pointer rounded-none border-0 bg-clip-border px-2 font-mono text-xs"
                               >
-                                <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                                <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                                <span className="sr-only">Toggle theme</span>
+                                {activeCurrencyCode || 'Currency'}
                               </Button>
                             </div>
                           }
-                        ></DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setTheme('light')}>
-                            Light
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setTheme('dark')}>
-                            Dark
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setTheme('system')}>
-                            System
-                          </DropdownMenuItem>
+                        />
+                        <DropdownMenuContent align="end" className="min-w-0">
+                          {currencies.map((hc) => (
+                            <DropdownMenuItem
+                              key={hc.id}
+                              onClick={() => handleCurrencyChange(hc.id)}
+                              className={cn(
+                                'justify-center font-mono',
+                                hc.id === displayCurrencyId && 'font-bold',
+                              )}
+                            >
+                              {hc.code}
+                            </DropdownMenuItem>
+                          ))}
                         </DropdownMenuContent>
                       </DropdownMenu>
+                    )}
+                    <div className="border-y-0">
+                      <SnapshotDialog fragmentRef={data.household} />
+                    </div>
+                    <div className="border-y-0">
                       <Button
                         variant="ghost"
                         className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
-                        onClick={togglePrivacyMode}
+                        onClick={() => {
+                          commitLocalUpdate(environment, (store) => {
+                            store.invalidateStore()
+                          })
+                          router.invalidate()
+                        }}
                       >
-                        {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
+                        <RefreshCwIcon />
                       </Button>
                     </div>
-                  </header>
-                  <div className="flex flex-1 flex-col">
-                    <Outlet />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <div className="border-y-0">
+                            <Button
+                              variant="ghost"
+                              className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
+                            >
+                              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                              <span className="sr-only">Toggle theme</span>
+                            </Button>
+                          </div>
+                        }
+                      ></DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setTheme('light')}>
+                          Light
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setTheme('dark')}>
+                          Dark
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setTheme('system')}>
+                          System
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button
+                      variant="ghost"
+                      className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
+                      onClick={togglePrivacyMode}
+                    >
+                      {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
+                    </Button>
                   </div>
-                </SidebarInset>
-                <MobileFabNav />
+                </header>
+                <div className="flex flex-1 flex-col">
+                  <Outlet />
+                </div>
+              </SidebarInset>
+              <MobileFabNav />
 
-                {search.edit_transaction_id && (
-                  <Dialog
-                    open={true}
-                    onOpenChange={() =>
-                      navigate({
-                        to: '.',
-                        resetScroll: false,
-                        search: (prev) => ({
-                          ...prev,
-                          edit_transaction_id: null,
-                        }),
-                      })
-                    }
-                  >
-                    <DialogContent>
-                      <Suspense fallback={<PendingComponent />}>
-                        <EditTransactionDialog
-                          transactionId={search.edit_transaction_id}
-                        />
-                      </Suspense>
-                    </DialogContent>
-                  </Dialog>
-                )}
+              {search.edit_transaction_id && (
+                <Dialog
+                  open={true}
+                  onOpenChange={() =>
+                    navigate({
+                      to: '.',
+                      resetScroll: false,
+                      search: (prev) => ({
+                        ...prev,
+                        edit_transaction_id: null,
+                      }),
+                    })
+                  }
+                >
+                  <DialogContent>
+                    <Suspense fallback={<PendingComponent />}>
+                      <EditTransactionDialog
+                        transactionId={search.edit_transaction_id}
+                      />
+                    </Suspense>
+                  </DialogContent>
+                </Dialog>
+              )}
 
-                {/* Desktop: Resizable & Draggable New Transaction Form */}
-                {!isMobile && (
-                  <FloatingLogTransactionWindow fragmentRef={data.household} />
-                )}
-              </SidebarProvider>
+              {/* Desktop: Resizable & Draggable New Transaction Form */}
+              {!isMobile && (
+                <FloatingLogTransactionWindow fragmentRef={data.household} />
+              )}
+            </SidebarProvider>
           </DisplayCurrencyProvider>
         </UserHouseholdProvider>
       </HouseholdProvider>
