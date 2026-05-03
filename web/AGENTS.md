@@ -204,7 +204,7 @@ Provider hierarchy in `$householdId/route.tsx`: UserProvider → HouseholdProvid
 
 - Do NOT use `fetch`/`axios`/`ky` directly for data - Relay only
 - Do NOT create barrel files (except `lib/relay/index.ts`)
-- Do NOT use Lucide icons - Hugeicons only
+- Do NOT use Hugeicons - Lucide (`lucide-react`) only
 - Do NOT use `memo()`/`useMemo()` unnecessarily - React Compiler handles it
 - Do NOT put shared components in `-components/` dirs
 - Do NOT edit `routeTree.gen.ts` or `__generated__/` files

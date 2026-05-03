@@ -26,7 +26,6 @@ const NavUserFragment = graphql`
   fragment navUserFragment on Query {
     user {
       name
-      email
     }
   }
 `
@@ -43,26 +42,24 @@ export function NavUser({ fragmentRef }: { fragmentRef: navUserFragment$key }) {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              >
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={''} alt={data.user.name.slice(0, 2)} />
-                  <AvatarFallback className="rounded-lg">
-                    {data.user.name.slice(0, 2)}
-                  </AvatarFallback>
-                </Avatar>
+              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground gap-1 p-1">
+                <div className="flex size-8 shrink-0 items-center justify-center">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={''} alt={data.user.name.slice(0, 2)} />
+                    <AvatarFallback className="">
+                      {data.user.name.slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{data.user.name}</span>
-                  <span className="truncate text-xs">{data.user.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
             }
-          ></DropdownMenuTrigger>
+          />
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
             side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
@@ -70,9 +67,9 @@ export function NavUser({ fragmentRef }: { fragmentRef: navUserFragment$key }) {
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="h-8 w-8 rounded-lg">
+                  <Avatar className="h-6 w-6">
                     <AvatarImage src={''} alt={data.user.name.slice(0, 2)} />
-                    <AvatarFallback className="rounded-lg">
+                    <AvatarFallback className="">
                       {data.user.name.slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>
@@ -80,7 +77,6 @@ export function NavUser({ fragmentRef }: { fragmentRef: navUserFragment$key }) {
                     <span className="truncate font-medium">
                       {data.user.name}
                     </span>
-                    <span className="truncate text-xs">{data.user.email}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>

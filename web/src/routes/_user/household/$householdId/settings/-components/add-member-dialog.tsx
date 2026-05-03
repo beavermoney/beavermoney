@@ -5,8 +5,7 @@ import * as z from 'zod'
 import { useFragment, useMutation } from 'react-relay'
 import { match } from 'ts-pattern'
 import { useState } from 'react'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { UserAdd01Icon } from '@hugeicons/core-free-icons'
+import { UserPlusIcon } from 'lucide-react'
 
 import type { addMemberDialogFragment$key } from './__generated__/addMemberDialogFragment.graphql'
 import type { addMemberDialogMutation } from './__generated__/addMemberDialogMutation.graphql'
@@ -170,7 +169,7 @@ export function AddMemberDialog({
         render={
           (trigger ?? (
             <Button variant="outline" size="sm">
-              <HugeiconsIcon icon={UserAdd01Icon} />
+              <UserPlusIcon />
               Add member
             </Button>
           )) as React.ReactElement

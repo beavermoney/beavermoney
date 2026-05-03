@@ -13,7 +13,7 @@ import type { LucideIcon } from 'lucide-react'
 // } from '@/components/ui/dropdown-menu'
 import {
   SidebarGroup,
-  SidebarGroupLabel,
+  // SidebarGroupLabel,
   SidebarMenu,
   // SidebarMenuAction,
   SidebarMenuButton,
@@ -37,12 +37,11 @@ export function NavProjects({
 
   return (
     <SidebarGroup className="">
-      <SidebarGroupLabel>Beaver Money</SidebarGroupLabel>
+      {/* <SidebarGroupLabel>Beaver Money</SidebarGroupLabel> */}
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton
-              className="hover:text-primary!"
               onClick={() => {
                 if (isMobile) {
                   setOpenMobile(false)
@@ -51,9 +50,9 @@ export function NavProjects({
               render={
                 <Link
                   {...item.link}
-                  className="group/nav-link hover:text-primary"
+                  className="group/nav-link"
                   activeProps={{
-                    className: 'font-semibold text-primary',
+                    className: 'bg-sidebar-accent',
                   }}
                 >
                   <item.icon />

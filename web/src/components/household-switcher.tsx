@@ -47,10 +47,7 @@ export function HouseholdSwitcher({ fragmentRef }: HouseholdSwitcherProps) {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              >
+              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground gap-1 p-1">
                 <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
                   <Logo size={32} />
                 </div>

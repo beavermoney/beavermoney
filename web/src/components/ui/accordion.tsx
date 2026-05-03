@@ -1,8 +1,7 @@
 import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
 
 import { cn } from '@/lib/utils'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { ArrowDown01Icon, ArrowUp01Icon } from '@hugeicons/core-free-icons'
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 
 function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
   return (
@@ -37,21 +36,17 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-xs/relaxed font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
+          'group/accordion-trigger **:data-[slot=accordion-trigger-icon]:text-muted-foreground relative flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-xs/relaxed font-medium transition-all outline-none hover:underline aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
           className,
         )}
         {...props}
       >
         {children}
-        <HugeiconsIcon
-          icon={ArrowDown01Icon}
-          strokeWidth={2}
+        <ChevronDownIcon
           data-slot="accordion-trigger-icon"
           className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
         />
-        <HugeiconsIcon
-          icon={ArrowUp01Icon}
-          strokeWidth={2}
+        <ChevronUpIcon
           data-slot="accordion-trigger-icon"
           className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
         />

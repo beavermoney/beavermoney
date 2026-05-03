@@ -4,8 +4,7 @@ import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
 import { toast } from 'sonner'
 import { useState } from 'react'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { MoreVerticalIcon } from '@hugeicons/core-free-icons'
+import { MoreVerticalIcon } from 'lucide-react'
 
 import type { membersSettingsFragment$key } from './__generated__/membersSettingsFragment.graphql'
 import type { membersSettingsUpdateRoleMutation } from './__generated__/membersSettingsUpdateRoleMutation.graphql'
@@ -227,7 +226,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                       />
                     }
                   >
-                    <HugeiconsIcon icon={MoreVerticalIcon} className="size-4" />
+                    <MoreVerticalIcon className="size-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem

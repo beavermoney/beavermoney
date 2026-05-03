@@ -130,7 +130,10 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline" className="cursor-pointer">
+          <Button
+            variant="ghost"
+            className="size-10 shrink-0 cursor-pointer rounded-none"
+          >
             <FlagIcon />
           </Button>
         }

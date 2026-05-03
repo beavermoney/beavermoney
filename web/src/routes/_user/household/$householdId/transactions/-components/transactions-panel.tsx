@@ -96,8 +96,6 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
       <div className="fixed right-4 bottom-4 lg:absolute">
         <Button
           nativeButton={true}
-          size="icon-xl"
-          className="rounded-full"
           onClick={() => openLogTransaction('expense')}
           disabled={isViewingOtherUser}
           aria-disabled={isViewingOtherUser}
