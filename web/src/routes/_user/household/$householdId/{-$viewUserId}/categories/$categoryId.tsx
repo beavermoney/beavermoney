@@ -17,6 +17,7 @@ import { TransactionsList } from '../transactions/-components/transactions-list'
 import invariant from 'tiny-invariant'
 import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { identity } from 'lodash-es'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/{-$viewUserId}/categories/$categoryId',
@@ -101,23 +102,25 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div>
-        <Button
-          variant="secondary"
-          onClick={() => navigate({ to: '..', search: identity })}
-        >
-          Back
-        </Button>
+    <HouseholdContentLayout>
+      <div className="flex h-full flex-col gap-4">
+        <div>
+          <Button
+            variant="secondary"
+            onClick={() => navigate({ to: '..', search: identity })}
+          >
+            Back
+          </Button>
+        </div>
+        <Item className="p-0">
+          <CategoryCard
+            categoryRef={data.node}
+            financialReportRef={data.household.financialReport}
+          />
+          <EditCategory key={data.node.id} fragmentRef={data.node} />
+        </Item>
+        <TransactionsList fragmentRef={data.household} />
       </div>
-      <Item className="p-0">
-        <CategoryCard
-          categoryRef={data.node}
-          financialReportRef={data.household.financialReport}
-        />
-        <EditCategory key={data.node.id} fragmentRef={data.node} />
-      </Item>
-      <TransactionsList fragmentRef={data.household} />
-    </div>
+    </HouseholdContentLayout>
   )
 }

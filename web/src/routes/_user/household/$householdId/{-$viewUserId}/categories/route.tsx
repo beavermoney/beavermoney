@@ -1,6 +1,5 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import * as z from 'zod'
-import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { getDateRangeForPreset, DATE_RANGE_PRESETS } from '@/lib/date-range'
 import { format } from 'date-fns'
 import { GenericError } from '@/components/generic-error'
@@ -29,9 +28,5 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  return (
-    <HouseholdContentLayout>
-      <Outlet />
-    </HouseholdContentLayout>
-  )
+  return <Outlet />
 }

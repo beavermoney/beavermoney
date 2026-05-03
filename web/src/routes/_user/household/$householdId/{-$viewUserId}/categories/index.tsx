@@ -11,6 +11,7 @@ import { environment } from '@/environment'
 import type { categoriesQuery } from './__generated__/categoriesQuery.graphql'
 import { CategoriesPanel } from './-components/categories-panel'
 import { parseDateRangeFromURL } from '@/lib/date-range'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const query = graphql`
   query categoriesQuery($startDate: Time!, $endDate: Time!, $viewUserId: ID) {
@@ -69,5 +70,9 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  return <CategoriesPanel fragmentRef={data.household} />
+  return (
+    <HouseholdContentLayout>
+      <CategoriesPanel fragmentRef={data.household} />
+    </HouseholdContentLayout>
+  )
 }
