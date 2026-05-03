@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9b8bee443f70c27979b8f32c36804cb8>>
+ * @generated SignedSource<<b60bbcad19fd317e67638ff3d57f606e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,7 +31,13 @@ export type snapshotDialogFragment$key = {
 };
 
 const node: ReaderFragment = {
-  "argumentDefinitions": [],
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
+    }
+  ],
   "kind": "Fragment",
   "metadata": null,
   "name": "snapshotDialogFragment",
@@ -40,11 +46,20 @@ const node: ReaderFragment = {
       "alias": null,
       "args": [
         {
-          "kind": "Literal",
-          "name": "where",
-          "value": {
-            "archived": false
-          }
+          "fields": [
+            {
+              "kind": "Literal",
+              "name": "archived",
+              "value": false
+            },
+            {
+              "kind": "Variable",
+              "name": "userID",
+              "variableName": "viewUserId"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
         }
       ],
       "concreteType": "AccountConnection",
@@ -107,13 +122,13 @@ const node: ReaderFragment = {
           "storageKey": null
         }
       ],
-      "storageKey": "accounts(where:{\"archived\":false})"
+      "storageKey": null
     }
   ],
   "type": "Household",
   "abstractKey": null
 };
 
-(node as any).hash = "541ad8345ae4f369f2da048e9f7a6aeb";
+(node as any).hash = "9d6886a9522af8793799cd11515789c3";
 
 export default node;

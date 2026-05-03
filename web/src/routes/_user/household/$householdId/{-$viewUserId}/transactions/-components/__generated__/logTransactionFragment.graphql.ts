@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<005668286641c3fd0db007ba10913021>>
+ * @generated SignedSource<<c5cdd18679376ed451989861f0fa17d8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,39 +19,53 @@ export type logTransactionFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"logTransactionFragment">;
 };
 
-const node: ReaderFragment = {
-  "argumentDefinitions": [],
+const node: ReaderFragment = (function(){
+var v0 = [
+  {
+    "kind": "Variable",
+    "name": "viewUserId",
+    "variableName": "viewUserId"
+  }
+];
+return {
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
+    }
+  ],
   "kind": "Fragment",
   "metadata": null,
   "name": "logTransactionFragment",
   "selections": [
     {
-      "args": null,
+      "args": (v0/*: any*/),
       "kind": "FragmentSpread",
       "name": "newExpenseFragment"
     },
     {
-      "args": null,
+      "args": (v0/*: any*/),
       "kind": "FragmentSpread",
       "name": "newIncomeFragment"
     },
     {
-      "args": null,
+      "args": (v0/*: any*/),
       "kind": "FragmentSpread",
       "name": "newTransferFragment"
     },
     {
-      "args": null,
+      "args": (v0/*: any*/),
       "kind": "FragmentSpread",
       "name": "newBuyFragment"
     },
     {
-      "args": null,
+      "args": (v0/*: any*/),
       "kind": "FragmentSpread",
       "name": "newSellFragment"
     },
     {
-      "args": null,
+      "args": (v0/*: any*/),
       "kind": "FragmentSpread",
       "name": "newMoveFragment"
     }
@@ -59,7 +73,8 @@ const node: ReaderFragment = {
   "type": "Household",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "2c01f7fd907b60a7c080eb1b87d71d92";
+(node as any).hash = "bd97002447ec479d0237daca787171c0";
 
 export default node;

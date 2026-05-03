@@ -58,8 +58,9 @@ const formSchema = z.object({
 })
 
 const newExpenseFragment = graphql`
-  fragment newExpenseFragment on Household {
-    accounts(where: { archived: false }) {
+  fragment newExpenseFragment on Household
+  @argumentDefinitions(viewUserId: { type: "ID" }) {
+    accounts(where: { archived: false, userID: $viewUserId }) {
       edges {
         node {
           id

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<27cfa468cbadeda5c96a55315b027292>>
+ * @generated SignedSource<<af76321d0d5669e78146b149267ad590>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -72,7 +72,13 @@ v2 = {
   "storageKey": null
 };
 return {
-  "argumentDefinitions": [],
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
+    }
+  ],
   "kind": "Fragment",
   "metadata": null,
   "name": "newMoveFragment",
@@ -81,11 +87,20 @@ return {
       "alias": null,
       "args": [
         {
-          "kind": "Literal",
-          "name": "where",
-          "value": {
-            "archived": false
-          }
+          "fields": [
+            {
+              "kind": "Literal",
+              "name": "archived",
+              "value": false
+            },
+            {
+              "kind": "Variable",
+              "name": "userID",
+              "variableName": "viewUserId"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
         }
       ],
       "concreteType": "AccountConnection",
@@ -165,7 +180,7 @@ return {
           "storageKey": null
         }
       ],
-      "storageKey": "accounts(where:{\"archived\":false})"
+      "storageKey": null
     },
     {
       "alias": null,
@@ -209,6 +224,6 @@ return {
 };
 })();
 
-(node as any).hash = "831db9cf63bcc6134eae38fd4a098787";
+(node as any).hash = "9922dce5411d198ca5ed4abb06f381fa";
 
 export default node;

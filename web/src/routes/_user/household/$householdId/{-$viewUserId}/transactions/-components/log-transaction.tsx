@@ -17,13 +17,14 @@ import type { LogTransactionType } from '@/hooks/log-transaction-store'
 import { cn } from '@/lib/utils'
 
 const logTransactionFragment = graphql`
-  fragment logTransactionFragment on Household {
-    ...newExpenseFragment
-    ...newIncomeFragment
-    ...newTransferFragment
-    ...newBuyFragment
-    ...newSellFragment
-    ...newMoveFragment
+  fragment logTransactionFragment on Household
+  @argumentDefinitions(viewUserId: { type: "ID" }) {
+    ...newExpenseFragment @arguments(viewUserId: $viewUserId)
+    ...newIncomeFragment @arguments(viewUserId: $viewUserId)
+    ...newTransferFragment @arguments(viewUserId: $viewUserId)
+    ...newBuyFragment @arguments(viewUserId: $viewUserId)
+    ...newSellFragment @arguments(viewUserId: $viewUserId)
+    ...newMoveFragment @arguments(viewUserId: $viewUserId)
   }
 `
 

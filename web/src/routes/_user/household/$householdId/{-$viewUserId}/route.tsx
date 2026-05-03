@@ -87,7 +87,7 @@ import { GenericError } from '@/components/generic-error'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
 
 const routeHouseholdIdQuery = graphql`
-  query routeHouseholdIdQuery {
+  query routeHouseholdIdQuery($viewUserId: ID) {
     ...appSidebarFragment
     user {
       ...useUserFragment
@@ -98,8 +98,8 @@ const routeHouseholdIdQuery = graphql`
     household {
       ...useHouseholdFragment
       ...useDisplayCurrencyFragment
-      ...logTransactionFragment
-      ...snapshotDialogFragment
+      ...logTransactionFragment @arguments(viewUserId: $viewUserId)
+      ...snapshotDialogFragment @arguments(viewUserId: $viewUserId)
       ...viewScopeSwitcherFragment
       # eslint-disable-next-line relay/unused-fields
       householdCurrencies {
@@ -138,11 +138,13 @@ export const Route = createFileRoute(
   loader: async ({ params, deps }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
 
+    const variables = { viewUserId: params.viewUserId ?? null }
+
     try {
       await fetchQuery<routeHouseholdIdQuery>(
         environment,
         routeHouseholdIdQuery,
-        {},
+        variables,
       ).toPromise()
     } catch (error) {
       if (isMembershipRevokedError(error)) {
@@ -165,7 +167,7 @@ export const Route = createFileRoute(
     return loadQuery<routeHouseholdIdQuery>(
       environment,
       routeHouseholdIdQuery,
-      {},
+      variables,
       { fetchPolicy: 'store-only' },
     )
   },
@@ -217,7 +219,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       routeHouseholdIdQuery,
-      {},
+      { viewUserId: params.viewUserId ?? null },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

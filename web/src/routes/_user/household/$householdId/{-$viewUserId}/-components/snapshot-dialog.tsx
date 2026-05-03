@@ -26,8 +26,9 @@ import { commitMutationResult } from '@/lib/relay'
 import { ItemTitle } from '@/components/ui/item'
 
 const SnapshotDialogFragment = graphql`
-  fragment snapshotDialogFragment on Household {
-    accounts(where: { archived: false }) {
+  fragment snapshotDialogFragment on Household
+  @argumentDefinitions(viewUserId: { type: "ID" }) {
+    accounts(where: { archived: false, userID: $viewUserId }) {
       edges {
         node {
           type

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0a1c8f7b47e0a4d90bfa22cdcb8242d0>>
+ * @generated SignedSource<<670ce686026d2d2d504dbb937a94488e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -66,7 +66,13 @@ v2 = {
   "storageKey": null
 };
 return {
-  "argumentDefinitions": [],
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "viewUserId"
+    }
+  ],
   "kind": "Fragment",
   "metadata": null,
   "name": "newTransferFragment",
@@ -75,11 +81,20 @@ return {
       "alias": null,
       "args": [
         {
-          "kind": "Literal",
-          "name": "where",
-          "value": {
-            "archived": false
-          }
+          "fields": [
+            {
+              "kind": "Literal",
+              "name": "archived",
+              "value": false
+            },
+            {
+              "kind": "Variable",
+              "name": "userID",
+              "variableName": "viewUserId"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
         }
       ],
       "concreteType": "AccountConnection",
@@ -145,7 +160,7 @@ return {
           "storageKey": null
         }
       ],
-      "storageKey": "accounts(where:{\"archived\":false})"
+      "storageKey": null
     },
     {
       "alias": null,
@@ -189,6 +204,6 @@ return {
 };
 })();
 
-(node as any).hash = "07fb677039317eacf8eee7676563867e";
+(node as any).hash = "4df9b53a2f2bdc2b3459be8d5cd79512";
 
 export default node;
