@@ -6,15 +6,16 @@ import (
 	"encoding/hex"
 	"io"
 	"log/slog"
-	"os"
 	"strings"
 	"testing"
 
-	"beavermoney.app/cmd/server/database"
 	"beavermoney.app/ent"
+	"beavermoney.app/ent/enttest"
 	_ "beavermoney.app/ent/runtime"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/internal/contextkeys"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func uniqueSuffix(t *testing.T) string {
@@ -26,44 +27,24 @@ func uniqueSuffix(t *testing.T) string {
 	return hex.EncodeToString(buf)
 }
 
-func testPostgresURL() string {
-	if v := os.Getenv("TEST_POSTGRES_URL"); v != "" {
-		return v
-	}
-	if v := os.Getenv("POSTGRES_URL"); v != "" {
-		return v
-	}
-	return "postgresql://user:password@localhost:2345/beavermoney?sslmode=disable"
-}
-
 func newTestResolver(t *testing.T) (*Resolver, *ent.Client, context.Context) {
 	t.Helper()
 
-	entClient, db, err := database.Connect(testPostgresURL())
-	if err != nil {
-		t.Skipf("postgres not available, skipping integration test: %v", err)
-	}
+	client := enttest.Open(
+		t,
+		"sqlite3",
+		"file:"+t.Name()+"?mode=memory&cache=shared&_fk=1",
+	)
+	t.Cleanup(func() { _ = client.Close() })
 
-	ctx := context.Background()
-	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
-
-	if _, err := entClient.UserHousehold.Query().Limit(1).All(bypassCtx); err != nil {
-		_ = entClient.Close()
-		_ = db.Close()
-		t.Skipf("schema not migrated, skipping: %v", err)
-	}
-
-	t.Cleanup(func() {
-		_ = entClient.Close()
-		_ = db.Close()
-	})
+	bypassCtx := contextkeys.NewPrivacyBypassContext(context.Background())
 
 	r := &Resolver{
 		logger:    slog.New(slog.NewTextHandler(io.Discard, nil)),
-		entClient: entClient,
+		entClient: client,
 	}
 
-	return r, entClient, bypassCtx
+	return r, client, bypassCtx
 }
 
 func seedHouseholdWithUsers(
@@ -75,29 +56,20 @@ func seedHouseholdWithUsers(
 
 	suffix := uniqueSuffix(t)
 
-	memberUser, err := client.User.Create().
+	memberUser := client.User.Create().
 		SetEmail("member-" + suffix + "@test.beavermoney.local").
 		SetName("Test Member").
-		Save(bypassCtx)
-	if err != nil {
-		t.Fatalf("create member user: %v", err)
-	}
+		SaveX(bypassCtx)
 
-	nonMemberUser, err := client.User.Create().
+	nonMemberUser := client.User.Create().
 		SetEmail("nonmember-" + suffix + "@test.beavermoney.local").
 		SetName("Test NonMember").
-		Save(bypassCtx)
-	if err != nil {
-		t.Fatalf("create non-member user: %v", err)
-	}
+		SaveX(bypassCtx)
 
-	household, err := client.Household.Create().
+	household := client.Household.Create().
 		SetName("Test Household " + suffix).
 		SetLocale("en-US").
-		Save(bypassCtx)
-	if err != nil {
-		t.Fatalf("create household: %v", err)
-	}
+		SaveX(bypassCtx)
 
 	householdScopedCtx := context.WithValue(
 		bypassCtx,
@@ -105,48 +77,18 @@ func seedHouseholdWithUsers(
 		household.ID,
 	)
 
-	hc, err := client.HouseholdCurrency.Create().
+	hc := client.HouseholdCurrency.Create().
 		SetCode("USD").
 		SetImportant(true).
 		SetHouseholdID(household.ID).
-		Save(householdScopedCtx)
-	if err != nil {
-		t.Fatalf("create household currency: %v", err)
-	}
+		SaveX(householdScopedCtx)
 
-	if _, err := client.UserHousehold.Create().
+	client.UserHousehold.Create().
 		SetUserID(memberUser.ID).
 		SetHouseholdID(household.ID).
 		SetRole(userhousehold.RoleAdmin).
 		SetHouseholdCurrencyID(hc.ID).
-		Save(householdScopedCtx); err != nil {
-		t.Fatalf("create user_household: %v", err)
-	}
-
-	t.Cleanup(func() {
-		ctx := contextkeys.NewPrivacyBypassContext(context.Background())
-		ctx = context.WithValue(ctx, contextkeys.HouseholdIDKey(), household.ID)
-		if _, err := client.UserHousehold.Delete().
-			Where(
-				userhousehold.HouseholdIDEQ(household.ID),
-			).Exec(ctx); err != nil {
-			t.Logf("cleanup user_households: %v", err)
-		}
-		if err := client.HouseholdCurrency.DeleteOneID(hc.ID).Exec(ctx); err != nil {
-			t.Logf("cleanup household_currency: %v", err)
-		}
-		if err := client.Household.DeleteOneID(household.ID).Exec(ctx); err != nil {
-			t.Logf("cleanup household: %v", err)
-		}
-		ctxAsMember := context.WithValue(ctx, contextkeys.UserIDKey(), memberUser.ID)
-		if err := client.User.DeleteOneID(memberUser.ID).Exec(ctxAsMember); err != nil {
-			t.Logf("cleanup member_user: %v", err)
-		}
-		ctxAsNonMember := context.WithValue(ctx, contextkeys.UserIDKey(), nonMemberUser.ID)
-		if err := client.User.DeleteOneID(nonMemberUser.ID).Exec(ctxAsNonMember); err != nil {
-			t.Logf("cleanup non_member_user: %v", err)
-		}
-	})
+		SaveX(householdScopedCtx)
 
 	return household.ID, memberUser.ID, nonMemberUser.ID
 }
