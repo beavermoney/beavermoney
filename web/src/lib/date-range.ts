@@ -1,4 +1,4 @@
-import { RecurringSubscriptionInterval } from '@/routes/_user/household/$householdId/subscriptions/-components/__generated__/subscriptionCardFragment.graphql'
+import { RecurringSubscriptionInterval } from '@/routes/_user/household/$householdId/{-$viewUserId}/subscriptions/-components/__generated__/subscriptionCardFragment.graphql'
 import {
   addMonths,
   addWeeks,

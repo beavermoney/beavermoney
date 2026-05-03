@@ -1,7 +1,6 @@
 import {
   LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
   LOCAL_STORAGE_TOKEN_KEY,
-  LOCAL_STORAGE_VIEW_USER_ID_KEY,
 } from '@/constant'
 
 export function logout() {
@@ -34,5 +33,4 @@ export function isMembershipRevokedError(error: unknown): boolean {
 
 export function clearHouseholdScopedStorage() {
   localStorage.removeItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
-  localStorage.removeItem(LOCAL_STORAGE_VIEW_USER_ID_KEY)
 }

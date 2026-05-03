@@ -16,7 +16,6 @@ export const LOCAL_STORAGE_PRIVACY_MODE_KEY = 'privacyMode'
 export const LOCAL_STORAGE_THEME_KEY = 'theme'
 export const LOCAL_STORAGE_RND_POSITION_KEY = 'rndPosition'
 export const LOCAL_STORAGE_DISPLAY_CURRENCY_ID_KEY = 'displayCurrencyId'
-export const LOCAL_STORAGE_VIEW_USER_ID_KEY = 'viewUserId'
 
 export const SESSION_STORAGE_PRIVACY_DIALOG_KEY = 'privacyDialog'
 
@@ -106,7 +105,7 @@ export const NAV: Array<{
   {
     name: 'Transactions',
     link: {
-      to: '/household/$householdId/transactions',
+      to: '/household/$householdId/{-$viewUserId}/transactions',
       activeOptions: {
         exact: false,
         includeSearch: false,
@@ -121,7 +120,7 @@ export const NAV: Array<{
   {
     name: 'Accounts',
     link: {
-      to: '/household/$householdId/accounts',
+      to: '/household/$householdId/{-$viewUserId}/accounts',
       activeOptions: {
         exact: false,
         includeSearch: false,
@@ -136,7 +135,7 @@ export const NAV: Array<{
   {
     name: 'Investments',
     link: {
-      to: '/household/$householdId/investments',
+      to: '/household/$householdId/{-$viewUserId}/investments',
       activeOptions: {
         exact: false,
         includeSearch: false,
@@ -151,7 +150,7 @@ export const NAV: Array<{
   {
     name: 'Categories',
     link: {
-      to: '/household/$householdId/categories',
+      to: '/household/$householdId/{-$viewUserId}/categories',
       activeOptions: {
         exact: false,
         includeSearch: false,
@@ -166,7 +165,7 @@ export const NAV: Array<{
   {
     name: 'Subscriptions',
     link: {
-      to: '/household/$householdId/subscriptions',
+      to: '/household/$householdId/{-$viewUserId}/subscriptions',
       activeOptions: {
         exact: false,
         includeSearch: false,
@@ -181,7 +180,7 @@ export const NAV: Array<{
   {
     name: 'Settings',
     link: {
-      to: '/household/$householdId/settings',
+      to: '/household/$householdId/{-$viewUserId}/settings',
       activeOptions: {
         exact: false,
         includeSearch: false,

@@ -19,10 +19,12 @@ import { useCallback, useEffect, useState } from 'react'
 
 export function CommandMenu() {
   const navigate = useNavigate()
-  const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const { householdId } = useParams({
+    from: '/_user/household/$householdId/{-$viewUserId}',
+  })
 
   const search = useSearch({
-    from: '/_user/household/$householdId',
+    from: '/_user/household/$householdId/{-$viewUserId}',
   })
 
   const [value, setValue] = useState('')
@@ -78,7 +80,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/transactions',
+                  to: '/household/$householdId/{-$viewUserId}/transactions',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -92,7 +94,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/accounts',
+                  to: '/household/$householdId/{-$viewUserId}/accounts',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -106,7 +108,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/investments',
+                  to: '/household/$householdId/{-$viewUserId}/investments',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -120,7 +122,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/categories',
+                  to: '/household/$householdId/{-$viewUserId}/categories',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -134,7 +136,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/subscriptions',
+                  to: '/household/$householdId/{-$viewUserId}/subscriptions',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -159,7 +161,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/accounts/new',
+                  to: '/household/$householdId/{-$viewUserId}/accounts/new',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -173,7 +175,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/investments/new',
+                  to: '/household/$householdId/{-$viewUserId}/investments/new',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -187,7 +189,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/categories/new',
+                  to: '/household/$householdId/{-$viewUserId}/categories/new',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
@@ -201,7 +203,7 @@ export function CommandMenu() {
             <CommandItem
               onSelect={() =>
                 handleSelect({
-                  to: '/household/$householdId/subscriptions/new',
+                  to: '/household/$householdId/{-$viewUserId}/subscriptions/new',
                   params: { householdId },
                   search: (prev) => ({
                     ...prev,
