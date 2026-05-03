@@ -159,15 +159,14 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
 
   return (
     <Fragment>
-      <div className="fixed right-4 bottom-4 lg:absolute">
-        <PlusButton
-          to="/household/$householdId/categories/new"
-          params={{ householdId }}
-          disabled={isViewingOtherUser}
-          disabledTitle="Switch to your view to create"
-          data-testid="new-category-button"
-        />
-      </div>
+      {!isViewingOtherUser && (
+        <div className="fixed right-4 bottom-4 lg:absolute">
+          <PlusButton
+            to="/household/$householdId/categories/new"
+            params={{ householdId }}
+          />
+        </div>
+      )}
       <FinancialSummaryCards fragmentRef={financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter

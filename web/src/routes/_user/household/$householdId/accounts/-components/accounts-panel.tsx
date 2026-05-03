@@ -237,13 +237,12 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         >
           <RefreshCwIcon className={isRefreshInFlight ? 'animate-spin' : ''} />
         </Button>
-        <PlusButton
-          to="/household/$householdId/accounts/new"
-          params={{ householdId }}
-          disabled={isViewingOtherUser}
-          disabledTitle="Switch to your view to create"
-          data-testid="new-account-button"
-        />
+        {!isViewingOtherUser && (
+          <PlusButton
+            to="/household/$householdId/accounts/new"
+            params={{ householdId }}
+          />
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex gap-3">

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7dc1d59fce5b1a3a65e6af9423981a69>>
+ * @generated SignedSource<<49f81c996b4abecd02156b9f9e4a06c9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -188,6 +188,8 @@ export type HouseholdWhereInput = {
   hasRecurringSubscriptionsWith?: ReadonlyArray<RecurringSubscriptionWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
   hasSnapshotEntriesWith?: ReadonlyArray<SnapshotEntryWhereInput> | null | undefined;
+  hasSnapshotRates?: boolean | null | undefined;
+  hasSnapshotRatesWith?: ReadonlyArray<SnapshotRateWhereInput> | null | undefined;
   hasSnapshots?: boolean | null | undefined;
   hasSnapshotsWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
   hasTransactionCategories?: boolean | null | undefined;
@@ -923,10 +925,16 @@ export type SnapshotRateWhereInput = {
   fromHouseholdCurrencyIDNotIn?: ReadonlyArray<string> | null | undefined;
   hasFromCurrency?: boolean | null | undefined;
   hasFromCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
+  hasHousehold?: boolean | null | undefined;
+  hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshot?: boolean | null | undefined;
   hasSnapshotWith?: ReadonlyArray<SnapshotWhereInput> | null | undefined;
   hasToCurrency?: boolean | null | undefined;
   hasToCurrencyWith?: ReadonlyArray<HouseholdCurrencyWhereInput> | null | undefined;
+  householdID?: string | null | undefined;
+  householdIDIn?: ReadonlyArray<string> | null | undefined;
+  householdIDNEQ?: string | null | undefined;
+  householdIDNotIn?: ReadonlyArray<string> | null | undefined;
   id?: string | null | undefined;
   idGT?: string | null | undefined;
   idGTE?: string | null | undefined;
