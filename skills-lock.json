@@ -61,6 +61,12 @@
       "sourceType": "github",
       "computedHash": "69cecc4f28fb2f140652669bd45cc492744ad5c3c45083f5e0be5b0a5ef8acd0"
     },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "29382b043f8d2588041d64c1a656468165a9c056a40d20f7925cb5757a94b8f2"
+    },
     "normalize": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
