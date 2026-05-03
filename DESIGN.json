@@ -8,190 +8,356 @@
         "role": "primary",
         "displayName": "Beaver Pelt Amber",
         "canonical": "oklch(0.852 0.199 91.936)",
-        "darkVariant": "oklch(0.795 0.184 86.047)",
         "tonalRamp": [
           "oklch(0.20 0.05 92)",
-          "oklch(0.32 0.08 92)",
-          "oklch(0.45 0.12 92)",
-          "oklch(0.58 0.16 92)",
-          "oklch(0.70 0.18 92)",
-          "oklch(0.80 0.20 92)",
-          "oklch(0.88 0.18 92)",
-          "oklch(0.96 0.10 92)"
+          "oklch(0.32 0.10 92)",
+          "oklch(0.45 0.14 92)",
+          "oklch(0.58 0.17 92)",
+          "oklch(0.72 0.19 92)",
+          "oklch(0.85 0.20 92)",
+          "oklch(0.92 0.13 92)",
+          "oklch(0.97 0.05 92)"
         ]
       },
-      "beaver-pelt-amber-deep": {
-        "role": "primary-secondary",
-        "displayName": "Beaver Pelt Amber Deep",
-        "canonical": "oklch(0.681 0.162 75.834)",
-        "tonalRamp": [
-          "oklch(0.18 0.04 76)",
-          "oklch(0.30 0.07 76)",
-          "oklch(0.42 0.11 76)",
-          "oklch(0.55 0.14 76)",
-          "oklch(0.68 0.16 76)",
-          "oklch(0.78 0.16 76)",
-          "oklch(0.86 0.14 76)",
-          "oklch(0.94 0.08 76)"
-        ]
-      },
-      "primary-foreground": {
-        "role": "on-primary",
-        "displayName": "Workshop Walnut",
+      "beaver-pelt-amber-foreground": {
+        "role": "primary-foreground",
+        "displayName": "Walnut Roast",
         "canonical": "oklch(0.421 0.095 57.708)",
         "tonalRamp": [
-          "oklch(0.15 0.04 58)",
-          "oklch(0.25 0.06 58)",
-          "oklch(0.35 0.08 58)",
+          "oklch(0.18 0.04 58)",
+          "oklch(0.27 0.07 58)",
+          "oklch(0.35 0.09 58)",
           "oklch(0.42 0.10 58)",
           "oklch(0.55 0.10 58)",
-          "oklch(0.68 0.08 58)",
-          "oklch(0.82 0.05 58)",
-          "oklch(0.94 0.02 58)"
+          "oklch(0.68 0.09 58)",
+          "oklch(0.82 0.06 58)",
+          "oklch(0.95 0.03 58)"
+        ]
+      },
+      "amber-deep": {
+        "role": "primary-dark",
+        "displayName": "Amber Deep",
+        "canonical": "oklch(0.795 0.184 86.047)",
+        "tonalRamp": [
+          "oklch(0.22 0.05 86)",
+          "oklch(0.34 0.10 86)",
+          "oklch(0.45 0.14 86)",
+          "oklch(0.58 0.17 86)",
+          "oklch(0.72 0.18 86)",
+          "oklch(0.83 0.18 86)",
+          "oklch(0.91 0.12 86)",
+          "oklch(0.96 0.05 86)"
+        ]
+      },
+      "burnished-gold": {
+        "role": "sidebar-primary",
+        "displayName": "Burnished Gold",
+        "canonical": "oklch(0.681 0.162 75.834)",
+        "tonalRamp": [
+          "oklch(0.20 0.05 76)",
+          "oklch(0.30 0.08 76)",
+          "oklch(0.42 0.12 76)",
+          "oklch(0.55 0.14 76)",
+          "oklch(0.68 0.16 76)",
+          "oklch(0.79 0.16 76)",
+          "oklch(0.88 0.11 76)",
+          "oklch(0.96 0.04 76)"
         ]
       },
       "paper-white": {
-        "role": "canvas",
+        "role": "background",
         "displayName": "Paper White",
         "canonical": "oklch(1 0.002 92)",
-        "darkVariant": "oklch(0.145 0.005 92)",
         "tonalRamp": [
-          "oklch(0.10 0.005 92)",
-          "oklch(0.20 0.005 92)",
-          "oklch(0.35 0.008 92)",
-          "oklch(0.50 0.008 92)",
-          "oklch(0.65 0.008 92)",
-          "oklch(0.80 0.005 92)",
-          "oklch(0.92 0.005 92)",
-          "oklch(1.00 0.002 92)"
-        ]
-      },
-      "ledger-ink": {
-        "role": "on-canvas",
-        "displayName": "Ledger Ink",
-        "canonical": "oklch(0.145 0.005 92)",
-        "darkVariant": "oklch(0.985 0.003 92)",
-        "tonalRamp": [
-          "oklch(0.05 0.003 92)",
-          "oklch(0.14 0.005 92)",
-          "oklch(0.27 0.008 92)",
-          "oklch(0.40 0.010 92)",
-          "oklch(0.55 0.008 92)",
-          "oklch(0.70 0.008 92)",
+          "oklch(0.15 0.005 92)",
+          "oklch(0.27 0.005 92)",
+          "oklch(0.42 0.005 92)",
+          "oklch(0.56 0.005 92)",
+          "oklch(0.71 0.005 92)",
           "oklch(0.85 0.005 92)",
-          "oklch(0.97 0.003 92)"
+          "oklch(0.95 0.003 92)",
+          "oklch(1 0.002 92)"
         ]
       },
-      "alarm-red": {
-        "role": "destructive",
-        "displayName": "Alarm Red",
-        "canonical": "oklch(0.577 0.245 27.325)",
-        "darkVariant": "oklch(0.704 0.191 22.216)",
+      "bone-cream": {
+        "role": "sidebar-surface",
+        "displayName": "Bone Cream",
+        "canonical": "oklch(0.985 0.005 92)",
         "tonalRamp": [
-          "oklch(0.18 0.06 27)",
-          "oklch(0.30 0.12 27)",
-          "oklch(0.42 0.18 27)",
-          "oklch(0.55 0.24 27)",
-          "oklch(0.65 0.24 27)",
-          "oklch(0.75 0.20 27)",
-          "oklch(0.85 0.14 27)",
-          "oklch(0.95 0.06 27)"
+          "oklch(0.15 0.005 92)",
+          "oklch(0.27 0.005 92)",
+          "oklch(0.42 0.005 92)",
+          "oklch(0.56 0.005 92)",
+          "oklch(0.71 0.005 92)",
+          "oklch(0.85 0.005 92)",
+          "oklch(0.95 0.005 92)",
+          "oklch(0.99 0.005 92)"
         ]
       },
-      "chart-net-worth": {
-        "role": "chart-semantic",
-        "displayName": "Net Worth Leaf",
+      "light-vellum": {
+        "role": "muted-surface",
+        "displayName": "Light Vellum",
+        "canonical": "oklch(0.97 0.005 92)",
+        "tonalRamp": [
+          "oklch(0.15 0.005 92)",
+          "oklch(0.27 0.005 92)",
+          "oklch(0.42 0.005 92)",
+          "oklch(0.56 0.005 92)",
+          "oklch(0.71 0.005 92)",
+          "oklch(0.85 0.005 92)",
+          "oklch(0.93 0.005 92)",
+          "oklch(0.97 0.005 92)"
+        ]
+      },
+      "pencil-grey": {
+        "role": "border-input",
+        "displayName": "Pencil Grey",
+        "canonical": "oklch(0.922 0.005 92)",
+        "tonalRamp": [
+          "oklch(0.15 0.005 92)",
+          "oklch(0.28 0.005 92)",
+          "oklch(0.43 0.005 92)",
+          "oklch(0.57 0.005 92)",
+          "oklch(0.72 0.005 92)",
+          "oklch(0.85 0.005 92)",
+          "oklch(0.92 0.005 92)",
+          "oklch(0.98 0.005 92)"
+        ]
+      },
+      "graphite-mid": {
+        "role": "ring",
+        "displayName": "Graphite Mid",
+        "canonical": "oklch(0.708 0.008 92)",
+        "tonalRamp": [
+          "oklch(0.15 0.008 92)",
+          "oklch(0.28 0.008 92)",
+          "oklch(0.42 0.008 92)",
+          "oklch(0.55 0.008 92)",
+          "oklch(0.71 0.008 92)",
+          "oklch(0.83 0.008 92)",
+          "oklch(0.92 0.005 92)",
+          "oklch(0.98 0.003 92)"
+        ]
+      },
+      "ink-mid": {
+        "role": "muted-foreground",
+        "displayName": "Ink Mid",
+        "canonical": "oklch(0.556 0.008 92)",
+        "tonalRamp": [
+          "oklch(0.15 0.008 92)",
+          "oklch(0.27 0.008 92)",
+          "oklch(0.40 0.008 92)",
+          "oklch(0.56 0.008 92)",
+          "oklch(0.70 0.008 92)",
+          "oklch(0.83 0.005 92)",
+          "oklch(0.92 0.005 92)",
+          "oklch(0.98 0.003 92)"
+        ]
+      },
+      "ink-deep": {
+        "role": "secondary-foreground",
+        "displayName": "Ink Deep",
+        "canonical": "oklch(0.205 0.008 92)",
+        "tonalRamp": [
+          "oklch(0.10 0.008 92)",
+          "oklch(0.20 0.008 92)",
+          "oklch(0.32 0.008 92)",
+          "oklch(0.45 0.008 92)",
+          "oklch(0.58 0.008 92)",
+          "oklch(0.72 0.008 92)",
+          "oklch(0.85 0.005 92)",
+          "oklch(0.96 0.003 92)"
+        ]
+      },
+      "ink-near-black": {
+        "role": "foreground",
+        "displayName": "Ink Near-Black",
+        "canonical": "oklch(0.145 0.005 92)",
+        "tonalRamp": [
+          "oklch(0.08 0.005 92)",
+          "oklch(0.14 0.005 92)",
+          "oklch(0.27 0.005 92)",
+          "oklch(0.42 0.005 92)",
+          "oklch(0.56 0.008 92)",
+          "oklch(0.71 0.008 92)",
+          "oklch(0.85 0.005 92)",
+          "oklch(0.96 0.003 92)"
+        ]
+      },
+      "warm-walnut": {
+        "role": "muted-dark",
+        "displayName": "Warm Walnut",
+        "canonical": "oklch(0.269 0.008 92)",
+        "tonalRamp": [
+          "oklch(0.10 0.008 92)",
+          "oklch(0.20 0.008 92)",
+          "oklch(0.27 0.008 92)",
+          "oklch(0.40 0.008 92)",
+          "oklch(0.55 0.008 92)",
+          "oklch(0.71 0.008 92)",
+          "oklch(0.85 0.005 92)",
+          "oklch(0.96 0.003 92)"
+        ]
+      },
+      "crimson-error": {
+        "role": "destructive",
+        "displayName": "Crimson Error",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": [
+          "oklch(0.20 0.08 27)",
+          "oklch(0.32 0.13 27)",
+          "oklch(0.43 0.18 27)",
+          "oklch(0.55 0.23 27)",
+          "oklch(0.68 0.22 27)",
+          "oklch(0.80 0.17 27)",
+          "oklch(0.90 0.10 27)",
+          "oklch(0.97 0.04 27)"
+        ]
+      },
+      "account-net-worth": {
+        "role": "chart-net-worth",
+        "displayName": "Account / Net Worth Green",
         "canonical": "oklch(0.72 0.19 142)",
         "tonalRamp": [
-          "oklch(0.20 0.06 142)",
+          "oklch(0.20 0.05 142)",
           "oklch(0.32 0.10 142)",
-          "oklch(0.45 0.14 142)",
+          "oklch(0.44 0.14 142)",
           "oklch(0.58 0.17 142)",
           "oklch(0.72 0.19 142)",
-          "oklch(0.82 0.16 142)",
-          "oklch(0.90 0.10 142)",
-          "oklch(0.96 0.04 142)"
+          "oklch(0.83 0.16 142)",
+          "oklch(0.91 0.10 142)",
+          "oklch(0.97 0.04 142)"
         ]
       },
-      "chart-liquidity": {
-        "role": "chart-semantic",
-        "displayName": "Liquidity Blue",
+      "account-liquidity": {
+        "role": "chart-liquidity",
+        "displayName": "Account / Liquidity Blue",
         "canonical": "oklch(0.67 0.2 258)",
         "tonalRamp": [
           "oklch(0.20 0.06 258)",
-          "oklch(0.32 0.10 258)",
-          "oklch(0.45 0.14 258)",
-          "oklch(0.55 0.18 258)",
+          "oklch(0.30 0.11 258)",
+          "oklch(0.42 0.15 258)",
+          "oklch(0.55 0.19 258)",
           "oklch(0.67 0.20 258)",
-          "oklch(0.78 0.16 258)",
-          "oklch(0.88 0.10 258)",
-          "oklch(0.96 0.04 258)"
+          "oklch(0.80 0.16 258)",
+          "oklch(0.90 0.10 258)",
+          "oklch(0.97 0.04 258)"
         ]
       },
-      "chart-investment": {
-        "role": "chart-semantic",
-        "displayName": "Investment Orange",
-        "canonical": "oklch(0.78 0.17 55)"
+      "account-investment": {
+        "role": "chart-investment",
+        "displayName": "Account / Investment Amber",
+        "canonical": "oklch(0.78 0.17 55)",
+        "tonalRamp": [
+          "oklch(0.22 0.05 55)",
+          "oklch(0.34 0.10 55)",
+          "oklch(0.46 0.13 55)",
+          "oklch(0.60 0.16 55)",
+          "oklch(0.78 0.17 55)",
+          "oklch(0.86 0.13 55)",
+          "oklch(0.93 0.08 55)",
+          "oklch(0.98 0.03 55)"
+        ]
       },
-      "chart-property": {
-        "role": "chart-semantic",
-        "displayName": "Property Magenta",
-        "canonical": "oklch(0.65 0.22 340)"
+      "account-property": {
+        "role": "chart-property",
+        "displayName": "Account / Property Magenta",
+        "canonical": "oklch(0.65 0.22 340)",
+        "tonalRamp": [
+          "oklch(0.20 0.07 340)",
+          "oklch(0.30 0.12 340)",
+          "oklch(0.42 0.17 340)",
+          "oklch(0.54 0.21 340)",
+          "oklch(0.65 0.22 340)",
+          "oklch(0.79 0.17 340)",
+          "oklch(0.90 0.10 340)",
+          "oklch(0.97 0.04 340)"
+        ]
       },
-      "chart-receivable": {
-        "role": "chart-semantic",
-        "displayName": "Receivable Teal",
-        "canonical": "oklch(0.7 0.18 200)"
+      "account-receivable": {
+        "role": "chart-receivable",
+        "displayName": "Account / Receivable Cyan",
+        "canonical": "oklch(0.7 0.18 200)",
+        "tonalRamp": [
+          "oklch(0.22 0.05 200)",
+          "oklch(0.32 0.09 200)",
+          "oklch(0.44 0.13 200)",
+          "oklch(0.57 0.17 200)",
+          "oklch(0.70 0.18 200)",
+          "oklch(0.82 0.14 200)",
+          "oklch(0.91 0.09 200)",
+          "oklch(0.97 0.04 200)"
+        ]
       },
-      "chart-liability": {
-        "role": "chart-semantic",
-        "displayName": "Liability Red",
-        "canonical": "oklch(0.65 0.22 25)"
+      "account-liability": {
+        "role": "chart-liability",
+        "displayName": "Account / Liability Red",
+        "canonical": "oklch(0.65 0.22 25)",
+        "tonalRamp": [
+          "oklch(0.20 0.07 25)",
+          "oklch(0.30 0.12 25)",
+          "oklch(0.42 0.17 25)",
+          "oklch(0.55 0.21 25)",
+          "oklch(0.65 0.22 25)",
+          "oklch(0.79 0.17 25)",
+          "oklch(0.90 0.10 25)",
+          "oklch(0.97 0.04 25)"
+        ]
       },
-      "chart-asset": {
-        "role": "chart-semantic",
-        "displayName": "Asset Violet",
-        "canonical": "oklch(0.72 0.17 300)"
+      "account-asset": {
+        "role": "chart-asset",
+        "displayName": "Account / Asset Purple",
+        "canonical": "oklch(0.72 0.17 300)",
+        "tonalRamp": [
+          "oklch(0.20 0.06 300)",
+          "oklch(0.30 0.10 300)",
+          "oklch(0.42 0.13 300)",
+          "oklch(0.56 0.16 300)",
+          "oklch(0.72 0.17 300)",
+          "oklch(0.83 0.13 300)",
+          "oklch(0.91 0.08 300)",
+          "oklch(0.97 0.04 300)"
+        ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Display 30",
-        "purpose": "Hero on landing page and onboarding moments. One per page maximum."
+        "displayName": "Display",
+        "purpose": "Landing-page hero and large empty-state titles. Rare in product surfaces; reserve for moments where the page is essentially a wordmark."
       },
       "headline": {
-        "displayName": "Headline 18",
-        "purpose": "Page title inside the app shell. Mostly silent; the data is the headline."
+        "displayName": "Headline",
+        "purpose": "Page-level titles inside the app shell ('Transactions', 'Investments'). One per route."
       },
       "title": {
-        "displayName": "Title 14",
-        "purpose": "Card titles, panel titles, dialog titles."
+        "displayName": "Title",
+        "purpose": "Card titles, dialog titles, table column headers, section labels. The most-used 'important text' size."
       },
       "body": {
-        "displayName": "Body 12 Relaxed",
-        "purpose": "The dominant register. Transaction rows, table cells, button text, descriptions. Default everywhere."
+        "displayName": "Body",
+        "purpose": "Default body. Transaction descriptions, form helpers, sidebar items, table rows. Cap long-form prose at 65-75ch."
       },
       "label": {
-        "displayName": "Label 10",
-        "purpose": "Badges, status pills, small markers. Use sparingly."
+        "displayName": "Label",
+        "purpose": "Metadata, badge text, the xs button size, form micro-labels. Use sparingly."
       }
     },
     "shadows": [],
     "motion": [
       {
+        "name": "transition-all",
+        "value": "all 150ms ease-out",
+        "purpose": "Default for buttons. Color, ring, and translate-y unify under one short transition."
+      },
+      {
+        "name": "transition-colors",
+        "value": "color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out",
+        "purpose": "For inputs and any control where only the color changes on state."
+      },
+      {
         "name": "ease-out-quart",
         "value": "cubic-bezier(0.25, 1, 0.5, 1)",
-        "purpose": "Default state-change easing. Used on hover, focus, active translations."
-      },
-      {
-        "name": "duration-100",
-        "value": "100ms",
-        "purpose": "Dialog open and close animation. Brief and respectful of attention."
-      },
-      {
-        "name": "active-press",
-        "value": "transform: translateY(1px)",
-        "purpose": "The single tactile feedback in the system. Buttons translate 1px down on active. Disabled on aria-haspopup buttons (menus, comboboxes)."
+        "purpose": "Reserved easing for any motion longer than 150ms (sheet open, drawer slide). No bounce, no elastic."
       }
     ],
     "breakpoints": [
@@ -206,115 +372,157 @@
     {
       "name": "Primary Button",
       "kind": "button",
-      "refersTo": "button-primary",
-      "description": "Single primary action per panel. Beaver Pelt Amber surface, deep walnut text, sharp corners, 28px height.",
-      "html": "<button class=\"ds-btn-primary\">Log transaction</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 8px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; font-weight: 500; color: oklch(0.421 0.095 57.708); background: oklch(0.852 0.199 91.936); border: 1px solid transparent; border-radius: 0; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1), transform 100ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-primary:hover { background: oklch(0.852 0.199 91.936 / 0.8); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.708 0.008 92); box-shadow: 0 0 0 2px oklch(0.708 0 0 / 0.3); }"
+      "refersTo": "button-default",
+      "description": "Primary action button. Beaver Pelt Amber fill with warm-brown text. 28px tall, 12px font, square corners.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Save transaction</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 8px; background: oklch(0.852 0.199 91.936); color: oklch(0.421 0.095 57.708); font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.625; letter-spacing: 0; border: 1px solid transparent; border-radius: 0; background-clip: padding-box; cursor: pointer; transition: all 150ms ease-out; outline: none; } .ds-btn-primary:hover { background: oklch(0.852 0.199 91.936 / 0.8); } .ds-btn-primary:focus-visible { border-color: oklch(0.708 0.008 92); box-shadow: 0 0 0 2px oklch(0.708 0.008 92 / 0.3); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Quiet companion to the primary. Ghost surface with a 1px border. Used when the primary would be too loud.",
-      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 8px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; font-weight: 500; color: oklch(0.145 0.005 92); background: transparent; border: 1px solid oklch(0.922 0.005 92); border-radius: 0; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-outline:hover { background: oklch(0.922 0 0 / 0.5); } .ds-btn-outline:active { transform: translateY(1px); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px oklch(0.708 0 0 / 0.3); }"
+      "description": "Secondary action. Hairline border on Paper White. The neutral choice for non-destructive secondary CTAs.",
+      "html": "<button class=\"ds-btn-outline\" type=\"button\">Cancel</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 8px; background: oklch(1 0.002 92); color: oklch(0.145 0.005 92); font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.625; border: 1px solid oklch(0.922 0.005 92); border-radius: 0; cursor: pointer; transition: all 150ms ease-out; outline: none; } .ds-btn-outline:hover { background: oklch(0.922 0.005 92 / 0.5); } .ds-btn-outline:focus-visible { border-color: oklch(0.708 0.008 92); box-shadow: 0 0 0 2px oklch(0.708 0.008 92 / 0.3); } .ds-btn-outline:active { transform: translateY(1px); }"
     },
     {
-      "name": "Destructive Button",
+      "name": "Ghost Button",
       "kind": "button",
-      "refersTo": "button-destructive",
-      "description": "Tinted destructive: 10% Alarm Red background with full-saturation text. Never a fully red surface.",
-      "html": "<button class=\"ds-btn-destructive\">Delete transaction</button>",
-      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; height: 28px; padding: 0 8px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; font-weight: 500; color: oklch(0.577 0.245 27.325); background: oklch(0.577 0.245 27.325 / 0.1); border: 1px solid transparent; border-radius: 0; cursor: pointer; transition: background 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.2); } .ds-btn-destructive:active { transform: translateY(1px); } .ds-btn-destructive:focus-visible { outline: none; box-shadow: 0 0 0 2px oklch(0.577 0.245 27.325 / 0.2); }"
+      "refersTo": "button-ghost",
+      "description": "Toolbar / dense-row button. Transparent at rest, fills with a muted background on hover. Used in sidebar items, table-row actions, command bars.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\"><svg class=\"ds-btn-ghost-icon\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>New</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 28px; padding: 0 8px; background: transparent; color: oklch(0.145 0.005 92); font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.625; border: 1px solid transparent; border-radius: 0; cursor: pointer; transition: all 150ms ease-out; outline: none; } .ds-btn-ghost:hover { background: oklch(0.97 0.005 92); } .ds-btn-ghost:focus-visible { border-color: oklch(0.708 0.008 92); box-shadow: 0 0 0 2px oklch(0.708 0.008 92 / 0.3); } .ds-btn-ghost:active { transform: translateY(1px); } .ds-btn-ghost-icon { flex-shrink: 0; }"
     },
     {
-      "name": "Default Badge",
-      "kind": "chip",
-      "refersTo": "badge-default",
-      "description": "The only pill in the system. 20px tall, 10px label text, full radius. Used for tags, status, currency codes inline with values.",
-      "html": "<span class=\"ds-badge\">USD</span>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; justify-content: center; height: 20px; padding: 0 8px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 10px; line-height: 1.4; font-weight: 500; color: oklch(0.421 0.095 57.708); background: oklch(0.852 0.199 91.936); border: 1px solid transparent; border-radius: 9999px; white-space: nowrap; }"
-    },
-    {
-      "name": "Outline Badge",
-      "kind": "chip",
-      "refersTo": "badge-outline",
-      "description": "Neutral badge variant: outline, transparent surface. Used for category tags and filter pills.",
-      "html": "<span class=\"ds-badge-outline\">Groceries</span>",
-      "css": ".ds-badge-outline { display: inline-flex; align-items: center; justify-content: center; height: 20px; padding: 0 8px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 10px; line-height: 1.4; font-weight: 500; color: oklch(0.145 0.005 92); background: oklch(0.922 0 0 / 0.2); border: 1px solid oklch(0.922 0.005 92); border-radius: 9999px; white-space: nowrap; }"
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard text field. 28px tall, Pencil Grey border, 20% Pencil Grey wash fill. Square corners. Focus shifts the border to Graphite Mid and adds a subtle ring.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Description\" />",
+      "css": ".ds-input { display: block; width: 100%; min-width: 0; height: 28px; padding: 0 8px; background: oklch(0.922 0.005 92 / 0.2); color: oklch(0.145 0.005 92); font-family: 'Inter Variable', system-ui, sans-serif; font-size: 14px; font-weight: 400; line-height: 1.4; border: 1px solid oklch(0.922 0.005 92); border-radius: 0; outline: none; transition: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; } .ds-input::placeholder { color: oklch(0.556 0.008 92); } .ds-input:focus-visible { border-color: oklch(0.708 0.008 92); box-shadow: 0 0 0 2px oklch(0.708 0.008 92 / 0.3); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; } .ds-input[aria-invalid=\"true\"] { border-color: oklch(0.577 0.245 27.325); box-shadow: 0 0 0 2px oklch(0.577 0.245 27.325 / 0.2); }"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Sharp surface separated from the canvas by a 1px ghost ring. No border, no shadow.",
-      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><div class=\"ds-card-title\">Net worth</div><div class=\"ds-card-description\">Across all accounts, in USD.</div></div><div class=\"ds-card-content\">$ 124,503.18</div></div>",
-      "css": ".ds-card { display: flex; flex-direction: column; gap: 16px; padding: 16px 0; background: oklch(1 0.002 92); color: oklch(0.145 0.005 92); border-radius: 0; box-shadow: 0 0 0 1px oklch(0.145 0 0 / 0.1); overflow: hidden; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; } .ds-card-header { padding: 0 16px; display: grid; gap: 4px; } .ds-card-title { font-size: 14px; font-weight: 500; line-height: 1.4; } .ds-card-description { font-size: 12px; line-height: 1.625; color: oklch(0.556 0.008 92); } .ds-card-content { padding: 0 16px; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 600; }"
+      "description": "Default container. Square corners, ring-1 hairline at 10% foreground. No shadow ever.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><div class=\"ds-card-title\">November total</div><div class=\"ds-card-description\">All accounts, USD</div></div><div class=\"ds-card-content ds-card-amount\">$4,283.17</div></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 16px; padding: 16px 0; background: oklch(1 0.002 92); color: oklch(0.145 0.005 92); border-radius: 0; box-shadow: inset 0 0 0 1px oklch(0.145 0.005 92 / 0.1); overflow: hidden; font-family: 'Inter Variable', system-ui, sans-serif; } .ds-card-header { display: grid; grid-auto-rows: min-content; gap: 4px; padding: 0 16px; } .ds-card-title { font-size: 14px; font-weight: 500; line-height: 1.4; } .ds-card-description { color: oklch(0.556 0.008 92); font-size: 12px; line-height: 1.625; } .ds-card-content { padding: 0 16px; font-size: 12px; line-height: 1.625; } .ds-card-amount { font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }"
     },
     {
-      "name": "Input",
-      "kind": "input",
-      "refersTo": "input",
-      "description": "28px tall, 1px border in pencil-line, transparent-tinted background. Body-12 text. Sharp.",
-      "html": "<input class=\"ds-input\" placeholder=\"Search transactions\" />",
-      "css": ".ds-input { display: block; width: 100%; height: 28px; padding: 0 8px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; color: oklch(0.145 0.005 92); background: oklch(0.922 0 0 / 0.2); border: 1px solid oklch(0.922 0.005 92); border-radius: 0; outline: none; transition: border-color 150ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 150ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-input::placeholder { color: oklch(0.556 0.008 92); } .ds-input:focus-visible { border-color: oklch(0.708 0.008 92); box-shadow: 0 0 0 2px oklch(0.708 0 0 / 0.3); }"
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "sidebar",
+      "description": "Single sidebar entry. Active state fills with Burnished Gold, the only place that color appears in the chrome.",
+      "html": "<nav class=\"ds-sidebar\"><a class=\"ds-sidebar-item ds-sidebar-item-active\" href=\"#\"><svg class=\"ds-sidebar-icon\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 6h20\"/><path d=\"M2 12h20\"/><path d=\"M2 18h20\"/></svg>Transactions</a><a class=\"ds-sidebar-item\" href=\"#\"><svg class=\"ds-sidebar-icon\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 8v4l3 2\"/></svg>Subscriptions</a><a class=\"ds-sidebar-item\" href=\"#\"><svg class=\"ds-sidebar-icon\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 3v18h18\"/><path d=\"m7 14 4-4 4 4 5-5\"/></svg>Investments</a></nav>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; gap: 1px; padding: 8px; background: oklch(0.985 0.005 92); font-family: 'Inter Variable', system-ui, sans-serif; min-width: 200px; } .ds-sidebar-item { display: inline-flex; align-items: center; gap: 8px; padding: 6px 8px; background: transparent; color: oklch(0.145 0.005 92); font-size: 12px; font-weight: 400; line-height: 1.625; text-decoration: none; border-radius: 0; transition: background-color 150ms ease-out, color 150ms ease-out; } .ds-sidebar-item:hover { background: oklch(0.97 0.005 92); } .ds-sidebar-item-active { background: oklch(0.681 0.162 75.834); color: oklch(0.987 0.026 102.212); font-weight: 500; } .ds-sidebar-item-active:hover { background: oklch(0.681 0.162 75.834); } .ds-sidebar-icon { flex-shrink: 0; }"
     },
     {
-      "name": "Dialog",
-      "kind": "card",
-      "refersTo": "dialog",
-      "description": "The one rounded surface in the system (4px corners). Ghost ring, backdrop blur on overlay.",
-      "html": "<div class=\"ds-dialog\"><div class=\"ds-dialog-title\">Delete transaction</div><div class=\"ds-dialog-body\">This will remove the transaction from this household. The action cannot be undone.</div><div class=\"ds-dialog-actions\"><button class=\"ds-btn-outline\">Cancel</button><button class=\"ds-btn-destructive\">Delete</button></div></div>",
-      "css": ".ds-dialog { display: grid; gap: 16px; padding: 16px; background: oklch(1 0.002 92); color: oklch(0.145 0.005 92); border-radius: 4px; box-shadow: 0 0 0 1px oklch(0.145 0 0 / 0.1); font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; max-width: 384px; } .ds-dialog-title { font-size: 14px; font-weight: 500; line-height: 1.4; } .ds-dialog-body { color: oklch(0.556 0.008 92); } .ds-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }"
+      "name": "Privacy-Mode Numeric",
+      "kind": "custom",
+      "refersTo": "privacy-numeric",
+      "description": "First-class state for any rendered financial value. The mask preserves layout (tabular-nums) so rows do not jump. Color is unchanged from the underlying value.",
+      "html": "<table class=\"ds-table\"><tr class=\"ds-row\"><td class=\"ds-cell-label\">Liquidity</td><td class=\"ds-cell-amount\">$2,418.03</td></tr><tr class=\"ds-row\"><td class=\"ds-cell-label\">Liquidity (privacy)</td><td class=\"ds-cell-amount ds-cell-private\">••••.••</td></tr></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 12px; line-height: 1.625; color: oklch(0.145 0.005 92); } .ds-row { border-bottom: 1px solid oklch(0.922 0.005 92); } .ds-row:last-child { border-bottom: none; } .ds-cell-label { padding: 8px 12px; color: oklch(0.556 0.008 92); } .ds-cell-amount { padding: 8px 12px; text-align: right; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; font-weight: 500; } .ds-cell-private { color: oklch(0.145 0.005 92); letter-spacing: 0.05em; }"
+    },
+    {
+      "name": "Account Color Legend",
+      "kind": "custom",
+      "refersTo": "chart-legend",
+      "description": "Reference for the seven semantic account colors. Every chart legend in the product uses exactly these swatch-and-label pairs.",
+      "html": "<ul class=\"ds-legend\"><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.72 0.19 142)\"></span>Net Worth</li><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.67 0.2 258)\"></span>Liquidity</li><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.78 0.17 55)\"></span>Investment</li><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.65 0.22 340)\"></span>Property</li><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.7 0.18 200)\"></span>Receivable</li><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.65 0.22 25)\"></span>Liability</li><li class=\"ds-legend-item\"><span class=\"ds-swatch\" style=\"background:oklch(0.72 0.17 300)\"></span>Asset</li></ul>",
+      "css": ".ds-legend { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-family: 'Inter Variable', system-ui, sans-serif; font-size: 10px; font-weight: 500; line-height: 1.4; letter-spacing: 0.02em; color: oklch(0.556 0.008 92); } .ds-legend-item { display: inline-flex; align-items: center; gap: 6px; } .ds-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 0; flex-shrink: 0; }"
     }
   ],
   "narrative": {
-    "northStar": "The Builder's Workbench",
-    "overview": "Beaver Money looks like a clean, well-lit workshop. Tools laid out on amber pine. Sharp, square edges everywhere except where a dialog softens the corner just enough to invite. Numbers are the work; the surface holds them and gets out of the way. Small daily marks (a transaction, a price refresh, a snapshot) accrete into something solid, the way a beaver's daily work becomes a dam.\n\nEvery visual decision serves accuracy, restraint, and craft. The amber primary is warm but disciplined: it appears where it earns its place (a single primary action, a household marker, the beaver pelt accent in the sidebar) and never floods the canvas. Type is small, dense, and consistent (Inter Variable, body-12 relaxed, weights 400 to 600 only). Surfaces are flat. Where two surfaces meet, a 1px ghost ring at 10% foreground separates them. No shadows, no gradients, no decorative chrome.\n\nThis system explicitly rejects three things, in priority order. It rejects commercial bank-app glossiness: no marketing hero metrics, no celebration confetti, no infantilizing copy. It rejects crypto-bro maximalism: no neon, no glow, no gradients masquerading as data. It rejects AI-SaaS templates: no 'icon plus heading plus paragraph' card grids, no gradient text, no lavender-and-cyan duotones. If a screen could be reskinned with a different name and pass for a SaaS template, it has lost.",
+    "northStar": "The Ledger Workshop",
+    "overview": "Beaver Money's interface is a craftsman's bench: tools within reach, columns straight, surfaces uncluttered, a single warm amber that reads as worked wood and brass instrument. Every component earns its space. Numbers are the substance; chrome is the box. The user is logging by hand because logging by hand is the point. The system supports that ritual rather than decorating around it. Density is the policy, not an accident. Default rows are tight, targets are real but compact, and there is no breathing room offered 'to look modern.' The aesthetic lineage runs through Linear, Raycast, Stripe Dashboard, Beancount, and the better personal-finance managers without inheriting their consumer-fintech polish. We sit closer to a measurement instrument than to a marketing page. This system explicitly rejects every visual idiom that signals 'fintech' at a glance: gradient hero metrics, navy-and-gold legacy bank chrome, neon-on-black crypto trading, glassmorphism, soft-pastel SaaS-cream, gamified streaks, and identical icon-heading-text card grids.",
     "keyCharacteristics": [
-      "Sharp by default. Radius is 0 across buttons, inputs, cards, the sidebar. The only soft corner is the dialog (4px) and the only round corner is the badge (full pill).",
-      "Compact and earnest. Default control height is 28px. Default body type is 12px with 1.625 line-height. The UI respects screen real estate the way a workbench respects bench space.",
-      "Flat with ghost rings. Surfaces never lift. Cards, popovers, and dialogs are separated from the canvas by a 1px subtle ring at 10% foreground.",
-      "Plural by default. Currency conversion, household identity, and member roles are first-class visual citizens, never modal afterthoughts.",
-      "Tonal layering for depth. Light theme uses (canvas, card, popover) as a near-flat lightness ramp. Dark theme inverts it: a deeper canvas, slightly lifted card, subtle popover."
+      "Sharp corners. --radius: 0 is the load-bearing decision; the entire scale collapses to zero.",
+      "Single warm hue (92°) tints every neutral. There is no cool grey anywhere in this product.",
+      "Rings, not shadows. Depth is conveyed by ring-1 ring-foreground/10 and tonal layering.",
+      "One typeface (Inter Variable). Hierarchy by scale and weight, never by family.",
+      "Semantic chart palette is fixed and meaningful. Colors map to account categories, not decoration.",
+      "Privacy-mode masking is a first-class state. Every numeric value must support it."
     ],
     "rules": [
-      { "name": "The One Amber Rule", "body": "Beaver Pelt Amber appears on no more than one primary action per panel and one identity marker per screen. Anywhere else amber appears, it is decoration and must be removed. The accent's rarity is the point.", "section": "colors" },
-      { "name": "The Tinted Destructive Rule", "body": "Destructive actions use a 10% Alarm Red background with full-saturation text and icon. Never a fully red button. Destructive is a serious moment, not a loud surface.", "section": "colors" },
-      { "name": "The Honest FX Rule", "body": "When a value is converted across currencies, surface that fact at the value (a small currency code or a tooltip), not in a footnote. Privacy mode masks; it never lies.", "section": "colors" },
-      { "name": "The Three-Weight Rule", "body": "The system uses 400, 500, 600. No 300, no 700, no italics. If you reach for a fourth weight, restructure the layout instead.", "section": "typography" },
-      { "name": "The Body-12 Rule", "body": "Default body is 12px. The system is built for users at a real keyboard, on a real screen, doing focused work. Resist the impulse to bump up to 14px to feel 'designed'. The density is the design.", "section": "typography" },
-      { "name": "The Tabular Numerals Rule", "body": "Money values use tabular numerals (font-variant-numeric: tabular-nums). Numbers in columns must align by digit, always. Non-tabular money is a bug.", "section": "typography" },
-      { "name": "The No-Shadow Rule", "body": "Surfaces do not cast light. If a component needs to feel separated, use the ghost ring (1px, 10% foreground) or shift the background tone. Drop-shadow is forbidden.", "section": "elevation" },
-      { "name": "The Ghost Ring Rule", "body": "Cards, popovers, and dialogs use a 1px ring at 10% foreground, not a border. A border claims edge; a ring whispers it.", "section": "elevation" },
-      { "name": "The Backdrop-Blur Exception", "body": "Backdrop-filter blur is permitted only on the dialog overlay, where it functions to mute the live canvas behind a modal. It is never decorative. No glassmorphism.", "section": "elevation" }
+      {
+        "name": "The Warm-Neutrals Rule",
+        "body": "Every neutral, in both themes, carries chroma 0.005-0.01 at hue 92°. There is no #000, no #fff, no cool grey, no slate. If a designer reaches for a neutral, it must come from this palette or be derived by adjusting only lightness on hue 92°.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic-Chart Rule",
+        "body": "The seven account colors are bound to their category for the lifetime of the product. They are not a generic 'data viz palette' to be reassigned per chart. A new chart picks colors from this list by what it represents, never by aesthetic preference.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Amber-At-A-Time Rule",
+        "body": "The main brand amber and the sidebar burnished gold do not appear on the same surface in the same role. Sidebar gold marks chrome (active nav); brand amber marks content actions. Mixing them weakens both.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Family Rule",
+        "body": "A second typeface is not added to introduce hierarchy. If two pieces of text need to be visually distinct, change weight, scale, color, or column position, never the family.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular-Numerics Rule",
+        "body": "Any column of numbers (account balances, transaction amounts, investment values, currency conversions) renders with font-variant-numeric: tabular-nums. Decimals align by point, the eye scans down a column, totals are reconcilable at a glance. A misaligned decimal in a financial table is a bug, not a style preference.",
+        "section": "typography"
+      },
+      {
+        "name": "The Compact-Default Rule",
+        "body": "Default body is 12px (text-xs/relaxed). Designers do not bump it to 14px because the page 'feels too dense'; the density is the design. If a screen is genuinely overpacked, reduce content, not increase type.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Shadow Rule",
+        "body": "Drop shadows are forbidden across the product. If a designer believes a surface needs to 'lift,' the answer is a ring border or a tonal-layer adjustment, not a shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Ring-Hairline Rule",
+        "body": "When a card needs an edge, it gets ring-1 ring-foreground/10. The ring sits inside the box; it does not affect layout; it does not change opacity on hover. It is the standard load-bearing edge for any container that holds tabular data.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Compact-Target Rule",
+        "body": "Buttons and inputs are 28px tall by default. Touch-priority surfaces may opt into 32-44px, but desktop never exceeds 28px without explicit reason. The hit area extends invisibly via padding for accessibility, but the visible chrome stays compact.",
+        "section": "components"
+      },
+      {
+        "name": "The State-By-Color Rule",
+        "body": "State changes (hover, focus, active, disabled, invalid) shift color, ring, and at most a 1px translate. They do not animate scale, blur, opacity-on-translate, or any layout property.",
+        "section": "components"
+      }
     ],
     "dos": [
-      "Do treat amber as scarce. One primary action per panel, one identity marker per screen, the brand mark, and that is the budget.",
-      "Do keep controls compact. 28px default control height. 12px body text. Density is the brand.",
-      "Do use the ghost ring (1px, 10% foreground) for surface separation. Never a full border, never a shadow.",
-      "Do keep corners sharp on every control and every card. The only soft corner is the dialog (4px). The only round corner is the badge (full pill).",
-      "Do use tabular numerals for every money value. Money columns must align by digit.",
-      "Do show currency conversion at the value, with the native amount as a secondary line. Never hide that a number was converted.",
-      "Do respect prefers-reduced-motion: reduce. Animations are state feedback, not theater.",
-      "Do make every action keyboard-reachable, including chart interactions, household switching, and transaction entry.",
-      "Do treat privacy mode as a real surface. When values are masked, charts and totals must remain coherent.",
-      "Do quote the Three-Weight Rule (400, 500, 600) and the Body-12 Rule when reviewing new screens."
+      "Do keep --radius: 0. The squared aesthetic is the load-bearing precision signal.",
+      "Do tint every neutral toward hue 92° with chroma 0.005-0.01.",
+      "Do use OKLCH for color values in styles.css. Match the existing token format; never split the source of truth into hex/HSL/RGB.",
+      "Do apply font-variant-numeric: tabular-nums to any column of numbers.",
+      "Do use the seven-color semantic account palette consistently. Net worth is always green; liabilities are always red; investments are always amber-orange.",
+      "Do use ring-1 ring-foreground/10 to give cards an edge.",
+      "Do keep buttons and inputs at h-7 (28px) by default.",
+      "Do use Lucide for every icon. Single-family icon set.",
+      "Do make privacy-mode masking work for any new financial value rendered.",
+      "Do respect prefers-reduced-motion, especially for any transition over 150ms."
     ],
     "donts": [
-      "Don't flood the canvas with amber. If amber appears more than once per panel as an action color, it is decoration. Remove it.",
-      "Don't use side-stripe borders (border-left or border-right greater than 1px as an accent). Forbidden by the impeccable shared laws and reinforced here. Use full ghost ring or background tint instead.",
-      "Don't use gradient text or background-clip: text. Single solid colors only. Emphasis comes from weight or size.",
-      "Don't ship glassmorphism. Backdrop-filter is permitted only on the dialog overlay. Anywhere else it is decorative and forbidden.",
-      "Don't build the hero-metric template (giant number, small label, supporting stats, gradient accent). It is the SaaS cliche PRODUCT.md rejects most strongly.",
-      "Don't use identical card grids of icon plus heading plus paragraph. If you find yourself laying out three cards in a row that look the same, the structure is wrong, not the styling.",
-      "Don't use neon or glow effects. No box-shadow colored beyond the ghost-ring 10% foreground. No text-shadow. Beaver Money tracks crypto without becoming a crypto app.",
-      "Don't write infantilizing or celebratory finance copy ('You spent $X on coffee this week!', 'Great job saving!'). Money is serious. Treat the user as an adult.",
-      "Don't introduce em dashes in any UX copy or marketing surface. Use commas, colons, semicolons, periods, or parentheses.",
-      "Don't add a fourth font weight, a third typeface, or italic body type. The system is built on Inter at three weights.",
-      "Don't wrap data in cards by default. Tables are the right primitive for transactions, balances, and rows. Cards are for summaries, not for everything.",
-      "Don't use #000 or #fff directly. Use paper-white and ledger-ink (which are oklch tokens) so future tinting is one variable change away.",
-      "Don't reach for a modal as the first answer. Inline editing, route-driven dialogs, and progressive disclosure beat a modal in almost every case."
+      "Don't use #000 or #fff anywhere. Every neutral must carry the warm hue tint.",
+      "Don't introduce box-shadow for elevation. The product is flat with rings; no exceptions.",
+      "Don't use background-clip: text with a gradient. No gradient text, no gradient hero metrics, no 'background gradient meets soft glow.' Solid colors only.",
+      "Don't introduce a second typeface. Inter Variable does all the work. Hierarchy is scale + weight.",
+      "Don't add cool greys, slate, navy, or 'cyberpunk' neon. Even the dark theme stays warm-neutral.",
+      "Don't use a border-left or border-right greater than 1px as a colored stripe accent on cards, alerts, or list items. This is the absolute-banned side-stripe pattern.",
+      "Don't repurpose the seven account colors for non-categorical decoration. They are bound to their account category for the life of the product.",
+      "Don't wrap every metric in a card. Tabular and inline displays are usually correct; the card is the lazy answer.",
+      "Don't show identical icon-heading-text card grids. The landing page already brushes against this; no further surfaces should adopt the pattern.",
+      "Don't imply auto-import is 'coming soon' or that manual entry is a fallback. Manual is the feature; the design must say so.",
+      "Don't gamify. No streaks, no confetti, no green/red 'you saved!' dopamine. The reward for logging is the awareness, not the animation.",
+      "Don't use glassmorphism. Backdrop-filter is reserved for the rare case of overlay readability; it is never decorative.",
+      "Don't bump default body size up 'to feel more breathable.' Density is the design."
     ]
   }
 }

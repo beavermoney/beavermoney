@@ -1,31 +1,34 @@
 ---
 name: Beaver Money
-description: Log your transactions. Build your dam.
+description: A craftsman's ledger for households who log every transaction by hand.
 colors:
   beaver-pelt-amber: "oklch(0.852 0.199 91.936)"
-  beaver-pelt-amber-deep: "oklch(0.681 0.162 75.834)"
-  primary-foreground: "oklch(0.421 0.095 57.708)"
+  beaver-pelt-amber-foreground: "oklch(0.421 0.095 57.708)"
+  amber-deep: "oklch(0.795 0.184 86.047)"
+  burnished-gold: "oklch(0.681 0.162 75.834)"
   paper-white: "oklch(1 0.002 92)"
-  ledger-ink: "oklch(0.145 0.005 92)"
-  warm-mist: "oklch(0.967 0.005 92)"
-  workshop-fog: "oklch(0.97 0.005 92)"
-  pencil-line: "oklch(0.922 0.005 92)"
-  ring-graphite: "oklch(0.708 0.008 92)"
-  alarm-red: "oklch(0.577 0.245 27.325)"
-  bench-canvas: "oklch(0.985 0.005 92)"
-  chart-net-worth: "oklch(0.72 0.19 142)"
-  chart-liquidity: "oklch(0.67 0.2 258)"
-  chart-investment: "oklch(0.78 0.17 55)"
-  chart-property: "oklch(0.65 0.22 340)"
-  chart-receivable: "oklch(0.7 0.18 200)"
-  chart-liability: "oklch(0.65 0.22 25)"
-  chart-asset: "oklch(0.72 0.17 300)"
+  bone-cream: "oklch(0.985 0.005 92)"
+  light-vellum: "oklch(0.97 0.005 92)"
+  pencil-grey: "oklch(0.922 0.005 92)"
+  graphite-mid: "oklch(0.708 0.008 92)"
+  ink-mid: "oklch(0.556 0.008 92)"
+  ink-deep: "oklch(0.205 0.008 92)"
+  ink-near-black: "oklch(0.145 0.005 92)"
+  warm-walnut: "oklch(0.269 0.008 92)"
+  crimson-error: "oklch(0.577 0.245 27.325)"
+  account-net-worth: "oklch(0.72 0.19 142)"
+  account-liquidity: "oklch(0.67 0.2 258)"
+  account-investment: "oklch(0.78 0.17 55)"
+  account-property: "oklch(0.65 0.22 340)"
+  account-receivable: "oklch(0.7 0.18 200)"
+  account-liability: "oklch(0.65 0.22 25)"
+  account-asset: "oklch(0.72 0.17 300)"
 typography:
   display:
     fontFamily: "Inter Variable, system-ui, sans-serif"
-    fontSize: "1.875rem"
-    fontWeight: 600
-    lineHeight: 1.15
+    fontSize: "clamp(2.25rem, 5vw, 3rem)"
+    fontWeight: 700
+    lineHeight: 1.1
     letterSpacing: "-0.02em"
   headline:
     fontFamily: "Inter Variable, system-ui, sans-serif"
@@ -38,302 +41,286 @@ typography:
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: 1.4
+    letterSpacing: "normal"
   body:
     fontFamily: "Inter Variable, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 400
     lineHeight: 1.625
+    letterSpacing: "normal"
   label:
     fontFamily: "Inter Variable, system-ui, sans-serif"
     fontSize: "0.625rem"
     fontWeight: 500
     lineHeight: 1.4
+    letterSpacing: "0.02em"
 rounded:
   none: "0"
   sm: "0"
   md: "0"
   lg: "0"
-  xl: "4px"
-  pill: "9999px"
 spacing:
   px: "1px"
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "24px"
-  sidebar-collapsed: "2.5rem"
-  sidebar-expanded: "12rem"
+  half: "2px"
+  one: "4px"
+  one-half: "6px"
+  two: "8px"
+  two-half: "10px"
+  three: "12px"
+  four: "16px"
+  six: "24px"
+  twelve: "48px"
 components:
-  button-primary:
+  button-default:
     backgroundColor: "{colors.beaver-pelt-amber}"
-    textColor: "{colors.primary-foreground}"
+    textColor: "{colors.beaver-pelt-amber-foreground}"
     typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "0 8px"
     height: "28px"
-  button-primary-hover:
+  button-default-hover:
     backgroundColor: "{colors.beaver-pelt-amber}"
-    textColor: "{colors.primary-foreground}"
+    textColor: "{colors.beaver-pelt-amber-foreground}"
   button-outline:
     backgroundColor: "{colors.paper-white}"
-    textColor: "{colors.ledger-ink}"
+    textColor: "{colors.ink-near-black}"
+    typography: "{typography.body}"
+    rounded: "{rounded.md}"
+    padding: "0 8px"
+    height: "28px"
+  button-secondary:
+    backgroundColor: "{colors.light-vellum}"
+    textColor: "{colors.ink-deep}"
     typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "0 8px"
     height: "28px"
   button-ghost:
-    backgroundColor: "{colors.paper-white}"
-    textColor: "{colors.ledger-ink}"
+    backgroundColor: "transparent"
+    textColor: "{colors.ink-near-black}"
     typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "0 8px"
     height: "28px"
-  badge-default:
-    backgroundColor: "{colors.beaver-pelt-amber}"
-    textColor: "{colors.primary-foreground}"
-    typography: "{typography.label}"
-    rounded: "{rounded.pill}"
+  button-destructive:
+    backgroundColor: "{colors.crimson-error}"
+    textColor: "{colors.paper-white}"
+    typography: "{typography.body}"
+    rounded: "{rounded.md}"
     padding: "0 8px"
-    height: "20px"
+    height: "28px"
   card:
     backgroundColor: "{colors.paper-white}"
-    textColor: "{colors.ledger-ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
+    textColor: "{colors.ink-near-black}"
+    rounded: "{rounded.lg}"
     padding: "16px"
   input:
-    backgroundColor: "{colors.paper-white}"
-    textColor: "{colors.ledger-ink}"
-    typography: "{typography.body}"
+    backgroundColor: "{colors.pencil-grey}"
+    textColor: "{colors.ink-near-black}"
+    typography: "{typography.title}"
     rounded: "{rounded.md}"
     padding: "0 8px"
     height: "28px"
-  dialog:
-    backgroundColor: "{colors.paper-white}"
-    textColor: "{colors.ledger-ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xl}"
-    padding: "16px"
+  sidebar:
+    backgroundColor: "{colors.bone-cream}"
+    textColor: "{colors.ink-near-black}"
 ---
 
 # Design System: Beaver Money
 
 ## 1. Overview
 
-**Creative North Star: "The Builder's Workbench"**
+**Creative North Star: "The Ledger Workshop"**
 
-Beaver Money looks like a clean, well-lit workshop. Tools laid out on amber pine. Sharp, square edges everywhere except where a dialog softens the corner just enough to invite. Numbers are the work; the surface holds them and gets out of the way. Small daily marks (a transaction, a price refresh, a snapshot) accrete into something solid, the way a beaver's daily work becomes a dam.
+Beaver Money's interface is a craftsman's bench: tools within reach, columns straight, surfaces uncluttered, a single warm amber that reads as worked wood and brass instrument. Every component earns its space. Numbers are the substance; chrome is the box. The user is logging by hand because logging by hand is the point. The system supports that ritual rather than decorating around it.
 
-Every visual decision serves accuracy, restraint, and craft. The amber primary is warm but disciplined: it appears where it earns its place (a single primary action, a household marker, the beaver pelt accent in the sidebar) and never floods the canvas. Type is small, dense, and consistent (Inter Variable, body-12 relaxed, weights 400 to 600 only). Surfaces are flat. Where two surfaces meet, a 1px ghost ring at 10% foreground separates them. No shadows, no gradients, no decorative chrome.
+Density is the policy, not an accident. Default rows are tight (`h-7` for inputs and buttons, `text-xs/relaxed` for body), targets are real but compact, and there is no breathing room offered "to look modern." The aesthetic lineage runs through Linear, Raycast, Stripe Dashboard, Beancount, and the better personal-finance managers (Monarch, Copilot, Lunch Money) without inheriting their consumer-fintech polish. We sit closer to a measurement instrument than to a marketing page.
 
-This system explicitly rejects three things, in priority order. It rejects **commercial bank-app glossiness**: no marketing hero metrics, no celebration confetti, no infantilizing copy. It rejects **crypto-bro maximalism**: no neon, no glow, no gradients masquerading as data. It rejects **AI-SaaS templates**: no "icon plus heading plus paragraph" card grids, no gradient text, no lavender-and-cyan duotones. If a screen could be reskinned with a different name and pass for a SaaS template, it has lost.
+This system explicitly rejects every visual idiom that signals "fintech" at a glance: gradient hero metrics, navy-and-gold legacy bank chrome, neon-on-black crypto trading, glassmorphism, soft-pastel SaaS-cream, gamified streaks, and identical icon-heading-text card grids. If a stranger could guess "fintech" from a 50ms glance at a gradient and a chart, the design has failed.
 
 **Key Characteristics:**
+- Sharp corners. `--radius: 0` is the load-bearing decision; the entire scale collapses to zero.
+- Single warm hue (92°) tints every neutral. There is no cool grey anywhere in this product.
+- Rings, not shadows. Depth is conveyed by `ring-1 ring-foreground/10` and tonal layering.
+- One typeface (Inter Variable). Hierarchy by scale and weight, never by family.
+- Semantic chart palette is fixed and meaningful. Colors map to account categories, not decoration.
+- Privacy-mode masking is a first-class state. Every numeric value must support it.
 
-- Sharp by default. Radius is 0 across buttons, inputs, cards, the sidebar. The only soft corner is the dialog (4px) and the only round corner is the badge (full pill).
-- Compact and earnest. Default control height is 28px. Default body type is 12px with 1.625 line-height. The UI respects screen real estate the way a workbench respects bench space.
-- Flat with ghost rings. Surfaces never lift. Cards, popovers, and dialogs are separated from the canvas by a 1px subtle ring at 10% foreground.
-- Plural by default. Currency conversion, household identity, and member roles are first-class visual citizens, never modal afterthoughts.
-- Tonal layering for depth. Light theme uses (canvas → card → popover) as a near-flat lightness ramp. Dark theme inverts it: a deeper canvas, slightly lifted card, subtle popover.
+## 2. Colors: The Beaver Pelt Palette
 
-## 2. Colors
-
-The palette is amber-warm-on-near-neutral. One committed accent (Beaver Pelt Amber) carries identity; everything else is a tinted-toward-warm neutral so the accent reads as warmth, not as decoration. Charts get their own dedicated semantic palette because financial roles are not interchangeable.
+Tinted neutrals around hue 92° (warm amber) plus one saturated brand hue and a fixed seven-role semantic chart palette. Cool greys are forbidden; every neutral carries chroma 0.005-0.01 toward the brand hue.
 
 ### Primary
 
-- **Beaver Pelt Amber** (`oklch(0.852 0.199 91.936)` light, `oklch(0.795 0.184 86.047)` dark): the single committed accent. Used on the primary call-to-action, the active household marker, the beaver-pelt sidebar primary, and the brand mark itself. Paired with **Primary Foreground** (`oklch(0.421 0.095 57.708)`), a deep warm brown that gives buttons readable contrast without pure black on amber.
-- **Beaver Pelt Amber Deep** (`oklch(0.681 0.162 75.834)`): the deeper sibling that lives in the sidebar primary slot. Slightly more orange, slightly more saturated, used to mark the active workspace identity.
+- **Beaver Pelt Amber** (`oklch(0.852 0.199 91.936)`): the brand hue at light-canvas saturation. Used on primary buttons, primary actions, brand surfaces, and the household-record indicator. In dark mode this shifts to **Amber Deep** (`oklch(0.795 0.184 86.047)`) for contrast against warm-dark backgrounds.
+- **Burnished Gold** (`oklch(0.681 0.162 75.834)`): the sidebar primary, deeper and more saturated than the main amber. Used to mark "active" navigation in the sidebar without competing with the main brand swatch elsewhere.
 
 ### Neutral
 
-Every neutral is tinted toward the brand hue (92°) at chroma 0.003 to 0.01, scaled by lightness (less chroma at the extremes, more in the mid-greys where the eye tolerates warmth). Pure `#fff` and pure `#000` are forbidden. Light theme:
+- **Paper White** (`oklch(1 0.002 92)`): main background and card surface in light mode. Tinted toward amber by chroma 0.002, never pure `#ffffff`.
+- **Bone Cream** (`oklch(0.985 0.005 92)`): the sidebar surface; just barely warmer than paper white so the chrome separates from content without a border.
+- **Light Vellum** (`oklch(0.97 0.005 92)`): muted/secondary/accent surface for buttons and pill backgrounds.
+- **Pencil Grey** (`oklch(0.922 0.005 92)`): borders and input field backgrounds (used at full opacity for borders, at 20% for input fills via `bg-input/20`).
+- **Graphite Mid** (`oklch(0.708 0.008 92)`): focus ring color and disabled-state grey.
+- **Ink Mid** (`oklch(0.556 0.008 92)`): muted-foreground for descriptions, captions, and secondary metadata.
+- **Ink Deep** (`oklch(0.205 0.008 92)`): used for secondary-button foreground and dark-mode card surface.
+- **Ink Near-Black** (`oklch(0.145 0.005 92)`): primary foreground in light mode; primary background in dark mode (it pivots).
+- **Warm Walnut** (`oklch(0.269 0.008 92)`): muted/accent surface in dark mode, the equivalent of Light Vellum's role.
 
-- **Paper White** (`oklch(1 0.002 92)`): primary canvas, card, popover background.
-- **Bench Canvas** (`oklch(0.985 0.005 92)`): sidebar background, a single step warmer than canvas.
-- **Workshop Fog** (`oklch(0.97 0.005 92)`): muted backgrounds, accent backgrounds.
-- **Warm Mist** (`oklch(0.967 0.005 92)`): secondary surface, a degree warmer than Workshop Fog.
-- **Pencil Line** (`oklch(0.922 0.005 92)`): borders, input borders, dividers.
-- **Ring Graphite** (`oklch(0.708 0.008 92)`): focus ring base.
-- **Ledger Ink** (`oklch(0.145 0.005 92)`): primary foreground text.
+### Semantic (account categories)
 
-Dark theme inverts: canvas (`oklch(0.145 0.005 92)`) is the page, card and popover lift to (`oklch(0.205 0.008 92)`), borders become 10% tinted white. Same role names, same warm tint, inverted lightness.
+The chart palette is **not a decoration system**. Each color is bound to an account category and must be used consistently across every chart, sankey, badge, dot, or icon that represents that category. Aim for the color to carry meaning at a glance after one exposure.
 
-### Tertiary (semantic alarm)
+- **Account / Net Worth Green** (`oklch(0.72 0.19 142)`): household net worth, total assets minus liabilities.
+- **Account / Liquidity Blue** (`oklch(0.67 0.2 258)`): cash, checking, savings.
+- **Account / Investment Amber** (`oklch(0.78 0.17 55)`): brokerage accounts, holdings. Sits adjacent to the brand hue intentionally, since investments are a significant first-class surface.
+- **Account / Property Magenta** (`oklch(0.65 0.22 340)`): real estate, vehicles, illiquid assets.
+- **Account / Receivable Cyan** (`oklch(0.7 0.18 200)`): money owed to the household.
+- **Account / Liability Red** (`oklch(0.65 0.22 25)`): credit cards, loans, debt.
+- **Account / Asset Purple** (`oklch(0.72 0.17 300)`): generic asset bucket distinct from property.
 
-- **Alarm Red** (`oklch(0.577 0.245 27.325)` light, `oklch(0.704 0.191 22.216)` dark): destructive actions only. Never decorative, never used to signal urgency on neutral data. Always paired with the tinted-background pattern: 10% background, full-saturation text and icon. The full red surface is reserved for alerts that must be impossible to ignore.
+A separate **chart-1..chart-5** grey ramp (`oklch(0.87 0.005 92)` down to `oklch(0.269 0.008 92)`) is used when the chart is non-categorical (e.g., a series over time without account semantics). In dark mode, the grey ramp is lifted into the readable band (≥0.45 lightness) so it reads on a dark canvas.
 
-### Chart Roles (semantic, color-blind aware)
+### Status
 
-Seven domain-specific chart colors map to financial concepts. Each one is a distinct hue plus a deliberate lightness, chosen so they remain distinguishable in deuteranopia and protanopia:
-
-- **Net Worth** (`oklch(0.72 0.19 142)`): leaf green. The single most important number gets the most cognitively positive hue.
-- **Liquidity** (`oklch(0.67 0.2 258)`): clear water blue. Liquid assets, cash flow.
-- **Investment** (`oklch(0.78 0.17 55)`): orange. Adjacent to the amber primary on purpose; investments are part of the household's working capital.
-- **Property** (`oklch(0.65 0.22 340)`): magenta. Hard assets, real estate.
-- **Receivable** (`oklch(0.7 0.18 200)`): teal. Money owed to the household.
-- **Liability** (`oklch(0.65 0.22 25)`): warm red. Debts and obligations.
-- **Asset** (`oklch(0.72 0.17 300)`): violet. Generic asset roll-up.
-
-A grayscale ramp (`chart-1` through `chart-5`) handles non-semantic chart contexts (sparklines, monochrome breakdowns). Light theme runs `oklch(0.87 0.005 92)` to `oklch(0.269 0.008 92)` (light to dark on light canvas). Dark theme is lifted into the readable band on dark canvas: `oklch(0.97 0.003 92)` to `oklch(0.45 0.008 92)` (light to mid-light on dark canvas, so all five remain visible).
+- **Crimson Error** (`oklch(0.577 0.245 27.325)`): destructive actions, error states, validation failures. Lifts to `oklch(0.704 0.191 22.216)` in dark mode.
 
 ### Named Rules
 
-**The One Amber Rule.** Beaver Pelt Amber appears on no more than one primary action per panel and one identity marker per screen. Anywhere else amber appears, it is decoration and must be removed. The accent's rarity is the point.
+**The Warm-Neutrals Rule.** Every neutral, in both themes, carries chroma 0.005-0.01 at hue 92°. There is no `#000`, no `#fff`, no cool grey, no slate. If a designer reaches for a neutral, it must come from this palette or be derived by adjusting only lightness on hue 92°.
 
-**The Tinted Destructive Rule.** Destructive actions use a 10% Alarm Red background with full-saturation text and icon. Never a fully red button. Destructive is a serious moment, not a loud surface.
+**The Semantic-Chart Rule.** The seven account colors are bound to their category for the lifetime of the product. They are not a generic "data viz palette" to be reassigned per chart. A new chart picks colors from this list by what it represents, never by aesthetic preference.
 
-**The Honest FX Rule.** When a value is converted across currencies, surface that fact at the value (a small currency code or a tooltip), not in a footnote. Privacy mode masks; it never lies.
+**The One-Amber-At-A-Time Rule.** The main brand amber and the sidebar burnished gold do not appear on the same surface in the same role. Sidebar gold marks chrome (active nav); brand amber marks content actions (primary buttons, household indicators). Mixing them weakens both.
 
 ## 3. Typography
 
-**Display Font:** Inter Variable (system-ui fallback)
-**Body Font:** Inter Variable (system-ui fallback)
-**Label Font:** Inter Variable (system-ui fallback)
+**Display Font:** Inter Variable, with system-ui and sans-serif fallback.
+**Body Font:** Inter Variable. Identical family to the display.
+**Mono / Numeric:** none distinct today; numerals are rendered in Inter using its tabular-numeric font features where alignment matters.
 
-**Character:** A single typeface family, Inter Variable, used in restricted weights (400, 500, 600). The result is consistency without monotony: hierarchy comes from scale and weight contrast, not from font switching. This is the typography of a tool, not a magazine.
+**Character:** A single optical-tuned grotesque doing all the work. Hierarchy comes from scale and weight contrast (≥1.25 ratio between steps), not from family change. The result reads as instrument-grade rather than editorial; the document feels like a notebook page, not a magazine spread.
 
 ### Hierarchy
 
-- **Display** (600, 1.875rem / 30px, line-height 1.15, letter-spacing -0.02em): the rare hero, used on the landing page and onboarding. One per page maximum.
-- **Headline** (600, 1.125rem / 18px, line-height 1.3, letter-spacing -0.01em): page titles inside the app shell. Mostly silent; the data is the headline.
-- **Title** (500, 0.875rem / 14px, line-height 1.4): card titles, panel titles, dialog titles.
-- **Body** (400, 0.75rem / 12px, line-height 1.625): the dominant register. Transaction rows, table cells, descriptions, button text. Cap line length at 65 to 75 characters when the body is prose; in tabular contexts, density wins.
-- **Label** (500, 0.625rem / 10px, line-height 1.4): badges, status pills, small uppercase markers. Use sparingly; below 12px is harder to read.
+- **Display** (700, `clamp(2.25rem, 5vw, 3rem)`, line-height 1.1, tracking -0.02em): landing-page hero (`/`) and large empty-state titles. Rare in the product surface; reserve for moments where the page is essentially a wordmark.
+- **Headline** (600, 1.125rem / 18px, line-height 1.3, tracking -0.01em): page-level titles inside the app shell ("Transactions", "Investments"). One per route maximum.
+- **Title** (500, 0.875rem / 14px, line-height 1.4): card titles, dialog titles, table column headers, section labels. The most-used "important text" size.
+- **Body** (400, 0.75rem / 12px, line-height 1.625): the default body size. Transaction descriptions, form helper text, sidebar items, most table rows. Body line length should still cap at 65-75ch in long-form prose contexts (settings descriptions, empty-state copy).
+- **Label** (500, 0.625rem / 10px, line-height 1.4, tracking 0.02em): metadata, badge text, the `xs` button size, and form micro-labels. Use sparingly; this size strains at desk distance.
 
 ### Named Rules
 
-**The Three-Weight Rule.** The system uses 400, 500, 600. No 300, no 700, no italics. If you reach for a fourth weight, restructure the layout instead.
+**The One-Family Rule.** A second typeface is not added to introduce hierarchy. If two pieces of text need to be visually distinct, change weight, scale, color, or column position, never the family.
 
-**The Body-12 Rule.** Default body is 12px. The system is built for users at a real keyboard, on a real screen, doing focused work. Resist the impulse to bump up to 14px to feel "designed". The density is the design.
+**The Tabular-Numerics Rule.** Any column of numbers (account balances, transaction amounts, investment values, currency conversions) renders with `font-variant-numeric: tabular-nums`. Decimals align by point, the eye scans down a column, totals are reconcilable at a glance. A misaligned decimal in a financial table is a bug, not a style preference.
 
-**The Tabular Numerals Rule.** Money values use tabular numerals (`font-variant-numeric: tabular-nums`). Numbers in columns must align by digit, always. Non-tabular money is a bug.
+**The Compact-Default Rule.** Default body is 12px (`text-xs/relaxed`). Designers do not bump it to 14px because the page "feels too dense"; the density is the design. If a screen is genuinely overpacked, reduce content, not increase type.
 
 ## 4. Elevation
 
-The system is **flat by default, with ghost rings**. There are no box-shadows in the global token vocabulary. Surfaces are separated by a 1px ring at 10% foreground (the "ghost ring"), which reads as a near-invisible edge in light theme and a subtle highlight in dark theme. Depth, when needed, is conveyed by tonal shifts in background lightness, not by light.
+This system is **flat with rings**. There are no `box-shadow` tokens, no soft drop shadows, no glassmorphism, no blur effects of any kind. Depth is conveyed by three legitimate mechanisms only:
 
-The dialog overlay is the one place the system uses backdrop-filter (`backdrop-blur-xs` on `bg-black/80`), and only because a modal needs to mute the canvas behind it. The backdrop blur is not decorative; it's a clarity device.
+1. **Tonal layering**: surfaces lift via background lightness (sidebar Bone Cream sits on Paper White content; warm-walnut accents sit on dark-mode card surfaces).
+2. **Ring borders**: cards and key containers carry `ring-1 ring-foreground/10` (a 10%-foreground hairline). This reads as a confident pencil line, not a glow.
+3. **Border separators**: form inputs, table rows, and lists use `border-input` (Pencil Grey) at 1px to delimit fields. Borders are structural; they delineate, they don't decorate.
 
-### Surface Ramp
-
-- **Canvas:** the page background (`paper-white` light, `oklch(0.145 0.005 92)` dark).
-- **Card / Popover:** the same as canvas in light theme (separated by ghost ring); one step lighter than canvas in dark theme (`oklch(0.205 0.008 92)`).
-- **Sidebar:** one step warmer than canvas (`bench-canvas` light, `oklch(0.205 0.008 92)` dark). The sidebar earns its slight lift because identity (household, navigation) lives there.
-- **Dialog:** popover token plus 4px corner softening, plus a backdrop-filter overlay behind it.
+There is no hover-lift, no tilt, no elevation increase on click. State changes are conveyed by background-color shifts, ring-color shifts, and (for buttons) a single-pixel `translate-y-px` press tic.
 
 ### Named Rules
 
-**The No-Shadow Rule.** Surfaces do not cast light. If a component needs to feel separated, use the ghost ring (1px, 10% foreground) or shift the background tone. Drop-shadow is forbidden.
+**The No-Shadow Rule.** Drop shadows are forbidden across the product. If a designer believes a surface needs to "lift," the answer is a ring border or a tonal-layer adjustment, not a shadow. Stitch's ambient and key shadows are not reintroduced under any pretext.
 
-**The Ghost Ring Rule.** Cards, popovers, and dialogs use `ring: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent)`. Not borders. A border claims edge; a ring whispers it.
-
-**The Backdrop-Blur Exception.** Backdrop-filter blur is permitted only on the dialog overlay, where it functions to mute the live canvas behind a modal. It is never decorative. No glassmorphism.
+**The Ring-Hairline Rule.** When a card needs an edge, it gets `ring-1 ring-foreground/10`. The ring sits inside the box; it does not affect layout; it does not change opacity on hover. It is the standard load-bearing edge for any container that holds tabular data.
 
 ## 5. Components
 
-Components are **compact and earnest**. Default control height is 28px. Default text inside controls is 12px. Variants are small, sharp, and unceremonious. The interaction language is keyboard-first (focus rings are real, focus-visible is everywhere, the command menu is a first-class navigation surface).
+The product uses Base UI (`@base-ui/react`) primitives wrapped to shadcn `base-mira` style. Every component below is real today; this section captures the philosophy, not aspirational extensions.
 
 ### Buttons
 
-- **Shape:** sharp (radius 0 on default; `xs` size shifts to negative-radius which still resolves to 0).
-- **Heights:** `xs` 20px, `sm` 24px, `default` 28px, `lg` 32px. Icon-only sizes match. There is no "large hero" button.
-- **Primary** (`button-primary`): Beaver Pelt Amber background, deep-brown foreground, 12px text, medium weight. Hover dims to amber/80%. Active translates 1px down (the only tactile press in the system).
-- **Outline** (`button-outline`): transparent background, 1px border in `pencil-line`, foreground text. Hover fills to `input/50` and shifts text to full foreground.
-- **Ghost** (`button-ghost`): no surface at rest. Hover fills to `muted` and shifts text. Used in toolbars and table actions.
-- **Secondary** (`button-secondary`): `cool-mist` background. Used when "primary" would be too loud and "ghost" would be too quiet.
-- **Destructive** (`button-destructive`): 10% Alarm Red background, full Alarm Red text. Hover deepens to 20%. Never a fully red surface.
-- **Link** (`button-link`): primary-amber text, underline-offset 4px, underline on hover. Used inline.
-- **Focus:** focus-visible adds a 2px amber-tinted ring at 30% saturation, plus a border shift to `ring`. Always reachable by Tab.
+- **Shape:** square corners (`rounded-md` resolves to 0). Borders are 1px transparent except for the outline variant. Background-clip is `padding-box` so the border-tinted background does not bleed.
+- **Default size:** 28px tall (`h-7`), 8px horizontal padding, 12px font (`text-xs/relaxed`), 500 weight. Icon size 14px (`size-3.5`) when present.
+- **Primary:** `bg-primary` (Beaver Pelt Amber) with `text-primary-foreground` (warm dark brown). Hover dims background to `/80`. Active translates 1px down. Focus shows a 2px ring at `ring/30`.
+- **Outline:** transparent background, `border-border` (Pencil Grey), foreground text. Hover fills with `bg-input/50`.
+- **Secondary:** Light Vellum background, Ink Deep text. Hover dims to `/80`.
+- **Ghost:** transparent, no border. Hover fills with `bg-muted`. Used in dense toolbars where multiple buttons share a row.
+- **Destructive:** translucent crimson background (`bg-destructive/10`), full crimson text. Hover deepens to `/20`. Reserves real saturated crimson for the foreground because that is where the user looks.
+- **Link:** primary color text, `underline-offset-4`, underline on hover. Inline-only.
+- **Sizes:** `xs` (20px tall, 10px text), `sm` (24px tall), `default` (28px), `lg` (32px). All compact by mainstream-product standards. Icon-only variants (`size-icon-*`) keep the same heights at square aspect.
 
 ### Inputs
 
-- **Style:** 28px tall, 1px `pencil-line` border, transparent-tinted background (`input/20` light, `input/30` dark). Padding 8px horizontal, 2px vertical. Body-12 text.
-- **Focus:** ring shifts to `ring/30` (a subtle gray ring, not a glow). Border shifts to ring color.
-- **Invalid:** ring becomes `destructive/20`, border becomes `destructive`. The state is visible but never alarming.
-- **Disabled:** opacity 50%, pointer-events none.
+- **Style:** 28px tall (`h-7`), `border-input` (Pencil Grey) at 1px, fill `bg-input/20` (a 20% wash of Pencil Grey for subtle layering). Square corners.
+- **Type:** 14px (`text-sm`) for value, 12px (`text-xs/relaxed`) on `md:` breakpoints (responsive density). Placeholder uses Ink Mid.
+- **Focus:** border shifts to `border-ring`, plus a 2px `ring-ring/30` outer ring. No glow, no animation beyond color transition.
+- **Invalid:** `aria-invalid` colors the border crimson and adds a 2px crimson ring at `/20` opacity.
+- **File inputs:** the file button inlines at 24px tall, transparent background, 12px font.
 
 ### Cards
 
-- **Corner:** sharp (radius 0).
-- **Surface:** card background (paper-white light, `oklch(0.205 0.008 92)` dark).
-- **Separation:** ghost ring (1px, 10% foreground). No border, no shadow.
-- **Internal padding:** 16px on default (`py-4 px-4`), 12px on small (`py-3 px-3`).
-- **Title:** 14px medium weight (`title` token).
-- **Description:** body-12 in `muted-foreground`.
-- **Image-first cards:** when the first child is an image, top padding goes to zero so the image bleeds to the corners.
+- **Corner Style:** square (`rounded-lg` resolves to 0).
+- **Background:** Paper White in light mode, a slightly-lifted warm dark in dark mode (`oklch(0.205 0.008 92)`).
+- **Edge:** `ring-1 ring-foreground/10` (the Ring-Hairline Rule). No shadow, no border-color shift on hover by default.
+- **Internal padding:** 16px vertical (`py-4`), 16px horizontal (`px-4`) at default size; 12px at `data-size="sm"`.
+- **Title:** `font-heading text-sm font-medium` (which equals Inter Medium 14px, since `font-heading == font-sans`).
+- **Description:** Ink Mid at 12px.
+- **Image-leading cards:** when the first child is `<img>`, the card removes top padding so the image sits flush to the squared top corners.
 
-### Badges (Pills)
+### Sidebar Navigation
 
-- **Shape:** the only pill in the system (`rounded-full`). 20px tall.
-- **Type:** label-10 medium weight.
-- **Variants:** match button variants (default amber, secondary cool-mist, destructive 10% red, outline, ghost, link).
-- **Use:** category tags, status markers, currency codes inline with values, count indicators. Not for primary actions.
+- **Style:** Bone Cream surface, no border against Paper White content (relies on tonal layering).
+- **Item type:** 12px body, 500 weight when active, 400 when default.
+- **Active state:** Burnished Gold background fill at full saturation, with `sidebar-primary-foreground` (warm cream) text. The active row is the only place Burnished Gold appears in the sidebar.
+- **Hover state:** Light Vellum background, Ink Near-Black text.
+- **Icon size:** 14px (`size-3.5`), Lucide icons exclusively.
 
-### Dialogs
+### Privacy-Mode Numeric
 
-- **Corner:** soft (4px). The one rounded surface in the system, because a dialog is an interruption and the soft corner is an apology.
-- **Surface:** popover token, ghost ring.
-- **Overlay:** `bg-black/80` with `backdrop-blur-xs`.
-- **Padding:** 16px.
-- **Close affordance:** ghost icon button, top-right, 24px square.
-- **Animation:** fade-in plus 95% zoom-in over 100ms. Reduced-motion respected.
-
-### Sidebar
-
-- **Width:** 12rem (192px) expanded, 2.5rem (40px) collapsed.
-- **Surface:** `bench-canvas` (one step warmer than the page canvas).
-- **Toggle shortcut:** Cmd/Ctrl-B is a first-class keyboard shortcut, persisted via cookie.
-- **Identity:** the household switcher and the active-workspace marker live at the top, using the deep amber sibling (`Beaver Pelt Amber Deep`) so the workspace identity reads even when the page is amber-quiet.
-- **Mobile:** transitions to a sheet (drawer from the side) at small breakpoints; the FAB nav (`mobile-fab-nav.tsx`) handles primary navigation on mobile.
-
-### Tables and Tabular Money
-
-The data layer is a table, conceptually. Money values are right-aligned, tabular-nums, and currency-coded inline. Multi-currency rows show the converted display currency primarily and the native currency as a small secondary line beneath.
+- **Behavior:** when `usePrivacyMode` is true, every formatted-currency value renders as a fixed-width mask (e.g., `••••.••`) with `font-variant-numeric: tabular-nums` so the row layout does not jump.
+- **Color:** unchanged from the underlying value. Privacy is about visibility, not de-emphasis.
+- **Treat as:** a first-class component state, not an afterthought. Any new numeric display must support it.
 
 ### Charts
 
-- **Use:** Recharts and Nivo Sankey for visualizations.
-- **Color:** the seven semantic chart roles (Section 2). Generic ramps fall back to the gray scale.
-- **Encoding:** every chart encodes meaning beyond color (label, position, pattern). Color-blind users get the chart, never the disability.
-- **Reduced-motion:** entrance animations honored. Tooltips and brushes do not animate when reduced-motion is requested.
+- **Library:** Recharts and `@nivo/sankey`.
+- **Palette:** the seven semantic account colors above. The grey `chart-1..5` ramp is reserved for non-categorical series.
+- **Grid lines:** Pencil Grey at 1px. Axis labels: Ink Mid at 10px Label.
+- **No fill gradients.** Sankey ribbons and area charts use solid color or a tonal ramp on the same hue. Never a multi-hue gradient.
 
-### Command Menu
+### Named Rules
 
-- **Library:** `cmdk`.
-- **Trigger:** keyboard-accessible from anywhere in the app shell.
-- **Role:** first-class navigation surface, not a power-user secret. PRODUCT.md commits to keyboard-first; the command menu is the embodiment.
+**The Compact-Target Rule.** Buttons and inputs are 28px tall by default. Touch-priority surfaces (mobile sheet actions, mobile nav) may opt into 32-44px, but desktop never exceeds 28px without explicit reason. The hit area extends invisibly via `padding` for accessibility, but the visible chrome stays compact.
+
+**The State-By-Color Rule.** State changes (hover, focus, active, disabled, invalid) shift color, ring, and at most a 1px translate. They do not animate scale, blur, opacity-on-translate, or any layout property.
 
 ## 6. Do's and Don'ts
 
-The line PRODUCT.md draws strategically, this section enforces visually.
+### Do
 
-### Do:
+- **Do** keep `--radius: 0`. The squared aesthetic is the load-bearing precision signal.
+- **Do** tint every neutral toward hue 92° with chroma 0.005-0.01.
+- **Do** use OKLCH for color values in `styles.css`. Match the existing token format; never split the source of truth into hex/HSL/RGB.
+- **Do** apply `font-variant-numeric: tabular-nums` to any column of numbers.
+- **Do** use the seven-color semantic account palette consistently. Net worth is always green; liabilities are always red; investments are always amber-orange.
+- **Do** use `ring-1 ring-foreground/10` to give cards an edge.
+- **Do** keep buttons and inputs at `h-7` (28px) by default.
+- **Do** use Lucide for every icon. Single-family icon set.
+- **Do** make privacy-mode masking work for any new financial value rendered.
+- **Do** respect `prefers-reduced-motion`, especially for any transition over 150ms.
 
-- **Do** treat amber as scarce. One primary action per panel, one identity marker per screen, the brand mark, and that is the budget.
-- **Do** keep controls compact. 28px default control height. 12px body text. Density is the brand.
-- **Do** use the ghost ring (1px, 10% foreground) for surface separation. Never a full border, never a shadow.
-- **Do** keep corners sharp on every control and every card. The only soft corner is the dialog (4px). The only round corner is the badge (full pill).
-- **Do** use tabular numerals for every money value. Money columns must align by digit.
-- **Do** show currency conversion at the value, with the native amount as a secondary line. Never hide that a number was converted.
-- **Do** respect `prefers-reduced-motion: reduce`. Animations are state feedback, not theater.
-- **Do** make every action keyboard-reachable, including chart interactions, household switching, and transaction entry.
-- **Do** treat privacy mode as a real surface. When values are masked, charts and totals must remain coherent.
-- **Do** quote the Three-Weight Rule (400, 500, 600) and the Body-12 Rule when reviewing new screens.
+### Don't
 
-### Don't:
-
-- **Don't** flood the canvas with amber. If amber appears more than once per panel as an action color, it is decoration. Remove it.
-- **Don't** use side-stripe borders (`border-left` or `border-right` greater than 1px as an accent). Forbidden by the impeccable shared laws and reinforced here. Use full ghost ring or background tint instead.
-- **Don't** use gradient text or `background-clip: text`. Single solid colors only. Emphasis comes from weight or size.
-- **Don't** ship glassmorphism. Backdrop-filter is permitted only on the dialog overlay. Anywhere else it is decorative and forbidden.
-- **Don't** build the hero-metric template (giant number, small label, supporting stats, gradient accent). It is the SaaS cliché PRODUCT.md rejects most strongly.
-- **Don't** use identical card grids of "icon plus heading plus paragraph". If you find yourself laying out three cards in a row that look the same, the structure is wrong, not the styling.
-- **Don't** use neon or glow effects. No `box-shadow` colored beyond the ghost-ring 10% foreground. No `text-shadow`. Beaver Money tracks crypto without becoming a crypto app.
-- **Don't** write infantilizing or celebratory finance copy ("You spent $X on coffee this week!", "Great job saving!"). Money is serious. Treat the user as an adult.
-- **Don't** introduce em dashes in any UX copy or marketing surface. Use commas, colons, semicolons, periods, or parentheses.
-- **Don't** add a fourth font weight, a third typeface, or italic body type. The system is built on Inter at three weights.
-- **Don't** wrap data in cards by default. Tables are the right primitive for transactions, balances, and rows. Cards are for summaries, not for everything.
-- **Don't** use `#000` or `#fff` directly. Every neutral is already tinted toward the brand hue (92°) at chroma 0.003 to 0.01; reach for `paper-white` or `ledger-ink` and the tint comes for free.
-- **Don't** reach for a modal as the first answer. Inline editing, route-driven dialogs, and progressive disclosure beat a modal in almost every case.
+- **Don't** use `#000` or `#fff` anywhere. Every neutral must carry the warm hue tint.
+- **Don't** introduce `box-shadow` for elevation. The product is flat with rings; no exceptions.
+- **Don't** use `background-clip: text` with a gradient. No gradient text, no gradient hero metrics, no "background gradient meets soft glow." Solid colors only.
+- **Don't** introduce a second typeface. Inter Variable does all the work. Hierarchy is scale + weight.
+- **Don't** add cool greys, slate, navy, or "cyberpunk" neon. Even the dark theme stays warm-neutral.
+- **Don't** use a `border-left` or `border-right` greater than 1px as a colored stripe accent on cards, alerts, or list items. This is the absolute-banned side-stripe pattern.
+- **Don't** repurpose the seven account colors for non-categorical decoration. They are bound to their account category for the life of the product.
+- **Don't** wrap every metric in a card. Tabular and inline displays are usually correct; the card is the lazy answer.
+- **Don't** show identical icon-heading-text card grids. The landing page already brushes against this; no further surfaces should adopt the pattern.
+- **Don't** imply auto-import is "coming soon" or that manual entry is a fallback. Manual is the feature; the design must say so.
+- **Don't** gamify. No streaks, no confetti, no green/red "you saved!" dopamine. The reward for logging is the awareness, not the animation.
+- **Don't** use glassmorphism. Backdrop-filter is reserved for the rare case of overlay readability; it is never decorative.
+- **Don't** bump default body size up "to feel more breathable." Density is the design.

@@ -4,19 +4,21 @@
 **Commit:** 5e32a5e
 **Branch:** main
 
-## DESIGN CONTEXT
-
-Strategic and visual stance for any UI work in this repo lives at the project root:
-
-- [`PRODUCT.md`](./PRODUCT.md) — register, users, brand personality, anti-references, design principles, accessibility commitments (WCAG 2.2 AA target). Read before designing or writing UX copy.
-- [`DESIGN.md`](./DESIGN.md) — visual system: color tokens (oklch), typography (Inter Variable), spacing, components, do's and don'ts. Read before generating new screens or components.
-- [`DESIGN.json`](./DESIGN.json) — same visual system in machine-readable form.
-
-The `$impeccable` skill loads PRODUCT/DESIGN automatically. Maintain them with `$impeccable teach` (strategic) and `$impeccable document` (visual).
-
 ## OVERVIEW
 
 Full-stack personal finance app. Go backend (Ent ORM + gqlgen GraphQL) serves a React 19 frontend (Vite + TanStack Router + Relay) via a single `/query` GraphQL endpoint. Multi-household, multi-currency.
+
+## DESIGN CONTEXT
+
+Register: **product**. Personality: **sharp, precise, transparent**. North Star: **The Ledger Workshop** (a craftsman's bench, manual logging as honored craft).
+
+- [PRODUCT.md](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/PRODUCT.md): users, purpose, principles, anti-references, accessibility floor (WCAG 2.2 AA + reduced-motion + privacy-mode masking).
+- [DESIGN.md](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/DESIGN.md): visual system. Brand hue 92° (Beaver Pelt Amber), `--radius: 0` everywhere, ring-1 borders (no shadows), Inter Variable single-family, 28px (`h-7`) compact targets, seven-color semantic account palette (net worth/liquidity/investment/property/receivable/liability/asset).
+- [DESIGN.json](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/DESIGN.json): machine-readable sidecar with tonal ramps, motion tokens, and component HTML/CSS snippets for the live design panel.
+
+Anti-references baked into both docs: auto-import / Plaid aggregators, gradient-led visuals, navy-and-gold legacy fintech, neon-on-black crypto, gamified Robinhood-style streaks, generic SaaS-cream landing pages. Manual entry is the feature, not the friction.
+
+Use the `$impeccable` skill at [.agents/skills/impeccable/SKILL.md](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/.agents/skills/impeccable/SKILL.md) for any design work; it loads the context above before doing anything.
 
 ## STRUCTURE
 
