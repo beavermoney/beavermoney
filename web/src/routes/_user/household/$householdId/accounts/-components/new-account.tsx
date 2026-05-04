@@ -46,6 +46,9 @@ import {
 } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
 import { useUser } from '@/hooks/use-user'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -69,6 +72,7 @@ const formSchema = z.object({
   ]),
   category: z.string(),
   balance: z.number(),
+  ownerUserID: z.string().min(1, 'Please select an owner'),
 })
 
 const newAccountMutation = graphql`
@@ -95,6 +99,9 @@ export function NewAccount() {
   const { household } = useHousehold()
   const { user } = useUser()
 
+  const ownerOptions = useHouseholdMembers()
+  const defaultOwnerUserID = useDefaultOwnerUserID(user.id)
+
   const form = useForm({
     defaultValues: {
       name: '',
@@ -103,6 +110,7 @@ export function NewAccount() {
       category: '',
       currencyCode: displayCurrencyCode,
       balance: undefined as unknown as number,
+      ownerUserID: defaultOwnerUserID,
     },
     validators: {
       onSubmit: formSchema,
@@ -131,7 +139,7 @@ export function NewAccount() {
               householdCurrencyID: currencyID,
               balance: balance.toString(),
               icon: formData.icon || null,
-              userID: user.id,
+              userID: formData.ownerUserID,
             },
           },
           updater: (store) => {
@@ -216,6 +224,32 @@ export function NewAccount() {
                 )
               }}
             />
+            {ownerOptions.length > 1 && (
+              <form.Field
+                name="ownerUserID"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                      <OwnerSelect
+                        id={field.name}
+                        name={field.name}
+                        options={ownerOptions}
+                        value={field.state.value}
+                        onValueChange={(value) => field.handleChange(value)}
+                        onBlur={field.handleBlur}
+                        ariaInvalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
             <form.Field
               name="icon"
               children={(field) => {

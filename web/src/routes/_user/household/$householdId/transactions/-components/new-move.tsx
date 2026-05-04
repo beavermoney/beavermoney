@@ -35,6 +35,9 @@ import {
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
 import { useUser } from '@/hooks/use-user'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
@@ -47,6 +50,7 @@ const formSchema = z.object({
   shares: z.number().positive('Shares must be positive'),
   pricePerShare: z.number().positive('Price per share must be positive'),
   datetime: z.date(),
+  ownerUserID: z.string().min(1, 'Please select an owner'),
   fromInvestmentId: z.string().min(1, 'Please select a from investment'),
   toInvestmentId: z.string().min(1, 'Please select a to investment'),
 })
@@ -113,6 +117,9 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
 
   const { household } = useHousehold()
   const { user } = useUser()
+
+  const ownerOptions = useHouseholdMembers()
+  const defaultOwnerUserID = useDefaultOwnerUserID(user.id)
   const { displayCurrencyCode } = useDisplayCurrency()
 
   // Get all investments from all investment accounts
@@ -150,6 +157,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
       shares: undefined as unknown as number,
       pricePerShare: undefined as unknown as number,
       datetime: new Date(),
+      ownerUserID: defaultOwnerUserID,
       fromInvestmentId: '',
       toInvestmentId: '',
     },
@@ -182,7 +190,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 description: value.description,
                 datetime: value.datetime.toISOString(),
                 categoryID: moveCategory.id,
-                userID: user.id,
+                userID: value.ownerUserID,
               },
               investmentLots: [
                 {
@@ -253,6 +261,32 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           }}
         >
           <FieldGroup>
+            {ownerOptions.length > 1 && (
+              <form.Field
+                name="ownerUserID"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                      <OwnerSelect
+                        id={field.name}
+                        name={field.name}
+                        options={ownerOptions}
+                        value={field.state.value}
+                        onValueChange={(value) => field.handleChange(value)}
+                        onBlur={field.handleBlur}
+                        ariaInvalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
             <form.Field
               name="description"
               children={(field) => {

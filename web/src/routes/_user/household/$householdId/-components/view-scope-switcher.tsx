@@ -1,49 +1,42 @@
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
 import { UserIcon, UsersIcon } from 'lucide-react'
-import type { viewScopeSwitcherFragment$key } from './__generated__/viewScopeSwitcherFragment.graphql'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { cn } from '@/lib/utils'
+import {
+  type HouseholdMember,
+  useHouseholdMembers,
+} from '@/hooks/use-household-members'
 
-const ViewScopeSwitcherFragment = graphql`
-  fragment viewScopeSwitcherFragment on Household {
-    userHouseholds {
-      id
-      user {
-        id
-        name
-      }
-    }
-  }
-`
-
-type ViewScopeSwitcherProps = {
-  fragmentRef: viewScopeSwitcherFragment$key
-}
-
-export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
-  const data = useFragment(ViewScopeSwitcherFragment, fragmentRef)
+export function ViewScopeSwitcher() {
+  const members = useHouseholdMembers()
   const { viewUserIds, isCombinedAll, setViewUserIds } = useHouseholdViewScope()
 
-  const userHouseholds = data.userHouseholds ?? []
-
-  if (userHouseholds.length <= 1) {
+  if (members.length <= 1) {
     return null
   }
 
-  const activeMember =
-    viewUserIds && viewUserIds.length === 1
-      ? (userHouseholds.find((uh) => uh.user.id === viewUserIds[0]) ?? null)
-      : null
+  const selectedIDs = viewUserIds ?? members.map((m) => m.id)
+  const selectedMembers = members.filter((m) => selectedIDs.includes(m.id))
+  const showsAll = isCombinedAll || selectedMembers.length === members.length
 
-  const activeLabel = activeMember?.user.name ?? 'Combined'
+  const toggleMember = (memberID: string, checked: boolean) => {
+    const base = viewUserIds ?? members.map((m) => m.id)
+    const next = checked
+      ? Array.from(new Set([...base, memberID]))
+      : base.filter((id) => id !== memberID)
+
+    if (next.length === 0 || next.length === members.length) {
+      setViewUserIds(null)
+      return
+    }
+    setViewUserIds(next)
+  }
 
   return (
     <DropdownMenu>
@@ -54,37 +47,48 @@ export function ViewScopeSwitcher({ fragmentRef }: ViewScopeSwitcherProps) {
             className="h-10 cursor-pointer gap-1 rounded-none border-0 bg-clip-border px-3 text-xs"
             data-testid="view-scope-switcher-trigger"
           >
-            {activeMember ? (
-              <UserIcon className="size-4" />
-            ) : (
+            {showsAll ? (
               <UsersIcon className="size-4" />
+            ) : (
+              <UserIcon className="size-4" />
             )}
-            {activeLabel}
+            {scopeLabel(showsAll, selectedMembers)}
           </Button>
         }
       />
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => setViewUserIds(null)}
-          className={cn('gap-2', isCombinedAll && 'font-bold')}
+      <DropdownMenuContent align="end" className="min-w-[10rem]">
+        <DropdownMenuCheckboxItem
+          checked={isCombinedAll}
+          onCheckedChange={() => setViewUserIds(null)}
+          closeOnClick={false}
         >
-          <UsersIcon className="size-4" />
-          Combined
-        </DropdownMenuItem>
-        {userHouseholds.map((uh) => {
-          const isActive = activeMember?.user.id === uh.user.id
-          return (
-            <DropdownMenuItem
-              key={uh.id}
-              onClick={() => setViewUserIds([uh.user.id])}
-              className={cn('gap-2', isActive && 'font-bold')}
-            >
-              <UserIcon className="size-4" />
-              {uh.user.name}
-            </DropdownMenuItem>
-          )
-        })}
+          All
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuSeparator />
+        {members.map((m) => (
+          <DropdownMenuCheckboxItem
+            key={m.id}
+            checked={selectedIDs.includes(m.id)}
+            onCheckedChange={(checked) => toggleMember(m.id, checked === true)}
+            closeOnClick={false}
+          >
+            {m.name}
+          </DropdownMenuCheckboxItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
+}
+
+function scopeLabel(
+  showsAll: boolean,
+  selectedMembers: ReadonlyArray<HouseholdMember>,
+): string {
+  if (showsAll) return 'All'
+  if (selectedMembers.length === 0) return 'All'
+  if (selectedMembers.length === 1) return selectedMembers[0].name
+  if (selectedMembers.length === 2) {
+    return `${selectedMembers[0].name} + ${selectedMembers[1].name}`
+  }
+  return `${selectedMembers.length} selected`
 }

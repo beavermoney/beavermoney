@@ -47,12 +47,13 @@ import { Button } from '@/components/ui/button'
 import { Item } from '@/components/ui/item'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { HouseholdProvider } from '@/hooks/use-household'
+import { HouseholdMembersProvider } from '@/hooks/use-household-members'
 import { DisplayCurrencyProvider } from '@/hooks/use-display-currency'
 import {
   displayCurrencyIdStore,
   setDisplayCurrencyId,
 } from '@/hooks/display-currency-store'
-import { UserProvider, useUser } from '@/hooks/use-user'
+import { UserProvider } from '@/hooks/use-user'
 import {
   LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
   SESSION_STORAGE_PRIVACY_DIALOG_KEY,
@@ -69,7 +70,6 @@ import { CommandMenu } from '@/components/command-menu'
 import { LogTransaction } from './transactions/-components/log-transaction'
 import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
 import { SnapshotDialog } from './-components/snapshot-dialog'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { cn } from '@/lib/utils'
@@ -98,10 +98,10 @@ const routeHouseholdIdQuery = graphql`
     }
     household {
       ...useHouseholdFragment
+      ...useHouseholdMembersFragment
       ...useDisplayCurrencyFragment
       ...logTransactionFragment @arguments(viewUserIds: $viewUserIds)
       ...snapshotDialogFragment @arguments(viewUserIds: $viewUserIds)
-      ...viewScopeSwitcherFragment
       # eslint-disable-next-line relay/unused-fields
       householdCurrencies {
         id
@@ -249,146 +249,148 @@ function RouteComponent() {
   return (
     <UserProvider userRef={data.user}>
       <HouseholdProvider householdRef={data.household}>
-        <UserHouseholdProvider userHouseholdRef={data.userHousehold}>
-          <DisplayCurrencyProvider householdRef={data.household}>
-            <Hotkeys />
-            <CommandMenu />
-            <SidebarProvider>
-              <AppSidebar fragmentRef={data} />
-              <SidebarInset>
-                <header className="bg-background sticky top-0 z-10 flex h-10 shrink-0 items-stretch border-b transition-[width,height] ease-linear">
-                  <SidebarTrigger className="cursor-pointer border-r" />
-                  <div className="flex flex-1 items-center px-3">
-                    <Breadcrumb>
-                      <BreadcrumbList></BreadcrumbList>
-                    </Breadcrumb>
-                  </div>
-                  <div className="border-border flex divide-x divide-solid">
-                    <div className="border-y-0" />
-                    {!isOnSettingsPage && (
+        <HouseholdMembersProvider householdRef={data.household}>
+          <UserHouseholdProvider userHouseholdRef={data.userHousehold}>
+            <DisplayCurrencyProvider householdRef={data.household}>
+              <Hotkeys />
+              <CommandMenu />
+              <SidebarProvider>
+                <AppSidebar fragmentRef={data} />
+                <SidebarInset>
+                  <header className="bg-background sticky top-0 z-10 flex h-10 shrink-0 items-stretch border-b transition-[width,height] ease-linear">
+                    <SidebarTrigger className="cursor-pointer border-r" />
+                    <div className="flex flex-1 items-center px-3">
+                      <Breadcrumb>
+                        <BreadcrumbList></BreadcrumbList>
+                      </Breadcrumb>
+                    </div>
+                    <div className="border-border flex divide-x divide-solid">
+                      <div className="border-y-0" />
+                      {!isOnSettingsPage && (
+                        <div className="border-y-0">
+                          <ViewScopeSwitcher />
+                        </div>
+                      )}
+                      {currencies.length > 1 && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <div className="border-y-0">
+                                <Button
+                                  variant="ghost"
+                                  className="h-10 cursor-pointer rounded-none border-0 bg-clip-border px-2 font-mono text-xs"
+                                >
+                                  {activeCurrencyCode || 'Currency'}
+                                </Button>
+                              </div>
+                            }
+                          />
+                          <DropdownMenuContent align="end" className="min-w-0">
+                            {currencies.map((hc) => (
+                              <DropdownMenuItem
+                                key={hc.id}
+                                onClick={() => handleCurrencyChange(hc.id)}
+                                className={cn(
+                                  'justify-center font-mono',
+                                  hc.id === displayCurrencyId && 'font-bold',
+                                )}
+                              >
+                                {hc.code}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                       <div className="border-y-0">
-                        <ViewScopeSwitcher fragmentRef={data.household} />
+                        <SnapshotDialog fragmentRef={data.household} />
                       </div>
-                    )}
-                    {currencies.length > 1 && (
+                      <div className="border-y-0">
+                        <Button
+                          variant="ghost"
+                          className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
+                          onClick={() => {
+                            commitLocalUpdate(environment, (store) => {
+                              store.invalidateStore()
+                            })
+                            router.invalidate()
+                          }}
+                        >
+                          <RefreshCwIcon />
+                        </Button>
+                      </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
                             <div className="border-y-0">
                               <Button
                                 variant="ghost"
-                                className="h-10 cursor-pointer rounded-none border-0 bg-clip-border px-2 font-mono text-xs"
+                                className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
                               >
-                                {activeCurrencyCode || 'Currency'}
+                                <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                                <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                                <span className="sr-only">Toggle theme</span>
                               </Button>
                             </div>
                           }
-                        />
-                        <DropdownMenuContent align="end" className="min-w-0">
-                          {currencies.map((hc) => (
-                            <DropdownMenuItem
-                              key={hc.id}
-                              onClick={() => handleCurrencyChange(hc.id)}
-                              className={cn(
-                                'justify-center font-mono',
-                                hc.id === displayCurrencyId && 'font-bold',
-                              )}
-                            >
-                              {hc.code}
-                            </DropdownMenuItem>
-                          ))}
+                        ></DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setTheme('light')}>
+                            Light
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTheme('dark')}>
+                            Dark
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTheme('system')}>
+                            System
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    )}
-                    <div className="border-y-0">
-                      <SnapshotDialog fragmentRef={data.household} />
-                    </div>
-                    <div className="border-y-0">
                       <Button
                         variant="ghost"
                         className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
-                        onClick={() => {
-                          commitLocalUpdate(environment, (store) => {
-                            store.invalidateStore()
-                          })
-                          router.invalidate()
-                        }}
+                        onClick={togglePrivacyMode}
                       >
-                        <RefreshCwIcon />
+                        {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
                       </Button>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <div className="border-y-0">
-                            <Button
-                              variant="ghost"
-                              className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
-                            >
-                              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                              <span className="sr-only">Toggle theme</span>
-                            </Button>
-                          </div>
-                        }
-                      ></DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setTheme('light')}>
-                          Light
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme('dark')}>
-                          Dark
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme('system')}>
-                          System
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                      variant="ghost"
-                      className="size-10 shrink-0 cursor-pointer rounded-none border-0 bg-clip-border"
-                      onClick={togglePrivacyMode}
-                    >
-                      {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
-                    </Button>
+                  </header>
+                  <div className="flex flex-1 flex-col">
+                    <Outlet />
                   </div>
-                </header>
-                <div className="flex flex-1 flex-col">
-                  <Outlet />
-                </div>
-              </SidebarInset>
-              <MobileFabNav />
+                </SidebarInset>
+                <MobileFabNav />
 
-              {search.edit_transaction_id && (
-                <Dialog
-                  open={true}
-                  onOpenChange={() =>
-                    navigate({
-                      to: '.',
-                      resetScroll: false,
-                      search: (prev) => ({
-                        ...prev,
-                        edit_transaction_id: null,
-                      }),
-                    })
-                  }
-                >
-                  <DialogContent>
-                    <Suspense fallback={<PendingComponent />}>
-                      <EditTransactionDialog
-                        transactionId={search.edit_transaction_id}
-                      />
-                    </Suspense>
-                  </DialogContent>
-                </Dialog>
-              )}
+                {search.edit_transaction_id && (
+                  <Dialog
+                    open={true}
+                    onOpenChange={() =>
+                      navigate({
+                        to: '.',
+                        resetScroll: false,
+                        search: (prev) => ({
+                          ...prev,
+                          edit_transaction_id: null,
+                        }),
+                      })
+                    }
+                  >
+                    <DialogContent>
+                      <Suspense fallback={<PendingComponent />}>
+                        <EditTransactionDialog
+                          transactionId={search.edit_transaction_id}
+                        />
+                      </Suspense>
+                    </DialogContent>
+                  </Dialog>
+                )}
 
-              {!isMobile && (
-                <FloatingLogTransactionWindow fragmentRef={data.household} />
-              )}
-            </SidebarProvider>
-          </DisplayCurrencyProvider>
-        </UserHouseholdProvider>
+                {!isMobile && (
+                  <FloatingLogTransactionWindow fragmentRef={data.household} />
+                )}
+              </SidebarProvider>
+            </DisplayCurrencyProvider>
+          </UserHouseholdProvider>
+        </HouseholdMembersProvider>
       </HouseholdProvider>
     </UserProvider>
   )
@@ -403,14 +405,6 @@ function FloatingLogTransactionWindow({
 }: FloatingLogTransactionWindowProps) {
   const { type: logTransactionType, close: closeLogTransaction } =
     useLogTransaction()
-  const { viewUserIds } = useHouseholdViewScope()
-  const { user } = useUser()
-  const isViewingOtherUser =
-    viewUserIds !== null && !viewUserIds.includes(user.id)
-
-  if (isViewingOtherUser) {
-    return null
-  }
 
   return (
     <Rnd

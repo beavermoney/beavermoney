@@ -35,6 +35,9 @@ import {
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
 import { useUser } from '@/hooks/use-user'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Calendar } from '@/components/ui/calendar'
@@ -51,6 +54,7 @@ const formSchema = z.object({
   pricePerShare: z.number().positive('Price per share must be positive'),
   totalReceived: z.number().positive('Total received must be positive'),
   datetime: z.date(),
+  ownerUserID: z.string().min(1, 'Please select an owner'),
   accountId: z.string().min(1, 'Please select an account'),
   investmentId: z.string().min(1, 'Please select an investment'),
 })
@@ -118,6 +122,9 @@ export function NewSell({ fragmentRef }: NewSellProps) {
 
   const { household } = useHousehold()
   const { user } = useUser()
+
+  const ownerOptions = useHouseholdMembers()
+  const defaultOwnerUserID = useDefaultOwnerUserID(user.id)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   // Filter accounts - only investment accounts
@@ -148,6 +155,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
       pricePerShare: undefined as unknown as number,
       totalReceived: undefined as unknown as number,
       datetime: new Date(),
+      ownerUserID: defaultOwnerUserID,
       accountId: '',
       investmentId: '',
     },
@@ -169,7 +177,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                 description: formData.description,
                 datetime: formData.datetime.toISOString(),
                 categoryID: sellCategory.id,
-                userID: user.id,
+                userID: formData.ownerUserID,
               },
               transactionEntry: {
                 amount: amount.toString(),
@@ -251,6 +259,32 @@ export function NewSell({ fragmentRef }: NewSellProps) {
           }}
         >
           <FieldGroup>
+            {ownerOptions.length > 1 && (
+              <form.Field
+                name="ownerUserID"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                      <OwnerSelect
+                        id={field.name}
+                        name={field.name}
+                        options={ownerOptions}
+                        value={field.state.value}
+                        onValueChange={(value) => field.handleChange(value)}
+                        onBlur={field.handleBlur}
+                        ariaInvalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
             <form.Field
               name="description"
               children={(field) => {

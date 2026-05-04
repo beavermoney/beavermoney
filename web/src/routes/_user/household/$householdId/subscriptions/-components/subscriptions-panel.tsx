@@ -15,8 +15,6 @@ import {
 } from '@/components/ui/select'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { useUser } from '@/hooks/use-user'
 
 import { calculateNextPaymentDate } from '@/lib/date-range'
 import currency from 'currency.js'
@@ -85,11 +83,6 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
   const { householdId } = useParams({
     from: '/_user/household/$householdId',
   })
-  const { viewUserIds } = useHouseholdViewScope()
-  const { user } = useUser()
-  const isViewingOtherUser =
-    viewUserIds !== null && !viewUserIds.includes(user.id)
-
   useRegisterConnection(
     data.recurringSubscriptions.__id,
     NodeType.RecurringSubscription,
@@ -193,14 +186,12 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
 
   return (
     <Fragment>
-      {!isViewingOtherUser && (
-        <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
-          <PlusButton
-            to="/household/$householdId/subscriptions/new"
-            params={{ householdId }}
-          />
-        </div>
-      )}
+      <div className="fixed right-4 bottom-4 flex flex-col items-end gap-2 lg:absolute">
+        <PlusButton
+          to="/household/$householdId/subscriptions/new"
+          params={{ householdId }}
+        />
+      </div>
 
       <div className="flex flex-col gap-1">
         <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
