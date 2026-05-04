@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dd94bc2e610f30c5c22a5d07c96a5bd7>>
+ * @generated SignedSource<<da880c78e3df9c7ec9aa657f4699f532>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,7 @@ export type CreateRecurringSubscriptionInput = {
   intervalCount?: number | null | undefined;
   name: string;
   startDate: any;
+  userID: string;
 };
 export type newSubscriptionMutation$variables = {
   input: CreateRecurringSubscriptionInput;

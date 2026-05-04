@@ -44,7 +44,6 @@ func (Transaction) Edges() []ent.Edge {
 			Required().
 			Annotations(
 				entgql.Skip(
-					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<36d4bbf40787ef37ebd557b47a40aeca>>
+ * @generated SignedSource<<0538915662c28b22175188ee584df453>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,6 +19,7 @@ export type CreateAccountInput = {
   icon?: string | null | undefined;
   name: string;
   type: AccountType;
+  userID: string;
 };
 export type newAccountMutation$variables = {
   input: CreateAccountInput;

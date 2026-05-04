@@ -45,6 +45,7 @@ import {
   ACCOUNT_CATEGORY_APPLICABLE_TYPES,
 } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
+import { useUser } from '@/hooks/use-user'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -92,6 +93,7 @@ export function NewAccount() {
   const { displayCurrencyCode } = useDisplayCurrency()
 
   const { household } = useHousehold()
+  const { user } = useUser()
 
   const form = useForm({
     defaultValues: {
@@ -129,6 +131,7 @@ export function NewAccount() {
               householdCurrencyID: currencyID,
               balance: balance.toString(),
               icon: formData.icon || null,
+              userID: user.id,
             },
           },
           updater: (store) => {

@@ -267,6 +267,7 @@ input CreateAccountInput {
   category: AccountCategory
   icon: String
   householdCurrencyID: ID!
+  userID: ID!
 }
 """
 CreateHouseholdCurrencyInput is used for create HouseholdCurrency object.
@@ -327,6 +328,7 @@ input CreateRecurringSubscriptionInput {
   icon: String
   cost: String
   householdCurrencyID: ID!
+  userID: ID!
 }
 """
 CreateSnapshotInput is used for create Snapshot object.
@@ -363,6 +365,7 @@ input CreateTransactionInput {
   description: String
   datetime: Time!
   excludeFromReports: Boolean
+  userID: ID!
   categoryID: ID!
 }
 """

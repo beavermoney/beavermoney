@@ -33,6 +33,7 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
+import { useUser } from '@/hooks/use-user'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Calendar } from '@/components/ui/calendar'
@@ -110,6 +111,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     useMutation<newTransferMutation>(newTransferMutation)
 
   const { household } = useHousehold()
+  const { user } = useUser()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   // Filter accounts - show all non-investment accounts
@@ -177,6 +179,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                 description: value.description,
                 datetime: value.datetime.toISOString(),
                 categoryID: value.categoryId,
+                userID: user.id,
               },
               transactionEntries: [
                 {

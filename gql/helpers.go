@@ -285,6 +285,42 @@ func applyViewUserIDEntryFilter(
 	s.Where(sql.EQ(a.C(account.FieldUserID), *viewUserID))
 }
 
+// validateMutationOwner enforces the two ownership invariants for any
+// resolver that accepts an explicit owner user ID: (1) the authenticated
+// caller must be a real user (synthetic joint users have no auth path and
+// must never reach a mutation), and (2) the chosen ownerUserID must belong
+// to the active household. Real members and synthetic joint users are both
+// valid owner values.
+func (r *Resolver) validateMutationOwner(
+	ctx context.Context,
+	householdID, ownerUserID int,
+) error {
+	callerID := contextkeys.GetUserID(ctx)
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+
+	caller, err := r.entClient.User.Get(bypassCtx, callerID)
+	if err != nil {
+		return err
+	}
+	if caller.IsSynthetic {
+		return fmt.Errorf("SYNTHETIC_USER_AS_CALLER")
+	}
+
+	exists, err := r.entClient.UserHousehold.Query().
+		Where(
+			userhousehold.UserIDEQ(ownerUserID),
+			userhousehold.HouseholdIDEQ(householdID),
+		).
+		Exist(bypassCtx)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("OWNER_NOT_HOUSEHOLD_MEMBER")
+	}
+	return nil
+}
+
 // validateViewUserID checks that the given userID is a member of the current household.
 // Returns VIEW_USER_NOT_HOUSEHOLD_MEMBER if the user is not a member.
 // Returns nil if viewUserID is nil (combined view).
