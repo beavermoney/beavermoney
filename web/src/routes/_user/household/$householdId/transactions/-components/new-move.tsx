@@ -261,59 +261,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           }}
         >
           <FieldGroup>
-            {ownerOptions.length > 1 && (
-              <form.Field
-                name="ownerUserID"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
-                      <OwnerSelect
-                        id={field.name}
-                        name={field.name}
-                        options={ownerOptions}
-                        value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value)}
-                        onBlur={field.handleBlur}
-                        ariaInvalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  )
-                }}
-              />
-            )}
-            <form.Field
-              name="description"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Input
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Move AAPL shares"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-
             <form.Field
               name="fromInvestmentId"
               validators={{
@@ -543,6 +490,60 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 )
               }}
             />
+
+            <form.Field
+              name="description"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                    <Input
+                      data-1p-ignore
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="Move AAPL shares"
+                      autoComplete="off"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+
+            {ownerOptions.length > 1 && (
+              <form.Field
+                name="ownerUserID"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                      <OwnerSelect
+                        id={field.name}
+                        name={field.name}
+                        options={ownerOptions}
+                        value={field.state.value}
+                        onValueChange={(value) => field.handleChange(value)}
+                        onBlur={field.handleBlur}
+                        ariaInvalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            )}
 
             <form.Field
               name="datetime"
