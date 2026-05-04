@@ -20,6 +20,7 @@ type CreateAccountInput struct {
 	Category            *account.Category
 	Icon                *string
 	HouseholdCurrencyID int
+	UserID              int
 }
 
 // Mutate applies the CreateAccountInput on the AccountMutation builder.
@@ -36,6 +37,7 @@ func (i *CreateAccountInput) Mutate(m *AccountMutation) {
 		m.SetIcon(*v)
 	}
 	m.SetHouseholdCurrencyID(i.HouseholdCurrencyID)
+	m.SetUserID(i.UserID)
 }
 
 // SetInput applies the change-set in the CreateAccountInput on the AccountCreate builder.
@@ -438,6 +440,7 @@ type CreateRecurringSubscriptionInput struct {
 	Icon                *string
 	Cost                *decimal.Decimal
 	HouseholdCurrencyID int
+	UserID              int
 }
 
 // Mutate applies the CreateRecurringSubscriptionInput on the RecurringSubscriptionMutation builder.
@@ -458,6 +461,7 @@ func (i *CreateRecurringSubscriptionInput) Mutate(m *RecurringSubscriptionMutati
 		m.SetCost(*v)
 	}
 	m.SetHouseholdCurrencyID(i.HouseholdCurrencyID)
+	m.SetUserID(i.UserID)
 }
 
 // SetInput applies the change-set in the CreateRecurringSubscriptionInput on the RecurringSubscriptionCreate builder.
@@ -573,6 +577,7 @@ type CreateTransactionInput struct {
 	Description        *string
 	Datetime           time.Time
 	ExcludeFromReports *bool
+	UserID             int
 	CategoryID         int
 }
 
@@ -585,6 +590,7 @@ func (i *CreateTransactionInput) Mutate(m *TransactionMutation) {
 	if v := i.ExcludeFromReports; v != nil {
 		m.SetExcludeFromReports(*v)
 	}
+	m.SetUserID(i.UserID)
 	m.SetCategoryID(i.CategoryID)
 }
 

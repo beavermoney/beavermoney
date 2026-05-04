@@ -307,13 +307,16 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.UserID); err != nil {
+		return nil, err
+	}
+
 	now := time.Now()
 	client := ent.FromContext(ctx)
 	zero := decimal.NewFromInt(0)
 
 	account, err := client.Account.Create().
 		SetInput(input).
-		SetUserID(userID).
 		SetHouseholdID(householdID).
 		SetBalance(zero).
 		Save(ctx)
@@ -338,7 +341,7 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, input ent.CreateAc
 		SetDescription("Initial Balance").
 		SetDatetime(now).
 		SetCategory(setupCategory).
-		SetUserID(userID).
+		SetUserID(input.UserID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -500,6 +503,10 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
+	if err := r.validateMutationOwner(ctx, householdID, account.UserID); err != nil {
+		return nil, err
+	}
+
 	// Uppercase the symbol before querying
 	symbolUpper := strings.ToUpper(input.Input.Symbol)
 
@@ -549,7 +556,7 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		SetDescription("Initial Value").
 		SetDatetime(now).
 		SetCategoryID(categoryID).
-		SetUserID(userID).
+		SetUserID(account.UserID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -681,12 +688,15 @@ func (r *mutationResolver) CreateRecurringSubscription(ctx context.Context, inpu
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	subscription, err := client.RecurringSubscription.Create().
 		SetHouseholdID(householdID).
 		SetInput(input).
-		SetUserID(userID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -760,6 +770,10 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.Transaction.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	account, err := client.Account.Get(ctx, input.TransactionEntry.AccountID)
@@ -779,7 +793,6 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
-		SetUserID(userID).
 		SetInput(*input.Transaction).
 		Save(ctx)
 	if err != nil {
@@ -856,6 +869,10 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.Transaction.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	// Validate account belongs to household
@@ -876,7 +893,6 @@ func (r *mutationResolver) CreateIncome(ctx context.Context, input model.CreateI
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
-		SetUserID(userID).
 		SetInput(*input.Transaction).
 		Save(ctx)
 	if err != nil {
@@ -956,6 +972,10 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.Transaction.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	// Validate we have at least 2 transaction entries
@@ -991,7 +1011,6 @@ func (r *mutationResolver) CreateTransfer(ctx context.Context, input model.Creat
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
-		SetUserID(userID).
 		SetInput(*input.Transaction).
 		Save(ctx)
 	if err != nil {
@@ -1077,6 +1096,10 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.Transaction.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	// Validate account belongs to household
@@ -1106,7 +1129,6 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
-		SetUserID(userID).
 		SetInput(*input.Transaction).
 		Save(ctx)
 	if err != nil {
@@ -1203,6 +1225,10 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.Transaction.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	// Validate account belongs to household
@@ -1232,7 +1258,6 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
-		SetUserID(userID).
 		SetInput(*input.Transaction).
 		Save(ctx)
 	if err != nil {
@@ -1329,6 +1354,10 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	)
 	defer span.End()
 
+	if err := r.validateMutationOwner(ctx, householdID, input.Transaction.UserID); err != nil {
+		return nil, err
+	}
+
 	client := ent.FromContext(ctx)
 
 	// Validate we have exactly 2 lots (from and to)
@@ -1418,7 +1447,6 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 	// Create transaction
 	txn, err := client.Transaction.Create().
 		SetHouseholdID(householdID).
-		SetUserID(userID).
 		SetInput(*input.Transaction).
 		Save(ctx)
 	if err != nil {

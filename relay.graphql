@@ -283,6 +283,7 @@ input CreateAccountInput {
   category: AccountCategory
   icon: String
   householdCurrencyID: ID!
+  userID: ID!
 }
 
 """
@@ -348,6 +349,7 @@ input CreateRecurringSubscriptionInput {
   icon: String
   cost: String
   householdCurrencyID: ID!
+  userID: ID!
 }
 
 """
@@ -388,6 +390,7 @@ input CreateTransactionInput {
   description: String
   datetime: Time!
   excludeFromReports: Boolean
+  userID: ID!
   categoryID: ID!
 }
 

@@ -79,7 +79,6 @@ func (RecurringSubscription) Edges() []ent.Edge {
 			Immutable().
 			Annotations(
 				entgql.Skip(
-					entgql.SkipMutationCreateInput,
 					entgql.SkipMutationUpdateInput,
 				),
 			),

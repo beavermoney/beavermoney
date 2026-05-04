@@ -21853,7 +21853,7 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "type", "balance", "category", "icon", "householdCurrencyID"}
+	fieldsInOrder := [...]string{"name", "type", "balance", "category", "icon", "householdCurrencyID", "userID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21904,6 +21904,13 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 				return it, err
 			}
 			it.HouseholdCurrencyID = data
+		case "userID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
 		}
 	}
 
@@ -22315,7 +22322,7 @@ func (ec *executionContext) unmarshalInputCreateRecurringSubscriptionInput(ctx c
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "interval", "intervalCount", "startDate", "active", "icon", "cost", "householdCurrencyID"}
+	fieldsInOrder := [...]string{"name", "interval", "intervalCount", "startDate", "active", "icon", "cost", "householdCurrencyID", "userID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22380,6 +22387,13 @@ func (ec *executionContext) unmarshalInputCreateRecurringSubscriptionInput(ctx c
 				return it, err
 			}
 			it.HouseholdCurrencyID = data
+		case "userID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
 		}
 	}
 
@@ -22497,7 +22511,7 @@ func (ec *executionContext) unmarshalInputCreateTransactionInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"description", "datetime", "excludeFromReports", "categoryID"}
+	fieldsInOrder := [...]string{"description", "datetime", "excludeFromReports", "userID", "categoryID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22525,6 +22539,13 @@ func (ec *executionContext) unmarshalInputCreateTransactionInput(ctx context.Con
 				return it, err
 			}
 			it.ExcludeFromReports = data
+		case "userID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
 		case "categoryID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
 			data, err := ec.unmarshalNID2int(ctx, v)

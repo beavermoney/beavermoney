@@ -35,6 +35,7 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
+import { useUser } from '@/hooks/use-user'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { Calendar } from '@/components/ui/calendar'
@@ -119,6 +120,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
   const { displayCurrencyCode } = useDisplayCurrency()
 
   const { household } = useHousehold()
+  const { user } = useUser()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   // Filter accounts - only investment accounts
@@ -168,6 +170,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                 description: formData.description,
                 datetime: formData.datetime.toISOString(),
                 categoryID: buyCategory.id,
+                userID: user.id,
               },
               transactionEntry: {
                 amount: amount.toString(),

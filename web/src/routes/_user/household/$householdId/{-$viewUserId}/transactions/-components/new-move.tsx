@@ -34,6 +34,7 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { useHousehold } from '@/hooks/use-household'
+import { useUser } from '@/hooks/use-user'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
@@ -111,6 +112,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     useMutation<newMoveMutation>(newMoveMutation)
 
   const { household } = useHousehold()
+  const { user } = useUser()
   const { displayCurrencyCode } = useDisplayCurrency()
 
   // Get all investments from all investment accounts
@@ -180,6 +182,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 description: value.description,
                 datetime: value.datetime.toISOString(),
                 categoryID: moveCategory.id,
+                userID: user.id,
               },
               investmentLots: [
                 {
