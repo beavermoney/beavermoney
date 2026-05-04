@@ -26,7 +26,7 @@ export const Route = createFileRoute(
     return loadQuery<newTransactionQuery>(
       environment,
       newTransactionQuery,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'store-or-network' },
     )
   },
@@ -34,9 +34,9 @@ export const Route = createFileRoute(
 })
 
 const newTransactionQuery = graphql`
-  query newTransactionQuery($viewUserId: ID) {
+  query newTransactionQuery($viewUserIds: [ID!]) {
     household {
-      ...logTransactionFragment @arguments(viewUserId: $viewUserId)
+      ...logTransactionFragment @arguments(viewUserIds: $viewUserIds)
     }
   }
 `
@@ -54,7 +54,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       newTransactionQuery,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

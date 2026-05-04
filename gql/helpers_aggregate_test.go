@@ -23,15 +23,17 @@ import (
 // TestAggregateByCategoryType_MultiEntryExpenseScopedByUser pins the entry-level
 // filter behavior of applyViewUserIDEntryFilter. Pre-fix, scoping by viewUserID
 // over-summed because all sibling entries (including those on other users'
-// accounts) were aggregated. Post-fix, each scope sees only its own slice.
+// accounts) were aggregated. Post-fix, each scope sees only its own slice and
+// multi-id selections sum slices across the chosen owners.
 //
 // Setup: one household, two users (A, B). One $100 expense from A's account,
 // one $5 fee on B's account, both attached to the same transaction. Expected
 // expense totals (Abs):
 //
-//	nil -> 105 (combined view, all entries)
-//	A   -> 100 (only A's main entry)
-//	B   ->   5 (only B's fee entry)
+//	[]    -> 105 (combined view, all entries)
+//	[A]   -> 100 (only A's main entry)
+//	[B]   ->   5 (only B's fee entry)
+//	[A,B] -> 105 (both slices added)
 func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 	client := enttest.Open(
 		t,
@@ -132,13 +134,15 @@ func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 
 	cases := []struct {
 		name         string
-		viewUserID   *int
+		viewUserIDs  []int
 		wantTotal    string
 		wantTxnCount int
 	}{
-		{"combined", nil, "105", 1},
-		{"scoped to user A", &userA.ID, "100", 1},
-		{"scoped to user B", &userB.ID, "5", 1},
+		{"combined (nil)", nil, "105", 1},
+		{"combined (empty slice)", []int{}, "105", 1},
+		{"scoped to user A", []int{userA.ID}, "100", 1},
+		{"scoped to user B", []int{userB.ID}, "5", 1},
+		{"scoped to A and B", []int{userA.ID, userB.ID}, "105", 1},
 	}
 
 	for _, tc := range cases {
@@ -147,7 +151,7 @@ func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 				queryCtx,
 				&model.FinancialReport{},
 				transactioncategory.TypeExpense,
-				tc.viewUserID,
+				tc.viewUserIDs,
 			)
 			if err != nil {
 				t.Fatalf("aggregateByCategoryType: %v", err)

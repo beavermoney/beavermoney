@@ -51,13 +51,13 @@ const AccountsPanelFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }
-    viewUserId: { type: "ID" }
+    viewUserIds: { type: "[ID!]" }
   )
   @refetchable(queryName: "accountsPanelRefetch") {
     accounts(
       first: $count
       after: $cursor
-      where: { archived: false, userID: $viewUserId }
+      where: { archived: false, userIDIn: $viewUserIds }
     ) @connection(key: "accountsPanel_accounts") {
       __id
       edges {
@@ -104,9 +104,9 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     from: '/_user/household/$householdId',
   })
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
   const { user } = useUser()
-  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
+  const isViewingOtherUser =
+    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   const search = useSearch({
     from: '/_user/household/$householdId/accounts',

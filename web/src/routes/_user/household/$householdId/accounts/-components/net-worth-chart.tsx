@@ -176,7 +176,6 @@ export function NetWorthChart() {
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
 
   const [duration, setDuration] = useState<Duration>('1M')
   const [isPending, startTransition] = useTransition()
@@ -213,7 +212,7 @@ export function NetWorthChart() {
         const rateMap = buildRateMap(snap.snapshotRates ?? [])
 
         const filteredEntries = (snap.snapshotEntries ?? []).filter((entry) =>
-          viewUserId === null ? true : entry.userID === viewUserId,
+          viewUserIds === null ? true : viewUserIds.includes(entry.userID),
         )
 
         const totals = filteredEntries.reduce(
@@ -269,7 +268,7 @@ export function NetWorthChart() {
         }
       })
       .sort((a, b) => a.date - b.date)
-  }, [data.household.snapshots.edges, displayCurrency, viewUserId])
+  }, [data.household.snapshots.edges, displayCurrency, viewUserIds])
 
   const yDomain = useMemo((): [number, number] => {
     const values = chartData

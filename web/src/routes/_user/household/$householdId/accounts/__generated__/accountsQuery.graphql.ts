@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<565f949bee3112fbae30cb763b9194de>>
+ * @generated SignedSource<<3872b3878f7a7363f149e44ea20d6eb8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type accountsQuery$variables = {
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type accountsQuery$data = {
   readonly household: {
@@ -28,7 +28,7 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "viewUserId"
+    "name": "viewUserIds"
   }
 ],
 v1 = [
@@ -46,8 +46,8 @@ v1 = [
       },
       {
         "kind": "Variable",
-        "name": "userID",
-        "variableName": "viewUserId"
+        "name": "userIDIn",
+        "variableName": "viewUserIds"
       }
     ],
     "kind": "ObjectValue",
@@ -87,8 +87,8 @@ return {
             "args": [
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -293,16 +293,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c9e955f6a8a323a550746806bc664f38",
+    "cacheID": "cfe5f909e0e83277728d45878d884b20",
     "id": null,
     "metadata": {},
     "name": "accountsQuery",
     "operationKind": "query",
-    "text": "query accountsQuery(\n  $viewUserId: ID\n) {\n  household {\n    ...accountsPanelFragment_9dezq\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_9dezq on Household {\n  accounts(first: 50, where: {archived: false, userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...accountsPanelFragment_3rIbPZ\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_3rIbPZ on Household {\n  accounts(first: 50, where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "881d94da07d5e6dc37c9181ea3941b6b";
+(node as any).hash = "cc010dd359bf645e80eb64e9c994ad16";
 
 export default node;

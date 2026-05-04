@@ -21,7 +21,7 @@ const query = graphql`
     $where: TransactionWhereInput
     $startDate: Time!
     $endDate: Time!
-    $viewUserId: ID
+    $viewUserIds: [ID!]
   ) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
@@ -30,27 +30,27 @@ const query = graphql`
           where: $where
           startDate: $startDate
           endDate: $endDate
-          viewUserId: $viewUserId
+          viewUserIds: $viewUserIds
         )
     }
   }
 `
 
-// Filter transactions by "any entry's account is owned by viewUserId" so
-// cross-user transfers (Alice -> Bob) appear in BOTH users' individual views.
-// Mirrors the backend predicate in gql/helpers.go::transactionCount.
+// Filter transactions by "any entry's account is owned by one of viewUserIds"
+// so cross-user transfers (Alice -> Bob) appear in BOTH users' individual
+// views. Mirrors the backend predicate in gql/helpers.go::transactionCount.
 function buildTransactionWhere(
   startDate: string,
   endDate: string,
-  viewUserId: string | null,
+  viewUserIds: ReadonlyArray<string> | null,
 ): TransactionWhereInput {
   const where: TransactionWhereInput = {
     datetimeGTE: startDate,
     datetimeLT: endDate,
   }
-  if (viewUserId !== null) {
+  if (viewUserIds !== null) {
     where.hasTransactionEntriesWith = [
-      { hasAccountWith: [{ userID: viewUserId }] },
+      { hasAccountWith: [{ userIDIn: viewUserIds }] },
     ]
   }
   return where
@@ -67,11 +67,11 @@ export const Route = createFileRoute(
   }),
   loader: ({ deps, params }) => {
     const period = parseDateRangeFromURL(deps.start, deps.end)
-    const viewUserId = readViewUserIds(params.householdId)?.[0] ?? null
+    const viewUserIds = readViewUserIds(params.householdId)
     const where = buildTransactionWhere(
       period.startDate,
       period.endDate,
-      viewUserId,
+      viewUserIds,
     )
 
     return loadQuery<transactionsQuery>(
@@ -81,7 +81,7 @@ export const Route = createFileRoute(
         where,
         startDate: period.startDate,
         endDate: period.endDate,
-        viewUserId,
+        viewUserIds,
       },
       { fetchPolicy: 'store-or-network' },
     )
@@ -93,7 +93,6 @@ function RouteComponent() {
   const queryRef = Route.useLoaderData()
   const { household } = useHousehold()
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
 
   const data = usePreloadedQuery<transactionsQuery>(query, queryRef)
 
@@ -102,7 +101,7 @@ function RouteComponent() {
     const where = buildTransactionWhere(
       period.startDate,
       period.endDate,
-      viewUserId ?? null,
+      viewUserIds ?? null,
     )
 
     fetchQuery(
@@ -112,7 +111,7 @@ function RouteComponent() {
         where,
         startDate: period.startDate,
         endDate: period.endDate,
-        viewUserId: viewUserId ?? null,
+        viewUserIds: viewUserIds ?? null,
       },
       { fetchPolicy: 'network-only' },
     ).subscribe({})

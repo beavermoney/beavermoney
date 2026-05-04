@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3c4245ad28d9cd9646cf7916ac1013fe>>
+ * @generated SignedSource<<0a0fbbe60c8e374a3e83acf83d6cf818>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type investmentsPanelRefetch$variables = {
   count?: number | null | undefined;
   cursor?: any | null | undefined;
   id: string;
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type investmentsPanelRefetch$data = {
   readonly node: {
@@ -45,7 +45,7 @@ v2 = {
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "viewUserId"
+  "name": "viewUserIds"
 },
 v4 = [
   {
@@ -83,8 +83,8 @@ v7 = [
     "fields": [
       {
         "kind": "Variable",
-        "name": "userID",
-        "variableName": "viewUserId"
+        "name": "userIDIn",
+        "variableName": "viewUserIds"
       }
     ],
     "kind": "ObjectValue",
@@ -151,8 +151,8 @@ return {
               },
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -367,16 +367,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a9069e8eb1ce602406ae88c48557cd79",
+    "cacheID": "43849645dfe0ced23877fcdd8aa79d54",
     "id": null,
     "metadata": {},
     "name": "investmentsPanelRefetch",
     "operationKind": "query",
-    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserId: ID\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_q4eSF\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_q4eSF on Household {\n  investments(first: $count, after: $cursor, where: {userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_2mcrba on Household {\n  investments(first: $count, after: $cursor, where: {userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f5cbff025110a1ee830b8bf939ad85be";
+(node as any).hash = "7bf74328390e52acc340a7ff24b166cf";
 
 export default node;

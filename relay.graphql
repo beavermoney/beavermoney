@@ -635,7 +635,10 @@ type Household implements Node {
   householdCurrencies: [HouseholdCurrency!]
   householdRates: [HouseholdRate!]
   userHouseholds: [UserHousehold!]
-  financialReport(period: TimePeriodInput!, viewUserID: ID): FinancialReport!
+  financialReport(
+    period: TimePeriodInput!
+    viewUserIDs: [ID!]
+  ): FinancialReport!
 }
 
 type HouseholdCurrency implements Node {

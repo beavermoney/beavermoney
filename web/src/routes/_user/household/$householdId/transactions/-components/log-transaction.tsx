@@ -18,13 +18,13 @@ import { cn } from '@/lib/utils'
 
 const logTransactionFragment = graphql`
   fragment logTransactionFragment on Household
-  @argumentDefinitions(viewUserId: { type: "ID" }) {
-    ...newExpenseFragment @arguments(viewUserId: $viewUserId)
-    ...newIncomeFragment @arguments(viewUserId: $viewUserId)
-    ...newTransferFragment @arguments(viewUserId: $viewUserId)
-    ...newBuyFragment @arguments(viewUserId: $viewUserId)
-    ...newSellFragment @arguments(viewUserId: $viewUserId)
-    ...newMoveFragment @arguments(viewUserId: $viewUserId)
+  @argumentDefinitions(viewUserIds: { type: "[ID!]" }) {
+    ...newExpenseFragment @arguments(viewUserIds: $viewUserIds)
+    ...newIncomeFragment @arguments(viewUserIds: $viewUserIds)
+    ...newTransferFragment @arguments(viewUserIds: $viewUserIds)
+    ...newBuyFragment @arguments(viewUserIds: $viewUserIds)
+    ...newSellFragment @arguments(viewUserIds: $viewUserIds)
+    ...newMoveFragment @arguments(viewUserIds: $viewUserIds)
   }
 `
 

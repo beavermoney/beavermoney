@@ -13,10 +13,10 @@ import { readViewUserIds } from '@/hooks/view-scope-store'
 import type { investmentsQuery } from './__generated__/investmentsQuery.graphql'
 
 const query = graphql`
-  query investmentsQuery($viewUserId: ID) {
+  query investmentsQuery($viewUserIds: [ID!]) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
-      ...investmentsPanelFragment @arguments(viewUserId: $viewUserId)
+      ...investmentsPanelFragment @arguments(viewUserIds: $viewUserIds)
     }
   }
 `
@@ -30,7 +30,7 @@ export const Route = createFileRoute(
     return loadQuery<investmentsQuery>(
       environment,
       query,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'store-or-network' },
     )
   },
@@ -46,7 +46,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

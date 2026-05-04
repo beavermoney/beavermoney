@@ -16,10 +16,10 @@ import { SubscriptionsPanel } from './-components/subscriptions-panel'
 import type { subscriptionsQuery } from './__generated__/subscriptionsQuery.graphql'
 
 const query = graphql`
-  query subscriptionsQuery($viewUserId: ID) {
+  query subscriptionsQuery($viewUserIds: [ID!]) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
-      ...subscriptionsPanelFragment @arguments(viewUserId: $viewUserId)
+      ...subscriptionsPanelFragment @arguments(viewUserIds: $viewUserIds)
     }
   }
 `
@@ -33,7 +33,7 @@ export const Route = createFileRoute(
     return loadQuery<subscriptionsQuery>(
       environment,
       query,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'store-or-network' },
     )
   },
@@ -49,7 +49,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<beee661fdf0633c7c45b45efbcd705d3>>
+ * @generated SignedSource<<8783d99582cfba6a45375036fa55501a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -1187,7 +1187,7 @@ export type transactionsPanelRefetchQuery$variables = {
   endDate: any;
   id: string;
   startDate: any;
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
   where?: TransactionWhereInput | null | undefined;
 };
 export type transactionsPanelRefetchQuery$data = {
@@ -1219,7 +1219,7 @@ v2 = {
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "viewUserId"
+  "name": "viewUserIds"
 },
 v4 = {
   "defaultValue": null,
@@ -1367,8 +1367,8 @@ return {
               (v7/*: any*/),
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               },
               (v8/*: any*/)
             ],
@@ -1641,8 +1641,8 @@ return {
                   },
                   {
                     "kind": "Variable",
-                    "name": "viewUserID",
-                    "variableName": "viewUserId"
+                    "name": "viewUserIDs",
+                    "variableName": "viewUserIds"
                   }
                 ],
                 "concreteType": "FinancialReport",
@@ -1683,16 +1683,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d79b2273f8c0c8a52bd5259aacd350f0",
+    "cacheID": "0fb70ba346e990ede6a5305c539c803a",
     "id": null,
     "metadata": {},
     "name": "transactionsPanelRefetchQuery",
     "operationKind": "query",
-    "text": "query transactionsPanelRefetchQuery(\n  $endDate: Time!\n  $startDate: Time!\n  $viewUserId: ID = null\n  $where: TransactionWhereInput\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...transactionsPanelFragment_40uQzN\n    id\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n  id\n}\n\nfragment transactionsPanelFragment_40uQzN on Household {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}, viewUserID: $viewUserId) {\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n"
+    "text": "query transactionsPanelRefetchQuery(\n  $endDate: Time!\n  $startDate: Time!\n  $viewUserIds: [ID!]\n  $where: TransactionWhereInput\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...transactionsPanelFragment_3NMAg4\n    id\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        ...transactionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n  id\n}\n\nfragment transactionsPanelFragment_3NMAg4 on Household {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}, viewUserIDs: $viewUserIds) {\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "56ec3527171c0b1032a3deb970e5d2a9";
+(node as any).hash = "21e2c62ae02ad0c5afe2290ef3429c0d";
 
 export default node;

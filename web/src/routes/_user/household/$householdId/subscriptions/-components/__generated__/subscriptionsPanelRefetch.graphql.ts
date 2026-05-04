@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6a0db5c72946780b3a09c47966f3a591>>
+ * @generated SignedSource<<8ba1195bfa7985ce0552730ece1242e5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type subscriptionsPanelRefetch$variables = {
   count?: number | null | undefined;
   cursor?: any | null | undefined;
   id: string;
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type subscriptionsPanelRefetch$data = {
   readonly node: {
@@ -45,7 +45,7 @@ v2 = {
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "viewUserId"
+  "name": "viewUserIds"
 },
 v4 = [
   {
@@ -83,8 +83,8 @@ v7 = [
     "fields": [
       {
         "kind": "Variable",
-        "name": "userID",
-        "variableName": "viewUserId"
+        "name": "userIDIn",
+        "variableName": "viewUserIds"
       }
     ],
     "kind": "ObjectValue",
@@ -125,8 +125,8 @@ return {
               },
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -331,16 +331,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8f912b3f9cf3728dbfc413ce7c1616e3",
+    "cacheID": "d4da68ae3e62aec6bfcb24f2d434ee53",
     "id": null,
     "metadata": {},
     "name": "subscriptionsPanelRefetch",
     "operationKind": "query",
-    "text": "query subscriptionsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserId: ID\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...subscriptionsPanelFragment_q4eSF\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_q4eSF on Household {\n  recurringSubscriptions(first: $count, after: $cursor, where: {userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...subscriptionsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_2mcrba on Household {\n  recurringSubscriptions(first: $count, after: $cursor, where: {userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "73d0b8dd833db5e8d85d998db19f38e7";
+(node as any).hash = "ee027ec0faadd6ce468fdd64adc03983";
 
 export default node;

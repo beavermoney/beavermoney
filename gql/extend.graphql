@@ -1,5 +1,8 @@
 extend type Household {
-  financialReport(period: TimePeriodInput!, viewUserID: ID): FinancialReport!
+  financialReport(
+    period: TimePeriodInput!
+    viewUserIDs: [ID!]
+  ): FinancialReport!
 }
 
 extend type Investment {

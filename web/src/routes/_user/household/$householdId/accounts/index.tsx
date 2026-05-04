@@ -14,10 +14,10 @@ import type { accountsQuery } from './__generated__/accountsQuery.graphql'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const query = graphql`
-  query accountsQuery($viewUserId: ID) {
+  query accountsQuery($viewUserIds: [ID!]) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
-      ...accountsPanelFragment @arguments(viewUserId: $viewUserId)
+      ...accountsPanelFragment @arguments(viewUserIds: $viewUserIds)
     }
   }
 `
@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
       return loadQuery<accountsQuery>(
         environment,
         query,
-        { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+        { viewUserIds: readViewUserIds(params.householdId) },
         { fetchPolicy: 'store-or-network' },
       )
     },
@@ -47,7 +47,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       query,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })

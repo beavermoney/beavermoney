@@ -88,7 +88,7 @@ import { GenericError } from '@/components/generic-error'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
 
 const routeHouseholdIdQuery = graphql`
-  query routeHouseholdIdQuery($viewUserId: ID) {
+  query routeHouseholdIdQuery($viewUserIds: [ID!]) {
     ...appSidebarFragment
     user {
       ...useUserFragment
@@ -99,8 +99,8 @@ const routeHouseholdIdQuery = graphql`
     household {
       ...useHouseholdFragment
       ...useDisplayCurrencyFragment
-      ...logTransactionFragment @arguments(viewUserId: $viewUserId)
-      ...snapshotDialogFragment @arguments(viewUserId: $viewUserId)
+      ...logTransactionFragment @arguments(viewUserIds: $viewUserIds)
+      ...snapshotDialogFragment @arguments(viewUserIds: $viewUserIds)
       ...viewScopeSwitcherFragment
       # eslint-disable-next-line relay/unused-fields
       householdCurrencies {
@@ -138,7 +138,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
 
     const variables = {
-      viewUserId: readViewUserIds(params.householdId)?.[0] ?? null,
+      viewUserIds: readViewUserIds(params.householdId),
     }
 
     try {
@@ -220,7 +220,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       routeHouseholdIdQuery,
-      { viewUserId: readViewUserIds(params.householdId)?.[0] ?? null },
+      { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })
@@ -404,9 +404,9 @@ function FloatingLogTransactionWindow({
   const { type: logTransactionType, close: closeLogTransaction } =
     useLogTransaction()
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
   const { user } = useUser()
-  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
+  const isViewingOtherUser =
+    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   if (isViewingOtherUser) {
     return null

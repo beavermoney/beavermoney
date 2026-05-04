@@ -32,13 +32,13 @@ const SubscriptionsPanelFragment = graphql`
   @argumentDefinitions(
     count: { type: "Int", defaultValue: 50 }
     cursor: { type: "Cursor" }
-    viewUserId: { type: "ID" }
+    viewUserIds: { type: "[ID!]" }
   )
   @refetchable(queryName: "subscriptionsPanelRefetch") {
     recurringSubscriptions(
       first: $count
       after: $cursor
-      where: { userID: $viewUserId }
+      where: { userIDIn: $viewUserIds }
     ) @connection(key: "subscriptionsPanel_recurringSubscriptions") {
       __id
       edges {
@@ -86,9 +86,9 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     from: '/_user/household/$householdId',
   })
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
   const { user } = useUser()
-  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
+  const isViewingOtherUser =
+    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   useRegisterConnection(
     data.recurringSubscriptions.__id,

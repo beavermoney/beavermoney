@@ -93,47 +93,86 @@ func seedHouseholdWithUsers(
 	return household.ID, memberUser.ID, nonMemberUser.ID
 }
 
-func TestViewUserID_Nil_Returns_Nil(t *testing.T) {
+func TestViewUserIDs_Nil_Returns_Nil(t *testing.T) {
 	r := &Resolver{
 		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 
-	if err := r.validateViewUserID(context.Background(), 1, nil); err != nil {
-		t.Fatalf("expected nil for nil viewUserID, got %v", err)
+	if err := r.validateViewUserIDs(context.Background(), 1, nil); err != nil {
+		t.Fatalf("expected nil for nil viewUserIDs, got %v", err)
 	}
 }
 
-func TestViewUserID_NonMemberReturnsError(t *testing.T) {
+func TestViewUserIDs_Empty_Returns_Nil(t *testing.T) {
+	r := &Resolver{
+		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
+
+	if err := r.validateViewUserIDs(context.Background(), 1, []int{}); err != nil {
+		t.Fatalf("expected nil for empty viewUserIDs, got %v", err)
+	}
+}
+
+func TestViewUserIDs_NonMemberReturnsError(t *testing.T) {
 	r, client, bypassCtx := newTestResolver(t)
 	householdID, _, nonMemberUserID := seedHouseholdWithUsers(t, client, bypassCtx)
 
-	err := r.validateViewUserID(context.Background(), householdID, &nonMemberUserID)
+	err := r.validateViewUserIDs(
+		context.Background(),
+		householdID,
+		[]int{nonMemberUserID},
+	)
 	if err == nil {
-		t.Fatalf("expected error for non-member viewUserID, got nil")
+		t.Fatalf("expected error for non-member viewUserIDs, got nil")
 	}
 	if !strings.Contains(err.Error(), "VIEW_USER_NOT_HOUSEHOLD_MEMBER") {
 		t.Fatalf("expected VIEW_USER_NOT_HOUSEHOLD_MEMBER error, got %q", err.Error())
 	}
 }
 
-func TestViewUserID_MemberReturnsNil(t *testing.T) {
+func TestViewUserIDs_MemberReturnsNil(t *testing.T) {
 	r, client, bypassCtx := newTestResolver(t)
 	householdID, memberUserID, _ := seedHouseholdWithUsers(t, client, bypassCtx)
 
-	if err := r.validateViewUserID(context.Background(), householdID, &memberUserID); err != nil {
-		t.Fatalf("expected nil for member viewUserID, got %v", err)
+	if err := r.validateViewUserIDs(
+		context.Background(),
+		householdID,
+		[]int{memberUserID},
+	); err != nil {
+		t.Fatalf("expected nil for member viewUserIDs, got %v", err)
 	}
 }
 
-func TestViewUserID_DifferentHouseholdReturnsError(t *testing.T) {
+func TestViewUserIDs_MixedMemberAndNonMemberReturnsError(t *testing.T) {
+	r, client, bypassCtx := newTestResolver(t)
+	householdID, memberUserID, nonMemberUserID := seedHouseholdWithUsers(t, client, bypassCtx)
+
+	err := r.validateViewUserIDs(
+		context.Background(),
+		householdID,
+		[]int{memberUserID, nonMemberUserID},
+	)
+	if err == nil {
+		t.Fatalf("expected error when one id is non-member, got nil")
+	}
+	if !strings.Contains(err.Error(), "VIEW_USER_NOT_HOUSEHOLD_MEMBER") {
+		t.Fatalf("expected VIEW_USER_NOT_HOUSEHOLD_MEMBER error, got %q", err.Error())
+	}
+}
+
+func TestViewUserIDs_DifferentHouseholdReturnsError(t *testing.T) {
 	r, client, bypassCtx := newTestResolver(t)
 	_, memberUserID, _ := seedHouseholdWithUsers(t, client, bypassCtx)
 
 	otherHouseholdID, _, _ := seedHouseholdWithUsers(t, client, bypassCtx)
 
-	err := r.validateViewUserID(context.Background(), otherHouseholdID, &memberUserID)
+	err := r.validateViewUserIDs(
+		context.Background(),
+		otherHouseholdID,
+		[]int{memberUserID},
+	)
 	if err == nil {
-		t.Fatalf("expected error for cross-household viewUserID, got nil")
+		t.Fatalf("expected error for cross-household viewUserIDs, got nil")
 	}
 	if !strings.Contains(err.Error(), "VIEW_USER_NOT_HOUSEHOLD_MEMBER") {
 		t.Fatalf("expected VIEW_USER_NOT_HOUSEHOLD_MEMBER, got %q", err.Error())

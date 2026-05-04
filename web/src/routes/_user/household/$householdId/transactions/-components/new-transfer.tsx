@@ -57,8 +57,8 @@ const formSchema = z.object({
 
 const newTransferFragment = graphql`
   fragment newTransferFragment on Household
-  @argumentDefinitions(viewUserId: { type: "ID" }) {
-    accounts(where: { archived: false, userID: $viewUserId }) {
+  @argumentDefinitions(viewUserIds: { type: "[ID!]" }) {
+    accounts(where: { archived: false, userIDIn: $viewUserIds }) {
       edges {
         node {
           id

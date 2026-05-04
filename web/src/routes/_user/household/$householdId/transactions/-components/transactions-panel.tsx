@@ -25,12 +25,12 @@ const transactionsPanelFragment = graphql`
     where: { type: "TransactionWhereInput" }
     startDate: { type: "Time!" }
     endDate: { type: "Time!" }
-    viewUserId: { type: "ID", defaultValue: null }
+    viewUserIds: { type: "[ID!]" }
   ) {
     ...transactionsListFragment @arguments(where: $where)
     financialReport(
       period: { startDate: $startDate, endDate: $endDate }
-      viewUserID: $viewUserId
+      viewUserIDs: $viewUserIds
     ) {
       ...financialSummaryCardsFragment
     }
@@ -52,9 +52,9 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const { household } = useHousehold()
   const { open: openLogTransaction } = useLogTransaction()
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
   const { user } = useUser()
-  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
+  const isViewingOtherUser =
+    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
@@ -63,9 +63,9 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
     const nextWhere: TransactionWhereInput = {
       datetimeGTE: period.startDate,
       datetimeLT: period.endDate,
-      ...(viewUserId !== null && {
+      ...(viewUserIds !== null && {
         hasTransactionEntriesWith: [
-          { hasAccountWith: [{ userID: viewUserId }] },
+          { hasAccountWith: [{ userIDIn: viewUserIds }] },
         ],
       }),
     }
@@ -78,7 +78,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         where: nextWhere,
         startDate: period.startDate,
         endDate: period.endDate,
-        viewUserId: viewUserId ?? null,
+        viewUserIds: viewUserIds ?? null,
       },
     ).toPromise()
 

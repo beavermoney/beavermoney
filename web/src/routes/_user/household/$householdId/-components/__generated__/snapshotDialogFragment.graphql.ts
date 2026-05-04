@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b60bbcad19fd317e67638ff3d57f606e>>
+ * @generated SignedSource<<f273a2ce220a696e8867ad12d65e9e07>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -35,7 +35,7 @@ const node: ReaderFragment = {
     {
       "defaultValue": null,
       "kind": "LocalArgument",
-      "name": "viewUserId"
+      "name": "viewUserIds"
     }
   ],
   "kind": "Fragment",
@@ -54,8 +54,8 @@ const node: ReaderFragment = {
             },
             {
               "kind": "Variable",
-              "name": "userID",
-              "variableName": "viewUserId"
+              "name": "userIDIn",
+              "variableName": "viewUserIds"
             }
           ],
           "kind": "ObjectValue",
@@ -129,6 +129,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "9d6886a9522af8793799cd11515789c3";
+(node as any).hash = "afff3ac5df1890e637ac165251f654fe";
 
 export default node;

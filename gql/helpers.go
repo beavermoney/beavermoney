@@ -28,7 +28,7 @@ func (r *householdResolver) aggregateByCategoryType(
 	ctx context.Context,
 	obj *model.FinancialReport,
 	categoryType transactioncategory.Type,
-	viewUserID *int,
+	viewUserIDs []int,
 ) (*model.CategoryTypeAggregate, error) {
 	ctx, span := r.tracer.Start(
 		ctx,
@@ -72,8 +72,8 @@ func (r *householdResolver) aggregateByCategoryType(
 			s.Where(sql.EQ(s.C(transaction.FieldExcludeFromReports), false))
 
 			// Entry-level (not transaction-level): SUM must reflect only
-			// viewUserID's own slice of multi-entry transactions.
-			applyViewUserIDEntryFilter(s, te, viewUserID)
+			// the selected owners' slices of multi-entry transactions.
+			applyViewUserIDEntryFilter(s, te, viewUserIDs)
 
 			// Apply time filters
 			if !obj.StartDate.IsZero() {
@@ -227,15 +227,15 @@ func (r *householdResolver) aggregateByCategoryType(
 func (r *householdResolver) transactionCount(
 	ctx context.Context,
 	obj *model.FinancialReport,
-	viewUserID *int,
+	viewUserIDs []int,
 ) (int, error) {
 	householdID := contextkeys.GetHouseholdID(ctx)
 
 	query := r.entClient.Transaction.Query()
-	if viewUserID != nil {
+	if len(viewUserIDs) > 0 {
 		query = query.Where(transaction.HasTransactionEntriesWith(
 			transactionentry.HasAccountWith(
-				account.UserIDEQ(*viewUserID),
+				account.UserIDIn(viewUserIDs...),
 			),
 		))
 	}
@@ -264,25 +264,32 @@ func (r *householdResolver) transactionCount(
 }
 
 // applyViewUserIDEntryFilter restricts the joined transaction_entries (te) to
-// rows whose account belongs to viewUserID. Use this in aggregations where
-// SUM(te.amount) must reflect only the user's own slice of multi-entry
-// transactions (e.g. expense/income with cross-user fees, transfers).
+// rows whose account belongs to one of viewUserIDs. Use this in aggregations
+// where SUM(te.amount) must reflect only the selected owners' slice of
+// multi-entry transactions (e.g. expense/income with cross-user fees,
+// transfers).
 //
 // For transaction-level inclusion (counts, lists), use the ent predicate
 // directly: q.Where(transaction.HasTransactionEntriesWith(...)). That form is
 // set-membership only — the outer SUM still sees every sibling entry, which
 // is wrong when a transaction spans multiple users' accounts.
+//
+// Empty/nil viewUserIDs means "no filter" (combined view across all owners).
 func applyViewUserIDEntryFilter(
 	s *sql.Selector,
 	te *sql.SelectTable,
-	viewUserID *int,
+	viewUserIDs []int,
 ) {
-	if viewUserID == nil {
+	if len(viewUserIDs) == 0 {
 		return
 	}
 	a := sql.Table(account.Table)
 	s.Join(a).On(te.C(transactionentry.AccountColumn), a.C(account.FieldID))
-	s.Where(sql.EQ(a.C(account.FieldUserID), *viewUserID))
+	values := make([]any, len(viewUserIDs))
+	for i, id := range viewUserIDs {
+		values[i] = id
+	}
+	s.Where(sql.In(a.C(account.FieldUserID), values...))
 }
 
 // validateMutationOwner enforces the two ownership invariants for any
@@ -321,11 +328,15 @@ func (r *Resolver) validateMutationOwner(
 	return nil
 }
 
-// validateViewUserID checks that the given userID is a member of the current household.
-// Returns VIEW_USER_NOT_HOUSEHOLD_MEMBER if the user is not a member.
-// Returns nil if viewUserID is nil (combined view).
-func (r *Resolver) validateViewUserID(ctx context.Context, householdID int, viewUserID *int) error {
-	if viewUserID == nil {
+// validateViewUserIDs checks that every id in viewUserIDs is a member of the
+// given household (real or synthetic). Empty/nil = combined view, returns nil.
+// Returns VIEW_USER_NOT_HOUSEHOLD_MEMBER on the first non-member.
+func (r *Resolver) validateViewUserIDs(
+	ctx context.Context,
+	householdID int,
+	viewUserIDs []int,
+) error {
+	if len(viewUserIDs) == 0 {
 		return nil
 	}
 
@@ -334,16 +345,16 @@ func (r *Resolver) validateViewUserID(ctx context.Context, householdID int, view
 	// cross-household Relay node fetches).
 	queryCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), householdID)
 
-	exists, err := r.entClient.UserHousehold.Query().
+	matched, err := r.entClient.UserHousehold.Query().
 		Where(
-			userhousehold.UserIDEQ(*viewUserID),
+			userhousehold.UserIDIn(viewUserIDs...),
 			userhousehold.HouseholdIDEQ(householdID),
 		).
-		Exist(queryCtx)
+		Count(queryCtx)
 	if err != nil {
 		return err
 	}
-	if !exists {
+	if matched != len(viewUserIDs) {
 		return fmt.Errorf("VIEW_USER_NOT_HOUSEHOLD_MEMBER")
 	}
 	return nil

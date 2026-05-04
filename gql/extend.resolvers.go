@@ -18,7 +18,7 @@ import (
 )
 
 // FinancialReport is the resolver for the financialReport field.
-func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserID *int) (*model.FinancialReport, error) {
+func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserIDs []int) (*model.FinancialReport, error) {
 	userID := contextkeys.GetUserID(ctx)
 
 	ctx, span := r.tracer.Start(ctx, "householdResolver.FinancialReport",
@@ -29,7 +29,7 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 	)
 	defer span.End()
 
-	if err := r.validateViewUserID(ctx, obj.ID, viewUserID); err != nil {
+	if err := r.validateViewUserIDs(ctx, obj.ID, viewUserIDs); err != nil {
 		return nil, err
 	}
 
@@ -45,7 +45,7 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 		ctx,
 		report,
 		transactioncategory.TypeIncome,
-		viewUserID,
+		viewUserIDs,
 	)
 	if err != nil {
 		return nil, err
@@ -55,13 +55,13 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 		ctx,
 		report,
 		transactioncategory.TypeExpense,
-		viewUserID,
+		viewUserIDs,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	transactionCount, err := r.transactionCount(ctx, report, viewUserID)
+	transactionCount, err := r.transactionCount(ctx, report, viewUserIDs)
 	if err != nil {
 		return nil, err
 	}

@@ -173,7 +173,7 @@ type ComplexityRoot struct {
 	Household struct {
 		Accounts               func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.AccountWhereInput) int
 		CreateTime             func(childComplexity int) int
-		FinancialReport        func(childComplexity int, period model.TimePeriodInput, viewUserID *int) int
+		FinancialReport        func(childComplexity int, period model.TimePeriodInput, viewUserIDs []int) int
 		HouseholdCurrencies    func(childComplexity int) int
 		HouseholdRates         func(childComplexity int) int
 		ID                     func(childComplexity int) int
@@ -618,7 +618,7 @@ type AccountResolver interface {
 	Value(ctx context.Context, obj *ent.Account) (string, error)
 }
 type HouseholdResolver interface {
-	FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserID *int) (*model.FinancialReport, error)
+	FinancialReport(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserIDs []int) (*model.FinancialReport, error)
 }
 type HouseholdRateResolver interface {
 	Rate(ctx context.Context, obj *ent.HouseholdRate) (string, error)
@@ -1223,7 +1223,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Household.FinancialReport(childComplexity, args["period"].(model.TimePeriodInput), args["viewUserID"].(*int)), true
+		return e.complexity.Household.FinancialReport(childComplexity, args["period"].(model.TimePeriodInput), args["viewUserIDs"].([]int)), true
 	case "Household.householdCurrencies":
 		if e.complexity.Household.HouseholdCurrencies == nil {
 			break
@@ -3621,11 +3621,11 @@ func (ec *executionContext) field_Household_financialReport_args(ctx context.Con
 		return nil, err
 	}
 	args["period"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "viewUserID", ec.unmarshalOID2ᚖint)
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "viewUserIDs", ec.unmarshalOID2ᚕintᚄ)
 	if err != nil {
 		return nil, err
 	}
-	args["viewUserID"] = arg1
+	args["viewUserIDs"] = arg1
 	return args, nil
 }
 
@@ -7259,7 +7259,7 @@ func (ec *executionContext) _Household_financialReport(ctx context.Context, fiel
 		ec.fieldContext_Household_financialReport,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Household().FinancialReport(ctx, obj, fc.Args["period"].(model.TimePeriodInput), fc.Args["viewUserID"].(*int))
+			return ec.resolvers.Household().FinancialReport(ctx, obj, fc.Args["period"].(model.TimePeriodInput), fc.Args["viewUserIDs"].([]int))
 		},
 		nil,
 		ec.marshalNFinancialReport2ᚖbeavermoneyᚗappᚋgqlᚋmodelᚐFinancialReport,

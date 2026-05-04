@@ -41,7 +41,7 @@ const CategoriesPanelFragment = graphql`
     cursor: { type: "Cursor" }
     startDate: { type: "Time!" }
     endDate: { type: "Time!" }
-    viewUserId: { type: "ID", defaultValue: null }
+    viewUserIds: { type: "[ID!]" }
   )
   @refetchable(queryName: "categoriesPanelRefetch") {
     transactionCategories(first: $count, after: $cursor)
@@ -57,7 +57,7 @@ const CategoriesPanelFragment = graphql`
     }
     financialReport(
       period: { startDate: $startDate, endDate: $endDate }
-      viewUserID: $viewUserId
+      viewUserIDs: $viewUserIds
     ) {
       incomeBreakdown {
         categoryType
@@ -94,9 +94,9 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
     from: '/_user/household/$householdId',
   })
   const { viewUserIds } = useHouseholdViewScope()
-  const viewUserId = viewUserIds?.[0] ?? null
   const { user } = useUser()
-  const isViewingOtherUser = viewUserId !== null && viewUserId !== user.id
+  const isViewingOtherUser =
+    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   useRegisterConnection(
     data.transactionCategories.__id,
@@ -148,7 +148,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
         id: household.id,
         startDate: period.startDate,
         endDate: period.endDate,
-        viewUserId,
+        viewUserIds,
       },
     ).toPromise()
 

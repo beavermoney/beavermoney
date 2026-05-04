@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6e8a56dccc440b0d18fa8c5c7ada6822>>
+ * @generated SignedSource<<e2dfec3c71b8dd9711372e3046283702>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type accountsPanelRefetch$variables = {
   count?: number | null | undefined;
   cursor?: any | null | undefined;
   id: string;
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type accountsPanelRefetch$data = {
   readonly node: {
@@ -45,7 +45,7 @@ v2 = {
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "viewUserId"
+  "name": "viewUserIds"
 },
 v4 = [
   {
@@ -88,8 +88,8 @@ v7 = [
       },
       {
         "kind": "Variable",
-        "name": "userID",
-        "variableName": "viewUserId"
+        "name": "userIDIn",
+        "variableName": "viewUserIds"
       }
     ],
     "kind": "ObjectValue",
@@ -137,8 +137,8 @@ return {
               },
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -350,16 +350,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a92b58298ebb4f08d4fee36601415d52",
+    "cacheID": "c200abef8c1c9477e5d0c0449ff35281",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserId: ID\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_q4eSF\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_q4eSF on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false, userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment accountCardFragment on Account {\n  id\n  name\n  type\n  icon\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  value\n  balance\n}\n\nfragment accountsPanelFragment_2mcrba on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        householdCurrency {\n          code\n          id\n        }\n        ...accountCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "50ea58edd27579cc5d0e22abdef75170";
+(node as any).hash = "ed7e99ad4694c35984d8312cded10c49";
 
 export default node;

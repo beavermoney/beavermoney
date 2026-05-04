@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c5cdd18679376ed451989861f0fa17d8>>
+ * @generated SignedSource<<37e680a4ed4a9bfaf22e1a961a2d28f6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,8 +23,8 @@ const node: ReaderFragment = (function(){
 var v0 = [
   {
     "kind": "Variable",
-    "name": "viewUserId",
-    "variableName": "viewUserId"
+    "name": "viewUserIds",
+    "variableName": "viewUserIds"
   }
 ];
 return {
@@ -32,7 +32,7 @@ return {
     {
       "defaultValue": null,
       "kind": "LocalArgument",
-      "name": "viewUserId"
+      "name": "viewUserIds"
     }
   ],
   "kind": "Fragment",
@@ -75,6 +75,6 @@ return {
 };
 })();
 
-(node as any).hash = "bd97002447ec479d0237daca787171c0";
+(node as any).hash = "0866a2ca773e8dc872a31b4026b5ddfd";
 
 export default node;

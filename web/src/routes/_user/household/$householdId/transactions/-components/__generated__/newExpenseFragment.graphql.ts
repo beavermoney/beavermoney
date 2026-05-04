@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<51bbe8cc2fceef9c50b1820f363ff015>>
+ * @generated SignedSource<<b1d95d16615b9b393424661fdf7dd636>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -70,7 +70,7 @@ return {
     {
       "defaultValue": null,
       "kind": "LocalArgument",
-      "name": "viewUserId"
+      "name": "viewUserIds"
     }
   ],
   "kind": "Fragment",
@@ -89,8 +89,8 @@ return {
             },
             {
               "kind": "Variable",
-              "name": "userID",
-              "variableName": "viewUserId"
+              "name": "userIDIn",
+              "variableName": "viewUserIds"
             }
           ],
           "kind": "ObjectValue",
@@ -204,6 +204,6 @@ return {
 };
 })();
 
-(node as any).hash = "dbe31607d7a12e26cb2c0bd0d220c8af";
+(node as any).hash = "f0851c68623bd0e520f409fdba632949";
 
 export default node;

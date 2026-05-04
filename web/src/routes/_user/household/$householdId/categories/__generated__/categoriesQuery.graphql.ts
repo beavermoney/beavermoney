@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2a518de5dc4f1b21dedc7a7d065cfad0>>
+ * @generated SignedSource<<7cde3cfb3839da4cbe50e74c2d9b553d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type categoriesQuery$variables = {
   endDate: any;
   startDate: any;
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type categoriesQuery$data = {
   readonly household: {
@@ -39,7 +39,7 @@ v1 = {
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "viewUserId"
+  "name": "viewUserIds"
 },
 v3 = {
   "kind": "Variable",
@@ -156,8 +156,8 @@ return {
               (v4/*: any*/),
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -304,8 +304,8 @@ return {
               },
               {
                 "kind": "Variable",
-                "name": "viewUserID",
-                "variableName": "viewUserId"
+                "name": "viewUserIDs",
+                "variableName": "viewUserIds"
               }
             ],
             "concreteType": "FinancialReport",
@@ -343,16 +343,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7949c22adf23aacc2025ed659fa1bff5",
+    "cacheID": "f444d485fd4f08868c51c2f06359486b",
     "id": null,
     "metadata": {},
     "name": "categoriesQuery",
     "operationKind": "query",
-    "text": "query categoriesQuery(\n  $startDate: Time!\n  $endDate: Time!\n  $viewUserId: ID\n) {\n  household {\n    ...categoriesPanelFragment_4baCpB\n    id\n  }\n}\n\nfragment categoriesPanelFragment_4baCpB on Household {\n  transactionCategories(first: 50) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  financialReport(period: {startDate: $startDate, endDate: $endDate}, viewUserID: $viewUserId) {\n    incomeBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    expensesBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    ...categoryCardFinancialReportFragment\n    ...financialSummaryCardsFragment\n    ...categoriesSankeyFragment\n  }\n  id\n}\n\nfragment categoriesSankeyFragment on FinancialReport {\n  incomeBreakdown {\n    total\n    categories {\n      category {\n        id\n        name\n        icon\n      }\n      total\n    }\n  }\n  expensesBreakdown {\n    total\n    categories {\n      category {\n        id\n        name\n        icon\n      }\n      total\n    }\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
+    "text": "query categoriesQuery(\n  $startDate: Time!\n  $endDate: Time!\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...categoriesPanelFragment_gfap0\n    id\n  }\n}\n\nfragment categoriesPanelFragment_gfap0 on Household {\n  transactionCategories(first: 50) {\n    edges {\n      node {\n        id\n        type\n        ...categoryCardCategoryFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  financialReport(period: {startDate: $startDate, endDate: $endDate}, viewUserIDs: $viewUserIds) {\n    incomeBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    expensesBreakdown {\n      categoryType\n      total\n      transactionCount\n    }\n    ...categoryCardFinancialReportFragment\n    ...financialSummaryCardsFragment\n    ...categoriesSankeyFragment\n  }\n  id\n}\n\nfragment categoriesSankeyFragment on FinancialReport {\n  incomeBreakdown {\n    total\n    categories {\n      category {\n        id\n        name\n        icon\n      }\n      total\n    }\n  }\n  expensesBreakdown {\n    total\n    categories {\n      category {\n        id\n        name\n        icon\n      }\n      total\n    }\n  }\n}\n\nfragment categoryCardCategoryFragment on TransactionCategory {\n  id\n  name\n  type\n  icon\n}\n\nfragment categoryCardFinancialReportFragment on FinancialReport {\n  incomeBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n  expensesBreakdown {\n    categories {\n      category {\n        id\n      }\n      total\n      transactionCount\n    }\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2670dfdfa2df645606e4b1b89a5d7047";
+(node as any).hash = "03819fe57dbe737f369a379f2c5ec205";
 
 export default node;

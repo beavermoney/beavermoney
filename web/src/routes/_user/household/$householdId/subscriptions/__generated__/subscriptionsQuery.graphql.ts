@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6410b03605a38898909a1d5108316783>>
+ * @generated SignedSource<<aa0fafd98dc755c40c54dd7e7f07fda4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type subscriptionsQuery$variables = {
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type subscriptionsQuery$data = {
   readonly household: {
@@ -28,7 +28,7 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "viewUserId"
+    "name": "viewUserIds"
   }
 ],
 v1 = [
@@ -41,8 +41,8 @@ v1 = [
     "fields": [
       {
         "kind": "Variable",
-        "name": "userID",
-        "variableName": "viewUserId"
+        "name": "userIDIn",
+        "variableName": "viewUserIds"
       }
     ],
     "kind": "ObjectValue",
@@ -75,8 +75,8 @@ return {
             "args": [
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -274,16 +274,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e6fe841076411abc69b0e5fdda3005d9",
+    "cacheID": "d2ffb3f1f49c0951f5d4a8d81e76eab0",
     "id": null,
     "metadata": {},
     "name": "subscriptionsQuery",
     "operationKind": "query",
-    "text": "query subscriptionsQuery(\n  $viewUserId: ID\n) {\n  household {\n    ...subscriptionsPanelFragment_9dezq\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_9dezq on Household {\n  recurringSubscriptions(first: 50, where: {userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query subscriptionsQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...subscriptionsPanelFragment_3rIbPZ\n    id\n  }\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n\nfragment subscriptionsPanelFragment_3rIbPZ on Household {\n  recurringSubscriptions(first: 50, where: {userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        active\n        cost\n        householdCurrency {\n          code\n          id\n        }\n        interval\n        intervalCount\n        startDate\n        name\n        ...subscriptionCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "dcbcca2ca1f3f4f87211091982cafb87";
+(node as any).hash = "3f72b1e38e9000e9440b6ebd2631cea0";
 
 export default node;

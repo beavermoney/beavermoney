@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5899cc2fc655676348865c2f7d47da3d>>
+ * @generated SignedSource<<6d88c711bcb90adc3ba054d464b37a0b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type investmentsQuery$variables = {
-  viewUserId?: string | null | undefined;
+  viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
 export type investmentsQuery$data = {
   readonly household: {
@@ -28,7 +28,7 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "viewUserId"
+    "name": "viewUserIds"
   }
 ],
 v1 = [
@@ -41,8 +41,8 @@ v1 = [
     "fields": [
       {
         "kind": "Variable",
-        "name": "userID",
-        "variableName": "viewUserId"
+        "name": "userIDIn",
+        "variableName": "viewUserIds"
       }
     ],
     "kind": "ObjectValue",
@@ -101,8 +101,8 @@ return {
             "args": [
               {
                 "kind": "Variable",
-                "name": "viewUserId",
-                "variableName": "viewUserId"
+                "name": "viewUserIds",
+                "variableName": "viewUserIds"
               }
             ],
             "kind": "FragmentSpread",
@@ -310,16 +310,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b329e979f71b04c1cd5c13cff1dbe92a",
+    "cacheID": "130a9278daf1059900681361698993ac",
     "id": null,
     "metadata": {},
     "name": "investmentsQuery",
     "operationKind": "query",
-    "text": "query investmentsQuery(\n  $viewUserId: ID\n) {\n  household {\n    ...investmentsPanelFragment_9dezq\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_9dezq on Household {\n  investments(first: 50, where: {userID: $viewUserId}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...investmentsPanelFragment_3rIbPZ\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_3rIbPZ on Household {\n  investments(first: 50, where: {userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c646ced055eba79a1b29329fefc86b2a";
+(node as any).hash = "75649ce5abf3a9d2f406ae3683213731";
 
 export default node;

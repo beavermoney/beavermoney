@@ -15,14 +15,18 @@ import { parseDateRangeFromURL } from '@/lib/date-range'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const query = graphql`
-  query categoriesQuery($startDate: Time!, $endDate: Time!, $viewUserId: ID) {
+  query categoriesQuery(
+    $startDate: Time!
+    $endDate: Time!
+    $viewUserIds: [ID!]
+  ) {
     household {
       # eslint-disable-next-line relay/must-colocate-fragment-spreads
       ...categoriesPanelFragment
         @arguments(
           startDate: $startDate
           endDate: $endDate
-          viewUserId: $viewUserId
+          viewUserIds: $viewUserIds
         )
     }
   }
@@ -45,7 +49,7 @@ export const Route = createFileRoute(
       query,
       {
         ...period,
-        viewUserId: readViewUserIds(params.householdId)?.[0] ?? null,
+        viewUserIds: readViewUserIds(params.householdId),
       },
       {
         fetchPolicy: 'store-or-network',
@@ -69,7 +73,7 @@ function RouteComponent() {
       query,
       {
         ...period,
-        viewUserId: readViewUserIds(params.householdId)?.[0] ?? null,
+        viewUserIds: readViewUserIds(params.householdId),
       },
       {
         fetchPolicy: 'network-only',
