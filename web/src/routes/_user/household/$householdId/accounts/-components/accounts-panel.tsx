@@ -23,8 +23,6 @@ import { useCurrency } from '@/hooks/use-currency'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { useUser } from '@/hooks/use-user'
 import {
   Select,
   SelectContent,
@@ -103,11 +101,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const { householdId } = useParams({
     from: '/_user/household/$householdId',
   })
-  const { viewUserIds } = useHouseholdViewScope()
-  const { user } = useUser()
-  const isViewingOtherUser =
-    viewUserIds !== null && !viewUserIds.includes(user.id)
-
   const search = useSearch({
     from: '/_user/household/$householdId/accounts',
   })
@@ -240,12 +233,10 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         >
           <RefreshCwIcon className={isRefreshInFlight ? 'animate-spin' : ''} />
         </Button>
-        {!isViewingOtherUser && (
-          <PlusButton
-            to="/household/$householdId/accounts/new"
-            params={{ householdId }}
-          />
-        )}
+        <PlusButton
+          to="/household/$householdId/accounts/new"
+          params={{ householdId }}
+        />
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex gap-3">

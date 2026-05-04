@@ -14,7 +14,6 @@ import { Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { useUser } from '@/hooks/use-user'
 import { parseISO } from 'date-fns'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 
@@ -52,9 +51,6 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const { household } = useHousehold()
   const { open: openLogTransaction } = useLogTransaction()
   const { viewUserIds } = useHouseholdViewScope()
-  const { user } = useUser()
-  const isViewingOtherUser =
-    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
@@ -94,18 +90,16 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
 
   return (
     <Fragment>
-      {!isViewingOtherUser && (
-        <div className="fixed right-4 bottom-4 lg:absolute">
-          <Button
-            nativeButton={true}
-            size="icon-lg"
-            className="size-10 [&_svg:not([class*='size-'])]:size-5"
-            onClick={() => openLogTransaction('expense')}
-          >
-            <PlusIcon />
-          </Button>
-        </div>
-      )}
+      <div className="fixed right-4 bottom-4 lg:absolute">
+        <Button
+          nativeButton={true}
+          size="icon-lg"
+          className="size-10 [&_svg:not([class*='size-'])]:size-5"
+          onClick={() => openLogTransaction('expense')}
+        >
+          <PlusIcon />
+        </Button>
+      </div>
       <FinancialSummaryCards fragmentRef={data.financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter

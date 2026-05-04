@@ -28,8 +28,6 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { useUser } from '@/hooks/use-user'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
@@ -97,11 +95,6 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   const { householdId } = useParams({
     from: '/_user/household/$householdId',
   })
-  const { viewUserIds } = useHouseholdViewScope()
-  const { user } = useUser()
-  const isViewingOtherUser =
-    viewUserIds !== null && !viewUserIds.includes(user.id)
-
   const search = useSearch({
     from: '/_user/household/$householdId/investments',
   })
@@ -193,12 +186,10 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         >
           <RefreshCwIcon className={isRefreshInFlight ? 'animate-spin' : ''} />
         </Button>
-        {!isViewingOtherUser && (
-          <PlusButton
-            to="/household/$householdId/investments/new"
-            params={{ householdId }}
-          />
-        )}
+        <PlusButton
+          to="/household/$householdId/investments/new"
+          params={{ householdId }}
+        />
       </div>
       <div className="flex flex-col gap-1">
         <span className="text-[0.6875rem] font-medium tracking-wider uppercase">

@@ -18,7 +18,6 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { useUser } from '@/hooks/use-user'
 import { cn } from '@/lib/utils'
 import { useHousehold } from '@/hooks/use-household'
 import { CATEGORY_TYPE_LIST } from '@/constant'
@@ -94,9 +93,6 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
     from: '/_user/household/$householdId',
   })
   const { viewUserIds } = useHouseholdViewScope()
-  const { user } = useUser()
-  const isViewingOtherUser =
-    viewUserIds !== null && !viewUserIds.includes(user.id)
 
   useRegisterConnection(
     data.transactionCategories.__id,
@@ -164,14 +160,12 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
 
   return (
     <Fragment>
-      {!isViewingOtherUser && (
-        <div className="fixed right-4 bottom-4 lg:absolute">
-          <PlusButton
-            to="/household/$householdId/categories/new"
-            params={{ householdId }}
-          />
-        </div>
-      )}
+      <div className="fixed right-4 bottom-4 lg:absolute">
+        <PlusButton
+          to="/household/$householdId/categories/new"
+          params={{ householdId }}
+        />
+      </div>
       <FinancialSummaryCards fragmentRef={financialReport} />
       <div className="py-2"></div>
       <DateRangeFilter
