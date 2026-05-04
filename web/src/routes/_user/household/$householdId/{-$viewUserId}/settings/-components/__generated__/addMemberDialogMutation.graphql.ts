@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5fbd8a2354e53415af6609c692122afb>>
+ * @generated SignedSource<<4349662c131c1dd136e609ce70a71668>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,7 +27,7 @@ export type addMemberDialogMutation$data = {
     readonly id: string;
     readonly role: UserHouseholdRole;
     readonly user: {
-      readonly email: string;
+      readonly email: string | null | undefined;
       readonly id: string;
       readonly name: string;
     };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<aaf6680785e0a89ca53f7b09c244dcca>>
+ * @generated SignedSource<<00646fb5185120633d10e61d185d42de>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,8 +20,9 @@ export type membersSettingsFragment$data = {
     readonly id: string;
     readonly role: UserHouseholdRole;
     readonly user: {
-      readonly email: string;
+      readonly email: string | null | undefined;
       readonly id: string;
+      readonly isSynthetic: boolean;
       readonly name: string;
     };
   }> | null | undefined;
@@ -104,6 +105,13 @@ return {
               "kind": "ScalarField",
               "name": "email",
               "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "isSynthetic",
+              "storageKey": null
             }
           ],
           "storageKey": null
@@ -122,6 +130,6 @@ return {
 };
 })();
 
-(node as any).hash = "c118008a64e7e9e8558a4b71d4a3bd1b";
+(node as any).hash = "ceab19b6a3867af0e1aec760dadc0e77";
 
 export default node;

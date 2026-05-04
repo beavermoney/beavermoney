@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c59965bca9e28d72551b545777c9837c>>
+ * @generated SignedSource<<8599de9693a7dbbb988f9ad0fd928d98>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type useUserFragment$data = {
-  readonly email: string;
+  readonly email: string | null | undefined;
   readonly id: string;
   readonly name: string;
   readonly " $fragmentType": "useUserFragment";

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c6334d4d15f8a1b603cfa34fbf25a39b>>
+ * @generated SignedSource<<5c1e2391b3f216b54f4c0300a295c2e6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -129,6 +129,13 @@ return {
                     "kind": "ScalarField",
                     "name": "email",
                     "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "isSynthetic",
+                    "storageKey": null
                   }
                 ],
                 "storageKey": null
@@ -155,12 +162,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "4d7b7de05ee648df37aadbd42c0dedaf",
+    "cacheID": "3cd97e5aa84bcd49752c2f5f3b8718a8",
     "id": null,
     "metadata": {},
     "name": "membersSettingsPageQuery",
     "operationKind": "query",
-    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment addMemberDialogFragment on Household {\n  id\n  userHouseholds {\n    id\n    user {\n      id\n    }\n  }\n  householdCurrencies {\n    id\n    code\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  id\n  userHouseholds {\n    id\n    role\n    householdCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n    }\n  }\n  ...addMemberDialogFragment\n}\n"
+    "text": "query membersSettingsPageQuery {\n  household {\n    ...membersSettingsFragment\n    id\n  }\n}\n\nfragment addMemberDialogFragment on Household {\n  id\n  userHouseholds {\n    id\n    user {\n      id\n    }\n  }\n  householdCurrencies {\n    id\n    code\n  }\n}\n\nfragment membersSettingsFragment on Household {\n  id\n  userHouseholds {\n    id\n    role\n    householdCurrency {\n      code\n      id\n    }\n    user {\n      id\n      name\n      email\n      isSynthetic\n    }\n  }\n  ...addMemberDialogFragment\n}\n"
   }
 };
 })();

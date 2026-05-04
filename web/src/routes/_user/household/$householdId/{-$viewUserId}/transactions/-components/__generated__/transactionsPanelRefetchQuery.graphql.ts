@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<55eb92629722e2fce4eb067b60ea434c>>
+ * @generated SignedSource<<beee661fdf0633c7c45b45efbcd705d3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -112,10 +112,12 @@ export type UserWhereInput = {
   emailHasPrefix?: string | null | undefined;
   emailHasSuffix?: string | null | undefined;
   emailIn?: ReadonlyArray<string> | null | undefined;
+  emailIsNil?: boolean | null | undefined;
   emailLT?: string | null | undefined;
   emailLTE?: string | null | undefined;
   emailNEQ?: string | null | undefined;
   emailNotIn?: ReadonlyArray<string> | null | undefined;
+  emailNotNil?: boolean | null | undefined;
   hasAccounts?: boolean | null | undefined;
   hasAccountsWith?: ReadonlyArray<AccountWhereInput> | null | undefined;
   hasHouseholds?: boolean | null | undefined;
@@ -140,6 +142,8 @@ export type UserWhereInput = {
   idLTE?: string | null | undefined;
   idNEQ?: string | null | undefined;
   idNotIn?: ReadonlyArray<string> | null | undefined;
+  isSynthetic?: boolean | null | undefined;
+  isSyntheticNEQ?: boolean | null | undefined;
   name?: string | null | undefined;
   nameContains?: string | null | undefined;
   nameContainsFold?: string | null | undefined;
