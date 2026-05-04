@@ -77,7 +77,7 @@ export function HouseholdSwitcher({ fragmentRef }: HouseholdSwitcherProps) {
                   className="gap-2 p-2"
                   onClick={() =>
                     navigate({
-                      to: '/household/$householdId/{-$viewUserId}',
+                      to: '/household/$householdId',
                       params: {
                         householdId: household.id,
                       },

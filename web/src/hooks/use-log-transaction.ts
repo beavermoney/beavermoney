@@ -28,8 +28,8 @@ export function useLogTransaction() {
       }))
       if (isMobile) {
         navigate({
-          from: '/household/$householdId/{-$viewUserId}',
-          to: '/household/$householdId/{-$viewUserId}/transactions/new',
+          from: '/household/$householdId',
+          to: '/household/$householdId/transactions/new',
         })
       }
     },
