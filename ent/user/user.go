@@ -23,6 +23,8 @@ const (
 	FieldEmail = "email"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldIsSynthetic holds the string denoting the is_synthetic field in the database.
+	FieldIsSynthetic = "is_synthetic"
 	// EdgeHouseholds holds the string denoting the households edge name in mutations.
 	EdgeHouseholds = "households"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -104,6 +106,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldEmail,
 	FieldName,
+	FieldIsSynthetic,
 }
 
 var (
@@ -136,10 +139,10 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
-	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
-	EmailValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultIsSynthetic holds the default value on creation for the "is_synthetic" field.
+	DefaultIsSynthetic bool
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -168,6 +171,11 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByIsSynthetic orders the results by the is_synthetic field.
+func ByIsSynthetic(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsSynthetic, opts...).ToFunc()
 }
 
 // ByHouseholdsCount orders the results by households count.

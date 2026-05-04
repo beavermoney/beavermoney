@@ -693,3 +693,29 @@ func (r *investmentResolver) computeAvgCostBasis(
 	}
 	return basis, shares, nil
 }
+
+const syntheticJointUserName = "Joint"
+
+// countHouseholdMembers returns the real and synthetic user counts for a
+// household. The ctx must allow reading User rows that are not co-members of
+// the caller (e.g. privacy-bypass), otherwise FilterMeOrCoMember hides them.
+func (r *Resolver) countHouseholdMembers(ctx context.Context, householdID int) (real int, synthetic int, err error) {
+	rows, err := r.entClient.UserHousehold.Query().
+		Where(userhousehold.HouseholdIDEQ(householdID)).
+		WithUser().
+		All(ctx)
+	if err != nil {
+		return 0, 0, err
+	}
+	for _, uh := range rows {
+		if uh.Edges.User == nil {
+			continue
+		}
+		if uh.Edges.User.IsSynthetic {
+			synthetic++
+		} else {
+			real++
+		}
+	}
+	return real, synthetic, nil
+}

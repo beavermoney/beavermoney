@@ -64,9 +64,31 @@ func (_c *UserCreate) SetEmail(v string) *UserCreate {
 	return _c
 }
 
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (_c *UserCreate) SetNillableEmail(v *string) *UserCreate {
+	if v != nil {
+		_c.SetEmail(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *UserCreate) SetName(v string) *UserCreate {
 	_c.mutation.SetName(v)
+	return _c
+}
+
+// SetIsSynthetic sets the "is_synthetic" field.
+func (_c *UserCreate) SetIsSynthetic(v bool) *UserCreate {
+	_c.mutation.SetIsSynthetic(v)
+	return _c
+}
+
+// SetNillableIsSynthetic sets the "is_synthetic" field if the given value is not nil.
+func (_c *UserCreate) SetNillableIsSynthetic(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetIsSynthetic(*v)
+	}
 	return _c
 }
 
@@ -241,6 +263,10 @@ func (_c *UserCreate) defaults() error {
 		v := user.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
+	if _, ok := _c.mutation.IsSynthetic(); !ok {
+		v := user.DefaultIsSynthetic
+		_c.mutation.SetIsSynthetic(v)
+	}
 	return nil
 }
 
@@ -252,14 +278,6 @@ func (_c *UserCreate) check() error {
 	if _, ok := _c.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "User.update_time"`)}
 	}
-	if _, ok := _c.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
-	}
-	if v, ok := _c.mutation.Email(); ok {
-		if err := user.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
 	}
@@ -267,6 +285,9 @@ func (_c *UserCreate) check() error {
 		if err := user.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.IsSynthetic(); !ok {
+		return &ValidationError{Name: "is_synthetic", err: errors.New(`ent: missing required field "User.is_synthetic"`)}
 	}
 	return nil
 }
@@ -305,11 +326,15 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
-		_node.Email = value
+		_node.Email = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := _c.mutation.IsSynthetic(); ok {
+		_spec.SetField(user.FieldIsSynthetic, field.TypeBool, value)
+		_node.IsSynthetic = value
 	}
 	if nodes := _c.mutation.HouseholdsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -519,6 +544,12 @@ func (u *UserUpsert) UpdateEmail() *UserUpsert {
 	return u
 }
 
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsert) ClearEmail() *UserUpsert {
+	u.SetNull(user.FieldEmail)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *UserUpsert) SetName(v string) *UserUpsert {
 	u.Set(user.FieldName, v)
@@ -544,6 +575,9 @@ func (u *UserUpsertOne) UpdateNewValues() *UserUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(user.FieldCreateTime)
+		}
+		if _, exists := u.create.mutation.IsSynthetic(); exists {
+			s.SetIgnore(user.FieldIsSynthetic)
 		}
 	}))
 	return u
@@ -601,6 +635,13 @@ func (u *UserUpsertOne) SetEmail(v string) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateEmail() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateEmail()
+	})
+}
+
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsertOne) ClearEmail() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearEmail()
 	})
 }
 
@@ -797,6 +838,9 @@ func (u *UserUpsertBulk) UpdateNewValues() *UserUpsertBulk {
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(user.FieldCreateTime)
 			}
+			if _, exists := b.mutation.IsSynthetic(); exists {
+				s.SetIgnore(user.FieldIsSynthetic)
+			}
 		}
 	}))
 	return u
@@ -854,6 +898,13 @@ func (u *UserUpsertBulk) SetEmail(v string) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateEmail() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateEmail()
+	})
+}
+
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsertBulk) ClearEmail() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearEmail()
 	})
 }
 

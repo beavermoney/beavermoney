@@ -6152,6 +6152,8 @@ type UserWhereInput struct {
 	EmailContains     *string  `json:"emailContains,omitempty"`
 	EmailHasPrefix    *string  `json:"emailHasPrefix,omitempty"`
 	EmailHasSuffix    *string  `json:"emailHasSuffix,omitempty"`
+	EmailIsNil        bool     `json:"emailIsNil,omitempty"`
+	EmailNotNil       bool     `json:"emailNotNil,omitempty"`
 	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
 	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
 
@@ -6169,6 +6171,10 @@ type UserWhereInput struct {
 	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "is_synthetic" field predicates.
+	IsSynthetic    *bool `json:"isSynthetic,omitempty"`
+	IsSyntheticNEQ *bool `json:"isSyntheticNEQ,omitempty"`
 
 	// "households" edge predicates.
 	HasHouseholds     *bool                  `json:"hasHouseholds,omitempty"`
@@ -6379,6 +6385,12 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	if i.EmailHasSuffix != nil {
 		predicates = append(predicates, user.EmailHasSuffix(*i.EmailHasSuffix))
 	}
+	if i.EmailIsNil {
+		predicates = append(predicates, user.EmailIsNil())
+	}
+	if i.EmailNotNil {
+		predicates = append(predicates, user.EmailNotNil())
+	}
 	if i.EmailEqualFold != nil {
 		predicates = append(predicates, user.EmailEqualFold(*i.EmailEqualFold))
 	}
@@ -6423,6 +6435,12 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, user.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.IsSynthetic != nil {
+		predicates = append(predicates, user.IsSyntheticEQ(*i.IsSynthetic))
+	}
+	if i.IsSyntheticNEQ != nil {
+		predicates = append(predicates, user.IsSyntheticNEQ(*i.IsSyntheticNEQ))
 	}
 
 	if i.HasHouseholds != nil {

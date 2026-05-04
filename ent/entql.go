@@ -313,10 +313,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "User",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			user.FieldCreateTime: {Type: field.TypeTime, Column: user.FieldCreateTime},
-			user.FieldUpdateTime: {Type: field.TypeTime, Column: user.FieldUpdateTime},
-			user.FieldEmail:      {Type: field.TypeString, Column: user.FieldEmail},
-			user.FieldName:       {Type: field.TypeString, Column: user.FieldName},
+			user.FieldCreateTime:  {Type: field.TypeTime, Column: user.FieldCreateTime},
+			user.FieldUpdateTime:  {Type: field.TypeTime, Column: user.FieldUpdateTime},
+			user.FieldEmail:       {Type: field.TypeString, Column: user.FieldEmail},
+			user.FieldName:        {Type: field.TypeString, Column: user.FieldName},
+			user.FieldIsSynthetic: {Type: field.TypeBool, Column: user.FieldIsSynthetic},
 		},
 	}
 	graph.Nodes[14] = &sqlgraph.Node{
@@ -3292,6 +3293,11 @@ func (f *UserFilter) WhereEmail(p entql.StringP) {
 // WhereName applies the entql string predicate on the name field.
 func (f *UserFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(user.FieldName))
+}
+
+// WhereIsSynthetic applies the entql bool predicate on the is_synthetic field.
+func (f *UserFilter) WhereIsSynthetic(p entql.BoolP) {
+	f.Where(p.Field(user.FieldIsSynthetic))
 }
 
 // WhereHasHouseholds applies a predicate to check if query has an edge households.

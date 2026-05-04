@@ -3107,8 +3107,9 @@ type User implements Node {
   id: ID!
   createTime: Time!
   updateTime: Time!
-  email: String!
+  email: String
   name: String!
+  isSynthetic: Boolean!
   households: [Household!]
   accounts: [Account!]
   investments: [Investment!]
@@ -3333,6 +3334,8 @@ input UserWhereInput {
   emailContains: String
   emailHasPrefix: String
   emailHasSuffix: String
+  emailIsNil: Boolean
+  emailNotNil: Boolean
   emailEqualFold: String
   emailContainsFold: String
   """
@@ -3351,6 +3354,11 @@ input UserWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
+  """
+  is_synthetic field predicates
+  """
+  isSynthetic: Boolean
+  isSyntheticNEQ: Boolean
   """
   households edge predicates
   """

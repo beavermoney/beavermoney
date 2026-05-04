@@ -578,6 +578,7 @@ type ComplexityRoot struct {
 		Households             func(childComplexity int) int
 		ID                     func(childComplexity int) int
 		Investments            func(childComplexity int) int
+		IsSynthetic            func(childComplexity int) int
 		Name                   func(childComplexity int) int
 		RecurringSubscriptions func(childComplexity int) int
 		SnapshotEntries        func(childComplexity int) int
@@ -3254,6 +3255,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.User.Investments(childComplexity), true
+	case "User.isSynthetic":
+		if e.complexity.User.IsSynthetic == nil {
+			break
+		}
+
+		return e.complexity.User.IsSynthetic(childComplexity), true
 	case "User.name":
 		if e.complexity.User.Name == nil {
 			break
@@ -5256,6 +5263,8 @@ func (ec *executionContext) fieldContext_Account_user(_ context.Context, field g
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -6562,6 +6571,8 @@ func (ec *executionContext) fieldContext_Household_users(_ context.Context, fiel
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -9469,6 +9480,8 @@ func (ec *executionContext) fieldContext_Investment_user(_ context.Context, fiel
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -12966,6 +12979,8 @@ func (ec *executionContext) fieldContext_Query_user(_ context.Context, field gra
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -13874,6 +13889,8 @@ func (ec *executionContext) fieldContext_RecurringSubscription_user(_ context.Co
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -15154,6 +15171,8 @@ func (ec *executionContext) fieldContext_SnapshotEntry_user(_ context.Context, f
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -16524,6 +16543,8 @@ func (ec *executionContext) fieldContext_Transaction_user(_ context.Context, fie
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -18295,9 +18316,9 @@ func (ec *executionContext) _User_email(ctx context.Context, field graphql.Colle
 			return obj.Email, nil
 		},
 		nil,
-		ec.marshalNString2string,
+		ec.marshalOString2ᚖstring,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -18338,6 +18359,35 @@ func (ec *executionContext) fieldContext_User_name(_ context.Context, field grap
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_isSynthetic(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_isSynthetic,
+		func(ctx context.Context) (any, error) {
+			return obj.IsSynthetic, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_isSynthetic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -19076,6 +19126,8 @@ func (ec *executionContext) fieldContext_UserHousehold_user(_ context.Context, f
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -19443,6 +19495,8 @@ func (ec *executionContext) fieldContext_UserKey_user(_ context.Context, field g
 				return ec.fieldContext_User_email(ctx, field)
 			case "name":
 				return ec.fieldContext_User_name(ctx, field)
+			case "isSynthetic":
+				return ec.fieldContext_User_isSynthetic(ctx, field)
 			case "households":
 				return ec.fieldContext_User_households(ctx, field)
 			case "accounts":
@@ -30557,7 +30611,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasHouseholds", "hasHouseholdsWith", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactions", "hasTransactionsWith", "hasUserKeys", "hasUserKeysWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailIsNil", "emailNotNil", "emailEqualFold", "emailContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "isSynthetic", "isSyntheticNEQ", "hasHouseholds", "hasHouseholdsWith", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactions", "hasTransactionsWith", "hasUserKeys", "hasUserKeysWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasUserHouseholds", "hasUserHouseholdsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -30830,6 +30884,20 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.EmailHasSuffix = data
+		case "emailIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EmailIsNil = data
+		case "emailNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.EmailNotNil = data
 		case "emailEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailEqualFold"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -30935,6 +31003,20 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.NameContainsFold = data
+		case "isSynthetic":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isSynthetic"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSynthetic = data
+		case "isSyntheticNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isSyntheticNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSyntheticNEQ = data
 		case "hasHouseholds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHouseholds"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -37551,11 +37633,13 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "email":
 			out.Values[i] = ec._User_email(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._User_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "name":
-			out.Values[i] = ec._User_name(ctx, field, obj)
+		case "isSynthetic":
+			out.Values[i] = ec._User_isSynthetic(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

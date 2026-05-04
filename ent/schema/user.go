@@ -18,10 +18,15 @@ type User struct {
 }
 
 // Fields of the User.
+//
+// Email is nullable because synthetic joint users (is_synthetic=true) have
+// no email and no UserKey. Real users must have a non-empty unique email;
+// that invariant is enforced at the resolver layer.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("email").NotEmpty().Unique(),
+		field.String("email").Optional().Nillable().Unique(),
 		field.String("name").NotEmpty(),
+		field.Bool("is_synthetic").Default(false).Immutable(),
 	}
 }
 
@@ -50,6 +55,7 @@ func (User) Policy() ent.Policy {
 			rules.FilterMeOrCoMember(),
 		},
 		Mutation: privacy.MutationPolicy{
+			rules.AllowPrivacyBypass(),
 			privacy.OnMutationOperation(
 				privacy.AlwaysAllowRule(),
 				ent.OpCreate,

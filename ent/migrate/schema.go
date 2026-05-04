@@ -560,8 +560,9 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "email", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "is_synthetic", Type: field.TypeBool, Default: false},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
