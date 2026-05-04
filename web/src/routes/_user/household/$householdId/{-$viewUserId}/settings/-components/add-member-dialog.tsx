@@ -88,6 +88,10 @@ function getErrorMessage(error: unknown): string {
     return "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
   if (msg.includes('MEMBER_ALREADY_EXISTS'))
     return 'That user is already a household member.'
+  if (msg.includes('HOUSEHOLD_MAX_REAL_USERS_REACHED'))
+    return 'A household can only have two members. Remove one before adding another.'
+  if (msg.includes('HOUSEHOLD_HAS_SYNTHETIC_USER'))
+    return 'This household is in an unexpected state. Refresh and try again.'
   if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
     return 'Member changes are disabled on the demo household.'
   if (msg.includes('NOT_HOUSEHOLD_ADMIN'))

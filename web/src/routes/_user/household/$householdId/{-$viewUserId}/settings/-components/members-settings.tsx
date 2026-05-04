@@ -53,6 +53,7 @@ const membersSettingsFragment = graphql`
         id
         name
         email
+        isSynthetic
       }
     }
     ...addMemberDialogFragment
@@ -85,6 +86,8 @@ function getRoleErrorMessage(error: unknown): string {
     return 'At least one admin must remain.'
   if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
     return 'Only household admins can change roles.'
+  if (msg.includes('SYNTHETIC_USER_ROLE_CHANGE_NOT_ALLOWED'))
+    return "The joint owner's role is fixed and can't be changed."
   if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
     return 'Member changes are disabled on the demo household.'
   return 'Something went wrong. Please try again.'
@@ -95,9 +98,11 @@ function getRemoveErrorMessage(error: unknown): string {
   if (msg.includes('LAST_ADMIN_PROTECTED'))
     return 'At least one admin must remain.'
   if (msg.includes('MEMBER_HAS_OWNED_RECORDS'))
-    return 'This member owns accounts, investments, or subscriptions. Remove or archive them first.'
+    return 'This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first.'
   if (msg.includes('SELF_REMOVAL_NOT_ALLOWED'))
     return "You can't remove yourself from the household."
+  if (msg.includes('SYNTHETIC_USER_REMOVAL_NOT_ALLOWED'))
+    return "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
   if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
     return 'Only household admins can remove members.'
   if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
@@ -118,6 +123,10 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
 
   const isAdmin = userHousehold.role === 'admin'
   const householdId = household.id
+  const realMemberCount = household.userHouseholds.filter(
+    (uh) => !uh.user.isSynthetic,
+  ).length
+  const canInviteMore = realMemberCount < 2
 
   const [commitUpdateRole, isUpdateRoleInFlight] =
     useMutation<membersSettingsUpdateRoleMutation>(updateRoleMutation)
@@ -186,7 +195,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
 
   return (
     <div className="flex max-w-md flex-col gap-3">
-      {isAdmin && (
+      {isAdmin && canInviteMore && (
         <div>
           <AddMemberDialog householdRef={household} />
         </div>
@@ -194,7 +203,8 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
       <ItemGroup>
         {household.userHouseholds.map((uh) => {
           const isCurrentUser = uh.user.id === user.id
-          const showActions = isAdmin && !isCurrentUser
+          const isSynthetic = uh.user.isSynthetic
+          const showActions = isAdmin && !isCurrentUser && !isSynthetic
           const nextRole: 'admin' | 'member' =
             uh.role === 'admin' ? 'member' : 'admin'
           return (
@@ -209,11 +219,20 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                   )}
                   <Badge variant={'outline'}>{uh.householdCurrency.code}</Badge>
                 </ItemTitle>
-                <ItemDescription>{uh.user.email}</ItemDescription>
+                {uh.user.email && (
+                  <ItemDescription>{uh.user.email}</ItemDescription>
+                )}
+                {isSynthetic && (
+                  <ItemDescription>Shared owner — auto-managed</ItemDescription>
+                )}
               </ItemContent>
-              <Badge variant={uh.role === 'admin' ? 'default' : 'secondary'}>
-                {uh.role}
-              </Badge>
+              {isSynthetic ? (
+                <Badge variant="outline">joint</Badge>
+              ) : (
+                <Badge variant={uh.role === 'admin' ? 'default' : 'secondary'}>
+                  {uh.role}
+                </Badge>
+              )}
               {showActions && (
                 <DropdownMenu>
                   <DropdownMenuTrigger

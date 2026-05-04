@@ -2042,6 +2042,15 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 		return nil, fmt.Errorf("MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD")
 	}
 
+	bypassCtx := contextkeys.NewPrivacyBypassContext(householdCtx)
+	targetUser, err := client.User.Get(bypassCtx, target.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if targetUser.IsSynthetic {
+		return nil, fmt.Errorf("SYNTHETIC_USER_ROLE_CHANGE_NOT_ALLOWED")
+	}
+
 	if target.Role == role {
 		return target, nil
 	}

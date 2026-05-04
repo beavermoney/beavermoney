@@ -814,6 +814,21 @@ func TestUpdateHouseholdUserRole_NonAdminDenied(t *testing.T) {
 	requireErrorContains(t, err, "NOT_HOUSEHOLD_ADMIN")
 }
 
+func TestUpdateHouseholdUserRole_SyntheticBlocked(t *testing.T) {
+	f := setupMemberFixture(t)
+	paired := pairHouseholdWithMember(t, f)
+	r := newMemberTestResolver(f.client)
+	ctx := memberCallCtx(f.client, f.adminUser.ID, f.household.ID)
+
+	_, err := callUpdateHouseholdUserRole(
+		ctx,
+		r,
+		paired.syntheticUH.ID,
+		userhousehold.RoleAdmin,
+	)
+	requireErrorContains(t, err, "SYNTHETIC_USER_ROLE_CHANGE_NOT_ALLOWED")
+}
+
 func TestUpdateHouseholdUserRole_NoOp(t *testing.T) {
 	f := setupMemberFixture(t)
 	paired := pairHouseholdWithMember(t, f)
