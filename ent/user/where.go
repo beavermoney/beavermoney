@@ -75,6 +75,11 @@ func Name(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldName, v))
 }
 
+// IsSynthetic applies equality check predicate on the "is_synthetic" field. It's identical to IsSyntheticEQ.
+func IsSynthetic(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsSynthetic, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreateTime, v))
@@ -210,6 +215,16 @@ func EmailHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldEmail, v))
 }
 
+// EmailIsNil applies the IsNil predicate on the "email" field.
+func EmailIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldEmail))
+}
+
+// EmailNotNil applies the NotNil predicate on the "email" field.
+func EmailNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldEmail))
+}
+
 // EmailEqualFold applies the EqualFold predicate on the "email" field.
 func EmailEqualFold(v string) predicate.User {
 	return predicate.User(sql.FieldEqualFold(FieldEmail, v))
@@ -283,6 +298,16 @@ func NameEqualFold(v string) predicate.User {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldName, v))
+}
+
+// IsSyntheticEQ applies the EQ predicate on the "is_synthetic" field.
+func IsSyntheticEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsSynthetic, v))
+}
+
+// IsSyntheticNEQ applies the NEQ predicate on the "is_synthetic" field.
+func IsSyntheticNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsSynthetic, v))
 }
 
 // HasHouseholds applies the HasEdge predicate on the "households" edge.

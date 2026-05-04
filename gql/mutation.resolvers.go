@@ -1716,7 +1716,9 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 	return &model.DeleteHouseholdCurrencyPayload{DeletedHouseholdCurrencyID: id}, nil
 }
 
-// AddHouseholdUser is the resolver for the addHouseholdUser field.
+// AddHouseholdUser invites a partner into a single-real-user household and
+// atomically creates the synthetic joint user, ending in the canonical
+// 2-real + 1-synthetic shape. Any other shape is rejected.
 func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.AddHouseholdUserInput) (*ent.UserHousehold, error) {
 	callerID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
@@ -1767,6 +1769,9 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 	userLookupCtx := contextkeys.NewPrivacyBypassContext(householdCtx)
 
 	normalizedEmail := strings.ToLower(strings.TrimSpace(input.Email))
+	if normalizedEmail == "" {
+		return nil, fmt.Errorf("MEMBER_EMAIL_NOT_REGISTERED")
+	}
 	targetUser, err := client.User.Query().
 		Where(user.EmailEQ(normalizedEmail)).
 		Only(userLookupCtx)
@@ -1775,6 +1780,9 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 			return nil, fmt.Errorf("MEMBER_EMAIL_NOT_REGISTERED")
 		}
 		return nil, err
+	}
+	if targetUser.IsSynthetic {
+		return nil, fmt.Errorf("MEMBER_EMAIL_NOT_REGISTERED")
 	}
 	span.SetAttributes(attribute.Int("targetUserID", targetUser.ID))
 
@@ -1791,12 +1799,23 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 		return nil, fmt.Errorf("MEMBER_ALREADY_EXISTS")
 	}
 
+	realMemberCount, syntheticMemberCount, err := r.countHouseholdMembers(userLookupCtx, householdID)
+	if err != nil {
+		return nil, err
+	}
+	if realMemberCount >= 2 {
+		return nil, fmt.Errorf("HOUSEHOLD_MAX_REAL_USERS_REACHED")
+	}
+	if syntheticMemberCount > 0 {
+		return nil, fmt.Errorf("HOUSEHOLD_HAS_SYNTHETIC_USER")
+	}
+
 	hc, err := client.HouseholdCurrency.Get(householdCtx, input.HouseholdCurrencyID)
 	if err != nil || hc.HouseholdID != householdID {
 		return nil, fmt.Errorf("invalid household currency")
 	}
 
-	uh, err := client.UserHousehold.Create().
+	partnerUH, err := client.UserHousehold.Create().
 		SetUserID(targetUser.ID).
 		SetHouseholdID(householdID).
 		SetRole(input.Role).
@@ -1807,10 +1826,33 @@ func (r *mutationResolver) AddHouseholdUser(ctx context.Context, input model.Add
 		return nil, fmt.Errorf("failed to add household user: %w", err)
 	}
 
-	return uh, nil
+	syntheticUser, err := client.User.Create().
+		SetName(syntheticJointUserName).
+		SetIsSynthetic(true).
+		Save(userLookupCtx)
+	if err != nil {
+		r.logger.Error("Failed to create synthetic joint user", "error", err)
+		return nil, fmt.Errorf("failed to create synthetic joint user: %w", err)
+	}
+	span.SetAttributes(attribute.Int("syntheticUserID", syntheticUser.ID))
+
+	if _, err := client.UserHousehold.Create().
+		SetUserID(syntheticUser.ID).
+		SetHouseholdID(householdID).
+		SetRole(userhousehold.RoleMember).
+		SetHouseholdCurrencyID(input.HouseholdCurrencyID).
+		Save(householdCtx); err != nil {
+		r.logger.Error("Failed to add synthetic joint UserHousehold", "error", err)
+		return nil, fmt.Errorf("failed to add synthetic joint UserHousehold: %w", err)
+	}
+
+	return partnerUH, nil
 }
 
-// RemoveHouseholdUser is the resolver for the removeHouseholdUser field.
+// RemoveHouseholdUser removes a real partner from a household. When a
+// synthetic joint user exists, it is cascaded out atomically (the synthetic
+// user has no meaning in a single-real-user household). Synthetic users
+// cannot be removed directly; their lifecycle follows the partner's.
 func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*model.RemoveHouseholdUserPayload, error) {
 	callerID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
@@ -1825,6 +1867,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 	defer span.End()
 
 	householdCtx := context.WithValue(ctx, contextkeys.HouseholdIDKey(), householdID)
+	bypassCtx := contextkeys.NewPrivacyBypassContext(householdCtx)
 	client := ent.FromContext(ctx)
 
 	target, err := client.UserHousehold.Get(householdCtx, id)
@@ -1853,6 +1896,14 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 		return nil, fmt.Errorf("SELF_REMOVAL_NOT_ALLOWED")
 	}
 
+	targetUser, err := client.User.Get(bypassCtx, target.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if targetUser.IsSynthetic {
+		return nil, fmt.Errorf("SYNTHETIC_USER_REMOVAL_NOT_ALLOWED")
+	}
+
 	household, err := client.Household.Get(householdCtx, target.HouseholdID)
 	if err != nil {
 		return nil, err
@@ -1876,10 +1927,26 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 		}
 	}
 
+	syntheticUH, err := client.UserHousehold.Query().
+		Where(
+			userhousehold.HouseholdIDEQ(target.HouseholdID),
+			userhousehold.HasUserWith(user.IsSyntheticEQ(true)),
+		).
+		WithUser().
+		First(bypassCtx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, err
+	}
+
+	ownerUserIDs := []int{target.UserID}
+	if syntheticUH != nil {
+		ownerUserIDs = append(ownerUserIDs, syntheticUH.UserID)
+	}
+
 	accountCount, err := client.Account.Query().
 		Where(
 			account.HouseholdIDEQ(target.HouseholdID),
-			account.UserIDEQ(target.UserID),
+			account.UserIDIn(ownerUserIDs...),
 			account.ArchivedEQ(false),
 		).
 		Count(householdCtx)
@@ -1890,7 +1957,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 	investmentCount, err := client.Investment.Query().
 		Where(
 			investment.HouseholdIDEQ(target.HouseholdID),
-			investment.UserIDEQ(target.UserID),
+			investment.UserIDIn(ownerUserIDs...),
 		).
 		Count(householdCtx)
 	if err != nil {
@@ -1900,7 +1967,7 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 	subscriptionCount, err := client.RecurringSubscription.Query().
 		Where(
 			recurringsubscription.HouseholdIDEQ(target.HouseholdID),
-			recurringsubscription.UserIDEQ(target.UserID),
+			recurringsubscription.UserIDIn(ownerUserIDs...),
 		).
 		Count(householdCtx)
 	if err != nil {
@@ -1915,6 +1982,17 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 	if err := client.UserHousehold.DeleteOneID(id).Exec(householdCtx); err != nil {
 		r.logger.Error("Failed to remove household user", "error", err)
 		return nil, fmt.Errorf("failed to remove household user: %w", err)
+	}
+
+	if syntheticUH != nil {
+		if err := client.UserHousehold.DeleteOneID(syntheticUH.ID).Exec(bypassCtx); err != nil {
+			r.logger.Error("Failed to remove synthetic UserHousehold", "error", err)
+			return nil, fmt.Errorf("failed to remove synthetic UserHousehold: %w", err)
+		}
+		if err := client.User.DeleteOneID(syntheticUH.UserID).Exec(bypassCtx); err != nil {
+			r.logger.Error("Failed to remove synthetic user", "error", err)
+			return nil, fmt.Errorf("failed to remove synthetic user: %w", err)
+		}
 	}
 
 	return &model.RemoveHouseholdUserPayload{RemovedUserHouseholdID: id}, nil

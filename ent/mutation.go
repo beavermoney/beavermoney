@@ -14177,6 +14177,7 @@ type UserMutation struct {
 	update_time                    *time.Time
 	email                          *string
 	name                           *string
+	is_synthetic                   *bool
 	clearedFields                  map[string]struct{}
 	households                     map[int]struct{}
 	removedhouseholds              map[int]struct{}
@@ -14394,7 +14395,7 @@ func (m *UserMutation) Email() (r string, exists bool) {
 // OldEmail returns the old "email" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldEmail(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldEmail(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
 	}
@@ -14408,9 +14409,22 @@ func (m *UserMutation) OldEmail(ctx context.Context) (v string, err error) {
 	return oldValue.Email, nil
 }
 
+// ClearEmail clears the value of the "email" field.
+func (m *UserMutation) ClearEmail() {
+	m.email = nil
+	m.clearedFields[user.FieldEmail] = struct{}{}
+}
+
+// EmailCleared returns if the "email" field was cleared in this mutation.
+func (m *UserMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[user.FieldEmail]
+	return ok
+}
+
 // ResetEmail resets all changes to the "email" field.
 func (m *UserMutation) ResetEmail() {
 	m.email = nil
+	delete(m.clearedFields, user.FieldEmail)
 }
 
 // SetName sets the "name" field.
@@ -14447,6 +14461,42 @@ func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *UserMutation) ResetName() {
 	m.name = nil
+}
+
+// SetIsSynthetic sets the "is_synthetic" field.
+func (m *UserMutation) SetIsSynthetic(b bool) {
+	m.is_synthetic = &b
+}
+
+// IsSynthetic returns the value of the "is_synthetic" field in the mutation.
+func (m *UserMutation) IsSynthetic() (r bool, exists bool) {
+	v := m.is_synthetic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSynthetic returns the old "is_synthetic" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsSynthetic(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSynthetic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSynthetic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSynthetic: %w", err)
+	}
+	return oldValue.IsSynthetic, nil
+}
+
+// ResetIsSynthetic resets all changes to the "is_synthetic" field.
+func (m *UserMutation) ResetIsSynthetic() {
+	m.is_synthetic = nil
 }
 
 // AddHouseholdIDs adds the "households" edge to the Household entity by ids.
@@ -14915,7 +14965,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, user.FieldCreateTime)
 	}
@@ -14927,6 +14977,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
+	}
+	if m.is_synthetic != nil {
+		fields = append(fields, user.FieldIsSynthetic)
 	}
 	return fields
 }
@@ -14944,6 +14997,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case user.FieldName:
 		return m.Name()
+	case user.FieldIsSynthetic:
+		return m.IsSynthetic()
 	}
 	return nil, false
 }
@@ -14961,6 +15016,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldEmail(ctx)
 	case user.FieldName:
 		return m.OldName(ctx)
+	case user.FieldIsSynthetic:
+		return m.OldIsSynthetic(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -14998,6 +15055,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
+	case user.FieldIsSynthetic:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSynthetic(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
@@ -15027,7 +15091,11 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldEmail) {
+		fields = append(fields, user.FieldEmail)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -15040,6 +15108,11 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldEmail:
+		m.ClearEmail()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -15058,6 +15131,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldName:
 		m.ResetName()
+		return nil
+	case user.FieldIsSynthetic:
+		m.ResetIsSynthetic()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

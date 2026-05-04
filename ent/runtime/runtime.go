@@ -535,14 +535,14 @@ func init() {
 	user.DefaultUpdateTime = userDescUpdateTime.Default.(func() time.Time)
 	// user.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	user.UpdateDefaultUpdateTime = userDescUpdateTime.UpdateDefault.(func() time.Time)
-	// userDescEmail is the schema descriptor for email field.
-	userDescEmail := userFields[0].Descriptor()
-	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
-	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
 	// userDescName is the schema descriptor for name field.
 	userDescName := userFields[1].Descriptor()
 	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	user.NameValidator = userDescName.Validators[0].(func(string) error)
+	// userDescIsSynthetic is the schema descriptor for is_synthetic field.
+	userDescIsSynthetic := userFields[2].Descriptor()
+	// user.DefaultIsSynthetic holds the default value on creation for the is_synthetic field.
+	user.DefaultIsSynthetic = userDescIsSynthetic.Default.(bool)
 	userhouseholdMixin := schema.UserHousehold{}.Mixin()
 	userhousehold.Policy = privacy.NewPolicies(schema.UserHousehold{})
 	userhousehold.Hooks[0] = func(next ent.Mutator) ent.Mutator {

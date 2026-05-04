@@ -3189,6 +3189,11 @@ func (_q *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, user.FieldName)
 				fieldSeen[user.FieldName] = struct{}{}
 			}
+		case "isSynthetic":
+			if _, ok := fieldSeen[user.FieldIsSynthetic]; !ok {
+				selectedFields = append(selectedFields, user.FieldIsSynthetic)
+				fieldSeen[user.FieldIsSynthetic] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:
