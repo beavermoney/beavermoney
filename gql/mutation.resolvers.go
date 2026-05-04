@@ -265,19 +265,26 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.
 		return nil, err
 	}
 
+	// Bypass privacy for the final two steps. Caller has already been verified
+	// as admin of this household (above), so the privacy filters would only
+	// block legitimate cleanup:
+	//   - UserHousehold mutations are blocked for demo households by
+	//     BlockDemoHouseholdMutation, which would silently delete 0 rows.
+	//   - Household.DeleteOneID is filtered by FilterAdminHousehold, which
+	//     joins through user_households — once memberships are gone, no row
+	//     would be considered admin-owned.
+	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+
 	// 9. UserHousehold memberships
 	_, err = client.UserHousehold.Delete().
 		Where(userhousehold.HouseholdIDEQ(id)).
-		Exec(ctx)
+		Exec(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to delete user household memberships", "error", err)
 		return nil, err
 	}
 
-	// Bypass required: all UserHousehold rows for this household were just deleted
-	// in step 9, so FilterMemberHousehold (which checks the join table) would deny
-	// the orphaned Household row.
-	bypassCtx := contextkeys.NewPrivacyBypassContext(ctx)
+	// 10. Household
 	err = client.Household.DeleteOneID(id).Exec(bypassCtx)
 	if err != nil {
 		r.logger.Error("Failed to delete household", "error", err)
