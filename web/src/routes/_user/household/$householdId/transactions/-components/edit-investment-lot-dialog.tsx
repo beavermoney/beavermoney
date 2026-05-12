@@ -203,8 +203,8 @@ export function EditInvestmentLotDialog({
                   <Combobox
                     items={investmentAccounts.map((account) => account.id)}
                     itemToStringLabel={(item) =>
-                      investmentAccounts.find((acc) => acc.id === item)
-                        ?.name || ''
+                      investmentAccounts.find((acc) => acc.id === item)?.name ||
+                      ''
                     }
                     value={field.state.value}
                     onValueChange={(value) => {
@@ -258,9 +258,7 @@ export function EditInvestmentLotDialog({
                       </ComboboxList>
                     </ComboboxContent>
                   </Combobox>
-                  {isInvalid && (
-                    <FieldError errors={field.state.meta.errors} />
-                  )}
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               )
             }}
@@ -316,9 +314,7 @@ export function EditInvestmentLotDialog({
                       </ComboboxList>
                     </ComboboxContent>
                   </Combobox>
-                  {isInvalid && (
-                    <FieldError errors={field.state.meta.errors} />
-                  )}
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               )
             }}
@@ -348,9 +344,7 @@ export function EditInvestmentLotDialog({
                     placeholder="10"
                     autoComplete="off"
                   />
-                  {isInvalid && (
-                    <FieldError errors={field.state.meta.errors} />
-                  )}
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               )
             }}
@@ -385,9 +379,7 @@ export function EditInvestmentLotDialog({
                     onBlur={field.handleBlur}
                     aria-invalid={isInvalid}
                   />
-                  {isInvalid && (
-                    <FieldError errors={field.state.meta.errors} />
-                  )}
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               )
             }}
