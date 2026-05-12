@@ -74,7 +74,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { cn } from '@/lib/utils'
 import { EditTransactionDialog } from './transactions/-components/edit-transaction-dialog'
-import { EditTransactionDialogQuery } from './transactions/-components/edit-transaction-dialog-query'
+import { EditTransactionDialogQuery } from './transactions/-components/edit-transaction-dialog'
 import { Suspense } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import Hotkeys from './-components/hotkeys'
@@ -362,21 +362,24 @@ function RouteComponent() {
 
                 {search.edit_transaction_id && (
                   <Dialog
-                    open={true}
-                    onOpenChange={() =>
-                      navigate({
-                        to: '.',
-                        resetScroll: false,
-                        search: (prev) => ({
-                          ...prev,
-                          edit_transaction_id: null,
-                        }),
-                      })
-                    }
+                    open={search.edit_transaction_id !== null}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        navigate({
+                          to: '.',
+                          resetScroll: false,
+                          search: (prev) => ({
+                            ...prev,
+                            edit_transaction_id: null,
+                          }),
+                        })
+                      }
+                    }}
                   >
                     <DialogContent>
                       <Suspense fallback={<PendingComponent />}>
                         <EditTransactionDialog
+                          key={search.edit_transaction_id}
                           transactionId={search.edit_transaction_id}
                         />
                       </Suspense>

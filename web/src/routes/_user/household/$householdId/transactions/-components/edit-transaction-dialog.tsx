@@ -1,4 +1,9 @@
-import { graphql, useLazyLoadQuery, useMutation } from 'react-relay'
+import {
+  graphql,
+  useFragment,
+  useLazyLoadQuery,
+  useMutation,
+} from 'react-relay'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -9,6 +14,9 @@ import { AlertTriangleIcon } from 'lucide-react'
 
 import type { editTransactionDialogUpdateMutation } from './__generated__/editTransactionDialogUpdateMutation.graphql'
 import type { editTransactionDialogDeleteMutation } from './__generated__/editTransactionDialogDeleteMutation.graphql'
+import type { editTransactionDialogTransactionFragment$key } from './__generated__/editTransactionDialogTransactionFragment.graphql'
+import type { editTransactionDialogCategoriesFragment$key } from './__generated__/editTransactionDialogCategoriesFragment.graphql'
+import type { editTransactionDialogHouseholdFragment$key } from './__generated__/editTransactionDialogHouseholdFragment.graphql'
 
 import {
   Dialog,
@@ -62,7 +70,6 @@ import { EditTransactionEntryDialog } from './edit-transaction-entry-dialog'
 import { EditInvestmentLotDialog } from './edit-investment-lot-dialog'
 import { useHousehold } from '@/hooks/use-household'
 import { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
-import { EditTransactionDialogQuery } from './edit-transaction-dialog-query'
 import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { Separator } from '@/components/ui/separator'
@@ -99,6 +106,95 @@ const editTransactionDialogDeleteMutation = graphql`
     }
   }
 `
+
+const editTransactionDialogTransactionFragment = graphql`
+  fragment editTransactionDialogTransactionFragment on Transaction {
+    id
+    description
+    datetime
+    categoryID
+    excludeFromReports
+    category {
+      id
+      name
+      type
+    }
+    investmentLots {
+      ...investmentLotCardFragment
+      id
+      amount
+      price
+      investment {
+        id
+        account {
+          id
+        }
+      }
+    }
+    transactionEntries {
+      ...transactionEntryCardFragment
+      id
+      amount
+      account {
+        id
+      }
+    }
+  }
+`
+
+const editTransactionDialogCategoriesFragment = graphql`
+  fragment editTransactionDialogCategoriesFragment on Query {
+    transactionCategories {
+      edges {
+        node {
+          id
+          name
+          type
+        }
+      }
+    }
+  }
+`
+
+const editTransactionDialogHouseholdFragment = graphql`
+  fragment editTransactionDialogHouseholdFragment on Household {
+    accounts(where: { archived: false }) {
+      edges {
+        node {
+          id
+          name
+          type
+          icon
+          value
+          householdCurrency {
+            code
+          }
+          investments {
+            id
+            name
+            symbol
+          }
+        }
+      }
+    }
+  }
+`
+
+export const EditTransactionDialogQuery = graphql`
+  query editTransactionDialogQuery($transactionId: ID!) {
+    node(id: $transactionId) {
+      __typename
+      ... on Transaction {
+        ...editTransactionDialogTransactionFragment
+      }
+    }
+    ...editTransactionDialogCategoriesFragment
+    household {
+      ...editTransactionDialogHouseholdFragment
+    }
+  }
+`
+
 const formSchema = z.object({
   description: z
     .string()
@@ -115,16 +211,27 @@ type EditTransactionDialogProps = {
 export function EditTransactionDialog({
   transactionId,
 }: EditTransactionDialogProps) {
-  const data = useLazyLoadQuery<editTransactionDialogQuery>(
+  const queryRef = useLazyLoadQuery<editTransactionDialogQuery>(
     EditTransactionDialogQuery,
     {
       transactionId,
     },
   )
 
-  const categoriesData = data
-  const transaction = data.node
-  invariant(transaction?.__typename === 'Transaction')
+  invariant(queryRef.node?.__typename === 'Transaction')
+  const transaction = useFragment<editTransactionDialogTransactionFragment$key>(
+    editTransactionDialogTransactionFragment,
+    queryRef.node,
+  )
+  const categoriesData =
+    useFragment<editTransactionDialogCategoriesFragment$key>(
+      editTransactionDialogCategoriesFragment,
+      queryRef,
+    )
+  const householdData = useFragment<editTransactionDialogHouseholdFragment$key>(
+    editTransactionDialogHouseholdFragment,
+    queryRef.household,
+  )
 
   const navigate = useNavigate()
 
@@ -146,10 +253,21 @@ export function EditTransactionDialog({
   }
   const [editingEntry, setEditingEntry] = useState<EditingEntry | null>(null)
   const [editingLot, setEditingLot] = useState<EditingLot | null>(null)
+  const [entryDialogOpen, setEntryDialogOpen] = useState(false)
+  const [lotDialogOpen, setLotDialogOpen] = useState(false)
+
+  const openEntryEdit = (entry: EditingEntry) => {
+    setEditingEntry(entry)
+    setEntryDialogOpen(true)
+  }
+  const openLotEdit = (lot: EditingLot) => {
+    setEditingLot(lot)
+    setLotDialogOpen(true)
+  }
 
   const accountsList = useMemo(
     () =>
-      data.household.accounts.edges?.flatMap((edge) =>
+      householdData.accounts.edges?.flatMap((edge) =>
         edge?.node
           ? [
               {
@@ -170,7 +288,7 @@ export function EditTransactionDialog({
             ]
           : [],
       ) ?? [],
-    [data.household.accounts.edges],
+    [householdData.accounts.edges],
   )
 
   const [commitUpdate, isUpdateInFlight] =
@@ -336,7 +454,7 @@ export function EditTransactionDialog({
                 isFirst={index === 0}
                 isLast={index === sortedItems.length - 1}
                 onClick={() =>
-                  setEditingLot({
+                  openLotEdit({
                     id: item.lot.id,
                     amount: item.lot.amount,
                     price: item.lot.price,
@@ -354,7 +472,7 @@ export function EditTransactionDialog({
                 isFirst={index === 0}
                 isLast={index === sortedItems.length - 1}
                 onClick={() =>
-                  setEditingEntry({
+                  openEntryEdit({
                     id: item.entry.id,
                     amount: item.entry.amount,
                     accountId: item.entry.account.id,
@@ -578,40 +696,42 @@ export function EditTransactionDialog({
       </DialogFooter>
 
       <Dialog
-        open={editingEntry !== null}
+        open={entryDialogOpen}
         onOpenChange={(open) => {
-          if (!open) setEditingEntry(null)
+          if (!open) setEntryDialogOpen(false)
         }}
       >
         <DialogContent>
           {editingEntry && (
             <EditTransactionEntryDialog
+              key={editingEntry.id}
               entryId={editingEntry.id}
               currentAmount={editingEntry.amount}
               currentAccountId={editingEntry.accountId}
               accounts={accountsList}
-              onClose={() => setEditingEntry(null)}
+              onClose={() => setEntryDialogOpen(false)}
             />
           )}
         </DialogContent>
       </Dialog>
 
       <Dialog
-        open={editingLot !== null}
+        open={lotDialogOpen}
         onOpenChange={(open) => {
-          if (!open) setEditingLot(null)
+          if (!open) setLotDialogOpen(false)
         }}
       >
         <DialogContent>
           {editingLot && (
             <EditInvestmentLotDialog
+              key={editingLot.id}
               lotId={editingLot.id}
               currentAmount={editingLot.amount}
               currentPrice={editingLot.price}
               currentInvestmentId={editingLot.investmentId}
               currentAccountId={editingLot.accountId}
               accounts={accountsList}
-              onClose={() => setEditingLot(null)}
+              onClose={() => setLotDialogOpen(false)}
             />
           )}
         </DialogContent>
