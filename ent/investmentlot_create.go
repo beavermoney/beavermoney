@@ -389,6 +389,18 @@ func (u *InvestmentLotUpsert) AddPrice(v decimal.Decimal) *InvestmentLotUpsert {
 	return u
 }
 
+// SetInvestmentID sets the "investment_id" field.
+func (u *InvestmentLotUpsert) SetInvestmentID(v int) *InvestmentLotUpsert {
+	u.Set(investmentlot.FieldInvestmentID, v)
+	return u
+}
+
+// UpdateInvestmentID sets the "investment_id" field to the value that was provided on create.
+func (u *InvestmentLotUpsert) UpdateInvestmentID() *InvestmentLotUpsert {
+	u.SetExcluded(investmentlot.FieldInvestmentID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -405,9 +417,6 @@ func (u *InvestmentLotUpsertOne) UpdateNewValues() *InvestmentLotUpsertOne {
 		}
 		if _, exists := u.create.mutation.HouseholdID(); exists {
 			s.SetIgnore(investmentlot.FieldHouseholdID)
-		}
-		if _, exists := u.create.mutation.InvestmentID(); exists {
-			s.SetIgnore(investmentlot.FieldInvestmentID)
 		}
 		if _, exists := u.create.mutation.TransactionID(); exists {
 			s.SetIgnore(investmentlot.FieldTransactionID)
@@ -496,6 +505,20 @@ func (u *InvestmentLotUpsertOne) AddPrice(v decimal.Decimal) *InvestmentLotUpser
 func (u *InvestmentLotUpsertOne) UpdatePrice() *InvestmentLotUpsertOne {
 	return u.Update(func(s *InvestmentLotUpsert) {
 		s.UpdatePrice()
+	})
+}
+
+// SetInvestmentID sets the "investment_id" field.
+func (u *InvestmentLotUpsertOne) SetInvestmentID(v int) *InvestmentLotUpsertOne {
+	return u.Update(func(s *InvestmentLotUpsert) {
+		s.SetInvestmentID(v)
+	})
+}
+
+// UpdateInvestmentID sets the "investment_id" field to the value that was provided on create.
+func (u *InvestmentLotUpsertOne) UpdateInvestmentID() *InvestmentLotUpsertOne {
+	return u.Update(func(s *InvestmentLotUpsert) {
+		s.UpdateInvestmentID()
 	})
 }
 
@@ -681,9 +704,6 @@ func (u *InvestmentLotUpsertBulk) UpdateNewValues() *InvestmentLotUpsertBulk {
 			if _, exists := b.mutation.HouseholdID(); exists {
 				s.SetIgnore(investmentlot.FieldHouseholdID)
 			}
-			if _, exists := b.mutation.InvestmentID(); exists {
-				s.SetIgnore(investmentlot.FieldInvestmentID)
-			}
 			if _, exists := b.mutation.TransactionID(); exists {
 				s.SetIgnore(investmentlot.FieldTransactionID)
 			}
@@ -772,6 +792,20 @@ func (u *InvestmentLotUpsertBulk) AddPrice(v decimal.Decimal) *InvestmentLotUpse
 func (u *InvestmentLotUpsertBulk) UpdatePrice() *InvestmentLotUpsertBulk {
 	return u.Update(func(s *InvestmentLotUpsert) {
 		s.UpdatePrice()
+	})
+}
+
+// SetInvestmentID sets the "investment_id" field.
+func (u *InvestmentLotUpsertBulk) SetInvestmentID(v int) *InvestmentLotUpsertBulk {
+	return u.Update(func(s *InvestmentLotUpsert) {
+		s.SetInvestmentID(v)
+	})
+}
+
+// UpdateInvestmentID sets the "investment_id" field to the value that was provided on create.
+func (u *InvestmentLotUpsertBulk) UpdateInvestmentID() *InvestmentLotUpsertBulk {
+	return u.Update(func(s *InvestmentLotUpsert) {
+		s.UpdateInvestmentID()
 	})
 }
 

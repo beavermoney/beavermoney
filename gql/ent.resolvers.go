@@ -11,7 +11,6 @@ import (
 
 	"beavermoney.app/ent"
 	"entgo.io/contrib/entgql"
-	"github.com/shopspring/decimal"
 )
 
 // Balance is the resolver for the balance field.
@@ -166,772 +165,710 @@ func (r *transactionEntryResolver) Amount(ctx context.Context, obj *ent.Transact
 
 // Balance is the resolver for the balance field.
 func (r *accountWhereInputResolver) Balance(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	if data == nil || *data == "" {
-		return nil
-	}
-
-	dec, err := decimal.NewFromString(*data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for balance: %v", err)
-	}
-
-	obj.Balance = &dec
-	return nil
+	return setDecimalPtr(&obj.Balance, data, "balance")
 }
 
 // BalanceNeq is the resolver for the balanceNEQ field.
 func (r *accountWhereInputResolver) BalanceNeq(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: BalanceNeq - balanceNEQ"))
+	return setDecimalPtr(&obj.BalanceNEQ, data, "balanceNEQ")
 }
 
 // BalanceIn is the resolver for the balanceIn field.
 func (r *accountWhereInputResolver) BalanceIn(ctx context.Context, obj *ent.AccountWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: BalanceIn - balanceIn"))
+	return setDecimalSlice(&obj.BalanceIn, data, "balanceIn")
 }
 
 // BalanceNotIn is the resolver for the balanceNotIn field.
 func (r *accountWhereInputResolver) BalanceNotIn(ctx context.Context, obj *ent.AccountWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: BalanceNotIn - balanceNotIn"))
+	return setDecimalSlice(&obj.BalanceNotIn, data, "balanceNotIn")
 }
 
 // BalanceGt is the resolver for the balanceGT field.
 func (r *accountWhereInputResolver) BalanceGt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: BalanceGt - balanceGT"))
+	return setDecimalPtr(&obj.BalanceGT, data, "balanceGT")
 }
 
 // BalanceGte is the resolver for the balanceGTE field.
 func (r *accountWhereInputResolver) BalanceGte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: BalanceGte - balanceGTE"))
+	return setDecimalPtr(&obj.BalanceGTE, data, "balanceGTE")
 }
 
 // BalanceLt is the resolver for the balanceLT field.
 func (r *accountWhereInputResolver) BalanceLt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: BalanceLt - balanceLT"))
+	return setDecimalPtr(&obj.BalanceLT, data, "balanceLT")
 }
 
 // BalanceLte is the resolver for the balanceLTE field.
 func (r *accountWhereInputResolver) BalanceLte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: BalanceLte - balanceLTE"))
+	return setDecimalPtr(&obj.BalanceLTE, data, "balanceLTE")
 }
 
 // Value is the resolver for the value field.
 func (r *accountWhereInputResolver) Value(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Value - value"))
+	return setDecimalPtr(&obj.Value, data, "value")
 }
 
 // ValueNeq is the resolver for the valueNEQ field.
 func (r *accountWhereInputResolver) ValueNeq(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueNeq - valueNEQ"))
+	return setDecimalPtr(&obj.ValueNEQ, data, "valueNEQ")
 }
 
 // ValueIn is the resolver for the valueIn field.
 func (r *accountWhereInputResolver) ValueIn(ctx context.Context, obj *ent.AccountWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: ValueIn - valueIn"))
+	return setDecimalSlice(&obj.ValueIn, data, "valueIn")
 }
 
 // ValueNotIn is the resolver for the valueNotIn field.
 func (r *accountWhereInputResolver) ValueNotIn(ctx context.Context, obj *ent.AccountWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: ValueNotIn - valueNotIn"))
+	return setDecimalSlice(&obj.ValueNotIn, data, "valueNotIn")
 }
 
 // ValueGt is the resolver for the valueGT field.
 func (r *accountWhereInputResolver) ValueGt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueGt - valueGT"))
+	return setDecimalPtr(&obj.ValueGT, data, "valueGT")
 }
 
 // ValueGte is the resolver for the valueGTE field.
 func (r *accountWhereInputResolver) ValueGte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueGte - valueGTE"))
+	return setDecimalPtr(&obj.ValueGTE, data, "valueGTE")
 }
 
 // ValueLt is the resolver for the valueLT field.
 func (r *accountWhereInputResolver) ValueLt(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueLt - valueLT"))
+	return setDecimalPtr(&obj.ValueLT, data, "valueLT")
 }
 
 // ValueLte is the resolver for the valueLTE field.
 func (r *accountWhereInputResolver) ValueLte(ctx context.Context, obj *ent.AccountWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueLte - valueLTE"))
+	return setDecimalPtr(&obj.ValueLTE, data, "valueLTE")
 }
 
 // Balance is the resolver for the balance field.
 func (r *createAccountInputResolver) Balance(ctx context.Context, obj *ent.CreateAccountInput, data *string) error {
-	if data == nil || *data == "" {
-		return nil
-	}
-
-	dec, err := decimal.NewFromString(*data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for balance: %v", err)
-	}
-
-	obj.Balance = &dec
-	return nil
+	return setDecimalPtr(&obj.Balance, data, "balance")
 }
 
 // Amount is the resolver for the amount field.
 func (r *createInvestmentInputResolver) Amount(ctx context.Context, obj *ent.CreateInvestmentInput, data *string) error {
-	if data == nil || *data == "" {
-		return nil
-	}
-
-	dec, err := decimal.NewFromString(*data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for amount: %v", err)
-	}
-
-	obj.Amount = &dec
-	return nil
+	return setDecimalPtr(&obj.Amount, data, "amount")
 }
 
 // Amount is the resolver for the amount field.
 func (r *createInvestmentLotInputResolver) Amount(ctx context.Context, obj *ent.CreateInvestmentLotInput, data string) error {
-	dec, err := decimal.NewFromString(data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for amount: %v", err)
+	if err := setDecimalValue(&obj.Amount, data, "amount"); err != nil {
+		return err
 	}
-
-	if dec.IsZero() {
+	if obj.Amount.IsZero() {
 		return fmt.Errorf("investment lot amount cannot be zero")
 	}
-
-	obj.Amount = dec
 	return nil
 }
 
 // Price is the resolver for the price field.
 func (r *createInvestmentLotInputResolver) Price(ctx context.Context, obj *ent.CreateInvestmentLotInput, data string) error {
-	dec, err := decimal.NewFromString(data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for price: %v", err)
-	}
-
-	obj.Price = dec
-	return nil
+	return setDecimalValue(&obj.Price, data, "price")
 }
 
 // Cost is the resolver for the cost field.
 func (r *createRecurringSubscriptionInputResolver) Cost(ctx context.Context, obj *ent.CreateRecurringSubscriptionInput, data *string) error {
-	if data == nil || *data == "" {
-		return nil
-	}
-
-	dec, err := decimal.NewFromString(*data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for cost: %v", err)
-	}
-
-	obj.Cost = &dec
-	return nil
+	return setDecimalPtr(&obj.Cost, data, "cost")
 }
 
 // Amount is the resolver for the amount field.
 func (r *createTransactionEntryInputResolver) Amount(ctx context.Context, obj *ent.CreateTransactionEntryInput, data string) error {
-	dec, err := decimal.NewFromString(data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for amount: %v", err)
+	if err := setDecimalValue(&obj.Amount, data, "amount"); err != nil {
+		return err
 	}
-
-	if dec.IsZero() {
+	if obj.Amount.IsZero() {
 		return fmt.Errorf("transaction entry amount cannot be zero")
 	}
-
-	obj.Amount = dec
 	return nil
 }
 
 // Rate is the resolver for the rate field.
 func (r *householdRateWhereInputResolver) Rate(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Rate - rate"))
+	return setDecimalPtr(&obj.Rate, data, "rate")
 }
 
 // RateNeq is the resolver for the rateNEQ field.
 func (r *householdRateWhereInputResolver) RateNeq(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateNeq - rateNEQ"))
+	return setDecimalPtr(&obj.RateNEQ, data, "rateNEQ")
 }
 
 // RateIn is the resolver for the rateIn field.
 func (r *householdRateWhereInputResolver) RateIn(ctx context.Context, obj *ent.HouseholdRateWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: RateIn - rateIn"))
+	return setDecimalSlice(&obj.RateIn, data, "rateIn")
 }
 
 // RateNotIn is the resolver for the rateNotIn field.
 func (r *householdRateWhereInputResolver) RateNotIn(ctx context.Context, obj *ent.HouseholdRateWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: RateNotIn - rateNotIn"))
+	return setDecimalSlice(&obj.RateNotIn, data, "rateNotIn")
 }
 
 // RateGt is the resolver for the rateGT field.
 func (r *householdRateWhereInputResolver) RateGt(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateGt - rateGT"))
+	return setDecimalPtr(&obj.RateGT, data, "rateGT")
 }
 
 // RateGte is the resolver for the rateGTE field.
 func (r *householdRateWhereInputResolver) RateGte(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateGte - rateGTE"))
+	return setDecimalPtr(&obj.RateGTE, data, "rateGTE")
 }
 
 // RateLt is the resolver for the rateLT field.
 func (r *householdRateWhereInputResolver) RateLt(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateLt - rateLT"))
+	return setDecimalPtr(&obj.RateLT, data, "rateLT")
 }
 
 // RateLte is the resolver for the rateLTE field.
 func (r *householdRateWhereInputResolver) RateLte(ctx context.Context, obj *ent.HouseholdRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateLte - rateLTE"))
+	return setDecimalPtr(&obj.RateLTE, data, "rateLTE")
 }
 
 // Amount is the resolver for the amount field.
 func (r *investmentLotWhereInputResolver) Amount(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Amount - amount"))
+	return setDecimalPtr(&obj.Amount, data, "amount")
 }
 
 // AmountNeq is the resolver for the amountNEQ field.
 func (r *investmentLotWhereInputResolver) AmountNeq(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountNeq - amountNEQ"))
+	return setDecimalPtr(&obj.AmountNEQ, data, "amountNEQ")
 }
 
 // AmountIn is the resolver for the amountIn field.
 func (r *investmentLotWhereInputResolver) AmountIn(ctx context.Context, obj *ent.InvestmentLotWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: AmountIn - amountIn"))
+	return setDecimalSlice(&obj.AmountIn, data, "amountIn")
 }
 
 // AmountNotIn is the resolver for the amountNotIn field.
 func (r *investmentLotWhereInputResolver) AmountNotIn(ctx context.Context, obj *ent.InvestmentLotWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: AmountNotIn - amountNotIn"))
+	return setDecimalSlice(&obj.AmountNotIn, data, "amountNotIn")
 }
 
 // AmountGt is the resolver for the amountGT field.
 func (r *investmentLotWhereInputResolver) AmountGt(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountGt - amountGT"))
+	return setDecimalPtr(&obj.AmountGT, data, "amountGT")
 }
 
 // AmountGte is the resolver for the amountGTE field.
 func (r *investmentLotWhereInputResolver) AmountGte(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountGte - amountGTE"))
+	return setDecimalPtr(&obj.AmountGTE, data, "amountGTE")
 }
 
 // AmountLt is the resolver for the amountLT field.
 func (r *investmentLotWhereInputResolver) AmountLt(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountLt - amountLT"))
+	return setDecimalPtr(&obj.AmountLT, data, "amountLT")
 }
 
 // AmountLte is the resolver for the amountLTE field.
 func (r *investmentLotWhereInputResolver) AmountLte(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountLte - amountLTE"))
+	return setDecimalPtr(&obj.AmountLTE, data, "amountLTE")
 }
 
 // Price is the resolver for the price field.
 func (r *investmentLotWhereInputResolver) Price(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Price - price"))
+	return setDecimalPtr(&obj.Price, data, "price")
 }
 
 // PriceNeq is the resolver for the priceNEQ field.
 func (r *investmentLotWhereInputResolver) PriceNeq(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PriceNeq - priceNEQ"))
+	return setDecimalPtr(&obj.PriceNEQ, data, "priceNEQ")
 }
 
 // PriceIn is the resolver for the priceIn field.
 func (r *investmentLotWhereInputResolver) PriceIn(ctx context.Context, obj *ent.InvestmentLotWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: PriceIn - priceIn"))
+	return setDecimalSlice(&obj.PriceIn, data, "priceIn")
 }
 
 // PriceNotIn is the resolver for the priceNotIn field.
 func (r *investmentLotWhereInputResolver) PriceNotIn(ctx context.Context, obj *ent.InvestmentLotWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: PriceNotIn - priceNotIn"))
+	return setDecimalSlice(&obj.PriceNotIn, data, "priceNotIn")
 }
 
 // PriceGt is the resolver for the priceGT field.
 func (r *investmentLotWhereInputResolver) PriceGt(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PriceGt - priceGT"))
+	return setDecimalPtr(&obj.PriceGT, data, "priceGT")
 }
 
 // PriceGte is the resolver for the priceGTE field.
 func (r *investmentLotWhereInputResolver) PriceGte(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PriceGte - priceGTE"))
+	return setDecimalPtr(&obj.PriceGTE, data, "priceGTE")
 }
 
 // PriceLt is the resolver for the priceLT field.
 func (r *investmentLotWhereInputResolver) PriceLt(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PriceLt - priceLT"))
+	return setDecimalPtr(&obj.PriceLT, data, "priceLT")
 }
 
 // PriceLte is the resolver for the priceLTE field.
 func (r *investmentLotWhereInputResolver) PriceLte(ctx context.Context, obj *ent.InvestmentLotWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PriceLte - priceLTE"))
+	return setDecimalPtr(&obj.PriceLTE, data, "priceLTE")
 }
 
 // Amount is the resolver for the amount field.
 func (r *investmentWhereInputResolver) Amount(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Amount - amount"))
+	return setDecimalPtr(&obj.Amount, data, "amount")
 }
 
 // AmountNeq is the resolver for the amountNEQ field.
 func (r *investmentWhereInputResolver) AmountNeq(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountNeq - amountNEQ"))
+	return setDecimalPtr(&obj.AmountNEQ, data, "amountNEQ")
 }
 
 // AmountIn is the resolver for the amountIn field.
 func (r *investmentWhereInputResolver) AmountIn(ctx context.Context, obj *ent.InvestmentWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: AmountIn - amountIn"))
+	return setDecimalSlice(&obj.AmountIn, data, "amountIn")
 }
 
 // AmountNotIn is the resolver for the amountNotIn field.
 func (r *investmentWhereInputResolver) AmountNotIn(ctx context.Context, obj *ent.InvestmentWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: AmountNotIn - amountNotIn"))
+	return setDecimalSlice(&obj.AmountNotIn, data, "amountNotIn")
 }
 
 // AmountGt is the resolver for the amountGT field.
 func (r *investmentWhereInputResolver) AmountGt(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountGt - amountGT"))
+	return setDecimalPtr(&obj.AmountGT, data, "amountGT")
 }
 
 // AmountGte is the resolver for the amountGTE field.
 func (r *investmentWhereInputResolver) AmountGte(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountGte - amountGTE"))
+	return setDecimalPtr(&obj.AmountGTE, data, "amountGTE")
 }
 
 // AmountLt is the resolver for the amountLT field.
 func (r *investmentWhereInputResolver) AmountLt(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountLt - amountLT"))
+	return setDecimalPtr(&obj.AmountLT, data, "amountLT")
 }
 
 // AmountLte is the resolver for the amountLTE field.
 func (r *investmentWhereInputResolver) AmountLte(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountLte - amountLTE"))
+	return setDecimalPtr(&obj.AmountLTE, data, "amountLTE")
 }
 
 // Quote is the resolver for the quote field.
 func (r *investmentWhereInputResolver) Quote(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Quote - quote"))
+	return setDecimalPtr(&obj.Quote, data, "quote")
 }
 
 // QuoteNeq is the resolver for the quoteNEQ field.
 func (r *investmentWhereInputResolver) QuoteNeq(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: QuoteNeq - quoteNEQ"))
+	return setDecimalPtr(&obj.QuoteNEQ, data, "quoteNEQ")
 }
 
 // QuoteIn is the resolver for the quoteIn field.
 func (r *investmentWhereInputResolver) QuoteIn(ctx context.Context, obj *ent.InvestmentWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: QuoteIn - quoteIn"))
+	return setDecimalSlice(&obj.QuoteIn, data, "quoteIn")
 }
 
 // QuoteNotIn is the resolver for the quoteNotIn field.
 func (r *investmentWhereInputResolver) QuoteNotIn(ctx context.Context, obj *ent.InvestmentWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: QuoteNotIn - quoteNotIn"))
+	return setDecimalSlice(&obj.QuoteNotIn, data, "quoteNotIn")
 }
 
 // QuoteGt is the resolver for the quoteGT field.
 func (r *investmentWhereInputResolver) QuoteGt(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: QuoteGt - quoteGT"))
+	return setDecimalPtr(&obj.QuoteGT, data, "quoteGT")
 }
 
 // QuoteGte is the resolver for the quoteGTE field.
 func (r *investmentWhereInputResolver) QuoteGte(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: QuoteGte - quoteGTE"))
+	return setDecimalPtr(&obj.QuoteGTE, data, "quoteGTE")
 }
 
 // QuoteLt is the resolver for the quoteLT field.
 func (r *investmentWhereInputResolver) QuoteLt(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: QuoteLt - quoteLT"))
+	return setDecimalPtr(&obj.QuoteLT, data, "quoteLT")
 }
 
 // QuoteLte is the resolver for the quoteLTE field.
 func (r *investmentWhereInputResolver) QuoteLte(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: QuoteLte - quoteLTE"))
+	return setDecimalPtr(&obj.QuoteLTE, data, "quoteLTE")
 }
 
 // Value is the resolver for the value field.
 func (r *investmentWhereInputResolver) Value(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Value - value"))
+	return setDecimalPtr(&obj.Value, data, "value")
 }
 
 // ValueNeq is the resolver for the valueNEQ field.
 func (r *investmentWhereInputResolver) ValueNeq(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueNeq - valueNEQ"))
+	return setDecimalPtr(&obj.ValueNEQ, data, "valueNEQ")
 }
 
 // ValueIn is the resolver for the valueIn field.
 func (r *investmentWhereInputResolver) ValueIn(ctx context.Context, obj *ent.InvestmentWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: ValueIn - valueIn"))
+	return setDecimalSlice(&obj.ValueIn, data, "valueIn")
 }
 
 // ValueNotIn is the resolver for the valueNotIn field.
 func (r *investmentWhereInputResolver) ValueNotIn(ctx context.Context, obj *ent.InvestmentWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: ValueNotIn - valueNotIn"))
+	return setDecimalSlice(&obj.ValueNotIn, data, "valueNotIn")
 }
 
 // ValueGt is the resolver for the valueGT field.
 func (r *investmentWhereInputResolver) ValueGt(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueGt - valueGT"))
+	return setDecimalPtr(&obj.ValueGT, data, "valueGT")
 }
 
 // ValueGte is the resolver for the valueGTE field.
 func (r *investmentWhereInputResolver) ValueGte(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueGte - valueGTE"))
+	return setDecimalPtr(&obj.ValueGTE, data, "valueGTE")
 }
 
 // ValueLt is the resolver for the valueLT field.
 func (r *investmentWhereInputResolver) ValueLt(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueLt - valueLT"))
+	return setDecimalPtr(&obj.ValueLT, data, "valueLT")
 }
 
 // ValueLte is the resolver for the valueLTE field.
 func (r *investmentWhereInputResolver) ValueLte(ctx context.Context, obj *ent.InvestmentWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ValueLte - valueLTE"))
+	return setDecimalPtr(&obj.ValueLTE, data, "valueLTE")
 }
 
 // Cost is the resolver for the cost field.
 func (r *recurringSubscriptionWhereInputResolver) Cost(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Cost - cost"))
+	return setDecimalPtr(&obj.Cost, data, "cost")
 }
 
 // CostNeq is the resolver for the costNEQ field.
 func (r *recurringSubscriptionWhereInputResolver) CostNeq(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: CostNeq - costNEQ"))
+	return setDecimalPtr(&obj.CostNEQ, data, "costNEQ")
 }
 
 // CostIn is the resolver for the costIn field.
 func (r *recurringSubscriptionWhereInputResolver) CostIn(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: CostIn - costIn"))
+	return setDecimalSlice(&obj.CostIn, data, "costIn")
 }
 
 // CostNotIn is the resolver for the costNotIn field.
 func (r *recurringSubscriptionWhereInputResolver) CostNotIn(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: CostNotIn - costNotIn"))
+	return setDecimalSlice(&obj.CostNotIn, data, "costNotIn")
 }
 
 // CostGt is the resolver for the costGT field.
 func (r *recurringSubscriptionWhereInputResolver) CostGt(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: CostGt - costGT"))
+	return setDecimalPtr(&obj.CostGT, data, "costGT")
 }
 
 // CostGte is the resolver for the costGTE field.
 func (r *recurringSubscriptionWhereInputResolver) CostGte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: CostGte - costGTE"))
+	return setDecimalPtr(&obj.CostGTE, data, "costGTE")
 }
 
 // CostLt is the resolver for the costLT field.
 func (r *recurringSubscriptionWhereInputResolver) CostLt(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: CostLt - costLT"))
+	return setDecimalPtr(&obj.CostLT, data, "costLT")
 }
 
 // CostLte is the resolver for the costLTE field.
 func (r *recurringSubscriptionWhereInputResolver) CostLte(ctx context.Context, obj *ent.RecurringSubscriptionWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: CostLte - costLTE"))
+	return setDecimalPtr(&obj.CostLTE, data, "costLTE")
 }
 
 // Liquidity is the resolver for the liquidity field.
 func (r *snapshotEntryWhereInputResolver) Liquidity(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Liquidity - liquidity"))
+	return setDecimalPtr(&obj.Liquidity, data, "liquidity")
 }
 
 // LiquidityNeq is the resolver for the liquidityNEQ field.
 func (r *snapshotEntryWhereInputResolver) LiquidityNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiquidityNeq - liquidityNEQ"))
+	return setDecimalPtr(&obj.LiquidityNEQ, data, "liquidityNEQ")
 }
 
 // LiquidityIn is the resolver for the liquidityIn field.
 func (r *snapshotEntryWhereInputResolver) LiquidityIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: LiquidityIn - liquidityIn"))
+	return setDecimalSlice(&obj.LiquidityIn, data, "liquidityIn")
 }
 
 // LiquidityNotIn is the resolver for the liquidityNotIn field.
 func (r *snapshotEntryWhereInputResolver) LiquidityNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: LiquidityNotIn - liquidityNotIn"))
+	return setDecimalSlice(&obj.LiquidityNotIn, data, "liquidityNotIn")
 }
 
 // LiquidityGt is the resolver for the liquidityGT field.
 func (r *snapshotEntryWhereInputResolver) LiquidityGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiquidityGt - liquidityGT"))
+	return setDecimalPtr(&obj.LiquidityGT, data, "liquidityGT")
 }
 
 // LiquidityGte is the resolver for the liquidityGTE field.
 func (r *snapshotEntryWhereInputResolver) LiquidityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiquidityGte - liquidityGTE"))
+	return setDecimalPtr(&obj.LiquidityGTE, data, "liquidityGTE")
 }
 
 // LiquidityLt is the resolver for the liquidityLT field.
 func (r *snapshotEntryWhereInputResolver) LiquidityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiquidityLt - liquidityLT"))
+	return setDecimalPtr(&obj.LiquidityLT, data, "liquidityLT")
 }
 
 // LiquidityLte is the resolver for the liquidityLTE field.
 func (r *snapshotEntryWhereInputResolver) LiquidityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiquidityLte - liquidityLTE"))
+	return setDecimalPtr(&obj.LiquidityLTE, data, "liquidityLTE")
 }
 
 // Investment is the resolver for the investment field.
 func (r *snapshotEntryWhereInputResolver) Investment(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Investment - investment"))
+	return setDecimalPtr(&obj.Investment, data, "investment")
 }
 
 // InvestmentNeq is the resolver for the investmentNEQ field.
 func (r *snapshotEntryWhereInputResolver) InvestmentNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: InvestmentNeq - investmentNEQ"))
+	return setDecimalPtr(&obj.InvestmentNEQ, data, "investmentNEQ")
 }
 
 // InvestmentIn is the resolver for the investmentIn field.
 func (r *snapshotEntryWhereInputResolver) InvestmentIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: InvestmentIn - investmentIn"))
+	return setDecimalSlice(&obj.InvestmentIn, data, "investmentIn")
 }
 
 // InvestmentNotIn is the resolver for the investmentNotIn field.
 func (r *snapshotEntryWhereInputResolver) InvestmentNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: InvestmentNotIn - investmentNotIn"))
+	return setDecimalSlice(&obj.InvestmentNotIn, data, "investmentNotIn")
 }
 
 // InvestmentGt is the resolver for the investmentGT field.
 func (r *snapshotEntryWhereInputResolver) InvestmentGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: InvestmentGt - investmentGT"))
+	return setDecimalPtr(&obj.InvestmentGT, data, "investmentGT")
 }
 
 // InvestmentGte is the resolver for the investmentGTE field.
 func (r *snapshotEntryWhereInputResolver) InvestmentGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: InvestmentGte - investmentGTE"))
+	return setDecimalPtr(&obj.InvestmentGTE, data, "investmentGTE")
 }
 
 // InvestmentLt is the resolver for the investmentLT field.
 func (r *snapshotEntryWhereInputResolver) InvestmentLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: InvestmentLt - investmentLT"))
+	return setDecimalPtr(&obj.InvestmentLT, data, "investmentLT")
 }
 
 // InvestmentLte is the resolver for the investmentLTE field.
 func (r *snapshotEntryWhereInputResolver) InvestmentLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: InvestmentLte - investmentLTE"))
+	return setDecimalPtr(&obj.InvestmentLTE, data, "investmentLTE")
 }
 
 // Property is the resolver for the property field.
 func (r *snapshotEntryWhereInputResolver) Property(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Property - property"))
+	return setDecimalPtr(&obj.Property, data, "property")
 }
 
 // PropertyNeq is the resolver for the propertyNEQ field.
 func (r *snapshotEntryWhereInputResolver) PropertyNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PropertyNeq - propertyNEQ"))
+	return setDecimalPtr(&obj.PropertyNEQ, data, "propertyNEQ")
 }
 
 // PropertyIn is the resolver for the propertyIn field.
 func (r *snapshotEntryWhereInputResolver) PropertyIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: PropertyIn - propertyIn"))
+	return setDecimalSlice(&obj.PropertyIn, data, "propertyIn")
 }
 
 // PropertyNotIn is the resolver for the propertyNotIn field.
 func (r *snapshotEntryWhereInputResolver) PropertyNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: PropertyNotIn - propertyNotIn"))
+	return setDecimalSlice(&obj.PropertyNotIn, data, "propertyNotIn")
 }
 
 // PropertyGt is the resolver for the propertyGT field.
 func (r *snapshotEntryWhereInputResolver) PropertyGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PropertyGt - propertyGT"))
+	return setDecimalPtr(&obj.PropertyGT, data, "propertyGT")
 }
 
 // PropertyGte is the resolver for the propertyGTE field.
 func (r *snapshotEntryWhereInputResolver) PropertyGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PropertyGte - propertyGTE"))
+	return setDecimalPtr(&obj.PropertyGTE, data, "propertyGTE")
 }
 
 // PropertyLt is the resolver for the propertyLT field.
 func (r *snapshotEntryWhereInputResolver) PropertyLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PropertyLt - propertyLT"))
+	return setDecimalPtr(&obj.PropertyLT, data, "propertyLT")
 }
 
 // PropertyLte is the resolver for the propertyLTE field.
 func (r *snapshotEntryWhereInputResolver) PropertyLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: PropertyLte - propertyLTE"))
+	return setDecimalPtr(&obj.PropertyLTE, data, "propertyLTE")
 }
 
 // Receivable is the resolver for the receivable field.
 func (r *snapshotEntryWhereInputResolver) Receivable(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Receivable - receivable"))
+	return setDecimalPtr(&obj.Receivable, data, "receivable")
 }
 
 // ReceivableNeq is the resolver for the receivableNEQ field.
 func (r *snapshotEntryWhereInputResolver) ReceivableNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ReceivableNeq - receivableNEQ"))
+	return setDecimalPtr(&obj.ReceivableNEQ, data, "receivableNEQ")
 }
 
 // ReceivableIn is the resolver for the receivableIn field.
 func (r *snapshotEntryWhereInputResolver) ReceivableIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: ReceivableIn - receivableIn"))
+	return setDecimalSlice(&obj.ReceivableIn, data, "receivableIn")
 }
 
 // ReceivableNotIn is the resolver for the receivableNotIn field.
 func (r *snapshotEntryWhereInputResolver) ReceivableNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: ReceivableNotIn - receivableNotIn"))
+	return setDecimalSlice(&obj.ReceivableNotIn, data, "receivableNotIn")
 }
 
 // ReceivableGt is the resolver for the receivableGT field.
 func (r *snapshotEntryWhereInputResolver) ReceivableGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ReceivableGt - receivableGT"))
+	return setDecimalPtr(&obj.ReceivableGT, data, "receivableGT")
 }
 
 // ReceivableGte is the resolver for the receivableGTE field.
 func (r *snapshotEntryWhereInputResolver) ReceivableGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ReceivableGte - receivableGTE"))
+	return setDecimalPtr(&obj.ReceivableGTE, data, "receivableGTE")
 }
 
 // ReceivableLt is the resolver for the receivableLT field.
 func (r *snapshotEntryWhereInputResolver) ReceivableLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ReceivableLt - receivableLT"))
+	return setDecimalPtr(&obj.ReceivableLT, data, "receivableLT")
 }
 
 // ReceivableLte is the resolver for the receivableLTE field.
 func (r *snapshotEntryWhereInputResolver) ReceivableLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: ReceivableLte - receivableLTE"))
+	return setDecimalPtr(&obj.ReceivableLTE, data, "receivableLTE")
 }
 
 // Liability is the resolver for the liability field.
 func (r *snapshotEntryWhereInputResolver) Liability(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Liability - liability"))
+	return setDecimalPtr(&obj.Liability, data, "liability")
 }
 
 // LiabilityNeq is the resolver for the liabilityNEQ field.
 func (r *snapshotEntryWhereInputResolver) LiabilityNeq(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiabilityNeq - liabilityNEQ"))
+	return setDecimalPtr(&obj.LiabilityNEQ, data, "liabilityNEQ")
 }
 
 // LiabilityIn is the resolver for the liabilityIn field.
 func (r *snapshotEntryWhereInputResolver) LiabilityIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: LiabilityIn - liabilityIn"))
+	return setDecimalSlice(&obj.LiabilityIn, data, "liabilityIn")
 }
 
 // LiabilityNotIn is the resolver for the liabilityNotIn field.
 func (r *snapshotEntryWhereInputResolver) LiabilityNotIn(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: LiabilityNotIn - liabilityNotIn"))
+	return setDecimalSlice(&obj.LiabilityNotIn, data, "liabilityNotIn")
 }
 
 // LiabilityGt is the resolver for the liabilityGT field.
 func (r *snapshotEntryWhereInputResolver) LiabilityGt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiabilityGt - liabilityGT"))
+	return setDecimalPtr(&obj.LiabilityGT, data, "liabilityGT")
 }
 
 // LiabilityGte is the resolver for the liabilityGTE field.
 func (r *snapshotEntryWhereInputResolver) LiabilityGte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiabilityGte - liabilityGTE"))
+	return setDecimalPtr(&obj.LiabilityGTE, data, "liabilityGTE")
 }
 
 // LiabilityLt is the resolver for the liabilityLT field.
 func (r *snapshotEntryWhereInputResolver) LiabilityLt(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiabilityLt - liabilityLT"))
+	return setDecimalPtr(&obj.LiabilityLT, data, "liabilityLT")
 }
 
 // LiabilityLte is the resolver for the liabilityLTE field.
 func (r *snapshotEntryWhereInputResolver) LiabilityLte(ctx context.Context, obj *ent.SnapshotEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: LiabilityLte - liabilityLTE"))
+	return setDecimalPtr(&obj.LiabilityLTE, data, "liabilityLTE")
 }
 
 // Rate is the resolver for the rate field.
 func (r *snapshotRateWhereInputResolver) Rate(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Rate - rate"))
+	return setDecimalPtr(&obj.Rate, data, "rate")
 }
 
 // RateNeq is the resolver for the rateNEQ field.
 func (r *snapshotRateWhereInputResolver) RateNeq(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateNeq - rateNEQ"))
+	return setDecimalPtr(&obj.RateNEQ, data, "rateNEQ")
 }
 
 // RateIn is the resolver for the rateIn field.
 func (r *snapshotRateWhereInputResolver) RateIn(ctx context.Context, obj *ent.SnapshotRateWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: RateIn - rateIn"))
+	return setDecimalSlice(&obj.RateIn, data, "rateIn")
 }
 
 // RateNotIn is the resolver for the rateNotIn field.
 func (r *snapshotRateWhereInputResolver) RateNotIn(ctx context.Context, obj *ent.SnapshotRateWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: RateNotIn - rateNotIn"))
+	return setDecimalSlice(&obj.RateNotIn, data, "rateNotIn")
 }
 
 // RateGt is the resolver for the rateGT field.
 func (r *snapshotRateWhereInputResolver) RateGt(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateGt - rateGT"))
+	return setDecimalPtr(&obj.RateGT, data, "rateGT")
 }
 
 // RateGte is the resolver for the rateGTE field.
 func (r *snapshotRateWhereInputResolver) RateGte(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateGte - rateGTE"))
+	return setDecimalPtr(&obj.RateGTE, data, "rateGTE")
 }
 
 // RateLt is the resolver for the rateLT field.
 func (r *snapshotRateWhereInputResolver) RateLt(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateLt - rateLT"))
+	return setDecimalPtr(&obj.RateLT, data, "rateLT")
 }
 
 // RateLte is the resolver for the rateLTE field.
 func (r *snapshotRateWhereInputResolver) RateLte(ctx context.Context, obj *ent.SnapshotRateWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: RateLte - rateLTE"))
+	return setDecimalPtr(&obj.RateLTE, data, "rateLTE")
 }
 
 // Amount is the resolver for the amount field.
 func (r *transactionEntryWhereInputResolver) Amount(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Amount - amount"))
+	return setDecimalPtr(&obj.Amount, data, "amount")
 }
 
 // AmountNeq is the resolver for the amountNEQ field.
 func (r *transactionEntryWhereInputResolver) AmountNeq(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountNeq - amountNEQ"))
+	return setDecimalPtr(&obj.AmountNEQ, data, "amountNEQ")
 }
 
 // AmountIn is the resolver for the amountIn field.
 func (r *transactionEntryWhereInputResolver) AmountIn(ctx context.Context, obj *ent.TransactionEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: AmountIn - amountIn"))
+	return setDecimalSlice(&obj.AmountIn, data, "amountIn")
 }
 
 // AmountNotIn is the resolver for the amountNotIn field.
 func (r *transactionEntryWhereInputResolver) AmountNotIn(ctx context.Context, obj *ent.TransactionEntryWhereInput, data []string) error {
-	panic(fmt.Errorf("not implemented: AmountNotIn - amountNotIn"))
+	return setDecimalSlice(&obj.AmountNotIn, data, "amountNotIn")
 }
 
 // AmountGt is the resolver for the amountGT field.
 func (r *transactionEntryWhereInputResolver) AmountGt(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountGt - amountGT"))
+	return setDecimalPtr(&obj.AmountGT, data, "amountGT")
 }
 
 // AmountGte is the resolver for the amountGTE field.
 func (r *transactionEntryWhereInputResolver) AmountGte(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountGte - amountGTE"))
+	return setDecimalPtr(&obj.AmountGTE, data, "amountGTE")
 }
 
 // AmountLt is the resolver for the amountLT field.
 func (r *transactionEntryWhereInputResolver) AmountLt(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountLt - amountLT"))
+	return setDecimalPtr(&obj.AmountLT, data, "amountLT")
 }
 
 // AmountLte is the resolver for the amountLTE field.
 func (r *transactionEntryWhereInputResolver) AmountLte(ctx context.Context, obj *ent.TransactionEntryWhereInput, data *string) error {
-	panic(fmt.Errorf("not implemented: AmountLte - amountLTE"))
+	return setDecimalPtr(&obj.AmountLTE, data, "amountLTE")
 }
 
 // Amount is the resolver for the amount field.
 func (r *updateInvestmentLotInputResolver) Amount(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Amount - amount"))
+	return setDecimalPtr(&obj.Amount, data, "amount")
 }
 
 // Price is the resolver for the price field.
 func (r *updateInvestmentLotInputResolver) Price(ctx context.Context, obj *ent.UpdateInvestmentLotInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Price - price"))
+	return setDecimalPtr(&obj.Price, data, "price")
 }
 
 // Cost is the resolver for the cost field.
 func (r *updateRecurringSubscriptionInputResolver) Cost(ctx context.Context, obj *ent.UpdateRecurringSubscriptionInput, data *string) error {
-	if data == nil || *data == "" {
-		return nil
+	if err := setDecimalPtr(&obj.Cost, data, "cost"); err != nil {
+		return err
 	}
-
-	dec, err := decimal.NewFromString(*data)
-	if err != nil {
-		return fmt.Errorf("invalid decimal string for cost: %v", err)
-	}
-
-	if dec.IsZero() {
+	if obj.Cost != nil && obj.Cost.IsZero() {
 		return fmt.Errorf("recurring subscription cost cannot be zero")
 	}
-
-	obj.Cost = &dec
 	return nil
 }
 
 // Amount is the resolver for the amount field.
 func (r *updateTransactionEntryInputResolver) Amount(ctx context.Context, obj *ent.UpdateTransactionEntryInput, data *string) error {
-	panic(fmt.Errorf("not implemented: Amount - amount"))
+	return setDecimalPtr(&obj.Amount, data, "amount")
 }
 
 // Account returns AccountResolver implementation.

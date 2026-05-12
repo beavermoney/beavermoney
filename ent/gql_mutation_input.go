@@ -404,8 +404,9 @@ func (c *InvestmentLotCreate) SetInput(i CreateInvestmentLotInput) *InvestmentLo
 
 // UpdateInvestmentLotInput represents a mutation input for updating investmentlots.
 type UpdateInvestmentLotInput struct {
-	Amount *decimal.Decimal
-	Price  *decimal.Decimal
+	Amount       *decimal.Decimal
+	Price        *decimal.Decimal
+	InvestmentID *int
 }
 
 // Mutate applies the UpdateInvestmentLotInput on the InvestmentLotMutation builder.
@@ -415,6 +416,9 @@ func (i *UpdateInvestmentLotInput) Mutate(m *InvestmentLotMutation) {
 	}
 	if v := i.Price; v != nil {
 		m.SetPrice(*v)
+	}
+	if v := i.InvestmentID; v != nil {
+		m.SetInvestmentID(*v)
 	}
 }
 

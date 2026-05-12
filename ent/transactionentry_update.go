@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"beavermoney.app/ent/account"
+	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
@@ -72,9 +73,28 @@ func (_u *TransactionEntryUpdate) SetNillableAccountID(v *int) *TransactionEntry
 	return _u
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_u *TransactionEntryUpdate) SetHouseholdCurrencyID(v int) *TransactionEntryUpdate {
+	_u.mutation.SetHouseholdCurrencyID(v)
+	return _u
+}
+
+// SetNillableHouseholdCurrencyID sets the "household_currency_id" field if the given value is not nil.
+func (_u *TransactionEntryUpdate) SetNillableHouseholdCurrencyID(v *int) *TransactionEntryUpdate {
+	if v != nil {
+		_u.SetHouseholdCurrencyID(*v)
+	}
+	return _u
+}
+
 // SetAccount sets the "account" edge to the Account entity.
 func (_u *TransactionEntryUpdate) SetAccount(v *Account) *TransactionEntryUpdate {
 	return _u.SetAccountID(v.ID)
+}
+
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *TransactionEntryUpdate) SetHouseholdCurrency(v *HouseholdCurrency) *TransactionEntryUpdate {
+	return _u.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the TransactionEntryMutation object of the builder.
@@ -85,6 +105,12 @@ func (_u *TransactionEntryUpdate) Mutation() *TransactionEntryMutation {
 // ClearAccount clears the "account" edge to the Account entity.
 func (_u *TransactionEntryUpdate) ClearAccount() *TransactionEntryUpdate {
 	_u.mutation.ClearAccount()
+	return _u
+}
+
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *TransactionEntryUpdate) ClearHouseholdCurrency() *TransactionEntryUpdate {
+	_u.mutation.ClearHouseholdCurrency()
 	return _u
 }
 
@@ -135,6 +161,11 @@ func (_u *TransactionEntryUpdate) check() error {
 	if v, ok := _u.mutation.AccountID(); ok {
 		if err := transactionentry.AccountIDValidator(v); err != nil {
 			return &ValidationError{Name: "account_id", err: fmt.Errorf(`ent: validator failed for field "TransactionEntry.account_id": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.HouseholdCurrencyID(); ok {
+		if err := transactionentry.HouseholdCurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "TransactionEntry.household_currency_id": %w`, err)}
 		}
 	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
@@ -208,6 +239,35 @@ func (_u *TransactionEntryUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.HouseholdCurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transactionentry.HouseholdCurrencyTable,
+			Columns: []string{transactionentry.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transactionentry.HouseholdCurrencyTable,
+			Columns: []string{transactionentry.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -271,9 +331,28 @@ func (_u *TransactionEntryUpdateOne) SetNillableAccountID(v *int) *TransactionEn
 	return _u
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (_u *TransactionEntryUpdateOne) SetHouseholdCurrencyID(v int) *TransactionEntryUpdateOne {
+	_u.mutation.SetHouseholdCurrencyID(v)
+	return _u
+}
+
+// SetNillableHouseholdCurrencyID sets the "household_currency_id" field if the given value is not nil.
+func (_u *TransactionEntryUpdateOne) SetNillableHouseholdCurrencyID(v *int) *TransactionEntryUpdateOne {
+	if v != nil {
+		_u.SetHouseholdCurrencyID(*v)
+	}
+	return _u
+}
+
 // SetAccount sets the "account" edge to the Account entity.
 func (_u *TransactionEntryUpdateOne) SetAccount(v *Account) *TransactionEntryUpdateOne {
 	return _u.SetAccountID(v.ID)
+}
+
+// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *TransactionEntryUpdateOne) SetHouseholdCurrency(v *HouseholdCurrency) *TransactionEntryUpdateOne {
+	return _u.SetHouseholdCurrencyID(v.ID)
 }
 
 // Mutation returns the TransactionEntryMutation object of the builder.
@@ -284,6 +363,12 @@ func (_u *TransactionEntryUpdateOne) Mutation() *TransactionEntryMutation {
 // ClearAccount clears the "account" edge to the Account entity.
 func (_u *TransactionEntryUpdateOne) ClearAccount() *TransactionEntryUpdateOne {
 	_u.mutation.ClearAccount()
+	return _u
+}
+
+// ClearHouseholdCurrency clears the "household_currency" edge to the HouseholdCurrency entity.
+func (_u *TransactionEntryUpdateOne) ClearHouseholdCurrency() *TransactionEntryUpdateOne {
+	_u.mutation.ClearHouseholdCurrency()
 	return _u
 }
 
@@ -347,6 +432,11 @@ func (_u *TransactionEntryUpdateOne) check() error {
 	if v, ok := _u.mutation.AccountID(); ok {
 		if err := transactionentry.AccountIDValidator(v); err != nil {
 			return &ValidationError{Name: "account_id", err: fmt.Errorf(`ent: validator failed for field "TransactionEntry.account_id": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.HouseholdCurrencyID(); ok {
+		if err := transactionentry.HouseholdCurrencyIDValidator(v); err != nil {
+			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "TransactionEntry.household_currency_id": %w`, err)}
 		}
 	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
@@ -430,6 +520,35 @@ func (_u *TransactionEntryUpdateOne) sqlSave(ctx context.Context) (_node *Transa
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HouseholdCurrencyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transactionentry.HouseholdCurrencyTable,
+			Columns: []string{transactionentry.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transactionentry.HouseholdCurrencyTable,
+			Columns: []string{transactionentry.HouseholdCurrencyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

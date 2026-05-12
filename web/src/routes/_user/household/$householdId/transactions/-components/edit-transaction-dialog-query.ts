@@ -27,6 +27,23 @@ export const EditTransactionDialogQuery = graphql`
           ...investmentLotCardFragment
           id
           amount
+          # eslint-disable-next-line relay/unused-fields
+          price
+          # eslint-disable-next-line relay/unused-fields
+          investment {
+            id
+            # eslint-disable-next-line relay/unused-fields
+            name
+            # eslint-disable-next-line relay/unused-fields
+            account {
+              id
+            }
+            # eslint-disable-next-line relay/unused-fields
+            householdCurrency {
+              # eslint-disable-next-line relay/unused-fields
+              code
+            }
+          }
         }
         # eslint-disable-next-line relay/unused-fields
         transactionEntries {
@@ -34,6 +51,17 @@ export const EditTransactionDialogQuery = graphql`
           ...transactionEntryCardFragment
           id
           amount
+          # eslint-disable-next-line relay/unused-fields
+          account {
+            id
+            # eslint-disable-next-line relay/unused-fields
+            name
+            # eslint-disable-next-line relay/unused-fields
+            householdCurrency {
+              # eslint-disable-next-line relay/unused-fields
+              code
+            }
+          }
         }
       }
     }
@@ -45,6 +73,39 @@ export const EditTransactionDialogQuery = graphql`
           id
           name
           type
+        }
+      }
+    }
+
+    household {
+      # eslint-disable-next-line relay/unused-fields
+      accounts(where: { archived: false }) {
+        # eslint-disable-next-line relay/unused-fields
+        edges {
+          node {
+            id
+            # eslint-disable-next-line relay/unused-fields
+            name
+            # eslint-disable-next-line relay/unused-fields
+            type
+            # eslint-disable-next-line relay/unused-fields
+            icon
+            # eslint-disable-next-line relay/unused-fields
+            value
+            # eslint-disable-next-line relay/unused-fields
+            householdCurrency {
+              # eslint-disable-next-line relay/unused-fields
+              code
+            }
+            # eslint-disable-next-line relay/unused-fields
+            investments {
+              id
+              # eslint-disable-next-line relay/unused-fields
+              name
+              # eslint-disable-next-line relay/unused-fields
+              symbol
+            }
+          }
         }
       }
     }

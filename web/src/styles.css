@@ -166,4 +166,8 @@
   [role='button']:not([disabled]):not([aria-disabled='true']) {
     cursor: pointer;
   }
+
+  [data-base-ui-inert] {
+    z-index: 50;
+  }
 }

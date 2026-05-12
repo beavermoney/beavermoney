@@ -338,10 +338,12 @@ type ComplexityRoot struct {
 		UpdateHousehold             func(childComplexity int, id int, input ent.UpdateHouseholdInput) int
 		UpdateHouseholdCurrency     func(childComplexity int, id int, input ent.UpdateHouseholdCurrencyInput) int
 		UpdateHouseholdUserRole     func(childComplexity int, id int, role userhousehold.Role) int
+		UpdateInvestmentLot         func(childComplexity int, id int, input ent.UpdateInvestmentLotInput) int
 		UpdateRecurringSubscription func(childComplexity int, id int, input ent.UpdateRecurringSubscriptionInput) int
 		UpdateSnapshot              func(childComplexity int, id int, input ent.UpdateSnapshotInput) int
 		UpdateTransaction           func(childComplexity int, id int, input ent.UpdateTransactionInput) int
 		UpdateTransactionCategory   func(childComplexity int, id int, input ent.UpdateTransactionCategoryInput) int
+		UpdateTransactionEntry      func(childComplexity int, id int, input ent.UpdateTransactionEntryInput) int
 	}
 
 	PageInfo struct {
@@ -659,6 +661,8 @@ type MutationResolver interface {
 	SellInvestment(ctx context.Context, input model.SellInvestmentInputCustom) (*ent.TransactionEdge, error)
 	MoveInvestment(ctx context.Context, input model.MoveInvestmentInputCustom) (*ent.TransactionEdge, error)
 	UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput) (*ent.TransactionEdge, error)
+	UpdateTransactionEntry(ctx context.Context, id int, input ent.UpdateTransactionEntryInput) (*ent.TransactionEntryEdge, error)
+	UpdateInvestmentLot(ctx context.Context, id int, input ent.UpdateInvestmentLotInput) (*ent.InvestmentLotEdge, error)
 	DeleteTransaction(ctx context.Context, id int) (*model.DeleteTransactionPayload, error)
 	CreateHouseholdCurrency(ctx context.Context, input ent.CreateHouseholdCurrencyInput) (*ent.HouseholdCurrency, error)
 	UpdateHouseholdCurrency(ctx context.Context, id int, input ent.UpdateHouseholdCurrencyInput) (*ent.HouseholdCurrency, error)
@@ -2167,6 +2171,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateHouseholdUserRole(childComplexity, args["id"].(int), args["role"].(userhousehold.Role)), true
+	case "Mutation.updateInvestmentLot":
+		if e.complexity.Mutation.UpdateInvestmentLot == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateInvestmentLot_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateInvestmentLot(childComplexity, args["id"].(int), args["input"].(ent.UpdateInvestmentLotInput)), true
 	case "Mutation.updateRecurringSubscription":
 		if e.complexity.Mutation.UpdateRecurringSubscription == nil {
 			break
@@ -2211,6 +2226,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdateTransactionCategory(childComplexity, args["id"].(int), args["input"].(ent.UpdateTransactionCategoryInput)), true
+	case "Mutation.updateTransactionEntry":
+		if e.complexity.Mutation.UpdateTransactionEntry == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTransactionEntry_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTransactionEntry(childComplexity, args["id"].(int), args["input"].(ent.UpdateTransactionEntryInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -4230,6 +4256,22 @@ func (ec *executionContext) field_Mutation_updateHousehold_args(ctx context.Cont
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateInvestmentLot_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateInvestmentLotInput2beavermoneyᚗappᚋentᚐUpdateInvestmentLotInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateRecurringSubscription_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -4271,6 +4313,22 @@ func (ec *executionContext) field_Mutation_updateTransactionCategory_args(ctx co
 	}
 	args["id"] = arg0
 	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateTransactionCategoryInput2beavermoneyᚗappᚋentᚐUpdateTransactionCategoryInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTransactionEntry_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2int)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateTransactionEntryInput2beavermoneyᚗappᚋentᚐUpdateTransactionEntryInput)
 	if err != nil {
 		return nil, err
 	}
@@ -11548,6 +11606,100 @@ func (ec *executionContext) fieldContext_Mutation_updateTransaction(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateTransaction_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateTransactionEntry(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateTransactionEntry,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateTransactionEntry(ctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateTransactionEntryInput))
+		},
+		nil,
+		ec.marshalNTransactionEntryEdge2ᚖbeavermoneyᚗappᚋentᚐTransactionEntryEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateTransactionEntry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_TransactionEntryEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_TransactionEntryEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type TransactionEntryEdge", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateTransactionEntry_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateInvestmentLot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateInvestmentLot,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateInvestmentLot(ctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateInvestmentLotInput))
+		},
+		nil,
+		ec.marshalNInvestmentLotEdge2ᚖbeavermoneyᚗappᚋentᚐInvestmentLotEdge,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateInvestmentLot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "node":
+				return ec.fieldContext_InvestmentLotEdge_node(ctx, field)
+			case "cursor":
+				return ec.fieldContext_InvestmentLotEdge_cursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type InvestmentLotEdge", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateInvestmentLot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -29715,7 +29867,7 @@ func (ec *executionContext) unmarshalInputUpdateInvestmentLotInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"amount", "price"}
+	fieldsInOrder := [...]string{"amount", "price", "investmentID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -29740,6 +29892,13 @@ func (ec *executionContext) unmarshalInputUpdateInvestmentLotInput(ctx context.C
 			if err = ec.resolvers.UpdateInvestmentLotInput().Price(ctx, &it, data); err != nil {
 				return it, err
 			}
+		case "investmentID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("investmentID"))
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.InvestmentID = data
 		}
 	}
 
@@ -34635,6 +34794,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "updateTransactionEntry":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateTransactionEntry(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateInvestmentLot":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateInvestmentLot(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "deleteTransaction":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteTransaction(ctx, field)
@@ -39178,6 +39351,20 @@ func (ec *executionContext) marshalNInvestmentLotConnection2ᚖbeavermoneyᚗapp
 	return ec._InvestmentLotConnection(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNInvestmentLotEdge2beavermoneyᚗappᚋentᚐInvestmentLotEdge(ctx context.Context, sel ast.SelectionSet, v ent.InvestmentLotEdge) graphql.Marshaler {
+	return ec._InvestmentLotEdge(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNInvestmentLotEdge2ᚖbeavermoneyᚗappᚋentᚐInvestmentLotEdge(ctx context.Context, sel ast.SelectionSet, v *ent.InvestmentLotEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._InvestmentLotEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNInvestmentLotWhereInput2ᚖbeavermoneyᚗappᚋentᚐInvestmentLotWhereInput(ctx context.Context, v any) (*ent.InvestmentLotWhereInput, error) {
 	res, err := ec.unmarshalInputInvestmentLotWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -39576,6 +39763,20 @@ func (ec *executionContext) marshalNTransactionEntryConnection2ᚖbeavermoneyᚗ
 	return ec._TransactionEntryConnection(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNTransactionEntryEdge2beavermoneyᚗappᚋentᚐTransactionEntryEdge(ctx context.Context, sel ast.SelectionSet, v ent.TransactionEntryEdge) graphql.Marshaler {
+	return ec._TransactionEntryEdge(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTransactionEntryEdge2ᚖbeavermoneyᚗappᚋentᚐTransactionEntryEdge(ctx context.Context, sel ast.SelectionSet, v *ent.TransactionEntryEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._TransactionEntryEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNTransactionEntryWhereInput2ᚖbeavermoneyᚗappᚋentᚐTransactionEntryWhereInput(ctx context.Context, v any) (*ent.TransactionEntryWhereInput, error) {
 	res, err := ec.unmarshalInputTransactionEntryWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -39617,6 +39818,11 @@ func (ec *executionContext) unmarshalNUpdateHouseholdInput2beavermoneyᚗappᚋe
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNUpdateInvestmentLotInput2beavermoneyᚗappᚋentᚐUpdateInvestmentLotInput(ctx context.Context, v any) (ent.UpdateInvestmentLotInput, error) {
+	res, err := ec.unmarshalInputUpdateInvestmentLotInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateRecurringSubscriptionInput2beavermoneyᚗappᚋentᚐUpdateRecurringSubscriptionInput(ctx context.Context, v any) (ent.UpdateRecurringSubscriptionInput, error) {
 	res, err := ec.unmarshalInputUpdateRecurringSubscriptionInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -39629,6 +39835,11 @@ func (ec *executionContext) unmarshalNUpdateSnapshotInput2beavermoneyᚗappᚋen
 
 func (ec *executionContext) unmarshalNUpdateTransactionCategoryInput2beavermoneyᚗappᚋentᚐUpdateTransactionCategoryInput(ctx context.Context, v any) (ent.UpdateTransactionCategoryInput, error) {
 	res, err := ec.unmarshalInputUpdateTransactionCategoryInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTransactionEntryInput2beavermoneyᚗappᚋentᚐUpdateTransactionEntryInput(ctx context.Context, v any) (ent.UpdateTransactionEntryInput, error) {
+	res, err := ec.unmarshalInputUpdateTransactionEntryInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

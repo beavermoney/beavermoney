@@ -410,6 +410,18 @@ func (u *TransactionEntryUpsert) UpdateAccountID() *TransactionEntryUpsert {
 	return u
 }
 
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *TransactionEntryUpsert) SetHouseholdCurrencyID(v int) *TransactionEntryUpsert {
+	u.Set(transactionentry.FieldHouseholdCurrencyID, v)
+	return u
+}
+
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *TransactionEntryUpsert) UpdateHouseholdCurrencyID() *TransactionEntryUpsert {
+	u.SetExcluded(transactionentry.FieldHouseholdCurrencyID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -426,9 +438,6 @@ func (u *TransactionEntryUpsertOne) UpdateNewValues() *TransactionEntryUpsertOne
 		}
 		if _, exists := u.create.mutation.HouseholdID(); exists {
 			s.SetIgnore(transactionentry.FieldHouseholdID)
-		}
-		if _, exists := u.create.mutation.HouseholdCurrencyID(); exists {
-			s.SetIgnore(transactionentry.FieldHouseholdCurrencyID)
 		}
 		if _, exists := u.create.mutation.TransactionID(); exists {
 			s.SetIgnore(transactionentry.FieldTransactionID)
@@ -510,6 +519,20 @@ func (u *TransactionEntryUpsertOne) SetAccountID(v int) *TransactionEntryUpsertO
 func (u *TransactionEntryUpsertOne) UpdateAccountID() *TransactionEntryUpsertOne {
 	return u.Update(func(s *TransactionEntryUpsert) {
 		s.UpdateAccountID()
+	})
+}
+
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *TransactionEntryUpsertOne) SetHouseholdCurrencyID(v int) *TransactionEntryUpsertOne {
+	return u.Update(func(s *TransactionEntryUpsert) {
+		s.SetHouseholdCurrencyID(v)
+	})
+}
+
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *TransactionEntryUpsertOne) UpdateHouseholdCurrencyID() *TransactionEntryUpsertOne {
+	return u.Update(func(s *TransactionEntryUpsert) {
+		s.UpdateHouseholdCurrencyID()
 	})
 }
 
@@ -695,9 +718,6 @@ func (u *TransactionEntryUpsertBulk) UpdateNewValues() *TransactionEntryUpsertBu
 			if _, exists := b.mutation.HouseholdID(); exists {
 				s.SetIgnore(transactionentry.FieldHouseholdID)
 			}
-			if _, exists := b.mutation.HouseholdCurrencyID(); exists {
-				s.SetIgnore(transactionentry.FieldHouseholdCurrencyID)
-			}
 			if _, exists := b.mutation.TransactionID(); exists {
 				s.SetIgnore(transactionentry.FieldTransactionID)
 			}
@@ -779,6 +799,20 @@ func (u *TransactionEntryUpsertBulk) SetAccountID(v int) *TransactionEntryUpsert
 func (u *TransactionEntryUpsertBulk) UpdateAccountID() *TransactionEntryUpsertBulk {
 	return u.Update(func(s *TransactionEntryUpsert) {
 		s.UpdateAccountID()
+	})
+}
+
+// SetHouseholdCurrencyID sets the "household_currency_id" field.
+func (u *TransactionEntryUpsertBulk) SetHouseholdCurrencyID(v int) *TransactionEntryUpsertBulk {
+	return u.Update(func(s *TransactionEntryUpsert) {
+		s.SetHouseholdCurrencyID(v)
+	})
+}
+
+// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
+func (u *TransactionEntryUpsertBulk) UpdateHouseholdCurrencyID() *TransactionEntryUpsertBulk {
+	return u.Update(func(s *TransactionEntryUpsert) {
+		s.UpdateHouseholdCurrencyID()
 	})
 }
 

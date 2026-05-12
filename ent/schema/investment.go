@@ -168,7 +168,7 @@ func (InvestmentLot) Fields() []ent.Field {
 			}).
 			Annotations(entgql.Type("String")),
 
-		field.Int("investment_id").Positive().Immutable(),
+		field.Int("investment_id").Positive(),
 		field.Int("transaction_id").Positive().Immutable(),
 	}
 }
@@ -192,7 +192,6 @@ func (InvestmentLot) Edges() []ent.Edge {
 			Ref("investment_lots").
 			Field("investment_id").
 			Unique().
-			Immutable().
 			Required(),
 		edge.From("transaction", Transaction.Type).
 			Ref("investment_lots").
