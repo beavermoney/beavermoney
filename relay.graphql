@@ -295,7 +295,6 @@ input CreateHouseholdCurrencyInput {
   important: Boolean
   accountIDs: [ID!]
   investmentIDs: [ID!]
-  transactionEntryIDs: [ID!]
   recurringSubscriptionIDs: [ID!]
   snapshotEntryIDs: [ID!]
   snapshotRatesFromIDs: [ID!]
@@ -651,7 +650,6 @@ type HouseholdCurrency implements Node {
   household: Household!
   accounts: [Account!]
   investments: [Investment!]
-  transactionEntries: [TransactionEntry!]
   recurringSubscriptions: [RecurringSubscription!]
   snapshotEntries: [SnapshotEntry!]
   snapshotRatesFrom: [SnapshotRate!]
@@ -776,11 +774,6 @@ input HouseholdCurrencyWhereInput {
   """
   hasInvestments: Boolean
   hasInvestmentsWith: [InvestmentWhereInput!]
-  """
-  transaction_entries edge predicates
-  """
-  hasTransactionEntries: Boolean
-  hasTransactionEntriesWith: [TransactionEntryWhereInput!]
   """
   recurring_subscriptions edge predicates
   """
@@ -2730,11 +2723,9 @@ type TransactionEntry implements Node {
   householdID: ID!
   amount: String!
   accountID: ID!
-  householdCurrencyID: ID!
   transactionID: ID!
   household: Household!
   account: Account!
-  householdCurrency: HouseholdCurrency!
   transaction: Transaction!
 }
 
@@ -2837,13 +2828,6 @@ input TransactionEntryWhereInput {
   accountIDIn: [ID!]
   accountIDNotIn: [ID!]
   """
-  household_currency_id field predicates
-  """
-  householdCurrencyID: ID
-  householdCurrencyIDNEQ: ID
-  householdCurrencyIDIn: [ID!]
-  householdCurrencyIDNotIn: [ID!]
-  """
   transaction_id field predicates
   """
   transactionID: ID
@@ -2860,11 +2844,6 @@ input TransactionEntryWhereInput {
   """
   hasAccount: Boolean
   hasAccountWith: [AccountWhereInput!]
-  """
-  household_currency edge predicates
-  """
-  hasHouseholdCurrency: Boolean
-  hasHouseholdCurrencyWith: [HouseholdCurrencyWhereInput!]
   """
   transaction edge predicates
   """
@@ -3040,9 +3019,6 @@ input UpdateHouseholdCurrencyInput {
   addInvestmentIDs: [ID!]
   removeInvestmentIDs: [ID!]
   clearInvestments: Boolean
-  addTransactionEntryIDs: [ID!]
-  removeTransactionEntryIDs: [ID!]
-  clearTransactionEntries: Boolean
   addRecurringSubscriptionIDs: [ID!]
   removeRecurringSubscriptionIDs: [ID!]
   clearRecurringSubscriptions: Boolean

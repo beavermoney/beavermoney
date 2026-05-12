@@ -55,15 +55,17 @@ func (r *householdResolver) aggregateByCategoryType(
 		Modify(func(s *sql.Selector) {
 			te := sql.Table(transactionentry.Table)
 			tc := sql.Table(transactioncategory.Table)
+			ac := sql.Table(account.Table)
 			cu := sql.Table(householdcurrency.Table)
 
-			// Join tables
 			s.Join(te).
 				On(s.C(transaction.FieldID), te.C(transactionentry.TransactionColumn))
 			s.Join(tc).
 				On(s.C(transaction.CategoryColumn), tc.C(transactioncategory.FieldID))
+			s.Join(ac).
+				On(te.C(transactionentry.AccountColumn), ac.C(account.FieldID))
 			s.Join(cu).
-				On(te.C(transactionentry.HouseholdCurrencyColumn), cu.C(householdcurrency.FieldID))
+				On(ac.C(account.HouseholdCurrencyColumn), cu.C(householdcurrency.FieldID))
 
 			// Filter by household
 			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))

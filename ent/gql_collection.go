@@ -1313,19 +1313,6 @@ func (_q *HouseholdCurrencyQuery) collectField(ctx context.Context, oneNode bool
 				*wq = *query
 			})
 
-		case "transactionEntries":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&TransactionEntryClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, transactionentryImplementors)...); err != nil {
-				return err
-			}
-			_q.WithNamedTransactionEntries(alias, func(wq *TransactionEntryQuery) {
-				*wq = *query
-			})
-
 		case "recurringSubscriptions":
 			var (
 				alias = field.Alias
@@ -2939,21 +2926,6 @@ func (_q *TransactionEntryQuery) collectField(ctx context.Context, oneNode bool,
 				fieldSeen[transactionentry.FieldAccountID] = struct{}{}
 			}
 
-		case "householdCurrency":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = (&HouseholdCurrencyClient{config: _q.config}).Query()
-			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdcurrencyImplementors)...); err != nil {
-				return err
-			}
-			_q.withHouseholdCurrency = query
-			if _, ok := fieldSeen[transactionentry.FieldHouseholdCurrencyID]; !ok {
-				selectedFields = append(selectedFields, transactionentry.FieldHouseholdCurrencyID)
-				fieldSeen[transactionentry.FieldHouseholdCurrencyID] = struct{}{}
-			}
-
 		case "transaction":
 			var (
 				alias = field.Alias
@@ -2992,11 +2964,6 @@ func (_q *TransactionEntryQuery) collectField(ctx context.Context, oneNode bool,
 			if _, ok := fieldSeen[transactionentry.FieldAccountID]; !ok {
 				selectedFields = append(selectedFields, transactionentry.FieldAccountID)
 				fieldSeen[transactionentry.FieldAccountID] = struct{}{}
-			}
-		case "householdCurrencyID":
-			if _, ok := fieldSeen[transactionentry.FieldHouseholdCurrencyID]; !ok {
-				selectedFields = append(selectedFields, transactionentry.FieldHouseholdCurrencyID)
-				fieldSeen[transactionentry.FieldHouseholdCurrencyID] = struct{}{}
 			}
 		case "transactionID":
 			if _, ok := fieldSeen[transactionentry.FieldTransactionID]; !ok {

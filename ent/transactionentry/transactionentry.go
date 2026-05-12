@@ -25,16 +25,12 @@ const (
 	FieldAmount = "amount"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
-	// FieldHouseholdCurrencyID holds the string denoting the household_currency_id field in the database.
-	FieldHouseholdCurrencyID = "household_currency_id"
 	// FieldTransactionID holds the string denoting the transaction_id field in the database.
 	FieldTransactionID = "transaction_id"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeAccount holds the string denoting the account edge name in mutations.
 	EdgeAccount = "account"
-	// EdgeHouseholdCurrency holds the string denoting the household_currency edge name in mutations.
-	EdgeHouseholdCurrency = "household_currency"
 	// EdgeTransaction holds the string denoting the transaction edge name in mutations.
 	EdgeTransaction = "transaction"
 	// Table holds the table name of the transactionentry in the database.
@@ -53,13 +49,6 @@ const (
 	AccountInverseTable = "accounts"
 	// AccountColumn is the table column denoting the account relation/edge.
 	AccountColumn = "account_id"
-	// HouseholdCurrencyTable is the table that holds the household_currency relation/edge.
-	HouseholdCurrencyTable = "transaction_entries"
-	// HouseholdCurrencyInverseTable is the table name for the HouseholdCurrency entity.
-	// It exists in this package in order to avoid circular dependency with the "householdcurrency" package.
-	HouseholdCurrencyInverseTable = "household_currencies"
-	// HouseholdCurrencyColumn is the table column denoting the household_currency relation/edge.
-	HouseholdCurrencyColumn = "household_currency_id"
 	// TransactionTable is the table that holds the transaction relation/edge.
 	TransactionTable = "transaction_entries"
 	// TransactionInverseTable is the table name for the Transaction entity.
@@ -77,7 +66,6 @@ var Columns = []string{
 	FieldHouseholdID,
 	FieldAmount,
 	FieldAccountID,
-	FieldHouseholdCurrencyID,
 	FieldTransactionID,
 }
 
@@ -107,8 +95,6 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	AccountIDValidator func(int) error
-	// HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
-	HouseholdCurrencyIDValidator func(int) error
 	// TransactionIDValidator is a validator for the "transaction_id" field. It is called by the builders before save.
 	TransactionIDValidator func(int) error
 )
@@ -146,11 +132,6 @@ func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAccountID, opts...).ToFunc()
 }
 
-// ByHouseholdCurrencyID orders the results by the household_currency_id field.
-func ByHouseholdCurrencyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldHouseholdCurrencyID, opts...).ToFunc()
-}
-
 // ByTransactionID orders the results by the transaction_id field.
 func ByTransactionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTransactionID, opts...).ToFunc()
@@ -167,13 +148,6 @@ func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByAccountField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newAccountStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByHouseholdCurrencyField orders the results by household_currency field.
-func ByHouseholdCurrencyField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newHouseholdCurrencyStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -195,13 +169,6 @@ func newAccountStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AccountInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, AccountTable, AccountColumn),
-	)
-}
-func newHouseholdCurrencyStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(HouseholdCurrencyInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, HouseholdCurrencyTable, HouseholdCurrencyColumn),
 	)
 }
 func newTransactionStep() *sqlgraph.Step {

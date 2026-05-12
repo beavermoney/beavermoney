@@ -293,13 +293,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "TransactionEntry",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			transactionentry.FieldCreateTime:          {Type: field.TypeTime, Column: transactionentry.FieldCreateTime},
-			transactionentry.FieldUpdateTime:          {Type: field.TypeTime, Column: transactionentry.FieldUpdateTime},
-			transactionentry.FieldHouseholdID:         {Type: field.TypeInt, Column: transactionentry.FieldHouseholdID},
-			transactionentry.FieldAmount:              {Type: field.TypeFloat64, Column: transactionentry.FieldAmount},
-			transactionentry.FieldAccountID:           {Type: field.TypeInt, Column: transactionentry.FieldAccountID},
-			transactionentry.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: transactionentry.FieldHouseholdCurrencyID},
-			transactionentry.FieldTransactionID:       {Type: field.TypeInt, Column: transactionentry.FieldTransactionID},
+			transactionentry.FieldCreateTime:    {Type: field.TypeTime, Column: transactionentry.FieldCreateTime},
+			transactionentry.FieldUpdateTime:    {Type: field.TypeTime, Column: transactionentry.FieldUpdateTime},
+			transactionentry.FieldHouseholdID:   {Type: field.TypeInt, Column: transactionentry.FieldHouseholdID},
+			transactionentry.FieldAmount:        {Type: field.TypeFloat64, Column: transactionentry.FieldAmount},
+			transactionentry.FieldAccountID:     {Type: field.TypeInt, Column: transactionentry.FieldAccountID},
+			transactionentry.FieldTransactionID: {Type: field.TypeInt, Column: transactionentry.FieldTransactionID},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -620,18 +619,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"HouseholdCurrency",
 		"Investment",
-	)
-	graph.MustAddE(
-		"transaction_entries",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-		},
-		"HouseholdCurrency",
-		"TransactionEntry",
 	)
 	graph.MustAddE(
 		"recurring_subscriptions",
@@ -1112,18 +1099,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"TransactionEntry",
 		"Account",
-	)
-	graph.MustAddE(
-		"household_currency",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   transactionentry.HouseholdCurrencyTable,
-			Columns: []string{transactionentry.HouseholdCurrencyColumn},
-			Bidi:    false,
-		},
-		"TransactionEntry",
-		"HouseholdCurrency",
 	)
 	graph.MustAddE(
 		"transaction",
@@ -1822,20 +1797,6 @@ func (f *HouseholdCurrencyFilter) WhereHasInvestments() {
 // WhereHasInvestmentsWith applies a predicate to check if query has an edge investments with a given conditions (other predicates).
 func (f *HouseholdCurrencyFilter) WhereHasInvestmentsWith(preds ...predicate.Investment) {
 	f.Where(entql.HasEdgeWith("investments", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasTransactionEntries applies a predicate to check if query has an edge transaction_entries.
-func (f *HouseholdCurrencyFilter) WhereHasTransactionEntries() {
-	f.Where(entql.HasEdge("transaction_entries"))
-}
-
-// WhereHasTransactionEntriesWith applies a predicate to check if query has an edge transaction_entries with a given conditions (other predicates).
-func (f *HouseholdCurrencyFilter) WhereHasTransactionEntriesWith(preds ...predicate.TransactionEntry) {
-	f.Where(entql.HasEdgeWith("transaction_entries", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -3169,11 +3130,6 @@ func (f *TransactionEntryFilter) WhereAccountID(p entql.IntP) {
 	f.Where(p.Field(transactionentry.FieldAccountID))
 }
 
-// WhereHouseholdCurrencyID applies the entql int predicate on the household_currency_id field.
-func (f *TransactionEntryFilter) WhereHouseholdCurrencyID(p entql.IntP) {
-	f.Where(p.Field(transactionentry.FieldHouseholdCurrencyID))
-}
-
 // WhereTransactionID applies the entql int predicate on the transaction_id field.
 func (f *TransactionEntryFilter) WhereTransactionID(p entql.IntP) {
 	f.Where(p.Field(transactionentry.FieldTransactionID))
@@ -3201,20 +3157,6 @@ func (f *TransactionEntryFilter) WhereHasAccount() {
 // WhereHasAccountWith applies a predicate to check if query has an edge account with a given conditions (other predicates).
 func (f *TransactionEntryFilter) WhereHasAccountWith(preds ...predicate.Account) {
 	f.Where(entql.HasEdgeWith("account", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasHouseholdCurrency applies a predicate to check if query has an edge household_currency.
-func (f *TransactionEntryFilter) WhereHasHouseholdCurrency() {
-	f.Where(entql.HasEdge("household_currency"))
-}
-
-// WhereHasHouseholdCurrencyWith applies a predicate to check if query has an edge household_currency with a given conditions (other predicates).
-func (f *TransactionEntryFilter) WhereHasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) {
-	f.Where(entql.HasEdgeWith("household_currency", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

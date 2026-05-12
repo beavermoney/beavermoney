@@ -204,8 +204,6 @@ func (TransactionEntry) Fields() []ent.Field {
 			Annotations(entgql.Type("String")),
 
 		field.Int("account_id").Positive(),
-		field.Int("household_currency_id").Positive().
-			Annotations(entgql.Skip(entgql.SkipMutationUpdateInput)),
 		field.Int("transaction_id").Positive().Immutable(),
 	}
 }
@@ -230,17 +228,6 @@ func (TransactionEntry) Edges() []ent.Edge {
 			Ref("transaction_entries").
 			Unique().
 			Required(),
-		edge.From("household_currency", HouseholdCurrency.Type).
-			Field("household_currency_id").
-			Ref("transaction_entries").
-			Unique().
-			Required().
-			Annotations(
-				entgql.Skip(
-					entgql.SkipMutationCreateInput,
-					entgql.SkipMutationUpdateInput,
-				),
-			),
 		edge.From("transaction", Transaction.Type).
 			Field("transaction_id").
 			Ref("transaction_entries").

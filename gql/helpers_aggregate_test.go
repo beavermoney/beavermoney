@@ -103,14 +103,12 @@ func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 		SetHouseholdID(hh.ID).
 		SetTransactionID(txn.ID).
 		SetAccountID(accA.ID).
-		SetHouseholdCurrencyID(usd.ID).
 		SetAmount(decimal.NewFromInt(-100)).
 		SaveX(hctx)
 	client.TransactionEntry.Create().
 		SetHouseholdID(hh.ID).
 		SetTransactionID(txn.ID).
 		SetAccountID(accB.ID).
-		SetHouseholdCurrencyID(usd.ID).
 		SetAmount(decimal.NewFromInt(-5)).
 		SaveX(hctx)
 

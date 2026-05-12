@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6c1b8ca0e27f8e83596ddb26e9e53ad8>>
+ * @generated SignedSource<<d6d5fbdd37a7993304a59e537322bf60>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,7 +31,6 @@ export type editTransactionEntryDialogUpdateMutation$data = {
       };
       readonly accountID: string;
       readonly amount: string;
-      readonly householdCurrencyID: string;
       readonly id: string;
     } | null | undefined;
   };
@@ -107,13 +106,6 @@ v2 = [
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "householdCurrencyID",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
             "concreteType": "Account",
             "kind": "LinkedField",
             "name": "account",
@@ -181,16 +173,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "9dcdfc79655c0b1fec25e43410a361b7",
+    "cacheID": "cb62a6b7f10e2e437bd3cec5e590c32a",
     "id": null,
     "metadata": {},
     "name": "editTransactionEntryDialogUpdateMutation",
     "operationKind": "mutation",
-    "text": "mutation editTransactionEntryDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionEntryInput!\n) {\n  updateTransactionEntry(id: $id, input: $input) {\n    node {\n      id\n      amount\n      accountID\n      householdCurrencyID\n      account {\n        id\n        balance\n        value\n        householdCurrency {\n          id\n          code\n        }\n      }\n    }\n  }\n}\n"
+    "text": "mutation editTransactionEntryDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionEntryInput!\n) {\n  updateTransactionEntry(id: $id, input: $input) {\n    node {\n      id\n      amount\n      accountID\n      account {\n        id\n        balance\n        value\n        householdCurrency {\n          id\n          code\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1e3e4c6e65a805262d90803adf7d53ca";
+(node as any).hash = "0a8de8924c28ffe34814c25f02ce0272";
 
 export default node;

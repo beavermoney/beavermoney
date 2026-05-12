@@ -42,8 +42,6 @@ type HouseholdCurrencyEdges struct {
 	Accounts []*Account `json:"accounts,omitempty"`
 	// Investments holds the value of the investments edge.
 	Investments []*Investment `json:"investments,omitempty"`
-	// TransactionEntries holds the value of the transaction_entries edge.
-	TransactionEntries []*TransactionEntry `json:"transaction_entries,omitempty"`
 	// RecurringSubscriptions holds the value of the recurring_subscriptions edge.
 	RecurringSubscriptions []*RecurringSubscription `json:"recurring_subscriptions,omitempty"`
 	// SnapshotEntries holds the value of the snapshot_entries edge.
@@ -58,13 +56,12 @@ type HouseholdCurrencyEdges struct {
 	HouseholdRatesTo []*HouseholdRate `json:"household_rates_to,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [9]bool
 	// totalCount holds the count of the edges above.
-	totalCount [10]map[string]int
+	totalCount [9]map[string]int
 
 	namedAccounts               map[string][]*Account
 	namedInvestments            map[string][]*Investment
-	namedTransactionEntries     map[string][]*TransactionEntry
 	namedRecurringSubscriptions map[string][]*RecurringSubscription
 	namedSnapshotEntries        map[string][]*SnapshotEntry
 	namedSnapshotRatesFrom      map[string][]*SnapshotRate
@@ -102,19 +99,10 @@ func (e HouseholdCurrencyEdges) InvestmentsOrErr() ([]*Investment, error) {
 	return nil, &NotLoadedError{edge: "investments"}
 }
 
-// TransactionEntriesOrErr returns the TransactionEntries value or an error if the edge
-// was not loaded in eager-loading.
-func (e HouseholdCurrencyEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error) {
-	if e.loadedTypes[3] {
-		return e.TransactionEntries, nil
-	}
-	return nil, &NotLoadedError{edge: "transaction_entries"}
-}
-
 // RecurringSubscriptionsOrErr returns the RecurringSubscriptions value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdCurrencyEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.RecurringSubscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
@@ -123,7 +111,7 @@ func (e HouseholdCurrencyEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubsc
 // SnapshotEntriesOrErr returns the SnapshotEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdCurrencyEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		return e.SnapshotEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_entries"}
@@ -132,7 +120,7 @@ func (e HouseholdCurrencyEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error)
 // SnapshotRatesFromOrErr returns the SnapshotRatesFrom value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdCurrencyEdges) SnapshotRatesFromOrErr() ([]*SnapshotRate, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[5] {
 		return e.SnapshotRatesFrom, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_rates_from"}
@@ -141,7 +129,7 @@ func (e HouseholdCurrencyEdges) SnapshotRatesFromOrErr() ([]*SnapshotRate, error
 // SnapshotRatesToOrErr returns the SnapshotRatesTo value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdCurrencyEdges) SnapshotRatesToOrErr() ([]*SnapshotRate, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[6] {
 		return e.SnapshotRatesTo, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_rates_to"}
@@ -150,7 +138,7 @@ func (e HouseholdCurrencyEdges) SnapshotRatesToOrErr() ([]*SnapshotRate, error) 
 // HouseholdRatesFromOrErr returns the HouseholdRatesFrom value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdCurrencyEdges) HouseholdRatesFromOrErr() ([]*HouseholdRate, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[7] {
 		return e.HouseholdRatesFrom, nil
 	}
 	return nil, &NotLoadedError{edge: "household_rates_from"}
@@ -159,7 +147,7 @@ func (e HouseholdCurrencyEdges) HouseholdRatesFromOrErr() ([]*HouseholdRate, err
 // HouseholdRatesToOrErr returns the HouseholdRatesTo value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdCurrencyEdges) HouseholdRatesToOrErr() ([]*HouseholdRate, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[8] {
 		return e.HouseholdRatesTo, nil
 	}
 	return nil, &NotLoadedError{edge: "household_rates_to"}
@@ -255,11 +243,6 @@ func (_m *HouseholdCurrency) QueryAccounts() *AccountQuery {
 // QueryInvestments queries the "investments" edge of the HouseholdCurrency entity.
 func (_m *HouseholdCurrency) QueryInvestments() *InvestmentQuery {
 	return NewHouseholdCurrencyClient(_m.config).QueryInvestments(_m)
-}
-
-// QueryTransactionEntries queries the "transaction_entries" edge of the HouseholdCurrency entity.
-func (_m *HouseholdCurrency) QueryTransactionEntries() *TransactionEntryQuery {
-	return NewHouseholdCurrencyClient(_m.config).QueryTransactionEntries(_m)
 }
 
 // QueryRecurringSubscriptions queries the "recurring_subscriptions" edge of the HouseholdCurrency entity.
@@ -378,30 +361,6 @@ func (_m *HouseholdCurrency) appendNamedInvestments(name string, edges ...*Inves
 		_m.Edges.namedInvestments[name] = []*Investment{}
 	} else {
 		_m.Edges.namedInvestments[name] = append(_m.Edges.namedInvestments[name], edges...)
-	}
-}
-
-// NamedTransactionEntries returns the TransactionEntries named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (_m *HouseholdCurrency) NamedTransactionEntries(name string) ([]*TransactionEntry, error) {
-	if _m.Edges.namedTransactionEntries == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := _m.Edges.namedTransactionEntries[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (_m *HouseholdCurrency) appendNamedTransactionEntries(name string, edges ...*TransactionEntry) {
-	if _m.Edges.namedTransactionEntries == nil {
-		_m.Edges.namedTransactionEntries = make(map[string][]*TransactionEntry)
-	}
-	if len(edges) == 0 {
-		_m.Edges.namedTransactionEntries[name] = []*TransactionEntry{}
-	} else {
-		_m.Edges.namedTransactionEntries[name] = append(_m.Edges.namedTransactionEntries[name], edges...)
 	}
 }
 
