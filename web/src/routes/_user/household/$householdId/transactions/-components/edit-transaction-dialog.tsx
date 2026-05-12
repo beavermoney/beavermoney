@@ -11,6 +11,8 @@ import type { editTransactionDialogUpdateMutation } from './__generated__/editTr
 import type { editTransactionDialogDeleteMutation } from './__generated__/editTransactionDialogDeleteMutation.graphql'
 
 import {
+  Dialog,
+  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
@@ -56,6 +58,8 @@ import {
 import { commitMutationResult } from '@/lib/relay'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
+import { EditTransactionEntryDialog } from './edit-transaction-entry-dialog'
+import { EditInvestmentLotDialog } from './edit-investment-lot-dialog'
 import { useHousehold } from '@/hooks/use-household'
 import { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
 import { EditTransactionDialogQuery } from './edit-transaction-dialog-query'
@@ -127,6 +131,47 @@ export function EditTransactionDialog({
   const { household } = useHousehold()
 
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
+
+  type EditingEntry = {
+    id: string
+    amount: string
+    accountId: string
+  }
+  type EditingLot = {
+    id: string
+    amount: string
+    price: string
+    investmentId: string
+    accountId: string
+  }
+  const [editingEntry, setEditingEntry] = useState<EditingEntry | null>(null)
+  const [editingLot, setEditingLot] = useState<EditingLot | null>(null)
+
+  const accountsList = useMemo(
+    () =>
+      data.household.accounts.edges?.flatMap((edge) =>
+        edge?.node
+          ? [
+              {
+                id: edge.node.id,
+                name: edge.node.name,
+                type: edge.node.type,
+                icon: edge.node.icon ?? null,
+                value: edge.node.value,
+                householdCurrency: {
+                  code: edge.node.householdCurrency.code,
+                },
+                investments: (edge.node.investments ?? []).map((inv) => ({
+                  id: inv.id,
+                  name: inv.name,
+                  symbol: inv.symbol,
+                })),
+              },
+            ]
+          : [],
+      ) ?? [],
+    [data.household.accounts.edges],
+  )
 
   const [commitUpdate, isUpdateInFlight] =
     useMutation<editTransactionDialogUpdateMutation>(
@@ -277,7 +322,7 @@ export function EditTransactionDialog({
         <DialogTitle>Edit Transaction</DialogTitle>
         <DialogDescription>
           Update transaction details. Click on entries or lots below to edit
-          them individually (coming soon).
+          them individually.
         </DialogDescription>
       </DialogHeader>
 
@@ -290,6 +335,15 @@ export function EditTransactionDialog({
                 fragmentRef={item.lot}
                 isFirst={index === 0}
                 isLast={index === sortedItems.length - 1}
+                onClick={() =>
+                  setEditingLot({
+                    id: item.lot.id,
+                    amount: item.lot.amount,
+                    price: item.lot.price,
+                    investmentId: item.lot.investment.id,
+                    accountId: item.lot.investment.account.id,
+                  })
+                }
               />
             </Fragment>
           ) : (
@@ -299,6 +353,13 @@ export function EditTransactionDialog({
                 fragmentRef={item.entry}
                 isFirst={index === 0}
                 isLast={index === sortedItems.length - 1}
+                onClick={() =>
+                  setEditingEntry({
+                    id: item.entry.id,
+                    amount: item.entry.amount,
+                    accountId: item.entry.account.id,
+                  })
+                }
               />
             </Fragment>
           ),
@@ -515,6 +576,46 @@ export function EditTransactionDialog({
           {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
         </Button>
       </DialogFooter>
+
+      <Dialog
+        open={editingEntry !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingEntry(null)
+        }}
+      >
+        <DialogContent>
+          {editingEntry && (
+            <EditTransactionEntryDialog
+              entryId={editingEntry.id}
+              currentAmount={editingEntry.amount}
+              currentAccountId={editingEntry.accountId}
+              accounts={accountsList}
+              onClose={() => setEditingEntry(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={editingLot !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingLot(null)
+        }}
+      >
+        <DialogContent>
+          {editingLot && (
+            <EditInvestmentLotDialog
+              lotId={editingLot.id}
+              currentAmount={editingLot.amount}
+              currentPrice={editingLot.price}
+              currentInvestmentId={editingLot.investmentId}
+              currentAccountId={editingLot.accountId}
+              accounts={accountsList}
+              onClose={() => setEditingLot(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

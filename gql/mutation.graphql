@@ -36,6 +36,8 @@ type Mutation {
   sellInvestment(input: SellInvestmentInputCustom!): TransactionEdge!
   moveInvestment(input: MoveInvestmentInputCustom!): TransactionEdge!
   updateTransaction(id: ID!, input: UpdateTransactionInput!): TransactionEdge!
+  updateTransactionEntry(id: ID!, input: UpdateTransactionEntryInput!): TransactionEntryEdge!
+  updateInvestmentLot(id: ID!, input: UpdateInvestmentLotInput!): InvestmentLotEdge!
   deleteTransaction(id: ID!): DeleteTransactionPayload!
 
   createHouseholdCurrency(

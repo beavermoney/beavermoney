@@ -50,10 +50,12 @@ export function TransactionEntryCard({
   fragmentRef,
   isFirst,
   isLast,
+  onClick,
 }: {
   fragmentRef: transactionEntryCardFragment$key
   isFirst: boolean
   isLast: boolean
+  onClick?: () => void
 }) {
   const { formatCurrency } = useCurrency()
 
@@ -65,13 +67,22 @@ export function TransactionEntryCard({
   return (
     <Item
       variant="default"
-      role="listitem"
+      role={onClick ? 'button' : 'listitem'}
+      tabIndex={onClick ? 0 : undefined}
       className={cn(
         !isFirst && 'rounded-t-none border-t-0',
         !isLast && 'rounded-b-none',
+        onClick && 'hover:bg-muted cursor-pointer',
       )}
       id={data.id}
       key={data.id}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick()
+        }
+      }}
     >
       <ItemMedia variant="image" className="rounded-full">
         {getCategoryTypeIcon({

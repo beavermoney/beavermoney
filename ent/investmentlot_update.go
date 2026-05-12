@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
 	"entgo.io/ent/dialect/sql"
@@ -78,9 +79,34 @@ func (_u *InvestmentLotUpdate) AddPrice(v decimal.Decimal) *InvestmentLotUpdate 
 	return _u
 }
 
+// SetInvestmentID sets the "investment_id" field.
+func (_u *InvestmentLotUpdate) SetInvestmentID(v int) *InvestmentLotUpdate {
+	_u.mutation.SetInvestmentID(v)
+	return _u
+}
+
+// SetNillableInvestmentID sets the "investment_id" field if the given value is not nil.
+func (_u *InvestmentLotUpdate) SetNillableInvestmentID(v *int) *InvestmentLotUpdate {
+	if v != nil {
+		_u.SetInvestmentID(*v)
+	}
+	return _u
+}
+
+// SetInvestment sets the "investment" edge to the Investment entity.
+func (_u *InvestmentLotUpdate) SetInvestment(v *Investment) *InvestmentLotUpdate {
+	return _u.SetInvestmentID(v.ID)
+}
+
 // Mutation returns the InvestmentLotMutation object of the builder.
 func (_u *InvestmentLotUpdate) Mutation() *InvestmentLotMutation {
 	return _u.mutation
+}
+
+// ClearInvestment clears the "investment" edge to the Investment entity.
+func (_u *InvestmentLotUpdate) ClearInvestment() *InvestmentLotUpdate {
+	_u.mutation.ClearInvestment()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -127,6 +153,11 @@ func (_u *InvestmentLotUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *InvestmentLotUpdate) check() error {
+	if v, ok := _u.mutation.InvestmentID(); ok {
+		if err := investmentlot.InvestmentIDValidator(v); err != nil {
+			return &ValidationError{Name: "investment_id", err: fmt.Errorf(`ent: validator failed for field "InvestmentLot.investment_id": %w`, err)}
+		}
+	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "InvestmentLot.household"`)
 	}
@@ -171,6 +202,35 @@ func (_u *InvestmentLotUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	}
 	if value, ok := _u.mutation.AddedPrice(); ok {
 		_spec.AddField(investmentlot.FieldPrice, field.TypeFloat64, value)
+	}
+	if _u.mutation.InvestmentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   investmentlot.InvestmentTable,
+			Columns: []string{investmentlot.InvestmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.InvestmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   investmentlot.InvestmentTable,
+			Columns: []string{investmentlot.InvestmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -242,9 +302,34 @@ func (_u *InvestmentLotUpdateOne) AddPrice(v decimal.Decimal) *InvestmentLotUpda
 	return _u
 }
 
+// SetInvestmentID sets the "investment_id" field.
+func (_u *InvestmentLotUpdateOne) SetInvestmentID(v int) *InvestmentLotUpdateOne {
+	_u.mutation.SetInvestmentID(v)
+	return _u
+}
+
+// SetNillableInvestmentID sets the "investment_id" field if the given value is not nil.
+func (_u *InvestmentLotUpdateOne) SetNillableInvestmentID(v *int) *InvestmentLotUpdateOne {
+	if v != nil {
+		_u.SetInvestmentID(*v)
+	}
+	return _u
+}
+
+// SetInvestment sets the "investment" edge to the Investment entity.
+func (_u *InvestmentLotUpdateOne) SetInvestment(v *Investment) *InvestmentLotUpdateOne {
+	return _u.SetInvestmentID(v.ID)
+}
+
 // Mutation returns the InvestmentLotMutation object of the builder.
 func (_u *InvestmentLotUpdateOne) Mutation() *InvestmentLotMutation {
 	return _u.mutation
+}
+
+// ClearInvestment clears the "investment" edge to the Investment entity.
+func (_u *InvestmentLotUpdateOne) ClearInvestment() *InvestmentLotUpdateOne {
+	_u.mutation.ClearInvestment()
+	return _u
 }
 
 // Where appends a list predicates to the InvestmentLotUpdate builder.
@@ -304,6 +389,11 @@ func (_u *InvestmentLotUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *InvestmentLotUpdateOne) check() error {
+	if v, ok := _u.mutation.InvestmentID(); ok {
+		if err := investmentlot.InvestmentIDValidator(v); err != nil {
+			return &ValidationError{Name: "investment_id", err: fmt.Errorf(`ent: validator failed for field "InvestmentLot.investment_id": %w`, err)}
+		}
+	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "InvestmentLot.household"`)
 	}
@@ -365,6 +455,35 @@ func (_u *InvestmentLotUpdateOne) sqlSave(ctx context.Context) (_node *Investmen
 	}
 	if value, ok := _u.mutation.AddedPrice(); ok {
 		_spec.AddField(investmentlot.FieldPrice, field.TypeFloat64, value)
+	}
+	if _u.mutation.InvestmentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   investmentlot.InvestmentTable,
+			Columns: []string{investmentlot.InvestmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.InvestmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   investmentlot.InvestmentTable,
+			Columns: []string{investmentlot.InvestmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &InvestmentLot{config: _u.config}

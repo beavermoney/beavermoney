@@ -1545,6 +1545,73 @@ func (r *mutationResolver) UpdateTransaction(ctx context.Context, id int, input 
 	}, nil
 }
 
+// UpdateTransactionEntry is the resolver for the updateTransactionEntry field.
+func (r *mutationResolver) UpdateTransactionEntry(ctx context.Context, id int, input ent.UpdateTransactionEntryInput) (*ent.TransactionEntryEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateTransactionEntry",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	update := client.TransactionEntry.UpdateOneID(id).SetInput(input)
+
+	if input.AccountID != nil {
+		newAccount, err := client.Account.Query().
+			Where(account.IDEQ(*input.AccountID)).
+			Only(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("account not found: %w", err)
+		}
+		if newAccount.Archived {
+			return nil, fmt.Errorf("cannot move entry to archived account")
+		}
+		update = update.SetHouseholdCurrencyID(newAccount.HouseholdCurrencyID)
+	}
+
+	data, err := update.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ent.TransactionEntryEdge{
+		Node:   data,
+		Cursor: gqlutil.EncodeCursor(data.ID),
+	}, nil
+}
+
+// UpdateInvestmentLot is the resolver for the updateInvestmentLot field.
+func (r *mutationResolver) UpdateInvestmentLot(ctx context.Context, id int, input ent.UpdateInvestmentLotInput) (*ent.InvestmentLotEdge, error) {
+	userID := contextkeys.GetUserID(ctx)
+	householdID := contextkeys.GetHouseholdID(ctx)
+
+	ctx, span := r.tracer.Start(ctx, "mutationResolver.UpdateInvestmentLot",
+		trace.WithAttributes(
+			attribute.Int("householdID", householdID),
+			attribute.Int("userID", userID),
+		),
+	)
+	defer span.End()
+
+	client := ent.FromContext(ctx)
+
+	data, err := client.InvestmentLot.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ent.InvestmentLotEdge{
+		Node:   data,
+		Cursor: gqlutil.EncodeCursor(data.ID),
+	}, nil
+}
+
 // DeleteTransaction is the resolver for the deleteTransaction field.
 func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (*model.DeleteTransactionPayload, error) {
 	userID := contextkeys.GetUserID(ctx)
