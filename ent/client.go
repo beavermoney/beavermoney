@@ -1059,22 +1059,6 @@ func (c *HouseholdCurrencyClient) QueryInvestments(_m *HouseholdCurrency) *Inves
 	return query
 }
 
-// QueryTransactionEntries queries the transaction_entries edge of a HouseholdCurrency.
-func (c *HouseholdCurrencyClient) QueryTransactionEntries(_m *HouseholdCurrency) *TransactionEntryQuery {
-	query := (&TransactionEntryClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(householdcurrency.Table, householdcurrency.FieldID, id),
-			sqlgraph.To(transactionentry.Table, transactionentry.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, householdcurrency.TransactionEntriesTable, householdcurrency.TransactionEntriesColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryRecurringSubscriptions queries the recurring_subscriptions edge of a HouseholdCurrency.
 func (c *HouseholdCurrencyClient) QueryRecurringSubscriptions(_m *HouseholdCurrency) *RecurringSubscriptionQuery {
 	query := (&RecurringSubscriptionClient{config: c.config}).Query()
@@ -3048,22 +3032,6 @@ func (c *TransactionEntryClient) QueryAccount(_m *TransactionEntry) *AccountQuer
 			sqlgraph.From(transactionentry.Table, transactionentry.FieldID, id),
 			sqlgraph.To(account.Table, account.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, transactionentry.AccountTable, transactionentry.AccountColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryHouseholdCurrency queries the household_currency edge of a TransactionEntry.
-func (c *TransactionEntryClient) QueryHouseholdCurrency(_m *TransactionEntry) *HouseholdCurrencyQuery {
-	query := (&HouseholdCurrencyClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(transactionentry.Table, transactionentry.FieldID, id),
-			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, transactionentry.HouseholdCurrencyTable, transactionentry.HouseholdCurrencyColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

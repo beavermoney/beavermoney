@@ -81,11 +81,6 @@ func AccountID(v int) predicate.TransactionEntry {
 	return predicate.TransactionEntry(sql.FieldEQ(FieldAccountID, v))
 }
 
-// HouseholdCurrencyID applies equality check predicate on the "household_currency_id" field. It's identical to HouseholdCurrencyIDEQ.
-func HouseholdCurrencyID(v int) predicate.TransactionEntry {
-	return predicate.TransactionEntry(sql.FieldEQ(FieldHouseholdCurrencyID, v))
-}
-
 // TransactionID applies equality check predicate on the "transaction_id" field. It's identical to TransactionIDEQ.
 func TransactionID(v int) predicate.TransactionEntry {
 	return predicate.TransactionEntry(sql.FieldEQ(FieldTransactionID, v))
@@ -251,26 +246,6 @@ func AccountIDNotIn(vs ...int) predicate.TransactionEntry {
 	return predicate.TransactionEntry(sql.FieldNotIn(FieldAccountID, vs...))
 }
 
-// HouseholdCurrencyIDEQ applies the EQ predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDEQ(v int) predicate.TransactionEntry {
-	return predicate.TransactionEntry(sql.FieldEQ(FieldHouseholdCurrencyID, v))
-}
-
-// HouseholdCurrencyIDNEQ applies the NEQ predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDNEQ(v int) predicate.TransactionEntry {
-	return predicate.TransactionEntry(sql.FieldNEQ(FieldHouseholdCurrencyID, v))
-}
-
-// HouseholdCurrencyIDIn applies the In predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDIn(vs ...int) predicate.TransactionEntry {
-	return predicate.TransactionEntry(sql.FieldIn(FieldHouseholdCurrencyID, vs...))
-}
-
-// HouseholdCurrencyIDNotIn applies the NotIn predicate on the "household_currency_id" field.
-func HouseholdCurrencyIDNotIn(vs ...int) predicate.TransactionEntry {
-	return predicate.TransactionEntry(sql.FieldNotIn(FieldHouseholdCurrencyID, vs...))
-}
-
 // TransactionIDEQ applies the EQ predicate on the "transaction_id" field.
 func TransactionIDEQ(v int) predicate.TransactionEntry {
 	return predicate.TransactionEntry(sql.FieldEQ(FieldTransactionID, v))
@@ -329,29 +304,6 @@ func HasAccount() predicate.TransactionEntry {
 func HasAccountWith(preds ...predicate.Account) predicate.TransactionEntry {
 	return predicate.TransactionEntry(func(s *sql.Selector) {
 		step := newAccountStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasHouseholdCurrency applies the HasEdge predicate on the "household_currency" edge.
-func HasHouseholdCurrency() predicate.TransactionEntry {
-	return predicate.TransactionEntry(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, HouseholdCurrencyTable, HouseholdCurrencyColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasHouseholdCurrencyWith applies the HasEdge predicate on the "household_currency" edge with a given conditions (other predicates).
-func HasHouseholdCurrencyWith(preds ...predicate.HouseholdCurrency) predicate.TransactionEntry {
-	return predicate.TransactionEntry(func(s *sql.Selector) {
-		step := newHouseholdCurrencyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

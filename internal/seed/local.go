@@ -227,7 +227,6 @@ func Seed(
 			SetAccount(chase).
 			SetHousehold(household).
 			SetTransaction(transaction).
-			SetHouseholdCurrencyID(householdUSD.ID).
 			SetAmount(decimal.NewFromInt(1000000)).SaveX(ctx)
 	}
 
@@ -250,7 +249,6 @@ func Seed(
 				SetAccount(chase).
 				SetHousehold(household).
 				SetTransaction(t).
-				SetHouseholdCurrencyID(householdUSD.ID).
 				SetAmount(genRandomAmount().Mul(decimal.NewFromInt(-1)))
 		}
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
@@ -275,7 +273,6 @@ func Seed(
 				SetAccount(wealthsimple).
 				SetHousehold(household).
 				SetTransaction(t).
-				SetHouseholdCurrencyID(householdCAD.ID).
 				SetAmount(genRandomAmount().Mul(decimal.NewFromInt(-1)))
 		}
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
@@ -830,7 +827,6 @@ func createTransaction(
 		SetAccount(account).
 		SetHouseholdID(household.ID).
 		SetTransaction(tx).
-		SetHouseholdCurrencyID(account.HouseholdCurrencyID).
 		SetAmount(amount).
 		SetCreateTime(date).
 		Save(ctx)

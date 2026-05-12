@@ -9,7 +9,6 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent"
@@ -32,8 +31,6 @@ type TransactionEntry struct {
 	Amount decimal.Decimal `json:"amount,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID int `json:"account_id,omitempty"`
-	// HouseholdCurrencyID holds the value of the "household_currency_id" field.
-	HouseholdCurrencyID int `json:"household_currency_id,omitempty"`
 	// TransactionID holds the value of the "transaction_id" field.
 	TransactionID int `json:"transaction_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -48,15 +45,13 @@ type TransactionEntryEdges struct {
 	Household *Household `json:"household,omitempty"`
 	// Account holds the value of the account edge.
 	Account *Account `json:"account,omitempty"`
-	// HouseholdCurrency holds the value of the household_currency edge.
-	HouseholdCurrency *HouseholdCurrency `json:"household_currency,omitempty"`
 	// Transaction holds the value of the transaction edge.
 	Transaction *Transaction `json:"transaction,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [3]map[string]int
 }
 
 // HouseholdOrErr returns the Household value or an error if the edge
@@ -81,23 +76,12 @@ func (e TransactionEntryEdges) AccountOrErr() (*Account, error) {
 	return nil, &NotLoadedError{edge: "account"}
 }
 
-// HouseholdCurrencyOrErr returns the HouseholdCurrency value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TransactionEntryEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
-	if e.HouseholdCurrency != nil {
-		return e.HouseholdCurrency, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: householdcurrency.Label}
-	}
-	return nil, &NotLoadedError{edge: "household_currency"}
-}
-
 // TransactionOrErr returns the Transaction value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TransactionEntryEdges) TransactionOrErr() (*Transaction, error) {
 	if e.Transaction != nil {
 		return e.Transaction, nil
-	} else if e.loadedTypes[3] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: transaction.Label}
 	}
 	return nil, &NotLoadedError{edge: "transaction"}
@@ -110,7 +94,7 @@ func (*TransactionEntry) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transactionentry.FieldAmount:
 			values[i] = new(decimal.Decimal)
-		case transactionentry.FieldID, transactionentry.FieldHouseholdID, transactionentry.FieldAccountID, transactionentry.FieldHouseholdCurrencyID, transactionentry.FieldTransactionID:
+		case transactionentry.FieldID, transactionentry.FieldHouseholdID, transactionentry.FieldAccountID, transactionentry.FieldTransactionID:
 			values[i] = new(sql.NullInt64)
 		case transactionentry.FieldCreateTime, transactionentry.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -165,12 +149,6 @@ func (_m *TransactionEntry) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.AccountID = int(value.Int64)
 			}
-		case transactionentry.FieldHouseholdCurrencyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field household_currency_id", values[i])
-			} else if value.Valid {
-				_m.HouseholdCurrencyID = int(value.Int64)
-			}
 		case transactionentry.FieldTransactionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field transaction_id", values[i])
@@ -198,11 +176,6 @@ func (_m *TransactionEntry) QueryHousehold() *HouseholdQuery {
 // QueryAccount queries the "account" edge of the TransactionEntry entity.
 func (_m *TransactionEntry) QueryAccount() *AccountQuery {
 	return NewTransactionEntryClient(_m.config).QueryAccount(_m)
-}
-
-// QueryHouseholdCurrency queries the "household_currency" edge of the TransactionEntry entity.
-func (_m *TransactionEntry) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
-	return NewTransactionEntryClient(_m.config).QueryHouseholdCurrency(_m)
 }
 
 // QueryTransaction queries the "transaction" edge of the TransactionEntry entity.
@@ -247,9 +220,6 @@ func (_m *TransactionEntry) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("account_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.AccountID))
-	builder.WriteString(", ")
-	builder.WriteString("household_currency_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdCurrencyID))
 	builder.WriteString(", ")
 	builder.WriteString("transaction_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TransactionID))

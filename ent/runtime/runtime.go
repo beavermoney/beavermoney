@@ -503,12 +503,8 @@ func init() {
 	transactionentryDescAccountID := transactionentryFields[1].Descriptor()
 	// transactionentry.AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	transactionentry.AccountIDValidator = transactionentryDescAccountID.Validators[0].(func(int) error)
-	// transactionentryDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
-	transactionentryDescHouseholdCurrencyID := transactionentryFields[2].Descriptor()
-	// transactionentry.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
-	transactionentry.HouseholdCurrencyIDValidator = transactionentryDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// transactionentryDescTransactionID is the schema descriptor for transaction_id field.
-	transactionentryDescTransactionID := transactionentryFields[3].Descriptor()
+	transactionentryDescTransactionID := transactionentryFields[2].Descriptor()
 	// transactionentry.TransactionIDValidator is a validator for the "transaction_id" field. It is called by the builders before save.
 	transactionentry.TransactionIDValidator = transactionentryDescTransactionID.Validators[0].(func(int) error)
 	userMixin := schema.User{}.Mixin()

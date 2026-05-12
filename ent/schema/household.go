@@ -205,7 +205,6 @@ func (HouseholdCurrency) Edges() []ent.Edge {
 			),
 		edge.To("accounts", Account.Type),
 		edge.To("investments", Investment.Type),
-		edge.To("transaction_entries", TransactionEntry.Type),
 		edge.To("recurring_subscriptions", RecurringSubscription.Type),
 		edge.To("snapshot_entries", SnapshotEntry.Type),
 		edge.To("snapshot_rates_from", SnapshotRate.Type),

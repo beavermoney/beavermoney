@@ -209,7 +209,6 @@ type ComplexityRoot struct {
 		SnapshotEntries        func(childComplexity int) int
 		SnapshotRatesFrom      func(childComplexity int) int
 		SnapshotRatesTo        func(childComplexity int) int
-		TransactionEntries     func(childComplexity int) int
 		UpdateTime             func(childComplexity int) int
 	}
 
@@ -548,18 +547,16 @@ type ComplexityRoot struct {
 	}
 
 	TransactionEntry struct {
-		Account             func(childComplexity int) int
-		AccountID           func(childComplexity int) int
-		Amount              func(childComplexity int) int
-		CreateTime          func(childComplexity int) int
-		Household           func(childComplexity int) int
-		HouseholdCurrency   func(childComplexity int) int
-		HouseholdCurrencyID func(childComplexity int) int
-		HouseholdID         func(childComplexity int) int
-		ID                  func(childComplexity int) int
-		Transaction         func(childComplexity int) int
-		TransactionID       func(childComplexity int) int
-		UpdateTime          func(childComplexity int) int
+		Account       func(childComplexity int) int
+		AccountID     func(childComplexity int) int
+		Amount        func(childComplexity int) int
+		CreateTime    func(childComplexity int) int
+		Household     func(childComplexity int) int
+		HouseholdID   func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Transaction   func(childComplexity int) int
+		TransactionID func(childComplexity int) int
+		UpdateTime    func(childComplexity int) int
 	}
 
 	TransactionEntryConnection struct {
@@ -1466,12 +1463,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.HouseholdCurrency.SnapshotRatesTo(childComplexity), true
-	case "HouseholdCurrency.transactionEntries":
-		if e.complexity.HouseholdCurrency.TransactionEntries == nil {
-			break
-		}
-
-		return e.complexity.HouseholdCurrency.TransactionEntries(childComplexity), true
 	case "HouseholdCurrency.updateTime":
 		if e.complexity.HouseholdCurrency.UpdateTime == nil {
 			break
@@ -3170,18 +3161,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.TransactionEntry.Household(childComplexity), true
-	case "TransactionEntry.householdCurrency":
-		if e.complexity.TransactionEntry.HouseholdCurrency == nil {
-			break
-		}
-
-		return e.complexity.TransactionEntry.HouseholdCurrency(childComplexity), true
-	case "TransactionEntry.householdCurrencyID":
-		if e.complexity.TransactionEntry.HouseholdCurrencyID == nil {
-			break
-		}
-
-		return e.complexity.TransactionEntry.HouseholdCurrencyID(childComplexity), true
 	case "TransactionEntry.householdID":
 		if e.complexity.TransactionEntry.HouseholdID == nil {
 			break
@@ -5266,8 +5245,6 @@ func (ec *executionContext) fieldContext_Account_householdCurrency(_ context.Con
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -5382,16 +5359,12 @@ func (ec *executionContext) fieldContext_Account_transactionEntries(_ context.Co
 				return ec.fieldContext_TransactionEntry_amount(ctx, field)
 			case "accountID":
 				return ec.fieldContext_TransactionEntry_accountID(ctx, field)
-			case "householdCurrencyID":
-				return ec.fieldContext_TransactionEntry_householdCurrencyID(ctx, field)
 			case "transactionID":
 				return ec.fieldContext_TransactionEntry_transactionID(ctx, field)
 			case "household":
 				return ec.fieldContext_TransactionEntry_household(ctx, field)
 			case "account":
 				return ec.fieldContext_TransactionEntry_account(ctx, field)
-			case "householdCurrency":
-				return ec.fieldContext_TransactionEntry_householdCurrency(ctx, field)
 			case "transaction":
 				return ec.fieldContext_TransactionEntry_transaction(ctx, field)
 			}
@@ -7186,8 +7159,6 @@ func (ec *executionContext) fieldContext_Household_householdCurrencies(_ context
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -7751,61 +7722,6 @@ func (ec *executionContext) fieldContext_HouseholdCurrency_investments(_ context
 	return fc, nil
 }
 
-func (ec *executionContext) _HouseholdCurrency_transactionEntries(ctx context.Context, field graphql.CollectedField, obj *ent.HouseholdCurrency) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_HouseholdCurrency_transactionEntries,
-		func(ctx context.Context) (any, error) {
-			return obj.TransactionEntries(ctx)
-		},
-		nil,
-		ec.marshalOTransactionEntry2ᚕᚖbeavermoneyᚗappᚋentᚐTransactionEntryᚄ,
-		true,
-		false,
-	)
-}
-
-func (ec *executionContext) fieldContext_HouseholdCurrency_transactionEntries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "HouseholdCurrency",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_TransactionEntry_id(ctx, field)
-			case "createTime":
-				return ec.fieldContext_TransactionEntry_createTime(ctx, field)
-			case "updateTime":
-				return ec.fieldContext_TransactionEntry_updateTime(ctx, field)
-			case "householdID":
-				return ec.fieldContext_TransactionEntry_householdID(ctx, field)
-			case "amount":
-				return ec.fieldContext_TransactionEntry_amount(ctx, field)
-			case "accountID":
-				return ec.fieldContext_TransactionEntry_accountID(ctx, field)
-			case "householdCurrencyID":
-				return ec.fieldContext_TransactionEntry_householdCurrencyID(ctx, field)
-			case "transactionID":
-				return ec.fieldContext_TransactionEntry_transactionID(ctx, field)
-			case "household":
-				return ec.fieldContext_TransactionEntry_household(ctx, field)
-			case "account":
-				return ec.fieldContext_TransactionEntry_account(ctx, field)
-			case "householdCurrency":
-				return ec.fieldContext_TransactionEntry_householdCurrency(ctx, field)
-			case "transaction":
-				return ec.fieldContext_TransactionEntry_transaction(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type TransactionEntry", field.Name)
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _HouseholdCurrency_recurringSubscriptions(ctx context.Context, field graphql.CollectedField, obj *ent.HouseholdCurrency) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -8289,8 +8205,6 @@ func (ec *executionContext) fieldContext_HouseholdCurrencyEdge_node(_ context.Co
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -8657,8 +8571,6 @@ func (ec *executionContext) fieldContext_HouseholdRate_fromCurrency(_ context.Co
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -8720,8 +8632,6 @@ func (ec *executionContext) fieldContext_HouseholdRate_toCurrency(_ context.Cont
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -9483,8 +9393,6 @@ func (ec *executionContext) fieldContext_Investment_householdCurrency(_ context.
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -11794,8 +11702,6 @@ func (ec *executionContext) fieldContext_Mutation_createHouseholdCurrency(ctx co
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -11869,8 +11775,6 @@ func (ec *executionContext) fieldContext_Mutation_updateHouseholdCurrency(ctx co
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -13986,8 +13890,6 @@ func (ec *executionContext) fieldContext_RecurringSubscription_householdCurrency
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -15268,8 +15170,6 @@ func (ec *executionContext) fieldContext_SnapshotEntry_householdCurrency(_ conte
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -15984,8 +15884,6 @@ func (ec *executionContext) fieldContext_SnapshotRate_fromCurrency(_ context.Con
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -16047,8 +15945,6 @@ func (ec *executionContext) fieldContext_SnapshotRate_toCurrency(_ context.Conte
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -16880,16 +16776,12 @@ func (ec *executionContext) fieldContext_Transaction_transactionEntries(_ contex
 				return ec.fieldContext_TransactionEntry_amount(ctx, field)
 			case "accountID":
 				return ec.fieldContext_TransactionEntry_accountID(ctx, field)
-			case "householdCurrencyID":
-				return ec.fieldContext_TransactionEntry_householdCurrencyID(ctx, field)
 			case "transactionID":
 				return ec.fieldContext_TransactionEntry_transactionID(ctx, field)
 			case "household":
 				return ec.fieldContext_TransactionEntry_household(ctx, field)
 			case "account":
 				return ec.fieldContext_TransactionEntry_account(ctx, field)
-			case "householdCurrency":
-				return ec.fieldContext_TransactionEntry_householdCurrency(ctx, field)
 			case "transaction":
 				return ec.fieldContext_TransactionEntry_transaction(ctx, field)
 			}
@@ -17864,35 +17756,6 @@ func (ec *executionContext) fieldContext_TransactionEntry_accountID(_ context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _TransactionEntry_householdCurrencyID(ctx context.Context, field graphql.CollectedField, obj *ent.TransactionEntry) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_TransactionEntry_householdCurrencyID,
-		func(ctx context.Context) (any, error) {
-			return obj.HouseholdCurrencyID, nil
-		},
-		nil,
-		ec.marshalNID2int,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_TransactionEntry_householdCurrencyID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TransactionEntry",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _TransactionEntry_transactionID(ctx context.Context, field graphql.CollectedField, obj *ent.TransactionEntry) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -18057,69 +17920,6 @@ func (ec *executionContext) fieldContext_TransactionEntry_account(_ context.Cont
 				return ec.fieldContext_Account_investments(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _TransactionEntry_householdCurrency(ctx context.Context, field graphql.CollectedField, obj *ent.TransactionEntry) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_TransactionEntry_householdCurrency,
-		func(ctx context.Context) (any, error) {
-			return obj.HouseholdCurrency(ctx)
-		},
-		nil,
-		ec.marshalNHouseholdCurrency2ᚖbeavermoneyᚗappᚋentᚐHouseholdCurrency,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_TransactionEntry_householdCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TransactionEntry",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_HouseholdCurrency_id(ctx, field)
-			case "householdID":
-				return ec.fieldContext_HouseholdCurrency_householdID(ctx, field)
-			case "createTime":
-				return ec.fieldContext_HouseholdCurrency_createTime(ctx, field)
-			case "updateTime":
-				return ec.fieldContext_HouseholdCurrency_updateTime(ctx, field)
-			case "code":
-				return ec.fieldContext_HouseholdCurrency_code(ctx, field)
-			case "important":
-				return ec.fieldContext_HouseholdCurrency_important(ctx, field)
-			case "household":
-				return ec.fieldContext_HouseholdCurrency_household(ctx, field)
-			case "accounts":
-				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
-			case "investments":
-				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
-			case "recurringSubscriptions":
-				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
-			case "snapshotEntries":
-				return ec.fieldContext_HouseholdCurrency_snapshotEntries(ctx, field)
-			case "snapshotRatesFrom":
-				return ec.fieldContext_HouseholdCurrency_snapshotRatesFrom(ctx, field)
-			case "snapshotRatesTo":
-				return ec.fieldContext_HouseholdCurrency_snapshotRatesTo(ctx, field)
-			case "householdRatesFrom":
-				return ec.fieldContext_HouseholdCurrency_householdRatesFrom(ctx, field)
-			case "householdRatesTo":
-				return ec.fieldContext_HouseholdCurrency_householdRatesTo(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type HouseholdCurrency", field.Name)
 		},
 	}
 	return fc, nil
@@ -18323,16 +18123,12 @@ func (ec *executionContext) fieldContext_TransactionEntryEdge_node(_ context.Con
 				return ec.fieldContext_TransactionEntry_amount(ctx, field)
 			case "accountID":
 				return ec.fieldContext_TransactionEntry_accountID(ctx, field)
-			case "householdCurrencyID":
-				return ec.fieldContext_TransactionEntry_householdCurrencyID(ctx, field)
 			case "transactionID":
 				return ec.fieldContext_TransactionEntry_transactionID(ctx, field)
 			case "household":
 				return ec.fieldContext_TransactionEntry_household(ctx, field)
 			case "account":
 				return ec.fieldContext_TransactionEntry_account(ctx, field)
-			case "householdCurrency":
-				return ec.fieldContext_TransactionEntry_householdCurrency(ctx, field)
 			case "transaction":
 				return ec.fieldContext_TransactionEntry_transaction(ctx, field)
 			}
@@ -19418,8 +19214,6 @@ func (ec *executionContext) fieldContext_UserHousehold_householdCurrency(_ conte
 				return ec.fieldContext_HouseholdCurrency_accounts(ctx, field)
 			case "investments":
 				return ec.fieldContext_HouseholdCurrency_investments(ctx, field)
-			case "transactionEntries":
-				return ec.fieldContext_HouseholdCurrency_transactionEntries(ctx, field)
 			case "recurringSubscriptions":
 				return ec.fieldContext_HouseholdCurrency_recurringSubscriptions(ctx, field)
 			case "snapshotEntries":
@@ -22121,7 +21915,7 @@ func (ec *executionContext) unmarshalInputCreateHouseholdCurrencyInput(ctx conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"code", "important", "accountIDs", "investmentIDs", "transactionEntryIDs", "recurringSubscriptionIDs", "snapshotEntryIDs", "snapshotRatesFromIDs", "snapshotRatesToIDs", "householdRatesFromIDs", "householdRatesToIDs"}
+	fieldsInOrder := [...]string{"code", "important", "accountIDs", "investmentIDs", "recurringSubscriptionIDs", "snapshotEntryIDs", "snapshotRatesFromIDs", "snapshotRatesToIDs", "householdRatesFromIDs", "householdRatesToIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22156,13 +21950,6 @@ func (ec *executionContext) unmarshalInputCreateHouseholdCurrencyInput(ctx conte
 				return it, err
 			}
 			it.InvestmentIDs = data
-		case "transactionEntryIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionEntryIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.TransactionEntryIDs = data
 		case "recurringSubscriptionIDs":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recurringSubscriptionIDs"))
 			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
@@ -22763,7 +22550,7 @@ func (ec *executionContext) unmarshalInputHouseholdCurrencyWhereInput(ctx contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "important", "importantNEQ", "hasHousehold", "hasHouseholdWith", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasTransactionEntries", "hasTransactionEntriesWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasSnapshotRatesFrom", "hasSnapshotRatesFromWith", "hasSnapshotRatesTo", "hasSnapshotRatesToWith", "hasHouseholdRatesFrom", "hasHouseholdRatesFromWith", "hasHouseholdRatesTo", "hasHouseholdRatesToWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "important", "importantNEQ", "hasHousehold", "hasHouseholdWith", "hasAccounts", "hasAccountsWith", "hasInvestments", "hasInvestmentsWith", "hasRecurringSubscriptions", "hasRecurringSubscriptionsWith", "hasSnapshotEntries", "hasSnapshotEntriesWith", "hasSnapshotRatesFrom", "hasSnapshotRatesFromWith", "hasSnapshotRatesTo", "hasSnapshotRatesToWith", "hasHouseholdRatesFrom", "hasHouseholdRatesFromWith", "hasHouseholdRatesTo", "hasHouseholdRatesToWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23134,20 +22921,6 @@ func (ec *executionContext) unmarshalInputHouseholdCurrencyWhereInput(ctx contex
 				return it, err
 			}
 			it.HasInvestmentsWith = data
-		case "hasTransactionEntries":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionEntries"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HasTransactionEntries = data
-		case "hasTransactionEntriesWith":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionEntriesWith"))
-			data, err := ec.unmarshalOTransactionEntryWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐTransactionEntryWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HasTransactionEntriesWith = data
 		case "hasRecurringSubscriptions":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasRecurringSubscriptions"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -28496,7 +28269,7 @@ func (ec *executionContext) unmarshalInputTransactionEntryWhereInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "amount", "amountNEQ", "amountIn", "amountNotIn", "amountGT", "amountGTE", "amountLT", "amountLTE", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "householdCurrencyID", "householdCurrencyIDNEQ", "householdCurrencyIDIn", "householdCurrencyIDNotIn", "transactionID", "transactionIDNEQ", "transactionIDIn", "transactionIDNotIn", "hasHousehold", "hasHouseholdWith", "hasAccount", "hasAccountWith", "hasHouseholdCurrency", "hasHouseholdCurrencyWith", "hasTransaction", "hasTransactionWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createTime", "createTimeNEQ", "createTimeIn", "createTimeNotIn", "createTimeGT", "createTimeGTE", "createTimeLT", "createTimeLTE", "updateTime", "updateTimeNEQ", "updateTimeIn", "updateTimeNotIn", "updateTimeGT", "updateTimeGTE", "updateTimeLT", "updateTimeLTE", "householdID", "householdIDNEQ", "householdIDIn", "householdIDNotIn", "amount", "amountNEQ", "amountIn", "amountNotIn", "amountGT", "amountGTE", "amountLT", "amountLTE", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "transactionID", "transactionIDNEQ", "transactionIDIn", "transactionIDNotIn", "hasHousehold", "hasHouseholdWith", "hasAccount", "hasAccountWith", "hasTransaction", "hasTransactionWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -28820,34 +28593,6 @@ func (ec *executionContext) unmarshalInputTransactionEntryWhereInput(ctx context
 				return it, err
 			}
 			it.AccountIDNotIn = data
-		case "householdCurrencyID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdCurrencyID"))
-			data, err := ec.unmarshalOID2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HouseholdCurrencyID = data
-		case "householdCurrencyIDNEQ":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdCurrencyIDNEQ"))
-			data, err := ec.unmarshalOID2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HouseholdCurrencyIDNEQ = data
-		case "householdCurrencyIDIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdCurrencyIDIn"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HouseholdCurrencyIDIn = data
-		case "householdCurrencyIDNotIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("householdCurrencyIDNotIn"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HouseholdCurrencyIDNotIn = data
 		case "transactionID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionID"))
 			data, err := ec.unmarshalOID2ᚖint(ctx, v)
@@ -28904,20 +28649,6 @@ func (ec *executionContext) unmarshalInputTransactionEntryWhereInput(ctx context
 				return it, err
 			}
 			it.HasAccountWith = data
-		case "hasHouseholdCurrency":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHouseholdCurrency"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HasHouseholdCurrency = data
-		case "hasHouseholdCurrencyWith":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasHouseholdCurrencyWith"))
-			data, err := ec.unmarshalOHouseholdCurrencyWhereInput2ᚕᚖbeavermoneyᚗappᚋentᚐHouseholdCurrencyWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.HasHouseholdCurrencyWith = data
 		case "hasTransaction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransaction"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -29576,7 +29307,7 @@ func (ec *executionContext) unmarshalInputUpdateHouseholdCurrencyInput(ctx conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"important", "addAccountIDs", "removeAccountIDs", "clearAccounts", "addInvestmentIDs", "removeInvestmentIDs", "clearInvestments", "addTransactionEntryIDs", "removeTransactionEntryIDs", "clearTransactionEntries", "addRecurringSubscriptionIDs", "removeRecurringSubscriptionIDs", "clearRecurringSubscriptions", "addSnapshotEntryIDs", "removeSnapshotEntryIDs", "clearSnapshotEntries", "addSnapshotRatesFromIDs", "removeSnapshotRatesFromIDs", "clearSnapshotRatesFrom", "addSnapshotRatesToIDs", "removeSnapshotRatesToIDs", "clearSnapshotRatesTo", "addHouseholdRatesFromIDs", "removeHouseholdRatesFromIDs", "clearHouseholdRatesFrom", "addHouseholdRatesToIDs", "removeHouseholdRatesToIDs", "clearHouseholdRatesTo"}
+	fieldsInOrder := [...]string{"important", "addAccountIDs", "removeAccountIDs", "clearAccounts", "addInvestmentIDs", "removeInvestmentIDs", "clearInvestments", "addRecurringSubscriptionIDs", "removeRecurringSubscriptionIDs", "clearRecurringSubscriptions", "addSnapshotEntryIDs", "removeSnapshotEntryIDs", "clearSnapshotEntries", "addSnapshotRatesFromIDs", "removeSnapshotRatesFromIDs", "clearSnapshotRatesFrom", "addSnapshotRatesToIDs", "removeSnapshotRatesToIDs", "clearSnapshotRatesTo", "addHouseholdRatesFromIDs", "removeHouseholdRatesFromIDs", "clearHouseholdRatesFrom", "addHouseholdRatesToIDs", "removeHouseholdRatesToIDs", "clearHouseholdRatesTo"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -29632,27 +29363,6 @@ func (ec *executionContext) unmarshalInputUpdateHouseholdCurrencyInput(ctx conte
 				return it, err
 			}
 			it.ClearInvestments = data
-		case "addTransactionEntryIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionEntryIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.AddTransactionEntryIDs = data
-		case "removeTransactionEntryIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionEntryIDs"))
-			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RemoveTransactionEntryIDs = data
-		case "clearTransactionEntries":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearTransactionEntries"))
-			data, err := ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ClearTransactionEntries = data
 		case "addRecurringSubscriptionIDs":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addRecurringSubscriptionIDs"))
 			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
@@ -33038,39 +32748,6 @@ func (ec *executionContext) _HouseholdCurrency(ctx context.Context, sel ast.Sele
 					}
 				}()
 				res = ec._HouseholdCurrency_investments(ctx, field, obj)
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "transactionEntries":
-			field := field
-
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._HouseholdCurrency_transactionEntries(ctx, field, obj)
 				return res
 			}
 
@@ -37535,11 +37212,6 @@ func (ec *executionContext) _TransactionEntry(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "householdCurrencyID":
-			out.Values[i] = ec._TransactionEntry_householdCurrencyID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "transactionID":
 			out.Values[i] = ec._TransactionEntry_transactionID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -37591,42 +37263,6 @@ func (ec *executionContext) _TransactionEntry(ctx context.Context, sel ast.Selec
 					}
 				}()
 				res = ec._TransactionEntry_account(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "householdCurrency":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._TransactionEntry_householdCurrency(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

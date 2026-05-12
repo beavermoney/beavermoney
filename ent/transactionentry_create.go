@@ -10,7 +10,6 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
@@ -73,12 +72,6 @@ func (_c *TransactionEntryCreate) SetAccountID(v int) *TransactionEntryCreate {
 	return _c
 }
 
-// SetHouseholdCurrencyID sets the "household_currency_id" field.
-func (_c *TransactionEntryCreate) SetHouseholdCurrencyID(v int) *TransactionEntryCreate {
-	_c.mutation.SetHouseholdCurrencyID(v)
-	return _c
-}
-
 // SetTransactionID sets the "transaction_id" field.
 func (_c *TransactionEntryCreate) SetTransactionID(v int) *TransactionEntryCreate {
 	_c.mutation.SetTransactionID(v)
@@ -93,11 +86,6 @@ func (_c *TransactionEntryCreate) SetHousehold(v *Household) *TransactionEntryCr
 // SetAccount sets the "account" edge to the Account entity.
 func (_c *TransactionEntryCreate) SetAccount(v *Account) *TransactionEntryCreate {
 	return _c.SetAccountID(v.ID)
-}
-
-// SetHouseholdCurrency sets the "household_currency" edge to the HouseholdCurrency entity.
-func (_c *TransactionEntryCreate) SetHouseholdCurrency(v *HouseholdCurrency) *TransactionEntryCreate {
-	return _c.SetHouseholdCurrencyID(v.ID)
 }
 
 // SetTransaction sets the "transaction" edge to the Transaction entity.
@@ -181,14 +169,6 @@ func (_c *TransactionEntryCreate) check() error {
 			return &ValidationError{Name: "account_id", err: fmt.Errorf(`ent: validator failed for field "TransactionEntry.account_id": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.HouseholdCurrencyID(); !ok {
-		return &ValidationError{Name: "household_currency_id", err: errors.New(`ent: missing required field "TransactionEntry.household_currency_id"`)}
-	}
-	if v, ok := _c.mutation.HouseholdCurrencyID(); ok {
-		if err := transactionentry.HouseholdCurrencyIDValidator(v); err != nil {
-			return &ValidationError{Name: "household_currency_id", err: fmt.Errorf(`ent: validator failed for field "TransactionEntry.household_currency_id": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.TransactionID(); !ok {
 		return &ValidationError{Name: "transaction_id", err: errors.New(`ent: missing required field "TransactionEntry.transaction_id"`)}
 	}
@@ -202,9 +182,6 @@ func (_c *TransactionEntryCreate) check() error {
 	}
 	if len(_c.mutation.AccountIDs()) == 0 {
 		return &ValidationError{Name: "account", err: errors.New(`ent: missing required edge "TransactionEntry.account"`)}
-	}
-	if len(_c.mutation.HouseholdCurrencyIDs()) == 0 {
-		return &ValidationError{Name: "household_currency", err: errors.New(`ent: missing required edge "TransactionEntry.household_currency"`)}
 	}
 	if len(_c.mutation.TransactionIDs()) == 0 {
 		return &ValidationError{Name: "transaction", err: errors.New(`ent: missing required edge "TransactionEntry.transaction"`)}
@@ -280,23 +257,6 @@ func (_c *TransactionEntryCreate) createSpec() (*TransactionEntry, *sqlgraph.Cre
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.AccountID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.HouseholdCurrencyIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   transactionentry.HouseholdCurrencyTable,
-			Columns: []string{transactionentry.HouseholdCurrencyColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(householdcurrency.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.HouseholdCurrencyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.TransactionIDs(); len(nodes) > 0 {
@@ -410,18 +370,6 @@ func (u *TransactionEntryUpsert) UpdateAccountID() *TransactionEntryUpsert {
 	return u
 }
 
-// SetHouseholdCurrencyID sets the "household_currency_id" field.
-func (u *TransactionEntryUpsert) SetHouseholdCurrencyID(v int) *TransactionEntryUpsert {
-	u.Set(transactionentry.FieldHouseholdCurrencyID, v)
-	return u
-}
-
-// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
-func (u *TransactionEntryUpsert) UpdateHouseholdCurrencyID() *TransactionEntryUpsert {
-	u.SetExcluded(transactionentry.FieldHouseholdCurrencyID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -519,20 +467,6 @@ func (u *TransactionEntryUpsertOne) SetAccountID(v int) *TransactionEntryUpsertO
 func (u *TransactionEntryUpsertOne) UpdateAccountID() *TransactionEntryUpsertOne {
 	return u.Update(func(s *TransactionEntryUpsert) {
 		s.UpdateAccountID()
-	})
-}
-
-// SetHouseholdCurrencyID sets the "household_currency_id" field.
-func (u *TransactionEntryUpsertOne) SetHouseholdCurrencyID(v int) *TransactionEntryUpsertOne {
-	return u.Update(func(s *TransactionEntryUpsert) {
-		s.SetHouseholdCurrencyID(v)
-	})
-}
-
-// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
-func (u *TransactionEntryUpsertOne) UpdateHouseholdCurrencyID() *TransactionEntryUpsertOne {
-	return u.Update(func(s *TransactionEntryUpsert) {
-		s.UpdateHouseholdCurrencyID()
 	})
 }
 
@@ -799,20 +733,6 @@ func (u *TransactionEntryUpsertBulk) SetAccountID(v int) *TransactionEntryUpsert
 func (u *TransactionEntryUpsertBulk) UpdateAccountID() *TransactionEntryUpsertBulk {
 	return u.Update(func(s *TransactionEntryUpsert) {
 		s.UpdateAccountID()
-	})
-}
-
-// SetHouseholdCurrencyID sets the "household_currency_id" field.
-func (u *TransactionEntryUpsertBulk) SetHouseholdCurrencyID(v int) *TransactionEntryUpsertBulk {
-	return u.Update(func(s *TransactionEntryUpsert) {
-		s.SetHouseholdCurrencyID(v)
-	})
-}
-
-// UpdateHouseholdCurrencyID sets the "household_currency_id" field to the value that was provided on create.
-func (u *TransactionEntryUpsertBulk) UpdateHouseholdCurrencyID() *TransactionEntryUpsertBulk {
-	return u.Update(func(s *TransactionEntryUpsert) {
-		s.UpdateHouseholdCurrencyID()
 	})
 }
 

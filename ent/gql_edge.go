@@ -337,18 +337,6 @@ func (_m *HouseholdCurrency) Investments(ctx context.Context) (result []*Investm
 	return result, err
 }
 
-func (_m *HouseholdCurrency) TransactionEntries(ctx context.Context) (result []*TransactionEntry, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = _m.NamedTransactionEntries(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = _m.Edges.TransactionEntriesOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = _m.QueryTransactionEntries().All(ctx)
-	}
-	return result, err
-}
-
 func (_m *HouseholdCurrency) RecurringSubscriptions(ctx context.Context) (result []*RecurringSubscription, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedRecurringSubscriptions(graphql.GetFieldContext(ctx).Field.Alias)
@@ -713,14 +701,6 @@ func (_m *TransactionEntry) Account(ctx context.Context) (*Account, error) {
 	result, err := _m.Edges.AccountOrErr()
 	if IsNotLoaded(err) {
 		result, err = _m.QueryAccount().Only(ctx)
-	}
-	return result, err
-}
-
-func (_m *TransactionEntry) HouseholdCurrency(ctx context.Context) (*HouseholdCurrency, error) {
-	result, err := _m.Edges.HouseholdCurrencyOrErr()
-	if IsNotLoaded(err) {
-		result, err = _m.QueryHouseholdCurrency().Only(ctx)
 	}
 	return result, err
 }

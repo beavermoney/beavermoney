@@ -324,29 +324,6 @@ func HasInvestmentsWith(preds ...predicate.Investment) predicate.HouseholdCurren
 	})
 }
 
-// HasTransactionEntries applies the HasEdge predicate on the "transaction_entries" edge.
-func HasTransactionEntries() predicate.HouseholdCurrency {
-	return predicate.HouseholdCurrency(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TransactionEntriesTable, TransactionEntriesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTransactionEntriesWith applies the HasEdge predicate on the "transaction_entries" edge with a given conditions (other predicates).
-func HasTransactionEntriesWith(preds ...predicate.TransactionEntry) predicate.HouseholdCurrency {
-	return predicate.HouseholdCurrency(func(s *sql.Selector) {
-		step := newTransactionEntriesStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasRecurringSubscriptions applies the HasEdge predicate on the "recurring_subscriptions" edge.
 func HasRecurringSubscriptions() predicate.HouseholdCurrency {
 	return predicate.HouseholdCurrency(func(s *sql.Selector) {

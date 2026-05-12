@@ -10,7 +10,6 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/household"
-	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactionentry"
@@ -23,16 +22,15 @@ import (
 // TransactionEntryQuery is the builder for querying TransactionEntry entities.
 type TransactionEntryQuery struct {
 	config
-	ctx                   *QueryContext
-	order                 []transactionentry.OrderOption
-	inters                []Interceptor
-	predicates            []predicate.TransactionEntry
-	withHousehold         *HouseholdQuery
-	withAccount           *AccountQuery
-	withHouseholdCurrency *HouseholdCurrencyQuery
-	withTransaction       *TransactionQuery
-	loadTotal             []func(context.Context, []*TransactionEntry) error
-	modifiers             []func(*sql.Selector)
+	ctx             *QueryContext
+	order           []transactionentry.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.TransactionEntry
+	withHousehold   *HouseholdQuery
+	withAccount     *AccountQuery
+	withTransaction *TransactionQuery
+	loadTotal       []func(context.Context, []*TransactionEntry) error
+	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -106,28 +104,6 @@ func (_q *TransactionEntryQuery) QueryAccount() *AccountQuery {
 			sqlgraph.From(transactionentry.Table, transactionentry.FieldID, selector),
 			sqlgraph.To(account.Table, account.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, transactionentry.AccountTable, transactionentry.AccountColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryHouseholdCurrency chains the current query on the "household_currency" edge.
-func (_q *TransactionEntryQuery) QueryHouseholdCurrency() *HouseholdCurrencyQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(transactionentry.Table, transactionentry.FieldID, selector),
-			sqlgraph.To(householdcurrency.Table, householdcurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, transactionentry.HouseholdCurrencyTable, transactionentry.HouseholdCurrencyColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -344,15 +320,14 @@ func (_q *TransactionEntryQuery) Clone() *TransactionEntryQuery {
 		return nil
 	}
 	return &TransactionEntryQuery{
-		config:                _q.config,
-		ctx:                   _q.ctx.Clone(),
-		order:                 append([]transactionentry.OrderOption{}, _q.order...),
-		inters:                append([]Interceptor{}, _q.inters...),
-		predicates:            append([]predicate.TransactionEntry{}, _q.predicates...),
-		withHousehold:         _q.withHousehold.Clone(),
-		withAccount:           _q.withAccount.Clone(),
-		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
-		withTransaction:       _q.withTransaction.Clone(),
+		config:          _q.config,
+		ctx:             _q.ctx.Clone(),
+		order:           append([]transactionentry.OrderOption{}, _q.order...),
+		inters:          append([]Interceptor{}, _q.inters...),
+		predicates:      append([]predicate.TransactionEntry{}, _q.predicates...),
+		withHousehold:   _q.withHousehold.Clone(),
+		withAccount:     _q.withAccount.Clone(),
+		withTransaction: _q.withTransaction.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -379,17 +354,6 @@ func (_q *TransactionEntryQuery) WithAccount(opts ...func(*AccountQuery)) *Trans
 		opt(query)
 	}
 	_q.withAccount = query
-	return _q
-}
-
-// WithHouseholdCurrency tells the query-builder to eager-load the nodes that are connected to
-// the "household_currency" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TransactionEntryQuery) WithHouseholdCurrency(opts ...func(*HouseholdCurrencyQuery)) *TransactionEntryQuery {
-	query := (&HouseholdCurrencyClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withHouseholdCurrency = query
 	return _q
 }
 
@@ -488,10 +452,9 @@ func (_q *TransactionEntryQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*TransactionEntry{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			_q.withHousehold != nil,
 			_q.withAccount != nil,
-			_q.withHouseholdCurrency != nil,
 			_q.withTransaction != nil,
 		}
 	)
@@ -525,12 +488,6 @@ func (_q *TransactionEntryQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if query := _q.withAccount; query != nil {
 		if err := _q.loadAccount(ctx, query, nodes, nil,
 			func(n *TransactionEntry, e *Account) { n.Edges.Account = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withHouseholdCurrency; query != nil {
-		if err := _q.loadHouseholdCurrency(ctx, query, nodes, nil,
-			func(n *TransactionEntry, e *HouseholdCurrency) { n.Edges.HouseholdCurrency = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -606,35 +563,6 @@ func (_q *TransactionEntryQuery) loadAccount(ctx context.Context, query *Account
 	}
 	return nil
 }
-func (_q *TransactionEntryQuery) loadHouseholdCurrency(ctx context.Context, query *HouseholdCurrencyQuery, nodes []*TransactionEntry, init func(*TransactionEntry), assign func(*TransactionEntry, *HouseholdCurrency)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*TransactionEntry)
-	for i := range nodes {
-		fk := nodes[i].HouseholdCurrencyID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(householdcurrency.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "household_currency_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (_q *TransactionEntryQuery) loadTransaction(ctx context.Context, query *TransactionQuery, nodes []*TransactionEntry, init func(*TransactionEntry), assign func(*TransactionEntry, *Transaction)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*TransactionEntry)
@@ -698,9 +626,6 @@ func (_q *TransactionEntryQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withAccount != nil {
 			_spec.Node.AddColumnOnce(transactionentry.FieldAccountID)
-		}
-		if _q.withHouseholdCurrency != nil {
-			_spec.Node.AddColumnOnce(transactionentry.FieldHouseholdCurrencyID)
 		}
 		if _q.withTransaction != nil {
 			_spec.Node.AddColumnOnce(transactionentry.FieldTransactionID)

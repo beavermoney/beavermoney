@@ -520,7 +520,6 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
 		{Name: "account_id", Type: field.TypeInt},
 		{Name: "household_id", Type: field.TypeInt},
-		{Name: "household_currency_id", Type: field.TypeInt},
 		{Name: "transaction_id", Type: field.TypeInt},
 	}
 	// TransactionEntriesTable holds the schema information for the "transaction_entries" table.
@@ -542,14 +541,8 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "transaction_entries_household_currencies_transaction_entries",
-				Columns:    []*schema.Column{TransactionEntriesColumns[6]},
-				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
 				Symbol:     "transaction_entries_transactions_transaction_entries",
-				Columns:    []*schema.Column{TransactionEntriesColumns[7]},
+				Columns:    []*schema.Column{TransactionEntriesColumns[6]},
 				RefColumns: []*schema.Column{TransactionsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -733,8 +726,7 @@ func init() {
 	}
 	TransactionEntriesTable.ForeignKeys[0].RefTable = AccountsTable
 	TransactionEntriesTable.ForeignKeys[1].RefTable = HouseholdsTable
-	TransactionEntriesTable.ForeignKeys[2].RefTable = HouseholdCurrenciesTable
-	TransactionEntriesTable.ForeignKeys[3].RefTable = TransactionsTable
+	TransactionEntriesTable.ForeignKeys[2].RefTable = TransactionsTable
 	TransactionEntriesTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(17179869184),
 	}

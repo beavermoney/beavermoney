@@ -16,7 +16,6 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshotentry"
 	"beavermoney.app/ent/snapshotrate"
-	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -84,21 +83,6 @@ func (_u *HouseholdCurrencyUpdate) AddInvestments(v ...*Investment) *HouseholdCu
 		ids[i] = v[i].ID
 	}
 	return _u.AddInvestmentIDs(ids...)
-}
-
-// AddTransactionEntryIDs adds the "transaction_entries" edge to the TransactionEntry entity by IDs.
-func (_u *HouseholdCurrencyUpdate) AddTransactionEntryIDs(ids ...int) *HouseholdCurrencyUpdate {
-	_u.mutation.AddTransactionEntryIDs(ids...)
-	return _u
-}
-
-// AddTransactionEntries adds the "transaction_entries" edges to the TransactionEntry entity.
-func (_u *HouseholdCurrencyUpdate) AddTransactionEntries(v ...*TransactionEntry) *HouseholdCurrencyUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddTransactionEntryIDs(ids...)
 }
 
 // AddRecurringSubscriptionIDs adds the "recurring_subscriptions" edge to the RecurringSubscription entity by IDs.
@@ -236,27 +220,6 @@ func (_u *HouseholdCurrencyUpdate) RemoveInvestments(v ...*Investment) *Househol
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveInvestmentIDs(ids...)
-}
-
-// ClearTransactionEntries clears all "transaction_entries" edges to the TransactionEntry entity.
-func (_u *HouseholdCurrencyUpdate) ClearTransactionEntries() *HouseholdCurrencyUpdate {
-	_u.mutation.ClearTransactionEntries()
-	return _u
-}
-
-// RemoveTransactionEntryIDs removes the "transaction_entries" edge to TransactionEntry entities by IDs.
-func (_u *HouseholdCurrencyUpdate) RemoveTransactionEntryIDs(ids ...int) *HouseholdCurrencyUpdate {
-	_u.mutation.RemoveTransactionEntryIDs(ids...)
-	return _u
-}
-
-// RemoveTransactionEntries removes "transaction_entries" edges to TransactionEntry entities.
-func (_u *HouseholdCurrencyUpdate) RemoveTransactionEntries(v ...*TransactionEntry) *HouseholdCurrencyUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveTransactionEntryIDs(ids...)
 }
 
 // ClearRecurringSubscriptions clears all "recurring_subscriptions" edges to the RecurringSubscription entity.
@@ -542,51 +505,6 @@ func (_u *HouseholdCurrencyUpdate) sqlSave(ctx context.Context) (_node int, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.TransactionEntriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedTransactionEntriesIDs(); len(nodes) > 0 && !_u.mutation.TransactionEntriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.TransactionEntriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -936,21 +854,6 @@ func (_u *HouseholdCurrencyUpdateOne) AddInvestments(v ...*Investment) *Househol
 	return _u.AddInvestmentIDs(ids...)
 }
 
-// AddTransactionEntryIDs adds the "transaction_entries" edge to the TransactionEntry entity by IDs.
-func (_u *HouseholdCurrencyUpdateOne) AddTransactionEntryIDs(ids ...int) *HouseholdCurrencyUpdateOne {
-	_u.mutation.AddTransactionEntryIDs(ids...)
-	return _u
-}
-
-// AddTransactionEntries adds the "transaction_entries" edges to the TransactionEntry entity.
-func (_u *HouseholdCurrencyUpdateOne) AddTransactionEntries(v ...*TransactionEntry) *HouseholdCurrencyUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddTransactionEntryIDs(ids...)
-}
-
 // AddRecurringSubscriptionIDs adds the "recurring_subscriptions" edge to the RecurringSubscription entity by IDs.
 func (_u *HouseholdCurrencyUpdateOne) AddRecurringSubscriptionIDs(ids ...int) *HouseholdCurrencyUpdateOne {
 	_u.mutation.AddRecurringSubscriptionIDs(ids...)
@@ -1086,27 +989,6 @@ func (_u *HouseholdCurrencyUpdateOne) RemoveInvestments(v ...*Investment) *House
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveInvestmentIDs(ids...)
-}
-
-// ClearTransactionEntries clears all "transaction_entries" edges to the TransactionEntry entity.
-func (_u *HouseholdCurrencyUpdateOne) ClearTransactionEntries() *HouseholdCurrencyUpdateOne {
-	_u.mutation.ClearTransactionEntries()
-	return _u
-}
-
-// RemoveTransactionEntryIDs removes the "transaction_entries" edge to TransactionEntry entities by IDs.
-func (_u *HouseholdCurrencyUpdateOne) RemoveTransactionEntryIDs(ids ...int) *HouseholdCurrencyUpdateOne {
-	_u.mutation.RemoveTransactionEntryIDs(ids...)
-	return _u
-}
-
-// RemoveTransactionEntries removes "transaction_entries" edges to TransactionEntry entities.
-func (_u *HouseholdCurrencyUpdateOne) RemoveTransactionEntries(v ...*TransactionEntry) *HouseholdCurrencyUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveTransactionEntryIDs(ids...)
 }
 
 // ClearRecurringSubscriptions clears all "recurring_subscriptions" edges to the RecurringSubscription entity.
@@ -1422,51 +1304,6 @@ func (_u *HouseholdCurrencyUpdateOne) sqlSave(ctx context.Context) (_node *House
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(investment.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.TransactionEntriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedTransactionEntriesIDs(); len(nodes) > 0 && !_u.mutation.TransactionEntriesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.TransactionEntriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   householdcurrency.TransactionEntriesTable,
-			Columns: []string{householdcurrency.TransactionEntriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(transactionentry.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

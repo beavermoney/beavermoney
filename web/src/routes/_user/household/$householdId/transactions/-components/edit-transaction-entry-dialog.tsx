@@ -47,7 +47,6 @@ const editTransactionEntryDialogUpdateMutation = graphql`
         id
         amount
         accountID
-        householdCurrencyID
         account {
           id
           balance

@@ -142,7 +142,6 @@ type CreateHouseholdCurrencyInput struct {
 	Important                *bool
 	AccountIDs               []int
 	InvestmentIDs            []int
-	TransactionEntryIDs      []int
 	RecurringSubscriptionIDs []int
 	SnapshotEntryIDs         []int
 	SnapshotRatesFromIDs     []int
@@ -162,9 +161,6 @@ func (i *CreateHouseholdCurrencyInput) Mutate(m *HouseholdCurrencyMutation) {
 	}
 	if v := i.InvestmentIDs; len(v) > 0 {
 		m.AddInvestmentIDs(v...)
-	}
-	if v := i.TransactionEntryIDs; len(v) > 0 {
-		m.AddTransactionEntryIDs(v...)
 	}
 	if v := i.RecurringSubscriptionIDs; len(v) > 0 {
 		m.AddRecurringSubscriptionIDs(v...)
@@ -201,9 +197,6 @@ type UpdateHouseholdCurrencyInput struct {
 	ClearInvestments               bool
 	AddInvestmentIDs               []int
 	RemoveInvestmentIDs            []int
-	ClearTransactionEntries        bool
-	AddTransactionEntryIDs         []int
-	RemoveTransactionEntryIDs      []int
 	ClearRecurringSubscriptions    bool
 	AddRecurringSubscriptionIDs    []int
 	RemoveRecurringSubscriptionIDs []int
@@ -246,15 +239,6 @@ func (i *UpdateHouseholdCurrencyInput) Mutate(m *HouseholdCurrencyMutation) {
 	}
 	if v := i.RemoveInvestmentIDs; len(v) > 0 {
 		m.RemoveInvestmentIDs(v...)
-	}
-	if i.ClearTransactionEntries {
-		m.ClearTransactionEntries()
-	}
-	if v := i.AddTransactionEntryIDs; len(v) > 0 {
-		m.AddTransactionEntryIDs(v...)
-	}
-	if v := i.RemoveTransactionEntryIDs; len(v) > 0 {
-		m.RemoveTransactionEntryIDs(v...)
 	}
 	if i.ClearRecurringSubscriptions {
 		m.ClearRecurringSubscriptions()
