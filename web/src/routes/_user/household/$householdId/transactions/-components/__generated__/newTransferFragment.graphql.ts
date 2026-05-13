@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ced8082494667cf78b46c362e20fb1be>>
+ * @generated SignedSource<<6c55f5609748c106f1ad84de2f3cacb4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,6 +23,9 @@ export type newTransferFragment$data = {
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -152,6 +155,18 @@ return {
                     }
                   ],
                   "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v1/*: any*/)
+                  ],
+                  "storageKey": null
                 }
               ],
               "storageKey": null
@@ -204,6 +219,6 @@ return {
 };
 })();
 
-(node as any).hash = "dcc5b170c5accff612b2589a36398dab";
+(node as any).hash = "1c933752cfa6f74ccc95ec07bdf7a29c";
 
 export default node;

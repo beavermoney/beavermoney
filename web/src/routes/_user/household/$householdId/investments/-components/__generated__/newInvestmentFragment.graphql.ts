@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<44d4cc6818cf04141f0639a50bce2945>>
+ * @generated SignedSource<<f278db285e349959a8e3d0ff326bce0c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,6 +22,9 @@ export type newInvestmentFragment$data = {
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -33,7 +36,15 @@ export type newInvestmentFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"newInvestmentFragment">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
@@ -85,13 +96,7 @@ const node: ReaderFragment = {
                   "name": "type",
                   "storageKey": null
                 },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "name",
-                  "storageKey": null
-                },
+                (v0/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -123,6 +128,18 @@ const node: ReaderFragment = {
                     }
                   ],
                   "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v0/*: any*/)
+                  ],
+                  "storageKey": null
                 }
               ],
               "storageKey": null
@@ -137,7 +154,8 @@ const node: ReaderFragment = {
   "type": "Household",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "aa5c5208cacf7ebdc92339638d8acabe";
+(node as any).hash = "3489a6279d6c738b2bdbad59b1803e08";
 
 export default node;

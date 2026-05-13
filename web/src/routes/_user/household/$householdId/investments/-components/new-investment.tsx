@@ -33,12 +33,6 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
-import { INVESTMENT_TYPE_LIST } from '@/constant'
-import { useHousehold } from '@/hooks/use-household'
-import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
-import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
-import { newInvestmentFragment$key } from './__generated__/newInvestmentFragment.graphql'
 import {
   Item,
   ItemContent,
@@ -46,6 +40,12 @@ import {
   ItemMedia,
   ItemTitle,
 } from '@/components/ui/item'
+import { INVESTMENT_TYPE_LIST } from '@/constant'
+import { useHousehold } from '@/hooks/use-household'
+import { CurrencyInput } from '@/components/currency-input'
+import { commitMutationResult } from '@/lib/relay'
+import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
+import { newInvestmentFragment$key } from './__generated__/newInvestmentFragment.graphql'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   getLogoTickerURL,
@@ -87,6 +87,9 @@ const newInvestmentFragment = graphql`
           value
           householdCurrency {
             code
+          }
+          user {
+            name
           }
         }
       }
@@ -313,31 +316,40 @@ export function NewInvestment({
                             const account = investmentAccounts.find(
                               (acc) => acc.id === item,
                             )
+                            if (!account) return null
                             return (
-                              <ComboboxItem
-                                key={item}
-                                value={item}
-                                className="flex items-center gap-2"
-                              >
-                                <Avatar className="size-5">
-                                  <AvatarImage
-                                    src={getLogoDomainURL(account?.icon || '')}
-                                    alt={account?.icon || 'unknown logo'}
-                                  />
-                                  <AvatarFallback className="text-[8px]">
-                                    {account?.name}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground font-mono">
-                                  {account &&
-                                    formatCurrencyWithPrivacyMode({
-                                      value: account.value,
-                                      currencyCode:
-                                        account.householdCurrency.code,
-                                      liability: account.type === 'liability',
-                                    })}
-                                </span>
+                              <ComboboxItem key={item} value={item}>
+                                <Item size="xs" className="p-0">
+                                  <ItemMedia variant="image">
+                                    <Avatar className="size-6">
+                                      <AvatarImage
+                                        src={getLogoDomainURL(
+                                          account.icon || '',
+                                        )}
+                                        alt={account.icon || 'unknown logo'}
+                                      />
+                                      <AvatarFallback>
+                                        {account.name}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </ItemMedia>
+                                  <ItemContent>
+                                    <ItemTitle>{account.name}</ItemTitle>
+                                    <ItemDescription>
+                                      <span className="tabular-nums">
+                                        {formatCurrencyWithPrivacyMode({
+                                          value: account.value,
+                                          currencyCode:
+                                            account.householdCurrency.code,
+                                          liability:
+                                            account.type === 'liability',
+                                        })}
+                                      </span>
+                                      <span aria-hidden="true"> · </span>
+                                      {account.user.name}
+                                    </ItemDescription>
+                                  </ItemContent>
+                                </Item>
                               </ComboboxItem>
                             )
                           }}

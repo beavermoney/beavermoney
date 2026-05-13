@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7704700aaf1d0ca2af007c21a7c92e69>>
+ * @generated SignedSource<<3699967a6ec127547790ebe9f74947ea>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -127,7 +127,11 @@ v11 = {
   ],
   "storageKey": null
 },
-v12 = {
+v12 = [
+  (v6/*: any*/),
+  (v3/*: any*/)
+],
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -295,10 +299,7 @@ return {
                         "kind": "LinkedField",
                         "name": "category",
                         "plural": false,
-                        "selections": [
-                          (v6/*: any*/),
-                          (v3/*: any*/)
-                        ],
+                        "selections": (v12/*: any*/),
                         "storageKey": null
                       },
                       (v4/*: any*/)
@@ -352,7 +353,7 @@ return {
                         "selections": [
                           (v6/*: any*/),
                           (v7/*: any*/),
-                          (v12/*: any*/),
+                          (v13/*: any*/),
                           (v3/*: any*/)
                         ],
                         "storageKey": null
@@ -446,7 +447,7 @@ return {
                       (v3/*: any*/),
                       (v6/*: any*/),
                       (v7/*: any*/),
-                      (v12/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -455,6 +456,16 @@ return {
                         "storageKey": null
                       },
                       (v11/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "User",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": (v12/*: any*/),
+                        "storageKey": null
+                      },
                       {
                         "alias": null,
                         "args": null,
@@ -485,12 +496,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bf1fe8054731ebd6502ea9e497c3d605",
+    "cacheID": "b40b1ae75fcee5549a23ba6f2c7f1304",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogQuery",
     "operationKind": "query",
-    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      ...editTransactionDialogTransactionFragment\n    }\n    id\n  }\n  ...editTransactionDialogCategoriesFragment\n  household {\n    ...editTransactionDialogHouseholdFragment\n    id\n  }\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogHouseholdFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      ...editTransactionDialogTransactionFragment\n    }\n    id\n  }\n  ...editTransactionDialogCategoriesFragment\n  household {\n    ...editTransactionDialogHouseholdFragment\n    id\n  }\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        name\n        type\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogHouseholdFragment on Household {\n  accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        user {\n          name\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();
