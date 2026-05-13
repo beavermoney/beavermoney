@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2c58a20f4358d6e7d3111ea1d4aaa1a7>>
+ * @generated SignedSource<<814f7388114597aa7f66adc5fd33289d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,6 +27,9 @@ export type editTransactionDialogHouseholdFragment$data = {
         }> | null | undefined;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -135,6 +138,18 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v1/*: any*/)
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "concreteType": "Investment",
                   "kind": "LinkedField",
                   "name": "investments",
@@ -167,6 +182,6 @@ return {
 };
 })();
 
-(node as any).hash = "2d06dc8cc60c7b4387f4f9c81ca27489";
+(node as any).hash = "0c6693a2349d4558369f4e630206c1fb";
 
 export default node;

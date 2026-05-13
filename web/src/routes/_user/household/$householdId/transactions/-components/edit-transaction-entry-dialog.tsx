@@ -29,6 +29,13 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
@@ -73,6 +80,7 @@ export type EditEntryAccount = {
   icon: string | null
   value: string
   householdCurrency: { code: string }
+  user: { name: string }
 }
 
 type EditTransactionEntryDialogProps = {
@@ -190,31 +198,37 @@ export function EditTransactionEntryDialog({
                           const account = accounts.find(
                             (acc) => acc.id === item,
                           )
+                          if (!account) return null
                           return (
-                            <ComboboxItem
-                              key={item}
-                              value={item}
-                              className="flex items-center gap-2"
-                            >
-                              <Avatar className="size-5">
-                                <AvatarImage
-                                  src={getLogoDomainURL(account?.icon || '')}
-                                  alt={account?.icon || 'unknown logo'}
-                                />
-                                <AvatarFallback className="text-[8px]">
-                                  {account?.name}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span className="flex-1">{account?.name}</span>
-                              <span className="text-muted-foreground tabular-nums">
-                                {account &&
-                                  formatCurrencyWithPrivacyMode({
-                                    value: account.value,
-                                    currencyCode:
-                                      account.householdCurrency.code,
-                                    liability: account.type === 'liability',
-                                  })}
-                              </span>
+                            <ComboboxItem key={item} value={item}>
+                              <Item size="xs" className="p-0">
+                                <ItemMedia variant="image">
+                                  <Avatar className="size-6">
+                                    <AvatarImage
+                                      src={getLogoDomainURL(account.icon || '')}
+                                      alt={account.icon || 'unknown logo'}
+                                    />
+                                    <AvatarFallback>
+                                      {account.name}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                </ItemMedia>
+                                <ItemContent>
+                                  <ItemTitle>{account.name}</ItemTitle>
+                                  <ItemDescription>
+                                    <span className="tabular-nums">
+                                      {formatCurrencyWithPrivacyMode({
+                                        value: account.value,
+                                        currencyCode:
+                                          account.householdCurrency.code,
+                                        liability: account.type === 'liability',
+                                      })}
+                                    </span>
+                                    <span aria-hidden="true"> · </span>
+                                    {account.user.name}
+                                  </ItemDescription>
+                                </ItemContent>
+                              </Item>
                             </ComboboxItem>
                           )
                         }}

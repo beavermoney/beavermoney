@@ -32,6 +32,13 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item'
 import { useHousehold } from '@/hooks/use-household'
 import { useUser } from '@/hooks/use-user'
 import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
@@ -72,6 +79,9 @@ const newTransferFragment = graphql`
           value
           householdCurrency {
             code
+          }
+          user {
+            name
           }
         }
       }
@@ -350,31 +360,40 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                             const account = availableAccounts.find(
                               (acc) => acc.id === item,
                             )
+                            if (!account) return null
                             return (
-                              <ComboboxItem
-                                key={item}
-                                value={item}
-                                className="flex items-center gap-2"
-                              >
-                                <Avatar className="size-5">
-                                  <AvatarImage
-                                    src={getLogoDomainURL(account?.icon || '')}
-                                    alt={account?.icon || 'unknown logo'}
-                                  />
-                                  <AvatarFallback className="text-[8px]">
-                                    {account?.name}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground tabular-nums">
-                                  {account &&
-                                    formatCurrencyWithPrivacyMode({
-                                      value: account.value,
-                                      currencyCode:
-                                        account.householdCurrency.code,
-                                      liability: account.type === 'liability',
-                                    })}
-                                </span>
+                              <ComboboxItem key={item} value={item}>
+                                <Item size="xs" className="p-0">
+                                  <ItemMedia variant="image">
+                                    <Avatar className="size-6">
+                                      <AvatarImage
+                                        src={getLogoDomainURL(
+                                          account.icon || '',
+                                        )}
+                                        alt={account.icon || 'unknown logo'}
+                                      />
+                                      <AvatarFallback>
+                                        {account.name}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </ItemMedia>
+                                  <ItemContent>
+                                    <ItemTitle>{account.name}</ItemTitle>
+                                    <ItemDescription>
+                                      <span className="tabular-nums">
+                                        {formatCurrencyWithPrivacyMode({
+                                          value: account.value,
+                                          currencyCode:
+                                            account.householdCurrency.code,
+                                          liability:
+                                            account.type === 'liability',
+                                        })}
+                                      </span>
+                                      <span aria-hidden="true"> · </span>
+                                      {account.user.name}
+                                    </ItemDescription>
+                                  </ItemContent>
+                                </Item>
                               </ComboboxItem>
                             )
                           }}
@@ -438,31 +457,40 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                             const account = availableAccounts.find(
                               (acc) => acc.id === item,
                             )
+                            if (!account) return null
                             return (
-                              <ComboboxItem
-                                key={item}
-                                value={item}
-                                className="flex items-center gap-2"
-                              >
-                                <Avatar className="size-5">
-                                  <AvatarImage
-                                    src={getLogoDomainURL(account?.icon || '')}
-                                    alt={account?.icon || 'unknown logo'}
-                                  />
-                                  <AvatarFallback className="text-[8px]">
-                                    {account?.name}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="flex-1">{account?.name}</span>
-                                <span className="text-muted-foreground tabular-nums">
-                                  {account &&
-                                    formatCurrencyWithPrivacyMode({
-                                      value: account.value,
-                                      currencyCode:
-                                        account.householdCurrency.code,
-                                      liability: account.type === 'liability',
-                                    })}
-                                </span>
+                              <ComboboxItem key={item} value={item}>
+                                <Item size="xs" className="p-0">
+                                  <ItemMedia variant="image">
+                                    <Avatar className="size-6">
+                                      <AvatarImage
+                                        src={getLogoDomainURL(
+                                          account.icon || '',
+                                        )}
+                                        alt={account.icon || 'unknown logo'}
+                                      />
+                                      <AvatarFallback>
+                                        {account.name}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </ItemMedia>
+                                  <ItemContent>
+                                    <ItemTitle>{account.name}</ItemTitle>
+                                    <ItemDescription>
+                                      <span className="tabular-nums">
+                                        {formatCurrencyWithPrivacyMode({
+                                          value: account.value,
+                                          currencyCode:
+                                            account.householdCurrency.code,
+                                          liability:
+                                            account.type === 'liability',
+                                        })}
+                                      </span>
+                                      <span aria-hidden="true"> · </span>
+                                      {account.user.name}
+                                    </ItemDescription>
+                                  </ItemContent>
+                                </Item>
                               </ComboboxItem>
                             )
                           }}

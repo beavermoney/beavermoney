@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b1d95d16615b9b393424661fdf7dd636>>
+ * @generated SignedSource<<7ec938fff9e2821dee746e83e009e164>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,6 +23,9 @@ export type newExpenseFragment$data = {
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -152,6 +155,18 @@ return {
                     }
                   ],
                   "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v1/*: any*/)
+                  ],
+                  "storageKey": null
                 }
               ],
               "storageKey": null
@@ -204,6 +219,6 @@ return {
 };
 })();
 
-(node as any).hash = "f0851c68623bd0e520f409fdba632949";
+(node as any).hash = "04af65a4bc4e5b4ca8842cedf78536a5";
 
 export default node;

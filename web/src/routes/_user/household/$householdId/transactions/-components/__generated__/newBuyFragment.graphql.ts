@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5be82a7a0143b11ab6fbfa4bf3d15184>>
+ * @generated SignedSource<<fdd2ba95e829c7ccfa4886c001b3715a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,6 +30,9 @@ export type newBuyFragment$data = {
         }> | null | undefined;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -163,6 +166,18 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v1/*: any*/)
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "concreteType": "Investment",
                   "kind": "LinkedField",
                   "name": "investments",
@@ -232,6 +247,6 @@ return {
 };
 })();
 
-(node as any).hash = "b522cef6a37b6cf1f1876e56785453b6";
+(node as any).hash = "a8b4dcbe7696fafb436a221c005cf5df";
 
 export default node;

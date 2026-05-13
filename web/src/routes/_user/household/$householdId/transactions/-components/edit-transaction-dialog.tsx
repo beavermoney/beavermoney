@@ -169,6 +169,9 @@ const editTransactionDialogHouseholdFragment = graphql`
           householdCurrency {
             code
           }
+          user {
+            name
+          }
           investments {
             id
             name
@@ -278,6 +281,9 @@ export function EditTransactionDialog({
                 value: edge.node.value,
                 householdCurrency: {
                   code: edge.node.householdCurrency.code,
+                },
+                user: {
+                  name: edge.node.user.name,
                 },
                 investments: (edge.node.investments ?? []).map((inv) => ({
                   id: inv.id,
