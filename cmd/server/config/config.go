@@ -35,7 +35,7 @@ type Config struct {
 // Load reads environment variables and returns a Config struct.
 // In non-production environments, it loads .env file first.
 func Load() (*Config, error) {
-	isProd := os.Getenv("RAILWAY_PUBLIC_DOMAIN") != ""
+	isProd := os.Getenv("RAILWAY_PROJECT_NAME") != ""
 
 	if !isProd {
 		if err := godotenv.Load(); err != nil {
