@@ -36,8 +36,8 @@ github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0 h1:jfIu9sQUG6Ig
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0/go.mod h1:t2tdKJDJF9BV14lnkjHmOQgcvEKgtqs5a1N3LNdJhGE=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ2ASbcXHWsFqH8hp8=
-github.com/beavermoney/finance-go v0.1.2 h1:PT3jhxn81SEVbVFUxMQfJOF+UHAdslzNouT6A1hbuUg=
-github.com/beavermoney/finance-go v0.1.2/go.mod h1:x8TTX4mxd3yCNS7DJFgOuSEg/ef2jPFKWnQVf3WC2OM=
+github.com/beavermoney/finance-go v0.1.3 h1:sOyNT04M+CCbWD/CH5wXfxdPU2HZ2ZAVJST+TGRLZPQ=
+github.com/beavermoney/finance-go v0.1.3/go.mod h1:x8TTX4mxd3yCNS7DJFgOuSEg/ef2jPFKWnQVf3WC2OM=
 github.com/bmatcuk/doublestar v1.1.1/go.mod h1:UD6OnuiIn0yFxxA2le/rnRU1G4RaI4UvFv1sNto9p6w=
 github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQrS0=
 github.com/bmatcuk/doublestar v1.3.4/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
