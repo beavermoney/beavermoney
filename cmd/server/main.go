@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -42,6 +44,51 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/markbates/goth/gothic"
 )
+
+var allowedReturnToRegex = regexp.MustCompile(
+	`^https://[a-z0-9-]+-beavermoney-pr-\d+\.up\.railway\.app$`,
+)
+
+const returnToCookieName = "auth_return_to"
+
+func isAllowedReturnTo(target string, cfg *config.Config) bool {
+	if target == "" {
+		return false
+	}
+	if target == cfg.WebURL {
+		return true
+	}
+	return allowedReturnToRegex.MatchString(target)
+}
+
+func setReturnToCookie(res http.ResponseWriter, value string, secure bool) {
+	http.SetCookie(res, &http.Cookie{
+		Name:     returnToCookieName,
+		Value:    value,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   600,
+	})
+}
+
+func consumeReturnToCookie(res http.ResponseWriter, req *http.Request, secure bool) string {
+	c, err := req.Cookie(returnToCookieName)
+	if err != nil {
+		return ""
+	}
+	http.SetCookie(res, &http.Cookie{
+		Name:     returnToCookieName,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   -1,
+	})
+	return c.Value
+}
 
 func main() {
 	ctx := context.Background()
@@ -258,8 +305,13 @@ func main() {
 					},
 				)
 
+				redirectBase := cfg.WebURL
+				if returnTo := consumeReturnToCookie(res, req, cfg.IsProd); isAllowedReturnTo(returnTo, cfg) {
+					redirectBase = returnTo
+				}
+
 				res.Header().
-					Set("Location", cfg.WebURL+"/auth/callback?token="+tokenString)
+					Set("Location", redirectBase+"/auth/callback?token="+tokenString)
 				res.WriteHeader(http.StatusTemporaryRedirect)
 
 			default:
@@ -283,7 +335,23 @@ func main() {
 		},
 	)
 
+	proxyHost := ""
+	if cfg.AuthProxyURL != "" {
+		if u, err := url.Parse(cfg.AuthProxyURL); err == nil {
+			proxyHost = u.Host
+		}
+	}
+
 	r.Get("/auth/{provider}", func(res http.ResponseWriter, req *http.Request) {
+		if cfg.AuthProxyURL != "" && req.Host != proxyHost {
+			target := cfg.AuthProxyURL + "/auth/" + req.PathValue("provider") +
+				"?return_to=" + url.QueryEscape(cfg.WebURL)
+			http.Redirect(res, req, target, http.StatusTemporaryRedirect)
+			return
+		}
+		if returnTo := req.URL.Query().Get("return_to"); isAllowedReturnTo(returnTo, cfg) {
+			setReturnToCookie(res, returnTo, cfg.IsProd)
+		}
 		gothic.BeginAuthHandler(res, req)
 	})
 

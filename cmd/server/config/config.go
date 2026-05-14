@@ -19,6 +19,8 @@ type Config struct {
 	GoogleClientSecret string `env:"GOOGLE_CLIENT_SECRET"`
 	GoogleRedirectURL  string `env:"GOOGLE_REDIRECT_URL"`
 
+	AuthProxyURL string `env:"AUTH_PROXY_URL"`
+
 	SessionSecret string `env:"SESSION_SECRET,notEmpty"`
 	JWTSecret     string `env:"JWT_SECRET,notEmpty"`
 
