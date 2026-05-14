@@ -24,7 +24,8 @@ type Config struct {
 
 	FrankfurterBaseURL string `env:"FRANKFURTER_BASE_URL"`
 
-	EODHDAPIKey string `env:"EODHD_API_KEY"`
+	EODHDAPIKey       string `env:"EODHD_API_KEY"`
+	MarketstackAPIKey string `env:"MARKETSTACK_API_KEY"`
 
 	SentryDSN string `env:"SENTRY_DSN"`
 

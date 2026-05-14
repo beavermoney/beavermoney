@@ -113,12 +113,23 @@ func main() {
 		panic(err)
 	}
 
-	// Use EODHD provider if API key is provided, otherwise fall back to Yahoo
 	var marketProvider market.MarketProvider
-	if cfg.EODHDAPIKey != "" {
+	switch {
+	case cfg.MarketstackAPIKey != "":
+		logger.Info("using Marketstack market data provider")
+		msProvider, err := market.NewMarketstackProvider(cfg.MarketstackAPIKey)
+		if err != nil {
+			logger.Error(
+				"marketstack provider setup failed",
+				slog.String("error", err.Error()),
+			)
+			panic(err)
+		}
+		marketProvider = msProvider
+	case cfg.EODHDAPIKey != "":
 		logger.Info("using EODHD market data provider")
 		marketProvider = market.NewEODHDProvider(cfg.EODHDAPIKey)
-	} else {
+	default:
 		logger.Info("using Yahoo Finance market data provider")
 		marketProvider = market.NewYahooProvider()
 	}
