@@ -1,0 +1,5 @@
+package: marketstack
+output: internal/marketstack/client.gen.go
+generate:
+  client: true
+  models: true

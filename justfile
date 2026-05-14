@@ -1,5 +1,9 @@
-codegen:
+codegen: oapi
   go generate .
+
+oapi:
+  go run -mod=mod github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.6.0 -config internal/frankfurter/oapi-codegen.yaml internal/frankfurter/openapi.json
+  go run -mod=mod github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.6.0 -config internal/marketstack/oapi-codegen.yaml internal/marketstack/openapi.json
 
 [working-directory: 'web']
 web:
