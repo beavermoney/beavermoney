@@ -1,8 +1,7 @@
-package market
+package stock
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"sort"
@@ -15,23 +14,11 @@ import (
 	"beavermoney.app/internal/marketstack"
 )
 
-// MarketstackProvider implements the MarketProvider interface using the
-// marketstack.com API. Marketstack covers stocks, ETFs and indices across
-// global exchanges via end-of-day (EOD) and intraday endpoints. It does NOT
-// cover cryptocurrencies — crypto methods return an error.
 type MarketstackProvider struct {
 	apiKey string
 	client *marketstack.ClientWithResponses
 }
 
-// errMarketstackCryptoUnsupported is returned by the crypto methods on
-// MarketstackProvider because the marketstack API does not cover crypto assets.
-var errMarketstackCryptoUnsupported = errors.New(
-	"marketstack provider does not support crypto quotes",
-)
-
-// NewMarketstackProvider creates a new Marketstack provider with the given
-// API access key.
 func NewMarketstackProvider(apiKey string) (*MarketstackProvider, error) {
 	httpClient := &http.Client{Timeout: 10 * time.Second}
 
@@ -49,10 +36,10 @@ func NewMarketstackProvider(apiKey string) (*MarketstackProvider, error) {
 	}, nil
 }
 
-func (p *MarketstackProvider) StockQuote(
+func (p *MarketstackProvider) Quote(
 	ctx context.Context,
 	symbol string,
-) (*StockQuoteResult, error) {
+) (*QuoteResult, error) {
 	results, err := p.fetchLatest(ctx, []string{symbol})
 	if err != nil {
 		return nil, err
@@ -64,31 +51,17 @@ func (p *MarketstackProvider) StockQuote(
 	return nil, fmt.Errorf("marketstack: no quote returned for symbol %q", symbol)
 }
 
-func (p *MarketstackProvider) StockQuotes(
+func (p *MarketstackProvider) Quotes(
 	ctx context.Context,
 	symbols []string,
-) (map[string]*StockQuoteResult, error) {
+) (map[string]*QuoteResult, error) {
 	if len(symbols) == 0 {
-		return make(map[string]*StockQuoteResult), nil
+		return make(map[string]*QuoteResult), nil
 	}
 	return p.fetchLatest(ctx, symbols)
 }
 
-func (p *MarketstackProvider) CryptoQuote(
-	_ context.Context,
-	_ string,
-) (*CryptoQuoteResult, error) {
-	return nil, errMarketstackCryptoUnsupported
-}
-
-func (p *MarketstackProvider) CryptoQuotes(
-	_ context.Context,
-	_ []string,
-) (map[string]*CryptoQuoteResult, error) {
-	return nil, errMarketstackCryptoUnsupported
-}
-
-func (p *MarketstackProvider) StockHistoricalQuote(
+func (p *MarketstackProvider) HistoricalQuote(
 	ctx context.Context,
 	symbol string,
 	period string,
@@ -156,10 +129,9 @@ func (p *MarketstackProvider) StockHistoricalQuote(
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse date %s: %w", *b.Date, err)
 		}
-		close := barClose(b)
 		daily = append(daily, HistoricalDataPoint{
 			Date:  date,
-			Close: close,
+			Close: barClose(b),
 		})
 	}
 
@@ -167,20 +139,10 @@ func (p *MarketstackProvider) StockHistoricalQuote(
 	return result, nil
 }
 
-func (p *MarketstackProvider) CryptoHistoricalQuote(
-	_ context.Context,
-	_ string,
-	_ string,
-	_ time.Time,
-	_ time.Time,
-) (*HistoricalQuoteResult, error) {
-	return nil, errMarketstackCryptoUnsupported
-}
-
 func (p *MarketstackProvider) fetchLatest(
 	ctx context.Context,
 	symbols []string,
-) (map[string]*StockQuoteResult, error) {
+) (map[string]*QuoteResult, error) {
 	resp, err := p.client.GetEodLatestWithResponse(
 		ctx,
 		&marketstack.GetEodLatestParams{
@@ -200,14 +162,14 @@ func (p *MarketstackProvider) fetchLatest(
 		)
 	}
 
-	results := make(map[string]*StockQuoteResult, len(symbols))
+	results := make(map[string]*QuoteResult, len(symbols))
 	for _, bar := range *resp.JSON200.Data {
 		if bar.Symbol == nil {
 			continue
 		}
 		sym := *bar.Symbol
 
-		quote := &StockQuoteResult{
+		quote := &QuoteResult{
 			Symbol:       sym,
 			CurrentPrice: barClose(bar),
 			Currency:     barCurrency(bar),

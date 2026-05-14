@@ -101,7 +101,7 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input model.Crea
 			household,
 			userID,
 			r.frankfurterClient,
-			r.marketClient,
+			r.stockClient,
 		); err != nil {
 			r.logger.Error("Failed to seed demo household data", "error", err)
 			return nil, fmt.Errorf("failed to seed demo household data: %w", err)
@@ -509,7 +509,7 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 	// Uppercase the symbol before querying
 	symbolUpper := strings.ToUpper(input.Input.Symbol)
 
-	quote, err := r.marketClient.StockQuote(ctx, symbolUpper)
+	quote, err := r.stockClient.Quote(ctx, symbolUpper)
 	if err != nil {
 		return nil, err
 	}
@@ -2332,7 +2332,7 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 
 	// Batch fetch stock quotes
 	if len(stockSymbols) > 0 {
-		quotes, err := r.marketClient.StockQuotes(ctx, stockSymbols)
+		quotes, err := r.stockClient.Quotes(ctx, stockSymbols)
 		if err != nil {
 			r.logger.Error("Failed to fetch stock quotes", "error", err)
 			return false, err
@@ -2360,7 +2360,7 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 
 	// Batch fetch crypto quotes
 	if len(cryptoSymbols) > 0 {
-		quotes, err := r.marketClient.CryptoQuotes(ctx, cryptoSymbols)
+		quotes, err := r.cryptoClient.Quotes(ctx, cryptoSymbols)
 		if err != nil {
 			r.logger.Error("Failed to fetch crypto quotes", "error", err)
 			return false, err

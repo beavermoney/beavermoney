@@ -76,7 +76,7 @@ func (r *queryResolver) StockQuote(ctx context.Context, symbol string) (*model.S
 	)
 	defer span.End()
 
-	stockQuote, err := r.marketClient.StockQuote(ctx, symbol)
+	stockQuote, err := r.stockClient.Quote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (r *queryResolver) CryptoQuote(ctx context.Context, symbol string) (*model.
 	)
 	defer span.End()
 
-	cryptoQuote, err := r.marketClient.CryptoQuote(ctx, symbol)
+	cryptoQuote, err := r.cryptoClient.Quote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}

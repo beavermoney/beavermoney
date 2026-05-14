@@ -16,7 +16,7 @@ import (
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/internal/contextkeys"
 	"beavermoney.app/internal/frankfurter"
-	"beavermoney.app/internal/market"
+	"beavermoney.app/internal/market/stock"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/shopspring/decimal"
 )
@@ -26,7 +26,7 @@ func Seed(
 	ctx context.Context,
 	entClient *ent.Client,
 	frankfurterClient *frankfurter.ClientWithResponses,
-	marketClient *market.Client,
+	stockClient *stock.Client,
 ) error {
 	// Bypass required: seed runs at server startup before any auth context
 	// exists, so FilterMeOrCoMember has no UserIDKey/HouseholdIDKey to use.
@@ -278,7 +278,7 @@ func Seed(
 		entClient.TransactionEntry.CreateBulk(txEntryCreates...).SaveX(ctx)
 	}
 
-	xeqtQuote, err := marketClient.StockQuote(ctx, "XEQT.TO")
+	xeqtQuote, err := stockClient.Quote(ctx, "XEQT.TO")
 	if err != nil {
 		panic(err)
 	}
@@ -336,7 +336,7 @@ func SeedDemoHousehold(
 	household *ent.Household,
 	userID int,
 	frankfurterClient *frankfurter.ClientWithResponses,
-	marketClient *market.Client,
+	stockClient *stock.Client,
 ) error {
 	householdCurrency, err := getOrCreateHouseholdCurrency(
 		ctx,
@@ -382,7 +382,7 @@ func SeedDemoHousehold(
 	allSymbols := append([]string{config.etfSymbol}, config.stockSymbols...)
 	historicalPrices, err := fetchHistoricalPrices(
 		ctx,
-		marketClient,
+		stockClient,
 		allSymbols,
 		startDate,
 		time.Now(),
@@ -399,7 +399,7 @@ func SeedDemoHousehold(
 		accounts.investment,
 		householdCurrency,
 		config,
-		marketClient,
+		stockClient,
 		historicalPrices,
 		startDate,
 	)
@@ -657,7 +657,7 @@ type investmentSet struct {
 }
 
 // historicalPriceMap maps symbol -> sorted slice of HistoricalDataPoint (ascending by date).
-type historicalPriceMap map[string][]market.HistoricalDataPoint
+type historicalPriceMap map[string][]stock.HistoricalDataPoint
 
 // priceAt returns the closest available price for a symbol on or before the given date.
 // Falls back to the earliest available price if the date precedes all data.
@@ -679,13 +679,13 @@ func (m historicalPriceMap) priceAt(symbol string, date time.Time) (decimal.Deci
 // fetchHistoricalPrices pre-fetches daily historical data for all symbols over [from, to].
 func fetchHistoricalPrices(
 	ctx context.Context,
-	marketClient *market.Client,
+	stockClient *stock.Client,
 	symbols []string,
 	from, to time.Time,
 ) (historicalPriceMap, error) {
 	result := make(historicalPriceMap, len(symbols))
 	for _, symbol := range symbols {
-		hist, err := marketClient.StockHistoricalQuote(ctx, symbol, "d", from, to)
+		hist, err := stockClient.HistoricalQuote(ctx, symbol, "d", from, to)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch historical data for %s: %w", symbol, err)
 		}
@@ -701,7 +701,7 @@ func fetchAndCreateInvestments(
 	investmentAccount *ent.Account,
 	householdCurrency *ent.HouseholdCurrency,
 	config demoConfig,
-	marketClient *market.Client,
+	stockClient *stock.Client,
 	prices historicalPriceMap,
 	createdAt time.Time,
 ) (*investmentSet, error) {
@@ -710,7 +710,7 @@ func fetchAndCreateInvestments(
 		if p, ok := prices.priceAt(symbol, createdAt); ok && !p.IsZero() {
 			return p, nil
 		}
-		quote, err := marketClient.StockQuote(ctx, symbol)
+		quote, err := stockClient.Quote(ctx, symbol)
 		if err != nil {
 			return decimal.Zero, fmt.Errorf("failed to fetch quote for %s: %w", symbol, err)
 		}

@@ -27,7 +27,8 @@ import (
 	"beavermoney.app/ent/userkey"
 	"beavermoney.app/internal/contextkeys"
 	"beavermoney.app/internal/frankfurter"
-	"beavermoney.app/internal/market"
+	"beavermoney.app/internal/market/crypto"
+	"beavermoney.app/internal/market/stock"
 	"beavermoney.app/internal/seed"
 	"entgo.io/contrib/entgql"
 	entsql "entgo.io/ent/dialect/sql"
@@ -113,30 +114,11 @@ func main() {
 		panic(err)
 	}
 
-	var marketProvider market.MarketProvider
-	switch {
-	case cfg.MarketstackAPIKey != "":
-		logger.Info("using Marketstack market data provider")
-		msProvider, err := market.NewMarketstackProvider(cfg.MarketstackAPIKey)
-		if err != nil {
-			logger.Error(
-				"marketstack provider setup failed",
-				slog.String("error", err.Error()),
-			)
-			panic(err)
-		}
-		marketProvider = msProvider
-	case cfg.EODHDAPIKey != "":
-		logger.Info("using EODHD market data provider")
-		marketProvider = market.NewEODHDProvider(cfg.EODHDAPIKey)
-	default:
-		logger.Info("using Yahoo Finance market data provider")
-		marketProvider = market.NewYahooProvider()
-	}
-	marketClient := market.NewClient(marketProvider)
+	stockClient := stock.NewClient(stock.NewYahooProvider())
+	cryptoClient := crypto.NewClient(crypto.NewYahooProvider())
 
 	if !cfg.IsProd {
-		if err := seed.Seed(ctx, entClient, frankfurterClient, marketClient); err != nil {
+		if err := seed.Seed(ctx, entClient, frankfurterClient, stockClient); err != nil {
 			panic(err)
 		}
 	}
@@ -174,7 +156,8 @@ func main() {
 			logger,
 			entClient,
 			frankfurterClient,
-			marketClient,
+			stockClient,
+			cryptoClient,
 			meter,
 			otel.Tracer("beavermoney-server"),
 		),

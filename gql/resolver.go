@@ -5,7 +5,8 @@ import (
 
 	"beavermoney.app/ent"
 	"beavermoney.app/internal/frankfurter"
-	"beavermoney.app/internal/market"
+	"beavermoney.app/internal/market/crypto"
+	"beavermoney.app/internal/market/stock"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/getsentry/sentry-go"
 	"go.opentelemetry.io/otel/trace"
@@ -20,7 +21,8 @@ type Resolver struct {
 	logger            *slog.Logger
 	entClient         *ent.Client
 	frankfurterClient *frankfurter.ClientWithResponses
-	marketClient      *market.Client
+	stockClient       *stock.Client
+	cryptoClient      *crypto.Client
 	meter             sentry.Meter
 	tracer            trace.Tracer
 }
@@ -30,7 +32,8 @@ func NewSchema(
 	logger *slog.Logger,
 	entClient *ent.Client,
 	frankfurterClient *frankfurter.ClientWithResponses,
-	marketClient *market.Client,
+	stockClient *stock.Client,
+	cryptoClient *crypto.Client,
 	meter sentry.Meter,
 	tracer trace.Tracer,
 ) graphql.ExecutableSchema {
@@ -39,7 +42,8 @@ func NewSchema(
 			logger,
 			entClient,
 			frankfurterClient,
-			marketClient,
+			stockClient,
+			cryptoClient,
 			meter,
 			tracer,
 		},
