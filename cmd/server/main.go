@@ -115,7 +115,7 @@ func main() {
 	}
 
 	stockClient := stock.NewClient(stock.NewYahooProvider())
-	cryptoClient := crypto.NewClient(crypto.NewYahooProvider())
+	cryptoClient := crypto.NewClient(crypto.NewCoinbaseProvider())
 
 	if !cfg.IsProd {
 		if err := seed.Seed(ctx, entClient, frankfurterClient, stockClient); err != nil {
