@@ -25,6 +25,7 @@ import (
 	"beavermoney.app/cmd/server/auth"
 	"beavermoney.app/cmd/server/config"
 	"beavermoney.app/cmd/server/database"
+	"beavermoney.app/ent"
 	"beavermoney.app/ent/user"
 	"beavermoney.app/ent/userkey"
 	"beavermoney.app/internal/contextkeys"
@@ -46,7 +47,7 @@ import (
 )
 
 var allowedReturnToRegex = regexp.MustCompile(
-	`^https://[a-z0-9-]+-beavermoney-pr-\d+\.up\.railway\.app$`,
+	`^https://[a-z0-9-]+-beavermoney-pr-\d+\.up\.railway\.app(/.*)?$`,
 )
 
 const returnToCookieName = "auth_return_to"
@@ -55,9 +56,17 @@ func isAllowedReturnTo(target string, cfg *config.Config) bool {
 	if target == "" {
 		return false
 	}
-	if target == cfg.WebURL {
+	u, err := url.Parse(target)
+	if err != nil {
+		return false
+	}
+
+	// Allow if it matches the WebURL (base domain)
+	webURL, _ := url.Parse(cfg.WebURL)
+	if u.Host == webURL.Host {
 		return true
 	}
+
 	return allowedReturnToRegex.MatchString(target)
 }
 
@@ -88,6 +97,44 @@ func consumeReturnToCookie(res http.ResponseWriter, req *http.Request, secure bo
 		MaxAge:   -1,
 	})
 	return c.Value
+}
+
+func isProxyCallback(target string, cfg *config.Config) bool {
+	if target == "" {
+		return false
+	}
+	u, err := url.Parse(target)
+	if err != nil {
+		return false
+	}
+	// It's a proxy callback if it's NOT our local WebURL and it looks like an API callback path
+	webURL, _ := url.Parse(cfg.WebURL)
+	return u.Host != webURL.Host && (regexp.MustCompile(`/auth/[a-z]+/callback$`).MatchString(u.Path))
+}
+
+func provisionUser(ctx context.Context, client *ent.Client, email, name, providerUserID, provider string) (int, error) {
+	// Create/update user
+	userID, err := client.User.Create().
+		SetEmail(email).
+		SetName(name).
+		OnConflict(entsql.ConflictColumns(user.FieldEmail)).
+		Ignore().ID(contextkeys.NewPrivacyBypassContext(ctx))
+	if err != nil {
+		return 0, fmt.Errorf("failed creating user: %w", err)
+	}
+
+	// Create/update user key
+	err = client.UserKey.Create().
+		SetUserID(userID).
+		SetKey(providerUserID).
+		SetProvider(userkey.Provider(provider)).
+		OnConflict(entsql.ConflictColumns(userkey.FieldProvider, userkey.FieldKey)).
+		Ignore().Exec(contextkeys.NewPrivacyBypassContext(ctx))
+	if err != nil {
+		return 0, fmt.Errorf("failed creating user key: %w", err)
+	}
+
+	return userID, nil
 }
 
 func main() {
@@ -227,6 +274,39 @@ func main() {
 		"/auth/{provider}/callback",
 		func(res http.ResponseWriter, req *http.Request) {
 			p := req.PathValue("provider")
+
+			// Scenario C: Receiving an identity token from a proxy
+			if identityToken := req.URL.Query().Get("identity_token"); identityToken != "" {
+				token, err := tokenAuth.Decode(identityToken)
+				if err != nil {
+					http.Error(res, "Invalid identity token", http.StatusUnauthorized)
+					return
+				}
+				claims := token.PrivateClaims()
+
+				email, _ := claims["email"].(string)
+				name, _ := claims["name"].(string)
+				providerUserID, _ := claims["provider_user_id"].(string)
+
+				if email == "" || providerUserID == "" {
+					http.Error(res, "Identity token missing required claims", http.StatusBadRequest)
+					return
+				}
+
+				// Create/update local user
+				userID, err := provisionUser(ctx, entClient, email, name, providerUserID, p)
+				if err != nil {
+					res.WriteHeader(http.StatusInternalServerError)
+					logger.Error("failed provisioning user from identity", "error", err)
+					return
+				}
+
+				_, tokenString, _ := tokenAuth.Encode(map[string]any{"user_id": strconv.Itoa(userID)})
+				res.Header().Set("Location", cfg.WebURL+"/auth/callback?token="+tokenString)
+				res.WriteHeader(http.StatusTemporaryRedirect)
+				return
+			}
+
 			if !cfg.IsProd && p == "local" {
 				// Bypass required: dev-only login shortcut runs before any JWT
 				// is issued, so there is no UserIDKey/HouseholdIDKey for
@@ -253,6 +333,37 @@ func main() {
 				return
 			}
 
+			returnTo := consumeReturnToCookie(res, req, cfg.IsProd)
+
+			// Scenario B: Acting as a proxy for another environment
+			if isProxyCallback(returnTo, cfg) {
+				// We ONLY trust verified emails from Google for this handoff
+				if gothicUser.Provider == "google" {
+					if verifiedEmail, ok := gothicUser.RawData["verified_email"].(bool); !ok || !verifiedEmail {
+						http.Error(res, "email not verified", http.StatusUnauthorized)
+						return
+					}
+				}
+
+				// Issue short-lived Identity Token
+				_, identityToken, _ := tokenAuth.Encode(map[string]any{
+					"email":            gothicUser.Email,
+					"name":             gothicUser.Name,
+					"provider_user_id": gothicUser.UserID,
+					"exp":              time.Now().Add(5 * time.Minute).Unix(),
+				})
+
+				redirectURL, _ := url.Parse(returnTo)
+				q := redirectURL.Query()
+				q.Set("identity_token", identityToken)
+				redirectURL.RawQuery = q.Encode()
+
+				res.Header().Set("Location", redirectURL.String())
+				res.WriteHeader(http.StatusTemporaryRedirect)
+				return
+			}
+
+			// Scenario A: Standard local login
 			switch gothicUser.Provider {
 			case "google":
 				if verifiedEmail, ok := gothicUser.RawData["verified_email"].(bool); !ok ||
@@ -264,37 +375,11 @@ func main() {
 					return
 				}
 
-				// Bypass required: OAuth callback runs before any JWT is issued,
-				// so there is no UserIDKey for FilterMe to use. Email is already
-				// verified by Google above.
-				userID, err := entClient.User.Create().
-					SetEmail(gothicUser.Email).
-					SetName(gothicUser.Name).
-					OnConflict(entsql.ConflictColumns(user.FieldEmail)).
-					Ignore().ID(contextkeys.NewPrivacyBypassContext(ctx))
+				// Create/update local user
+				userID, err := provisionUser(ctx, entClient, gothicUser.Email, gothicUser.Name, gothicUser.UserID, string(userkey.ProviderGoogle))
 				if err != nil {
 					res.WriteHeader(http.StatusInternalServerError)
-					logger.Error(
-						"failed creating user",
-						slog.String("error", err.Error()),
-					)
-					return
-				}
-
-				// Bypass required: same reason as the User.Create above —
-				// no UserIDKey is set yet, so FilterOwner cannot match.
-				err = entClient.UserKey.Create().
-					SetUserID(userID).
-					SetKey(gothicUser.UserID).
-					SetProvider(userkey.ProviderGoogle).
-					OnConflict(entsql.ConflictColumns(userkey.FieldProvider, userkey.FieldKey)).
-					Ignore().Exec(contextkeys.NewPrivacyBypassContext(ctx))
-				if err != nil {
-					res.WriteHeader(http.StatusInternalServerError)
-					logger.Error(
-						"failed creating user key",
-						slog.String("error", err.Error()),
-					)
+					logger.Error("failed provisioning user", "error", err)
 					return
 				}
 
@@ -306,7 +391,7 @@ func main() {
 				)
 
 				redirectBase := cfg.WebURL
-				if returnTo := consumeReturnToCookie(res, req, cfg.IsProd); isAllowedReturnTo(returnTo, cfg) {
+				if isAllowedReturnTo(returnTo, cfg) {
 					redirectBase = returnTo
 				}
 
@@ -344,8 +429,15 @@ func main() {
 
 	r.Get("/auth/{provider}", func(res http.ResponseWriter, req *http.Request) {
 		if cfg.AuthProxyURL != "" && req.Host != proxyHost {
+			// Proxy to the auth server, but tell it to return to OUR callback
+			scheme := "http"
+			if req.TLS != nil || req.Header.Get("X-Forwarded-Proto") == "https" {
+				scheme = "https"
+			}
+			localCallback := fmt.Sprintf("%s://%s/auth/%s/callback", scheme, req.Host, req.PathValue("provider"))
+
 			target := cfg.AuthProxyURL + "/auth/" + req.PathValue("provider") +
-				"?return_to=" + url.QueryEscape(cfg.WebURL)
+				"?return_to=" + url.QueryEscape(localCallback)
 			http.Redirect(res, req, target, http.StatusTemporaryRedirect)
 			return
 		}
