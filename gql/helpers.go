@@ -41,15 +41,17 @@ func (r *householdResolver) aggregateByCategoryType(
 	client := r.entClient
 
 	dc := contextkeys.GetDisplayCurrency(ctx)
+	targetCurrencyID := dc.HouseholdCurrencyID
 	targetCurrencyCode := dc.Code
 
 	// Query grouped by category and currency
 	var res []struct {
-		CategoryID   int             `sql:"category_id"`
-		CurrencyCode string          `sql:"currency_code"`
-		CurrencyID   int             `sql:"currency_id"`
-		Total        decimal.Decimal `sql:"total"`
-		Count        int             `sql:"count"`
+		CategoryID   int              `sql:"category_id"`
+		CurrencyCode string           `sql:"currency_code"`
+		CurrencyID   int              `sql:"currency_id"`
+		Rate         *decimal.Decimal `sql:"rate"`
+		Total        decimal.Decimal  `sql:"total"`
+		Count        int              `sql:"count"`
 	}
 
 	err := client.Transaction.Query().
@@ -58,6 +60,7 @@ func (r *householdResolver) aggregateByCategoryType(
 			tc := sql.Table(transactioncategory.Table)
 			ac := sql.Table(account.Table)
 			cu := sql.Table(householdcurrency.Table)
+			hr := sql.Table(householdrate.Table)
 
 			s.Join(te).
 				On(s.C(transaction.FieldID), te.C(transactionentry.TransactionColumn))
@@ -67,6 +70,12 @@ func (r *householdResolver) aggregateByCategoryType(
 				On(te.C(transactionentry.AccountColumn), ac.C(account.FieldID))
 			s.Join(cu).
 				On(ac.C(account.HouseholdCurrencyColumn), cu.C(householdcurrency.FieldID))
+			s.LeftJoin(hr).
+				On(cu.C(householdcurrency.FieldID), hr.C(householdrate.FieldFromHouseholdCurrencyID)).
+				OnP(sql.And(
+					sql.EQ(hr.C(householdrate.FieldHouseholdID), householdID),
+					sql.EQ(hr.C(householdrate.FieldToHouseholdCurrencyID), targetCurrencyID),
+				))
 
 			// Filter by household
 			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
@@ -94,6 +103,7 @@ func (r *householdResolver) aggregateByCategoryType(
 				sql.As(tc.C(transactioncategory.FieldID), "category_id"),
 				sql.As(cu.C(householdcurrency.FieldCode), "currency_code"),
 				sql.As(cu.C(householdcurrency.FieldID), "currency_id"),
+				sql.As(hr.C(householdrate.FieldRate), "rate"),
 				sql.As(sql.Sum(te.C(transactionentry.FieldAmount)), "total"),
 				sql.As(
 					sql.Count(sql.Distinct(s.C(transaction.FieldID))),
@@ -104,6 +114,7 @@ func (r *householdResolver) aggregateByCategoryType(
 				tc.C(transactioncategory.FieldID),
 				cu.C(householdcurrency.FieldCode),
 				cu.C(householdcurrency.FieldID),
+				hr.C(householdrate.FieldRate),
 			)
 		}).
 		Scan(ctx, &res)
@@ -128,42 +139,11 @@ func (r *householdResolver) aggregateByCategoryType(
 		count int
 	}
 	categoryMap := make(map[int]*categoryData)
-	targetCurrencyID := dc.HouseholdCurrencyID
-
-	sourceCurrencyIDs := make([]int, 0, len(res))
-	seenSourceCurrencyIDs := make(map[int]bool, len(res))
-	for _, row := range res {
-		if row.CurrencyID == targetCurrencyID || seenSourceCurrencyIDs[row.CurrencyID] {
-			continue
-		}
-		seenSourceCurrencyIDs[row.CurrencyID] = true
-		sourceCurrencyIDs = append(sourceCurrencyIDs, row.CurrencyID)
-	}
-
-	rateByFromCurrencyID := make(map[int]decimal.Decimal, len(sourceCurrencyIDs))
-	if len(sourceCurrencyIDs) > 0 {
-		rates, err := client.HouseholdRate.Query().
-			Where(
-				householdrate.HouseholdIDEQ(householdID),
-				householdrate.ToHouseholdCurrencyIDEQ(targetCurrencyID),
-				householdrate.FromHouseholdCurrencyIDIn(sourceCurrencyIDs...),
-			).
-			All(ctx)
-		if err != nil {
-			r.logger.Error("Failed to load household FX rates", "error", err)
-			return nil, err
-		}
-		for _, rate := range rates {
-			rateByFromCurrencyID[rate.FromHouseholdCurrencyID] = rate.Rate
-		}
-	}
 
 	for _, row := range res {
 		rate := decimal.NewFromInt(1)
 		if row.CurrencyID != targetCurrencyID {
-			var ok bool
-			rate, ok = rateByFromCurrencyID[row.CurrencyID]
-			if !ok {
+			if row.Rate == nil {
 				err := fmt.Errorf(
 					"missing household FX rate from %s to %s",
 					row.CurrencyCode,
@@ -180,6 +160,7 @@ func (r *householdResolver) aggregateByCategoryType(
 				)
 				return nil, err
 			}
+			rate = *row.Rate
 		}
 
 		convertedTotal := row.Total.Mul(rate)
