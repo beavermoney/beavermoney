@@ -56,6 +56,9 @@ func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 	usd := client.HouseholdCurrency.Create().
 		SetHouseholdID(hh.ID).SetCode("USD").SetImportant(true).SaveX(hctx)
 
+	client.HouseholdRate.Create().
+		SetHouseholdID(hh.ID).SetFromCurrencyID(usd.ID).SetToCurrencyID(usd.ID).SetRate(decimal.NewFromInt(1)).SaveX(hctx)
+
 	client.UserHousehold.Create().
 		SetUserID(userA.ID).SetHouseholdID(hh.ID).
 		SetRole(userhousehold.RoleAdmin).
