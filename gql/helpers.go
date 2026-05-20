@@ -41,14 +41,12 @@ func (r *householdResolver) aggregateByCategoryType(
 	client := r.entClient
 
 	dc := contextkeys.GetDisplayCurrency(ctx)
-	targetCurrencyCode := dc.Code
 
-	// Query grouped by category and currency
+	// Query grouped by category
 	var res []struct {
-		CategoryID   int             `sql:"category_id"`
-		CurrencyCode string          `sql:"currency_code"`
-		Total        decimal.Decimal `sql:"total"`
-		Count        int             `sql:"count"`
+		CategoryID int             `sql:"category_id"`
+		Total      decimal.Decimal `sql:"total"`
+		Count      int             `sql:"count"`
 	}
 
 	err := client.Transaction.Query().
@@ -57,6 +55,7 @@ func (r *householdResolver) aggregateByCategoryType(
 			tc := sql.Table(transactioncategory.Table)
 			ac := sql.Table(account.Table)
 			cu := sql.Table(householdcurrency.Table)
+			ra := sql.Table(householdrate.Table)
 
 			s.Join(te).
 				On(s.C(transaction.FieldID), te.C(transactionentry.TransactionColumn))
@@ -66,6 +65,10 @@ func (r *householdResolver) aggregateByCategoryType(
 				On(te.C(transactionentry.AccountColumn), ac.C(account.FieldID))
 			s.Join(cu).
 				On(ac.C(account.HouseholdCurrencyColumn), cu.C(householdcurrency.FieldID))
+			s.Join(ra).
+				On(cu.C(householdcurrency.FieldID), ra.C(householdrate.FieldFromHouseholdCurrencyID))
+
+			s.Where(sql.EQ(ra.C(householdrate.FieldToHouseholdCurrencyID), dc.HouseholdCurrencyID))
 
 			// Filter by household
 			s.Where(sql.EQ(s.C(transaction.FieldHouseholdID), householdID))
@@ -91,12 +94,14 @@ func (r *householdResolver) aggregateByCategoryType(
 			// Group by category and currency and sum
 			s.Select(
 				sql.As(tc.C(transactioncategory.FieldID), "category_id"),
-				sql.As(cu.C(householdcurrency.FieldCode), "currency_code"),
-				sql.As(sql.Sum(te.C(transactionentry.FieldAmount)), "total"),
 				sql.As(
 					sql.Count(sql.Distinct(s.C(transaction.FieldID))),
 					"count",
 				),
+			)
+			s.AppendSelectExpr(
+				sql.Expr(
+					fmt.Sprintf("SUM(%s * %s) AS total", te.C(transactionentry.FieldAmount), ra.C(householdrate.FieldRate))),
 			)
 			s.GroupBy(
 				tc.C(transactioncategory.FieldID),
@@ -127,53 +132,12 @@ func (r *householdResolver) aggregateByCategoryType(
 	categoryMap := make(map[int]*categoryData)
 
 	for _, row := range res {
-		rate := decimal.NewFromInt(1)
-		if row.CurrencyCode != targetCurrencyCode {
-			date := openapi_types.Date{Time: time.Now().UTC()}
-			resp, err := r.frankfurterClient.GetRateWithResponse(
-				ctx,
-				row.CurrencyCode,
-				targetCurrencyCode,
-				&frankfurter.GetRateParams{Date: &date},
-			)
-			if err != nil {
-				r.logger.Error(
-					"Failed to get FX rate",
-					"error",
-					err,
-					"from",
-					row.CurrencyCode,
-					"to",
-					targetCurrencyCode,
-				)
-				return nil, err
-			}
-
-			if resp.JSON200 == nil {
-				err = fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
-				r.logger.Error(
-					"Failed to get FX rate",
-					"error",
-					err,
-					"from",
-					row.CurrencyCode,
-					"to",
-					targetCurrencyCode,
-				)
-				return nil, err
-			}
-
-			rate = decimal.NewFromFloat32(resp.JSON200.Rate)
-		}
-
-		convertedTotal := row.Total.Mul(rate)
-
 		if existing, ok := categoryMap[row.CategoryID]; ok {
-			existing.total = existing.total.Add(convertedTotal)
+			existing.total = existing.total.Add(row.Total)
 			existing.count += row.Count
 		} else {
 			categoryMap[row.CategoryID] = &categoryData{
-				total: convertedTotal,
+				total: row.Total,
 				count: row.Count,
 			}
 		}
