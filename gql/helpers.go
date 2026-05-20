@@ -44,14 +44,13 @@ func (r *householdResolver) aggregateByCategoryType(
 	targetCurrencyID := dc.HouseholdCurrencyID
 	targetCurrencyCode := dc.Code
 
-	// Query grouped by category and currency
+	// Query grouped by category with DB-side currency conversion
 	var res []struct {
-		CategoryID   int              `sql:"category_id"`
-		CurrencyCode string           `sql:"currency_code"`
-		CurrencyID   int              `sql:"currency_id"`
-		Rate         *decimal.Decimal `sql:"rate"`
-		Total        decimal.Decimal  `sql:"total"`
-		Count        int              `sql:"count"`
+		CategoryID          int             `sql:"category_id"`
+		Total               decimal.Decimal `sql:"total"`
+		Count               int             `sql:"count"`
+		MissingRateCount    int             `sql:"missing_rate_count"`
+		MissingCurrencyCode *string         `sql:"missing_currency_code"`
 	}
 
 	err := client.Transaction.Query().
@@ -98,24 +97,40 @@ func (r *householdResolver) aggregateByCategoryType(
 			// Filter for category type
 			s.Where(sql.EQ(tc.C(transactioncategory.FieldType), categoryType))
 
-			// Group by category and currency and sum
+			convertedTotalExpr := fmt.Sprintf(
+				"SUM(CASE WHEN %s = %d THEN %s ELSE %s * %s END)",
+				cu.C(householdcurrency.FieldID),
+				targetCurrencyID,
+				te.C(transactionentry.FieldAmount),
+				te.C(transactionentry.FieldAmount),
+				hr.C(householdrate.FieldRate),
+			)
+			missingRateCountExpr := fmt.Sprintf(
+				"SUM(CASE WHEN %s <> %d AND %s IS NULL THEN 1 ELSE 0 END)",
+				cu.C(householdcurrency.FieldID),
+				targetCurrencyID,
+				hr.C(householdrate.FieldRate),
+			)
+			missingCurrencyCodeExpr := fmt.Sprintf(
+				"MIN(CASE WHEN %s <> %d AND %s IS NULL THEN %s END)",
+				cu.C(householdcurrency.FieldID),
+				targetCurrencyID,
+				hr.C(householdrate.FieldRate),
+				cu.C(householdcurrency.FieldCode),
+			)
+
+			// Group by category and sum already-converted amounts
 			s.Select(
 				sql.As(tc.C(transactioncategory.FieldID), "category_id"),
-				sql.As(cu.C(householdcurrency.FieldCode), "currency_code"),
-				sql.As(cu.C(householdcurrency.FieldID), "currency_id"),
-				sql.As(hr.C(householdrate.FieldRate), "rate"),
-				sql.As(sql.Sum(te.C(transactionentry.FieldAmount)), "total"),
+				sql.As(convertedTotalExpr, "total"),
 				sql.As(
 					sql.Count(sql.Distinct(s.C(transaction.FieldID))),
 					"count",
 				),
+				sql.As(missingRateCountExpr, "missing_rate_count"),
+				sql.As(missingCurrencyCodeExpr, "missing_currency_code"),
 			)
-			s.GroupBy(
-				tc.C(transactioncategory.FieldID),
-				cu.C(householdcurrency.FieldCode),
-				cu.C(householdcurrency.FieldID),
-				hr.C(householdrate.FieldRate),
-			)
+			s.GroupBy(tc.C(transactioncategory.FieldID))
 		}).
 		Scan(ctx, &res)
 	if err != nil {
@@ -141,38 +156,31 @@ func (r *householdResolver) aggregateByCategoryType(
 	categoryMap := make(map[int]*categoryData)
 
 	for _, row := range res {
-		rate := decimal.NewFromInt(1)
-		if row.CurrencyID != targetCurrencyID {
-			if row.Rate == nil {
-				err := fmt.Errorf(
-					"missing household FX rate from %s to %s",
-					row.CurrencyCode,
-					targetCurrencyCode,
-				)
-				r.logger.Error(
-					"Failed to convert category aggregate amount",
-					"error",
-					err,
-					"from",
-					row.CurrencyCode,
-					"to",
-					targetCurrencyCode,
-				)
-				return nil, err
+		if row.MissingRateCount > 0 {
+			fromCurrencyCode := "unknown"
+			if row.MissingCurrencyCode != nil {
+				fromCurrencyCode = *row.MissingCurrencyCode
 			}
-			rate = *row.Rate
+			err := fmt.Errorf(
+				"missing household FX rate from %s to %s",
+				fromCurrencyCode,
+				targetCurrencyCode,
+			)
+			r.logger.Error(
+				"Failed to convert category aggregate amount",
+				"error",
+				err,
+				"from",
+				fromCurrencyCode,
+				"to",
+				targetCurrencyCode,
+			)
+			return nil, err
 		}
 
-		convertedTotal := row.Total.Mul(rate)
-
-		if existing, ok := categoryMap[row.CategoryID]; ok {
-			existing.total = existing.total.Add(convertedTotal)
-			existing.count += row.Count
-		} else {
-			categoryMap[row.CategoryID] = &categoryData{
-				total: convertedTotal,
-				count: row.Count,
-			}
+		categoryMap[row.CategoryID] = &categoryData{
+			total: row.Total,
+			count: row.Count,
 		}
 	}
 
