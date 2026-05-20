@@ -75,6 +75,17 @@ func (r *mutationResolver) CreateHousehold(ctx context.Context, input model.Crea
 		return nil, fmt.Errorf("failed to create primary household currency: %w", err)
 	}
 
+	err = client.HouseholdRate.Create().
+		SetHouseholdID(household.ID).
+		SetFromCurrencyID(primaryHC.ID).
+		SetToCurrencyID(primaryHC.ID).
+		SetRate(decimal.NewFromInt(1)).
+		Exec(householdCtx)
+	if err != nil {
+		r.logger.Error("Failed to create household rate", "error", err)
+		return nil, fmt.Errorf("failed to create household rate: %w", err)
+	}
+
 	// Create UserHousehold relationship (user is admin of the new household)
 	err = client.UserHousehold.Create().
 		SetUserID(userID).
