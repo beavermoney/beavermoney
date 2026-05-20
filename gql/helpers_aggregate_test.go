@@ -9,6 +9,7 @@ import (
 
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/enttest"
+	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/userhousehold"
 	"beavermoney.app/gql/model"
@@ -176,5 +177,152 @@ func TestAggregateByCategoryType_MultiEntryExpenseScopedByUser(t *testing.T) {
 				)
 			}
 		})
+	}
+}
+
+func TestAggregateByCategoryType_UsesHouseholdRates(t *testing.T) {
+	client := enttest.Open(
+		t,
+		"sqlite3",
+		"file:helpers_aggregate_rates?mode=memory&cache=shared&_fk=1",
+	)
+	t.Cleanup(func() { _ = client.Close() })
+
+	bypass := contextkeys.NewPrivacyBypassContext(context.Background())
+
+	user := client.User.Create().
+		SetEmail("rates@bm.test").SetName("Rates").SaveX(bypass)
+
+	hh := client.Household.Create().
+		SetName("Test").SetLocale("en-US").SaveX(bypass)
+	hctx := context.WithValue(bypass, contextkeys.HouseholdIDKey(), hh.ID)
+
+	usd := client.HouseholdCurrency.Create().
+		SetHouseholdID(hh.ID).SetCode("USD").SetImportant(true).SaveX(hctx)
+	cad := client.HouseholdCurrency.Create().
+		SetHouseholdID(hh.ID).SetCode("CAD").SetImportant(true).SaveX(hctx)
+
+	client.HouseholdRate.Create().
+		SetHouseholdID(hh.ID).
+		SetFromHouseholdCurrencyID(cad.ID).
+		SetToHouseholdCurrencyID(usd.ID).
+		SetRate(decimal.NewFromFloat(0.75)).
+		SaveX(hctx)
+	client.HouseholdRate.Create().
+		SetHouseholdID(hh.ID).
+		SetFromHouseholdCurrencyID(usd.ID).
+		SetToHouseholdCurrencyID(cad.ID).
+		SetRate(decimal.NewFromFloat(1.333333)).
+		SaveX(hctx)
+
+	client.UserHousehold.Create().
+		SetUserID(user.ID).SetHouseholdID(hh.ID).
+		SetRole(userhousehold.RoleAdmin).
+		SetHouseholdCurrencyID(usd.ID).SaveX(bypass)
+
+	accUSD := client.Account.Create().
+		SetName("USD Account").
+		SetType(account.TypeLiquidity).
+		SetUserID(user.ID).
+		SetHouseholdID(hh.ID).
+		SetHouseholdCurrencyID(usd.ID).
+		SaveX(hctx)
+	accCAD := client.Account.Create().
+		SetName("CAD Account").
+		SetType(account.TypeLiquidity).
+		SetUserID(user.ID).
+		SetHouseholdID(hh.ID).
+		SetHouseholdCurrencyID(cad.ID).
+		SaveX(hctx)
+
+	expenseCat := client.TransactionCategory.Create().
+		SetName("Food").
+		SetType(transactioncategory.TypeExpense).
+		SetIcon("utensils").
+		SetHouseholdID(hh.ID).
+		SaveX(hctx)
+
+	txnTime, err := time.Parse(time.RFC3339, "2026-02-10T12:00:00Z")
+	if err != nil {
+		t.Fatalf("parse txn time: %v", err)
+	}
+
+	txnUSD := client.Transaction.Create().
+		SetHouseholdID(hh.ID).
+		SetUserID(user.ID).
+		SetCategoryID(expenseCat.ID).
+		SetDatetime(txnTime).
+		SetDescription("USD meal").
+		SaveX(hctx)
+	client.TransactionEntry.Create().
+		SetHouseholdID(hh.ID).
+		SetTransactionID(txnUSD.ID).
+		SetAccountID(accUSD.ID).
+		SetAmount(decimal.NewFromInt(-100)).
+		SaveX(hctx)
+
+	txnCAD := client.Transaction.Create().
+		SetHouseholdID(hh.ID).
+		SetUserID(user.ID).
+		SetCategoryID(expenseCat.ID).
+		SetDatetime(txnTime.Add(time.Hour)).
+		SetDescription("CAD meal").
+		SaveX(hctx)
+	client.TransactionEntry.Create().
+		SetHouseholdID(hh.ID).
+		SetTransactionID(txnCAD.ID).
+		SetAccountID(accCAD.ID).
+		SetAmount(decimal.NewFromInt(-100)).
+		SaveX(hctx)
+
+	r := &Resolver{
+		logger:    slog.New(slog.NewTextHandler(io.Discard, nil)),
+		entClient: client,
+		tracer:    noop.NewTracerProvider().Tracer("test"),
+	}
+	fr := &householdResolver{r}
+
+	queryCtx := context.WithValue(
+		bypass,
+		contextkeys.HouseholdIDKey(),
+		hh.ID,
+	)
+	queryCtx = context.WithValue(
+		queryCtx,
+		contextkeys.DisplayCurrencyKey(),
+		&contextkeys.DisplayCurrency{HouseholdCurrencyID: usd.ID, Code: "USD"},
+	)
+
+	out, err := fr.aggregateByCategoryType(
+		queryCtx,
+		&model.FinancialReport{},
+		transactioncategory.TypeExpense,
+		nil,
+	)
+	if err != nil {
+		t.Fatalf("aggregateByCategoryType: %v", err)
+	}
+
+	gotTotal, err := decimal.NewFromString(out.Total)
+	if err != nil {
+		t.Fatalf("parse total %q: %v", out.Total, err)
+	}
+	wantTotal := decimal.NewFromInt(175)
+	if !gotTotal.Equal(wantTotal) {
+		t.Fatalf("total = %s, want %s", gotTotal.String(), wantTotal.String())
+	}
+
+	if out.TransactionCount != 2 {
+		t.Fatalf("transactionCount = %d, want 2", out.TransactionCount)
+	}
+
+	storedRates, err := client.HouseholdRate.Query().
+		Where(householdrate.HouseholdIDEQ(hh.ID)).
+		Count(hctx)
+	if err != nil {
+		t.Fatalf("count stored rates: %v", err)
+	}
+	if storedRates == 0 {
+		t.Fatal("expected stored household rates")
 	}
 }

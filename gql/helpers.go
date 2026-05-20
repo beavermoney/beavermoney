@@ -47,6 +47,7 @@ func (r *householdResolver) aggregateByCategoryType(
 	var res []struct {
 		CategoryID   int             `sql:"category_id"`
 		CurrencyCode string          `sql:"currency_code"`
+		CurrencyID   int             `sql:"currency_id"`
 		Total        decimal.Decimal `sql:"total"`
 		Count        int             `sql:"count"`
 	}
@@ -92,6 +93,7 @@ func (r *householdResolver) aggregateByCategoryType(
 			s.Select(
 				sql.As(tc.C(transactioncategory.FieldID), "category_id"),
 				sql.As(cu.C(householdcurrency.FieldCode), "currency_code"),
+				sql.As(cu.C(householdcurrency.FieldID), "currency_id"),
 				sql.As(sql.Sum(te.C(transactionentry.FieldAmount)), "total"),
 				sql.As(
 					sql.Count(sql.Distinct(s.C(transaction.FieldID))),
@@ -101,6 +103,7 @@ func (r *householdResolver) aggregateByCategoryType(
 			s.GroupBy(
 				tc.C(transactioncategory.FieldID),
 				cu.C(householdcurrency.FieldCode),
+				cu.C(householdcurrency.FieldID),
 			)
 		}).
 		Scan(ctx, &res)
@@ -125,20 +128,49 @@ func (r *householdResolver) aggregateByCategoryType(
 		count int
 	}
 	categoryMap := make(map[int]*categoryData)
+	targetCurrencyID := dc.HouseholdCurrencyID
+
+	sourceCurrencyIDs := make([]int, 0, len(res))
+	seenSourceCurrencyIDs := make(map[int]bool, len(res))
+	for _, row := range res {
+		if row.CurrencyID == targetCurrencyID || seenSourceCurrencyIDs[row.CurrencyID] {
+			continue
+		}
+		seenSourceCurrencyIDs[row.CurrencyID] = true
+		sourceCurrencyIDs = append(sourceCurrencyIDs, row.CurrencyID)
+	}
+
+	rateByFromCurrencyID := make(map[int]decimal.Decimal, len(sourceCurrencyIDs))
+	if len(sourceCurrencyIDs) > 0 {
+		rates, err := client.HouseholdRate.Query().
+			Where(
+				householdrate.HouseholdIDEQ(householdID),
+				householdrate.ToHouseholdCurrencyIDEQ(targetCurrencyID),
+				householdrate.FromHouseholdCurrencyIDIn(sourceCurrencyIDs...),
+			).
+			All(ctx)
+		if err != nil {
+			r.logger.Error("Failed to load household FX rates", "error", err)
+			return nil, err
+		}
+		for _, rate := range rates {
+			rateByFromCurrencyID[rate.FromHouseholdCurrencyID] = rate.Rate
+		}
+	}
 
 	for _, row := range res {
 		rate := decimal.NewFromInt(1)
-		if row.CurrencyCode != targetCurrencyCode {
-			date := openapi_types.Date{Time: time.Now().UTC()}
-			resp, err := r.frankfurterClient.GetRateWithResponse(
-				ctx,
-				row.CurrencyCode,
-				targetCurrencyCode,
-				&frankfurter.GetRateParams{Date: &date},
-			)
-			if err != nil {
+		if row.CurrencyID != targetCurrencyID {
+			var ok bool
+			rate, ok = rateByFromCurrencyID[row.CurrencyID]
+			if !ok {
+				err := fmt.Errorf(
+					"missing household FX rate from %s to %s",
+					row.CurrencyCode,
+					targetCurrencyCode,
+				)
 				r.logger.Error(
-					"Failed to get FX rate",
+					"Failed to convert category aggregate amount",
 					"error",
 					err,
 					"from",
@@ -148,22 +180,6 @@ func (r *householdResolver) aggregateByCategoryType(
 				)
 				return nil, err
 			}
-
-			if resp.JSON200 == nil {
-				err = fmt.Errorf("failed to get FX rate: unexpected status %s", resp.Status())
-				r.logger.Error(
-					"Failed to get FX rate",
-					"error",
-					err,
-					"from",
-					row.CurrencyCode,
-					"to",
-					targetCurrencyCode,
-				)
-				return nil, err
-			}
-
-			rate = decimal.NewFromFloat32(resp.JSON200.Rate)
 		}
 
 		convertedTotal := row.Total.Mul(rate)
