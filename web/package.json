@@ -87,7 +87,7 @@
     "typescript-eslint": "^8.59.3",
     "vite": "^7.3.3",
     "vite-plugin-relay": "^2.1.0",
-    "vitest": "^3.2.4",
+    "vitest": "^3.2.6",
     "web-vitals": "^5.2.0"
   }
 }
