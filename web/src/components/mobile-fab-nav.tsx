@@ -19,7 +19,7 @@ export function MobileFabNav() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4">
+    <div className="absolute bottom-4 left-4">
       <DropdownMenu>
         <DropdownMenuTrigger
           render={

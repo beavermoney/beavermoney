@@ -52,6 +52,10 @@
   --sidebar-accent-foreground: oklch(0.205 0.008 92); /* Ink Deep */
   --sidebar-border: oklch(0.922 0.005 92); /* Pencil Grey */
   --sidebar-ring: oklch(0.708 0.008 92); /* Graphite Mid */
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 .dark {
@@ -154,6 +158,9 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
+    padding-bottom: var(--safe-bottom);
+    padding-right: var(--safe-right);
+    padding-left: var(--safe-left);
   }
   html {
     @apply font-sans;
