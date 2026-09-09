@@ -237,6 +237,37 @@
   box-shadow: 0 1px 2px var(--surface-shadow-color);
 }
 
+@media (max-width: 47.999rem) {
+  .mobile-content-bottom-corners::before,
+  .mobile-content-bottom-corners::after {
+    position: absolute;
+    z-index: 20;
+    bottom: 0;
+    width: var(--radius-2xl);
+    height: var(--radius-2xl);
+    pointer-events: none;
+    content: '';
+  }
+
+  .mobile-content-bottom-corners::before {
+    left: 1rem;
+    background: radial-gradient(
+      circle at top right,
+      transparent calc(var(--radius-2xl) - 0.5px),
+      var(--background) var(--radius-2xl)
+    );
+  }
+
+  .mobile-content-bottom-corners::after {
+    right: 1rem;
+    background: radial-gradient(
+      circle at top left,
+      transparent calc(var(--radius-2xl) - 0.5px),
+      var(--background) var(--radius-2xl)
+    );
+  }
+}
+
 [data-slot='button'][data-variant='default'] {
   box-shadow:
     inset 0 1px 0 oklch(1 0.002 92 / 38%),
