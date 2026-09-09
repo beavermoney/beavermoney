@@ -243,27 +243,28 @@
     position: absolute;
     z-index: 20;
     bottom: 0;
-    width: var(--radius-2xl);
-    height: var(--radius-2xl);
+    /* Include the one-pixel outer ring used by ledger surfaces. */
+    width: calc(var(--radius-2xl) + 1px);
+    height: calc(var(--radius-2xl) + 1px);
     pointer-events: none;
     content: '';
   }
 
   .mobile-content-bottom-corners::before {
-    left: 1rem;
+    left: calc(1rem - 1px);
     background: radial-gradient(
       circle at top right,
-      transparent calc(var(--radius-2xl) - 0.5px),
-      var(--background) var(--radius-2xl)
+      transparent calc(var(--radius-2xl) + 0.5px),
+      var(--background) calc(var(--radius-2xl) + 1px)
     );
   }
 
   .mobile-content-bottom-corners::after {
-    right: 1rem;
+    right: calc(1rem - 1px);
     background: radial-gradient(
       circle at top left,
-      transparent calc(var(--radius-2xl) - 0.5px),
-      var(--background) var(--radius-2xl)
+      transparent calc(var(--radius-2xl) + 0.5px),
+      var(--background) calc(var(--radius-2xl) + 1px)
     );
   }
 }
