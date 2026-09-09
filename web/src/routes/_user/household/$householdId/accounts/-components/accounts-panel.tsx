@@ -28,6 +28,7 @@ import {
   AccordionContent,
   AccordionItem,
 } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import {
   Empty,
   EmptyDescription,
@@ -135,6 +136,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
 
   const [displayIndex, setDisplayIndex] = useState(0)
   const [searchFilter, setSearchFilter] = useState('')
+  const [showPercentages, setShowPercentages] = useState(false)
 
   const handleGroupByChange = (newGroupBy: string | null) => {
     if (!newGroupBy) return
@@ -267,26 +269,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     return capitalize(key)
   }
 
-  const allocationSummary = visibleGroups.map(({ key, accounts }) => {
-    const total = accounts.reduce(
-      (groupTotal, account) => groupTotal.add(account.displayValue),
-      currency(0),
-    )
-    const groupTypes = new Set(accounts.map(({ node }) => node.type))
-    const accentClass =
-      groupTypes.size === 1
-        ? (ACCOUNT_TYPE_ACCENT_CLASSES[[...groupTypes][0]] ?? 'bg-chart-2')
-        : 'bg-chart-2'
-    const { share } = getAccountGroupAllocation(total.value, assetsTotal)
-
-    return {
-      key,
-      label: getGroupLabel(key),
-      share,
-      accentClass,
-    }
-  })
-
   const formattedDisplayValue = formatCurrencyWithPrivacyMode({
     value: displayOptions[displayIndex].value,
     currencyCode: displayCurrencyCode,
@@ -362,6 +344,14 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           />
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowPercentages((current) => !current)}
+            className="col-span-2 sm:col-span-1"
+          >
+            {showPercentages ? 'Show values' : 'Show percentages'}
+          </Button>
           <Select
             name="sort-accounts"
             value={sortOption}
@@ -413,101 +403,76 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
 
       <div className="py-2" />
       {visibleGroups.length > 0 ? (
-        <>
-          <section
-            aria-labelledby="account-allocation-title"
-            className="border-border bg-muted/35 mb-3 rounded-lg border px-3 py-2.5"
-          >
-            <h2
-              id="account-allocation-title"
-              className="text-muted-foreground mb-2 text-[0.625rem] font-semibold tracking-[0.08em] uppercase"
-            >
-              Account allocation
-            </h2>
-            <ul className="flex flex-wrap gap-x-5 gap-y-2">
-              {allocationSummary.map((group) => (
-                <li
-                  key={group.key}
-                  className="flex min-w-28 items-center gap-2"
-                >
-                  <span
-                    aria-hidden="true"
-                    className={cn('size-2 shrink-0', group.accentClass)}
+        <Accordion
+          key={groupByOption}
+          multiple
+          className="ring-foreground/10 overflow-hidden rounded-xl border-0 ring-1"
+          defaultValue={visibleGroups.map(({ key }) => key)}
+        >
+          {visibleGroups.map(({ key, accounts }) => {
+            const groupTotal = accounts.reduce(
+              (total, account) => total.add(account.displayValue),
+              currency(0),
+            )
+            const isLiabilityGroup = accounts.every(
+              ({ node }) => node.type === 'liability',
+            )
+            const groupTypes = new Set(accounts.map(({ node }) => node.type))
+            const groupAccentClass =
+              groupTypes.size === 1
+                ? (ACCOUNT_TYPE_ACCENT_CLASSES[[...groupTypes][0]] ??
+                  'bg-chart-2')
+                : 'bg-chart-2'
+            const groupDisplayValue = showPercentages
+              ? formatPercentageWithPrivacyMode(
+                  getAccountGroupAllocation(groupTotal.value, assetsTotal)
+                    .share,
+                  household.locale,
+                  isPrivacyModeEnabled,
+                )
+              : formatCurrencyWithPrivacyMode({
+                  value: groupTotal,
+                  currencyCode: displayCurrencyCode,
+                  liability: isLiabilityGroup,
+                })
+
+            return (
+              <AccordionItem
+                value={key}
+                key={key}
+                className="data-open:bg-transparent"
+              >
+                <AccountGroupTrigger
+                  label={getGroupLabel(key)}
+                  total={groupDisplayValue}
+                  accentClass={groupAccentClass}
+                />
+                <AccordionContent className="-mx-2 pb-0">
+                  <AccountLedgerColumnHeader
+                    displayCurrencyCode={displayCurrencyCode}
                   />
-                  <span className="text-xs font-medium">{group.label}</span>
-                  <span className="ml-auto text-sm font-semibold tabular-nums">
-                    {formatPercentageWithPrivacyMode(
-                      group.share,
-                      household.locale,
-                      isPrivacyModeEnabled,
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-          <Accordion
-            key={groupByOption}
-            multiple
-            className="ring-foreground/10 overflow-hidden rounded-xl border-0 ring-1"
-            defaultValue={visibleGroups.map(({ key }) => key)}
-          >
-            {visibleGroups.map(({ key, accounts }) => {
-              const groupTotal = accounts.reduce(
-                (total, account) => total.add(account.displayValue),
-                currency(0),
-              )
-              const isLiabilityGroup = accounts.every(
-                ({ node }) => node.type === 'liability',
-              )
-              const groupTypes = new Set(accounts.map(({ node }) => node.type))
-              const groupAccentClass =
-                groupTypes.size === 1
-                  ? (ACCOUNT_TYPE_ACCENT_CLASSES[[...groupTypes][0]] ??
-                    'bg-chart-2')
-                  : 'bg-chart-2'
-              return (
-                <AccordionItem
-                  value={key}
-                  key={key}
-                  className="data-open:bg-transparent"
-                >
-                  <AccountGroupTrigger
-                    label={getGroupLabel(key)}
-                    total={formatCurrencyWithPrivacyMode({
-                      value: groupTotal,
-                      currencyCode: displayCurrencyCode,
-                      liability: isLiabilityGroup,
-                    })}
-                    accentClass={groupAccentClass}
-                  />
-                  <AccordionContent className="-mx-2 pb-0">
-                    <AccountLedgerColumnHeader
-                      displayCurrencyCode={displayCurrencyCode}
-                    />
-                    <div
-                      role="list"
-                      aria-label={`${getGroupLabel(key)} accounts`}
-                    >
-                      {accounts.map((account) => (
-                        <AccountLedgerRow
-                          key={account.node.id}
-                          fragmentRef={account.node}
-                          displayValue={account.displayValue}
-                          displayCurrencyCode={displayCurrencyCode}
-                          share={calculateAllocationPercentage(
-                            account.displayValue.value,
-                            groupTotal.value,
-                          )}
-                        />
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              )
-            })}
-          </Accordion>
-        </>
+                  <div
+                    role="list"
+                    aria-label={`${getGroupLabel(key)} accounts`}
+                  >
+                    {accounts.map((account) => (
+                      <AccountLedgerRow
+                        key={account.node.id}
+                        fragmentRef={account.node}
+                        displayValue={account.displayValue}
+                        displayCurrencyCode={displayCurrencyCode}
+                        share={calculateAllocationPercentage(
+                          account.displayValue.value,
+                          groupTotal.value,
+                        )}
+                      />
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
       ) : (
         <Empty className="border py-10">
           <EmptyHeader>
