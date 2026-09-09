@@ -338,7 +338,7 @@ function RouteComponent() {
                       </Button>
                     </div>
                   </header>
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-b-2xl">
+                  <div className="mobile-content-bottom-corners relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
                     <Outlet />
                   </div>
                   <AppActionDock
