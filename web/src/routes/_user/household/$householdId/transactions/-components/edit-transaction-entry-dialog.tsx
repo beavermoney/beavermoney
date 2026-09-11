@@ -1,4 +1,4 @@
-import { graphql, useMutation } from 'react-relay'
+import { graphql, useFragment, useMutation } from 'react-relay'
 import { useForm } from '@tanstack/react-form'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -6,6 +6,7 @@ import { match } from 'ts-pattern'
 import currency from 'currency.js'
 
 import type { editTransactionEntryDialogUpdateMutation } from './__generated__/editTransactionEntryDialogUpdateMutation.graphql'
+import type { editTransactionEntryDialogAccountsFragment$key } from './__generated__/editTransactionEntryDialogAccountsFragment.graphql'
 
 import {
   DialogFooter,
@@ -20,24 +21,28 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
-import { getLogoDomainURL } from '@/lib/logo'
-import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { useEffect } from 'react'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { MobileSelectionDrawer } from '@/components/mobile-selection-drawer'
-import { DesktopSelectionPopover } from '@/components/desktop-selection-popover'
+import { TransactionAccountPicker } from './transaction-account-picker'
+
+const editTransactionEntryDialogAccountsFragment = graphql`
+  fragment editTransactionEntryDialogAccountsFragment on Household
+  @argumentDefinitions(viewUserIds: { type: "[ID!]" }) {
+    accounts(where: { archived: false, userIDIn: $viewUserIds }) {
+      edges {
+        node {
+          id
+          householdCurrency {
+            code
+          }
+          ...transactionAccountPickerFragment
+        }
+      }
+    }
+  }
+`
 
 const editTransactionEntryDialogUpdateMutation = graphql`
   mutation editTransactionEntryDialogUpdateMutation(
@@ -68,29 +73,11 @@ const formSchema = z.object({
   accountId: z.string().min(1, 'Please select an account'),
 })
 
-export type EditEntryAccount = {
-  id: string
-  name: string
-  type: string
-  icon: string | null
-  value: string
-  householdCurrency: { code: string }
-  user: { name: string }
-}
-
-const ACCOUNT_GROUPS = [
-  ['liquidity', 'Liquidity'],
-  ['investment', 'Investment'],
-  ['property', 'Property'],
-  ['receivable', 'Receivable'],
-  ['liability', 'Liability'],
-] as const
-
 type EditTransactionEntryDialogProps = {
   entryId: string
   currentAmount: string
   currentAccountId: string
-  accounts: ReadonlyArray<EditEntryAccount>
+  householdRef: editTransactionEntryDialogAccountsFragment$key
   onClose: () => void
 }
 
@@ -98,9 +85,18 @@ export function EditTransactionEntryDialog({
   entryId,
   currentAmount,
   currentAccountId,
-  accounts,
+  householdRef,
   onClose,
 }: EditTransactionEntryDialogProps) {
+  const accountsData = useFragment(
+    editTransactionEntryDialogAccountsFragment,
+    householdRef,
+  )
+  const accounts =
+    accountsData.accounts.edges?.flatMap((edge) =>
+      edge?.node ? [edge.node] : [],
+    ) ?? []
+
   const [commitUpdate, isUpdateInFlight] =
     useMutation<editTransactionEntryDialogUpdateMutation>(
       editTransactionEntryDialogUpdateMutation,
@@ -108,8 +104,6 @@ export function EditTransactionEntryDialog({
 
   const { household } = useHousehold()
   const { displayCurrencyCode } = useDisplayCurrency()
-  const { formatCurrencyWithPrivacyMode } = useCurrency()
-  const isMobile = useIsMobile()
 
   const originalSign = parseFloat(currentAmount) < 0 ? -1 : 1
 
@@ -154,20 +148,6 @@ export function EditTransactionEntryDialog({
     },
   })
 
-  const selectedAccountId = form.state.values.accountId
-  const accountSelectionAvailable =
-    !selectedAccountId ||
-    accounts.some((account) => account.id === selectedAccountId)
-
-  useEffect(() => {
-    if (!accountSelectionAvailable) form.setFieldValue('accountId', '')
-  }, [accountSelectionAvailable, form])
-
-  const accountGroups = ACCOUNT_GROUPS.map(([type, label]) => ({
-    label,
-    items: accounts.filter((account) => account.type === type),
-  })).filter((group) => group.items.length > 0)
-
   return (
     <>
       <DialogHeader>
@@ -194,56 +174,15 @@ export function EditTransactionEntryDialog({
               return (
                 <Field data-invalid={isInvalid}>
                   <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                  {isMobile ? (
-                    <MobileSelectionDrawer
-                      groups={accountGroups}
-                      name={field.name}
-                      value={field.state.value}
-                      label="Account"
-                      placeholder="Select an account"
-                      emptyMessage="No accounts available."
-                      getValue={(account) => account.id}
-                      getLabel={(account) => account.name}
-                      renderItem={(account) => (
-                        <EditEntryAccountDetails
-                          account={account}
-                          formattedValue={formatCurrencyWithPrivacyMode({
-                            value: account.value,
-                            currencyCode: account.householdCurrency.code,
-                            liability: account.type === 'liability',
-                          })}
-                        />
-                      )}
-                      onValueChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                    />
-                  ) : (
-                    <DesktopSelectionPopover
-                      groups={accountGroups}
-                      name={field.name}
-                      value={field.state.value}
-                      label="Account"
-                      placeholder="Select an account"
-                      emptyMessage="No accounts available."
-                      getValue={(account) => account.id}
-                      getLabel={(account) => account.name}
-                      renderItem={(account) => (
-                        <EditEntryAccountDetails
-                          account={account}
-                          formattedValue={formatCurrencyWithPrivacyMode({
-                            value: account.value,
-                            currencyCode: account.householdCurrency.code,
-                            liability: account.type === 'liability',
-                          })}
-                        />
-                      )}
-                      onValueChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                      triggerClassName="h-12 justify-start p-2"
-                    />
-                  )}
+                  <TransactionAccountPicker
+                    accounts={accounts}
+                    name={field.name}
+                    value={field.state.value}
+                    label="Account"
+                    onValueChange={field.handleChange}
+                    onBlur={field.handleBlur}
+                    invalid={isInvalid}
+                  />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               )
@@ -297,34 +236,5 @@ export function EditTransactionEntryDialog({
         </Button>
       </DialogFooter>
     </>
-  )
-}
-
-function EditEntryAccountDetails({
-  account,
-  formattedValue,
-}: {
-  account: EditEntryAccount
-  formattedValue: string
-}) {
-  return (
-    <Item size="xs" className="min-w-0 flex-1 border-0 p-0">
-      <ItemMedia variant="image">
-        <Avatar className="size-6">
-          {account.icon && (
-            <AvatarImage src={getLogoDomainURL(account.icon)} alt="" />
-          )}
-          <AvatarFallback>{account.name}</AvatarFallback>
-        </Avatar>
-      </ItemMedia>
-      <ItemContent className="min-w-0 gap-0">
-        <ItemTitle>{account.name}</ItemTitle>
-        <ItemDescription>
-          <span className="tabular-nums">{formattedValue}</span>
-          <span aria-hidden="true"> · </span>
-          {account.user.name}
-        </ItemDescription>
-      </ItemContent>
-    </Item>
   )
 }

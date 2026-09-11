@@ -54,6 +54,7 @@ const account = {
   icon: null,
   balance: '100',
   householdCurrency: { code: 'USD' },
+  user: { name: 'Joey' },
 } as never
 
 const manyAccounts = Array.from({ length: 6 }, (_, index) => ({
@@ -63,6 +64,7 @@ const manyAccounts = Array.from({ length: 6 }, (_, index) => ({
   icon: null,
   balance: '100',
   householdCurrency: { code: 'USD' },
+  user: { name: 'Joey' },
   latestTransaction: {
     datetime: `2026-09-0${index + 1}T00:00:00Z`,
   },
@@ -122,6 +124,22 @@ it('searches every recency-sorted account on desktop', () => {
   })
   expect(screen.getByText('Account 1')).toBeTruthy()
   expect(screen.queryByText('Account 6')).toBeNull()
+})
+
+it('shows the account owner alongside the balance and currency', () => {
+  render(
+    <TransactionAccountPicker
+      accounts={[account]}
+      name="accountId"
+      label="Account"
+      value="account-1"
+      onValueChange={() => undefined}
+      onBlur={() => undefined}
+      invalid={false}
+    />,
+  )
+
+  expect(screen.getByRole('button').textContent).toContain('$100.00 USD · Joey')
 })
 
 it('opens a searchable account drawer on mobile', async () => {

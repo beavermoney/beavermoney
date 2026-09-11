@@ -188,6 +188,8 @@ export const EditTransactionDialogQuery = graphql`
     household {
       ...editTransactionDialogHouseholdFragment
         @arguments(viewUserIds: $viewUserIds)
+      ...editTransactionEntryDialogAccountsFragment
+        @arguments(viewUserIds: $viewUserIds)
     }
   }
 `
@@ -686,7 +688,7 @@ export function EditTransactionDialog({
               entryId={editingEntry.id}
               currentAmount={editingEntry.amount}
               currentAccountId={editingEntry.accountId}
-              accounts={accountsList}
+              householdRef={queryData.household}
               onClose={() => setEntryDialogOpen(false)}
             />
           )}

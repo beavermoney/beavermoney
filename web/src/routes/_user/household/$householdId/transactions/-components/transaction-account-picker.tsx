@@ -14,11 +14,16 @@ import { newestActivityFirst } from '@/lib/sort-by-update-time'
 
 const accountFragment = graphql`
   fragment transactionAccountPickerFragment on Account @inline {
+    id
+    type
     name
     icon
     balance
     householdCurrency {
       code
+    }
+    user {
+      name
     }
     latestTransaction {
       datetime
@@ -26,10 +31,7 @@ const accountFragment = graphql`
   }
 `
 
-type Account = transactionAccountPickerFragment$key & {
-  id: string
-  type: string
-}
+type Account = transactionAccountPickerFragment$key
 
 type TransactionAccountPickerProps = {
   accounts: ReadonlyArray<Account>
@@ -63,7 +65,7 @@ export function TransactionAccountPicker({
   preferredTypes,
 }: TransactionAccountPickerProps) {
   const isMobile = useIsMobile()
-  const selected = accounts.find((account) => account.id === value)
+  const selected = accounts.find((account) => accountData(account).id === value)
   const selectionAvailable = !value || selected !== undefined
 
   useEffect(() => {
@@ -76,7 +78,9 @@ export function TransactionAccountPicker({
     type,
     title,
     typeIndex,
-    accounts: orderedAccounts.filter((account) => account.type === type),
+    accounts: orderedAccounts.filter(
+      (account) => accountData(account).type === type,
+    ),
   }))
     .filter((group) => group.accounts.length > 0)
     .sort((a, b) => {
@@ -112,10 +116,13 @@ export function TransactionAccountPicker({
           disabled ? 'Select a source account first' : 'Select an account'
         }
         emptyMessage="No accounts available."
-        getValue={(account) => account.id}
+        getValue={(account) => accountData(account).id}
         getLabel={(account) => accountData(account).name}
         renderItem={(account) => (
-          <AccountDetails account={account} selected={value === account.id} />
+          <AccountDetails
+            account={account}
+            selected={value === accountData(account).id}
+          />
         )}
         onValueChange={onValueChange}
         onBlur={onBlur}
@@ -139,10 +146,13 @@ export function TransactionAccountPicker({
         disabled ? 'Select a source account first' : 'Select an account'
       }
       emptyMessage="No accounts available."
-      getValue={(account) => account.id}
+      getValue={(account) => accountData(account).id}
       getLabel={(account) => accountData(account).name}
       renderItem={(account) => (
-        <AccountDetails account={account} selected={value === account.id} />
+        <AccountDetails
+          account={account}
+          selected={value === accountData(account).id}
+        />
       )}
       onValueChange={onValueChange}
       onBlur={onBlur}
@@ -203,9 +213,11 @@ function AccountDetails({
           {formatCurrencyWithPrivacyMode({
             value: data.balance,
             currencyCode: data.householdCurrency.code,
-            liability: account.type === 'liability',
+            liability: data.type === 'liability',
           })}
           <span> {data.householdCurrency.code}</span>
+          <span aria-hidden="true"> · </span>
+          <span>{data.user.name}</span>
         </span>
       </span>
     </span>
