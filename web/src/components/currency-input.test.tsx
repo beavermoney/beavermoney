@@ -37,3 +37,92 @@ it('parses locale decimal separators before reporting the numeric value', () => 
     value: '12,34',
   })
 })
+
+it('reflects external value changes while preserving user edits', () => {
+  const onValueChange = vi.fn()
+  const { rerender } = render(
+    <CurrencyInput
+      locale="en-US"
+      currency="USD"
+      value={undefined}
+      onValueChange={onValueChange}
+    />,
+  )
+
+  rerender(
+    <CurrencyInput
+      locale="en-US"
+      currency="USD"
+      value={25}
+      onValueChange={onValueChange}
+    />,
+  )
+
+  expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('25')
+
+  fireEvent.change(screen.getByRole('textbox'), {
+    target: { value: '27.50' },
+  })
+
+  rerender(
+    <CurrencyInput
+      locale="en-US"
+      currency="USD"
+      value={27.5}
+      onValueChange={onValueChange}
+    />,
+  )
+
+  expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('27.50')
+  expect(onValueChange).toHaveBeenLastCalledWith({
+    floatValue: 27.5,
+    value: '27.50',
+  })
+})
+
+it('can hide the currency symbol for non-currency decimal values', () => {
+  const { container } = render(
+    <CurrencyInput
+      locale="en-US"
+      currency="USD"
+      value={10.5}
+      showCurrencySymbol={false}
+      onValueChange={() => {}}
+    />,
+  )
+
+  expect(container.textContent).not.toContain('$')
+  expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('10.5')
+})
+
+it('keeps a controlled zero visible for fractional entry', () => {
+  const onValueChange = vi.fn()
+  const { rerender } = render(
+    <CurrencyInput
+      locale="en-US"
+      currency="USD"
+      value={undefined}
+      onValueChange={onValueChange}
+    />,
+  )
+
+  rerender(
+    <CurrencyInput
+      locale="en-US"
+      currency="USD"
+      value={0}
+      onValueChange={onValueChange}
+    />,
+  )
+
+  expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('0')
+
+  fireEvent.change(screen.getByRole('textbox'), {
+    target: { value: '0.5' },
+  })
+
+  expect(onValueChange).toHaveBeenLastCalledWith({
+    floatValue: 0.5,
+    value: '0.5',
+  })
+})

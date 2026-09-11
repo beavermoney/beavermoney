@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { controlGroupSurfaceClassName } from '@/components/ui/control-surface'
-import { useState, useCallback, type ComponentPropsWithoutRef } from 'react'
+import { useCallback, useState, type ComponentPropsWithoutRef } from 'react'
 import { useCurrencyConfig } from '@/hooks/use-currency-config'
 
 type CurrencyInputProps = Omit<
@@ -12,14 +12,22 @@ type CurrencyInputProps = Omit<
   value?: string | number
   decimalScale?: number
   allowNegative?: boolean
+  showCurrencySymbol?: boolean
   onValueChange?: (values: { floatValue?: number; value: string }) => void
 }
 
-function valueToRaw(value: string | number | undefined): string {
+function valueToRaw(
+  value: string | number | undefined,
+  decimalSeparator: string,
+): string {
   if (value == null) return ''
   if (typeof value === 'string') return value
-  if (value === 0) return ''
-  return String(value)
+  return String(value).replace('.', decimalSeparator)
+}
+
+function rawToFloat(raw: string, decimalSeparator: string) {
+  const parsed = parseFloat(raw.replace(decimalSeparator, '.'))
+  return Number.isNaN(parsed) ? undefined : parsed
 }
 
 export function CurrencyInput({
@@ -28,6 +36,7 @@ export function CurrencyInput({
   currency,
   decimalScale = 2,
   allowNegative = false,
+  showCurrencySymbol = true,
   onValueChange,
   value,
   ...props
@@ -37,7 +46,22 @@ export function CurrencyInput({
     currency,
   )
 
-  const [rawValue, setRawValue] = useState(() => valueToRaw(value))
+  const [rawValue, setRawValue] = useState(() =>
+    valueToRaw(value, decimalSeparator),
+  )
+  const [lastValue, setLastValue] = useState(value)
+
+  if (!Object.is(value, lastValue)) {
+    const nextRawValue = valueToRaw(value, decimalSeparator)
+    setLastValue(value)
+
+    if (
+      rawToFloat(rawValue, decimalSeparator) !==
+      rawToFloat(nextRawValue, decimalSeparator)
+    ) {
+      setRawValue(nextRawValue)
+    }
+  }
 
   const validate = useCallback(
     (raw: string): string => {
@@ -75,9 +99,7 @@ export function CurrencyInput({
       const cleaned = validate(e.target.value)
       setRawValue(cleaned)
 
-      const normalizedValue = cleaned.replace(decimalSeparator, '.')
-      const floatValue =
-        cleaned === '' ? undefined : parseFloat(normalizedValue)
+      const floatValue = rawToFloat(cleaned, decimalSeparator)
       onValueChange?.({ floatValue, value: cleaned })
     },
     [decimalSeparator, validate, onValueChange],
@@ -91,7 +113,7 @@ export function CurrencyInput({
         className,
       )}
     >
-      {prefix && (
+      {showCurrencySymbol && prefix && (
         <span className="text-muted-foreground pr-1 pl-2 text-sm select-none md:text-xs/relaxed">
           {prefix}
         </span>
@@ -104,12 +126,12 @@ export function CurrencyInput({
         onChange={handleChange}
         className={cn(
           'min-w-0 flex-1 border-none bg-transparent px-0 py-0.5 text-sm outline-none md:text-xs/relaxed',
-          !prefix && 'pl-2',
-          !suffix && 'pr-2',
+          (!showCurrencySymbol || !prefix) && 'pl-2',
+          (!showCurrencySymbol || !suffix) && 'pr-2',
         )}
         {...props}
       />
-      {suffix && (
+      {showCurrencySymbol && suffix && (
         <span className="text-muted-foreground pr-2 pl-1 text-sm select-none md:text-xs/relaxed">
           {suffix}
         </span>

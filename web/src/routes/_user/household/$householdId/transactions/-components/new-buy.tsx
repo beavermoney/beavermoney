@@ -315,17 +315,21 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Shares</FieldLabel>
-                    <Input
+                    <CurrencyInput
                       data-1p-ignore
                       id={field.name}
                       name={field.name}
-                      type="number"
-                      step="any"
-                      value={field.state.value || ''}
+                      value={field.state.value}
+                      locale={household.locale}
+                      currency={
+                        selectedAccount?.householdCurrency.code ??
+                        displayCurrencyCode
+                      }
+                      decimalScale={8}
+                      showCurrencySymbol={false}
                       onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value)
-                        field.handleChange(isNaN(val) ? 0 : val)
+                      onValueChange={(values) => {
+                        field.handleChange(values.floatValue!)
                       }}
                       aria-invalid={isInvalid}
                       placeholder="10"
