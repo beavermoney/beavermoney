@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<96e988a4807e1a9d3e4dac031595a714>>
+ * @generated SignedSource<<77de48b2d751ce98ee7fd5716265bb3a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,7 +28,29 @@ export type newInvestmentFragment$key = {
   readonly " $fragmentSpreads": FragmentRefs<"newInvestmentFragment">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [
     {
       "defaultValue": null,
@@ -81,31 +103,15 @@ const node: ReaderFragment = {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "type",
-                  "storageKey": null
-                },
+                (v0/*: any*/),
+                (v1/*: any*/),
                 {
                   "kind": "InlineDataFragmentSpread",
                   "name": "transactionAccountPickerFragment",
                   "selections": [
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "name",
-                      "storageKey": null
-                    },
+                    (v0/*: any*/),
+                    (v1/*: any*/),
+                    (v2/*: any*/),
                     {
                       "alias": null,
                       "args": null,
@@ -135,6 +141,18 @@ const node: ReaderFragment = {
                           "name": "code",
                           "storageKey": null
                         }
+                      ],
+                      "storageKey": null
+                    },
+                    {
+                      "alias": null,
+                      "args": null,
+                      "concreteType": "User",
+                      "kind": "LinkedField",
+                      "name": "user",
+                      "plural": false,
+                      "selections": [
+                        (v2/*: any*/)
                       ],
                       "storageKey": null
                     },
@@ -173,6 +191,7 @@ const node: ReaderFragment = {
   "type": "Household",
   "abstractKey": null
 };
+})();
 
 (node as any).hash = "71b722e0007ba9aa5c2202c003d1de79";
 

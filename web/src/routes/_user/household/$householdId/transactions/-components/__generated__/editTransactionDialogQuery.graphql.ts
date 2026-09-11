@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9dcb5553a2e3bb70a88892d9c546a063>>
+ * @generated SignedSource<<eb58eb2911ae94ffc4ebedc09fc25f03>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type editTransactionDialogQuery$variables = {
 };
 export type editTransactionDialogQuery$data = {
   readonly household: {
-    readonly " $fragmentSpreads": FragmentRefs<"editTransactionDialogHouseholdFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"editTransactionDialogHouseholdFragment" | "editTransactionEntryDialogAccountsFragment">;
   };
   readonly node: {
     readonly __typename: "Transaction";
@@ -60,56 +60,63 @@ v2 = {
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
+v3 = [
+  {
+    "kind": "Variable",
+    "name": "viewUserIds",
+    "variableName": "viewUserIds"
+  }
+],
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "datetime",
   "storageKey": null
 },
-v5 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "excludeFromReports",
   "storageKey": null
 },
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "type",
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
 },
-v9 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "symbol",
   "storageKey": null
 },
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -124,19 +131,32 @@ v10 = {
       "name": "code",
       "storageKey": null
     },
-    (v3/*: any*/)
+    (v4/*: any*/)
   ],
   "storageKey": null
 },
-v11 = [
-  (v6/*: any*/),
-  (v3/*: any*/)
+v12 = [
+  (v7/*: any*/),
+  (v4/*: any*/)
 ],
-v12 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "icon",
+  "storageKey": null
+},
+v14 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Transaction",
+  "kind": "LinkedField",
+  "name": "latestTransaction",
+  "plural": false,
+  "selections": [
+    (v5/*: any*/),
+    (v4/*: any*/)
+  ],
   "storageKey": null
 };
 return {
@@ -184,15 +204,14 @@ return {
         "plural": false,
         "selections": [
           {
-            "args": [
-              {
-                "kind": "Variable",
-                "name": "viewUserIds",
-                "variableName": "viewUserIds"
-              }
-            ],
+            "args": (v3/*: any*/),
             "kind": "FragmentSpread",
             "name": "editTransactionDialogHouseholdFragment"
+          },
+          {
+            "args": (v3/*: any*/),
+            "kind": "FragmentSpread",
+            "name": "editTransactionEntryDialogAccountsFragment"
           }
         ],
         "storageKey": null
@@ -216,7 +235,7 @@ return {
         "plural": false,
         "selections": [
           (v2/*: any*/),
-          (v3/*: any*/),
+          (v4/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
@@ -227,7 +246,7 @@ return {
                 "name": "description",
                 "storageKey": null
               },
-              (v4/*: any*/),
+              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -235,7 +254,7 @@ return {
                 "name": "categoryID",
                 "storageKey": null
               },
-              (v5/*: any*/),
+              (v6/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -244,9 +263,9 @@ return {
                 "name": "category",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
-                  (v6/*: any*/),
-                  (v7/*: any*/)
+                  (v4/*: any*/),
+                  (v7/*: any*/),
+                  (v8/*: any*/)
                 ],
                 "storageKey": null
               },
@@ -258,8 +277,8 @@ return {
                 "name": "investmentLots",
                 "plural": true,
                 "selections": [
-                  (v3/*: any*/),
-                  (v8/*: any*/),
+                  (v4/*: any*/),
+                  (v9/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -275,10 +294,10 @@ return {
                     "name": "investment",
                     "plural": false,
                     "selections": [
-                      (v6/*: any*/),
-                      (v9/*: any*/),
+                      (v7/*: any*/),
                       (v10/*: any*/),
-                      (v3/*: any*/),
+                      (v11/*: any*/),
+                      (v4/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -287,7 +306,7 @@ return {
                         "name": "account",
                         "plural": false,
                         "selections": [
-                          (v3/*: any*/)
+                          (v4/*: any*/)
                         ],
                         "storageKey": null
                       }
@@ -302,7 +321,7 @@ return {
                     "name": "transaction",
                     "plural": false,
                     "selections": [
-                      (v3/*: any*/),
+                      (v4/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -310,10 +329,10 @@ return {
                         "kind": "LinkedField",
                         "name": "category",
                         "plural": false,
-                        "selections": (v11/*: any*/),
+                        "selections": (v12/*: any*/),
                         "storageKey": null
                       },
-                      (v4/*: any*/)
+                      (v5/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -328,8 +347,8 @@ return {
                 "name": "transactionEntries",
                 "plural": true,
                 "selections": [
-                  (v3/*: any*/),
-                  (v8/*: any*/),
+                  (v4/*: any*/),
+                  (v9/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -338,9 +357,9 @@ return {
                     "name": "account",
                     "plural": false,
                     "selections": [
-                      (v6/*: any*/),
-                      (v10/*: any*/),
-                      (v3/*: any*/)
+                      (v7/*: any*/),
+                      (v11/*: any*/),
+                      (v4/*: any*/)
                     ],
                     "storageKey": null
                   },
@@ -352,8 +371,8 @@ return {
                     "name": "transaction",
                     "plural": false,
                     "selections": [
-                      (v3/*: any*/),
-                      (v5/*: any*/),
+                      (v4/*: any*/),
+                      (v6/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -362,14 +381,14 @@ return {
                         "name": "category",
                         "plural": false,
                         "selections": [
-                          (v6/*: any*/),
                           (v7/*: any*/),
-                          (v12/*: any*/),
-                          (v3/*: any*/)
+                          (v8/*: any*/),
+                          (v13/*: any*/),
+                          (v4/*: any*/)
                         ],
                         "storageKey": null
                       },
-                      (v4/*: any*/)
+                      (v5/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -407,23 +426,11 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
+                  (v4/*: any*/),
+                  (v8/*: any*/),
                   (v7/*: any*/),
-                  (v6/*: any*/),
-                  (v12/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Transaction",
-                    "kind": "LinkedField",
-                    "name": "latestTransaction",
-                    "plural": false,
-                    "selections": [
-                      (v4/*: any*/),
-                      (v3/*: any*/)
-                    ],
-                    "storageKey": null
-                  }
+                  (v13/*: any*/),
+                  (v14/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -482,10 +489,10 @@ return {
                     "name": "node",
                     "plural": false,
                     "selections": [
-                      (v3/*: any*/),
-                      (v6/*: any*/),
+                      (v4/*: any*/),
                       (v7/*: any*/),
-                      (v12/*: any*/),
+                      (v8/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -493,7 +500,7 @@ return {
                         "name": "value",
                         "storageKey": null
                       },
-                      (v10/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -501,7 +508,7 @@ return {
                         "kind": "LinkedField",
                         "name": "user",
                         "plural": false,
-                        "selections": (v11/*: any*/),
+                        "selections": (v12/*: any*/),
                         "storageKey": null
                       },
                       {
@@ -512,12 +519,20 @@ return {
                         "name": "investments",
                         "plural": true,
                         "selections": [
-                          (v3/*: any*/),
-                          (v6/*: any*/),
-                          (v9/*: any*/)
+                          (v4/*: any*/),
+                          (v7/*: any*/),
+                          (v10/*: any*/)
                         ],
                         "storageKey": null
-                      }
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "balance",
+                        "storageKey": null
+                      },
+                      (v14/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -527,23 +542,23 @@ return {
             ],
             "storageKey": null
           },
-          (v3/*: any*/)
+          (v4/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "26efee5490a04d8724f44e616c6555a1",
+    "cacheID": "d8d316ca74fae3b43cdb7f00a16b9da9",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogQuery",
     "operationKind": "query",
-    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      ...editTransactionDialogTransactionFragment\n    }\n    id\n  }\n  ...editTransactionDialogCategoriesFragment\n  household {\n    ...editTransactionDialogHouseholdFragment_3rIbPZ\n    id\n  }\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        type\n        ...transactionCategoryPickerFragment\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogHouseholdFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        user {\n          name\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCategoryPickerFragment on TransactionCategory {\n  name\n  icon\n  latestTransaction {\n    datetime\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      ...editTransactionDialogTransactionFragment\n    }\n    id\n  }\n  ...editTransactionDialogCategoriesFragment\n  household {\n    ...editTransactionDialogHouseholdFragment_3rIbPZ\n    ...editTransactionEntryDialogAccountsFragment_3rIbPZ\n    id\n  }\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        type\n        ...transactionCategoryPickerFragment\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogHouseholdFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        user {\n          name\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment editTransactionEntryDialogAccountsFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        householdCurrency {\n          code\n          id\n        }\n        ...transactionAccountPickerFragment\n      }\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionAccountPickerFragment on Account {\n  id\n  type\n  name\n  icon\n  balance\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  latestTransaction {\n    datetime\n    id\n  }\n}\n\nfragment transactionCategoryPickerFragment on TransactionCategory {\n  name\n  icon\n  latestTransaction {\n    datetime\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c36df89390cc010258edf1525eb864e1";
+(node as any).hash = "73bbce4f407506ab57d0f84dd3f70c54";
 
 export default node;

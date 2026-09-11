@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<591aef43173ff1b06887e0d4bdcbc611>>
+ * @generated SignedSource<<451e597b70bd34326b7c6b333f4cbb36>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,10 +9,8 @@
 // @ts-nocheck
 
 import { ReaderFragment } from 'relay-runtime';
-export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
-export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
-export type newExpenseFragment$data = {
+export type editTransactionEntryDialogAccountsFragment$data = {
   readonly accounts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
@@ -20,25 +18,15 @@ export type newExpenseFragment$data = {
           readonly code: string;
         };
         readonly id: string;
-        readonly type: AccountType;
         readonly " $fragmentSpreads": FragmentRefs<"transactionAccountPickerFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
-  readonly transactionCategories: {
-    readonly edges: ReadonlyArray<{
-      readonly node: {
-        readonly id: string;
-        readonly type: TransactionCategoryType;
-        readonly " $fragmentSpreads": FragmentRefs<"transactionCategoryPickerFragment">;
-      } | null | undefined;
-    } | null | undefined> | null | undefined;
-  };
-  readonly " $fragmentType": "newExpenseFragment";
+  readonly " $fragmentType": "editTransactionEntryDialogAccountsFragment";
 };
-export type newExpenseFragment$key = {
-  readonly " $data"?: newExpenseFragment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"newExpenseFragment">;
+export type editTransactionEntryDialogAccountsFragment$key = {
+  readonly " $data"?: editTransactionEntryDialogAccountsFragment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"editTransactionEntryDialogAccountsFragment">;
 };
 
 const node: ReaderFragment = (function(){
@@ -50,27 +38,6 @@ var v0 = {
   "storageKey": null
 },
 v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "type",
-  "storageKey": null
-},
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "name",
-  "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "icon",
-  "storageKey": null
-},
-v4 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -88,22 +55,11 @@ v4 = {
   ],
   "storageKey": null
 },
-v5 = {
+v2 = {
   "alias": null,
   "args": null,
-  "concreteType": "Transaction",
-  "kind": "LinkedField",
-  "name": "latestTransaction",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "datetime",
-      "storageKey": null
-    }
-  ],
+  "kind": "ScalarField",
+  "name": "name",
   "storageKey": null
 };
 return {
@@ -116,7 +72,7 @@ return {
   ],
   "kind": "Fragment",
   "metadata": null,
-  "name": "newExpenseFragment",
+  "name": "editTransactionEntryDialogAccountsFragment",
   "selections": [
     {
       "alias": null,
@@ -166,9 +122,21 @@ return {
                   "name": "transactionAccountPickerFragment",
                   "selections": [
                     (v0/*: any*/),
-                    (v1/*: any*/),
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "type",
+                      "storageKey": null
+                    },
                     (v2/*: any*/),
-                    (v3/*: any*/),
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "icon",
+                      "storageKey": null
+                    },
                     {
                       "alias": null,
                       "args": null,
@@ -176,7 +144,7 @@ return {
                       "name": "balance",
                       "storageKey": null
                     },
-                    (v4/*: any*/),
+                    (v1/*: any*/),
                     {
                       "alias": null,
                       "args": null,
@@ -189,54 +157,24 @@ return {
                       ],
                       "storageKey": null
                     },
-                    (v5/*: any*/)
-                  ],
-                  "args": null,
-                  "argumentDefinitions": []
-                },
-                (v4/*: any*/)
-              ],
-              "storageKey": null
-            }
-          ],
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "TransactionCategoryConnection",
-      "kind": "LinkedField",
-      "name": "transactionCategories",
-      "plural": false,
-      "selections": [
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "TransactionCategoryEdge",
-          "kind": "LinkedField",
-          "name": "edges",
-          "plural": true,
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "concreteType": "TransactionCategory",
-              "kind": "LinkedField",
-              "name": "node",
-              "plural": false,
-              "selections": [
-                (v0/*: any*/),
-                (v1/*: any*/),
-                {
-                  "kind": "InlineDataFragmentSpread",
-                  "name": "transactionCategoryPickerFragment",
-                  "selections": [
-                    (v2/*: any*/),
-                    (v3/*: any*/),
-                    (v5/*: any*/)
+                    {
+                      "alias": null,
+                      "args": null,
+                      "concreteType": "Transaction",
+                      "kind": "LinkedField",
+                      "name": "latestTransaction",
+                      "plural": false,
+                      "selections": [
+                        {
+                          "alias": null,
+                          "args": null,
+                          "kind": "ScalarField",
+                          "name": "datetime",
+                          "storageKey": null
+                        }
+                      ],
+                      "storageKey": null
+                    }
                   ],
                   "args": null,
                   "argumentDefinitions": []
@@ -256,6 +194,6 @@ return {
 };
 })();
 
-(node as any).hash = "4d6e961930db563119f2a19fe940c7b3";
+(node as any).hash = "adb52926607c66d4f87acbbfa4c76cca";
 
 export default node;
