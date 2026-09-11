@@ -54,7 +54,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           'border-border bg-background text-foreground fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl border p-4 text-xs/relaxed shadow-[0_8px_24px_var(--glass-shadow-color)] transition-[opacity,scale] duration-200 ease-[var(--ease-out-quint)] outline-none data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 sm:max-w-sm',
-          'data-nested-dialog-open:scale-[0.96] data-nested-dialog-open:opacity-50 data-nested-dialog-open:blur-[2px]',
+          'data-nested-dialog-open:scale-[0.96]',
           className,
         )}
         {...props}
