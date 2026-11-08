@@ -1,3 +1,4 @@
+import { useComposer } from '@/components/transaction-composer/context'
 import { SearchSelect } from '@/components/search-select'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
@@ -55,9 +56,7 @@ export function TransactionAccountPicker({
 }: TransactionAccountPickerProps) {
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const selected = accounts.find((account) => account.id === value)
-  useEffect(() => {
-    if (value && !selected) onValueChange('')
-  }, [value, selected, onValueChange])
+  const isComposer = !!useComposer()
   const ordered = [...accounts].sort((a, b) => {
     const preference =
       Number(!preferredTypes?.includes(a.type)) -
@@ -69,8 +68,24 @@ export function TransactionAccountPicker({
       )
     )
   })
+  const defaultID = isComposer && !disabled ? ordered[0]?.id : undefined
+  useEffect(() => {
+    if (!selected && (value || defaultID)) onValueChange(defaultID ?? '')
+  }, [value, selected, defaultID, onValueChange])
   return (
     <SearchSelect
+      confirmSelection
+      hideChipLabel
+      renderChipIcon={(account) => {
+        const data = accountData(account)
+        return (
+          <Avatar
+            size="xsm"
+            name={data.name}
+            src={data.icon ? getLogoDomainURL(data.icon) : undefined}
+          />
+        )
+      }}
       items={ordered}
       value={selected ?? null}
       label={label}

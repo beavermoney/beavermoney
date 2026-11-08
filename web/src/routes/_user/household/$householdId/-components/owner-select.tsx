@@ -1,3 +1,5 @@
+import { useComposer } from '@/components/transaction-composer/context'
+import { ComposerChoice } from '@/components/transaction-composer/controls'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import {
@@ -32,6 +34,25 @@ export function OwnerSelect({
   onBlur,
   ariaInvalid,
 }: OwnerSelectProps) {
+  const composer = useComposer()
+  if (composer)
+    return (
+      <ComposerChoice
+        name={name ?? 'owner'}
+        label="Owner"
+        hideChipLabel
+        value={options.find((option) => option.id === value)}
+        items={options}
+        getLabel={(option) => option.name}
+        getKey={(option) => option.id}
+        onChange={(option) => {
+          onValueChange(option.id)
+          onBlur?.()
+        }}
+        invalid={ariaInvalid}
+        searchable={false}
+      />
+    )
   return (
     <Stack direction="vertical" gap={1}>
       <Text type="label">Owner</Text>

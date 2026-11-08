@@ -1,3 +1,5 @@
+import { useComposer } from './transaction-composer/context'
+import { ComposerAmount } from './transaction-composer/controls'
 import { useCurrencyConfig } from '@/hooks/use-currency-config'
 import { InputGroup, InputGroupText } from '@astryxdesign/core/InputGroup'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -22,7 +24,14 @@ function valueToRaw(
 ): string {
   if (value == null) return ''
   if (typeof value === 'string') return value
-  return String(value).replace('.', decimalSeparator)
+  const text = String(value)
+  const expanded = /e/i.test(text)
+    ? value.toLocaleString('en-US', {
+        useGrouping: false,
+        maximumFractionDigits: 20,
+      })
+    : text
+  return expanded.replace('.', decimalSeparator)
 }
 
 function rawToFloat(raw: string, decimalSeparator: string) {
@@ -41,6 +50,7 @@ export function CurrencyInput({
   value,
   ...props
 }: CurrencyInputProps) {
+  const composer = useComposer()
   const { prefix, suffix, decimalSeparator } = useCurrencyConfig(
     locale,
     currency,
@@ -106,6 +116,40 @@ export function CurrencyInput({
   )
 
   const { name, disabled, readOnly, autoFocus, required } = props
+  if (composer) {
+    return (
+      <ComposerAmount
+        name={name ?? props.id ?? 'amount'}
+        label={
+          props['aria-label'] ??
+          (name
+            ? (name[0].toUpperCase() + name.slice(1)).replace(
+                /([a-z])([A-Z])/g,
+                '$1 $2',
+              )
+            : 'Amount')
+        }
+        currencyCode={showCurrencySymbol ? currency : undefined}
+        raw={rawValue}
+        prefix={showCurrencySymbol ? prefix : ''}
+        suffix={showCurrencySymbol ? suffix : ''}
+        decimal={decimalSeparator}
+        scale={decimalScale}
+        disabled={disabled || readOnly}
+        invalid={props['aria-invalid'] === true}
+        onChange={(next) => {
+          const cleaned = next.startsWith('-')
+            ? '-' + validate(next.slice(1))
+            : validate(next)
+          setRawValue(cleaned)
+          onValueChange?.({
+            floatValue: rawToFloat(cleaned, decimalSeparator),
+            value: cleaned,
+          })
+        }}
+      />
+    )
+  }
   return (
     <InputGroup
       label={

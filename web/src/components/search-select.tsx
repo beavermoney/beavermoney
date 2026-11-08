@@ -1,3 +1,5 @@
+import { useComposer } from './transaction-composer/context'
+import { ComposerChoice } from './transaction-composer/controls'
 import { Selector } from '@astryxdesign/core/Selector'
 import type { ReactNode } from 'react'
 
@@ -19,6 +21,9 @@ type SearchSelectProps<T> = {
   invalid?: boolean
   isLabelHidden?: boolean
   searchable?: boolean
+  confirmSelection?: boolean
+  hideChipLabel?: boolean
+  renderChipIcon?: (item: T) => ReactNode
 }
 
 // Keep domain objects intact while Astryx owns the searchable selector surface.
@@ -34,9 +39,13 @@ export function SearchSelect<T>({
   invalid,
   emptyText,
   searchable = true,
+  confirmSelection = false,
+  hideChipLabel,
+  renderChipIcon,
   disabledMessage,
   ...props
 }: SearchSelectProps<T>) {
+  const composer = useComposer()
   const text = (item: T) =>
     getLabel
       ? getLabel(item)
@@ -57,6 +66,29 @@ export function SearchSelect<T>({
     item,
   }))
   const optionText = (id: string) => options.find((option) => option.id === id)
+  if (composer)
+    return (
+      <ComposerChoice
+        name={name ?? props.id ?? label}
+        label={label}
+        value={value}
+        items={items}
+        getLabel={text}
+        getKey={key}
+        getSearchText={getSearchText}
+        renderOption={renderOption}
+        onChange={(next) => {
+          onChange?.(next)
+          props.onBlur?.()
+        }}
+        disabled={props.isDisabled}
+        invalid={invalid}
+        searchable={searchable}
+        closeOnSelect={!confirmSelection}
+        hideChipLabel={hideChipLabel}
+        renderChipIcon={renderChipIcon}
+      />
+    )
   return (
     <Selector
       {...props}

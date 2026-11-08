@@ -3,6 +3,7 @@ import '@/test/browser-setup'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 import { afterEach, expect, it, vi } from 'vitest'
+import { ComposerContext } from '@/components/transaction-composer/context'
 import { TransactionCategoryPicker } from './transaction-category-picker'
 
 const mobileState = vi.hoisted(() => ({ value: true }))
@@ -66,4 +67,55 @@ it('shows a useful empty search result', async () => {
   const input = screen.getByRole('combobox')
   fireEvent.change(input, { target: { value: 'no-such-category' } })
   expect(await screen.findByText('No categories available.')).toBeTruthy()
+})
+
+it('searches compact composer categories and selects a transfer type', () => {
+  const choose = vi.fn()
+  const change = vi.fn()
+  render(
+    <ComposerContext
+      value={{
+        activeAmount: 'amount',
+        setActiveAmount: vi.fn(),
+        editor: null,
+        setEditor: vi.fn(),
+        target: null,
+        keypadTarget: null,
+        dateField: null,
+        compactCategories: true,
+        chooseCategory: choose,
+      }}
+    >
+      <TransactionCategoryPicker
+        categories={
+          [
+            {
+              id: 'transfer',
+              name: 'Money Transfer',
+              type: 'transfer',
+              icon: null,
+            },
+            {
+              id: 'fx',
+              name: 'Foreign Exchange',
+              type: 'transfer',
+              icon: null,
+            },
+          ] as never
+        }
+        name="category"
+        value="transfer"
+        onValueChange={change}
+        onBlur={vi.fn()}
+        invalid={false}
+      />
+    </ComposerContext>,
+  )
+  const search = screen.getByRole('textbox', { name: 'Search categories' })
+  expect(search.getAttribute('placeholder')).toBe('Search categories')
+  fireEvent.change(search, { target: { value: 'foreign' } })
+  expect(screen.queryByRole('button', { name: 'Money Transfer' })).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Foreign Exchange' }))
+  expect(change).toHaveBeenCalledWith('fx')
+  expect(choose).toHaveBeenCalledWith('Foreign Exchange', 'transfer', null)
 })

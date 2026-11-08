@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<37d0880f2e44b93166f08a666ebd3689>>
+ * @generated SignedSource<<df6cd39c57fab7d62c49a7317c2055bd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -42,6 +42,7 @@ export type editTransactionDialogTransactionFragment$data = {
     readonly id: string;
     readonly " $fragmentSpreads": FragmentRefs<"transactionEntryCardFragment">;
   }> | null | undefined;
+  readonly " $fragmentSpreads": FragmentRefs<"mobileEditTransactionFragment">;
   readonly " $fragmentType": "editTransactionDialogTransactionFragment";
 };
 export type editTransactionDialogTransactionFragment$key = {
@@ -82,6 +83,11 @@ return {
   "metadata": null,
   "name": "editTransactionDialogTransactionFragment",
   "selections": [
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "mobileEditTransactionFragment"
+    },
     (v0/*: any*/),
     {
       "alias": null,
@@ -200,6 +206,6 @@ return {
 };
 })();
 
-(node as any).hash = "2888dbc81ac0fe862e1dfe8efb35517c";
+(node as any).hash = "18a7b096d10afbc594b220151a8c589d";
 
 export default node;

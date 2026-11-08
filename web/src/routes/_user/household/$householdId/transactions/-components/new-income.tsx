@@ -1,3 +1,7 @@
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { useRef } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Text } from '@astryxdesign/core/Text'
 import { FinanceDateInput } from '@/components/finance-date-input'
@@ -91,6 +95,9 @@ type NewIncomeProps = {
 
 export function NewIncome({ fragmentRef }: NewIncomeProps) {
   const showToast = useToast()
+  const isMobile = useIsMobile()
+  const mobileSubmission = useRef<'close' | 'again' | null>(null)
+  const { close: closeComposer } = useLogTransaction()
 
   const data = useFragment(newIncomeFragment, fragmentRef)
 
@@ -172,6 +179,14 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
           )
 
           showToast({ type: 'info', body: 'Income created successfully!' })
+          if (mobileSubmission.current === 'close') closeComposer()
+          if (mobileSubmission.current === 'again') {
+            form.reset({
+              ...value,
+              description: '',
+              amount: undefined as unknown as number,
+            })
+          }
         })
         .with({ status: 'error' }, ({ error }) => {
           showToast({ type: 'error', body: error.toString() })
@@ -189,6 +204,222 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
     (acc) => acc.id === selectedAccountId,
   )
 
+  const fields = {
+    categoryId: (
+      <form.Field
+        name="categoryId"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack
+              direction="vertical"
+              gap={2}
+              data-invalid={isInvalid}
+              data-transaction-initial-focus
+            >
+              <TransactionCategoryPicker
+                categories={incomeCategories}
+                name={field.name}
+                value={field.state.value}
+                onValueChange={field.handleChange}
+                onBlur={field.handleBlur}
+                invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    accountId: (
+      <form.Field
+        name="accountId"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <TransactionAccountPicker
+                preferredTypes={['liquidity', 'investment']}
+                accounts={availableAccounts}
+                name={field.name}
+                label="Account"
+                value={field.state.value}
+                onValueChange={field.handleChange}
+                onBlur={field.handleBlur}
+                invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    amount: (
+      <form.Field
+        name="amount"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <CurrencyInput
+                id={field.name}
+                name={field.name}
+                placeholder="Please enter an amount"
+                onValueChange={(e) => {
+                  field.handleChange(e.floatValue!)
+                }}
+                value={field.state.value}
+                locale={household.locale}
+                currency={
+                  selectedAccount?.householdCurrency.code ?? displayCurrencyCode
+                }
+                onBlur={field.handleBlur}
+                aria-invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    description: (
+      <form.Field
+        name="description"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <TextInput
+                data-1p-ignore
+                id={field.name}
+                onBlur={field.handleBlur}
+                aria-invalid={isInvalid}
+                placeholder="Monthly salary"
+                autoComplete="off"
+                label={'Description'}
+
+                value={String(field.state.value ?? '')}
+                onChange={(_value, event) =>
+                  ((e) => field.handleChange(e.target.value))(event)
+                }
+                htmlName={field.name}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    ownerUserID: (
+      <form.Field
+        name="ownerUserID"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <OwnerSelect
+                id={field.name}
+                name={field.name}
+                options={ownerOptions}
+                value={field.state.value}
+                onValueChange={(value) => field.handleChange(value)}
+                onBlur={field.handleBlur}
+                ariaInvalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    datetime: (
+      <form.Field
+        name="datetime"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack
+              direction="vertical"
+              width={isMobile ? undefined : '100%'}
+              gap={2}
+              data-invalid={isInvalid}
+            >
+              <FinanceDateInput
+                id={field.name}
+                label="Date"
+                value={field.state.value}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                disabledDate={(date) =>
+                  date > new Date() || date < new Date('1900-01-01')
+                }
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    excludeFromReports: (
+      <form.Field
+        name="excludeFromReports"
+        children={(field) => {
+          return (
+            <Stack direction="vertical" gap={2}>
+              <CheckboxInput
+                id={field.name}
+                htmlName={field.name}
+                value={field.state.value}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                label={'Exclude from reports'}
+              />
+            </Stack>
+          )
+        }}
+      />
+    ),
+  }
+
+  if (isMobile)
+    return (
+      <MobileTransactionComposer
+        kind="income"
+        category={fields.categoryId}
+        firstAmount={'amount'}
+        amounts={<>{fields.amount}</>}
+        chips={
+          <>
+            {fields.accountId}
+            {ownerOptions.length > 1 && fields.ownerUserID}
+          </>
+        }
+        date={fields.datetime}
+        details={
+          <>
+            {fields.description}
+            {fields.excludeFromReports}
+          </>
+        }
+        pending={isMutationInFlight}
+        onSave={async (again) => {
+          mobileSubmission.current = again ? 'again' : 'close'
+          try {
+            await form.handleSubmit()
+            return form.state.isValid
+          } finally {
+            mobileSubmission.current = null
+          }
+        }}
+      />
+    )
+
   return (
     <Stack direction="vertical" gap={6}>
       <Stack direction="vertical" gap={4}>
@@ -203,218 +434,32 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
           }}
         >
           <FormLayout>
-            <form.Field
-              name="categoryId"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack
-                    direction="vertical"
-                    gap={2}
-                    data-invalid={isInvalid}
-                    data-transaction-initial-focus
-                  >
-                    <TransactionCategoryPicker
-                      categories={incomeCategories}
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            {fields.categoryId}
             <Grid
               columns={{ minWidth: 240, max: 2 }}
               gap={4}
               align="start"
               justify="stretch"
             >
-              <form.Field
-                name="accountId"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <TransactionAccountPicker
-                        preferredTypes={['liquidity', 'investment']}
-                        accounts={availableAccounts}
-                        name={field.name}
-                        label="Account"
-                        value={field.state.value}
-                        onValueChange={field.handleChange}
-                        onBlur={field.handleBlur}
-                        invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
-              <form.Field
-                name="amount"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <CurrencyInput
-                        id={field.name}
-                        name={field.name}
-                        placeholder="Please enter an amount"
-                        onValueChange={(e) => {
-                          field.handleChange(e.floatValue!)
-                        }}
-                        value={field.state.value}
-                        locale={household.locale}
-                        currency={
-                          selectedAccount?.householdCurrency.code ??
-                          displayCurrencyCode
-                        }
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
+              {fields.accountId}
+              {fields.amount}
             </Grid>
-            <form.Field
-              name="description"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="Monthly salary"
-                      autoComplete="off"
-                      label={'Description'}
-
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            {fields.description}
             <Grid
               columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
               gap={4}
               align="start"
               justify="stretch"
             >
-              {ownerOptions.length > 1 && (
-                <form.Field
-                  name="ownerUserID"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid
-                    return (
-                      <Stack
-                        direction="vertical"
-                        gap={2}
-                        data-invalid={isInvalid}
-                      >
-                        <OwnerSelect
-                          id={field.name}
-                          name={field.name}
-                          options={ownerOptions}
-                          value={field.state.value}
-                          onValueChange={(value) => field.handleChange(value)}
-                          onBlur={field.handleBlur}
-                          ariaInvalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FormError errors={field.state.meta.errors} />
-                        )}
-                      </Stack>
-                    )
-                  }}
-                />
-              )}
-              <form.Field
-                name="datetime"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      width="100%"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <FinanceDateInput
-                        id={field.name}
-                        label="Date"
-                        value={field.state.value}
-                        onChange={field.handleChange}
-                        onBlur={field.handleBlur}
-                        disabledDate={(date) =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
+              {ownerOptions.length > 1 && fields.ownerUserID}
+              {fields.datetime}
             </Grid>
             <fieldset>
               <legend className="mb-2">
                 <Text type="label">Options</Text>
               </legend>
               <Stack direction="vertical" gap={4} data-slot="checkbox-group">
-                <form.Field
-                  name="excludeFromReports"
-                  children={(field) => {
-                    return (
-                      <Stack direction="vertical" gap={2}>
-                        <CheckboxInput
-                          id={field.name}
-                          htmlName={field.name}
-                          value={field.state.value}
-                          onChange={field.handleChange}
-                          onBlur={field.handleBlur}
-                          label={'Exclude from reports'}
-                        />
-                      </Stack>
-                    )
-                  }}
-                />
+                {fields.excludeFromReports}
               </Stack>
             </fieldset>
           </FormLayout>

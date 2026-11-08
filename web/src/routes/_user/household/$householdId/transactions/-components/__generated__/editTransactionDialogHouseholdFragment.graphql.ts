@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bdddd4a1ae7165120aacbf58271e698a>>
+ * @generated SignedSource<<d58f0b8083daf654fd5fb282c7b833cf>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,6 +34,7 @@ export type editTransactionDialogHouseholdFragment$data = {
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
+  readonly " $fragmentSpreads": FragmentRefs<"mobileEditTransactionAccountsFragment">;
   readonly " $fragmentType": "editTransactionDialogHouseholdFragment";
 };
 export type editTransactionDialogHouseholdFragment$key = {
@@ -68,6 +69,17 @@ return {
   "metadata": null,
   "name": "editTransactionDialogHouseholdFragment",
   "selections": [
+    {
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "viewUserIds",
+          "variableName": "viewUserIds"
+        }
+      ],
+      "kind": "FragmentSpread",
+      "name": "mobileEditTransactionAccountsFragment"
+    },
     {
       "alias": null,
       "args": [
@@ -197,6 +209,6 @@ return {
 };
 })();
 
-(node as any).hash = "7487a6aaedbfaf315948cafe4f5eb14e";
+(node as any).hash = "c3f718ba7aaccda48ee0cbab4fcfb364";
 
 export default node;

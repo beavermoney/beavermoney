@@ -1,3 +1,4 @@
+import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
@@ -339,6 +340,9 @@ function TransactionDetailDialog({
   onClose,
   onCloseComplete,
 }: TransactionDetailDialogProps) {
+  const mobile = useIsMobile()
+  const [editingPending, setEditingPending] = useState(false)
+  const Surface = mobile ? BottomSheet : Dialog
   const matchingQueryRef =
     retainedTransactionId === queryRef?.variables.transactionId
       ? queryRef
@@ -346,15 +350,18 @@ function TransactionDetailDialog({
 
   return (
     <>
-      <Dialog
+      <Surface
+        className={mobile ? 'transaction-composer-sheet' : undefined}
+        label="Edit transaction"
+        {...(mobile ? { height: 'hug' as const } : {})}
         isOpen={transactionId !== null}
         onOpenChange={(open) => {
-          if (!open) {
+          if (!open && !editingPending) {
             onClose()
             onCloseComplete()
           }
         }}
-        purpose="info"
+        purpose={editingPending ? 'required' : 'info'}
         padding={0}
       >
         <ErrorBoundary
@@ -401,6 +408,7 @@ function TransactionDetailDialog({
                 key={retainedTransactionId}
                 queryRef={matchingQueryRef}
                 onClose={onClose}
+                onPendingChange={setEditingPending}
               />
             </Suspense>
           ) : (
@@ -410,7 +418,7 @@ function TransactionDetailDialog({
             />
           )}
         </ErrorBoundary>
-      </Dialog>
+      </Surface>
     </>
   )
 }

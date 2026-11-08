@@ -1,3 +1,5 @@
+import { useIsMobile } from '@/hooks/use-mobile'
+import { MobileEditTransaction } from './mobile-edit-transaction'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
@@ -75,6 +77,7 @@ const editTransactionDialogDeleteMutation = graphql`
 
 const editTransactionDialogTransactionFragment = graphql`
   fragment editTransactionDialogTransactionFragment on Transaction {
+    ...mobileEditTransactionFragment
     id
     description
     datetime
@@ -125,6 +128,8 @@ const editTransactionDialogCategoriesFragment = graphql`
 const editTransactionDialogHouseholdFragment = graphql`
   fragment editTransactionDialogHouseholdFragment on Household
   @argumentDefinitions(viewUserIds: { type: "[ID!]" }) {
+    ...mobileEditTransactionAccountsFragment
+      @arguments(viewUserIds: $viewUserIds)
     accounts(where: { archived: false, userIDIn: $viewUserIds }) {
       edges {
         node {
@@ -178,12 +183,15 @@ const formSchema = z.object({
 type EditTransactionDialogProps = {
   queryRef: PreloadedQuery<editTransactionDialogQuery>
   onClose?: () => void
+  onPendingChange?: (pending: boolean) => void
 }
 
 export function EditTransactionDialog({
   queryRef,
   onClose,
+  onPendingChange,
 }: EditTransactionDialogProps) {
+  const isMobile = useIsMobile()
   const showToast = useToast()
 
   const queryData = usePreloadedQuery<editTransactionDialogQuery>(
@@ -407,6 +415,29 @@ export function EditTransactionDialog({
         return [...debits, ...credits]
       })
   }, [transaction])
+
+  // Standard create flows have at most two entries and two lots. Preserve the
+  // existing per-entry editor for imported/custom transactions with more splits.
+  if (
+    isMobile &&
+    (transaction.transactionEntries?.length ?? 0) <= 2 &&
+    (transaction.investmentLots?.length ?? 0) <= 2 &&
+    (transaction.transactionEntries?.length ?? 0) +
+      (transaction.investmentLots?.length ?? 0) >
+      0
+  ) {
+    return (
+      <MobileEditTransaction
+        transactionRef={transaction}
+        householdRef={householdData}
+        categories={allCategories}
+        onClose={onClose}
+        onDelete={handleDelete}
+        deleting={isDeleteInFlight}
+        onPendingChange={onPendingChange}
+      />
+    )
+  }
 
   if (deleteAlertOpen)
     return (

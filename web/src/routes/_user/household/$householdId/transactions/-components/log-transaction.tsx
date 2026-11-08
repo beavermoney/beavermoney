@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@astryxdesign/core/Button'
 import {
   SegmentedControl,
@@ -71,6 +72,7 @@ function firstTypeForMode(mode: Mode): LogTransactionType {
 
 export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   const data = useFragment(logTransactionFragment, fragmentRef)
+  const isMobile = useIsMobile()
   const panelRef = useRef<HTMLDivElement>(null)
   const { type: selectedType, setType, close } = useLogTransaction()
   invariant(
@@ -100,6 +102,7 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   })
 
   useEffect(() => {
+    if (isMobile) return
     const frame = requestAnimationFrame(() => {
       if (panelRef.current) {
         focusInitialTransactionControl(panelRef.current)
@@ -107,7 +110,7 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
     })
 
     return () => cancelAnimationFrame(frame)
-  }, [selectedType])
+  }, [selectedType, isMobile])
 
   return (
     <Stack ref={panelRef} direction="vertical" gap={6}>

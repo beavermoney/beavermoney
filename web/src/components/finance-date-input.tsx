@@ -1,3 +1,10 @@
+import { FinanceCalendar } from './finance-calendar'
+import { useComposer } from './transaction-composer/context'
+import { ComposerEditor } from './transaction-composer/controls'
+import { Button } from '@astryxdesign/core/Button'
+import { Text } from '@astryxdesign/core/Text'
+import { Stack } from '@astryxdesign/core/Stack'
+import { subDays } from 'date-fns'
 import { DateInput } from '@astryxdesign/core/DateInput'
 import type { ISODateString } from '@astryxdesign/core/Calendar'
 import { format, parseISO } from 'date-fns'
@@ -17,7 +24,8 @@ export function FinanceDateInput({
   onBlur: () => void
   disabledDate?: (date: Date) => boolean
 }) {
-  return (
+  const composer = useComposer()
+  const input = (
     <DateInput
       id={id}
       label={label}
@@ -32,5 +40,44 @@ export function FinanceDateInput({
       }
       presentation="adaptive-bottom-sheet"
     />
+  )
+  if (!composer) return input
+  const choose = (date: Date) => {
+    onChange(date)
+    onBlur()
+    composer.setEditor(null)
+  }
+  return (
+    <>
+      <Button
+        size="lg"
+        width="100%"
+        className="composer-key composer-date-key"
+        label={format(value, 'MMM d')}
+        onClick={() => composer.setEditor(id)}
+      />
+      <ComposerEditor name={id}>
+        <Stack gap={4} className="composer-choice">
+          <Text type="label">{label}</Text>
+          <Stack direction="horizontal" gap={2}>
+            <Button label="Today" onClick={() => choose(new Date())} />
+            <Button
+              label="Yesterday"
+              onClick={() => choose(subDays(new Date(), 1))}
+            />
+          </Stack>
+          <Stack className="composer-choice-results">
+            <FinanceCalendar
+              selected={value}
+              defaultMonth={value}
+              disabled={disabledDate}
+              onSelect={(date) => {
+                if (date) choose(date)
+              }}
+            />
+          </Stack>
+        </Stack>
+      </ComposerEditor>
+    </>
   )
 }

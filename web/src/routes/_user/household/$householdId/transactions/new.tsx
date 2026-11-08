@@ -1,3 +1,4 @@
+import { Button } from '@astryxdesign/core/Button'
 import { PendingComponent } from '@/components/pending-component'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -61,7 +62,7 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  const { type: logType } = useLogTransaction()
+  const { type: logType, close } = useLogTransaction()
 
   useEffect(() => {
     if (logTransactionStore.state.type === null) {
@@ -83,7 +84,10 @@ function RouteComponent() {
 
   return (
     <Stack direction="vertical" gap={6} className="max-w-2xl" width="100%">
-      <Heading level={1}>New transaction</Heading>
+      <Stack direction="horizontal" hAlign="between" vAlign="center">
+        <Heading level={2}>New transaction</Heading>
+        <Button label="Close" onClick={close} variant="ghost" />
+      </Stack>
       <Stack direction="vertical" gap={4}>
         <LogTransaction fragmentRef={data.household} />
       </Stack>

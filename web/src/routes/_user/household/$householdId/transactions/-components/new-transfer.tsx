@@ -1,3 +1,8 @@
+import { ComposerTransferRows } from '@/components/transaction-composer/transfer-rows'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { useRef } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
@@ -92,6 +97,9 @@ type NewTransferProps = {
 
 export function NewTransfer({ fragmentRef }: NewTransferProps) {
   const showToast = useToast()
+  const isMobile = useIsMobile()
+  const mobileSubmission = useRef<'close' | 'again' | null>(null)
+  const { close: closeComposer } = useLogTransaction()
 
   const data = useFragment(newTransferFragment, fragmentRef)
 
@@ -199,6 +207,16 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           )
 
           showToast({ type: 'info', body: 'Transfer created successfully!' })
+          if (mobileSubmission.current === 'close') closeComposer()
+          if (mobileSubmission.current === 'again') {
+            form.reset({
+              ...value,
+              description: '',
+              amount: undefined as unknown as number,
+              debitAmount: undefined as unknown as number,
+              creditAmount: undefined as unknown as number,
+            })
+          }
         })
         .with({ status: 'error' }, ({ error }) => {
           showToast({ type: 'error', body: error.toString() })
@@ -231,6 +249,351 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     toAccount &&
     fromAccount.householdCurrency.code !== toAccount.householdCurrency.code
 
+  const fields = {
+    categoryId: (
+      <form.Field
+        name="categoryId"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack
+              direction="vertical"
+              gap={2}
+              data-invalid={isInvalid}
+              data-transaction-initial-focus
+            >
+              <TransactionCategoryPicker
+                categories={transferCategories}
+                name={field.name}
+                value={field.state.value}
+                onValueChange={field.handleChange}
+                onBlur={field.handleBlur}
+                invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    fromAccountId: (
+      <form.Field
+        name="fromAccountId"
+        validators={{
+          onChange: ({ value, fieldApi }) => {
+            if (!value) {
+              return undefined
+            }
+            const toAccountId = fieldApi.form.getFieldValue('toAccountId')
+            if (toAccountId && value === toAccountId) {
+              // Trigger validation on toAccountId field to show error there
+              fieldApi.form.validateField('toAccountId', 'change')
+            } else if (toAccountId) {
+              // Clear error on toAccountId if it exists
+              fieldApi.form.validateField('toAccountId', 'change')
+            }
+            return undefined
+          },
+        }}
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <TransactionAccountPicker
+                accounts={availableAccounts}
+                name={field.name}
+                label="From Account"
+                value={field.state.value}
+                onValueChange={(value) => {
+                  field.handleChange(value)
+                  setEditingAccount(null)
+                  if (value === toAccountId)
+                    form.setFieldValue('toAccountId', '')
+                }}
+                onBlur={field.handleBlur}
+                invalid={isInvalid}
+                expanded={activeAccountPicker === 'fromAccountId'}
+                onExpand={() => setEditingAccount('fromAccountId')}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    amount: (
+      <form.Field
+        name="amount"
+        validators={{
+          onChange: ({ value }) => {
+            if (!value || value <= 0) {
+              return { message: 'Amount must be positive' }
+            }
+            return undefined
+          },
+        }}
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <CurrencyInput
+                id={field.name}
+                name={field.name}
+                placeholder="Please enter an amount"
+                onValueChange={(e) => {
+                  field.handleChange(e.floatValue!)
+                }}
+                value={field.state.value}
+                locale={household.locale}
+                currency={
+                  fromAccount?.householdCurrency.code ?? displayCurrencyCode
+                }
+                onBlur={field.handleBlur}
+                aria-invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    debitAmount: (
+      <form.Field
+        name="debitAmount"
+        validators={{
+          onChange: ({ value }) => {
+            if (!value || value <= 0) {
+              return { message: 'Debit amount must be positive' }
+            }
+            return undefined
+          },
+        }}
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <CurrencyInput
+                id={field.name}
+                name={field.name}
+                placeholder="Amount to debit"
+                onValueChange={(e) => {
+                  field.handleChange(e.floatValue!)
+                }}
+                value={field.state.value}
+                locale={household.locale}
+                currency={
+                  fromAccount?.householdCurrency.code ?? displayCurrencyCode
+                }
+                onBlur={field.handleBlur}
+                aria-invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    toAccountId: (
+      <form.Field
+        name="toAccountId"
+        validators={{
+          onChange: ({ value, fieldApi }) => {
+            if (!value) {
+              return undefined // Let zod handle the "required" validation
+            }
+            const fromAccountId = fieldApi.form.getFieldValue('fromAccountId')
+            if (fromAccountId && value === fromAccountId) {
+              return {
+                message: 'Cannot transfer to the same account',
+              }
+            }
+            return undefined
+          },
+        }}
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <TransactionAccountPicker
+                accounts={availableAccounts.filter(
+                  (account) => account.id !== fromAccountId,
+                )}
+                name={field.name}
+                label="To Account"
+                value={field.state.value}
+                onValueChange={(value) => {
+                  field.handleChange(value)
+                  setEditingAccount(null)
+                }}
+                onBlur={field.handleBlur}
+                invalid={isInvalid}
+                expanded={activeAccountPicker === 'toAccountId'}
+                onExpand={() => setEditingAccount('toAccountId')}
+                disabled={!fromAccountId}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    creditAmount: (
+      <form.Field
+        name="creditAmount"
+        validators={{
+          onChange: ({ value }) => {
+            if (!value || value <= 0) {
+              return { message: 'Credit amount must be positive' }
+            }
+            return undefined
+          },
+        }}
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <CurrencyInput
+                id={field.name}
+                name={field.name}
+                placeholder="Amount to credit"
+                onValueChange={(e) => {
+                  field.handleChange(e.floatValue!)
+                }}
+                value={field.state.value}
+                locale={household.locale}
+                currency={
+                  toAccount?.householdCurrency.code ?? displayCurrencyCode
+                }
+                onBlur={field.handleBlur}
+                aria-invalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    description: (
+      <form.Field
+        name="description"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <TextInput
+                data-1p-ignore
+                id={field.name}
+                onBlur={field.handleBlur}
+                aria-invalid={isInvalid}
+                placeholder="Transfer to savings"
+                autoComplete="off"
+                label={'Description'}
+
+                value={String(field.state.value ?? '')}
+                onChange={(_value, event) =>
+                  ((e) => field.handleChange(e.target.value))(event)
+                }
+                htmlName={field.name}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    ownerUserID: (
+      <form.Field
+        name="ownerUserID"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+              <OwnerSelect
+                id={field.name}
+                name={field.name}
+                options={ownerOptions}
+                value={field.state.value}
+                onValueChange={(value) => field.handleChange(value)}
+                onBlur={field.handleBlur}
+                ariaInvalid={isInvalid}
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+    datetime: (
+      <form.Field
+        name="datetime"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid
+          return (
+            <Stack
+              direction="vertical"
+              width={isMobile ? undefined : '100%'}
+              gap={2}
+              data-invalid={isInvalid}
+            >
+              <FinanceDateInput
+                id={field.name}
+                label="Date"
+                value={field.state.value}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                disabledDate={(date) =>
+                  date > new Date() || date < new Date('1900-01-01')
+                }
+              />
+              {isInvalid && <FormError errors={field.state.meta.errors} />}
+            </Stack>
+          )
+        }}
+      />
+    ),
+  }
+
+  if (isMobile)
+    return (
+      <MobileTransactionComposer
+        kind="transfer"
+        category={fields.categoryId}
+        firstAmount={isDifferentCurrency ? 'debitAmount' : 'amount'}
+        entryRows={
+          <ComposerTransferRows
+            fromAccount={fields.fromAccountId}
+            fromAmount={
+              isDifferentCurrency ? fields.debitAmount : fields.amount
+            }
+            toAccount={fields.toAccountId}
+            toAmount={isDifferentCurrency ? fields.creditAmount : undefined}
+          />
+        }
+        chips={ownerOptions.length > 1 && fields.ownerUserID}
+        date={fields.datetime}
+        details={<>{fields.description}</>}
+        pending={isMutationInFlight}
+        onSave={async (again) => {
+          mobileSubmission.current = again ? 'again' : 'close'
+          try {
+            await form.handleSubmit()
+            return form.state.isValid
+          } finally {
+            mobileSubmission.current = null
+          }
+        }}
+      />
+    )
+
   return (
     <Stack direction="vertical" gap={6}>
       <Stack direction="vertical" gap={4}>
@@ -245,177 +608,15 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           }}
         >
           <FormLayout>
-            <form.Field
-              name="categoryId"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack
-                    direction="vertical"
-                    gap={2}
-                    data-invalid={isInvalid}
-                    data-transaction-initial-focus
-                  >
-                    <TransactionCategoryPicker
-                      categories={transferCategories}
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            {fields.categoryId}
             <Grid
               columns={{ minWidth: 240, max: 2 }}
               gap={4}
               align="start"
               justify="stretch"
             >
-              <form.Field
-                name="fromAccountId"
-                validators={{
-                  onChange: ({ value, fieldApi }) => {
-                    if (!value) {
-                      return undefined
-                    }
-                    const toAccountId =
-                      fieldApi.form.getFieldValue('toAccountId')
-                    if (toAccountId && value === toAccountId) {
-                      // Trigger validation on toAccountId field to show error there
-                      fieldApi.form.validateField('toAccountId', 'change')
-                    } else if (toAccountId) {
-                      // Clear error on toAccountId if it exists
-                      fieldApi.form.validateField('toAccountId', 'change')
-                    }
-                    return undefined
-                  },
-                }}
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <TransactionAccountPicker
-                        accounts={availableAccounts}
-                        name={field.name}
-                        label="From Account"
-                        value={field.state.value}
-                        onValueChange={(value) => {
-                          field.handleChange(value)
-                          setEditingAccount(null)
-                          if (value === toAccountId)
-                            form.setFieldValue('toAccountId', '')
-                        }}
-                        onBlur={field.handleBlur}
-                        invalid={isInvalid}
-                        expanded={activeAccountPicker === 'fromAccountId'}
-                        onExpand={() => setEditingAccount('fromAccountId')}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
-              {!isDifferentCurrency ? (
-                <form.Field
-                  name="amount"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (!value || value <= 0) {
-                        return { message: 'Amount must be positive' }
-                      }
-                      return undefined
-                    },
-                  }}
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid
-                    return (
-                      <Stack
-                        direction="vertical"
-                        gap={2}
-                        data-invalid={isInvalid}
-                      >
-                        <CurrencyInput
-                          id={field.name}
-                          name={field.name}
-                          placeholder="Please enter an amount"
-                          onValueChange={(e) => {
-                            field.handleChange(e.floatValue!)
-                          }}
-                          value={field.state.value}
-                          locale={household.locale}
-                          currency={
-                            fromAccount?.householdCurrency.code ??
-                            displayCurrencyCode
-                          }
-                          onBlur={field.handleBlur}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FormError errors={field.state.meta.errors} />
-                        )}
-                      </Stack>
-                    )
-                  }}
-                />
-              ) : (
-                <form.Field
-                  name="debitAmount"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (!value || value <= 0) {
-                        return { message: 'Debit amount must be positive' }
-                      }
-                      return undefined
-                    },
-                  }}
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid
-                    return (
-                      <Stack
-                        direction="vertical"
-                        gap={2}
-                        data-invalid={isInvalid}
-                      >
-                        <CurrencyInput
-                          id={field.name}
-                          name={field.name}
-                          placeholder="Amount to debit"
-                          onValueChange={(e) => {
-                            field.handleChange(e.floatValue!)
-                          }}
-                          value={field.state.value}
-                          locale={household.locale}
-                          currency={
-                            fromAccount?.householdCurrency.code ??
-                            displayCurrencyCode
-                          }
-                          onBlur={field.handleBlur}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FormError errors={field.state.meta.errors} />
-                        )}
-                      </Stack>
-                    )
-                  }}
-                />
-              )}
+              {fields.fromAccountId}
+              {!isDifferentCurrency ? fields.amount : fields.debitAmount}
             </Grid>
             <Grid
               columns={isDifferentCurrency ? { minWidth: 240, max: 2 } : 1}
@@ -423,194 +624,18 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
               align="start"
               justify="stretch"
             >
-              <form.Field
-                name="toAccountId"
-                validators={{
-                  onChange: ({ value, fieldApi }) => {
-                    if (!value) {
-                      return undefined // Let zod handle the "required" validation
-                    }
-                    const fromAccountId =
-                      fieldApi.form.getFieldValue('fromAccountId')
-                    if (fromAccountId && value === fromAccountId) {
-                      return {
-                        message: 'Cannot transfer to the same account',
-                      }
-                    }
-                    return undefined
-                  },
-                }}
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <TransactionAccountPicker
-                        accounts={availableAccounts.filter(
-                          (account) => account.id !== fromAccountId,
-                        )}
-                        name={field.name}
-                        label="To Account"
-                        value={field.state.value}
-                        onValueChange={(value) => {
-                          field.handleChange(value)
-                          setEditingAccount(null)
-                        }}
-                        onBlur={field.handleBlur}
-                        invalid={isInvalid}
-                        expanded={activeAccountPicker === 'toAccountId'}
-                        onExpand={() => setEditingAccount('toAccountId')}
-                        disabled={!fromAccountId}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
-              {isDifferentCurrency && (
-                <form.Field
-                  name="creditAmount"
-                  validators={{
-                    onChange: ({ value }) => {
-                      if (!value || value <= 0) {
-                        return { message: 'Credit amount must be positive' }
-                      }
-                      return undefined
-                    },
-                  }}
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid
-                    return (
-                      <Stack
-                        direction="vertical"
-                        gap={2}
-                        data-invalid={isInvalid}
-                      >
-                        <CurrencyInput
-                          id={field.name}
-                          name={field.name}
-                          placeholder="Amount to credit"
-                          onValueChange={(e) => {
-                            field.handleChange(e.floatValue!)
-                          }}
-                          value={field.state.value}
-                          locale={household.locale}
-                          currency={
-                            toAccount?.householdCurrency.code ??
-                            displayCurrencyCode
-                          }
-                          onBlur={field.handleBlur}
-                          aria-invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FormError errors={field.state.meta.errors} />
-                        )}
-                      </Stack>
-                    )
-                  }}
-                />
-              )}
+              {fields.toAccountId}
+              {isDifferentCurrency && fields.creditAmount}
             </Grid>
-            <form.Field
-              name="description"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="Transfer to savings"
-                      autoComplete="off"
-                      label={'Description'}
-
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            {fields.description}
             <Grid
               columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
               gap={4}
               align="start"
               justify="stretch"
             >
-              {ownerOptions.length > 1 && (
-                <form.Field
-                  name="ownerUserID"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid
-                    return (
-                      <Stack
-                        direction="vertical"
-                        gap={2}
-                        data-invalid={isInvalid}
-                      >
-                        <OwnerSelect
-                          id={field.name}
-                          name={field.name}
-                          options={ownerOptions}
-                          value={field.state.value}
-                          onValueChange={(value) => field.handleChange(value)}
-                          onBlur={field.handleBlur}
-                          ariaInvalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FormError errors={field.state.meta.errors} />
-                        )}
-                      </Stack>
-                    )
-                  }}
-                />
-              )}
-              <form.Field
-                name="datetime"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      width="100%"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <FinanceDateInput
-                        id={field.name}
-                        label="Date"
-                        value={field.state.value}
-                        onChange={field.handleChange}
-                        onBlur={field.handleBlur}
-                        disabledDate={(date) =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
+              {ownerOptions.length > 1 && fields.ownerUserID}
+              {fields.datetime}
             </Grid>
           </FormLayout>
         </Stack>
