@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b48bc12094062115eed3615efb5880e1>>
+ * @generated SignedSource<<803f23582b78435f5170c0421ed879a8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,6 +9,7 @@
 // @ts-nocheck
 
 import { ReaderInlineDataFragment } from 'relay-runtime';
+export type InvestmentType = "crypto" | "stock" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type transactionInvestmentPickerFragment$data = {
   readonly latestTransaction: {
@@ -16,6 +17,7 @@ export type transactionInvestmentPickerFragment$data = {
   } | null | undefined;
   readonly name: string;
   readonly symbol: string;
+  readonly type: InvestmentType;
   readonly " $fragmentType": "transactionInvestmentPickerFragment";
 };
 export type transactionInvestmentPickerFragment$key = {
@@ -28,6 +30,6 @@ const node: ReaderInlineDataFragment = {
   "name": "transactionInvestmentPickerFragment"
 };
 
-(node as any).hash = "b73aa2163ba04b6b23a509967c8a40b6";
+(node as any).hash = "13587105ed7f9edf89c778fe9f80bc03";
 
 export default node;

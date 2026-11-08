@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c69e4ae8b33af1ed344dc7b1dd95f8d1>>
+ * @generated SignedSource<<1c93c6490ed0513b1ae33ed26e375302>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -205,6 +205,7 @@ return {
                           "name": "symbol",
                           "storageKey": null
                         },
+                        (v1/*: any*/),
                         (v4/*: any*/)
                       ],
                       "args": null,

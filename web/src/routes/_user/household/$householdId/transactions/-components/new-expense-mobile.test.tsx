@@ -9,6 +9,9 @@ import {
   within,
 } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import { NewBuy } from './new-buy'
+import { NewSell } from './new-sell'
+import { NewMove } from './new-move'
 import { NewExpense } from './new-expense'
 import { NewTransfer } from './new-transfer'
 
@@ -46,7 +49,11 @@ vi.mock('@/hooks/use-display-currency', () => ({
 vi.mock('@/hooks/use-currency', () => ({
   useCurrency: () => ({ formatCurrencyWithPrivacyMode: () => '$100' }),
 }))
-vi.mock('@/lib/logo', () => ({ getLogoDomainURL: () => undefined }))
+vi.mock('@/lib/logo', () => ({
+  getLogoDomainURL: () => undefined,
+  getLogoTickerURL: () => undefined,
+  getLogoCryptoURL: () => undefined,
+}))
 vi.mock('@/components/category-icon', () => ({ CategoryIcon: () => null }))
 vi.mock('@astryxdesign/core/Toast', () => ({ useToast: () => mocks.toast }))
 vi.mock('@/lib/relay', () => ({
@@ -326,3 +333,102 @@ it('shows search for a small account list and replaces the entire composer', asy
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
   expect(screen.getByRole('button', { name: 'Edit Amount: $0' })).toBeTruthy()
 })
+
+const investmentFixture = {
+  accounts: {
+    edges: [
+      {
+        node: {
+          ...fixture.accounts.edges[0].node,
+          id: 'broker',
+          name: 'Brokerage',
+          type: 'investment',
+          investments: [
+            {
+              id: 'apple',
+              name: 'Apple',
+              symbol: 'AAPL',
+              latestTransaction: null,
+            },
+          ],
+        },
+      },
+      {
+        node: {
+          ...fixture.accounts.edges[0].node,
+          id: 'retirement',
+          name: 'Retirement',
+          type: 'investment',
+          investments: [
+            {
+              id: 'fund',
+              name: 'Index fund',
+              symbol: 'VTI',
+              latestTransaction: null,
+            },
+            {
+              id: 'apple-retirement',
+              name: 'Apple retirement',
+              symbol: 'AAPL',
+              latestTransaction: null,
+            },
+          ],
+        },
+      },
+    ],
+  },
+  transactionCategories: {
+    edges: ['Buy', 'Sell', 'Move'].map((name) => ({
+      node: { id: name.toLowerCase(), name, type: 'investment' },
+    })),
+  },
+}
+
+it.each([
+  ['Buy', NewBuy],
+  ['Sell', NewSell],
+  ['Move', NewMove],
+] as const)(
+  '%s starts with accounts, filters investments, and only then opens the drawer',
+  async (kind, Component) => {
+    render(<Component fragmentRef={investmentFixture as never} />)
+    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Search accounts' }), {
+      target: { value: 'Broker' },
+    })
+    expect(screen.queryByText('Retirement')).toBeNull()
+    fireEvent.click(
+      screen.getByRole('button', { name: /Brokerage.*investment/ }),
+    )
+    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+    expect(screen.queryByText('Index fund')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /Apple.*AAPL/ }))
+    if (kind === 'Move') {
+      expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+      expect(
+        screen.queryByRole('button', { name: /Brokerage.*investment/ }),
+      ).toBeNull()
+      fireEvent.click(
+        screen.getByRole('button', { name: /Retirement.*investment/ }),
+      )
+      expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+      expect(screen.queryByText('Index fund')).toBeNull()
+      fireEvent.click(
+        screen.getByRole('button', { name: /Apple retirement.*AAPL/ }),
+      )
+    }
+    await screen.findByRole('button', { name: 'Save' })
+    expect(screen.getByText(kind)).toBeTruthy()
+    const shares = screen.getByRole('button', { name: /Edit Shares:/ })
+    const price = screen.getByRole('button', { name: /Edit Price per share:/i })
+    fireEvent.click(price)
+    expect(
+      shares.compareDocumentPosition(price) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(price.getAttribute('aria-pressed')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: '2' }))
+    expect(
+      screen.getByRole('button', { name: /Edit Price per share:.*2/i }),
+    ).toBeTruthy()
+  },
+)

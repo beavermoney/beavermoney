@@ -1,9 +1,15 @@
 import { useComposer } from './transaction-composer/context'
 import { ComposerChoice } from './transaction-composer/controls'
 import { Selector } from '@astryxdesign/core/Selector'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Card } from '@astryxdesign/core/Card'
+import { Item } from '@astryxdesign/core/Item'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
 
 type SearchSelectProps<T> = {
+  inline?: boolean
   items: readonly T[]
   value?: T | null
   onChange?: (value: T | null) => void
@@ -28,6 +34,7 @@ type SearchSelectProps<T> = {
 
 // Keep domain objects intact while Astryx owns the searchable selector surface.
 export function SearchSelect<T>({
+  inline = false,
   items,
   value,
   onChange,
@@ -46,6 +53,7 @@ export function SearchSelect<T>({
   ...props
 }: SearchSelectProps<T>) {
   const composer = useComposer()
+  const [query, setQuery] = useState('')
   const text = (item: T) =>
     getLabel
       ? getLabel(item)
@@ -66,6 +74,40 @@ export function SearchSelect<T>({
     item,
   }))
   const optionText = (id: string) => options.find((option) => option.id === id)
+  if (inline) {
+    const matches = options.filter(({ item, label }) =>
+      `${label} ${getSearchText?.(item) ?? ''}`
+        .toLocaleLowerCase()
+        .includes(query.trim().toLocaleLowerCase()),
+    )
+    return (
+      <Stack gap={3}>
+        <TextInput
+          label={`Search ${label.toLowerCase()}`}
+          isLabelHidden
+          placeholder={`Search ${label.toLowerCase()}`}
+          value={query}
+          onChange={setQuery}
+        />
+        {matches.map((option) => (
+          <Card key={option.id} padding={0}>
+            <Item
+              density="spacious"
+              label={renderOption?.(option.item) ?? option.label}
+              isSelected={value != null && key(value) === option.id}
+              onClick={() => {
+                onChange?.(option.item)
+                props.onBlur?.()
+              }}
+            />
+          </Card>
+        ))}
+        {!matches.length && (
+          <Text type="supporting">{emptyText ?? 'No matching options.'}</Text>
+        )}
+      </Stack>
+    )
+  }
   if (composer)
     return (
       <ComposerChoice
@@ -107,7 +149,17 @@ export function SearchSelect<T>({
         // Selector searches its option labels; render the concise display text below.
         label: `${option.label} ${getSearchText?.(option.item) ?? ''}`.trim(),
       }))}
-      renderValue={(option) => optionText(option.value)?.label ?? option.label}
+      renderValue={(option) => {
+        const entry = optionText(option.value)
+        return entry && renderChipIcon ? (
+          <Stack direction="horizontal" gap={2} vAlign="center">
+            {renderChipIcon(entry.item)}
+            <Text>{entry.label}</Text>
+          </Stack>
+        ) : (
+          (entry?.label ?? option.label)
+        )
+      }}
       renderOption={(option) => {
         const entry = optionText(option.value)
         return entry

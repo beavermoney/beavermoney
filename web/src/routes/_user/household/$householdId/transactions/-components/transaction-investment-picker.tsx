@@ -1,5 +1,6 @@
 import { SearchSelect } from '@/components/search-select'
-import { VStack } from '@astryxdesign/core/Layout'
+import { InvestmentIcon } from '@/components/investment-icon'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
 import { useEffect } from 'react'
 import { graphql } from 'react-relay'
@@ -10,6 +11,7 @@ const investmentFragment = graphql`
   fragment transactionInvestmentPickerFragment on Investment @inline {
     name
     symbol
+    type
     latestTransaction {
       datetime
     }
@@ -22,6 +24,7 @@ type Investment = transactionInvestmentPickerFragment$key & {
 }
 
 type Props = {
+  inline?: boolean
   investments: ReadonlyArray<Investment>
   name: string
   label: string
@@ -35,6 +38,7 @@ type Props = {
 
 export function TransactionInvestmentPicker({
   investments,
+  inline = false,
   name,
   label,
   value,
@@ -57,6 +61,11 @@ export function TransactionInvestmentPicker({
     `${investmentData(investment).name}${investment.accountName ? ` · ${investment.accountName}` : ''}`
   return (
     <SearchSelect
+      renderChipIcon={(investment) => (
+        <InvestmentIcon {...investmentData(investment)} />
+      )}
+      hideChipLabel
+      inline={inline}
       items={ordered}
       value={selected ?? null}
       label={label}
@@ -72,15 +81,18 @@ export function TransactionInvestmentPicker({
       onChange={(investment) => onValueChange(investment?.id ?? '')}
       emptyText="No matching investments available."
       renderOption={(investment) => (
-        <VStack gap={0.5}>
-          <Text maxLines={2}>{title(investment)}</Text>
-          {investmentData(investment).name !==
-            investmentData(investment).symbol && (
-            <Text type="supporting" color="secondary">
-              {investmentData(investment).symbol}
-            </Text>
-          )}
-        </VStack>
+        <HStack gap={2} vAlign="center">
+          <InvestmentIcon {...investmentData(investment)} />
+          <VStack gap={0.5}>
+            <Text maxLines={2}>{title(investment)}</Text>
+            {investmentData(investment).name !==
+              investmentData(investment).symbol && (
+              <Text type="supporting" color="secondary">
+                {investmentData(investment).symbol}
+              </Text>
+            )}
+          </VStack>
+        </HStack>
       )}
     />
   )

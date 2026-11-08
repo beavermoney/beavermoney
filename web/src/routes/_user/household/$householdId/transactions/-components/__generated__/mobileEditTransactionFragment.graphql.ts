@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e09c1e2efb82b06bbf49e3ad8d39cce5>>
+ * @generated SignedSource<<6bd217f1b97342db0e7746138d97090e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ReaderFragment } from 'relay-runtime';
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
+export type InvestmentType = "crypto" | "stock" | "%future added value";
 export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type mobileEditTransactionFragment$data = {
@@ -40,6 +41,7 @@ export type mobileEditTransactionFragment$data = {
       readonly id: string;
       readonly name: string;
       readonly symbol: string;
+      readonly type: InvestmentType;
     };
     readonly price: string;
   }> | null | undefined;
@@ -246,6 +248,7 @@ return {
               "name": "symbol",
               "storageKey": null
             },
+            (v2/*: any*/),
             (v5/*: any*/)
           ],
           "storageKey": null
@@ -259,6 +262,6 @@ return {
 };
 })();
 
-(node as any).hash = "8b07b26a3e8479b1750a382c2a8a2c15";
+(node as any).hash = "e1496548a9ab9db5a6b11edc0b317b68";
 
 export default node;

@@ -11,7 +11,9 @@ import { ComposerChipRail } from './chip-rail'
 
 export function MobileTransactionComposer({
   kind,
+  stableAmounts = false,
   category,
+  header,
   amounts,
   entryRows,
   chips,
@@ -25,11 +27,13 @@ export function MobileTransactionComposer({
   embedded = false,
   onPendingChange,
 }: {
+  stableAmounts?: boolean
   kind: string
   mode?: 'create' | 'edit'
   initialCategory?: { name: string; type: string; icon?: string | null }
   embedded?: boolean
   onPendingChange?: (pending: boolean) => void
+  header?: ReactNode
   category?: ReactNode
   entryRows?: ReactNode
   amounts?: ReactNode
@@ -87,7 +91,7 @@ export function MobileTransactionComposer({
         keypadTarget,
         dateField: date,
         compactCategories: kind === 'transfer',
-        compactAmounts: !!entryRows,
+        compactAmounts: !!entryRows || stableAmounts,
         chooseCategory: (name, type, icon) => {
           setSelectedCategory({ name, type, icon })
           setEditor(null)
@@ -131,32 +135,50 @@ export function MobileTransactionComposer({
               aria-hidden={editor ? true : undefined}
               inert={!!editor}
             >
-              <Stack
-                direction="horizontal"
-                hAlign="between"
-                vAlign="center"
-                gap={2}
-              >
-                <Button
-                  variant="ghost"
-                  label={selectedCategory?.name || `New ${kind}`}
-                  icon={
-                    selectedCategory ? (
-                      <CategoryIcon
-                        type={selectedCategory.type}
-                        icon={selectedCategory.icon}
-                      />
-                    ) : undefined
-                  }
-                  onClick={() =>
-                    category && mode === 'edit'
-                      ? setEditor('category')
-                      : setOpen(false)
-                  }
-                />
-              </Stack>
+              {header ? (
+                <Stack
+                  direction="horizontal"
+                  gap={2}
+                  vAlign="center"
+                  wrap="wrap"
+                >
+                  {header}
+                </Stack>
+              ) : (
+                <Stack
+                  direction="horizontal"
+                  hAlign="between"
+                  vAlign="center"
+                  gap={2}
+                >
+                  <Button
+                    variant="ghost"
+                    label={selectedCategory?.name || `New ${kind}`}
+                    icon={
+                      selectedCategory ? (
+                        <CategoryIcon
+                          type={selectedCategory.type}
+                          icon={selectedCategory.icon}
+                        />
+                      ) : undefined
+                    }
+                    onClick={() =>
+                      category && mode === 'edit'
+                        ? setEditor('category')
+                        : setOpen(false)
+                    }
+                  />
+                </Stack>
+              )}
               {entryRows ?? (
-                <Stack gap={2} className="composer-amounts">
+                <Stack
+                  gap={2}
+                  className={
+                    stableAmounts
+                      ? 'composer-investment-amounts'
+                      : 'composer-amounts'
+                  }
+                >
                   {amounts}
                 </Stack>
               )}

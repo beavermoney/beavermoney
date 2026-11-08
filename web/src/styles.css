@@ -205,3 +205,22 @@
   white-space: normal;
   text-align: start;
 }
+
+.composer-investment-amounts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.composer-investment-amounts > * {
+  min-width: 0;
+}
+.composer-investment-amounts > :first-child {
+  grid-column: 1 / -1;
+}
+.composer-investment-amounts .composer-amount {
+  min-height: calc(var(--spacing-10) * 2);
+  height: calc(var(--spacing-10) * 2);
+}
+
+.composer-investment-amounts > :nth-child(2):last-child {
+  grid-column: 1 / -1;
+}

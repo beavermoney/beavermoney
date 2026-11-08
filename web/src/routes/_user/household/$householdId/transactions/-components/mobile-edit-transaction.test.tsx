@@ -21,7 +21,11 @@ vi.mock('@/hooks/use-household', () => ({
   useHousehold: () => ({ household: { locale: 'en-US' } }),
 }))
 vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => true }))
-vi.mock('@/lib/logo', () => ({ getLogoDomainURL: () => undefined }))
+vi.mock('@/lib/logo', () => ({
+  getLogoDomainURL: () => undefined,
+  getLogoTickerURL: () => undefined,
+  getLogoCryptoURL: () => undefined,
+}))
 vi.mock('@/components/category-icon', () => ({ CategoryIcon: () => null }))
 vi.mock('@/lib/relay', () => ({
   commitMutationResult: (...args: unknown[]) => mocks.commit(...args),
@@ -264,4 +268,54 @@ it('requires explicit deletion confirmation and keeps drafts when cancelled', ()
     (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
       .value,
   ).toBe('Changed note')
+})
+
+it('keeps investment account and symbol disabled while editing amounts in a fixed order', async () => {
+  const broker = {
+    ...account,
+    id: 'broker',
+    name: 'Brokerage',
+    type: 'investment',
+  }
+  open(
+    {
+      ...fixture,
+      category: { ...category, name: 'Buy', type: 'investment' },
+      transactionEntries: [{ id: 'entry', amount: '-100', account: broker }],
+      investmentLots: [
+        {
+          id: 'lot',
+          amount: '2',
+          price: '50',
+          investment: {
+            id: 'apple',
+            name: 'Apple',
+            symbol: 'AAPL',
+            account: broker,
+          },
+        },
+      ],
+    },
+    [broker],
+  )
+  for (const name of ['Investment account: Brokerage', 'Investment: AAPL']) {
+    const button = screen.getByRole('button', { name }) as HTMLButtonElement
+    expect(
+      button.disabled || button.getAttribute('aria-disabled') === 'true',
+    ).toBe(true)
+  }
+  const shares = screen.getByRole('button', { name: /Edit Shares:/ })
+  const price = screen.getByRole('button', { name: /Edit Price per share:/ })
+  const total = screen.getByRole('button', { name: /Edit Total paid:/ })
+  fireEvent.click(total)
+  expect(
+    shares.compareDocumentPosition(price) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy()
+  expect(
+    price.compareDocumentPosition(total) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables().entry0Input.accountID).toBeUndefined()
+  expect(variables().lot0Input.investmentID).toBeUndefined()
 })

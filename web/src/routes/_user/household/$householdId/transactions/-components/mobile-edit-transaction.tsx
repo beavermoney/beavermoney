@@ -1,3 +1,4 @@
+import { InvestmentIcon } from '@/components/investment-icon'
 import { ComposerTransferRows } from '@/components/transaction-composer/transfer-rows'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { SearchSelect } from '@/components/search-select'
@@ -59,6 +60,7 @@ const transactionFragment = graphql`
         id
         name
         symbol
+        type
         account {
           id
           name
@@ -91,6 +93,7 @@ const accountsFragment = graphql`
             id
             name
             symbol
+            type
           }
         }
       }
@@ -199,6 +202,7 @@ type Account = {
   investments?: ReadonlyArray<{
     id: string
     name: string
+    type?: string
     symbol?: string | null
   }> | null
 }
@@ -408,6 +412,7 @@ export function MobileEditTransaction({
     return (
       <EditAccount
         key={entry.id}
+        disabled={lots.length > 0}
         amountName={firstAmount}
         name={`account-${i}`}
         label={
@@ -434,9 +439,58 @@ export function MobileEditTransaction({
     )
   }
 
+  const sourceLot = Math.max(
+    0,
+    originalLots.findIndex((lot) => lot.amount.startsWith('-')),
+  )
+  const investmentAccount = (i: number) => (
+    <EditAccount
+      disabled
+      amountName={`lot-${i}-shares`}
+      name={`investment-account-${i}`}
+      label="Investment account"
+      value={accountMap.get(lots[i].accountId)!}
+      accounts={[]}
+      onChange={() => {}}
+    />
+  )
+  const investmentSymbol = (i: number) => (
+    <SearchSelect
+      isDisabled
+      hideChipLabel
+      name={`investment-${i}`}
+      label="Investment"
+      items={[originalLots[i].investment]}
+      value={originalLots[i].investment}
+      getLabel={(inv) => inv.symbol || inv.name}
+      renderChipIcon={(inv) => <InvestmentIcon {...inv} />}
+    />
+  )
+
   return (
     <MobileTransactionComposer
       mode="edit"
+      header={
+        lots.length ? (
+          lots.length === 2 ? (
+            <>
+              <Text type="label">Move</Text>
+              {investmentSymbol(sourceLot)}
+              <Text type="supporting">from</Text>
+              {investmentAccount(sourceLot)}
+              <Text type="supporting">to</Text>
+              {investmentAccount(1 - sourceLot)}
+            </>
+          ) : (
+            <>
+              {investmentAccount(0)}
+              <Text type="label">{transaction.category.name}</Text>
+              {investmentSymbol(0)}
+            </>
+          )
+        ) : undefined
+      }
+      stableAmounts={lots.length > 0}
       embedded
       kind={transaction.category.type}
       initialCategory={transaction.category}
@@ -490,6 +544,10 @@ export function MobileEditTransaction({
                   )
                 }
               />
+            </Fragment>
+          ))}
+          {lots.map((lot, i) => (
+            <Fragment key={lot.id}>
               <EditAmount
                 name={`lot-${i}-price`}
                 label="Price per share"
@@ -514,55 +572,7 @@ export function MobileEditTransaction({
       }
       chips={
         <>
-          {!transfer && entries.map((_, i) => entryAccount(i))}
-          {lots.map((lot, i) => {
-            const account = accountMap.get(lot.accountId)!
-            const original = originalLots[i].investment
-            const investments = account.investments?.length
-              ? account.investments
-              : account.id === original.account.id
-                ? [original]
-                : []
-            return (
-              <Stack key={lot.id} direction="horizontal" gap={2}>
-                <EditAccount
-                  amountName={`lot-${i}-shares`}
-                  name={`investment-account-${i}`}
-                  label="Investment account"
-                  value={account}
-                  accounts={available.filter((a) => a.type === 'investment')}
-                  onChange={(next) =>
-                    setLots((current) =>
-                      current.map((l, index) =>
-                        index === i
-                          ? {
-                              ...l,
-                              accountId: next.id,
-                              investmentId: next.investments?.[0]?.id ?? '',
-                            }
-                          : l,
-                      ),
-                    )
-                  }
-                />
-                <SearchSelect
-                  name={`investment-${i}`}
-                  label="Investment"
-                  items={investments}
-                  value={investments.find((inv) => inv.id === lot.investmentId)}
-                  getLabel={(inv) => inv.symbol || inv.name}
-                  onChange={(inv) =>
-                    inv &&
-                    setLots((current) =>
-                      current.map((l, index) =>
-                        index === i ? { ...l, investmentId: inv.id } : l,
-                      ),
-                    )
-                  }
-                />
-              </Stack>
-            )
-          })}
+          {!transfer && !lots.length && entries.map((_, i) => entryAccount(i))}
           <Button
             label={`Owner: ${transaction.user.name}`}
             isDisabled
@@ -625,6 +635,7 @@ export function MobileEditTransaction({
 }
 
 function EditAccount({
+  disabled = false,
   amountName,
   name,
   label,
@@ -632,6 +643,7 @@ function EditAccount({
   accounts,
   onChange,
 }: {
+  disabled?: boolean
   amountName: string
   name: string
   label: string
@@ -654,6 +666,7 @@ function EditAccount({
     <SearchSelect
       name={name}
       label={label}
+      isDisabled={disabled}
       items={choices}
       value={value}
       getLabel={(a) => a.name}

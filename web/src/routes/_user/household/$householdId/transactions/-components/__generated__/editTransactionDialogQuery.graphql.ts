@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<203ae40bdf6d2aabb81892fd264e4756>>
+ * @generated SignedSource<<c044d673227cac684829a0590bd12c53>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -350,6 +350,7 @@ return {
                       (v3/*: any*/),
                       (v6/*: any*/),
                       (v15/*: any*/),
+                      (v9/*: any*/),
                       (v14/*: any*/),
                       (v13/*: any*/)
                     ],
@@ -497,7 +498,8 @@ return {
                         "selections": [
                           (v3/*: any*/),
                           (v6/*: any*/),
-                          (v15/*: any*/)
+                          (v15/*: any*/),
+                          (v9/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -525,12 +527,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a110f3a0bdb49877ede6e2cc0a94cd1d",
+    "cacheID": "bc78ea70d443cd9b872dfd403aa5fa03",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogQuery",
     "operationKind": "query",
-    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      ...editTransactionDialogTransactionFragment\n    }\n    id\n  }\n  ...editTransactionDialogCategoriesFragment\n  household {\n    ...editTransactionDialogHouseholdFragment_3rIbPZ\n    id\n  }\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        type\n        ...transactionCategoryPickerFragment\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogHouseholdFragment_3rIbPZ on Household {\n  ...mobileEditTransactionAccountsFragment_3rIbPZ\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        user {\n          name\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  ...mobileEditTransactionFragment\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment mobileEditTransactionAccountsFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        icon\n        type\n        archived\n        householdCurrency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment mobileEditTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  excludeFromReports\n  user {\n    name\n    id\n  }\n  category {\n    id\n    name\n    type\n    icon\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      id\n      name\n      icon\n      type\n      archived\n      householdCurrency {\n        code\n        id\n      }\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      id\n      name\n      symbol\n      account {\n        id\n        name\n        icon\n        type\n        archived\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment transactionCategoryPickerFragment on TransactionCategory {\n  name\n  icon\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "query editTransactionDialogQuery(\n  $transactionId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $transactionId) {\n    __typename\n    ... on Transaction {\n      ...editTransactionDialogTransactionFragment\n    }\n    id\n  }\n  ...editTransactionDialogCategoriesFragment\n  household {\n    ...editTransactionDialogHouseholdFragment_3rIbPZ\n    id\n  }\n}\n\nfragment editTransactionDialogCategoriesFragment on Query {\n  transactionCategories {\n    edges {\n      node {\n        id\n        type\n        ...transactionCategoryPickerFragment\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogHouseholdFragment_3rIbPZ on Household {\n  ...mobileEditTransactionAccountsFragment_3rIbPZ\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        type\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        user {\n          name\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n        }\n      }\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  ...mobileEditTransactionFragment\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment mobileEditTransactionAccountsFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        icon\n        type\n        archived\n        householdCurrency {\n          code\n          id\n        }\n        investments {\n          id\n          name\n          symbol\n          type\n        }\n      }\n    }\n  }\n}\n\nfragment mobileEditTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  excludeFromReports\n  user {\n    name\n    id\n  }\n  category {\n    id\n    name\n    type\n    icon\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      id\n      name\n      icon\n      type\n      archived\n      householdCurrency {\n        code\n        id\n      }\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      id\n      name\n      symbol\n      type\n      account {\n        id\n        name\n        icon\n        type\n        archived\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment transactionCategoryPickerFragment on TransactionCategory {\n  name\n  icon\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();

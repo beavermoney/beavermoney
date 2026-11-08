@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b2bc33eec7864f407dea0cf8d1f8dcd7>>
+ * @generated SignedSource<<331194c3a9c0682afee07a2aa298093f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,6 +28,7 @@ export type newMoveFragment$data = {
         readonly name: string;
         readonly type: AccountType;
         readonly value: string;
+        readonly " $fragmentSpreads": FragmentRefs<"transactionAccountPickerFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -70,6 +71,42 @@ v2 = {
   "storageKey": null
 },
 v3 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "HouseholdCurrency",
+  "kind": "LinkedField",
+  "name": "householdCurrency",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "code",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Transaction",
+  "kind": "LinkedField",
+  "name": "latestTransaction",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "datetime",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -140,23 +177,31 @@ return {
                   "storageKey": null
                 },
                 {
-                  "alias": null,
-                  "args": null,
-                  "concreteType": "HouseholdCurrency",
-                  "kind": "LinkedField",
-                  "name": "householdCurrency",
-                  "plural": false,
+                  "kind": "InlineDataFragmentSpread",
+                  "name": "transactionAccountPickerFragment",
                   "selections": [
+                    (v1/*: any*/),
                     {
                       "alias": null,
                       "args": null,
                       "kind": "ScalarField",
-                      "name": "code",
+                      "name": "icon",
                       "storageKey": null
-                    }
+                    },
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "balance",
+                      "storageKey": null
+                    },
+                    (v3/*: any*/),
+                    (v4/*: any*/)
                   ],
-                  "storageKey": null
+                  "args": null,
+                  "argumentDefinitions": []
                 },
+                (v3/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -166,31 +211,15 @@ return {
                   "plural": true,
                   "selections": [
                     (v0/*: any*/),
-                    (v3/*: any*/),
+                    (v5/*: any*/),
                     {
                       "kind": "InlineDataFragmentSpread",
                       "name": "transactionInvestmentPickerFragment",
                       "selections": [
                         (v1/*: any*/),
-                        (v3/*: any*/),
-                        {
-                          "alias": null,
-                          "args": null,
-                          "concreteType": "Transaction",
-                          "kind": "LinkedField",
-                          "name": "latestTransaction",
-                          "plural": false,
-                          "selections": [
-                            {
-                              "alias": null,
-                              "args": null,
-                              "kind": "ScalarField",
-                              "name": "datetime",
-                              "storageKey": null
-                            }
-                          ],
-                          "storageKey": null
-                        }
+                        (v5/*: any*/),
+                        (v2/*: any*/),
+                        (v4/*: any*/)
                       ],
                       "args": null,
                       "argumentDefinitions": []
@@ -249,6 +278,6 @@ return {
 };
 })();
 
-(node as any).hash = "9111e75d37ca9f6a51d6524de4fb68ff";
+(node as any).hash = "c07111ffdca29b8b46fecc7c1e2c424b";
 
 export default node;

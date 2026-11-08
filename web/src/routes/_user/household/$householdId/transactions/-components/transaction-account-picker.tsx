@@ -30,6 +30,7 @@ type Account = transactionAccountPickerFragment$key & {
 }
 
 type TransactionAccountPickerProps = {
+  inline?: boolean
   accounts: ReadonlyArray<Account>
   name: string
   label: string
@@ -45,6 +46,7 @@ type TransactionAccountPickerProps = {
 
 export function TransactionAccountPicker({
   accounts,
+  inline = false,
   name,
   label,
   value,
@@ -68,12 +70,14 @@ export function TransactionAccountPicker({
       )
     )
   })
-  const defaultID = isComposer && !disabled ? ordered[0]?.id : undefined
+  const defaultID =
+    isComposer && !inline && !disabled ? ordered[0]?.id : undefined
   useEffect(() => {
     if (!selected && (value || defaultID)) onValueChange(defaultID ?? '')
   }, [value, selected, defaultID, onValueChange])
   return (
     <SearchSelect
+      inline={inline}
       confirmSelection
       hideChipLabel
       renderChipIcon={(account) => {

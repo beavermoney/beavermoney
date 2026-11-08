@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1ef9312476b058eb275f771fb87e791d>>
+ * @generated SignedSource<<7c01ab3aa6dd203ab488d837714e5e77>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ReaderFragment } from 'relay-runtime';
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
+export type InvestmentType = "crypto" | "stock" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type mobileEditTransactionAccountsFragment$data = {
   readonly accounts: {
@@ -25,6 +26,7 @@ export type mobileEditTransactionAccountsFragment$data = {
           readonly id: string;
           readonly name: string;
           readonly symbol: string;
+          readonly type: InvestmentType;
         }> | null | undefined;
         readonly name: string;
         readonly type: AccountType;
@@ -51,6 +53,13 @@ v1 = {
   "args": null,
   "kind": "ScalarField",
   "name": "name",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
   "storageKey": null
 };
 return {
@@ -115,13 +124,7 @@ return {
                   "name": "icon",
                   "storageKey": null
                 },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "type",
-                  "storageKey": null
-                },
+                (v2/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -163,7 +166,8 @@ return {
                       "kind": "ScalarField",
                       "name": "symbol",
                       "storageKey": null
-                    }
+                    },
+                    (v2/*: any*/)
                   ],
                   "storageKey": null
                 }
@@ -182,6 +186,6 @@ return {
 };
 })();
 
-(node as any).hash = "770c1c929e9ea78392f9d1b11a1c5a3e";
+(node as any).hash = "0f570e9d8ed86c584f929554e0b92a97";
 
 export default node;

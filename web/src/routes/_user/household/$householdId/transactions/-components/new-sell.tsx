@@ -1,4 +1,6 @@
+import { Text } from '@astryxdesign/core/Text'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { InvestmentStart } from './investment-start'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useRef } from 'react'
@@ -216,6 +218,11 @@ export function NewSell({ fragmentRef }: NewSellProps) {
     },
   })
 
+  const selectedInvestmentId = useStore(
+    form.store,
+    (state) => state.values.investmentId,
+  )
+
   const selectedAccountId = useStore(
     form.store,
     (state) => state.values.accountId,
@@ -312,22 +319,40 @@ export function NewSell({ fragmentRef }: NewSellProps) {
             field.state.meta.isTouched && !field.state.meta.isValid
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-              <NumberInput
-                data-1p-ignore
-                id={field.name}
-                onBlur={field.handleBlur}
-                aria-invalid={isInvalid}
-                placeholder="10"
-                autoComplete="off"
-                label={'Shares'}
+              {isMobile ? (
+                <CurrencyInput
+                  id={field.name}
+                  name={field.name}
+                  aria-label="Shares"
+                  value={field.state.value}
+                  locale={household.locale}
+                  currency={displayCurrencyCode}
+                  decimalScale={8}
+                  showCurrencySymbol={false}
+                  onBlur={field.handleBlur}
+                  onValueChange={(value) =>
+                    field.handleChange(value.floatValue!)
+                  }
+                  aria-invalid={isInvalid}
+                />
+              ) : (
+                <NumberInput
+                  data-1p-ignore
+                  id={field.name}
+                  onBlur={field.handleBlur}
+                  aria-invalid={isInvalid}
+                  placeholder="10"
+                  autoComplete="off"
+                  label={'Shares'}
 
-                htmlName={field.name}
-                value={
-                  field.state.value === undefined ? null : field.state.value
-                }
-                onChange={(value) => field.handleChange(value)}
-                step={0.0001}
-              />
+                  htmlName={field.name}
+                  value={
+                    field.state.value === undefined ? null : field.state.value
+                  }
+                  onChange={(value) => field.handleChange(value)}
+                  step={0.0001}
+                />
+              )}
               {isInvalid && <FormError errors={field.state.meta.errors} />}
             </Stack>
           )
@@ -481,6 +506,27 @@ export function NewSell({ fragmentRef }: NewSellProps) {
     return (
       <MobileTransactionComposer
         kind="sell"
+        header={
+          <>
+            {fields.accountId}
+            <Text type="label">Sell</Text>
+            {fields.investmentId}
+          </>
+        }
+        stableAmounts
+        category={
+          <InvestmentStart
+            kind="Sell"
+            accounts={investmentAccounts}
+            accountId={selectedAccountId}
+            investmentId={selectedInvestmentId}
+            onAccount={(id) => {
+              form.setFieldValue('accountId', id)
+              form.setFieldValue('investmentId', '')
+            }}
+            onInvestment={(id) => form.setFieldValue('investmentId', id)}
+          />
+        }
         firstAmount={'shares'}
         amounts={
           <>
@@ -489,13 +535,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
             {fields.totalReceived}
           </>
         }
-        chips={
-          <>
-            {fields.accountId}
-            {fields.investmentId}
-            {ownerOptions.length > 1 && fields.ownerUserID}
-          </>
-        }
+        chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
         details={<>{fields.description}</>}
         pending={isMutationInFlight}

@@ -1,3 +1,5 @@
+import { Text } from '@astryxdesign/core/Text'
+import { InvestmentStart } from './investment-start'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useRef } from 'react'
@@ -211,6 +213,11 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
         .exhaustive()
     },
   })
+
+  const selectedInvestmentId = useStore(
+    form.store,
+    (state) => state.values.investmentId,
+  )
 
   const selectedAccountId = useStore(
     form.store,
@@ -488,6 +495,27 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
     return (
       <MobileTransactionComposer
         kind="buy"
+        header={
+          <>
+            {fields.accountId}
+            <Text type="label">Buy</Text>
+            {fields.investmentId}
+          </>
+        }
+        stableAmounts
+        category={
+          <InvestmentStart
+            kind="Buy"
+            accounts={investmentAccounts}
+            accountId={selectedAccountId}
+            investmentId={selectedInvestmentId}
+            onAccount={(id) => {
+              form.setFieldValue('accountId', id)
+              form.setFieldValue('investmentId', '')
+            }}
+            onInvestment={(id) => form.setFieldValue('investmentId', id)}
+          />
+        }
         firstAmount={'shares'}
         amounts={
           <>
@@ -496,13 +524,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
             {fields.totalPaid}
           </>
         }
-        chips={
-          <>
-            {fields.accountId}
-            {fields.investmentId}
-            {ownerOptions.length > 1 && fields.ownerUserID}
-          </>
-        }
+        chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
         details={<>{fields.description}</>}
         pending={isMutationInFlight}

@@ -1,4 +1,7 @@
 import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { TransactionAccountPicker } from './transaction-account-picker'
+import { InvestmentStart } from './investment-start'
+import { useState } from 'react'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useRef } from 'react'
@@ -55,6 +58,7 @@ const newMoveFragment = graphql`
           name
           type
           value
+          ...transactionAccountPickerFragment
           householdCurrency {
             code
           }
@@ -236,6 +240,16 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     },
   })
 
+  const destinationInvestmentId = useStore(
+    form.store,
+    (state) => state.values.toInvestmentId,
+  )
+  const [sourceAccountId, setSourceAccountId] = useState('')
+  const investmentAccounts =
+    data.accounts.edges?.flatMap((edge) =>
+      edge?.node?.type === 'investment' ? [edge.node] : [],
+    ) ?? []
+
   const fromInvestmentId = useStore(
     form.store,
     (state) => state.values.fromInvestmentId,
@@ -287,7 +301,12 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               data-transaction-initial-focus
             >
               <TransactionInvestmentPicker
-                investments={allInvestments}
+                investments={
+                  isMobile
+                    ? (investmentAccounts.find((a) => a.id === sourceAccountId)
+                        ?.investments ?? [])
+                    : allInvestments
+                }
                 name={field.name}
                 label="From Investment"
                 value={field.state.value}
@@ -357,21 +376,39 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             field.state.meta.isTouched && !field.state.meta.isValid
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-              <NumberInput
-                data-1p-ignore
-                id={field.name}
-                placeholder="0"
-                onBlur={field.handleBlur}
-                aria-invalid={isInvalid}
-                label={'Shares to move'}
+              {isMobile ? (
+                <CurrencyInput
+                  id={field.name}
+                  name={field.name}
+                  aria-label="Shares"
+                  value={field.state.value}
+                  locale={household.locale}
+                  currency={displayCurrencyCode}
+                  decimalScale={8}
+                  showCurrencySymbol={false}
+                  onBlur={field.handleBlur}
+                  onValueChange={(value) =>
+                    field.handleChange(value.floatValue!)
+                  }
+                  aria-invalid={isInvalid}
+                />
+              ) : (
+                <NumberInput
+                  data-1p-ignore
+                  id={field.name}
+                  placeholder="0"
+                  onBlur={field.handleBlur}
+                  aria-invalid={isInvalid}
+                  label={'Shares to move'}
 
-                htmlName={field.name}
-                value={
-                  field.state.value === undefined ? null : field.state.value
-                }
-                onChange={(value) => field.handleChange(value)}
-                step={0.0001}
-              />
+                  htmlName={field.name}
+                  value={
+                    field.state.value === undefined ? null : field.state.value
+                  }
+                  onChange={(value) => field.handleChange(value)}
+                  step={0.0001}
+                />
+              )}
               {isInvalid && <FormError errors={field.state.meta.errors} />}
             </Stack>
           )
@@ -493,6 +530,86 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     return (
       <MobileTransactionComposer
         kind="move"
+        header={
+          <>
+            <Text type="label">Move</Text>
+            {fields.fromInvestmentId}
+            <Text type="supporting">from</Text>
+            <TransactionAccountPicker
+              accounts={investmentAccounts}
+              name="sourceAccount"
+              label="From account"
+              value={sourceAccountId}
+              onValueChange={(id) => {
+                setSourceAccountId(id)
+                form.setFieldValue('fromInvestmentId', '')
+                form.setFieldValue('toInvestmentId', '')
+              }}
+              onBlur={() => {}}
+              invalid={false}
+            />
+            <Text type="supporting">to</Text>
+            <TransactionAccountPicker
+              accounts={investmentAccounts.filter(
+                (a) =>
+                  a.id !== sourceAccountId &&
+                  a.investments?.some((inv) =>
+                    toInvestments.some((candidate) => candidate.id === inv.id),
+                  ),
+              )}
+              name="destinationAccount"
+              label="To account"
+              value={
+                investmentAccounts.find((a) =>
+                  a.investments?.some(
+                    (inv) => inv.id === destinationInvestmentId,
+                  ),
+                )?.id ?? ''
+              }
+              onValueChange={(id) => {
+                const investment = investmentAccounts
+                  .find((a) => a.id === id)
+                  ?.investments?.find((inv) =>
+                    toInvestments.some((candidate) => candidate.id === inv.id),
+                  )
+                form.setFieldValue('toInvestmentId', investment?.id ?? '')
+              }}
+              onBlur={() => {}}
+              invalid={false}
+            />
+          </>
+        }
+        stableAmounts
+        category={
+          <InvestmentStart
+            kind="Move"
+            destination={{
+              accounts: investmentAccounts
+                .filter((a) => a.id !== sourceAccountId)
+                .map((a) => ({
+                  ...a,
+                  investments: a.investments?.filter((inv) =>
+                    toInvestments.some((candidate) => candidate.id === inv.id),
+                  ),
+                }))
+                .filter((a) => a.investments?.length),
+              investmentId: destinationInvestmentId,
+              onInvestment: (id) => form.setFieldValue('toInvestmentId', id),
+            }}
+            accounts={investmentAccounts}
+            accountId={sourceAccountId}
+            investmentId={fromInvestmentId}
+            onAccount={(id) => {
+              setSourceAccountId(id)
+              form.setFieldValue('fromInvestmentId', '')
+              form.setFieldValue('toInvestmentId', '')
+            }}
+            onInvestment={(id) => {
+              form.setFieldValue('fromInvestmentId', id)
+              form.setFieldValue('toInvestmentId', '')
+            }}
+          />
+        }
         firstAmount={'shares'}
         amounts={
           <>
@@ -500,13 +617,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             {fields.pricePerShare}
           </>
         }
-        chips={
-          <>
-            {fields.fromInvestmentId}
-            {fields.toInvestmentId}
-            {ownerOptions.length > 1 && fields.ownerUserID}
-          </>
-        }
+        chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
         details={<>{fields.description}</>}
         pending={isMutationInFlight}
