@@ -1,39 +1,32 @@
-import { useState } from 'react'
-import { TransactionAccountPicker } from './transaction-account-picker'
-import { TransactionCategoryPicker } from './transaction-category-picker'
-import { graphql } from 'relay-runtime'
+import { FinanceCalendar } from '@/components/finance-calendar'
+import { FormError } from '@/components/form-error'
+import { Button } from '@astryxdesign/core/Button'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Popover } from '@astryxdesign/core/Popover'
+import { Stack } from '@astryxdesign/core/Stack'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
+import { useState } from 'react'
+import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import type { newTransferMutation } from './__generated__/newTransferMutation.graphql'
+import * as z from 'zod'
 import type { newTransferFragment$key } from './__generated__/newTransferFragment.graphql'
+import type { newTransferMutation } from './__generated__/newTransferMutation.graphql'
+import { TransactionAccountPicker } from './transaction-account-picker'
+import { TransactionCategoryPicker } from './transaction-category-picker'
 
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { useHousehold } from '@/hooks/use-household'
-import { useUser } from '@/hooks/use-user'
-import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
-import { useHouseholdMembers } from '@/hooks/use-household-members'
-import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { useUser } from '@/hooks/use-user'
 import { commitMutationResult } from '@/lib/relay'
-import { Calendar } from '@/components/ui/calendar'
+import { OwnerSelect } from '../../-components/owner-select'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
@@ -98,6 +91,8 @@ type NewTransferProps = {
 }
 
 export function NewTransfer({ fragmentRef }: NewTransferProps) {
+  const showToast = useToast()
+
   const data = useFragment(newTransferFragment, fragmentRef)
 
   const [commitMutation, isMutationInFlight] =
@@ -203,10 +198,10 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             'No data returned from mutation',
           )
 
-          toast.success('Transfer created successfully!')
+          showToast({ type: 'info', body: 'Transfer created successfully!' })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -237,27 +232,32 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     fromAccount.householdCurrency.code !== toAccount.householdCurrency.code
 
   return (
-    <Card className="w-full">
-      <CardContent>
-        <form
+    <Stack direction="vertical" gap={6}>
+      <Stack direction="vertical" gap={4}>
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="new-transfer-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="categoryId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field
+                  <Stack
+                    direction="vertical"
+                    gap={2}
                     data-invalid={isInvalid}
                     data-transaction-initial-focus
                   >
-                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                    <label htmlFor={field.name}>Category</label>
                     <TransactionCategoryPicker
                       categories={transferCategories}
                       name={field.name}
@@ -267,13 +267,12 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="fromAccountId"
               validators={{
@@ -296,8 +295,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid} className="max-md:gap-1">
-                    <FieldLabel htmlFor={field.name}>From Account</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>From Account</label>
                     <TransactionAccountPicker
                       accounts={availableAccounts}
                       name={field.name}
@@ -315,13 +314,12 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                       onExpand={() => setEditingAccount('fromAccountId')}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="toAccountId"
               validators={{
@@ -343,8 +341,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid} className="max-md:gap-1">
-                    <FieldLabel htmlFor={field.name}>To Account</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>To Account</label>
                     <TransactionAccountPicker
                       accounts={availableAccounts.filter(
                         (account) => account.id !== fromAccountId,
@@ -363,13 +361,12 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                       disabled={!fromAccountId}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             {!isDifferentCurrency ? (
               <form.Field
                 name="amount"
@@ -385,8 +382,11 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
                       <CurrencyInput
                         id={field.name}
                         name={field.name}
@@ -404,9 +404,9 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         aria-invalid={isInvalid}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
@@ -426,10 +426,11 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                     const isInvalid =
                       field.state.meta.isTouched && !field.state.meta.isValid
                     return (
-                      <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>
-                          Debit Amount (From Account)
-                        </FieldLabel>
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
                         <CurrencyInput
                           id={field.name}
                           name={field.name}
@@ -447,9 +448,9 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           aria-invalid={isInvalid}
                         />
                         {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
+                          <FormError errors={field.state.meta.errors} />
                         )}
-                      </Field>
+                      </Stack>
                     )
                   }}
                 />
@@ -468,10 +469,11 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                     const isInvalid =
                       field.state.meta.isTouched && !field.state.meta.isValid
                     return (
-                      <Field data-invalid={isInvalid}>
-                        <FieldLabel htmlFor={field.name}>
-                          Credit Amount (To Account)
-                        </FieldLabel>
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
                         <CurrencyInput
                           id={field.name}
                           name={field.name}
@@ -489,42 +491,43 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                           aria-invalid={isInvalid}
                         />
                         {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
+                          <FormError errors={field.state.meta.errors} />
                         )}
-                      </Field>
+                      </Stack>
                     )
                   }}
                 />
               </>
             )}
-
             <form.Field
               name="description"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="Transfer to savings"
                       autoComplete="off"
+                      label={'Description'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             {ownerOptions.length > 1 && (
               <form.Field
                 name="ownerUserID"
@@ -532,8 +535,11 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
                       <OwnerSelect
                         id={field.name}
                         name={field.name}
@@ -544,82 +550,110 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                         ariaInvalid={isInvalid}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
             )}
-
             <form.Field
               name="datetime"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            id={field.name}
-                            name={field.name}
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
-                            {field.state.value.toLocaleDateString(
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Date</label>
+                    <Popover
+                      label="Choose value"
+                      alignment={'start'}
+                      content={
+                        <>
+                          <FinanceCalendar
+                            mode="single"
+                            selected={field.state.value}
+                            onSelect={(date) => {
+                              if (date) {
+                                field.handleChange(date)
+                              }
+                            }}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date('1900-01-01')
+                            }
+                          />
+                        </>
+                      }
+                    >
+                      {(triggerProps) => (
+                        <Button
+                          {...triggerProps}
+                          id={field.name}
+                          name={field.name}
+                          type="button"
+
+                          label={String(
+                            field.state.value.toLocaleDateString(
                               household.locale,
                               {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                               },
-                            )}
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent className="w-auto p-0" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.handleChange(date)
-                            }
-                          }}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                            ),
+                          )}
+                          variant={'secondary'}
+                        >
+                          {field.state.value.toLocaleDateString(
+                            household.locale,
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )}
+                        </Button>
+                      )}
+                    </Popover>
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          </FormLayout>
+        </Stack>
+      </Stack>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+        as="footer"
+      >
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            label={'Reset'}
+            variant={'secondary'}
+          >
             Reset
           </Button>
           <Button
-            disabled={isMutationInFlight}
             type="submit"
             form="new-transfer-form"
+            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            variant={'primary'}
+
+            isDisabled={isMutationInFlight}
           >
             {isMutationInFlight ? 'Creating...' : 'Create'}
           </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

@@ -1,39 +1,23 @@
-import { graphql } from 'relay-runtime'
+import { FormError } from '@/components/form-error'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Selector } from '@astryxdesign/core/Selector'
+import { Stack } from '@astryxdesign/core/Stack'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useFragment, useMutation } from 'react-relay'
-import { match } from 'ts-pattern'
-import { useState } from 'react'
 import { UserPlusIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
+import { match } from 'ts-pattern'
+import * as z from 'zod'
 
 import type { addMemberDialogFragment$key } from './__generated__/addMemberDialogFragment.graphql'
 import type { addMemberDialogMutation } from './__generated__/addMemberDialogMutation.graphql'
 
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
 
@@ -108,6 +92,8 @@ export function AddMemberDialog({
   householdRef,
   trigger,
 }: AddMemberDialogProps) {
+  const showToast = useToast()
+
   const data = useFragment(addMemberDialogFragment, householdRef)
   const { household } = useHousehold()
 
@@ -150,71 +136,79 @@ export function AddMemberDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          toast.success('Member added.')
+          showToast({ type: 'info', body: 'Member added.' })
           form.reset()
           setOpen(false)
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(getErrorMessage(error))
+          showToast({ type: 'error', body: getErrorMessage(error) })
         })
         .exhaustive()
     },
   })
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) form.reset()
-      }}
-    >
-      <DialogTrigger
-        render={
-          (trigger ?? (
-            <Button variant="outline" size="sm">
-              <UserPlusIcon />
-              Add member
-            </Button>
-          )) as React.ReactElement
-        }
-      />
-      <DialogContent className="gap-3">
-        <DialogHeader>
-          <DialogTitle>Add household member</DialogTitle>
-        </DialogHeader>
-        <form
+    <>
+      <Button
+        label="Add member"
+        icon={<AstryxIcon icon={UserPlusIcon} />}
+        onClick={() => setOpen(true)}
+      >
+        {trigger ?? 'Add member'}
+      </Button>
+      <Dialog
+        isOpen={open}
+        onOpenChange={(next) => {
+          setOpen(next)
+          if (!next) form.reset()
+        }}
+        purpose="form"
+      >
+        <DialogHeader
+          title={<>Add household member</>}
+          onOpenChange={(next) => {
+            setOpen(next)
+            if (!next) form.reset()
+          }}
+        />
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="add-member-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="email"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      type="email"
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="user@example.com"
                       autoComplete="off"
+                      label={'Email'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
+                      type={'email'}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -224,34 +218,30 @@ export function AddMemberDialog({
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Role</FieldLabel>
-                    <Select
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Role</label>
+                    <Selector
                       value={field.state.value}
-                      onValueChange={(value) => {
+                      onChange={(value) => {
                         if (value === 'admin' || value === 'member') {
                           field.handleChange(value)
                         }
                       }}
-                    >
-                      <SelectTrigger
-                        id={field.name}
-                        className="w-full"
-                        aria-invalid={isInvalid}
-                      >
-                        <SelectValue className="capitalize" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="member">Member</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      id={field.name}
+                      aria-invalid={isInvalid}
+                      label={'Select option'}
+
+                      options={[
+                        ...[
+                          { value: 'member', label: String('Member') },
+                          { value: 'admin', label: String('Admin') },
+                        ],
+                      ]}
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -260,52 +250,63 @@ export function AddMemberDialog({
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
-                const selectedCurrency = householdCurrencies.find(
-                  (c) => c.id === field.state.value,
-                )
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Display currency
-                    </FieldLabel>
-                    <Select
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Display currency</label>
+                    <Selector
                       value={field.state.value}
-                      onValueChange={(value) => field.handleChange(value ?? '')}
-                    >
-                      <SelectTrigger
-                        id={field.name}
-                        className="w-full"
-                        aria-invalid={isInvalid}
-                      >
-                        <SelectValue placeholder="Select currency">
-                          {selectedCurrency?.code}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {householdCurrencies.map((currency) => (
-                            <SelectItem key={currency.id} value={currency.id}>
-                              {currency.code}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                      onChange={(value) => field.handleChange(value ?? '')}
+                      id={field.name}
+                      aria-invalid={isInvalid}
+                      label={'Select option'}
+
+                      options={[
+                        ...[
+                          ...householdCurrencies.map((currency) => ({
+                            value: currency.id,
+                            label: String(currency.code),
+                          })),
+                        ],
+                      ]}
+                      placeholder={'Select currency'}
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-          </FieldGroup>
-        </form>
-        <DialogFooter showCloseButton>
-          <Button type="submit" form="add-member-form" disabled={isInFlight}>
+          </FormLayout>
+        </Stack>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+        >
+          <Button
+            type="submit"
+            form="add-member-form"
+            label={String(isInFlight ? 'Adding...' : 'Add member')}
+            variant={'primary'}
+
+            isDisabled={isInFlight}
+          >
             {isInFlight ? 'Adding...' : 'Add member'}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button
+            label="Cancel"
+            onClick={() =>
+              ((next) => {
+                setOpen(next)
+                if (!next) form.reset()
+              })(false)
+            }
+          />
+        </Stack>
+      </Dialog>
+    </>
   )
 }

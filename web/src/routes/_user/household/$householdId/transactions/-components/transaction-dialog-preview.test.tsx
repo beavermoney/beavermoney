@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
-import type { ReactNode } from 'react'
 
 import { TransactionDialogPreview } from './transaction-dialog-preview'
 import type { transactionDialogPreviewFragment$key } from './__generated__/transactionDialogPreviewFragment.graphql'
@@ -14,18 +13,6 @@ vi.mock('react-relay', () => ({
 }))
 vi.mock('@/components/category-icon', () => ({
   CategoryIcon: () => <span aria-hidden="true">category icon</span>,
-}))
-vi.mock('@/components/ui/dialog', () => ({
-  DialogHeader: ({ children }: { children: ReactNode }) => (
-    <header>{children}</header>
-  ),
-  DialogTitle: ({ children }: { children: ReactNode }) => <h2>{children}</h2>,
-  DialogDescription: ({ children }: { children: ReactNode }) => (
-    <p>{children}</p>
-  ),
-  DialogFooter: ({ children }: { children: ReactNode }) => (
-    <footer>{children}</footer>
-  ),
 }))
 vi.mock('@/hooks/use-household', () => ({
   useHousehold: () => ({ household: { locale: 'en-US' } }),

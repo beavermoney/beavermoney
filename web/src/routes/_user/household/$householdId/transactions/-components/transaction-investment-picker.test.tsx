@@ -28,15 +28,6 @@ vi.mock('@/components/selection-rows', () => ({
     <div>{children}</div>
   ),
 }))
-vi.mock('@/components/ui/avatar', () => ({
-  Avatar: ({ children }: { children: React.ReactNode }) => (
-    <span>{children}</span>
-  ),
-  AvatarFallback: ({ children }: { children: React.ReactNode }) => (
-    <span>{children}</span>
-  ),
-  AvatarImage: () => null,
-}))
 
 const investments = [
   {
@@ -97,7 +88,9 @@ it('shows investment identity in desktop options and the selected trigger', () =
       name: 'Investment: Select an investment',
     }),
   )
-  expect(document.querySelector('[data-slot="scroll-area"]')).not.toBeNull()
+  expect(
+    screen.getByRole('group', { name: 'Scrollable content' }),
+  ).not.toBeNull()
   fireEvent.click(
     screen.getByRole('menuitemradio', { name: 'Index Fund, IDX' }),
   )

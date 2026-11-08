@@ -127,7 +127,7 @@ A monorepo. Go backend serves a single GraphQL endpoint to a React 19 SPA.
 | Market data | [EODHD](https://eodhd.com/) (optional) or Yahoo Finance        |
 | Frontend    | React 19, Vite, [TanStack Router](https://tanstack.com/router) |
 | Data        | [Relay](https://relay.dev/) (no REST, no Apollo)               |
-| Styling     | Tailwind CSS 4 + shadcn/ui (`base-mira` style)                 |
+| Styling     | Astryx neutral theme + Tailwind CSS 4                 |
 | Tools       | [mise](https://mise.jdx.dev/) + [just](https://just.systems/)  |
 
 The codebase is intentionally documented for AI-assisted development:
@@ -149,7 +149,7 @@ If that's a dealbreaker, [Monarch](https://www.monarchmoney.com/), [Lunch Money]
 Issues and pull requests are welcome.
 
 - **Conventions and architecture**: read [`AGENTS.md`](AGENTS.md) (project) and [`web/AGENTS.md`](web/AGENTS.md) (frontend) before touching code. Codegen pipelines for Ent and Relay are documented there.
-- **Design**: [`PRODUCT.md`](PRODUCT.md) and [`DESIGN.md`](DESIGN.md) are the source of truth for product and visual decisions. The `$impeccable` skill in [`.agents/skills/impeccable/`](.agents/skills/impeccable/SKILL.md) keeps AI-assisted design work on-brand.
+- **Design**: [`DESIGN.md`](DESIGN.md) describes Astryx defaults; [`PRODUCT.md`](PRODUCT.md) documents product behavior.
 - **Discussion**: the [Discord](https://discord.gg/V6yDJrrJ6h) is the fastest way to ask a question.
 
 ## License

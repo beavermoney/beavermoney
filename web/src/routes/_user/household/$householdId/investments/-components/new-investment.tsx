@@ -1,64 +1,43 @@
-import { graphql } from 'relay-runtime'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { NumberInput } from '@astryxdesign/core/NumberInput'
+import { Spinner } from '@astryxdesign/core/Spinner'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useFragment, useMutation, useRefetchableFragment } from 'react-relay'
+import { useNavigate } from '@tanstack/react-router'
 import { capitalize } from 'lodash-es'
+import { useFragment, useMutation, useRefetchableFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useNavigate } from '@tanstack/react-router'
+import * as z from 'zod'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
+import { CurrencyInput } from '@/components/currency-input'
 import { INVESTMENT_TYPE_LIST } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
-import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
-import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
 import { newInvestmentFragment$key } from './__generated__/newInvestmentFragment.graphql'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
+
+import { useCurrency } from '@/hooks/use-currency'
 import {
-  getLogoTickerURL,
   getLogoCryptoURL,
   getLogoDomainURL,
+  getLogoTickerURL,
 } from '@/lib/logo'
-import { useCurrency } from '@/hooks/use-currency'
-import { cn } from '@/lib/utils'
 import { useEffect, useState, useTransition } from 'react'
-import { Spinner } from '@/components/ui/spinner'
-import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
-import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
+import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
 
 const formSchema = z.object({
   name: z
@@ -153,6 +132,8 @@ export function NewInvestment({
   newInvestmentStockQuoteFragmentRef,
   newInvestmentCryptoQuoteFragmentRef,
 }: NewInvestmentProps) {
+  const showToast = useToast()
+
   const [isPending, startTransition] = useTransition()
   const data = useFragment(newInvestmentFragment, newInvestmentFragmentRef)
 
@@ -239,12 +220,13 @@ export function NewInvestment({
               investmentId: resultData.createInvestment.node.id,
             },
           })
-          toast.success(
-            `${resultData.createInvestment.node.name} is ready to go!`,
-          )
+          showToast({
+            type: 'info',
+            body: `${resultData.createInvestment.node.name} is ready to go!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -276,100 +258,94 @@ export function NewInvestment({
   }, [stockQuoteData, cryptoQuoteData, form])
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Investment</CardTitle>
-        <CardDescription>
+    <Card>
+      <Stack direction="vertical" gap={2} as="header">
+        <Heading level={2}>New Investment</Heading>
+        <Stack direction="vertical" gap={4}>
           Start tracking your investment in Beaver Money
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
+        </Stack>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="new-investment-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="accountId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                    <Combobox
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <SearchSelect
                       items={investmentAccounts.map((account) => account.id)}
-                      itemToStringLabel={(item) =>
+                      getLabel={(item) =>
                         investmentAccounts.find((acc) => acc.id === item)
                           ?.name || ''
                       }
                       value={field.state.value}
-                      onValueChange={(value) => {
+                      onChange={(value) => {
                         field.handleChange(value || '')
                       }}
-                    >
-                      <ComboboxInput
-                        data-1p-ignore
-                        id={field.name}
-                        name={field.name}
-                        placeholder="Select an account"
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item: string) => {
-                            const account = investmentAccounts.find(
-                              (acc) => acc.id === item,
-                            )
-                            if (!account) return null
-                            return (
-                              <ComboboxItem key={item} value={item}>
-                                <Item size="xs" className="p-0">
-                                  <ItemMedia variant="image">
-                                    <Avatar className="size-6">
-                                      <AvatarImage
-                                        src={getLogoDomainURL(
-                                          account.icon || '',
-                                        )}
-                                        alt={account.icon || 'unknown logo'}
-                                      />
-                                      <AvatarFallback>
-                                        {account.name}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </ItemMedia>
-                                  <ItemContent>
-                                    <ItemTitle>{account.name}</ItemTitle>
-                                    <ItemDescription>
-                                      <span className="tabular-nums">
-                                        {formatCurrencyWithPrivacyMode({
-                                          value: account.value,
-                                          currencyCode:
-                                            account.householdCurrency.code,
-                                          liability:
-                                            account.type === 'liability',
-                                        })}
-                                      </span>
-                                      <span aria-hidden="true"> · </span>
-                                      {account.user.name}
-                                    </ItemDescription>
-                                  </ItemContent>
-                                </Item>
-                              </ComboboxItem>
-                            )
-                          }}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
+                      data-1p-ignore
+                      id={field.name}
+                      placeholder="Select an account"
+                      onBlur={field.handleBlur}
+                      label={'Account'}
+                      renderOption={(item: string) => {
+                        const account = investmentAccounts.find(
+                          (acc) => acc.id === item,
+                        )
+                        if (!account) return null
+                        return (
+                          <span>
+                            <Stack
+                              direction="horizontal"
+                              gap={3}
+                              align="center"
+                              wrap="wrap"
+                            >
+                              <Stack direction="vertical" gap={4}>
+                                <Avatar
+                                  src={getLogoDomainURL(account.icon || '')}
+                                  alt={account.icon || 'unknown logo'}
+                                  name={String(account.name)}
+                                />
+                              </Stack>
+                              <Stack direction="vertical" gap={4}>
+                                <Stack direction="vertical" gap={4}>
+                                  {account.name}
+                                </Stack>
+                                <Stack direction="vertical" gap={4}>
+                                  <Text hasTabularNumbers>
+                                    {formatCurrencyWithPrivacyMode({
+                                      value: account.value,
+                                      currencyCode:
+                                        account.householdCurrency.code,
+                                      liability: account.type === 'liability',
+                                    })}
+                                  </Text>
+                                  <span aria-hidden="true"> · </span>
+                                  {account.user.name}
+                                </Stack>
+                              </Stack>
+                            </Stack>
+                          </span>
+                        )
+                      }}
+                      emptyText={<>No items found.</>}
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -387,40 +363,26 @@ export function NewInvestment({
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Type</FieldLabel>
-                    <Combobox
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <SearchSelect
                       items={INVESTMENT_TYPE_LIST}
                       value={field.state.value}
-                      onValueChange={(value) => field.handleChange(value || '')}
-                    >
-                      <ComboboxInput
-                        id={field.name}
-                        name={field.name}
-                        placeholder="Select a type"
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                        className="*:capitalize"
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList className="">
-                          {(item: string) => (
-                            <ComboboxItem
-                              key={item}
-                              value={item}
-                              className="flex flex-col items-start gap-0"
-                            >
-                              <span className="">{capitalize(item)}</span>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
+                      onChange={(value) => field.handleChange(value || '')}
+                      id={field.name}
+                      placeholder="Select a type"
+                      onBlur={field.handleBlur}
+                      label={'Type'}
+                      renderOption={(item: string) => (
+                        <span>
+                          <Text>{capitalize(item)}</Text>
+                        </span>
+                      )}
+                      emptyText={<>No items found.</>}
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -481,15 +443,11 @@ export function NewInvestment({
                   field.state.meta.isTouched && !field.state.meta.isValid
                 const investmentType = form.getFieldValue('type')
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Symbol</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder={
                         investmentType === 'crypto'
@@ -497,11 +455,18 @@ export function NewInvestment({
                           : 'e.g. XEQT.TO'
                       }
                       autoComplete="off"
+                      label={'Symbol'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -520,57 +485,64 @@ export function NewInvestment({
                 : ''
 
               return quote ? (
-                <Item variant={'outline'}>
-                  <ItemMedia variant="image">
-                    <Avatar className="">
-                      <AvatarImage
-                        src={
-                          investmentType === 'crypto'
-                            ? getLogoCryptoURL(logoSymbol)
-                            : getLogoTickerURL(logoSymbol)
-                        }
-                        alt={quote.symbol || 'unknown logo'}
-                      />
-                      <AvatarFallback>{quote.symbol}</AvatarFallback>
-                    </Avatar>
-                  </ItemMedia>
-                  <ItemContent className="gap-px">
-                    <ItemTitle className={cn('font-semibold')}>
+                <Stack
+                  direction="horizontal"
+                  gap={3}
+                  align="center"
+                  wrap="wrap"
+                >
+                  <Stack direction="vertical" gap={4}>
+                    <Avatar
+                      src={
+                        investmentType === 'crypto'
+                          ? getLogoCryptoURL(logoSymbol)
+                          : getLogoTickerURL(logoSymbol)
+                      }
+                      alt={quote.symbol || 'unknown logo'}
+                      name={String(quote.symbol)}
+                    />
+                  </Stack>
+                  <Stack direction="vertical" gap={4}>
+                    <Stack direction="vertical" gap={4}>
                       {quote.name}
-                    </ItemTitle>
-                    <ItemDescription>
+                    </Stack>
+                    <Stack direction="vertical" gap={4}>
                       {formatCurrency({
                         value: quote.currentPrice,
                         currencyCode: quote.currency,
                       })}
-                    </ItemDescription>
-                  </ItemContent>
-                  <ItemContent className="items-end gap-px">
-                    <ItemTitle className="">
+                    </Stack>
+                  </Stack>
+                  <Stack direction="vertical" gap={4}>
+                    <Stack direction="vertical" gap={4}>
                       <span>{quote.symbol}</span>
-                    </ItemTitle>
-                    <ItemDescription className="">
+                    </Stack>
+                    <Stack direction="vertical" gap={4}>
                       <span>{quote.exchange}</span>
-                    </ItemDescription>
-                  </ItemContent>
-                </Item>
+                    </Stack>
+                  </Stack>
+                </Stack>
               ) : (
-                <Item variant="outline">
-                  <ItemContent className="gap-px">
-                    <ItemTitle className={cn('')}>
+                <Stack
+                  direction="horizontal"
+                  gap={3}
+                  align="center"
+                  wrap="wrap"
+                >
+                  <Stack direction="vertical" gap={4}>
+                    <Stack direction="vertical" gap={4}>
                       Start typing the symbol to fetch quote...
-                    </ItemTitle>
-                    <ItemDescription>
+                    </Stack>
+                    <Stack direction="vertical" gap={4}>
                       {investmentType === 'crypto'
                         ? 'Enter crypto symbol with currency pair (e.g., BTC-CAD, ETH-USD)'
                         : 'Symbols are formatted according to Yahoo Finance.'}
-                    </ItemDescription>
-                  </ItemContent>
-
-                  <ItemContent className="items-end gap-px">
+                    </Stack>
+                  </Stack>
+                  <Stack direction="vertical" gap={4}>
                     {isPending && <Spinner />}
-                  </ItemContent>
-                </Item>
+                  </Stack>
+                </Stack>
               )
             })()}
             <form.Field
@@ -579,59 +551,58 @@ export function NewInvestment({
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="e.g. iShares Core Equity ETF Portfolio"
                       autoComplete="off"
+                      label={'Name'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="amount"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
-                    <Input
-                      type="number"
-                      inputMode="decimal"
-                      step="any"
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <NumberInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        if (e.target.value === '') {
-                          field.handleChange(undefined!)
-                        } else {
-                          field.handleChange(Number(e.target.value))
-                        }
-                      }}
                       aria-invalid={isInvalid}
                       placeholder="How many shares do you own?"
                       autoComplete="off"
+                      label={'Amount'}
+
+                      htmlName={field.name}
+                      value={
+                        field.state.value === undefined
+                          ? null
+                          : field.state.value
+                      }
+                      onChange={(value) => field.handleChange(value)}
+                      step={0.0001}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -650,9 +621,7 @@ export function NewInvestment({
                 const currencyCode = quote?.currency ?? displayCurrencyCode
 
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Cost Basis</FieldLabel>
-                    <FieldDescription> </FieldDescription>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
                       id={field.name}
                       name={field.name}
@@ -668,29 +637,44 @@ export function NewInvestment({
                       decimalScale={8}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          </FormLayout>
+        </Stack>
+      </Stack>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+        as="footer"
+      >
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            label={'Reset'}
+            variant={'secondary'}
+          >
             Reset
           </Button>
           <Button
-            disabled={isMutationInFlight}
             type="submit"
             form="new-investment-form"
+            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            variant={'primary'}
+
+            isDisabled={isMutationInFlight}
           >
             {isMutationInFlight ? 'Creating...' : 'Create'}
           </Button>
-        </Field>
-      </CardFooter>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

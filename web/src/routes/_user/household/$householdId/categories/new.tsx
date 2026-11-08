@@ -1,7 +1,8 @@
+import { PendingComponent } from '@/components/pending-component'
+import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import { NewCategory } from './-components/new-category'
-import { PendingComponent } from '@/components/pending-component'
-import { Item } from '@/components/ui/item'
+
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 export const Route = createFileRoute(
@@ -14,13 +15,13 @@ export const Route = createFileRoute(
 function RouteComponent() {
   return (
     <HouseholdContentLayout>
-      <div className="flex h-full">
-        <div className="flex-1">
-          <Item className="p-0">
+      <Stack direction="horizontal">
+        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+          <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
             <NewCategory />
-          </Item>
-        </div>
-      </div>
+          </Stack>
+        </Stack>
+      </Stack>
     </HouseholdContentLayout>
   )
 }

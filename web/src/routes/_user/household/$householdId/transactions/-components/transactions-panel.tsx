@@ -1,17 +1,19 @@
-import { fetchQuery, graphql } from 'relay-runtime'
-import { useFragment, useRelayEnvironment } from 'react-relay'
+import { FinancialSummaryCards } from '@/components/financial-summary-cards'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { parseDateRangeFromURL } from '@/lib/date-range'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { TransactionsList } from './transactions-list'
+import { parseISO } from 'date-fns'
+import { useFragment, useRelayEnvironment } from 'react-relay'
+import { fetchQuery, graphql } from 'relay-runtime'
+import { DateRangeFilter } from '../../categories/-components/date-range-filter'
+import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
 import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
 import transactionsPanelRefetchQueryNode from './__generated__/transactionsPanelRefetchQuery.graphql'
-import { DateRangeFilter } from '../../categories/-components/date-range-filter'
-import { FinancialSummaryCards } from '@/components/financial-summary-cards'
-import { parseDateRangeFromURL } from '@/lib/date-range'
-import { useHousehold } from '@/hooks/use-household'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { parseISO } from 'date-fns'
-import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
+import { TransactionsList } from './transactions-list'
 
 const transactionsPanelFragment = graphql`
   fragment transactionsPanelFragment on Household
@@ -83,20 +85,23 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
     })
   }
 
+  const dateFilter = (
+    <DateRangeFilter
+      startDate={startDate}
+      endDate={endDate}
+      onDateRangeChange={onDateRangeChange}
+    />
+  )
+
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+    <Stack direction="vertical" gap={6}>
+      <Heading level={1}>Transactions</Heading>
+      {dateFilter}
       <FinancialSummaryCards fragmentRef={data.financialReport} />
-      <div className="shrink-0 py-2"></div>
-      <DateRangeFilter
-        startDate={startDate}
-        endDate={endDate}
-        onDateRangeChange={onDateRangeChange}
-      />
-      <div className="shrink-0 py-2"></div>
       <TransactionsList
         key={`${startDate}-${endDate}-${viewUserIds?.join(',') ?? 'all'}`}
         fragmentRef={data}
       />
-    </div>
+    </Stack>
   )
 }

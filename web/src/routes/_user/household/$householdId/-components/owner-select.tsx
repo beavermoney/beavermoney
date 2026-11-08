@@ -1,12 +1,6 @@
+import { SearchSelect } from '@/components/search-select'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { UserIcon, UsersIcon } from 'lucide-react'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
 
 export type OwnerOption = {
   id: string
@@ -36,44 +30,32 @@ export function OwnerSelect({
   placeholder = 'Select an owner',
 }: OwnerSelectProps) {
   return (
-    <Combobox
+    <SearchSelect
+      name={name}
+      invalid={ariaInvalid}
       items={options.map((o) => o.id)}
-      itemToStringLabel={(item) =>
-        options.find((o) => o.id === item)?.name ?? ''
-      }
+      getLabel={(item) => options.find((o) => o.id === item)?.name ?? ''}
       value={value}
-      onValueChange={(next) => onValueChange(next || '')}
-    >
-      <ComboboxInput
-        id={id}
-        name={name}
-        placeholder={placeholder}
-        onBlur={onBlur}
-        aria-invalid={ariaInvalid}
-      />
-      <ComboboxContent>
-        <ComboboxEmpty>No owners.</ComboboxEmpty>
-        <ComboboxList>
-          {(item: string) => {
-            const owner = options.find((o) => o.id === item)
-            if (!owner) return null
-            return (
-              <ComboboxItem
-                key={item}
-                value={item}
-                className="flex items-center gap-2"
-              >
-                {owner.isSynthetic ? (
-                  <UsersIcon className="size-4 shrink-0" />
-                ) : (
-                  <UserIcon className="size-4 shrink-0" />
-                )}
-                <span>{owner.name}</span>
-              </ComboboxItem>
-            )
-          }}
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
+      onChange={(next) => onValueChange(next || '')}
+      id={id}
+      placeholder={placeholder}
+      onBlur={onBlur}
+      label={'Value'}
+      renderOption={(item: string) => {
+        const owner = options.find((o) => o.id === item)
+        if (!owner) return null
+        return (
+          <span>
+            {owner.isSynthetic ? (
+              <AstryxIcon icon={UsersIcon} />
+            ) : (
+              <AstryxIcon icon={UserIcon} />
+            )}
+            <span>{owner.name}</span>
+          </span>
+        )
+      }}
+      emptyText={<>No owners.</>}
+    />
   )
 }

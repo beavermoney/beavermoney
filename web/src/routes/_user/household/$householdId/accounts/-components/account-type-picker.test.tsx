@@ -27,22 +27,24 @@ describe('AccountTypePicker', () => {
   it('shows every available account type without opening a menu', () => {
     render(<Picker />)
 
-    expect(screen.getByRole('group', { name: 'Type' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: /Liquidity/ })).toBeTruthy()
-    expect(screen.getByRole('button', { name: /Investment/ })).toBeTruthy()
-    expect(screen.getByRole('button', { name: /Receivable/ })).toBeTruthy()
-    expect(screen.getByRole('button', { name: /Liability/ })).toBeTruthy()
+    expect(
+      screen.getByRole('radiogroup', { name: /Account type/ }),
+    ).toBeTruthy()
+    expect(screen.getByRole('radio', { name: /Liquidity/ })).toBeTruthy()
+    expect(screen.getByRole('radio', { name: /Investment/ })).toBeTruthy()
+    expect(screen.getByRole('radio', { name: /Receivable/ })).toBeTruthy()
+    expect(screen.getByRole('radio', { name: /Liability/ })).toBeTruthy()
     expect(screen.queryByRole('combobox')).toBeNull()
   })
 
   it('keeps one account type selected', () => {
     render(<Picker />)
-    const investment = screen.getByRole('button', { name: /Investment/ })
+    const investment = screen.getByRole('radio', { name: /Investment/ })
 
     fireEvent.click(investment)
-    expect(investment.getAttribute('aria-pressed')).toBe('true')
+    expect((investment as HTMLInputElement).checked).toBe(true)
 
     fireEvent.click(investment)
-    expect(investment.getAttribute('aria-pressed')).toBe('true')
+    expect((investment as HTMLInputElement).checked).toBe(true)
   })
 })

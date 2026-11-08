@@ -1,20 +1,18 @@
+import { Button } from '@astryxdesign/core/Button'
+import { Stack } from '@astryxdesign/core/Stack'
 import { useNavigate } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 import { env } from '@/env'
 
 export function LoginForm({
-  className,
+  className: _className,
   ...props
 }: React.ComponentProps<'div'>) {
   const navigate = useNavigate()
   return (
-    <div className={cn('flex w-full flex-col gap-3', className)} {...props}>
+    <Stack direction="vertical" gap={4} {...props}>
       {!import.meta.env.PROD && (
         <Button
-          variant="outline"
-          className="w-full cursor-pointer"
           type="button"
           onClick={() => {
             navigate({
@@ -22,13 +20,13 @@ export function LoginForm({
               reloadDocument: true,
             })
           }}
+          label={'Sandbox'}
+          variant={'secondary'}
         >
           Sandbox
         </Button>
       )}
       <Button
-        variant="outline"
-        className="w-full cursor-pointer"
         type="button"
         onClick={() => {
           navigate({
@@ -36,6 +34,8 @@ export function LoginForm({
             reloadDocument: true,
           })
         }}
+        label={'Login with Google'}
+        variant={'secondary'}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path
@@ -45,6 +45,6 @@ export function LoginForm({
         </svg>
         Login with Google
       </Button>
-    </div>
+    </Stack>
   )
 }

@@ -1,30 +1,22 @@
+import type { FinanceDateRange as DateRange } from '@/components/finance-calendar'
+import { FinanceCalendar } from '@/components/finance-calendar'
+import { Button } from '@astryxdesign/core/Button'
+import { Grid } from '@astryxdesign/core/Grid'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Popover } from '@astryxdesign/core/Popover'
+import { Selector } from '@astryxdesign/core/Selector'
+import { Spinner } from '@astryxdesign/core/Spinner'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
 import {
+  endOfMonth,
+  endOfYear,
   format,
   startOfMonth,
-  endOfMonth,
   startOfYear,
-  endOfYear,
 } from 'date-fns'
-import { useState, useTransition, useMemo } from 'react'
-import type { DateRange } from 'react-day-picker'
 import { ChevronLeft, ChevronRight, Undo2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Spinner } from '@/components/ui/spinner'
-import { cn } from '@/lib/utils'
+import { useMemo, useState, useTransition } from 'react'
 
 type GroupByOption = 'MONTH' | 'YEAR' | 'CUSTOM'
 
@@ -273,162 +265,184 @@ export function DateRangeFilter({
   ]
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-2">
+    <Stack direction="horizontal" gap={4} align="center" justify="between">
+      <Stack direction="horizontal" gap={2} align="center">
         <Button
-          variant="outline"
-          size="icon"
           onClick={handlePrevious}
-          disabled={groupBy === 'CUSTOM'}
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
+          label={'Previous period'}
+          variant={'secondary'}
 
-        <DropdownMenu open={isPickerOpen} onOpenChange={setIsPickerOpen}>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="outline"
-                className={cn(groupBy !== 'CUSTOM' && 'w-24')}
-              />
-            }
-          >
-            {getDisplayLabel()}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-auto p-0">
-            {!showCustomPicker && groupBy === 'MONTH' && (
-              <div className="flex flex-col gap-3 p-4">
-                <div className="text-sm font-medium">Select Month</div>
-                <Select
-                  value={selectedMonthYear.toString()}
-                  onValueChange={(value) => {
-                    if (!value) return
-                    const year = parseInt(value, 10)
-                    handleMonthSelect(selectedMonth, year)
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue>{selectedMonthYear}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearOptions.map((year) => (
-                      <SelectItem key={year} value={year.toString()}>
-                        {year}
-                      </SelectItem>
+          isDisabled={groupBy === 'CUSTOM'}
+          isIconOnly
+          icon={
+            <>
+              <AstryxIcon icon={ChevronLeft} />
+            </>
+          }
+        ></Button>
+
+        <Popover
+          isOpen={isPickerOpen}
+          onOpenChange={setIsPickerOpen}
+          label="Choose value"
+          alignment={'start'}
+          content={
+            <>
+              {!showCustomPicker && groupBy === 'MONTH' && (
+                <Stack direction="vertical" gap={3}>
+                  <Text as="div" display="block" type="label">
+                    Select Month
+                  </Text>
+                  <Selector
+                    value={selectedMonthYear.toString()}
+                    onChange={(value) => {
+                      if (!value) return
+                      const year = parseInt(value, 10)
+                      handleMonthSelect(selectedMonth, year)
+                    }}
+                    label={'Select option'}
+                    isLabelHidden
+                    options={[
+                      ...yearOptions.map((year) => ({
+                        value: year.toString(),
+                        label: String(year),
+                      })),
+                    ]}
+                  />
+                  <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
+                    {monthOptions.map((month, index) => (
+                      <Button
+                        key={month}
+                        onClick={() =>
+                          handleMonthSelect(index, selectedMonthYear)
+                        }
+                        label={String(month.slice(0, 3))}
+                        variant={
+                          index === selectedMonth ? 'primary' : 'secondary'
+                        }
+                      >
+                        {month.slice(0, 3)}
+                      </Button>
                     ))}
-                  </SelectContent>
-                </Select>
-                <div className="grid grid-cols-3 gap-2">
-                  {monthOptions.map((month, index) => (
+                  </Grid>
+                </Stack>
+              )}
+              {!showCustomPicker && groupBy === 'YEAR' && (
+                <Stack direction="vertical" gap={2}>
+                  <Text as="div" display="block" type="label">
+                    Select Year
+                  </Text>
+                  <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
+                    {yearOptions.map((year) => (
+                      <Button
+                        key={year}
+                        onClick={() => handleYearSelect(year)}
+                        label={String(year)}
+                        variant={
+                          year === selectedYear ? 'primary' : 'secondary'
+                        }
+                      >
+                        {year}
+                      </Button>
+                    ))}
+                  </Grid>
+                </Stack>
+              )}
+              {(showCustomPicker || groupBy === 'CUSTOM') && (
+                <>
+                  <FinanceCalendar
+                    mode="range"
+                    selected={tempDateRange}
+                    onSelect={setTempDateRange}
+                    numberOfMonths={2}
+                    disabled={(date) => date > new Date()}
+                  />
+                  <Stack direction="horizontal" gap={2}>
                     <Button
-                      key={month}
-                      variant={index === selectedMonth ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() =>
-                        handleMonthSelect(index, selectedMonthYear)
-                      }
-                    >
-                      {month.slice(0, 3)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
+                      onClick={handleCancel}
 
-            {!showCustomPicker && groupBy === 'YEAR' && (
-              <div className="flex flex-col gap-2 p-3">
-                <div className="text-sm font-medium">Select Year</div>
-                <div className="grid max-h-60 grid-cols-3 gap-2 overflow-y-auto">
-                  {yearOptions.map((year) => (
+                      label={'Cancel'}
+                      variant={'secondary'}
+                    >
+                      Cancel
+                    </Button>
                     <Button
-                      key={year}
-                      variant={year === selectedYear ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleYearSelect(year)}
-                    >
-                      {year}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
+                      onClick={handleCustomApply}
 
-            {(showCustomPicker || groupBy === 'CUSTOM') && (
-              <>
-                <Calendar
-                  className="bg-card"
-                  mode="range"
-                  selected={tempDateRange}
-                  onSelect={setTempDateRange}
-                  numberOfMonths={2}
-                  disabled={(date) => date > new Date()}
-                />
-                <div className="flex gap-2 p-3 pt-0">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCancel}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleCustomApply}
-                    disabled={!tempDateRange?.from || !tempDateRange?.to}
-                    className="flex-1"
-                  >
-                    Apply
-                  </Button>
-                </div>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                      label={'Apply'}
+                      variant={'primary'}
+
+                      isDisabled={!tempDateRange?.from || !tempDateRange?.to}
+                    >
+                      Apply
+                    </Button>
+                  </Stack>
+                </>
+              )}
+            </>
+          }
+        >
+          {(triggerProps) => (
+            <Button
+              {...triggerProps}
+
+              label={String(getDisplayLabel())}
+              variant={'secondary'}
+            >
+              {getDisplayLabel()}
+            </Button>
+          )}
+        </Popover>
 
         <Button
-          variant="outline"
-          size="icon"
           onClick={handleNext}
-          disabled={groupBy === 'CUSTOM'}
-        >
-          <ChevronRight className="size-4" />
-        </Button>
+          label={'Next period'}
+          variant={'secondary'}
+
+          isDisabled={groupBy === 'CUSTOM'}
+          isIconOnly
+          icon={
+            <>
+              <AstryxIcon icon={ChevronRight} />
+            </>
+          }
+        ></Button>
 
         {!isCurrentPeriod && groupBy !== 'CUSTOM' && (
           <Button
-            variant="outline"
-            size="icon"
             onClick={handleToday}
-            title={groupBy === 'MONTH' ? 'Go to this month' : 'Go to this year'}
-          >
-            <Undo2 className="size-4" />
-          </Button>
+            tooltip={
+              groupBy === 'MONTH' ? 'Go to this month' : 'Go to this year'
+            }
+            label={groupBy === 'MONTH' ? 'Go to this month' : 'Go to this year'}
+            variant={'secondary'}
+
+            isIconOnly
+            icon={
+              <>
+                <AstryxIcon icon={Undo2} />
+              </>
+            }
+          ></Button>
         )}
 
         {isPending && <Spinner />}
-      </div>
+      </Stack>
 
-      <Select
-        name="group-by-filter"
+      <Selector
         value={showCustomPicker ? 'CUSTOM' : groupBy}
-        onValueChange={handleGroupByChange}
-      >
-        <SelectTrigger className="w-32">
-          <SelectValue>
-            {GROUP_BY_LABELS[showCustomPicker ? 'CUSTOM' : groupBy]}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent className="">
-          <SelectGroup>
-            {Object.entries(GROUP_BY_LABELS).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
+        onChange={handleGroupByChange}
+        label="Period"
+        isLabelHidden
+        options={[
+          ...[
+            ...Object.entries(GROUP_BY_LABELS).map(([value, label]) => ({
+              value: value,
+              label: String(label),
+            })),
+          ],
+        ]}
+      />
+    </Stack>
   )
 }

@@ -1,52 +1,41 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { Divider } from '@astryxdesign/core/Divider'
+import { DropdownMenu, DropdownMenuItem } from '@astryxdesign/core/DropdownMenu'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
 import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import {
+  ArchiveIcon,
+  EditIcon,
+  MoreHorizontalIcon,
+  Trash2Icon,
+} from 'lucide-react'
+import { useState } from 'react'
+import {
   loadQuery,
+  useFragment,
+  useMutation,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { fetchQuery, graphql } from 'relay-runtime'
-import { useState } from 'react'
-import {
-  EditIcon,
-  ArchiveIcon,
-  Trash2Icon,
-  AlertTriangleIcon,
-  MoreHorizontalIcon,
-} from 'lucide-react'
-import { toast } from 'sonner'
 import { match } from 'ts-pattern'
-import { useFragment, useMutation } from 'react-relay'
-import { environment } from '@/environment'
-import { PendingComponent } from '@/components/pending-component'
-import { Separator } from '@/components/ui/separator'
-import { CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import invariant from 'tiny-invariant'
-import { NodeType, commitMutationResult, useDeleteNode } from '@/lib/relay'
-import { identity } from 'lodash-es'
-import { routeAccountIdQuery } from './__generated__/routeAccountIdQuery.graphql'
-import { routeAccountIdDeleteMutation } from './__generated__/routeAccountIdDeleteMutation.graphql'
-import { routeAccountIdArchiveMutation } from './__generated__/routeAccountIdArchiveMutation.graphql'
-import { routeAccountIdFragment$key } from './__generated__/routeAccountIdFragment.graphql'
-import { AccountCard } from '../-components/account-card'
+
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { commitMutationResult, NodeType, useDeleteNode } from '@/lib/relay'
+import { identity } from 'lodash-es'
+import invariant from 'tiny-invariant'
+import { AccountCard } from '../-components/account-card'
+import { routeAccountIdArchiveMutation } from './__generated__/routeAccountIdArchiveMutation.graphql'
+import { routeAccountIdDeleteMutation } from './__generated__/routeAccountIdDeleteMutation.graphql'
+import { routeAccountIdFragment$key } from './__generated__/routeAccountIdFragment.graphql'
+import { routeAccountIdQuery } from './__generated__/routeAccountIdQuery.graphql'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId',
@@ -96,6 +85,8 @@ const RouteAccountIdArchiveMutation = graphql`
 `
 
 function RouteComponent() {
+  const showToast = useToast()
+
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
   const navigate = useNavigate()
@@ -156,10 +147,10 @@ function RouteComponent() {
               'type' | 'category' | undefined,
           }),
         })
-        toast.success('Account deleted!')
+        showToast({ type: 'info', body: 'Account deleted!' })
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(error.toString())
+        showToast({ type: 'error', body: error.toString() })
       })
       .exhaustive()
   }
@@ -182,119 +173,168 @@ function RouteComponent() {
               'type' | 'category' | undefined,
           }),
         })
-        toast.success('Account archived!')
+        showToast({ type: 'info', body: 'Account archived!' })
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(error.toString())
+        showToast({ type: 'error', body: error.toString() })
       })
       .exhaustive()
   }
 
   return (
     <HouseholdContentLayout>
-      <div className="flex h-full flex-col">
+      <Stack direction="vertical">
         {/* Fixed header section */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
+        <Stack direction="vertical" gap={4}>
+          <Stack direction="horizontal" gap={2} align="center">
             <Button
-              variant="secondary"
               onClick={() => navigate({ to: '..', search: identity })}
+              label={'Back'}
+              variant={'secondary'}
             >
               Back
             </Button>
-            <CardTitle>Account Detail</CardTitle>
-            <div className="grow" />
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="ghost" size="icon" />}
-              >
-                <MoreHorizontalIcon className="size-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleEdit}>
-                  <EditIcon className="mr-2 size-4" />
-                  Edit
-                </DropdownMenuItem>
-                {!accountData.archived && (
-                  <DropdownMenuItem onClick={() => setArchiveAlertOpen(true)}>
-                    <ArchiveIcon className="mr-2 size-4" />
-                    Archive
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem
-                  onClick={() => setDeleteAlertOpen(true)}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2Icon className="mr-2 size-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="bg-muted/50 rounded-md">
-            <AccountCard fragmentRef={data.node} />
-          </div>
-          <Separator />
-        </div>
-        <div className="py-2"></div>
+            <Heading level={2}>Account Detail</Heading>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+            <DropdownMenu
+              alignment={'end'}
+              renderTrigger={(triggerProps) => (
+                <Button
+                  {...triggerProps}
+                  label={'Actions'}
+                  variant={'ghost'}
+
+                  isIconOnly
+                  icon={
+                    <>
+                      <AstryxIcon icon={MoreHorizontalIcon} />
+                    </>
+                  }
+                ></Button>
+              )}
+            >
+              <DropdownMenuItem
+                onClick={handleEdit}
+                label={
+                  <>
+                    <AstryxIcon icon={EditIcon} />
+                    Edit
+                  </>
+                }
+              />
+              {!accountData.archived && (
+                <DropdownMenuItem
+                  onClick={() => setArchiveAlertOpen(true)}
+                  label={
+                    <>
+                      <AstryxIcon icon={ArchiveIcon} />
+                      Archive
+                    </>
+                  }
+                />
+              )}
+              <DropdownMenuItem
+                onClick={() => setDeleteAlertOpen(true)}
+
+                label={
+                  <>
+                    <AstryxIcon icon={Trash2Icon} />
+                    Delete
+                  </>
+                }
+              />
+            </DropdownMenu>
+          </Stack>
+          <Stack direction="vertical" gap={4}>
+            <AccountCard fragmentRef={data.node} />
+          </Stack>
+          <Divider />
+        </Stack>
+
+        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
           <Outlet />
-        </div>
+        </Stack>
 
         {/* Delete Alert Dialog */}
-        <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
-          <AlertDialogContent size="sm">
-            <AlertDialogHeader>
-              <AlertDialogMedia>
-                <AlertTriangleIcon className="text-destructive" />
-              </AlertDialogMedia>
-              <AlertDialogTitle>Delete Account</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                account. Delete is only allowed if there are no transactions or
-                investments attached.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
+        <>
+          <Dialog
+            isOpen={deleteAlertOpen}
+            onOpenChange={setDeleteAlertOpen}
+            purpose="form"
+            role="alertdialog"
+          >
+            <DialogHeader
+              title={<>Delete Account</>}
+              onOpenChange={setDeleteAlertOpen}
+            />
+            <Text as="div" display="block" type="supporting">
+              This action cannot be undone. This will permanently delete the
+              account. Delete is only allowed if there are no transactions or
+              investments attached.
+            </Text>
+            <Stack
+              direction="horizontal"
+              gap={3}
+              align="center"
+              wrap="wrap"
+              justify="end"
+            >
+              <Button
+                label="Cancel"
+                onClick={() => setDeleteAlertOpen(false)}
+              />
+              <Button
                 variant="destructive"
                 onClick={handleDelete}
-                disabled={isDeleteMutationInFlight}
+                isDisabled={isDeleteMutationInFlight}
+                label="Delete account"
               >
                 {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+              </Button>
+            </Stack>
+          </Dialog>
+        </>
 
         {/* Archive Alert Dialog */}
-        <AlertDialog open={archiveAlertOpen} onOpenChange={setArchiveAlertOpen}>
-          <AlertDialogContent size="sm">
-            <AlertDialogHeader>
-              <AlertDialogMedia>
-                <ArchiveIcon />
-              </AlertDialogMedia>
-              <AlertDialogTitle>Archive Account</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will archive the account and hide it from the main list.
-                Archive is only allowed when the account value is zero. You can
-                unarchive it later in Settings → Accounts.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
+        <>
+          <Dialog
+            isOpen={archiveAlertOpen}
+            onOpenChange={setArchiveAlertOpen}
+            purpose="form"
+            role="alertdialog"
+          >
+            <DialogHeader
+              title={<>Archive Account</>}
+              onOpenChange={setArchiveAlertOpen}
+            />
+            <Text as="div" display="block" type="supporting">
+              This will archive the account and hide it from the main list.
+              Archive is only allowed when the account value is zero. You can
+              unarchive it later in Settings → Accounts.
+            </Text>
+            <Stack
+              direction="horizontal"
+              gap={3}
+              align="center"
+              wrap="wrap"
+              justify="end"
+            >
+              <Button
+                label="Cancel"
+                onClick={() => setArchiveAlertOpen(false)}
+              />
+              <Button
                 onClick={handleArchive}
-                disabled={isArchiveMutationInFlight}
+                isDisabled={isArchiveMutationInFlight}
+                label="Archive account"
+                variant="destructive"
               >
                 {isArchiveMutationInFlight ? 'Archiving...' : 'Archive'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+              </Button>
+            </Stack>
+          </Dialog>
+        </>
+      </Stack>
     </HouseholdContentLayout>
   )
 }

@@ -1,35 +1,33 @@
+import { CategoryIcon } from '@/components/category-icon'
+import { getLogoDomainURL } from '@/lib/logo'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Badge } from '@astryxdesign/core/Badge'
+import { Button } from '@astryxdesign/core/Button'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuGroup,
+} from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { Stack } from '@astryxdesign/core/Stack'
+import { proportional, Table } from '@astryxdesign/core/Table'
+import { Text } from '@astryxdesign/core/Text'
+import { Link } from '@tanstack/react-router'
+import { ArrowDownIcon, ArrowUpIcon, Columns3Icon } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { graphql, useFragment } from 'react-relay'
-import { Link } from '@tanstack/react-router'
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  Columns3Icon,
-  WalletIcon,
-  ListFilterIcon,
-} from 'lucide-react'
-import { CategoryIcon } from '@/components/category-icon'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { getLogoDomainURL } from '@/lib/logo'
+
 import { format, isToday, isYesterday } from 'date-fns'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuCheckboxItem,
-} from '@/components/ui/dropdown-menu'
+
 import { useCurrency } from '@/hooks/use-currency'
-import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { useHousehold } from '@/hooks/use-household'
-import { cn } from '@/lib/utils'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
+
 import type {
-  transactionsTableFragment$key,
   transactionsTableFragment$data,
+  transactionsTableFragment$key,
 } from './__generated__/transactionsTableFragment.graphql'
 
 const fragment = graphql`
@@ -157,29 +155,28 @@ export function TransactionsTable({
       id: 'date',
       enableHiding: false,
       header: (
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          label={`Date, ${direction === 'DESC' ? 'newest' : 'oldest'} first. Sort ${direction === 'DESC' ? 'oldest' : 'newest'} first`}
           onClick={() => {
             scrollContainer?.scrollTo({ top: 0 })
             onToggleSort()
           }}
-          disabled={isSorting || isLoadingNext}
-          className="focus-visible:outline-ring inline-flex h-7 items-center gap-1 font-medium focus-visible:outline-2"
-          aria-label={`Date, ${direction === 'DESC' ? 'newest' : 'oldest'} first. Sort ${direction === 'DESC' ? 'oldest' : 'newest'} first`}
+          isDisabled={isSorting || isLoadingNext}
+          endContent={
+            direction === 'DESC' ? (
+              <AstryxIcon icon={ArrowDownIcon} />
+            ) : (
+              <AstryxIcon icon={ArrowUpIcon} />
+            )
+          }
         >
-          Date{' '}
-          {direction === 'DESC' ? (
-            <ArrowDownIcon className="size-3" aria-hidden="true" />
-          ) : (
-            <ArrowUpIcon className="size-3" aria-hidden="true" />
-          )}
-        </button>
+          Date
+        </Button>
       ),
       cell: (transaction) => (
-        <time
-          dateTime={transaction.datetime}
-          className="block w-[13ch] whitespace-nowrap tabular-nums"
-        >
+        <time dateTime={transaction.datetime}>
           {isToday(new Date(transaction.datetime))
             ? 'Today'
             : isYesterday(new Date(transaction.datetime))
@@ -195,10 +192,10 @@ export function TransactionsTable({
       cell: (transaction) => {
         const { category } = transaction
         return (
-          <div className="flex min-w-0 items-center gap-2 xl:gap-3">
+          <Stack direction="horizontal" gap={2} align="center">
             <CategoryIcon type={category.type} icon={category.icon} />
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex min-w-0 items-center gap-2">
+            <Stack direction="vertical" gap={0.5}>
+              <Stack direction="horizontal" gap={2} align="center">
                 <Link
                   to="."
                   resetScroll={false}
@@ -208,30 +205,22 @@ export function TransactionsTable({
                   })}
                   onFocus={() => onPreloadTransaction(transaction.id)}
                   onClick={() => onPreloadTransaction(transaction.id)}
-                  className="focus-visible:outline-ring block min-w-0 truncate text-sm font-medium focus-visible:outline-2"
+
                   title={category.name}
                 >
                   {category.name}
                 </Link>
                 {transaction.excludeFromReports && (
-                  <Badge
-                    variant="outline"
-                    className="text-muted-foreground px-1 py-0 font-normal"
-                  >
-                    Excluded
-                  </Badge>
+                  <Badge label={<>Excluded</>} />
                 )}
-              </div>
+              </Stack>
               {transaction.description && (
-                <span
-                  className="text-muted-foreground block min-w-0 truncate"
-                  title={transaction.description}
-                >
+                <span title={transaction.description}>
                   {transaction.description}
                 </span>
               )}
-            </div>
-          </div>
+            </Stack>
+          </Stack>
         )
       },
     },
@@ -239,7 +228,7 @@ export function TransactionsTable({
       id: 'movement',
       header: 'Account / Movement',
       cell: (transaction) => (
-        <div className="flex min-w-0 flex-col gap-1 overflow-hidden">
+        <Stack direction="vertical" gap={1}>
           {transaction.transactionEntries?.map((entry) => (
             <AccountMovement key={entry.id} account={entry.account} />
           ))}
@@ -250,7 +239,7 @@ export function TransactionsTable({
               symbol={lot.investment.symbol}
             />
           ))}
-        </div>
+        </Stack>
       ),
     },
     {
@@ -258,61 +247,52 @@ export function TransactionsTable({
       header: 'Amount',
       enableHiding: false,
       cell: (transaction) => (
-        <div className="flex min-w-0 flex-col gap-1 overflow-hidden text-right whitespace-nowrap tabular-nums">
+        <Stack direction="vertical" gap={1}>
           {transaction.transactionEntries?.map((entry) => (
-            <span
-              key={entry.id}
-              className="flex h-7 min-w-0 items-center justify-end gap-1 overflow-hidden font-medium"
-            >
+            <span key={entry.id}>
               {formatCurrencyWithPrivacyMode({
                 value: entry.amount,
                 currencyCode: entry.account.householdCurrency.code,
               })}{' '}
-              <span className="text-muted-foreground">
+              <Text type="supporting">
                 {entry.account.householdCurrency.code}
-              </span>
+              </Text>
             </span>
           ))}
           {transaction.investmentLots?.map((lot) => (
-            <span
-              key={lot.id}
-              className="flex h-7 min-w-0 items-center justify-end gap-1 overflow-hidden font-medium"
-            >
+            <span key={lot.id}>
               {isPrivacyModeEnabled
                 ? '•••••••'
                 : quantityFormatter.format(Number(lot.amount))}{' '}
-              <span className="text-muted-foreground">
-                {lot.investment.symbol} @{' '}
-              </span>
+              <Text type="supporting">{lot.investment.symbol} @ </Text>
               {formatCurrencyWithPrivacyMode({
                 value: lot.price,
                 currencyCode: lot.investment.householdCurrency.code,
               })}{' '}
-              <span className="text-muted-foreground">
+              <Text type="supporting">
                 {lot.investment.householdCurrency.code}
-              </span>
+              </Text>
             </span>
           ))}
-        </div>
+        </Stack>
       ),
     },
     {
       id: 'owner',
       header: 'Member',
       cell: (transaction) => (
-        <div
-          className="flex min-w-0 items-center gap-1.5 xl:gap-2"
-          title={transaction.user.name}
+        <Stack
+          direction="horizontal"
+          gap={1.5}
+          align="center"
+
+          aria-label={transaction.user.name}
         >
-          <Avatar size="sm">
-            <AvatarFallback className="text-[10px]">
-              {transaction.user.name.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-muted-foreground block min-w-0 truncate">
-            {transaction.user.name}
-          </span>
-        </div>
+          <Avatar
+            name={String(transaction.user.name.slice(0, 2).toUpperCase())}
+          />
+          <span>{transaction.user.name}</span>
+        </Stack>
       ),
     },
   ]
@@ -321,151 +301,136 @@ export function TransactionsTable({
   )
 
   return (
-    <section
+    <Stack
+      direction="vertical"
+      gap={2}
+      as="section"
       aria-label="Transactions"
       aria-busy={isSorting || isLoadingNext}
-      className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden"
     >
-      <div className="flex items-center justify-between gap-2">
-        <p
-          className="text-muted-foreground flex items-center gap-2 text-xs"
+      <Stack direction="horizontal" gap={2} align="center" justify="between">
+        <Text
+          as="p"
+          display="block"
+          color="secondary"
+
           role="status"
         >
-          <ListFilterIcon className="size-3.5" aria-hidden="true" />
           {isSorting
             ? 'Sorting transactions…'
             : `${transactions.length} transaction${transactions.length === 1 ? '' : 's'}${hasNext ? ' loaded' : ''}`}
-        </p>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button type="button" variant="outline" size="sm" />}
-          >
-            <Columns3Icon data-icon="inline-start" />
-            Columns
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              {columns
-                .filter((column) => column.enableHiding !== false)
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={columnVisibility[column.id] !== false}
-                    onCheckedChange={(checked) =>
-                      setColumnVisibility((previous) => ({
-                        ...previous,
-                        [column.id]: checked,
-                      }))
-                    }
-                  >
-                    {LABELS[column.id]}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <ScrollArea
-        viewportRef={setScrollContainer}
-        scrollbars="both"
-        className="border-border min-h-0 min-w-0 flex-1 border-y"
-      >
-        <table className="w-full table-fixed border-separate border-spacing-0 text-xs">
-          <caption className="sr-only">
-            Transactions. Open a transaction to view or edit its details.
-            Investment amounts show quantity and price per unit.
-          </caption>
-          <thead className="bg-background sticky top-0 z-10">
-            <tr>
-              {visibleColumns.map((column) => (
-                <th
+        </Text>
+        <DropdownMenu
+          alignment={'end'}
+          renderTrigger={(triggerProps) => (
+            <Button
+              {...triggerProps}
+              type="button"
+              label={'Columns'}
+              variant={'secondary'}
+
+              icon={<AstryxIcon icon={Columns3Icon} />}
+            />
+          )}
+        >
+          <DropdownMenuGroup>
+            {columns
+              .filter((column) => column.enableHiding !== false)
+              .map((column) => (
+                <DropdownMenuCheckboxItem
                   key={column.id}
-                  scope="col"
-                  aria-sort={
-                    column.id === 'date'
-                      ? direction === 'DESC'
-                        ? 'descending'
-                        : 'ascending'
-                      : undefined
+                  value={columnVisibility[column.id] !== false}
+                  onChange={(checked) =>
+                    setColumnVisibility((previous) => ({
+                      ...previous,
+                      [column.id]: checked,
+                    }))
                   }
-                  className={cn(
-                    'border-border text-muted-foreground overflow-hidden border-b px-2 py-1.5 text-left font-medium whitespace-nowrap lg:px-3 xl:px-4',
-                    column.id === 'date' && 'w-[16%]',
-                    column.id === 'description' && 'w-[24%]',
-                    column.id === 'movement' && 'w-[27%]',
-                    column.id === 'amount' && 'w-[21%] text-right',
-                    column.id === 'owner' && 'w-[12%]',
-                  )}
-                >
-                  {column.header}
-                </th>
+                  label={<>{LABELS[column.id]}</>}
+                ></DropdownMenuCheckboxItem>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction) => (
-              <tr
-                key={transaction.id}
-                className="hover:bg-muted/50 focus-within:bg-muted cursor-pointer transition-colors duration-100 motion-reduce:transition-none"
-                onPointerEnter={() => onPreloadTransaction(transaction.id)}
-                onClick={(event) => {
-                  if (
-                    (event.target instanceof Element &&
-                      event.target.closest('a, button, input')) ||
-                    window.getSelection()?.toString()
-                  )
-                    return
-                  if (isSorting) return
-                  onOpenTransaction(transaction.id)
-                }}
-              >
-                {visibleColumns.map((column) => (
-                  <td
-                    key={column.id}
-                    className="border-border/60 overflow-hidden border-b px-2 py-3 align-middle lg:px-3 xl:px-4"
-                  >
-                    {column.cell(transaction)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-            {transactions.length === 0 && (
-              <tr>
-                <td
-                  colSpan={visibleColumns.length}
-                  className="text-muted-foreground px-3 py-10 text-center"
-                >
-                  No transactions in this date range.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+          </DropdownMenuGroup>
+        </DropdownMenu>
+      </Stack>
+      <ScrollableArea
+        label="Scrollable content"
+        ref={setScrollContainer}
+        axis="block"
+      >
+        <Table
+          aria-label="Transactions"
+          data={[...transactions]}
+          idKey="id"
+          hasHover
+          emptyState="No transactions in this date range."
+          textOverflow="truncate"
+          columns={visibleColumns.map((column) => ({
+            key: column.id,
+            header: column.header,
+            width: proportional(
+              column.id === 'description' || column.id === 'movement' ? 2 : 1,
+              {
+                minWidth:
+                  column.id === 'description' || column.id === 'movement'
+                    ? 200
+                    : 120,
+              },
+            ),
+            renderCell: column.cell,
+          }))}
+          plugins={{
+            navigation: {
+              transformBodyRow: (props, transaction) => ({
+                ...props,
+                htmlProps: {
+                  ...props.htmlProps,
+                  tabIndex: 0,
+                  onKeyDown: (event) => {
+                    if (event.target !== event.currentTarget || isSorting)
+                      return
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      onOpenTransaction(transaction.id)
+                    }
+                  },
+                  onPointerEnter: () => onPreloadTransaction(transaction.id),
+                  onClick: (event) => {
+                    if (
+                      (event.target instanceof Element &&
+                        event.target.closest('a,button,input')) ||
+                      window.getSelection()?.toString() ||
+                      isSorting
+                    )
+                      return
+                    onOpenTransaction(transaction.id)
+                  },
+                },
+              }),
+            },
+          }}
+        />
         {hasNext && (
-          <div
-            ref={loadMoreRef}
-            className="text-muted-foreground flex h-9 items-center justify-center text-xs"
-            role="status"
-          >
+          <div ref={loadMoreRef} role="status">
             {loadError ? (
-              <div role="alert" className="flex items-center gap-2">
+              <Stack direction="horizontal" gap={2} align="center" role="alert">
                 {loadError}
                 <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isLoadingNext}
                   onClick={onLoadMore}
+                  label={'Retry'}
+                  variant={'secondary'}
+
+                  isDisabled={isLoadingNext}
                 >
                   Retry
                 </Button>
-              </div>
+              </Stack>
             ) : isLoadingNext ? (
               'Loading more transactions…'
             ) : null}
           </div>
         )}
-      </ScrollArea>
-    </section>
+      </ScrollableArea>
+    </Stack>
   )
 }
 
@@ -477,22 +442,18 @@ function AccountMovement({
   symbol?: string
 }) {
   return (
-    <div
-      className="flex h-8 min-w-0 items-center gap-2 overflow-hidden"
-      title={`${account.name}${symbol ? ` · ${symbol}` : ''}`}
+    <Stack
+      direction="horizontal"
+      gap={2}
+      align="center"
+
+      aria-label={`${account.name}${symbol ? ` · ${symbol}` : ''}`}
     >
-      <Avatar>
-        {account.icon && (
-          <AvatarImage src={getLogoDomainURL(account.icon)} alt="" />
-        )}
-        <AvatarFallback>
-          <WalletIcon className="size-4" aria-hidden="true" />
-        </AvatarFallback>
-      </Avatar>
-      <span className="block min-w-0 truncate">
+      <Avatar src={getLogoDomainURL(account.icon || '')} name={String('')} />
+      <span>
         {account.name}
-        {symbol && <span className="text-muted-foreground"> · {symbol}</span>}
+        {symbol && <Text type="supporting"> · {symbol}</Text>}
       </span>
-    </div>
+    </Stack>
   )
 }

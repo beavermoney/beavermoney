@@ -1,28 +1,23 @@
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { Spinner } from '@/components/ui/spinner'
-
+import { Heading } from '@astryxdesign/core/Heading'
+import { Spinner } from '@astryxdesign/core/Spinner'
+import { Stack } from '@astryxdesign/core/Stack'
 export function PendingComponent() {
   return (
-    <Empty className="w-full">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
+    <Stack direction="vertical" gap={4}>
+      <Stack direction="vertical" gap={2}>
+        <Stack direction="vertical" gap={4}>
           <Spinner />
-        </EmptyMedia>
-        <EmptyTitle>Loading...</EmptyTitle>
+        </Stack>
+        <Heading level={2}>Loading...</Heading>
         {/* <EmptyDescription> */}
         {/*   Please wait while we process your request. Do not refresh the page. */}
         {/* </EmptyDescription> */}
-      </EmptyHeader>
+      </Stack>
       {/* <EmptyContent> */}
       {/*   <Button variant="outline" size="sm"> */}
       {/*     Cancel */}
       {/*   </Button> */}
       {/* </EmptyContent> */}
-    </Empty>
+    </Stack>
   )
 }

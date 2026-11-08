@@ -1,72 +1,46 @@
+import { FinanceCalendar } from '@/components/finance-calendar'
+import { FormError } from '@/components/form-error'
+import { Button } from '@astryxdesign/core/Button'
+import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { Divider } from '@astryxdesign/core/Divider'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Popover } from '@astryxdesign/core/Popover'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
+import { useForm } from '@tanstack/react-form'
+import { Fragment, useMemo, useState } from 'react'
+import type { PreloadedQuery } from 'react-relay'
 import {
   graphql,
   useFragment,
   useMutation,
   usePreloadedQuery,
 } from 'react-relay'
-import type { PreloadedQuery } from 'react-relay'
-import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { match } from 'ts-pattern'
 import invariant from 'tiny-invariant'
-import { Fragment, useMemo, useState } from 'react'
-import { AlertTriangleIcon } from 'lucide-react'
+import { match } from 'ts-pattern'
+import * as z from 'zod'
 
-import type { editTransactionDialogUpdateMutation } from './__generated__/editTransactionDialogUpdateMutation.graphql'
-import type { editTransactionDialogDeleteMutation } from './__generated__/editTransactionDialogDeleteMutation.graphql'
-import type { editTransactionDialogTransactionFragment$key } from './__generated__/editTransactionDialogTransactionFragment.graphql'
 import type { editTransactionDialogCategoriesFragment$key } from './__generated__/editTransactionDialogCategoriesFragment.graphql'
+import type { editTransactionDialogDeleteMutation } from './__generated__/editTransactionDialogDeleteMutation.graphql'
 import type { editTransactionDialogHouseholdFragment$key } from './__generated__/editTransactionDialogHouseholdFragment.graphql'
+import type { editTransactionDialogTransactionFragment$key } from './__generated__/editTransactionDialogTransactionFragment.graphql'
+import type { editTransactionDialogUpdateMutation } from './__generated__/editTransactionDialogUpdateMutation.graphql'
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { Calendar } from '@/components/ui/calendar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { commitMutationResult } from '@/lib/relay'
-import { InvestmentLotCard } from './investment-lot-card'
-import { TransactionEntryCard } from './transaction-entry-card'
-import { EditTransactionEntryDialog } from './edit-transaction-entry-dialog'
-import { EditInvestmentLotDialog } from './edit-investment-lot-dialog'
 import { useHousehold } from '@/hooks/use-household'
-import { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
+import { commitMutationResult } from '@/lib/relay'
 import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
-import { Separator } from '@/components/ui/separator'
-import { identity } from 'lodash-es'
+import { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
+import { EditInvestmentLotDialog } from './edit-investment-lot-dialog'
+import { EditTransactionEntryDialog } from './edit-transaction-entry-dialog'
+import { InvestmentLotCard } from './investment-lot-card'
+import { TransactionEntryCard } from './transaction-entry-card'
+
 import { NodeType, useDeleteNode } from '@/lib/relay'
+import { identity } from 'lodash-es'
 import { TransactionCategoryPicker } from './transaction-category-picker'
 
 const editTransactionDialogUpdateMutation = graphql`
@@ -204,11 +178,15 @@ const formSchema = z.object({
 
 type EditTransactionDialogProps = {
   queryRef: PreloadedQuery<editTransactionDialogQuery>
+  onClose?: () => void
 }
 
 export function EditTransactionDialog({
   queryRef,
+  onClose,
 }: EditTransactionDialogProps) {
+  const showToast = useToast()
+
   const queryData = usePreloadedQuery<editTransactionDialogQuery>(
     EditTransactionDialogQuery,
     queryRef,
@@ -346,10 +324,10 @@ export function EditTransactionDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          toast.success('Transaction updated successfully!')
+          showToast({ type: 'info', body: 'Transaction updated successfully!' })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -370,7 +348,7 @@ export function EditTransactionDialog({
 
     match(result)
       .with({ status: 'success' }, () => {
-        toast.success('Transaction deleted successfully!')
+        showToast({ type: 'info', body: 'Transaction deleted successfully!' })
         navigate({
           to: '.',
           search: (old) => ({ ...old, edit_transaction_id: null }),
@@ -379,7 +357,7 @@ export function EditTransactionDialog({
         setDeleteAlertOpen(false)
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(error.toString())
+        showToast({ type: 'error', body: error.toString() })
         setDeleteAlertOpen(false)
       })
       .exhaustive()
@@ -435,19 +413,17 @@ export function EditTransactionDialog({
 
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>Edit Transaction</DialogTitle>
-        <DialogDescription>
-          Update transaction details. Click on entries or lots below to edit
-          them individually.
-        </DialogDescription>
-      </DialogHeader>
+      <DialogHeader title="Edit Transaction" onOpenChange={() => onClose?.()} />
+      <Text as="div" display="block" type="supporting">
+        Update transaction details. Click on entries or lots below to edit them
+        individually.
+      </Text>
 
-      <div className="border-border [a]:hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center rounded-md border text-xs/relaxed transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors">
+      <Stack direction="horizontal" align="center">
         {sortedItems.map((item, index) =>
           item.type === 'lot' ? (
             <Fragment key={item.lot.id}>
-              {index !== 0 && <Separator className="" />}
+              {index !== 0 && <Divider />}
               <InvestmentLotCard
                 fragmentRef={item.lot}
                 isFirst={index === 0}
@@ -465,7 +441,7 @@ export function EditTransactionDialog({
             </Fragment>
           ) : (
             <Fragment key={item.entry.id}>
-              {index !== 0 && <Separator className="" />}
+              {index !== 0 && <Divider />}
               <TransactionEntryCard
                 fragmentRef={item.entry}
                 isFirst={index === 0}
@@ -481,105 +457,123 @@ export function EditTransactionDialog({
             </Fragment>
           ),
         )}
-      </div>
+      </Stack>
 
-      <div className="space-y-4">
+      <Stack direction="vertical" gap={4}>
         {/* Edit form */}
-        <form
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="edit-transaction-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="description"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="Transaction description"
                       autoComplete="off"
+                      label={'Description'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="datetime"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            id={field.name}
-                            name={field.name}
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
-                            {field.state.value.toLocaleDateString(
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Date</label>
+                    <Popover
+                      label="Choose value"
+                      alignment={'start'}
+                      content={
+                        <>
+                          <FinanceCalendar
+                            mode="single"
+                            selected={field.state.value}
+                            onSelect={(date) => {
+                              if (date) {
+                                field.handleChange(date)
+                              }
+                            }}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date('1900-01-01')
+                            }
+                          />
+                        </>
+                      }
+                    >
+                      {(triggerProps) => (
+                        <Button
+                          {...triggerProps}
+                          id={field.name}
+                          name={field.name}
+                          type="button"
+
+                          label={String(
+                            field.state.value.toLocaleDateString(
                               household.locale,
                               {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                               },
-                            )}
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent className="w-auto p-0" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.handleChange(date)
-                            }
-                          }}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                            ),
+                          )}
+                          variant={'secondary'}
+                        >
+                          {field.state.value.toLocaleDateString(
+                            household.locale,
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )}
+                        </Button>
+                      )}
+                    </Popover>
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="categoryId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Category</label>
                     <TransactionCategoryPicker
                       categories={allCategories}
                       name={field.name}
@@ -589,96 +583,112 @@ export function EditTransactionDialog({
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
-            <FieldSet>
-              <FieldLegend variant="label">Options</FieldLegend>
-              <FieldGroup data-slot="checkbox-group">
+            <fieldset>
+              <legend>Options</legend>
+              <Stack direction="vertical" gap={4} data-slot="checkbox-group">
                 <form.Field
                   name="excludeFromReports"
                   children={(field) => {
                     return (
-                      <Field orientation={'horizontal'}>
-                        <Button
-                          type="button"
+                      <Stack direction="vertical" gap={2}>
+                        <CheckboxInput
                           id={field.name}
-                          name={field.name}
-                          aria-pressed={field.state.value}
-                          variant="outline"
-                          onClick={() => field.handleChange(!field.state.value)}
+                          htmlName={field.name}
+                          value={field.state.value}
+                          onChange={field.handleChange}
                           onBlur={field.handleBlur}
-                          className="aria-pressed:border-primary"
-                        >
-                          Exclude from reports
-                        </Button>
-                      </Field>
+                          label={'Exclude from reports'}
+                        />
+                      </Stack>
                     )
                   }}
                 />
-              </FieldGroup>
-            </FieldSet>
-          </FieldGroup>
-        </form>
-      </div>
+              </Stack>
+            </fieldset>
+          </FormLayout>
+        </Stack>
+      </Stack>
 
-      <DialogFooter>
-        <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
-          <AlertDialogTrigger
-            render={
-              <Button
-                variant="destructive"
-                type="button"
-                disabled={isDeleteInFlight || isUpdateInFlight}
-              />
-            }
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+      >
+        <>
+          <Button
+            onClick={() => setDeleteAlertOpen(true)}
+            type="button"
+            label={'Delete'}
+            variant={'destructive'}
+
+            isDisabled={isDeleteInFlight || isUpdateInFlight}
           >
             Delete
-          </AlertDialogTrigger>
-          <AlertDialogContent size="sm">
-            <AlertDialogHeader>
-              <AlertDialogMedia>
-                <AlertTriangleIcon className="text-destructive" />
-              </AlertDialogMedia>
-              <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                transaction and all associated entries and investment lots.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
+          </Button>
+          <Dialog
+            isOpen={deleteAlertOpen}
+            onOpenChange={setDeleteAlertOpen}
+            purpose="form"
+            role="alertdialog"
+          >
+            <DialogHeader
+              title={<>Delete Transaction</>}
+              onOpenChange={setDeleteAlertOpen}
+            />
+            <Text as="div" display="block" type="supporting">
+              This action cannot be undone. This will permanently delete the
+              transaction and all associated entries and investment lots.
+            </Text>
+            <Stack
+              direction="horizontal"
+              gap={3}
+              align="center"
+              wrap="wrap"
+              justify="end"
+            >
+              <Button
+                label="Cancel"
+                onClick={() => setDeleteAlertOpen(false)}
+              />
+              <Button
                 variant="destructive"
                 onClick={handleDelete}
-                disabled={isDeleteInFlight}
+                isDisabled={isDeleteInFlight}
+                label="Delete"
               >
                 {isDeleteInFlight ? 'Deleting...' : 'Delete'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
+              </Button>
+            </Stack>
+          </Dialog>
+        </>
         <Button
           type="submit"
           form="edit-transaction-form"
-          disabled={isUpdateInFlight || isDeleteInFlight}
+          label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+          variant={'primary'}
+
+          isDisabled={isUpdateInFlight || isDeleteInFlight}
         >
           {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
         </Button>
-      </DialogFooter>
+      </Stack>
 
-      <Dialog
-        open={entryDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) setEntryDialogOpen(false)
-        }}
-      >
-        <DialogContent>
+      <>
+        <Dialog
+          isOpen={entryDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) setEntryDialogOpen(false)
+          }}
+          purpose="form"
+        >
           {editingEntry && (
             <EditTransactionEntryDialog
               key={editingEntry.id}
@@ -689,16 +699,17 @@ export function EditTransactionDialog({
               onClose={() => setEntryDialogOpen(false)}
             />
           )}
-        </DialogContent>
-      </Dialog>
+        </Dialog>
+      </>
 
-      <Dialog
-        open={lotDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) setLotDialogOpen(false)
-        }}
-      >
-        <DialogContent>
+      <>
+        <Dialog
+          isOpen={lotDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) setLotDialogOpen(false)
+          }}
+          purpose="form"
+        >
           {editingLot && (
             <EditInvestmentLotDialog
               key={editingLot.id}
@@ -711,8 +722,8 @@ export function EditTransactionDialog({
               onClose={() => setLotDialogOpen(false)}
             />
           )}
-        </DialogContent>
-      </Dialog>
+        </Dialog>
+      </>
     </>
   )
 }

@@ -1,14 +1,13 @@
 import type { LucideIcon } from 'lucide-react'
 import {
   ChartNoAxesCombinedIcon,
-  CheckIcon,
   CreditCardIcon,
   HandCoinsIcon,
   LandmarkIcon,
 } from 'lucide-react'
 
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ACCOUNT_TYPE_DESCRIPTION, ACCOUNT_TYPE_LIST } from '@/constant'
+import { RadioList, RadioListItem } from '@astryxdesign/core/RadioList'
 
 export type AccountType = (typeof ACCOUNT_TYPE_LIST)[number]
 
@@ -59,65 +58,33 @@ export function AccountTypePicker({
   describedBy,
   invalid = false,
 }: AccountTypePickerProps) {
-  const selectedValue = isAccountType(value) ? [value] : []
-
   return (
-    <ToggleGroup
-      value={selectedValue}
-      onValueChange={(values) => {
-        const nextValue = values[0]
-        if (isAccountType(nextValue)) {
-          onValueChange(nextValue)
-        }
+    <RadioList
+      label="Account type"
+      isLabelHidden
+      value={value}
+      onChange={(next) => {
+        if (isAccountType(next)) onValueChange(next)
       }}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          onBlur()
-        }
+        if (!event.currentTarget.contains(event.relatedTarget)) onBlur()
       }}
-      orientation="vertical"
-      variant="outline"
-      spacing={0}
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
-      aria-invalid={invalid}
-      className="w-full"
+      status={invalid ? { type: 'error' } : undefined}
     >
       {ACCOUNT_TYPE_LIST.map((type) => {
-        const {
-          label,
-          icon: Icon,
-          iconClassName,
-        } = ACCOUNT_TYPE_PRESENTATION[type]
-
+        const { label, icon: Icon } = ACCOUNT_TYPE_PRESENTATION[type]
         return (
-          <ToggleGroupItem
+          <RadioListItem
             key={type}
             value={type}
-            aria-invalid={invalid}
-            className="aria-pressed:bg-muted aria-pressed:hover:bg-muted aria-pressed:outline-foreground/40 h-auto min-h-12 w-full justify-start gap-3 px-3 py-2 text-left whitespace-normal aria-pressed:outline-1 aria-pressed:-outline-offset-1 aria-pressed:outline-solid"
-          >
-            <span
-              aria-hidden="true"
-              className="bg-muted ring-foreground/10 grid size-8 shrink-0 place-items-center ring-1"
-            >
-              <Icon className={iconClassName} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-xs/relaxed font-semibold">
-                {label}
-              </span>
-              <span className="text-muted-foreground block text-xs/normal font-normal">
-                {ACCOUNT_TYPE_DESCRIPTION[type]}
-              </span>
-            </span>
-            <CheckIcon
-              aria-hidden="true"
-              className="text-foreground shrink-0 opacity-0 group-aria-pressed/toggle:opacity-100"
-            />
-          </ToggleGroupItem>
+            label={label}
+            description={ACCOUNT_TYPE_DESCRIPTION[type]}
+            startContent={<Icon />}
+          />
         )
       })}
-    </ToggleGroup>
+    </RadioList>
   )
 }

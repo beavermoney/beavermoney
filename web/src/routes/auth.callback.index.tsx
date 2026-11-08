@@ -1,6 +1,6 @@
+import { LOCAL_STORAGE_TOKEN_KEY } from '@/constant'
 import { Navigate, createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { LOCAL_STORAGE_TOKEN_KEY } from '@/constant'
 
 const SearchSchema = z.object({
   token: z.string(),

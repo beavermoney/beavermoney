@@ -1,17 +1,18 @@
-import { ChevronDownIcon } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-
-import { SelectionRows } from '@/components/selection-rows'
-import { Button } from '@/components/ui/button'
+import { Button } from '@astryxdesign/core/Button'
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { RadioList, RadioListItem } from '@astryxdesign/core/RadioList'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { ChevronDownIcon } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+
 import { useIsMobile } from '@/hooks/use-mobile'
 
 type ResponsiveSelectionPickerProps<T> = {
@@ -60,66 +61,55 @@ export function ResponsiveSelectionPicker<T>({
   if (isMobile) {
     if (!expanded && selected) {
       return (
-        <button
+        <Button
+          label={`${label}: ${getLabel(selected)}`}
+          variant="secondary"
+          width="100%"
           ref={summaryRef}
           type="button"
           id={name}
           aria-expanded={false}
           aria-label={`${label}: ${getLabel(selected)}`}
           onClick={() => setEditing(true)}
-          className="border-input bg-background focus-visible:outline-ring flex min-h-9 w-full items-center gap-2 border px-2 py-1.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2"
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-2">
-            {renderItem(selected)}
-          </span>
-          <ChevronDownIcon className="size-4 shrink-0" aria-hidden="true" />
-        </button>
+          icon={<AstryxIcon icon={ChevronDownIcon} />}
+        ></Button>
       )
     }
 
     return (
-      <fieldset
+      <RadioList
         id={name}
-        aria-invalid={invalid}
-        className="m-0 min-w-0 border-0 p-0"
+        label={label}
+        isLabelHidden
+        htmlName={name}
+        value={value}
+        onChange={(next) => {
+          onValueChange(next)
+          setEditing(false)
+        }}
         onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget)) onBlur()
         }}
+        status={invalid ? { type: 'error' } : undefined}
       >
-        <legend className="sr-only">{label}</legend>
         {items.length === 0 ? (
-          <p className="text-muted-foreground w-full text-xs">{emptyMessage}</p>
+          <Text as="p" display="block" color="secondary">
+            {emptyMessage}
+          </Text>
         ) : (
-          <SelectionRows label={label}>
-            {items.map((item) => {
-              const itemValue = getValue(item)
-              return (
-                <label
-                  key={itemValue}
-                  className="border-input bg-background has-checked:border-primary has-focus-visible:outline-ring flex min-h-9 max-w-64 min-w-0 cursor-pointer items-center gap-2 border px-2 py-1.5 has-focus-visible:outline-2 has-focus-visible:-outline-offset-2"
-                >
-                  <input
-                    type="radio"
-                    name={name}
-                    value={itemValue}
-                    checked={value === itemValue}
-                    onChange={() => {
-                      onValueChange(itemValue)
-                      setEditing(false)
-                    }}
-                    onClick={() => {
-                      if (value === itemValue) setEditing(false)
-                    }}
-                    aria-invalid={invalid}
-                    className="sr-only"
-                  />
-                  {renderItem(item)}
-                </label>
-              )
-            })}
-          </SelectionRows>
+          items.map((item) => (
+            <RadioListItem
+              key={getValue(item)}
+              value={getValue(item)}
+              label={renderItem(item)}
+              aria-label={getLabel(item)}
+              onClick={() => {
+                if (value === getValue(item)) setEditing(false)
+              }}
+            />
+          ))
         )}
-      </fieldset>
+      </RadioList>
     )
   }
 
@@ -128,60 +118,57 @@ export function ResponsiveSelectionPicker<T>({
       onOpenChange={(open) => {
         if (!open) onBlur()
       }}
+      alignment={'start'}
+      renderTrigger={(triggerProps) => (
+        <Button
+          {...triggerProps}
+          id={name}
+          name={name}
+          type="button"
+          aria-invalid={invalid}
+
+          label={`${label}: ${selected ? getLabel(selected) : placeholder}`}
+          variant={'secondary'}
+
+          endContent={
+            <AstryxIcon icon={ChevronDownIcon} data-icon="inline-end" />
+          }
+        >
+          {selected ? (
+            <span>{renderItem(selected)}</span>
+          ) : (
+            <span>{placeholder}</span>
+          )}
+        </Button>
+      )}
     >
-      <DropdownMenuTrigger
-        render={
-          <Button
-            id={name}
-            name={name}
-            type="button"
-            variant="outline"
-            aria-invalid={invalid}
-            aria-label={`${label}: ${selected ? getLabel(selected) : placeholder}`}
-            className="h-auto min-h-9 w-full justify-between px-2 py-1.5 text-left font-normal"
-          />
-        }
-      >
-        {selected ? (
-          <span className="flex min-w-0 flex-1 items-center gap-2">
-            {renderItem(selected)}
-          </span>
-        ) : (
-          <span className="text-muted-foreground min-w-0 flex-1 truncate text-left">
-            {placeholder}
-          </span>
-        )}
-        <ChevronDownIcon data-icon="inline-end" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-h-none overflow-hidden p-0">
-        <ScrollArea className="max-h-80 [&_[data-slot=scroll-area-viewport]]:max-h-80">
-          <div className="p-1">
-            <DropdownMenuGroup>
-              <DropdownMenuRadioGroup
-                value={value}
-                onValueChange={(nextValue) => {
-                  if (typeof nextValue === 'string') onValueChange(nextValue)
-                }}
-              >
-                {items.map((item) => {
-                  const itemValue = getValue(item)
-                  return (
-                    <DropdownMenuRadioItem
-                      key={itemValue}
-                      value={itemValue}
-                      aria-label={getLabel(item)}
-                      closeOnClick
-                      className="min-h-9"
-                    >
-                      {renderItem(item)}
-                    </DropdownMenuRadioItem>
-                  )
-                })}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuGroup>
-          </div>
-        </ScrollArea>
-      </DropdownMenuContent>
+      <ScrollableArea label="Scrollable content">
+        <Stack direction="vertical" gap={4}>
+          <DropdownMenuGroup>
+            <DropdownMenuRadioGroup
+              value={value}
+              onChange={(nextValue) => {
+                if (typeof nextValue === 'string') onValueChange(nextValue)
+              }}
+              label="Options"
+              hasCloseOnSelect
+            >
+              {items.map((item) => {
+                const itemValue = getValue(item)
+                return (
+                  <DropdownMenuRadioItem
+                    key={itemValue}
+                    value={itemValue}
+                    aria-label={getLabel(item)}
+
+                    label={<>{renderItem(item)}</>}
+                  />
+                )
+              })}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuGroup>
+        </Stack>
+      </ScrollableArea>
     </DropdownMenu>
   )
 }

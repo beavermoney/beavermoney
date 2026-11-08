@@ -1,112 +1,63 @@
-// import { Folder, Forward, MoreHorizontal, Trash2 } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
-import type { LinkOptions } from '@tanstack/react-router'
+import { useAppShellMobile } from '@astryxdesign/core/AppShell'
+import { Kbd } from '@astryxdesign/core/Kbd'
+import { SideNavItem, SideNavSection } from '@astryxdesign/core/SideNav'
 import type { HotkeySequence } from '@tanstack/react-hotkeys'
-import type { LucideIcon } from 'lucide-react'
-
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from '@/components/ui/dropdown-menu'
 import {
-  SidebarGroup,
-  // SidebarGroupLabel,
-  SidebarMenu,
-  // SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-  // useSidebar,
-} from '@/components/ui/sidebar'
-import { Kbd, KbdGroup } from './ui/kbd'
+  useRouter,
+  useRouterState,
+  type LinkOptions,
+} from '@tanstack/react-router'
+import type { LucideIcon } from 'lucide-react'
 
 export function NavProjects({
   projects,
 }: {
-  projects: Array<{
+  projects: {
     name: string
     link: LinkOptions
     icon: LucideIcon
     shortcut: HotkeySequence
-  }>
+  }[]
 }) {
-  const { isMobile, setOpenMobile } = useSidebar()
-
+  const { closeMobileNav } = useAppShellMobile()
+  const router = useRouter()
+  const location = useRouterState({
+    select: (state) => state.location,
+  })
   return (
-    <SidebarGroup className="">
-      {/* <SidebarGroupLabel>Beaver Money</SidebarGroupLabel> */}
-      <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton
-              onClick={() => {
-                if (isMobile) {
-                  setOpenMobile(false)
-                }
-              }}
-              tooltip={{
-                children: (
-                  <KbdGroup>
-                    {item.shortcut.map((key) => (
-                      <Kbd key={`${item.name}-${key}`}>{key}</Kbd>
-                    ))}
-                  </KbdGroup>
-                ),
-                hidden: false,
-              }}
-              render={
-                <Link
-                  {...item.link}
-                  activeProps={{
-                    className: 'bg-sidebar-accent',
-                  }}
-                >
-                  <item.icon />
-                  <span>{item.name}</span>
-                </Link>
+    <SideNavSection title="Workspace">
+      {projects.map((item) => {
+        const href = router.buildLocation(item.link).href
+        return (
+          <SideNavItem
+            key={item.name}
+            label={item.name}
+            icon={item.icon}
+            className="group/nav-item"
+            href={href}
+            isSelected={location.pathname.startsWith(href.split('?')[0])}
+            endContent={
+              <Kbd
+                keys={item.shortcut.map(String).join('+')}
+                className="opacity-0 group-focus-within/nav-item:opacity-100 group-hover/nav-item:opacity-100"
+              />
+            }
+            onClick={(event) => {
+              if (
+                event.button === 0 &&
+                !event.metaKey &&
+                !event.ctrlKey &&
+                !event.shiftKey &&
+                !event.altKey
+              ) {
+                event.preventDefault()
+                closeMobileNav()
+                void router.navigate(item.link)
               }
-            />
-            {/* <DropdownMenu> */}
-            {/*   <DropdownMenuTrigger */}
-            {/*     render={ */}
-            {/*       <SidebarMenuAction showOnHover> */}
-            {/*         <MoreHorizontal /> */}
-            {/*         <span className="sr-only">More</span> */}
-            {/*       </SidebarMenuAction> */}
-            {/*     } */}
-            {/*   ></DropdownMenuTrigger> */}
-            {/*   <DropdownMenuContent */}
-            {/*     className="w-48 rounded-lg" */}
-            {/*     side={isMobile ? 'bottom' : 'right'} */}
-            {/*     align={isMobile ? 'end' : 'start'} */}
-            {/*   > */}
-            {/*     <DropdownMenuItem> */}
-            {/*       <Folder className="text-muted-foreground" /> */}
-            {/*       <span>View Project</span> */}
-            {/*     </DropdownMenuItem> */}
-            {/*     <DropdownMenuItem> */}
-            {/*       <Forward className="text-muted-foreground" /> */}
-            {/*       <span>Share Project</span> */}
-            {/*     </DropdownMenuItem> */}
-            {/*     <DropdownMenuSeparator /> */}
-            {/*     <DropdownMenuItem> */}
-            {/*       <Trash2 className="text-muted-foreground" /> */}
-            {/*       <span>Delete Project</span> */}
-            {/*     </DropdownMenuItem> */}
-            {/*   </DropdownMenuContent> */}
-            {/* </DropdownMenu> */}
-          </SidebarMenuItem>
-        ))}
-        {/* <SidebarMenuItem> */}
-        {/*   <SidebarMenuButton className="text-sidebar-foreground/70"> */}
-        {/*     <MoreHorizontal className="text-sidebar-foreground/70" /> */}
-        {/*     <span>More</span> */}
-        {/*   </SidebarMenuButton> */}
-        {/* </SidebarMenuItem> */}
-      </SidebarMenu>
-    </SidebarGroup>
+            }}
+          />
+        )
+      })}
+    </SideNavSection>
   )
 }

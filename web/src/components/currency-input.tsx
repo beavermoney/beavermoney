@@ -1,6 +1,7 @@
-import { cn } from '@/lib/utils'
-import { useState, useCallback, type ComponentPropsWithoutRef } from 'react'
 import { useCurrencyConfig } from '@/hooks/use-currency-config'
+import { InputGroup, InputGroupText } from '@astryxdesign/core/InputGroup'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useCallback, useState, type ComponentPropsWithoutRef } from 'react'
 
 type CurrencyInputProps = Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -22,7 +23,7 @@ function valueToRaw(value: string | number | undefined): string {
 }
 
 export function CurrencyInput({
-  className,
+  className: _className,
   locale,
   currency,
   decimalScale = 2,
@@ -82,36 +83,46 @@ export function CurrencyInput({
     [decimalSeparator, validate, onValueChange],
   )
 
+  const { name, disabled, readOnly, autoFocus, required } = props
   return (
-    <div
-      className={cn(
-        'bg-input/20 dark:bg-input/30 border-input focus-within:border-ring focus-within:ring-ring/30 has-[aria-invalid=true]:ring-destructive/20 dark:has-[aria-invalid=true]:ring-destructive/40 has-[aria-invalid=true]:border-destructive dark:has-[aria-invalid=true]:border-destructive/50 placeholder:text-muted-foreground flex h-7 w-full min-w-0 items-center rounded-md border py-0.5 text-sm transition-colors outline-none focus-within:ring-2 has-[:disabled]:pointer-events-none has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 has-[aria-invalid=true]:ring-2 md:text-xs/relaxed',
-        className,
-      )}
+    <InputGroup
+      label={
+        props['aria-label'] ??
+        (name
+          ? (name[0].toUpperCase() + name.slice(1)).replace(
+              /([a-z])([A-Z])/g,
+              '$1 $2',
+            )
+          : 'Amount')
+      }
+
+      isDisabled={disabled}
+      status={props['aria-invalid'] === true ? { type: 'error' } : undefined}
     >
-      {prefix && (
-        <span className="text-muted-foreground pr-1 pl-2 text-sm select-none md:text-xs/relaxed">
-          {prefix}
-        </span>
-      )}
-      <input
-        data-slot="input"
-        type="text"
+      {prefix && <InputGroupText>{prefix}</InputGroupText>}
+      <TextInput
+        id={props.id}
+        onBlur={props.onBlur}
+        onFocus={props.onFocus}
+        onKeyDown={props.onKeyDown}
+        aria-label={props['aria-label']}
+        aria-invalid={props['aria-invalid']}
+        aria-describedby={props['aria-describedby']}
+        autoComplete={props.autoComplete}
+        placeholder={props.placeholder}
+        label={props['aria-label'] ?? name ?? 'Amount'}
+
+        isLabelHidden
+        htmlName={name}
+        isDisabled={disabled}
+        isReadOnly={readOnly}
+        hasAutoFocus={autoFocus}
+        isRequired={required}
         inputMode="decimal"
         value={rawValue}
-        onChange={handleChange}
-        className={cn(
-          'min-w-0 flex-1 border-none bg-transparent px-0 py-0.5 text-sm outline-none md:text-xs/relaxed',
-          !prefix && 'pl-2',
-          !suffix && 'pr-2',
-        )}
-        {...props}
+        onChange={(_value, event) => handleChange(event)}
       />
-      {suffix && (
-        <span className="text-muted-foreground pr-2 pl-1 text-sm select-none md:text-xs/relaxed">
-          {suffix}
-        </span>
-      )}
-    </div>
+      {suffix && <InputGroupText>{suffix}</InputGroupText>}
+    </InputGroup>
   )
 }

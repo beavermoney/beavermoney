@@ -1,24 +1,26 @@
-import { useEffect, useRef, useState } from 'react'
-import { ChartNoAxesCombinedIcon, ChevronDownIcon } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { SelectionRows } from '@/components/selection-rows'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { getLogoCryptoURL, getLogoTickerURL } from '@/lib/logo'
-import { cn } from '@/lib/utils'
-import { newestActivityFirst } from '@/lib/sort-by-update-time'
-import { graphql } from 'react-relay'
-import { readInlineData } from 'relay-runtime'
-import type { transactionInvestmentPickerFragment$key } from './__generated__/transactionInvestmentPickerFragment.graphql'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { HStack } from '@astryxdesign/core/Layout'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { ChevronDownIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+
+import { useIsMobile } from '@/hooks/use-mobile'
+import { getLogoCryptoURL, getLogoTickerURL } from '@/lib/logo'
+import { newestActivityFirst } from '@/lib/sort-by-update-time'
+import { RadioList, RadioListItem } from '@astryxdesign/core/RadioList'
+import { graphql } from 'react-relay'
+import { readInlineData } from 'relay-runtime'
+import type { transactionInvestmentPickerFragment$key } from './__generated__/transactionInvestmentPickerFragment.graphql'
 
 const investmentFragment = graphql`
   fragment transactionInvestmentPickerFragment on Investment @inline {
@@ -97,76 +99,78 @@ export function TransactionInvestmentPicker({
         onOpenChange={(open) => {
           if (!open) onBlur()
         }}
+        alignment={'start'}
+        renderTrigger={(triggerProps) => (
+          <Button
+            {...triggerProps}
+            id={name}
+            name={name}
+            type="button"
+            aria-invalid={invalid}
+
+            label={`${label}: ${selected ? `${investmentData(selected).name}, ${investmentData(selected).symbol}` : disabled ? disabledMessage : 'Select an investment'}`}
+            variant={'secondary'}
+
+            isDisabled={disabled}
+            endContent={
+              <AstryxIcon icon={ChevronDownIcon} data-icon="inline-end" />
+            }
+          >
+            {selected ? (
+              <span>
+                <InvestmentDetails investment={selected} />
+              </span>
+            ) : (
+              <span>{disabled ? disabledMessage : 'Select an investment'}</span>
+            )}
+          </Button>
+        )}
       >
-        <DropdownMenuTrigger
-          render={
-            <Button
-              id={name}
-              name={name}
-              type="button"
-              variant="outline"
-              disabled={disabled}
-              aria-invalid={invalid}
-              aria-label={`${label}: ${selected ? `${investmentData(selected).name}, ${investmentData(selected).symbol}` : disabled ? disabledMessage : 'Select an investment'}`}
-              className="h-auto min-h-10 w-full justify-between px-2 py-1.5 text-left font-normal"
-            />
-          }
-        >
-          {selected ? (
-            <span className="flex min-w-0 flex-1 items-center gap-2">
-              <InvestmentDetails investment={selected} />
-            </span>
-          ) : (
-            <span className="text-muted-foreground min-w-0 flex-1 truncate text-left">
-              {disabled ? disabledMessage : 'Select an investment'}
-            </span>
-          )}
-          <ChevronDownIcon data-icon="inline-end" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="max-h-none overflow-hidden p-0">
-          <ScrollArea className="max-h-80 [&_[data-slot=scroll-area-viewport]]:max-h-80">
-            <div className="p-1">
-              <DropdownMenuGroup>
-                <DropdownMenuRadioGroup
-                  value={value}
-                  onValueChange={(nextValue) => {
-                    if (typeof nextValue === 'string') onValueChange(nextValue)
-                  }}
-                >
-                  {orderedInvestments.map((investment) => (
-                    <DropdownMenuRadioItem
-                      key={investment.id}
-                      value={investment.id}
-                      aria-label={`${investmentData(investment).name}, ${investmentData(investment).symbol}`}
-                      closeOnClick
-                      className="min-h-10 py-1.5"
-                    >
-                      <InvestmentDetails investment={investment} />
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuGroup>
-            </div>
-          </ScrollArea>
-        </DropdownMenuContent>
+        <ScrollableArea label="Scrollable content">
+          <Stack direction="vertical" gap={4}>
+            <DropdownMenuGroup>
+              <DropdownMenuRadioGroup
+                value={value}
+                onChange={(nextValue) => {
+                  if (typeof nextValue === 'string') onValueChange(nextValue)
+                }}
+                label="Options"
+                hasCloseOnSelect
+              >
+                {orderedInvestments.map((investment) => (
+                  <DropdownMenuRadioItem
+                    key={investment.id}
+                    value={investment.id}
+                    aria-label={`${investmentData(investment).name}, ${investmentData(investment).symbol}`}
+
+                    label={
+                      <>
+                        <InvestmentDetails investment={investment} />
+                      </>
+                    }
+                  />
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuGroup>
+          </Stack>
+        </ScrollableArea>
       </DropdownMenu>
     )
   }
 
   if (!expanded && selected) {
     return (
-      <button
+      <Button
         ref={summaryRef}
         type="button"
         id={name}
         aria-expanded={false}
-        aria-label={`${label}: ${investmentData(selected).name}`}
+        label={`${label}: ${investmentData(selected).name}`}
+        variant="secondary"
+        width="100%"
+        icon={<AstryxIcon icon={ChevronDownIcon} />}
         onClick={() => setEditing(true)}
-        className="border-input bg-background focus-visible:outline-ring flex min-h-11 w-full items-center gap-2 border p-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2"
-      >
-        <InvestmentDetails investment={selected} />
-        <ChevronDownIcon className="size-4 shrink-0" aria-hidden="true" />
-      </button>
+      />
     )
   }
 
@@ -175,45 +179,39 @@ export function TransactionInvestmentPicker({
       id={name}
       disabled={disabled}
       aria-invalid={invalid}
-      className="m-0 min-w-0 border-0 p-0"
+
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) onBlur()
       }}
     >
-      <legend className="sr-only">{label}</legend>
+      <legend>{label}</legend>
       {disabled || investments.length === 0 ? (
-        <p className="text-muted-foreground text-xs">
+        <Text as="p" display="block" color="secondary">
           {disabled ? disabledMessage : 'No matching investments available.'}
-        </p>
+        </Text>
       ) : (
-        <SelectionRows label={label}>
+        <RadioList
+          label={label}
+          htmlName={name}
+          value={value}
+          status={invalid ? { type: 'error' } : undefined}
+          onChange={(next) => {
+            onValueChange(next)
+            setEditing(false)
+          }}
+        >
           {orderedInvestments.map((investment) => (
-            <label
+            <RadioListItem
               key={investment.id}
-              className={cn(
-                'border-input bg-background has-focus-visible:outline-ring flex min-h-11 w-max max-w-64 shrink-0 cursor-pointer items-center gap-2 border p-2 has-focus-visible:outline-2 has-focus-visible:-outline-offset-2',
-                value === investment.id && 'border-primary',
-              )}
-            >
-              <input
-                type="radio"
-                name={name}
-                value={investment.id}
-                checked={value === investment.id}
-                onChange={() => {
-                  onValueChange(investment.id)
-                  setEditing(false)
-                }}
-                onClick={() => {
-                  if (value === investment.id) setEditing(false)
-                }}
-                aria-invalid={invalid}
-                className="sr-only"
-              />
-              <InvestmentDetails investment={investment} />
-            </label>
+              value={investment.id}
+              label={investmentData(investment).name}
+              description={`${investmentData(investment).symbol}${investment.accountName ? ` · ${investment.accountName}` : ''}`}
+              onClick={() => {
+                if (value === investment.id) setEditing(false)
+              }}
+            />
           ))}
-        </SelectionRows>
+        </RadioList>
       )}
     </fieldset>
   )
@@ -222,33 +220,24 @@ export function TransactionInvestmentPicker({
 function InvestmentDetails({ investment }: { investment: Investment }) {
   const data = investmentData(investment)
   return (
-    <>
-      <Avatar size="sm">
-        <AvatarImage
-          src={
-            data.type === 'crypto'
-              ? getLogoCryptoURL(data.symbol)
-              : getLogoTickerURL(data.symbol)
-          }
-          alt=""
-        />
-        <AvatarFallback>
-          <ChartNoAxesCombinedIcon className="size-4" aria-hidden="true" />
-        </AvatarFallback>
-      </Avatar>
-      <span className="flex min-w-0 flex-1 flex-col text-xs leading-4">
-        <span className="truncate" title={data.name}>
-          {data.name}
-        </span>
-        <span
-          className="text-muted-foreground truncate"
-          title={investment.accountName}
-        >
+    <HStack gap={2} vAlign="center">
+      <Avatar
+        src={
+          data.type === 'crypto'
+            ? getLogoCryptoURL(data.symbol)
+            : getLogoTickerURL(data.symbol)
+        }
+        alt=""
+        name={String('')}
+      />
+      <span>
+        <Text maxLines={1}>{data.name}</Text>
+        <Text type="supporting" maxLines={1}>
           {data.symbol}
           {investment.accountName ? ` · ${investment.accountName}` : ''}
-        </span>
+        </Text>
       </span>
-    </>
+    </HStack>
   )
 }
 

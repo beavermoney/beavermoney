@@ -1,17 +1,16 @@
-import { UserIcon, UsersIcon } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+  DropdownMenuDivider,
+} from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { UserIcon, UsersIcon } from 'lucide-react'
+
 import {
   type HouseholdMember,
   useHouseholdMembers,
 } from '@/hooks/use-household-members'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 
 export function ViewScopeSwitcher() {
   const members = useHouseholdMembers()
@@ -39,43 +38,34 @@ export function ViewScopeSwitcher() {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            className="h-10 cursor-pointer gap-1 rounded-none border-0 bg-clip-border px-3 text-xs"
-            data-testid="view-scope-switcher-trigger"
-          >
-            {showsAll ? (
-              <UsersIcon className="size-4" />
-            ) : (
-              <UserIcon className="size-4" />
-            )}
-            {scopeLabel(showsAll, selectedMembers)}
-          </Button>
-        }
+    <DropdownMenu
+      button={{
+        label: scopeLabel(showsAll, selectedMembers),
+        icon: showsAll ? (
+          <AstryxIcon icon={UsersIcon} />
+        ) : (
+          <AstryxIcon icon={UserIcon} />
+        ),
+        variant: 'ghost',
+      }}
+      alignment="end"
+    >
+      <DropdownMenuCheckboxItem
+        label="All"
+        value={isCombinedAll}
+        onChange={() => setViewUserIds(null)}
+        hasCloseOnSelect={false}
       />
-      <DropdownMenuContent align="end" className="min-w-[10rem]">
+      <DropdownMenuDivider />
+      {members.map((member) => (
         <DropdownMenuCheckboxItem
-          checked={isCombinedAll}
-          onCheckedChange={() => setViewUserIds(null)}
-          closeOnClick={false}
-        >
-          All
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuSeparator />
-        {members.map((m) => (
-          <DropdownMenuCheckboxItem
-            key={m.id}
-            checked={selectedIDs.includes(m.id)}
-            onCheckedChange={(checked) => toggleMember(m.id, checked === true)}
-            closeOnClick={false}
-          >
-            {m.name}
-          </DropdownMenuCheckboxItem>
-        ))}
-      </DropdownMenuContent>
+          key={member.id}
+          label={member.name}
+          value={selectedIDs.includes(member.id)}
+          onChange={(checked) => toggleMember(member.id, checked)}
+          hasCloseOnSelect={false}
+        />
+      ))}
     </DropdownMenu>
   )
 }

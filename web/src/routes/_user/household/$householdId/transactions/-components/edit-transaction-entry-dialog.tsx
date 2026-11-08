@@ -1,47 +1,26 @@
-import { graphql, useMutation } from 'react-relay'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { DialogHeader } from '@astryxdesign/core/Dialog'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { match } from 'ts-pattern'
 import currency from 'currency.js'
+import { graphql, useMutation } from 'react-relay'
+import { match } from 'ts-pattern'
+import * as z from 'zod'
 
 import type { editTransactionEntryDialogUpdateMutation } from './__generated__/editTransactionEntryDialogUpdateMutation.graphql'
 
-import {
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
-import { getLogoDomainURL } from '@/lib/logo'
 import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHousehold } from '@/hooks/use-household'
+import { getLogoDomainURL } from '@/lib/logo'
+import { commitMutationResult } from '@/lib/relay'
 import { useEffect } from 'react'
 
 const editTransactionEntryDialogUpdateMutation = graphql`
@@ -98,6 +77,8 @@ export function EditTransactionEntryDialog({
   accounts,
   onClose,
 }: EditTransactionEntryDialogProps) {
+  const showToast = useToast()
+
   const [commitUpdate, isUpdateInFlight] =
     useMutation<editTransactionEntryDialogUpdateMutation>(
       editTransactionEntryDialogUpdateMutation,
@@ -137,11 +118,11 @@ export function EditTransactionEntryDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          toast.success('Entry updated successfully!')
+          showToast({ type: 'info', body: 'Entry updated successfully!' })
           onClose()
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -160,92 +141,83 @@ export function EditTransactionEntryDialog({
 
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>Edit Entry</DialogTitle>
-        <DialogDescription>
-          Update entry details. Switching the account also switches the
-          entry&apos;s currency.
-        </DialogDescription>
-      </DialogHeader>
+      <DialogHeader title="Edit Entry" onOpenChange={() => onClose()} />
+      <Text as="div" display="block" type="supporting">
+        Update entry details. Switching the account also switches the
+        entry&apos;s currency.
+      </Text>
 
-      <form
+      <Stack
+        as="form"
+        direction="vertical"
+        gap={6}
         id="edit-entry-form"
         onSubmit={(e) => {
           e.preventDefault()
           form.handleSubmit()
         }}
       >
-        <FieldGroup>
+        <FormLayout>
           <form.Field
             name="accountId"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                  <Combobox
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                  <SearchSelect
                     items={accounts.map((a) => a.id)}
-                    itemToStringLabel={(item) =>
-                      accountById.get(item)?.name ?? ''
-                    }
+                    getLabel={(item) => accountById.get(item)?.name ?? ''}
                     value={field.state.value}
-                    onValueChange={(value) => field.handleChange(value || '')}
-                  >
-                    <ComboboxInput
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Select an account"
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No items found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: string) => {
-                          const account = accounts.find(
-                            (acc) => acc.id === item,
-                          )
-                          if (!account) return null
-                          return (
-                            <ComboboxItem key={item} value={item}>
-                              <Item size="xs" className="p-0">
-                                <ItemMedia variant="image">
-                                  <Avatar className="size-6">
-                                    <AvatarImage
-                                      src={getLogoDomainURL(account.icon || '')}
-                                      alt={account.icon || 'unknown logo'}
-                                    />
-                                    <AvatarFallback>
-                                      {account.name}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                </ItemMedia>
-                                <ItemContent>
-                                  <ItemTitle>{account.name}</ItemTitle>
-                                  <ItemDescription>
-                                    <span className="tabular-nums">
-                                      {formatCurrencyWithPrivacyMode({
-                                        value: account.value,
-                                        currencyCode:
-                                          account.householdCurrency.code,
-                                        liability: account.type === 'liability',
-                                      })}
-                                    </span>
-                                    <span aria-hidden="true"> · </span>
-                                    {account.user.name}
-                                  </ItemDescription>
-                                </ItemContent>
-                              </Item>
-                            </ComboboxItem>
-                          )
-                        }}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                    onChange={(value) => field.handleChange(value || '')}
+                    data-1p-ignore
+                    id={field.name}
+                    placeholder="Select an account"
+                    onBlur={field.handleBlur}
+                    label={'Account'}
+                    renderOption={(item: string) => {
+                      const account = accounts.find((acc) => acc.id === item)
+                      if (!account) return null
+                      return (
+                        <span>
+                          <Stack
+                            direction="horizontal"
+                            gap={3}
+                            align="center"
+                            wrap="wrap"
+                          >
+                            <Stack direction="vertical" gap={4}>
+                              <Avatar
+                                src={getLogoDomainURL(account.icon || '')}
+                                alt={account.icon || 'unknown logo'}
+                                name={String(account.name)}
+                              />
+                            </Stack>
+                            <Stack direction="vertical" gap={4}>
+                              <Stack direction="vertical" gap={4}>
+                                {account.name}
+                              </Stack>
+                              <Stack direction="vertical" gap={4}>
+                                <Text hasTabularNumbers>
+                                  {formatCurrencyWithPrivacyMode({
+                                    value: account.value,
+                                    currencyCode:
+                                      account.householdCurrency.code,
+                                    liability: account.type === 'liability',
+                                  })}
+                                </Text>
+                                <span aria-hidden="true"> · </span>
+                                {account.user.name}
+                              </Stack>
+                            </Stack>
+                          </Stack>
+                        </span>
+                      )
+                    }}
+                    emptyText={<>No items found.</>}
+                  />
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
@@ -258,8 +230,7 @@ export function EditTransactionEntryDialog({
                 (a) => a.id === form.state.values.accountId,
               )
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                   <CurrencyInput
                     id={field.name}
                     name={field.name}
@@ -276,26 +247,40 @@ export function EditTransactionEntryDialog({
                     onBlur={field.handleBlur}
                     aria-invalid={isInvalid}
                   />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
-        </FieldGroup>
-      </form>
+        </FormLayout>
+      </Stack>
 
-      <DialogFooter>
-        <Button variant="outline" type="button" onClick={onClose}>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+      >
+        <Button
+          type="button"
+          onClick={onClose}
+          label={'Cancel'}
+          variant={'secondary'}
+        >
           Cancel
         </Button>
         <Button
           type="submit"
           form="edit-entry-form"
-          disabled={isUpdateInFlight}
+          label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+          variant={'primary'}
+
+          isDisabled={isUpdateInFlight}
         >
           {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
         </Button>
-      </DialogFooter>
+      </Stack>
     </>
   )
 }

@@ -1,18 +1,14 @@
 import { CategoryIcon } from '@/components/category-icon'
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
 import { useCurrency } from '@/hooks/use-currency'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
-import { cn } from '@/lib/utils'
+import { Badge } from '@astryxdesign/core/Badge'
+import { VStack } from '@astryxdesign/core/Layout'
+import { ListItem } from '@astryxdesign/core/List'
+import { Text } from '@astryxdesign/core/Text'
+import { useFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
+
 import { format } from 'date-fns'
 import { transactionEntryCardFragment$key } from './__generated__/transactionEntryCardFragment.graphql'
-import { Badge } from '@/components/ui/badge'
 
 const transactionEntryCardFragment = graphql`
   fragment transactionEntryCardFragment on TransactionEntry {
@@ -39,8 +35,8 @@ const transactionEntryCardFragment = graphql`
 
 export function TransactionEntryCard({
   fragmentRef,
-  isFirst,
-  isLast,
+  isFirst: _isFirst,
+  isLast: _isLast,
   onClick,
 }: {
   fragmentRef: transactionEntryCardFragment$key
@@ -56,53 +52,31 @@ export function TransactionEntryCard({
   )
 
   return (
-    <Item
-      variant="default"
-      role={onClick ? 'button' : 'listitem'}
-      tabIndex={onClick ? 0 : undefined}
-      className={cn(
-        !isFirst && 'rounded-t-none border-t-0',
-        !isLast && 'rounded-b-none',
-        onClick && 'hover:bg-muted cursor-pointer',
-      )}
+    <ListItem
       id={data.id}
-      key={data.id}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-          e.preventDefault()
-          onClick()
-        }
-      }}
-    >
-      <ItemMedia variant="image" className="rounded-full">
+      label={data.transaction.category.name}
+      description={data.account.name}
+      startContent={
         <CategoryIcon
           type={data.transaction.category.type}
           icon={data.transaction.category.icon}
         />
-      </ItemMedia>
-      <ItemContent className="gap-px">
-        <ItemTitle className="">
-          <span className="">{data.transaction.category.name}</span>
-          {data.transaction.excludeFromReports && (
-            <Badge className="h-4 px-1.5">Excluded</Badge>
-          )}
-        </ItemTitle>
-        <ItemDescription className="">{data.account.name}</ItemDescription>
-      </ItemContent>
-      <ItemContent className="items-end gap-px">
-        <ItemTitle className="">
-          <span className="font-semibold tabular-nums">
+      }
+      onClick={onClick}
+      endContent={
+        <VStack gap={1} hAlign="end">
+          <Text type="label" hasTabularNumbers>
             {formatCurrency({
               value: data.amount,
               currencyCode: data.account.householdCurrency.code,
             })}
-          </span>
-        </ItemTitle>
-        <ItemDescription>
-          {format(new Date(data.transaction.datetime), 'LLL d')}
-        </ItemDescription>
-      </ItemContent>
-    </Item>
+          </Text>
+          <Text type="supporting">
+            {format(new Date(data.transaction.datetime), 'LLL d')}
+          </Text>
+          {data.transaction.excludeFromReports && <Badge label="Excluded" />}
+        </VStack>
+      }
+    />
   )
 }

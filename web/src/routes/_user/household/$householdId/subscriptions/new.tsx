@@ -1,6 +1,6 @@
+import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import { NewSubscription } from './-components/new-subscription'
-import { Item } from '@/components/ui/item'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/new',
@@ -10,10 +10,10 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   return (
-    <div className="flex h-full flex-col">
-      <Item className="p-0">
+    <Stack direction="vertical">
+      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
         <NewSubscription />
-      </Item>
-    </div>
+      </Stack>
+    </Stack>
   )
 }

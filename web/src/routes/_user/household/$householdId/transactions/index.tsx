@@ -1,3 +1,9 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { readViewUserIds } from '@/hooks/view-scope-store'
+import { parseDateRangeFromURL } from '@/lib/date-range'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
@@ -6,15 +12,9 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
-import { TransactionsPanel } from './-components/transactions-panel'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import { readViewUserIds } from '@/hooks/view-scope-store'
-import type { transactionsQuery } from './__generated__/transactionsQuery.graphql'
 import type { TransactionWhereInput } from './-components/__generated__/transactionsListRefetch.graphql'
-import { parseDateRangeFromURL } from '@/lib/date-range'
-import { useHousehold } from '@/hooks/use-household'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { TransactionsPanel } from './-components/transactions-panel'
+import type { transactionsQuery } from './__generated__/transactionsQuery.graphql'
 
 const query = graphql`
   query transactionsQuery(

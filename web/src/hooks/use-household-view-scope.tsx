@@ -1,5 +1,5 @@
+import { useParams, useRouter } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
-import { useRouter, useParams } from '@tanstack/react-router'
 import { useCallback } from 'react'
 import {
   setViewUserIds as persistViewUserIds,

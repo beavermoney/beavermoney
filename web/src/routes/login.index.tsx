@@ -1,6 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
 import { LoginForm } from '@/components/login-form'
 import { Logo } from '@/components/logo'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/login/')({
   component: RouteComponent,
@@ -8,23 +11,23 @@ export const Route = createFileRoute('/login/')({
 
 function RouteComponent() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-10 p-6 md:p-10">
-      <div className="flex w-full max-w-xs flex-col items-center gap-6">
-        <Link to="/" className="flex flex-col items-center gap-4 no-underline">
-          <Logo size={96} className="rounded-xl" />
-          <div className="flex flex-col items-center gap-1">
-            <h1 className="text-center text-xl font-semibold tracking-tight">
+    <Stack direction="vertical" gap={10} align="center" justify="center">
+      <Stack direction="vertical" gap={6} align="center">
+        <Link to="/">
+          <Logo size={96} />
+          <Stack direction="vertical" gap={1} align="center">
+            <Heading level={1}>
               Log your transactions.
               <br />
               Build your dam.
-            </h1>
-            <p className="text-muted-foreground text-center text-sm">
+            </Heading>
+            <Text as="p" display="block" color="secondary">
               Login with your Google account
-            </p>
-          </div>
+            </Text>
+          </Stack>
         </Link>
         <LoginForm />
-      </div>
-    </div>
+      </Stack>
+    </Stack>
   )
 }

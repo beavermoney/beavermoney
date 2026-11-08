@@ -1,29 +1,35 @@
-import { ChevronsUpDown, Plus } from 'lucide-react'
-
-import { Logo } from '@/components/logo'
-import { graphql, useFragment } from 'react-relay'
-import { useNavigate } from '@tanstack/react-router'
-import type { householdSwitcherFragment$key } from './__generated__/householdSwitcherFragment.graphql'
+import type { MouseEvent } from 'react'
+import { Avatar } from '@astryxdesign/core/Avatar'
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuDivider,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@astryxdesign/core/DropdownMenu'
+import { Icon } from '@astryxdesign/core/Icon'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '@/components/ui/sidebar'
+  useSideNavCollapse,
+  useSideNavRenderMode,
+} from '@astryxdesign/core/SideNav'
+import { Button } from '@astryxdesign/core/Button'
+import { Item } from '@astryxdesign/core/Item'
+import { Text } from '@astryxdesign/core/Text'
+import { useAppShellMobile } from '@astryxdesign/core/AppShell'
+import { Check, ChevronUp, LogOut, Plus, Settings, Users } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import { graphql, useFragment } from 'react-relay'
+
 import { useHousehold } from '@/hooks/use-household'
+import { logout } from '@/lib/auth'
+import type { householdSwitcherFragment$key } from './__generated__/householdSwitcherFragment.graphql'
 
 const HouseholdSwitcherFragment = graphql`
   fragment householdSwitcherFragment on Query {
+    user {
+      name
+      email
+    }
     households {
       id
       name
@@ -31,83 +37,158 @@ const HouseholdSwitcherFragment = graphql`
   }
 `
 
-type HouseholdSwitcherProps = {
+export function HouseholdSwitcher({
+  fragmentRef,
+}: {
   fragmentRef: householdSwitcherFragment$key
-}
-
-export function HouseholdSwitcher({ fragmentRef }: HouseholdSwitcherProps) {
-  const { isMobile } = useSidebar()
+}) {
   const data = useFragment(HouseholdSwitcherFragment, fragmentRef)
   const { household: activeHousehold } = useHousehold()
   const navigate = useNavigate()
+  const { closeMobileNav } = useAppShellMobile()
+  const { isCollapsed } = useSideNavCollapse()
+  const renderMode = useSideNavRenderMode()
+  const iconOnly = isCollapsed && renderMode === 'default'
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground gap-1 p-1">
-                <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
-                  <Logo size={32} />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {activeHousehold.name}
-                  </span>
-                  {/* <span className="truncate text-xs">{activeTeam.plan}</span> */}
-                </div>
-                <ChevronsUpDown className="ml-auto" />
-              </SidebarMenuButton>
+    <DropdownMenu
+      placement="above"
+      alignment="start"
+      menuWidth={320}
+      menuMaxHeight={560}
+      renderTrigger={(triggerProps) =>
+        iconOnly ? (
+          <Button
+            {...triggerProps}
+            label={`${activeHousehold.name}, household and account menu`}
+            variant="ghost"
+            isIconOnly
+            icon={
+              <Avatar
+                aria-hidden="true"
+                name={activeHousehold.name}
+                size="sm"
+              />
             }
-          ></DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? 'bottom' : 'right'}
-            sideOffset={4}
-          >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="text-muted-foreground text-xs">
-                Teams
-              </DropdownMenuLabel>
-              {data.households.map((household, index) => (
-                <DropdownMenuItem
-                  key={household.id}
-                  className="gap-2 p-2"
-                  onClick={() =>
-                    navigate({
-                      to: '/household/$householdId',
-                      params: {
-                        householdId: household.id,
-                      },
-                      reloadDocument: true,
-                    })
-                  }
-                >
-                  <div className="flex size-6 items-center justify-center rounded-md border text-sm">
-                    {household.name[0]}
-                  </div>
-                  {household.name}
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="gap-2 p-2"
-                onClick={() => navigate({ to: '/household/new' })}
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                  <Plus className="size-4" />
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  Add household
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+          />
+        ) : (
+          <Item
+            {...triggerProps}
+            onClick={(event) =>
+              triggerProps.onClick(event as MouseEvent<HTMLElement>)
+            }
+            as="button"
+            role="button"
+            label={activeHousehold.name}
+            aria-label={`${activeHousehold.name}, household and account menu`}
+            density="compact"
+            className="w-full text-left"
+            startContent={
+              <Avatar
+                aria-hidden="true"
+                name={activeHousehold.name}
+                size="sm"
+              />
+            }
+            endContent={<Icon icon={ChevronUp} size="sm" />}
+          />
+        )
+      }
+      header={
+        <HStack gap={3} vAlign="center" padding={3}>
+          <Avatar aria-hidden="true" name={activeHousehold.name} />
+          <VStack gap={0}>
+            <Text type="label">{activeHousehold.name}</Text>
+            <Text type="supporting" color="secondary">
+              Household
+            </Text>
+          </VStack>
+        </HStack>
+      }
+    >
+      <DropdownMenuGroup>
+        <DropdownMenuItem
+          label="Household settings"
+          icon={Settings}
+          onClick={() => {
+            closeMobileNav()
+            void navigate({
+              to: '/household/$householdId/settings/general',
+              params: { householdId: activeHousehold.id },
+            })
+          }}
+        />
+        <DropdownMenuItem
+          label="Members"
+          icon={Users}
+          onClick={() => {
+            closeMobileNav()
+            void navigate({
+              to: '/household/$householdId/settings/members',
+              params: { householdId: activeHousehold.id },
+            })
+          }}
+        />
+      </DropdownMenuGroup>
+      <DropdownMenuDivider />
+      <DropdownMenuGroup
+        title={
+          <HStack gap={2} vAlign="center">
+            <Avatar aria-hidden="true" name={data.user.name} size="sm" />
+            <VStack gap={0}>
+              <Text type="label">{data.user.name}</Text>
+              {data.user.email && (
+                <Text type="supporting" color="secondary">
+                  {data.user.email}
+                </Text>
+              )}
+            </VStack>
+          </HStack>
+        }
+      >
+        {data.households.map((household) => (
+          <DropdownMenuItem
+            key={household.id}
+            label={household.name}
+            icon={<Avatar aria-hidden="true" name={household.name} size="sm" />}
+            aria-current={
+              household.id === activeHousehold.id ? 'true' : undefined
+            }
+            endContent={
+              household.id === activeHousehold.id ? (
+                <Icon icon={Check} />
+              ) : undefined
+            }
+            onClick={() => {
+              if (household.id === activeHousehold.id) return
+              closeMobileNav()
+              void navigate({
+                to: '/household/$householdId',
+                params: { householdId: household.id },
+                reloadDocument: true,
+              })
+            }}
+          />
+        ))}
+        <DropdownMenuItem
+          label="Add household"
+          icon={Plus}
+          onClick={() => {
+            closeMobileNav()
+            void navigate({ to: '/household/new' })
+          }}
+        />
+      </DropdownMenuGroup>
+      <DropdownMenuDivider />
+      <DropdownMenuItem
+        label="Log out"
+        icon={LogOut}
+        onClick={() => {
+          closeMobileNav()
+          logout()
+          void navigate({ to: '/' })
+        }}
+      />
+    </DropdownMenu>
   )
 }

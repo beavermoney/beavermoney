@@ -1,16 +1,17 @@
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { ProgressBar } from '@astryxdesign/core/ProgressBar'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
 import { Link, LinkOptions } from '@tanstack/react-router'
+import { useFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import type { accountCardFragment$key } from './__generated__/accountCardFragment.graphql'
-import { cn } from '@/lib/utils'
 
 import { useCurrency } from '@/hooks/use-currency'
 import { getRelativeDate } from '@/lib/time'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
 import { getLogoDomainURL } from '@/lib/logo'
 import currency from 'currency.js'
-
-import { Progress } from '@/components/ui/progress'
 
 const accountCardFragment = graphql`
   fragment accountCardFragment on Account {
@@ -41,7 +42,7 @@ type AccountCardProps = {
 export function AccountCard({
   fragmentRef,
   linkOptions,
-  className,
+  className: _className,
 }: AccountCardProps) {
   const data = useFragment(accountCardFragment, fragmentRef)
 
@@ -63,60 +64,58 @@ export function AccountCard({
 
   return (
     <Link
-      className={cn(
-        'hover:bg-muted flex flex-col gap-1.5 rounded-md border border-transparent p-3 text-xs/relaxed no-underline! transition-colors',
-        className,
-      )}
       from="/household/$householdId"
       to="/household/$householdId/accounts/$accountId"
       search={(prev) => ({ ...prev })}
       activeOptions={{ exact: true }}
-      activeProps={{ className: 'border-border' }}
+
       params={{ accountId: data.id }}
       {...linkOptions}
     >
-      <div className="flex items-center gap-2">
-        <Avatar className="size-6 text-[0.5rem]">
-          <AvatarImage
-            src={getLogoDomainURL(data.icon || '')}
-            alt={data.icon || 'unknown logo'}
-          />
-          <AvatarFallback>{data.name.slice(0, 2)}</AvatarFallback>
-        </Avatar>
-        <span className="min-w-0 font-medium">{data.name}</span>
-      </div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-sm font-semibold tabular-nums">
+      <Stack direction="horizontal" gap={2} align="center">
+        <Avatar
+          src={getLogoDomainURL(data.icon || '')}
+          alt={data.icon || 'unknown logo'}
+          name={String(data.name.slice(0, 2))}
+        />
+        <span>{data.name}</span>
+      </Stack>
+      <Stack direction="horizontal" gap={2}>
+        <Text type="label" hasTabularNumbers>
           {formatCurrencyWithPrivacyMode({
             value: data.value,
             currencyCode: data.householdCurrency.code,
             liability: data.type === 'liability',
           })}
-        </span>
-      </div>
-      <div className="text-muted-foreground flex items-center gap-1.5 text-[0.6875rem]">
+        </Text>
+      </Stack>
+      <Stack direction="horizontal" gap={1.5} align="center">
         <span>{data.user.name}</span>
-        <span className="text-muted-foreground/40">·</span>
+        <Text type="supporting">·</Text>
         <span>
           {data.latestTransaction
             ? getRelativeDate(new Date(data.latestTransaction.datetime))
             : 'Never used'}
         </span>
-      </div>
+      </Stack>
       {showProgress && (
-        <div className="mt-0.5 flex flex-col gap-1">
-          <Progress value={investmentPercentage} className="h-1.5" />
-          <div className="text-muted-foreground flex justify-between text-[0.625rem]">
+        <Stack direction="vertical" gap={1}>
+          <ProgressBar
+            value={investmentPercentage}
+
+            label="Invested"
+          />
+          <Stack direction="horizontal" justify="between">
             <span>Invested {investmentPercentage}%</span>
-            <span className="tabular-nums">
+            <Text hasTabularNumbers>
               {formatCurrencyWithPrivacyMode({
                 value: data.balance,
                 currencyCode: data.householdCurrency.code,
               })}{' '}
               cash
-            </span>
-          </div>
-        </div>
+            </Text>
+          </Stack>
+        </Stack>
       )}
     </Link>
   )

@@ -12,12 +12,9 @@ vi.mock('lucide-react/dynamic', () => ({
   dynamicIconImports: { wallet: loadIcon },
 }))
 
-it('reserves icon space and immediately renders a cached icon on remount', async () => {
+it('immediately renders a cached icon on remount', async () => {
   const first = render(
     <CategoryGlyph name="wallet" fallback={<span>Loading icon</span>} />,
-  )
-  expect(screen.getByText('Loading icon').parentElement?.className).toContain(
-    'size-4 shrink-0',
   )
   await act(async () => {
     await Promise.resolve()

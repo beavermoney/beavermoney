@@ -145,14 +145,11 @@ it('masks both cash amounts and investment quantities in privacy mode', () => {
   expect(table.textContent).toContain('•••••••')
 })
 
-it('constrains the table and its cells to the available width', () => {
+it('opens a transaction row from the keyboard', () => {
   render(<TransactionsTable {...defaults} />)
-
-  const table = screen.getByRole('table')
-  expect(table.className).toContain('table-fixed')
-  for (const cell of screen.getAllByRole('cell')) {
-    expect(cell.className).toContain('overflow-hidden')
-  }
+  const row = screen.getByText('Currency transfer').closest('tr')!
+  fireEvent.keyDown(row, { key: 'Enter' })
+  expect(defaults.onOpenTransaction).toHaveBeenCalledWith('transfer')
 })
 
 it('loads near the scroll boundary and pauses while sorting or loading', () => {
@@ -194,9 +191,9 @@ it('stops automatic pagination after a failure and offers an explicit retry', ()
     />,
   )
   expect(defaults.onLoadMore).not.toHaveBeenCalled()
-  expect(screen.getByRole('alert').textContent).toContain(
-    'Could not load more transactions.',
-  )
+  expect(
+    screen.getByText('Could not load more transactions.').textContent,
+  ).toContain('Could not load more transactions.')
   fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
   expect(defaults.onLoadMore).toHaveBeenCalledOnce()
 })

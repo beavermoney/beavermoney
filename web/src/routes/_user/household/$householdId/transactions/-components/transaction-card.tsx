@@ -1,15 +1,16 @@
+import { Divider } from '@astryxdesign/core/Divider'
+import currency from 'currency.js'
+import { useFragment } from 'react-relay'
+import { Fragment } from 'react/jsx-runtime'
 import { graphql } from 'relay-runtime'
 import { match } from 'ts-pattern'
-import { useFragment } from 'react-relay'
-import currency from 'currency.js'
 import type { transactionCardFragment$key } from './__generated__/transactionCardFragment.graphql'
-import { Fragment } from 'react/jsx-runtime'
-import { Separator } from '@/components/ui/separator'
+
+import { Link } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import invariant from 'tiny-invariant'
 import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
-import { Link } from '@tanstack/react-router'
-import invariant from 'tiny-invariant'
-import { useMemo } from 'react'
 
 const transactionCardFragment = graphql`
   fragment transactionCardFragment on Transaction {
@@ -96,12 +97,11 @@ export function TransactionCard({
       onPointerEnter={() => onPreload(data.id)}
       onFocus={() => onPreload(data.id)}
       onClick={() => onPreload(data.id)}
-      className="border-border [a]:hover:bg-muted group/item focus-visible:border-ring focus-visible:ring-ring/50 flex w-full flex-wrap items-center rounded-md border text-xs/relaxed transition-colors duration-100 outline-none focus-visible:ring-[3px] [a]:transition-colors"
     >
       {sortedItems.map((item, index) =>
         item.type === 'lot' ? (
           <Fragment key={item.lot.id}>
-            {index !== 0 && <Separator className="" />}
+            {index !== 0 && <Divider />}
             <InvestmentLotCard
               fragmentRef={item.lot}
               isFirst={index === 0}
@@ -110,7 +110,7 @@ export function TransactionCard({
           </Fragment>
         ) : (
           <Fragment key={item.entry.id}>
-            {index !== 0 && <Separator className="" />}
+            {index !== 0 && <Divider />}
             <TransactionEntryCard
               fragmentRef={item.entry}
               isFirst={index === 0}

@@ -64,7 +64,9 @@ it('shows the full category display in desktop options and the selected trigger'
   fireEvent.click(
     screen.getByRole('button', { name: 'Category: Select a category' }),
   )
-  expect(document.querySelector('[data-slot="scroll-area"]')).not.toBeNull()
+  expect(
+    screen.getByRole('group', { name: 'Scrollable content' }),
+  ).not.toBeNull()
   fireEvent.click(screen.getByRole('menuitemradio', { name: 'Groceries' }))
 
   expect(screen.queryByRole('menu')).toBeNull()

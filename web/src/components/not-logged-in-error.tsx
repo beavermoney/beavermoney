@@ -1,45 +1,40 @@
+import { Button } from '@astryxdesign/core/Button'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
 import { useNavigate } from '@tanstack/react-router'
 import { ShieldAlertIcon } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
 
 export function NotLoggedInError() {
   const navigate = useNavigate()
 
   return (
-    <Empty className="w-full">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <ShieldAlertIcon />
-        </EmptyMedia>
-        <EmptyTitle>You are not logged in</EmptyTitle>
-        <EmptyDescription>
+    <Stack direction="vertical" gap={4}>
+      <Stack direction="vertical" gap={2}>
+        <Stack direction="vertical" gap={4}>
+          <AstryxIcon icon={ShieldAlertIcon} />
+        </Stack>
+        <Heading level={2}>You are not logged in</Heading>
+        <Stack direction="vertical" gap={4}>
           Your session may have expired. Please log in again to continue.
-        </EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent className="max-w-none flex-row justify-center">
+        </Stack>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
         <Button
-          className="cursor-pointer"
-          variant="outline"
           onClick={() => navigate({ to: '/' })}
+          label={'Go home'}
+          variant={'secondary'}
         >
           Go home
         </Button>
         <Button
-          className="cursor-pointer"
           onClick={() => navigate({ to: '/login' })}
+          label={'Go to login'}
+          variant={'primary'}
         >
           Go to login
         </Button>
-      </EmptyContent>
-    </Empty>
+      </Stack>
+    </Stack>
   )
 }

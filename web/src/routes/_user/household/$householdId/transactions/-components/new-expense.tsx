@@ -1,42 +1,34 @@
-import { TransactionAccountPicker } from './transaction-account-picker'
-import { TransactionCategoryPicker } from './transaction-category-picker'
-import { graphql } from 'relay-runtime'
+import { FinanceCalendar } from '@/components/finance-calendar'
+import { FormError } from '@/components/form-error'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { Button } from '@astryxdesign/core/Button'
+import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Popover } from '@astryxdesign/core/Popover'
+import { Stack } from '@astryxdesign/core/Stack'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
+import { useEffect } from 'react'
+import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useEffect } from 'react'
-import type { newExpenseMutation } from './__generated__/newExpenseMutation.graphql'
+import * as z from 'zod'
 import type { newExpenseFragment$key } from './__generated__/newExpenseFragment.graphql'
-import { useLogTransaction } from '@/hooks/use-log-transaction'
+import type { newExpenseMutation } from './__generated__/newExpenseMutation.graphql'
+import { TransactionAccountPicker } from './transaction-account-picker'
+import { TransactionCategoryPicker } from './transaction-category-picker'
 
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { useHousehold } from '@/hooks/use-household'
-import { useUser } from '@/hooks/use-user'
-import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
-import { useHouseholdMembers } from '@/hooks/use-household-members'
-import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { useUser } from '@/hooks/use-user'
 import { commitMutationResult } from '@/lib/relay'
-import { Calendar } from '@/components/ui/calendar'
+import { OwnerSelect } from '../../-components/owner-select'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
@@ -99,6 +91,8 @@ type NewExpenseProps = {
 }
 
 export function NewExpense({ fragmentRef }: NewExpenseProps) {
+  const showToast = useToast()
+
   const data = useFragment(newExpenseFragment, fragmentRef)
 
   const [commitMutation, isMutationInFlight] =
@@ -178,10 +172,10 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
             'No data returned from mutation',
           )
 
-          toast.success('Expense created successfully!')
+          showToast({ type: 'info', body: 'Expense created successfully!' })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -206,27 +200,32 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
   }, [defaults, form, setDefaults])
 
   return (
-    <Card className="w-full">
-      <CardContent>
-        <form
+    <Stack direction="vertical" gap={6}>
+      <Stack direction="vertical" gap={4}>
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="new-expense-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="categoryId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field
+                  <Stack
+                    direction="vertical"
+                    gap={2}
                     data-invalid={isInvalid}
                     data-transaction-initial-focus
                   >
-                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                    <label htmlFor={field.name}>Category</label>
                     <TransactionCategoryPicker
                       categories={expenseCategories}
                       name={field.name}
@@ -236,21 +235,20 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="accountId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid} className="max-md:gap-1">
-                    <FieldLabel htmlFor={field.name}>Account</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Account</label>
                     <TransactionAccountPicker
                       preferredTypes={['liquidity', 'liability']}
                       accounts={availableAccounts}
@@ -262,21 +260,19 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="amount"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
                       id={field.name}
                       name={field.name}
@@ -294,40 +290,41 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                       aria-invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="description"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="Coffee at Starbucks"
                       autoComplete="off"
+                      label={'Description'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             {ownerOptions.length > 1 && (
               <form.Field
                 name="ownerUserID"
@@ -335,8 +332,11 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
                       <OwnerSelect
                         id={field.name}
                         name={field.name}
@@ -347,109 +347,132 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                         ariaInvalid={isInvalid}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
             )}
-
             <form.Field
               name="datetime"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            id={field.name}
-                            name={field.name}
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
-                            {field.state.value.toLocaleDateString(
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <label htmlFor={field.name}>Date</label>
+                    <Popover
+                      label="Choose value"
+                      alignment={'start'}
+                      content={
+                        <>
+                          <FinanceCalendar
+                            mode="single"
+                            selected={field.state.value}
+                            onSelect={(date) => {
+                              if (date) {
+                                field.handleChange(date)
+                              }
+                            }}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date('1900-01-01')
+                            }
+                          />
+                        </>
+                      }
+                    >
+                      {(triggerProps) => (
+                        <Button
+                          {...triggerProps}
+                          id={field.name}
+                          name={field.name}
+                          type="button"
+
+                          label={String(
+                            field.state.value.toLocaleDateString(
                               household.locale,
                               {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                               },
-                            )}
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent className="w-auto p-0" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.handleChange(date)
-                            }
-                          }}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                            ),
+                          )}
+                          variant={'secondary'}
+                        >
+                          {field.state.value.toLocaleDateString(
+                            household.locale,
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )}
+                        </Button>
+                      )}
+                    </Popover>
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
-            <FieldSet>
-              <FieldLegend variant="label">Options</FieldLegend>
-              <FieldGroup data-slot="checkbox-group">
+            <fieldset>
+              <legend>Options</legend>
+              <Stack direction="vertical" gap={4} data-slot="checkbox-group">
                 <form.Field
                   name="excludeFromReports"
                   children={(field) => {
                     return (
-                      <Field orientation={'horizontal'}>
-                        <Button
-                          type="button"
+                      <Stack direction="vertical" gap={2}>
+                        <CheckboxInput
                           id={field.name}
-                          name={field.name}
-                          aria-pressed={field.state.value}
-                          variant="outline"
-                          onClick={() => field.handleChange(!field.state.value)}
+                          htmlName={field.name}
+                          value={field.state.value}
+                          onChange={field.handleChange}
                           onBlur={field.handleBlur}
-                          className="aria-pressed:border-primary"
-                        >
-                          Exclude from reports
-                        </Button>
-                      </Field>
+                          label={'Exclude from reports'}
+                        />
+                      </Stack>
                     )
                   }}
                 />
-              </FieldGroup>
-            </FieldSet>
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+              </Stack>
+            </fieldset>
+          </FormLayout>
+        </Stack>
+      </Stack>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+        as="footer"
+      >
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            label={'Reset'}
+            variant={'secondary'}
+          >
             Reset
           </Button>
           <Button
-            disabled={isMutationInFlight}
             type="submit"
             form="new-expense-form"
+            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            variant={'primary'}
+
+            isDisabled={isMutationInFlight}
           >
             {isMutationInFlight ? 'Creating...' : 'Create'}
           </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

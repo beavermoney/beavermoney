@@ -1,8 +1,15 @@
 import { PendingComponent } from '@/components/pending-component'
-import { Item } from '@/components/ui/item'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+
 import { environment } from '@/environment'
+import { logTransactionStore } from '@/hooks/log-transaction-store'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 import { createFileRoute, Navigate } from '@tanstack/react-router'
+import { identity } from 'lodash-es'
+import { useEffect } from 'react'
 import {
   fetchQuery,
   loadQuery,
@@ -12,11 +19,6 @@ import {
 import { graphql } from 'relay-runtime'
 import { LogTransaction } from './-components/log-transaction'
 import { type newTransactionQuery } from './__generated__/newTransactionQuery.graphql'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { logTransactionStore } from '@/hooks/log-transaction-store'
-import { useLogTransaction } from '@/hooks/use-log-transaction'
-import { identity } from 'lodash-es'
-import { useEffect } from 'react'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/new',
@@ -80,10 +82,11 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full overflow-hidden">
-      <Item className="h-full min-h-0 overflow-hidden p-0">
+    <Stack direction="vertical" gap={6}>
+      <Heading level={1}>New transaction</Heading>
+      <Stack direction="vertical" gap={4}>
         <LogTransaction fragmentRef={data.household} />
-      </Item>
-    </div>
+      </Stack>
+    </Stack>
   )
 }

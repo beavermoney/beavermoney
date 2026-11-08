@@ -10,15 +10,7 @@ Full-stack personal finance app. Go backend (Ent ORM + gqlgen GraphQL) serves a 
 
 ## DESIGN CONTEXT
 
-Register: **product**. Personality: **sharp, precise, transparent**. North Star: **The Ledger Workshop** (a craftsman's bench, manual logging as honored craft).
-
-- [PRODUCT.md](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/PRODUCT.md): users, purpose, principles, anti-references, accessibility floor (WCAG 2.2 AA + reduced-motion + privacy-mode masking).
-- [DESIGN.md](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/DESIGN.md): visual system. Brand hue 92° (Beaver Pelt Amber), `--radius: 0` everywhere, ring-1 borders (no shadows), Inter Variable single-family, 28px (`h-7`) compact targets, seven-color semantic account palette (net worth/liquidity/investment/property/receivable/liability/asset).
-- [DESIGN.json](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/DESIGN.json): machine-readable sidecar with tonal ramps, motion tokens, and component HTML/CSS snippets for the live design panel.
-
-Anti-references baked into both docs: auto-import / Plaid aggregators, gradient-led visuals, navy-and-gold legacy fintech, neon-on-black crypto, gamified Robinhood-style streaks, generic SaaS-cream landing pages. Manual entry is the feature, not the friction.
-
-Use the `$impeccable` skill at [.agents/skills/impeccable/SKILL.md](file:///Users/itsjoeoui/src/github.com/beavermoney/beavermoney/.agents/skills/impeccable/SKILL.md) for any design work; it loads the context above before doing anything.
+Use Astryx's default neutral theme and native component conventions. See [DESIGN.md](DESIGN.md) for UI guidance and [PRODUCT.md](PRODUCT.md) for product behavior. Preserve accessibility, privacy masking, exact monetary values, and confirmed-write behavior.
 
 ## STRUCTURE
 
@@ -87,7 +79,7 @@ Privacy rules (`ent/rules/privacy.go`) enforce access control: `FilterByHousehol
 - **Unused vars** must be prefixed with `_`
 - **Path alias**: `@/` maps to `web/src/`
 - **Icons**: Lucide (`lucide-react`)
-- **UI components**: shadcn/ui with `base-mira` style
+- **UI components**: Astryx with the default neutral theme
 - **Data fetching**: Relay only (no REST, no Apollo, no TanStack Query)
 - **Routing**: TanStack Router only (not React Router)
 - **Decimal fields**: PostgreSQL `numeric(36,18)` for money
@@ -179,7 +171,7 @@ ports 3000 or 5173, and do not start a second app process outside `just worktree
 | Routing        | TanStack Router           | 1.168.24  |
 | Data           | Relay                     | 20.1.1    |
 | Styling        | Tailwind CSS              | 4.2.4     |
-| UI Kit         | shadcn/ui                 | base-mira |
+| UI Kit         | Astryx                   | 0.7.11 |
 | Testing        | Vitest + Testing Library  | 3.2.4     |
 | Tool Manager   | mise                      | —         |
 | Task Runner    | just                      | —         |

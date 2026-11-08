@@ -1,14 +1,14 @@
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
 
 import { routeTree } from './routeTree.gen'
 
-import './styles.css'
-import { LOCAL_STORAGE_THEME_KEY } from './constant'
 import { ThemeProvider } from '@/components/theme-provider'
 import * as Sentry from '@sentry/react'
+import { LOCAL_STORAGE_THEME_KEY } from './constant'
 import { env } from './env'
+import './styles.css'
 
 Sentry.init({
   dsn: env.VITE_SENTRY_DSN,
@@ -34,7 +34,7 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ThemeProvider defaultTheme="dark" storageKey={LOCAL_STORAGE_THEME_KEY}>
+      <ThemeProvider defaultTheme="system" storageKey={LOCAL_STORAGE_THEME_KEY}>
         <RouterProvider router={router} />
       </ThemeProvider>
     </StrictMode>,

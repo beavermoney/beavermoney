@@ -1,20 +1,21 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { Button } from '@astryxdesign/core/Button'
+import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { graphql } from 'relay-runtime'
 import {
   fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import { EditSubscription } from './-components/edit-subscription'
 import { SubscriptionCard } from './-components/subscription-card'
-import { environment } from '@/environment'
-import { PendingComponent } from '@/components/pending-component'
-import { Item } from '@/components/ui/item'
-import { Button } from '@/components/ui/button'
-import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
-import invariant from 'tiny-invariant'
+
 import { identity } from 'lodash-es'
+import invariant from 'tiny-invariant'
+import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/$subscriptionId',
@@ -66,19 +67,20 @@ function RouteComponent() {
   invariant(data.node, 'Subscription not found')
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div>
+    <Stack direction="vertical" gap={4}>
+      <Stack direction="vertical" gap={4}>
         <Button
-          variant="secondary"
           onClick={() => navigate({ to: '..', search: identity })}
+          label={'Back'}
+          variant={'secondary'}
         >
           Back
         </Button>
-      </div>
-      <Item className="p-0">
+      </Stack>
+      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
         <SubscriptionCard fragmentRef={data.node} />
         <EditSubscription key={data.node.id} fragmentRef={data.node} />
-      </Item>
-    </div>
+      </Stack>
+    </Stack>
   )
 }

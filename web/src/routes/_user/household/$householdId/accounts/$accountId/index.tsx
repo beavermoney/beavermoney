@@ -1,3 +1,5 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   loadQuery,
@@ -5,11 +7,9 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { fetchQuery, graphql } from 'relay-runtime'
+import type { TransactionWhereInput } from '../../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { TransactionsList } from '../../transactions/-components/transactions-list'
 import type { AccountIdTransactionsQuery } from './__generated__/AccountIdTransactionsQuery.graphql'
-import type { TransactionWhereInput } from '../../transactions/-components/__generated__/transactionsListRefetch.graphql'
-import { environment } from '@/environment'
-import { PendingComponent } from '@/components/pending-component'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/accounts/$accountId/',

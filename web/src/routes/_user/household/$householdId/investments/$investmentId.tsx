@@ -1,4 +1,14 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { Divider } from '@astryxdesign/core/Divider'
+import { Grid } from '@astryxdesign/core/Grid'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import currency from 'currency.js'
 import {
   fetchQuery,
   loadQuery,
@@ -7,20 +17,14 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
-import currency from 'currency.js'
 import invariant from 'tiny-invariant'
+import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { TransactionsList } from '../transactions/-components/transactions-list'
 import { InvestmentCard } from './-components/investment-card'
-import type { InvestmentIdQuery } from './__generated__/InvestmentIdQuery.graphql'
 import type { InvestmentIdDetailFragment$key } from './__generated__/InvestmentIdDetailFragment.graphql'
-import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
-import { environment } from '@/environment'
-import { PendingComponent } from '@/components/pending-component'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import type { InvestmentIdQuery } from './__generated__/InvestmentIdQuery.graphql'
+
 import { useCurrency } from '@/hooks/use-currency'
-import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/investments/$investmentId',
@@ -99,19 +103,23 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <Button variant="secondary" onClick={() => navigate({ to: '..' })}>
+    <Stack direction="vertical" gap={4}>
+      <Stack direction="vertical" gap={4}>
+        <Button
+          onClick={() => navigate({ to: '..' })}
+          label={'Back'}
+          variant={'secondary'}
+        >
           Back
         </Button>
-      </div>
-      <div className="bg-muted/50 rounded-md">
+      </Stack>
+      <Stack direction="vertical" gap={4}>
         <InvestmentCard fragmentRef={data.node} />
-      </div>
+      </Stack>
       <InvestmentDetail fragmentRef={data.node} />
-      <Separator />
+      <Divider />
       <TransactionsList fragmentRef={data.household} />
-    </div>
+    </Stack>
   )
 }
 
@@ -140,56 +148,41 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
       ? `−${formattedPercent}`
       : formattedPercent
 
-  const returnClassName = cn(
-    'text-sm font-semibold tabular-nums',
-    isPositive && 'text-emerald-600 dark:text-emerald-400',
-    isNegative && 'text-red-600 dark:text-red-400',
-    !isPositive && !isNegative && 'text-muted-foreground',
-  )
-
   return (
-    <Card size="sm">
-      <CardHeader>
-        <CardTitle>Performance</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-[0.6875rem] font-medium tracking-wider uppercase">
-              Cost Basis
-            </span>
-            <span className="text-sm font-semibold tabular-nums">
+    <Card>
+      <Stack direction="vertical" gap={2} as="header">
+        <Heading level={2}>Performance</Heading>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
+        <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
+          <Stack direction="vertical" gap={1}>
+            <Text type="supporting">Cost Basis</Text>
+            <Text type="label" hasTabularNumbers>
               {formatCurrencyWithPrivacyMode({
                 value: data.costBasis,
                 currencyCode: data.householdCurrency.code,
               })}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-[0.6875rem] font-medium tracking-wider uppercase">
-              Avg Cost / Share
-            </span>
-            <span className="text-sm font-semibold tabular-nums">
+            </Text>
+          </Stack>
+          <Stack direction="vertical" gap={1}>
+            <Text type="supporting">Avg Cost / Share</Text>
+            <Text type="label" hasTabularNumbers>
               {formatCurrency({
                 value: data.averageCost,
                 currencyCode: data.householdCurrency.code,
               })}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-[0.6875rem] font-medium tracking-wider uppercase">
-              Unrealized Return
-            </span>
-            <span className={returnClassName}>{signedReturn}</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-muted-foreground text-[0.6875rem] font-medium tracking-wider uppercase">
-              Return %
-            </span>
-            <span className={returnClassName}>{signedPercent}</span>
-          </div>
-        </div>
-      </CardContent>
+            </Text>
+          </Stack>
+          <Stack direction="vertical" gap={1}>
+            <Text type="supporting">Unrealized Return</Text>
+            <span>{signedReturn}</span>
+          </Stack>
+          <Stack direction="vertical" gap={1}>
+            <Text type="supporting">Return %</Text>
+            <span>{signedPercent}</span>
+          </Stack>
+        </Grid>
+      </Stack>
     </Card>
   )
 }

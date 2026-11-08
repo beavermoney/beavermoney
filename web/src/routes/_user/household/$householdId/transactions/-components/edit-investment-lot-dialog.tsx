@@ -1,49 +1,28 @@
-import { graphql, useMutation } from 'react-relay'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { DialogHeader } from '@astryxdesign/core/Dialog'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { NumberInput } from '@astryxdesign/core/NumberInput'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { match } from 'ts-pattern'
 import currency from 'currency.js'
 import { useEffect, useMemo } from 'react'
+import { graphql, useMutation } from 'react-relay'
+import { match } from 'ts-pattern'
+import * as z from 'zod'
 
 import type { editInvestmentLotDialogUpdateMutation } from './__generated__/editInvestmentLotDialogUpdateMutation.graphql'
 
-import {
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
-import { getLogoDomainURL } from '@/lib/logo'
 import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHousehold } from '@/hooks/use-household'
+import { getLogoDomainURL } from '@/lib/logo'
+import { commitMutationResult } from '@/lib/relay'
 
 const editInvestmentLotDialogUpdateMutation = graphql`
   mutation editInvestmentLotDialogUpdateMutation(
@@ -111,6 +90,8 @@ export function EditInvestmentLotDialog({
   accounts,
   onClose,
 }: EditInvestmentLotDialogProps) {
+  const showToast = useToast()
+
   const [commitUpdate, isUpdateInFlight] =
     useMutation<editInvestmentLotDialogUpdateMutation>(
       editInvestmentLotDialogUpdateMutation,
@@ -161,11 +142,11 @@ export function EditInvestmentLotDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          toast.success('Lot updated successfully!')
+          showToast({ type: 'info', body: 'Lot updated successfully!' })
           onClose()
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -193,194 +174,173 @@ export function EditInvestmentLotDialog({
 
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>Edit Lot</DialogTitle>
-        <DialogDescription>
-          Update lot details. Switching the investment moves the lot&apos;s
-          shares.
-        </DialogDescription>
-      </DialogHeader>
+      <DialogHeader title="Edit Lot" onOpenChange={() => onClose()} />
+      <Text as="div" display="block" type="supporting">
+        Update lot details. Switching the investment moves the lot&apos;s
+        shares.
+      </Text>
 
-      <form
+      <Stack
+        as="form"
+        direction="vertical"
+        gap={6}
         id="edit-lot-form"
         onSubmit={(e) => {
           e.preventDefault()
           form.handleSubmit()
         }}
       >
-        <FieldGroup>
+        <FormLayout>
           <form.Field
             name="accountId"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                  <Combobox
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                  <SearchSelect
                     items={investmentAccounts.map((account) => account.id)}
-                    itemToStringLabel={(item) =>
+                    getLabel={(item) =>
                       investmentAccounts.find((acc) => acc.id === item)?.name ||
                       ''
                     }
                     value={field.state.value}
-                    onValueChange={(value) => {
+                    onChange={(value) => {
                       field.handleChange(value || '')
                       form.setFieldValue('investmentId', '')
                     }}
-                  >
-                    <ComboboxInput
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Select an account"
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No items found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: string) => {
-                          const account = investmentAccounts.find(
-                            (acc) => acc.id === item,
-                          )
-                          if (!account) return null
-                          return (
-                            <ComboboxItem key={item} value={item}>
-                              <Item size="xs" className="p-0">
-                                <ItemMedia variant="image">
-                                  <Avatar className="size-6">
-                                    <AvatarImage
-                                      src={getLogoDomainURL(account.icon || '')}
-                                      alt={account.icon || 'unknown logo'}
-                                    />
-                                    <AvatarFallback>
-                                      {account.name}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                </ItemMedia>
-                                <ItemContent>
-                                  <ItemTitle>{account.name}</ItemTitle>
-                                  <ItemDescription>
-                                    <span className="tabular-nums">
-                                      {formatCurrencyWithPrivacyMode({
-                                        value: account.value,
-                                        currencyCode:
-                                          account.householdCurrency.code,
-                                        liability: account.type === 'liability',
-                                      })}
-                                    </span>
-                                    <span aria-hidden="true"> · </span>
-                                    {account.user.name}
-                                  </ItemDescription>
-                                </ItemContent>
-                              </Item>
-                            </ComboboxItem>
-                          )
-                        }}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                    data-1p-ignore
+                    id={field.name}
+                    placeholder="Select an account"
+                    onBlur={field.handleBlur}
+                    label={'Account'}
+                    renderOption={(item: string) => {
+                      const account = investmentAccounts.find(
+                        (acc) => acc.id === item,
+                      )
+                      if (!account) return null
+                      return (
+                        <span>
+                          <Stack
+                            direction="horizontal"
+                            gap={3}
+                            align="center"
+                            wrap="wrap"
+                          >
+                            <Stack direction="vertical" gap={4}>
+                              <Avatar
+                                src={getLogoDomainURL(account.icon || '')}
+                                alt={account.icon || 'unknown logo'}
+                                name={String(account.name)}
+                              />
+                            </Stack>
+                            <Stack direction="vertical" gap={4}>
+                              <Stack direction="vertical" gap={4}>
+                                {account.name}
+                              </Stack>
+                              <Stack direction="vertical" gap={4}>
+                                <Text hasTabularNumbers>
+                                  {formatCurrencyWithPrivacyMode({
+                                    value: account.value,
+                                    currencyCode:
+                                      account.householdCurrency.code,
+                                    liability: account.type === 'liability',
+                                  })}
+                                </Text>
+                                <span aria-hidden="true"> · </span>
+                                {account.user.name}
+                              </Stack>
+                            </Stack>
+                          </Stack>
+                        </span>
+                      )
+                    }}
+                    emptyText={<>No items found.</>}
+                  />
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
-
           <form.Field
             name="investmentId"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Investment</FieldLabel>
-                  <Combobox
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                  <SearchSelect
                     items={availableInvestments.map((inv) => inv.id)}
-                    itemToStringLabel={(item) => {
+                    getLabel={(item) => {
                       const inv = availableInvestments.find(
                         (i) => i.id === item,
                       )
                       return inv ? `${inv.name} (${inv.symbol})` : ''
                     }}
                     value={field.state.value}
-                    onValueChange={(value) => {
+                    onChange={(value) => {
                       field.handleChange(value || '')
                     }}
-                    disabled={!selectedAccount}
-                  >
-                    <ComboboxInput
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      placeholder={
-                        selectedAccount
-                          ? 'Select an investment'
-                          : 'Select an account first'
-                      }
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No items found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: string) => {
-                          const inv = availableInvestments.find(
-                            (i) => i.id === item,
-                          )
-                          return (
-                            <ComboboxItem key={item} value={item}>
-                              {inv ? `${inv.name} (${inv.symbol})` : ''}
-                            </ComboboxItem>
-                          )
-                        }}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                    isDisabled={!selectedAccount}
+                    data-1p-ignore
+                    id={field.name}
+                    placeholder={
+                      selectedAccount
+                        ? 'Select an investment'
+                        : 'Select an account first'
+                    }
+                    onBlur={field.handleBlur}
+                    label={'Investment'}
+                    renderOption={(item: string) => {
+                      const inv = availableInvestments.find(
+                        (i) => i.id === item,
+                      )
+                      return (
+                        <span>{inv ? `${inv.name} (${inv.symbol})` : ''}</span>
+                      )
+                    }}
+                    emptyText={<>No items found.</>}
+                  />
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
-
           <form.Field
             name="shares"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Shares</FieldLabel>
-                  <Input
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                  <NumberInput
                     data-1p-ignore
                     id={field.name}
-                    name={field.name}
-                    type="number"
-                    step="any"
-                    value={field.state.value || ''}
                     onBlur={field.handleBlur}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value)
-                      field.handleChange(isNaN(val) ? 0 : val)
-                    }}
                     aria-invalid={isInvalid}
                     placeholder="10"
                     autoComplete="off"
+                    label={'Shares'}
+
+                    htmlName={field.name}
+                    value={
+                      field.state.value === undefined ? null : field.state.value
+                    }
+                    onChange={(value) => field.handleChange(value)}
+                    step={0.0001}
                   />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
-
           <form.Field
             name="pricePerShare"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Price per Share</FieldLabel>
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                   <CurrencyInput
                     id={field.name}
                     name={field.name}
@@ -398,22 +358,40 @@ export function EditInvestmentLotDialog({
                     aria-invalid={isInvalid}
                     decimalScale={8}
                   />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
-        </FieldGroup>
-      </form>
+        </FormLayout>
+      </Stack>
 
-      <DialogFooter>
-        <Button variant="outline" type="button" onClick={onClose}>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+      >
+        <Button
+          type="button"
+          onClick={onClose}
+          label={'Cancel'}
+          variant={'secondary'}
+        >
           Cancel
         </Button>
-        <Button type="submit" form="edit-lot-form" disabled={isUpdateInFlight}>
+        <Button
+          type="submit"
+          form="edit-lot-form"
+          label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+          variant={'primary'}
+
+          isDisabled={isUpdateInFlight}
+        >
           {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
         </Button>
-      </DialogFooter>
+      </Stack>
     </>
   )
 }

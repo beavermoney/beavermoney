@@ -1,8 +1,8 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
-import * as z from 'zod'
-import { getDateRangeForPreset, DATE_RANGE_PRESETS } from '@/lib/date-range'
-import { format } from 'date-fns'
 import { GenericError } from '@/components/generic-error'
+import { DATE_RANGE_PRESETS, getDateRangeForPreset } from '@/lib/date-range'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { format } from 'date-fns'
+import * as z from 'zod'
 
 const getDefaultDates = () => {
   const range = getDateRangeForPreset(DATE_RANGE_PRESETS.THIS_MONTH)

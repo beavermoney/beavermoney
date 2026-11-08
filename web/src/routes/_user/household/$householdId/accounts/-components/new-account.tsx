@@ -1,59 +1,41 @@
-import { graphql } from 'relay-runtime'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useMutation } from 'react-relay'
+import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
+import { useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useNavigate } from '@tanstack/react-router'
+import * as z from 'zod'
 import type {
-  newAccountMutation,
   AccountCategory,
+  newAccountMutation,
 } from './__generated__/newAccountMutation.graphql'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import {
-  ACCOUNT_CATEGORY_OPTIONS,
-  ACCOUNT_CATEGORY_APPLICABLE_TYPES,
-} from '@/constant'
-import { useHousehold } from '@/hooks/use-household'
-import { useUser } from '@/hooks/use-user'
-import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
-import { useHouseholdMembers } from '@/hooks/use-household-members'
-import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
+import {
+  ACCOUNT_CATEGORY_APPLICABLE_TYPES,
+  ACCOUNT_CATEGORY_OPTIONS,
+} from '@/constant'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { useUser } from '@/hooks/use-user'
 import { commitMutationResult } from '@/lib/relay'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getLogoDomainURL } from '@/lib/logo'
-import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
+import { OwnerSelect } from '../../-components/owner-select'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
+import { getLogoDomainURL } from '@/lib/logo'
 import { AccountTypePicker } from './account-type-picker'
 
 const formSchema = z.object({
@@ -89,6 +71,8 @@ const newAccountMutation = graphql`
 `
 
 export function NewAccount() {
+  const showToast = useToast()
+
   const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
@@ -165,10 +149,13 @@ export function NewAccount() {
               accountId: resultData.createAccount.node.id,
             },
           })
-          toast.success(`${resultData.createAccount.node.name} is ready to go!`)
+          showToast({
+            type: 'info',
+            body: `${resultData.createAccount.node.name} is ready to go!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -182,45 +169,51 @@ export function NewAccount() {
   const showCategory = ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(accountType)
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Account</CardTitle>
-        <CardDescription>
+    <Card>
+      <Stack direction="vertical" gap={2} as="header">
+        <Heading level={2}>New Account</Heading>
+        <Stack direction="vertical" gap={4}>
           Start tracking your account in Beaver Money
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
+        </Stack>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="new-account-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="name"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="Wealthsimple Chequing"
                       autoComplete="off"
+                      label={'Name'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -231,8 +224,11 @@ export function NewAccount() {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
                       <OwnerSelect
                         id={field.name}
                         name={field.name}
@@ -243,9 +239,9 @@ export function NewAccount() {
                         ariaInvalid={isInvalid}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
@@ -256,44 +252,44 @@ export function NewAccount() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Icon</FieldLabel>
-                    <FieldDescription>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <Stack direction="vertical" gap={4}>
                       Enter a domain to fetch logo (e.g., chase.com)
-                    </FieldDescription>
-                    <div className="flex items-center gap-3">
-                      <Input
+                    </Stack>
+                    <Stack direction="horizontal" gap={3} align="center">
+                      <TextInput
                         data-1p-ignore
                         id={field.name}
-                        name={field.name}
-                        value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) => {
-                          field.handleChange(e.target.value)
-                        }}
                         aria-invalid={isInvalid}
                         placeholder="e.g., chase.com"
                         autoComplete="off"
-                        className="flex-1"
+                        label={'Icon'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => {
+                            field.handleChange(e.target.value)
+                          })(event)
+                        }
+                        htmlName={field.name}
                       />
                       {field.state.value && (
-                        <div className="flex items-center gap-2">
-                          <Avatar className="size-6">
-                            <AvatarImage
-                              src={getLogoDomainURL(field.state.value)}
-                              alt={field.state.value}
-                            />
-                            <AvatarFallback className="text-xs">
-                              {field.state.value.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
+                        <Stack direction="horizontal" gap={2} align="center">
+                          <Avatar
+                            src={getLogoDomainURL(field.state.value)}
+                            alt={field.state.value}
+                            name={String(
+                              field.state.value.slice(0, 2).toUpperCase(),
+                            )}
+                          />
+                        </Stack>
                       )}
-                    </div>
+                    </Stack>
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -305,10 +301,8 @@ export function NewAccount() {
                 const labelId = `${field.name}-label`
                 const errorId = `${field.name}-error`
                 return (
-                  <FieldSet data-invalid={isInvalid}>
-                    <FieldLegend id={labelId} variant="label">
-                      Type
-                    </FieldLegend>
+                  <fieldset data-invalid={isInvalid}>
+                    <legend id={labelId}>Type</legend>
                     <AccountTypePicker
                       value={field.state.value}
                       onValueChange={field.handleChange}
@@ -318,12 +312,12 @@ export function NewAccount() {
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError
+                      <FormError
                         id={errorId}
                         errors={field.state.meta.errors}
                       />
                     )}
-                  </FieldSet>
+                  </fieldset>
                 )
               }}
             />
@@ -338,39 +332,31 @@ export function NewAccount() {
                       (o) => o.value === field.state.value,
                     ) ?? null
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>
-                        Category (optional)
-                      </FieldLabel>
-                      <Combobox
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
                         items={ACCOUNT_CATEGORY_OPTIONS}
                         value={selectedItem}
-                        onValueChange={(item) =>
+                        onChange={(item) =>
                           field.handleChange(item?.value ?? '')
                         }
-                      >
-                        <ComboboxInput
-                          id={field.name}
-                          name={field.name}
-                          placeholder="None (Taxable)"
-                          onBlur={field.handleBlur}
-                          aria-invalid={isInvalid}
-                        />
-                        <ComboboxContent>
-                          <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList>
-                            {(item: { value: string; label: string }) => (
-                              <ComboboxItem key={item.value} value={item}>
-                                {item.label}
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
+                        id={field.name}
+                        placeholder="None (Taxable)"
+                        onBlur={field.handleBlur}
+                        label={'Category (optional)'}
+                        renderOption={(item: {
+                          value: string
+                          label: string
+                        }) => <span>{item.label}</span>}
+                        emptyText={<>No items found.</>}
+                      />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
@@ -381,37 +367,24 @@ export function NewAccount() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
-                    <Combobox
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <SearchSelect
                       items={SUPPORTED_CURRENCIES.map((c) => c.code)}
                       value={field.state.value}
-                      onValueChange={(value) => {
+                      onChange={(value) => {
                         field.handleChange(value || '')
                       }}
-                    >
-                      <ComboboxInput
-                        id={field.name}
-                        name={field.name}
-                        placeholder="Select a currency"
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item: string) => (
-                            <ComboboxItem key={item} value={item}>
-                              {item}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
+                      id={field.name}
+                      placeholder="Select a currency"
+                      onBlur={field.handleBlur}
+                      label={'Currency'}
+                      renderOption={(item: string) => <span>{item}</span>}
+                      emptyText={<>No items found.</>}
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
@@ -421,11 +394,7 @@ export function NewAccount() {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Balance / Value
-                    </FieldLabel>
-                    <FieldDescription> </FieldDescription>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
                       id={field.name}
                       name={field.name}
@@ -442,29 +411,44 @@ export function NewAccount() {
                       decimalScale={2}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          </FormLayout>
+        </Stack>
+      </Stack>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+        as="footer"
+      >
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            label={'Reset'}
+            variant={'secondary'}
+          >
             Reset
           </Button>
           <Button
-            disabled={isMutationInFlight}
             type="submit"
             form="new-account-form"
+            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            variant={'primary'}
+
+            isDisabled={isMutationInFlight}
           >
             {isMutationInFlight ? 'Creating...' : 'Create'}
           </Button>
-        </Field>
-      </CardFooter>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

@@ -1,49 +1,31 @@
-import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
-import {
-  useNavigate,
-  useParams,
-  useRouter,
-  useSearch,
-} from '@tanstack/react-router'
+import { Card } from '@astryxdesign/core/Card'
+import { EmptyState } from '@astryxdesign/core/EmptyState'
+import { Grid } from '@astryxdesign/core/Grid'
+import { Heading } from '@astryxdesign/core/Heading'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
+import { List } from '@astryxdesign/core/List'
+import { Section } from '@astryxdesign/core/Section'
+import { Selector } from '@astryxdesign/core/Selector'
+import { Skeleton } from '@astryxdesign/core/Skeleton'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { capitalize, groupBy } from 'lodash-es'
-import { ChevronDownIcon, ChevronUpIcon, SearchIcon } from 'lucide-react'
-import { Fragment, Suspense, useMemo, useState } from 'react'
-import { useFragment, useRelayEnvironment } from 'react-relay'
-import { commitLocalUpdate, graphql } from 'relay-runtime'
+import { Suspense, useMemo, useState } from 'react'
+import { useFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 
-import {
-  ACCOUNT_TYPE_ACCENT_CLASSES,
-  calculateAllocationPercentage,
-  formatPercentageWithPrivacyMode,
-  getAccountGroupAllocation,
-} from './account-ledger-utils'
-import { AccountLedgerRow } from './account-ledger-row'
-import { NetWorthChart } from './net-worth-chart'
-import type { accountsPanelFragment$key } from './__generated__/accountsPanelFragment.graphql'
 import { PageAddButton } from '@/components/page-add-button'
+import type { accountsPanelFragment$key } from './__generated__/accountsPanelFragment.graphql'
+import { AccountLedgerRow } from './account-ledger-row'
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-} from '@/components/ui/accordion'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
+  calculateAllocationPercentage,
+  getAccountDisplayValue,
+} from './account-ledger-utils'
+import { NetWorthChart } from './net-worth-chart'
+
 import {
   ACCOUNT_CATEGORY_APPLICABLE_TYPES,
   ACCOUNT_CATEGORY_LABEL,
@@ -52,9 +34,7 @@ import {
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
-import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
-import { cn } from '@/lib/utils'
 
 const AccountsPanelFragment = graphql`
   fragment accountsPanelFragment on Household
@@ -110,18 +90,10 @@ type SortOption = keyof typeof SORT_OPTIONS
 
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const data = useFragment(AccountsPanelFragment, fragmentRef)
-  const environment = useRelayEnvironment()
   const { household } = useHousehold()
-  const {
-    displayCurrencyCode,
-    nextDisplayCurrencyCode,
-    cycleDisplayCurrency,
-    convert,
-  } = useDisplayCurrency()
-  const { isPrivacyModeEnabled } = usePrivacyMode()
+  const { displayCurrencyCode, convert } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const navigate = useNavigate()
-  const router = useRouter()
   const { householdId } = useParams({
     from: '/_user/household/$householdId',
   })
@@ -133,7 +105,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
 
   useRegisterConnection(data.accounts.__id, NodeType.Account)
 
-  const [displayIndex, setDisplayIndex] = useState(0)
   const [searchFilter, setSearchFilter] = useState('')
 
   const handleGroupByChange = (newGroupBy: string | null) => {
@@ -211,8 +182,14 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           switch (sortOption) {
             case 'value_desc':
               return (
-                Math.abs(accountB.displayValue.value) -
-                Math.abs(accountA.displayValue.value)
+                getAccountDisplayValue(
+                  accountB.displayValue.value,
+                  accountB.node.type,
+                ) -
+                getAccountDisplayValue(
+                  accountA.displayValue.value,
+                  accountA.node.type,
+                )
               )
             case 'updated_desc': {
               const timeA = accountA.node.latestTransaction
@@ -257,328 +234,127 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     ]
   }, [accountItems])
 
-  const assetsTotal = Math.abs(displayOptions[1].value.value)
-
-  const getGroupLabel = (key: string) => {
-    if (groupByOption === 'category') {
-      if (key === 'taxable') return 'Taxable'
-      return ACCOUNT_CATEGORY_LABEL[key] ?? capitalize(key)
-    }
-    return capitalize(key)
-  }
-
-  const formattedDisplayValue = formatCurrencyWithPrivacyMode({
-    value: displayOptions[displayIndex].value,
-    currencyCode: displayCurrencyCode,
-    liability: displayIndex === 2,
-  })
-
-  const handleCycleDisplayCurrency = () => {
-    if (!cycleDisplayCurrency()) return
-
-    commitLocalUpdate(environment, (store) => {
-      store.invalidateStore()
-    })
-    router.invalidate()
-  }
-
   return (
-    <Fragment>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <div className="flex gap-3">
-            {displayOptions.map((option, index) => (
-              <button
-                key={option.label}
-                type="button"
-                onClick={() => setDisplayIndex(index)}
-                className={cn(
-                  'cursor-pointer text-[0.6875rem] font-medium tracking-wider uppercase transition-colors',
-                  index === displayIndex ? '' : 'text-muted-foreground',
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          {nextDisplayCurrencyCode ? (
-            <button
-              type="button"
-              onClick={handleCycleDisplayCurrency}
-              title={`Switch to ${nextDisplayCurrencyCode}`}
-              aria-label={`${displayOptions[displayIndex].label}: ${formattedDisplayValue}. Displayed in ${displayCurrencyCode}. Switch to ${nextDisplayCurrencyCode}.`}
-              className="focus-visible:ring-ring/30 -mx-1 w-fit cursor-pointer px-1 text-left text-3xl font-semibold tracking-tight tabular-nums outline-none focus-visible:ring-2"
-            >
-              {formattedDisplayValue}
-            </button>
-          ) : (
-            <div className="text-3xl font-semibold tracking-tight tabular-nums">
-              {formattedDisplayValue}
-            </div>
-          )}
-        </div>
+    <VStack gap={6}>
+      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+        <VStack gap={1}>
+          <Heading level={1}>Accounts</Heading>
+          <Text color="secondary">
+            Your household's balances, in one place.
+          </Text>
+        </VStack>
         <PageAddButton
           label="Add account"
           to="/household/$householdId/accounts/new"
           params={{ householdId }}
         />
-      </div>
-
-      <div className="py-2" />
-      <Suspense fallback={<NetWorthChartSkeleton />}>
+      </HStack>
+      <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
+        {displayOptions.map((option, index) => (
+          <Card key={option.label}>
+            <VStack gap={3}>
+              <Text color="secondary">{option.label}</Text>
+              <Heading level={2}>
+                {formatCurrencyWithPrivacyMode({
+                  value: option.value,
+                  currencyCode: displayCurrencyCode,
+                  liability: index === 2,
+                })}
+              </Heading>
+              <Text type="supporting">{displayCurrencyCode}</Text>
+            </VStack>
+          </Card>
+        ))}
+      </Grid>
+      <Suspense fallback={<Skeleton height={200} />}>
         <NetWorthChart />
       </Suspense>
-      <div className="py-2" />
-
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <SearchIcon className="text-muted-foreground/50 absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-          <Input
-            placeholder="Filter accounts"
-            value={searchFilter}
-            onChange={(event) => setSearchFilter(event.target.value)}
-            className="w-full pl-8 text-xs sm:max-w-64"
-            aria-label="Filter accounts"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:flex">
-          <Select
-            name="sort-accounts"
-            value={sortOption}
-            onValueChange={handleSortChange}
-          >
-            <SelectTrigger
-              className="w-full sm:w-36"
-              aria-label="Sort accounts"
-            >
-              <SelectValue>{SORT_OPTIONS[sortOption]}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {(Object.entries(SORT_OPTIONS) as [SortOption, string][]).map(
-                  ([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ),
-                )}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            name="group-accounts"
-            value={groupByOption}
-            onValueChange={handleGroupByChange}
-          >
-            <SelectTrigger
-              className="w-full sm:w-32"
-              aria-label="Group accounts"
-            >
-              <SelectValue>{GROUP_BY_OPTIONS[groupByOption]}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {(
-                  Object.entries(GROUP_BY_OPTIONS) as [GroupByOption, string][]
-                ).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="py-2" />
-      {visibleGroups.length > 0 ? (
-        <Accordion
-          key={groupByOption}
-          multiple
-          className="ring-foreground/10 overflow-visible border-0 ring-1"
-          defaultValue={visibleGroups.map(({ key }) => key)}
-        >
-          {visibleGroups.map(({ key, accounts }) => {
-            const groupTotal = accounts.reduce(
-              (total, account) => total.add(account.displayValue),
-              currency(0),
-            )
-            const isLiabilityGroup = accounts.every(
-              ({ node }) => node.type === 'liability',
-            )
-            const { share: groupShare, basis: allocationBasis } =
-              getAccountGroupAllocation(groupTotal.value, assetsTotal)
-            const groupTypes = new Set(accounts.map(({ node }) => node.type))
-            const groupAccentClass =
-              groupTypes.size === 1
-                ? (ACCOUNT_TYPE_ACCENT_CLASSES[[...groupTypes][0]] ??
-                  'bg-chart-2')
-                : 'bg-chart-2'
-            const groupShareLabel = `${formatPercentageWithPrivacyMode(
-              groupShare,
-              household.locale,
-              isPrivacyModeEnabled,
-            )} of ${allocationBasis}`
-
-            return (
-              <AccordionItem
-                value={key}
-                key={key}
-                className="data-open:bg-transparent"
-              >
-                <AccountGroupTrigger
-                  label={getGroupLabel(key)}
-                  total={formatCurrencyWithPrivacyMode({
-                    value: groupTotal,
-                    currencyCode: displayCurrencyCode,
-                    liability: isLiabilityGroup,
-                  })}
-                  share={groupShare}
-                  shareLabel={groupShareLabel}
-                  accentClass={groupAccentClass}
-                  hideAllocation={isPrivacyModeEnabled}
-                />
-                <AccordionContent className="-mx-2 pb-0">
-                  <AccountLedgerColumnHeader
-                    displayCurrencyCode={displayCurrencyCode}
-                  />
-                  <div
-                    role="list"
-                    aria-label={`${getGroupLabel(key)} accounts`}
-                  >
-                    {accounts.map((account) => (
-                      <AccountLedgerRow
-                        key={account.node.id}
-                        fragmentRef={account.node}
-                        displayValue={account.displayValue}
-                        displayCurrencyCode={displayCurrencyCode}
-                        share={calculateAllocationPercentage(
-                          account.displayValue.value,
-                          groupTotal.value,
-                        )}
-                      />
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            )
-          })}
-        </Accordion>
-      ) : (
-        <Empty className="border py-10">
-          <EmptyHeader>
-            <EmptyTitle>No accounts found</EmptyTitle>
-            <EmptyDescription>
-              {searchFilter
-                ? `No account names match “${searchFilter}”.`
-                : 'Add an account to start building your balance sheet.'}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      )}
-    </Fragment>
-  )
-}
-
-function NetWorthChartSkeleton() {
-  return (
-    <div className="flex w-full flex-col items-stretch gap-0 rounded-md border border-transparent">
-      <div className="flex gap-1 py-px">
-        <Skeleton className="h-5 w-16 rounded-md" />
-        <Skeleton className="h-5 w-12 rounded-md" />
-        <Skeleton className="h-5 w-16 rounded-md" />
-        <Skeleton className="h-5 w-20 rounded-md" />
-        <Skeleton className="h-5 w-18 rounded-md" />
-        <Skeleton className="h-5 w-14 rounded-md" />
-      </div>
-      <div className="py-1" />
-      <Skeleton className="h-44 w-full rounded-md" />
-      <div className="flex items-center gap-2 pt-1 pb-2.5">
-        <Skeleton className="h-4 w-28" />
-        <div className="grow" />
-        <div className="flex gap-0.5">
-          <Skeleton className="h-5 w-7 rounded-md" />
-          <Skeleton className="h-5 w-7 rounded-md" />
-          <Skeleton className="h-5 w-7 rounded-md" />
-          <Skeleton className="h-5 w-7 rounded-md" />
-          <Skeleton className="h-5 w-7 rounded-md" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function AccountLedgerColumnHeader({
-  displayCurrencyCode,
-}: {
-  displayCurrencyCode: string
-}) {
-  return (
-    <div className="bg-muted/30 text-muted-foreground hidden grid-cols-[minmax(13rem,1.45fr)_minmax(5rem,0.45fr)_minmax(7rem,0.65fr)_minmax(8rem,0.7fr)_minmax(8rem,0.75fr)_minmax(8rem,0.8fr)] gap-x-4 border-t px-3 py-1.5 text-[0.625rem] font-medium tracking-[0.04em] uppercase lg:grid">
-      <span>Account</span>
-      <span>Owner</span>
-      <span>Updated</span>
-      <span className="text-right">Original</span>
-      <span className="text-right">Value ({displayCurrencyCode})</span>
-      <span className="text-right">Share</span>
-    </div>
-  )
-}
-
-type AccountGroupTriggerProps = {
-  label: string
-  total: string
-  share: number
-  shareLabel: string
-  accentClass: string
-  hideAllocation: boolean
-}
-
-function AccountGroupTrigger({
-  label,
-  total,
-  share,
-  shareLabel,
-  accentClass,
-  hideAllocation,
-}: AccountGroupTriggerProps) {
-  const allocationWidth = hideAllocation ? 0 : Math.min(100, Math.max(0, share))
-
-  return (
-    <AccordionPrimitive.Header className="sticky top-0 z-10 flex">
-      <AccordionPrimitive.Trigger className="group/account-group bg-muted hover:bg-input/50 focus-visible:border-ring focus-visible:ring-ring/30 dark:bg-card dark:hover:bg-input relative grid min-h-11 flex-1 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 border border-transparent py-1.5 pr-10 pl-3 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:pointer-events-none disabled:opacity-50">
-        <span className="flex min-w-0 items-center gap-2">
-          <span
-            aria-hidden="true"
-            className={cn('size-2 shrink-0', accentClass)}
-          />
-          <span className="truncate text-[0.6875rem] font-semibold tracking-[0.08em] uppercase">
-            {label}
-          </span>
-        </span>
-        <span className="row-span-2 text-right text-base leading-none font-semibold tracking-tight tabular-nums lg:text-sm">
-          {total}
-        </span>
-        <span className="text-muted-foreground absolute top-1/2 right-3 flex size-5 -translate-y-1/2 items-center justify-center">
-          <ChevronDownIcon className="pointer-events-none size-4 group-aria-expanded/account-group:hidden" />
-          <ChevronUpIcon className="pointer-events-none hidden size-4 group-aria-expanded/account-group:block" />
-        </span>
-        <span className="col-span-2 col-start-1 flex min-w-0 items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="bg-border block h-1 min-w-0 flex-1 overflow-hidden"
-          >
-            <span
-              className={cn('block h-full', accentClass)}
-              style={{ width: `${allocationWidth}%` }}
+      <Section>
+        <VStack gap={4}>
+          <HStack gap={3} vAlign="end" wrap="wrap">
+            <TextInput
+              label="Search accounts"
+              placeholder="Search by name"
+              value={searchFilter}
+              onChange={setSearchFilter}
             />
-          </span>
-          <span className="text-muted-foreground shrink-0 text-[0.625rem] tabular-nums">
-            {shareLabel}
-          </span>
-        </span>
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
+            <Selector
+              label="Sort by"
+              value={sortOption}
+              onChange={handleSortChange}
+              options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
+                value,
+                label,
+              }))}
+            />
+            <Selector
+              label="Group by"
+              value={groupByOption}
+              onChange={handleGroupByChange}
+              options={Object.entries(GROUP_BY_OPTIONS).map(
+                ([value, label]) => ({ value, label }),
+              )}
+            />
+          </HStack>
+          {visibleGroups.length ? (
+            visibleGroups.map(({ key, accounts }) => {
+              const total = accounts.reduce(
+                (sum, item) => sum.add(item.displayValue),
+                currency(0),
+              )
+              const label =
+                groupByOption === 'category'
+                  ? (ACCOUNT_CATEGORY_LABEL[key] ?? capitalize(key))
+                  : capitalize(key)
+              return (
+                <List
+                  key={key}
+                  hasDividers
+                  header={
+                    <HStack hAlign="between" vAlign="center" gap={3}>
+                      <Heading level={3}>{label}</Heading>
+                      <Text color="secondary" hasTabularNumbers>
+                        {formatCurrencyWithPrivacyMode({
+                          value: total,
+                          currencyCode: displayCurrencyCode,
+                          liability: accounts.every(
+                            ({ node }) => node.type === 'liability',
+                          ),
+                        })}
+                      </Text>
+                    </HStack>
+                  }
+                >
+                  {accounts.map((account) => (
+                    <AccountLedgerRow
+                      key={account.node.id}
+                      fragmentRef={account.node}
+                      displayValue={account.displayValue}
+                      displayCurrencyCode={displayCurrencyCode}
+                      share={calculateAllocationPercentage(
+                        getAccountDisplayValue(
+                          account.displayValue.value,
+                          account.node.type,
+                        ),
+                        total.value,
+                      )}
+                    />
+                  ))}
+                </List>
+              )
+            })
+          ) : (
+            <EmptyState
+              title="No accounts found"
+              description={
+                searchFilter
+                  ? 'Try another account name.'
+                  : 'Add your first account to start tracking your balances.'
+              }
+            />
+          )}
+        </VStack>
+      </Section>
+    </VStack>
   )
 }

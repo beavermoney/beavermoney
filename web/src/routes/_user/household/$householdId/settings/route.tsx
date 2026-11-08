@@ -1,44 +1,14 @@
-import {
-  Outlet,
-  createFileRoute,
-  Link,
-  linkOptions,
-} from '@tanstack/react-router'
-import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { cn } from '@/lib/utils'
-import { identity } from 'lodash-es'
 import { GenericError } from '@/components/generic-error'
-
-const SETTINGS_NAV = [
-  {
-    label: 'General',
-    ...linkOptions({
-      from: '/household/$householdId/settings',
-      to: './general',
-      search: identity,
-      activeOptions: { exact: true, includeSearch: false },
-    }),
-  },
-  {
-    label: 'Accounts',
-    ...linkOptions({
-      from: '/household/$householdId/settings',
-      to: './accounts',
-      search: identity,
-      activeOptions: { exact: true, includeSearch: false },
-    }),
-  },
-  {
-    label: 'Members',
-    ...linkOptions({
-      from: '/household/$householdId/settings',
-      to: './members',
-      search: identity,
-      activeOptions: { exact: true, includeSearch: false },
-    }),
-  },
-]
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Section } from '@astryxdesign/core/Section'
+import { Tab, TabList } from '@astryxdesign/core/TabList'
+import {
+  createFileRoute,
+  Outlet,
+  useNavigate,
+  useRouterState,
+} from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_user/household/$householdId/settings')({
   component: RouteComponent,
@@ -46,60 +16,35 @@ export const Route = createFileRoute('/_user/household/$householdId/settings')({
 })
 
 function RouteComponent() {
-  const isMobile = useIsMobile()
   const params = Route.useParams()
-
+  const navigate = useNavigate()
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const section = pathname.split('/').at(-1) ?? 'general'
   return (
-    <HouseholdContentLayout className="max-w-3xl">
-      {isMobile ? (
-        <div className="flex flex-col gap-4">
-          <nav className="border-b pb-2">
-            <div className="flex gap-1">
-              {SETTINGS_NAV.map(({ label, ...linkProps }) => (
-                <Link
-                  {...linkProps}
-                  key={label}
-                  params={params}
-                  className={cn(
-                    'text-muted-foreground rounded-md px-2.5 py-1 text-xs/relaxed font-medium transition-colors',
-                    '',
-                  )}
-                  activeProps={{
-                    className: 'bg-muted font-semibold',
-                  }}
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </nav>
-          <Outlet />
-        </div>
-      ) : (
-        <div className="grid grid-cols-[120px_1fr] gap-10">
-          <nav className="flex flex-col gap-0.5 border-r pt-px pr-6">
-            {SETTINGS_NAV.map(({ label, ...linkProps }) => (
-              <Link
-                {...linkProps}
-                key={label}
-                params={params}
-                className={cn(
-                  'text-muted-foreground hover:bg-muted focus-visible:outline-ring px-2.5 py-1 text-xs/relaxed font-medium transition-colors focus-visible:outline-2',
-                  '',
-                )}
-                activeProps={{
-                  className: 'bg-muted text-foreground font-semibold',
-                }}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-          <div className="min-w-0">
-            <Outlet />
-          </div>
-        </div>
-      )}
+    <HouseholdContentLayout>
+      <Heading level={1}>Household settings</Heading>
+      <TabList
+        aria-label="Settings"
+        value={section}
+        onChange={(value) => {
+          void navigate({
+            to:
+              value === 'accounts'
+                ? '/household/$householdId/settings/accounts'
+                : value === 'members'
+                  ? '/household/$householdId/settings/members'
+                  : '/household/$householdId/settings/general',
+            params,
+          })
+        }}
+      >
+        <Tab value="general" label="General" />
+        <Tab value="accounts" label="Accounts" />
+        <Tab value="members" label="Members" />
+      </TabList>
+      <Section>
+        <Outlet />
+      </Section>
     </HouseholdContentLayout>
   )
 }

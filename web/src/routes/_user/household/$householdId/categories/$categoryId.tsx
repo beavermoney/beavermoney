@@ -1,3 +1,7 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { Button } from '@astryxdesign/core/Button'
+import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import {
   loadQuery,
@@ -5,19 +9,16 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { fetchQuery, graphql } from 'relay-runtime'
-import type { CategoryIdQuery } from './__generated__/CategoryIdQuery.graphql'
-import { environment } from '@/environment'
-import { PendingComponent } from '@/components/pending-component'
-import { EditCategory } from './-components/edit-category'
 import { CategoryCard } from './-components/category-card'
-import { Item } from '@/components/ui/item'
-import { Button } from '@/components/ui/button'
+import { EditCategory } from './-components/edit-category'
+import type { CategoryIdQuery } from './__generated__/CategoryIdQuery.graphql'
+
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { parseDateRangeFromURL } from '@/lib/date-range'
-import { TransactionsList } from '../transactions/-components/transactions-list'
+import { identity } from 'lodash-es'
 import invariant from 'tiny-invariant'
 import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
-import { identity } from 'lodash-es'
-import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { TransactionsList } from '../transactions/-components/transactions-list'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/categories/$categoryId',
@@ -103,24 +104,25 @@ function RouteComponent() {
 
   return (
     <HouseholdContentLayout>
-      <div className="flex h-full flex-col gap-4">
-        <div>
+      <Stack direction="vertical" gap={4}>
+        <Stack direction="vertical" gap={4}>
           <Button
-            variant="secondary"
             onClick={() => navigate({ to: '..', search: identity })}
+            label={'Back'}
+            variant={'secondary'}
           >
             Back
           </Button>
-        </div>
-        <Item className="p-0">
+        </Stack>
+        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
           <CategoryCard
             categoryRef={data.node}
             financialReportRef={data.household.financialReport}
           />
           <EditCategory key={data.node.id} fragmentRef={data.node} />
-        </Item>
+        </Stack>
         <TransactionsList fragmentRef={data.household} />
-      </div>
+      </Stack>
     </HouseholdContentLayout>
   )
 }

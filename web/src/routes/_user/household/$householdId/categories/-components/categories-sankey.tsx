@@ -1,15 +1,17 @@
-import { useMemo } from 'react'
-import { graphql, useFragment } from 'react-relay'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
 import { ResponsiveSankey, type CustomSankeyLayerProps } from '@nivo/sankey'
 import currency from 'currency.js'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
-import { Item } from '@/components/ui/item'
+import { useMemo } from 'react'
+import { graphql, useFragment } from 'react-relay'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
-import type { categoriesSankeyFragment$key } from './__generated__/categoriesSankeyFragment.graphql'
 import { InfoIcon } from 'lucide-react'
+import type { categoriesSankeyFragment$key } from './__generated__/categoriesSankeyFragment.graphql'
 
 const CategoriesSankeyFragment = graphql`
   fragment categoriesSankeyFragment on FinancialReport {
@@ -288,13 +290,10 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
 
   if (!sankeyData) {
     return (
-      <Item
-        variant="outline"
-        className="flex items-center gap-2 overflow-x-auto"
-      >
-        <InfoIcon size="16" />
+      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+        <AstryxIcon icon={InfoIcon} size="md" />
         Log some transactions to see the Sankey chart
-      </Item>
+      </Stack>
     )
   }
 
@@ -368,12 +367,11 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
   }
 
   return (
-    <Item
-      variant="outline"
-      className="flex-col items-stretch gap-0 overflow-x-auto px-0 py-0"
-    >
-      <div
-        className="min-w-120"
+    <Stack direction="vertical" gap={4}>
+      <Stack
+        direction="vertical"
+        gap={4}
+
         style={{ height: Math.max(360, sankeyData.nodes.length * 32) }}
       >
         <ResponsiveSankey
@@ -397,7 +395,7 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
           isInteractive={false}
           layers={['links', 'nodes', customLabels]}
         />
-      </div>
-    </Item>
+      </Stack>
+    </Stack>
   )
 }

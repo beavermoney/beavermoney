@@ -1,15 +1,15 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
 import { createFileRoute } from '@tanstack/react-router'
-import { graphql } from 'relay-runtime'
 import {
   fetchQuery,
   loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import type { accountsSettingsQuery } from './__generated__/accountsSettingsQuery.graphql'
+import { graphql } from 'relay-runtime'
 import { AccountSettings } from './-components/account-settings'
+import type { accountsSettingsQuery } from './__generated__/accountsSettingsQuery.graphql'
 
 const query = graphql`
   query accountsSettingsQuery {

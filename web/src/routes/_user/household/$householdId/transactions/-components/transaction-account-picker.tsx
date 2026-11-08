@@ -1,28 +1,30 @@
-import { SelectionRows } from '@/components/selection-rows'
-import { Tabs } from '@base-ui/react/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { graphql } from 'react-relay'
-import type { transactionAccountPickerFragment$key } from './__generated__/transactionAccountPickerFragment.graphql'
-import { readInlineData } from 'relay-runtime'
-import { useEffect, useRef, useState } from 'react'
-import { ChevronDownIcon, WalletIcon } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { useCurrency } from '@/hooks/use-currency'
-import { getLogoDomainURL } from '@/lib/logo'
-import { cn } from '@/lib/utils'
-import { newestActivityFirst } from '@/lib/sort-by-update-time'
-import { Button } from '@/components/ui/button'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuDivider,
   DropdownMenuGroup,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
+import { RadioList, RadioListItem } from '@astryxdesign/core/RadioList'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Tab, TabList } from '@astryxdesign/core/TabList'
+import { Text } from '@astryxdesign/core/Text'
+
+import { ChevronDownIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { graphql } from 'react-relay'
+import { readInlineData } from 'relay-runtime'
+import type { transactionAccountPickerFragment$key } from './__generated__/transactionAccountPickerFragment.graphql'
+
+import { useCurrency } from '@/hooks/use-currency'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { getLogoDomainURL } from '@/lib/logo'
+import { newestActivityFirst } from '@/lib/sort-by-update-time'
 
 const accountFragment = graphql`
   fragment transactionAccountPickerFragment on Account @inline {
@@ -78,6 +80,11 @@ export function TransactionAccountPicker({
   disabled = false,
   preferredTypes,
 }: TransactionAccountPickerProps) {
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
+  const accountBalance = (account: Account) => {
+    const data = accountData(account)
+    return `${formatCurrencyWithPrivacyMode({ value: data.balance, currencyCode: data.householdCurrency.code, liability: account.type === 'liability' })} ${data.householdCurrency.code}`
+  }
   const isMobile = useIsMobile()
   const [typeFilter, setTypeFilter] = useState<{
     type: string
@@ -144,191 +151,172 @@ export function TransactionAccountPicker({
         onOpenChange={(open) => {
           if (!open) onBlur()
         }}
+        alignment={'start'}
+        renderTrigger={(triggerProps) => (
+          <Button
+            {...triggerProps}
+            id={name}
+            name={name}
+            type="button"
+            aria-invalid={invalid}
+
+            label={`${label}: ${selected ? `${accountData(selected).name} · ${accountBalance(selected)}` : disabled ? 'Select a source account first' : 'Select an account'}`}
+            variant={'secondary'}
+
+            isDisabled={disabled}
+            endContent={
+              <AstryxIcon icon={ChevronDownIcon} data-icon="inline-end" />
+            }
+          >
+            {selected ? (
+              <AccountDetails account={selected} />
+            ) : (
+              <span>
+                {disabled
+                  ? 'Select a source account first'
+                  : 'Select an account'}
+              </span>
+            )}
+          </Button>
+        )}
       >
-        <DropdownMenuTrigger
-          render={
-            <Button
-              id={name}
-              name={name}
-              type="button"
-              variant="outline"
-              disabled={disabled}
-              aria-invalid={invalid}
-              aria-label={`${label}: ${selected ? accountData(selected).name : disabled ? 'Select a source account first' : 'Select an account'}`}
-              className="h-12 w-full justify-start gap-2 p-2 text-left font-normal"
-            />
-          }
-        >
-          {selected ? (
-            <AccountDetails account={selected} />
-          ) : (
-            <span className="text-muted-foreground min-w-0 flex-1 truncate text-left">
-              {disabled ? 'Select a source account first' : 'Select an account'}
-            </span>
-          )}
-          <ChevronDownIcon data-icon="inline-end" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="max-h-none overflow-hidden p-0">
-          <ScrollArea className="max-h-80 [&_[data-slot=scroll-area-viewport]]:max-h-80">
-            <div className="p-1">
-              {groups.map((group, index) => (
-                <div key={group.type}>
-                  {index > 0 ? <DropdownMenuSeparator /> : null}
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>{group.title}</DropdownMenuLabel>
-                    <DropdownMenuRadioGroup
-                      value={value}
-                      onValueChange={(nextValue) => {
-                        if (typeof nextValue === 'string')
-                          onValueChange(nextValue)
-                      }}
-                    >
-                      {group.accounts.map((account) => (
-                        <DropdownMenuRadioItem
-                          key={account.id}
-                          value={account.id}
-                          aria-label={accountData(account).name}
-                          closeOnClick
-                          className="min-h-10 py-1.5"
-                        >
-                          <AccountDetails
-                            account={account}
-                            selected={value === account.id}
-                          />
-                        </DropdownMenuRadioItem>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuGroup>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </DropdownMenuContent>
+        <ScrollableArea label="Scrollable content">
+          <Text as="div" display="block">
+            {groups.map((group, index) => (
+              <Stack direction="vertical" gap={4} key={group.type}>
+                {index > 0 ? <DropdownMenuDivider /> : null}
+                <DropdownMenuGroup title={<>{group.title}</>}>
+                  <DropdownMenuRadioGroup
+                    value={value}
+                    onChange={(nextValue) => {
+                      if (typeof nextValue === 'string')
+                        onValueChange(nextValue)
+                    }}
+                    label="Options"
+                    hasCloseOnSelect
+                  >
+                    {group.accounts.map((account) => (
+                      <DropdownMenuRadioItem
+                        key={account.id}
+                        value={account.id}
+                        aria-label={accountData(account).name}
+
+                        label={
+                          <>
+                            <AccountDetails
+                              account={account}
+                              selected={value === account.id}
+                            />
+                          </>
+                        }
+                      />
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuGroup>
+              </Stack>
+            ))}
+          </Text>
+        </ScrollableArea>
       </DropdownMenu>
     )
   }
 
   if (!expanded || disabled) {
     return (
-      <button
+      <Button
         ref={summaryRef}
         type="button"
         id={name}
-        disabled={disabled}
+        isDisabled={disabled}
         aria-expanded={false}
-        aria-label={`${label}: ${selected ? accountData(selected).name : 'Select an account'}`}
+        label={`${label}: ${selected ? `${accountData(selected).name} · ${accountBalance(selected)}` : disabled ? 'Select a source account first' : 'Select an account'}`}
+        variant="secondary"
+        width="100%"
+        icon={<AstryxIcon icon={ChevronDownIcon} />}
         onClick={() => {
           if (isControlled) onExpand?.()
           else setEditing(true)
         }}
-        className="border-input bg-background focus-visible:outline-ring flex min-h-11 w-full items-center gap-2 border p-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {selected ? (
-          <AccountDetails account={selected} />
-        ) : (
-          <span className="text-muted-foreground flex-1 text-xs">
-            {disabled ? 'Select a source account first' : 'Select an account'}
-          </span>
-        )}
-        <ChevronDownIcon className="size-4 shrink-0" aria-hidden="true" />
-      </button>
+      />
     )
   }
 
   const renderGroups = (accountGroups: typeof groups) =>
     accountGroups.map((group) => (
-      <div key={group.type} className="flex min-w-0 flex-col gap-0.5">
-        <SelectionRows label={`${group.title} accounts`}>
+      <Stack direction="vertical" gap={0.5} key={group.type}>
+        <RadioList
+          label={`${group.title} accounts`}
+          htmlName={name}
+          value={value}
+          status={invalid ? { type: 'error' } : undefined}
+          onChange={(next) => {
+            onValueChange(next)
+            if (!isControlled) setEditing(false)
+          }}
+        >
           {group.accounts.map((account) => (
-            <label
+            <RadioListItem
               key={account.id}
-              className={cn(
-                'border-input bg-background has-focus-visible:outline-ring flex min-h-11 w-max max-w-full min-w-44 shrink-0 cursor-pointer items-center border p-2 has-focus-visible:outline-2 has-focus-visible:-outline-offset-2',
-                value === account.id && 'border-primary',
-              )}
-            >
-              <input
-                type="radio"
-                name={name}
-                value={account.id}
-                checked={value === account.id}
-                onChange={() => {
-                  onValueChange(account.id)
-                  if (!isControlled) setEditing(false)
-                }}
-                onClick={() => {
-                  if (value !== account.id) return
-                  if (isControlled) onValueChange(account.id)
-                  else setEditing(false)
-                }}
-                aria-invalid={invalid}
-                className="sr-only"
-              />
-              <AccountDetails
-                account={account}
-                selected={value === account.id}
-              />
-            </label>
+              value={account.id}
+              label={accountData(account).name}
+              description={accountBalance(account)}
+              onClick={() => {
+                if (value !== account.id) return
+                if (isControlled) onValueChange(account.id)
+                else setEditing(false)
+              }}
+            />
           ))}
-        </SelectionRows>
-      </div>
+        </RadioList>
+      </Stack>
     ))
 
   return (
     <fieldset
       id={name}
       aria-invalid={invalid}
-      className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0"
+
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) onBlur()
       }}
     >
-      <legend className="sr-only">{label}</legend>
+      <legend>{label}</legend>
       {accounts.length === 0 ? (
-        <p className="text-muted-foreground text-xs">No accounts available.</p>
+        <Text as="p" display="block" color="secondary">
+          No accounts available.
+        </Text>
       ) : groups.length === 1 ? (
         renderGroups(groups)
       ) : (
-        <Tabs.Root
-          value={activeType}
-          onValueChange={(type) => {
-            if (typeof type === 'string')
-              setTypeFilter({ type, accountValue: value })
-          }}
-          className="flex min-w-0 flex-col gap-2"
-        >
-          <ScrollArea className="w-full min-w-0 overflow-hidden [&_[data-slot=scroll-area-scrollbar]]:hidden">
-            <Tabs.List
-              aria-label={`${label} type`}
-              className="border-border divide-border flex w-max divide-x border"
-            >
-              {groups.map((group) => (
-                <Tabs.Tab
-                  key={group.type}
-                  value={group.type}
-                  className="focus-visible:ring-ring/30 text-muted-foreground hover:text-foreground hover:bg-background/50 data-active:text-foreground data-active:outline-primary inline-flex h-6 shrink-0 cursor-pointer items-center justify-center gap-1.5 px-2.5 text-xs font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2 data-active:outline-1 data-active:-outline-offset-1"
-                >
-                  {group.title}
-                  <span
-                    className="tabular-nums"
-                    aria-label={`${group.accounts.length} accounts`}
-                  >
+        <Stack direction="vertical" gap={3}>
+          <TabList
+            value={activeType}
+            onChange={(type) => setTypeFilter({ type, accountValue: value })}
+            aria-label={`${label} type`}
+            overflow="scroll"
+          >
+            {groups.map((group) => (
+              <Tab
+                key={group.type}
+                value={group.type}
+                label={group.title}
+                endContent={
+                  <span aria-label={`${group.accounts.length} accounts`}>
                     {group.accounts.length}
                   </span>
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </ScrollArea>
-          {groups.map((group) => (
-            <Tabs.Panel
-              key={group.type}
-              value={group.type}
-              className="min-w-0 outline-none"
-            >
-              {renderGroups([group])}
-            </Tabs.Panel>
-          ))}
-        </Tabs.Root>
+                }
+              />
+            ))}
+          </TabList>
+          <Stack
+            direction="vertical"
+            gap={4}
+            role="tabpanel"
+            aria-label={`${label} ${activeType}`}
+          >
+            {renderGroups(groups.filter((group) => group.type === activeType))}
+          </Stack>
+        </Stack>
       )}
     </fieldset>
   )
@@ -357,7 +345,7 @@ function accountData(account: Account) {
 
 function AccountDetails({
   account,
-  selected = false,
+  selected: _selected = false,
 }: {
   account: Account
   selected?: boolean
@@ -365,23 +353,14 @@ function AccountDetails({
   const data = accountData(account)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   return (
-    <span className="flex min-w-0 flex-1 items-center gap-2">
-      <Avatar size="sm">
-        {data.icon && <AvatarImage src={getLogoDomainURL(data.icon)} alt="" />}
-        <AvatarFallback>
-          <WalletIcon className="size-4" aria-hidden="true" />
-        </AvatarFallback>
-      </Avatar>
-      <span className="flex min-w-0 flex-1 flex-col text-xs leading-4">
-        <span className="truncate" title={data.name}>
-          {data.name}
-        </span>
-        <span
-          className={cn(
-            'wrap-anywhere tabular-nums',
-            selected ? 'text-foreground' : 'text-muted-foreground',
-          )}
-        >
+    <HStack gap={2} vAlign="center">
+      <Avatar
+        name={data.name}
+        src={data.icon ? getLogoDomainURL(data.icon) : undefined}
+      />
+      <VStack gap={1}>
+        <Text maxLines={1}>{data.name}</Text>
+        <span>
           {formatCurrencyWithPrivacyMode({
             value: data.balance,
             currencyCode: data.householdCurrency.code,
@@ -389,7 +368,7 @@ function AccountDetails({
           })}
           <span> {data.householdCurrency.code}</span>
         </span>
-      </span>
-    </span>
+      </VStack>
+    </HStack>
   )
 }

@@ -1,11 +1,12 @@
+import { GenericError } from '@/components/generic-error'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { getDefaultDates } from '@/lib/date-range'
 import {
   Outlet,
   createFileRoute,
   stripSearchParams,
 } from '@tanstack/react-router'
 import * as z from 'zod'
-import { getDefaultDates } from '@/lib/date-range'
-import { GenericError } from '@/components/generic-error'
 
 const defaults = getDefaultDates()
 
@@ -27,10 +28,8 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   return (
-    <div className="h-[calc(100dvh-2.5rem)] min-h-0 min-w-0 overflow-hidden">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-5xl min-w-0 flex-col overflow-hidden p-4">
-        <Outlet />
-      </div>
-    </div>
+    <HouseholdContentLayout>
+      <Outlet />
+    </HouseholdContentLayout>
   )
 }
