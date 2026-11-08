@@ -1,18 +1,18 @@
+import { Card } from '@astryxdesign/core/Card'
+import { EmptyState } from '@astryxdesign/core/EmptyState'
+import { Grid } from '@astryxdesign/core/Grid'
+import { Heading } from '@astryxdesign/core/Heading'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
+import { List } from '@astryxdesign/core/List'
+import { Section } from '@astryxdesign/core/Section'
+import { Selector } from '@astryxdesign/core/Selector'
+import { Text } from '@astryxdesign/core/Text'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { useMemo } from 'react'
-import { Fragment } from 'react/jsx-runtime'
 import { graphql, usePaginationFragment } from 'react-relay'
 import invariant from 'tiny-invariant'
 
-import { ItemGroup } from '@/components/ui/item'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
@@ -21,9 +21,9 @@ import currency from 'currency.js'
 
 import { SubscriptionCard } from './subscription-card'
 
-import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 import { PageAddButton } from '@/components/page-add-button'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
+import type { subscriptionsPanelFragment$key } from './__generated__/subscriptionsPanelFragment.graphql'
 
 const SubscriptionsPanelFragment = graphql`
   fragment subscriptionsPanelFragment on Household
@@ -73,6 +73,7 @@ const SORT_OPTIONS = {
 type SortOption = keyof typeof SORT_OPTIONS
 
 export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
+  const isMobile = useIsMobile()
   const { data } = usePaginationFragment(
     SubscriptionsPanelFragment,
     fragmentRef,
@@ -184,81 +185,118 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
       }
     }, [data, sortBy, convert])
 
+  const inactiveSubscriptions = (
+    data.recurringSubscriptions.edges ?? []
+  ).flatMap((edge) => (edge?.node && !edge.node.active ? [edge.node] : []))
+
   return (
-    <Fragment>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
-            Monthly Spend
-          </span>
-          <div className="text-3xl font-semibold tracking-tight tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: monthlyAverage,
-              currencyCode: displayCurrencyCode,
-            })}
-          </div>
-          <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums">
-            <span>
-              {formatCurrencyWithPrivacyMode({
-                value: yearlyAverage,
-                currencyCode: displayCurrencyCode,
-              })}{' '}
-              <span className="text-muted-foreground/60">yearly</span>
-            </span>
-            <span>
-              {activeCount}{' '}
-              <span className="text-muted-foreground/60">
-                {activeCount === 1 ? 'subscription' : 'subscriptions'}
-              </span>
-            </span>
-          </div>
-        </div>
+    <VStack gap={6}>
+      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+        <VStack gap={1}>
+          <Heading level={1}>Subscriptions</Heading>
+        </VStack>
         <PageAddButton
           label="Add subscription"
           to="/household/$householdId/subscriptions/new"
           params={{ householdId }}
         />
-      </div>
-
-      <div className="py-2"></div>
-
-      <div className="flex items-center">
-        <div className="grow"></div>
-        <Select
-          name="sort-subscriptions"
-          value={sortBy}
-          onValueChange={handleSortChange}
-        >
-          <SelectTrigger className="w-40">
-            <SelectValue>{SORT_OPTIONS[sortBy]}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {(Object.entries(SORT_OPTIONS) as [SortOption, string][]).map(
-                ([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ),
-              )}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="py-2"></div>
-
-      <div className="overflow-hidden rounded-md border">
-        <ItemGroup className="gap-0">
-          {sortedSubscriptions.map((subscription) => (
-            <SubscriptionCard
-              key={subscription.id}
-              fragmentRef={subscription}
-              className="rounded-none"
+      </HStack>
+      {activeCount > 0 &&
+        (isMobile ? (
+          <Card>
+            <VStack gap={3}>
+              <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
+                <Text color="secondary">Monthly spend</Text>
+                <Text type="label" hasTabularNumbers>
+                  {formatCurrencyWithPrivacyMode({
+                    value: monthlyAverage,
+                    currencyCode: displayCurrencyCode,
+                  })}
+                </Text>
+              </HStack>
+              <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
+                <Text color="secondary">Yearly spend</Text>
+                <Text type="label" hasTabularNumbers>
+                  {formatCurrencyWithPrivacyMode({
+                    value: yearlyAverage,
+                    currencyCode: displayCurrencyCode,
+                  })}
+                </Text>
+              </HStack>
+            </VStack>
+          </Card>
+        ) : (
+          <Grid columns={2} gap={4}>
+            {[
+              { label: 'Monthly spend', value: monthlyAverage },
+              { label: 'Yearly spend', value: yearlyAverage },
+            ].map((metric) => (
+              <Card key={metric.label}>
+                <VStack gap={3}>
+                  <Text color="secondary">{metric.label}</Text>
+                  <Heading level={2}>
+                    {formatCurrencyWithPrivacyMode({
+                      value: metric.value,
+                      currencyCode: displayCurrencyCode,
+                    })}
+                  </Heading>
+                </VStack>
+              </Card>
+            ))}
+          </Grid>
+        ))}
+      <Section padding={6}>
+        <VStack gap={4}>
+          <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
+            <Heading level={3}>
+              Recurring payments{activeCount > 0 ? ` (${activeCount})` : ''}
+            </Heading>
+            {activeCount > 1 && (
+              <Selector
+                label="Sort subscriptions"
+                isLabelHidden
+                value={sortBy}
+                onChange={handleSortChange}
+                options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
+                  value,
+                  label,
+                }))}
+              />
+            )}
+          </HStack>
+          {sortedSubscriptions.length ? (
+            <List hasDividers edge="outset">
+              {sortedSubscriptions.map((subscription) => (
+                <SubscriptionCard
+                  key={subscription.id}
+                  fragmentRef={subscription}
+                />
+              ))}
+            </List>
+          ) : (
+            <EmptyState
+              title="No subscriptions yet"
+              description="Add a recurring payment to see your upcoming costs."
             />
-          ))}
-        </ItemGroup>
-      </div>
-    </Fragment>
+          )}
+          {inactiveSubscriptions.length > 0 && (
+            <VStack gap={3}>
+              <Heading level={3}>
+                Inactive subscriptions ({inactiveSubscriptions.length})
+              </Heading>
+              <List hasDividers edge="outset">
+                {inactiveSubscriptions.map((subscription) => (
+                  <SubscriptionCard
+                    key={subscription.id}
+                    fragmentRef={subscription}
+                    isActive={false}
+                  />
+                ))}
+              </List>
+            </VStack>
+          )}
+        </VStack>
+      </Section>
+    </VStack>
   )
 }

@@ -1,12 +1,12 @@
+import { NotLoggedInError } from '@/components/not-logged-in-error'
+import { PendingComponent } from '@/components/pending-component'
 import {
   ErrorComponentProps,
   Outlet,
+  ErrorComponent as TanStackErrorComponent,
   createFileRoute,
 } from '@tanstack/react-router'
 import { HTTPError } from 'ky'
-import { NotLoggedInError } from '@/components/not-logged-in-error'
-import { ErrorComponent as TanStackErrorComponent } from '@tanstack/react-router'
-import { PendingComponent } from '@/components/pending-component'
 
 function ErrorComponent(error: ErrorComponentProps) {
   if (error.error instanceof HTTPError) {

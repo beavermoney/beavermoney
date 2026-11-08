@@ -5,8 +5,8 @@ import {
 } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { GenericError } from '@/components/generic-error'
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const SearchSchema = z.object({
   sort_by: z

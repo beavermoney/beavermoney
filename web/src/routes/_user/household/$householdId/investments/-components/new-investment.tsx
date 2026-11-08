@@ -1,76 +1,43 @@
-import { graphql } from 'relay-runtime'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { NumberInput } from '@astryxdesign/core/NumberInput'
+import { Spinner } from '@astryxdesign/core/Spinner'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
+import { useNavigate } from '@tanstack/react-router'
+import { capitalize } from 'lodash-es'
 import { useFragment, useMutation, useRefetchableFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useNavigate } from '@tanstack/react-router'
-import { BitcoinIcon, ChartNoAxesCombinedIcon, CheckIcon } from 'lucide-react'
+import * as z from 'zod'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
+import { CurrencyInput } from '@/components/currency-input'
 import { INVESTMENT_TYPE_LIST } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
-import { CurrencyInput } from '@/components/currency-input'
 import { commitMutationResult } from '@/lib/relay'
-import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
 import { newInvestmentFragment$key } from './__generated__/newInvestmentFragment.graphql'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getLogoTickerURL, getLogoCryptoURL } from '@/lib/logo'
+import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
+
 import { useCurrency } from '@/hooks/use-currency'
-import { cn } from '@/lib/utils'
+import {
+  getLogoCryptoURL,
+  getLogoDomainURL,
+  getLogoTickerURL,
+} from '@/lib/logo'
 import { useEffect, useState, useTransition } from 'react'
-import { Spinner } from '@/components/ui/spinner'
-import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
-import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { TransactionAccountPicker } from '../../transactions/-components/transaction-account-picker'
-
-type InvestmentType = (typeof INVESTMENT_TYPE_LIST)[number]
-
-const INVESTMENT_TYPE_PRESENTATION = {
-  stock: {
-    label: 'Stock',
-    description: 'Shares, funds, and exchange-traded assets',
-    icon: ChartNoAxesCombinedIcon,
-  },
-  crypto: {
-    label: 'Crypto',
-    description: 'Cryptocurrencies and digital assets',
-    icon: BitcoinIcon,
-  },
-} satisfies Record<
-  InvestmentType,
-  { label: string; description: string; icon: typeof BitcoinIcon }
->
-
-function isInvestmentType(value: string | undefined): value is InvestmentType {
-  return INVESTMENT_TYPE_LIST.some((type) => type === value)
-}
+import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
+import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
 
 const formSchema = z.object({
   name: z
@@ -95,7 +62,15 @@ const newInvestmentFragment = graphql`
         node {
           id
           type
-          ...transactionAccountPickerFragment
+          name
+          icon
+          value
+          householdCurrency {
+            code
+          }
+          user {
+            name
+          }
         }
       }
     }
@@ -105,11 +80,8 @@ const newInvestmentFragment = graphql`
 const newInvestmentStockQuoteFragment = graphql`
   fragment newInvestmentStockQuoteFragment on Query
   @refetchable(queryName: "newInvestmentStockQuoteQuery")
-  @argumentDefinitions(
-    symbol: { type: "String", defaultValue: "" }
-    skipQuote: { type: "Boolean", defaultValue: true }
-  ) {
-    stockQuote(symbol: $symbol) @skip(if: $skipQuote) {
+  @argumentDefinitions(symbol: { type: "String", defaultValue: "" }) {
+    stockQuote(symbol: $symbol) {
       currentPrice
       symbol
       exchange
@@ -122,11 +94,8 @@ const newInvestmentStockQuoteFragment = graphql`
 const newInvestmentCryptoQuoteFragment = graphql`
   fragment newInvestmentCryptoQuoteFragment on Query
   @refetchable(queryName: "newInvestmentCryptoQuoteQuery")
-  @argumentDefinitions(
-    symbol: { type: "String", defaultValue: "" }
-    skipQuote: { type: "Boolean", defaultValue: true }
-  ) {
-    cryptoQuote(symbol: $symbol) @skip(if: $skipQuote) {
+  @argumentDefinitions(symbol: { type: "String", defaultValue: "" }) {
+    cryptoQuote(symbol: $symbol) {
       currentPrice
       symbol
       exchange
@@ -163,6 +132,8 @@ export function NewInvestment({
   newInvestmentStockQuoteFragmentRef,
   newInvestmentCryptoQuoteFragmentRef,
 }: NewInvestmentProps) {
+  const showToast = useToast()
+
   const [isPending, startTransition] = useTransition()
   const data = useFragment(newInvestmentFragment, newInvestmentFragmentRef)
 
@@ -182,7 +153,7 @@ export function NewInvestment({
 
   const { displayCurrencyCode } = useDisplayCurrency()
 
-  const { formatCurrency } = useCurrency()
+  const { formatCurrency, formatCurrencyWithPrivacyMode } = useCurrency()
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newInvestmentMutation>(newInvestmentMutation)
@@ -249,12 +220,13 @@ export function NewInvestment({
               investmentId: resultData.createInvestment.node.id,
             },
           })
-          toast.success(
-            `${resultData.createInvestment.node.name} is ready to go!`,
-          )
+          showToast({
+            type: 'info',
+            body: `${resultData.createInvestment.node.name} is ready to go!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -286,399 +258,441 @@ export function NewInvestment({
   }, [stockQuoteData, cryptoQuoteData, form])
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Investment</CardTitle>
-        <CardDescription>
-          Start tracking your investment in Beaver Money
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="new-investment-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.Field
-              name="accountId"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                    <TransactionAccountPicker
-                      accounts={investmentAccounts}
-                      name={field.name}
-                      label="Account"
-                      value={field.state.value}
-                      onValueChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                      preferredTypes={['investment']}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="type"
-              listeners={{
-                onChange: ({ fieldApi }) => {
-                  // Clear symbol and name when type changes
-                  fieldApi.form.setFieldValue('symbol', '')
-                  fieldApi.form.setFieldValue('name', '')
-                  setQueriedSymbol('')
-                },
-              }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel id={`${field.name}-label`}>Type</FieldLabel>
-                    <ToggleGroup
-                      value={
-                        isInvestmentType(field.state.value)
-                          ? [field.state.value]
-                          : []
-                      }
-                      onValueChange={(values) => {
-                        const nextValue = values[0]
-                        if (isInvestmentType(nextValue)) {
-                          field.handleChange(nextValue)
-                        }
-                      }}
-                      onBlur={(event) => {
-                        if (
-                          !event.currentTarget.contains(event.relatedTarget)
-                        ) {
-                          field.handleBlur()
-                        }
-                      }}
-                      variant="outline"
-                      spacing={2}
-                      aria-labelledby={`${field.name}-label`}
-                      aria-invalid={isInvalid}
-                      className="grid w-full grid-cols-2 items-stretch"
+    <Card>
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>New Investment</Heading>
+        </Stack>
+        <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="new-investment-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              <form.Field
+                name="accountId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
                     >
-                      {INVESTMENT_TYPE_LIST.map((type) => {
-                        const {
-                          label,
-                          description,
-                          icon: Icon,
-                        } = INVESTMENT_TYPE_PRESENTATION[type]
-                        return (
-                          <ToggleGroupItem
-                            key={type}
-                            value={type}
-                            aria-invalid={isInvalid}
-                            className="aria-pressed:bg-muted aria-pressed:hover:bg-muted aria-pressed:outline-foreground/40 h-full min-h-16 w-full justify-start gap-2.5 px-3 py-2 text-left whitespace-normal aria-pressed:outline-1 aria-pressed:-outline-offset-1 aria-pressed:outline-solid"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="bg-muted ring-foreground/10 grid size-8 shrink-0 place-items-center rounded-lg ring-1"
-                            >
-                              <Icon className="size-4" />
+                      <SearchSelect
+                        items={investmentAccounts.map((account) => account.id)}
+                        getLabel={(item) =>
+                          investmentAccounts.find((acc) => acc.id === item)
+                            ?.name || ''
+                        }
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                        }}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder="Select an account"
+                        onBlur={field.handleBlur}
+                        label={'Account'}
+                        renderOption={(item: string) => {
+                          const account = investmentAccounts.find(
+                            (acc) => acc.id === item,
+                          )
+                          if (!account) return null
+                          return (
+                            <span>
+                              <Stack
+                                direction="horizontal"
+                                gap={3}
+                                align="center"
+                                wrap="wrap"
+                              >
+                                <Stack direction="vertical" gap={4}>
+                                  <Avatar
+                                    src={getLogoDomainURL(account.icon || '')}
+                                    alt={account.icon || 'unknown logo'}
+                                    name={String(account.name)}
+                                  />
+                                </Stack>
+                                <Stack direction="vertical" gap={4}>
+                                  <Stack direction="vertical" gap={4}>
+                                    {account.name}
+                                  </Stack>
+                                  <Stack direction="vertical" gap={4}>
+                                    <Text hasTabularNumbers>
+                                      {formatCurrencyWithPrivacyMode({
+                                        value: account.value,
+                                        currencyCode:
+                                          account.householdCurrency.code,
+                                        liability: account.type === 'liability',
+                                      })}
+                                    </Text>
+                                    <span aria-hidden="true"> · </span>
+                                    {account.user.name}
+                                  </Stack>
+                                </Stack>
+                              </Stack>
                             </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-xs/relaxed font-semibold">
-                                {label}
-                              </span>
-                              <span className="text-muted-foreground block text-xs/normal font-normal">
-                                {description}
-                              </span>
-                            </span>
-                            <CheckIcon
-                              aria-hidden="true"
-                              className="shrink-0 opacity-0 group-aria-pressed/toggle:opacity-100"
-                            />
-                          </ToggleGroupItem>
-                        )
-                      })}
-                    </ToggleGroup>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="symbol"
-              validators={{
-                onChangeAsync: ({ value, fieldApi }) => {
-                  if (!value) return undefined // skip for empty value
+                          )
+                        }}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="type"
+                listeners={{
+                  onChange: ({ fieldApi }) => {
+                    // Clear symbol and name when type changes
+                    fieldApi.form.setFieldValue('symbol', '')
+                    fieldApi.form.setFieldValue('name', '')
+                    setQueriedSymbol('')
+                  },
+                }}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={INVESTMENT_TYPE_LIST}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
+                        id={field.name}
+                        placeholder="Select a type"
+                        onBlur={field.handleBlur}
+                        label={'Type'}
+                        renderOption={(item: string) => (
+                          <span>
+                            <Text>{capitalize(item)}</Text>
+                          </span>
+                        )}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="symbol"
+                validators={{
+                  onChangeAsync: ({ value, fieldApi }) => {
+                    if (!value) return undefined // skip for empty value
 
-                  // zod stuff
-                  const parseResult = formSchema.shape.symbol.safeParse(value)
-                  if (!parseResult.success) {
-                    return parseResult.error.issues[0]
-                  }
-
-                  // value is different than queriedSymbol, meaning user is still typing
-                  if (value !== queriedSymbol) return undefined
-
-                  // is currently fetching
-                  if (isPending) return undefined
-
-                  // Check which type of investment this is
-                  const investmentType = fieldApi.form.getFieldValue('type')
-
-                  // after fetch, no quote found
-                  const quote =
-                    investmentType === 'crypto'
-                      ? cryptoQuoteData.cryptoQuote
-                      : stockQuoteData.stockQuote
-
-                  if (!quote) {
-                    return {
-                      message: 'Unable to find a quote for this symbol.',
+                    // zod stuff
+                    const parseResult = formSchema.shape.symbol.safeParse(value)
+                    if (!parseResult.success) {
+                      return parseResult.error.issues[0]
                     }
-                  }
 
-                  return undefined
-                },
-                onChangeAsyncDebounceMs: 500,
-              }}
-              listeners={{
-                onChange: ({ value, fieldApi }) => {
-                  startTransition(() => {
-                    setQueriedSymbol(value)
-                    if (!value) return
+                    // value is different than queriedSymbol, meaning user is still typing
+                    if (value !== queriedSymbol) return undefined
 
+                    // is currently fetching
+                    if (isPending) return undefined
+
+                    // Check which type of investment this is
                     const investmentType = fieldApi.form.getFieldValue('type')
 
-                    if (investmentType === 'crypto') {
-                      refetchCryptoQuote({ symbol: value, skipQuote: false })
-                    } else {
-                      refetchStockQuote({ symbol: value, skipQuote: false })
-                    }
-                  })
-                },
-                onChangeDebounceMs: 500,
-              }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                const investmentType = form.getFieldValue('type')
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Symbol</FieldLabel>
-                    <Input
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder={
-                        investmentType === 'crypto'
-                          ? 'e.g. BTC-CAD'
-                          : 'e.g. XEQT.TO'
+                    // after fetch, no quote found
+                    const quote =
+                      investmentType === 'crypto'
+                        ? cryptoQuoteData.cryptoQuote
+                        : stockQuoteData.stockQuote
+
+                    if (!quote) {
+                      return {
+                        message: 'Unable to find a quote for this symbol.',
                       }
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            {(() => {
-              const investmentType = form.getFieldValue('type')
-              const quote =
-                investmentType === 'crypto'
-                  ? cryptoQuoteData.cryptoQuote
-                  : stockQuoteData.stockQuote
+                    }
 
-              // For crypto logos, extract base symbol (e.g., "BTC" from "BTC-CAD")
-              const logoSymbol = quote?.symbol
-                ? investmentType === 'crypto'
-                  ? quote.symbol.split('-')[0]
-                  : quote.symbol
-                : ''
+                    return undefined
+                  },
+                  onChangeAsyncDebounceMs: 500,
+                }}
+                listeners={{
+                  onChange: ({ value, fieldApi }) => {
+                    startTransition(() => {
+                      setQueriedSymbol(value)
+                      const investmentType = fieldApi.form.getFieldValue('type')
 
-              return quote ? (
-                <Item variant={'outline'}>
-                  <ItemMedia variant="image">
-                    <Avatar className="">
-                      <AvatarImage
+                      if (investmentType === 'crypto') {
+                        refetchCryptoQuote({ symbol: value })
+                      } else {
+                        refetchStockQuote({ symbol: value })
+                      }
+                    })
+                  },
+                  onChangeDebounceMs: 500,
+                }}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  const investmentType = form.getFieldValue('type')
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TextInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder={
+                          investmentType === 'crypto'
+                            ? 'e.g. BTC-CAD'
+                            : 'e.g. XEQT.TO'
+                        }
+                        autoComplete="off"
+                        label={'Symbol'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              {(() => {
+                const investmentType = form.getFieldValue('type')
+                const quote =
+                  investmentType === 'crypto'
+                    ? cryptoQuoteData.cryptoQuote
+                    : stockQuoteData.stockQuote
+
+                // For crypto logos, extract base symbol (e.g., "BTC" from "BTC-CAD")
+                const logoSymbol = quote?.symbol
+                  ? investmentType === 'crypto'
+                    ? quote.symbol.split('-')[0]
+                    : quote.symbol
+                  : ''
+
+                return quote ? (
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    wrap="wrap"
+                  >
+                    <Stack direction="vertical" gap={4}>
+                      <Avatar
                         src={
                           investmentType === 'crypto'
                             ? getLogoCryptoURL(logoSymbol)
                             : getLogoTickerURL(logoSymbol)
                         }
                         alt={quote.symbol || 'unknown logo'}
+                        name={String(quote.symbol)}
                       />
-                      <AvatarFallback>{quote.symbol}</AvatarFallback>
-                    </Avatar>
-                  </ItemMedia>
-                  <ItemContent className="gap-px">
-                    <ItemTitle className={cn('font-semibold')}>
-                      {quote.name}
-                    </ItemTitle>
-                    <ItemDescription>
-                      {formatCurrency({
-                        value: quote.currentPrice,
-                        currencyCode: quote.currency,
-                      })}
-                    </ItemDescription>
-                  </ItemContent>
-                  <ItemContent className="items-end gap-px">
-                    <ItemTitle className="">
-                      <span>{quote.symbol}</span>
-                    </ItemTitle>
-                    <ItemDescription className="">
-                      <span>{quote.exchange}</span>
-                    </ItemDescription>
-                  </ItemContent>
-                </Item>
-              ) : (
-                <Item variant="outline">
-                  <ItemContent className="gap-px">
-                    <ItemTitle className={cn('')}>
-                      Start typing the symbol to fetch quote...
-                    </ItemTitle>
-                    <ItemDescription>
+                    </Stack>
+                    <Stack direction="vertical" gap={4}>
+                      <Stack direction="vertical" gap={4}>
+                        {quote.name}
+                      </Stack>
+                      <Stack direction="vertical" gap={4}>
+                        {formatCurrency({
+                          value: quote.currentPrice,
+                          currencyCode: quote.currency,
+                        })}
+                      </Stack>
+                    </Stack>
+                    <Stack direction="vertical" gap={4}>
+                      <Stack direction="vertical" gap={4}>
+                        <span>{quote.symbol}</span>
+                      </Stack>
+                      <Stack direction="vertical" gap={4}>
+                        <span>{quote.exchange}</span>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                ) : (
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    wrap="wrap"
+                  >
+                    <Text type="supporting" color="secondary">
                       {investmentType === 'crypto'
-                        ? 'Enter crypto symbol with currency pair (e.g., BTC-CAD, ETH-USD)'
-                        : 'Symbols are formatted according to Yahoo Finance.'}
-                    </ItemDescription>
-                  </ItemContent>
-
-                  <ItemContent className="items-end gap-px">
-                    {isPending && <Spinner />}
-                  </ItemContent>
-                </Item>
-              )
-            })()}
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="e.g. iShares Core Equity ETF Portfolio"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
+                        ? 'Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price.'
+                        : 'Enter a Yahoo Finance symbol to look up its price.'}
+                    </Text>
+                    <Stack direction="vertical" gap={4}>
+                      {isPending && <Spinner />}
+                    </Stack>
+                  </Stack>
                 )
-              }}
-            />
+              })()}
+              <form.Field
+                name="name"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TextInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="e.g. iShares Core Equity ETF Portfolio"
+                        autoComplete="off"
+                        label={'Name'}
 
-            <form.Field
-              name="amount"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
-                    <Input
-                      type="number"
-                      inputMode="decimal"
-                      step="any"
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        if (e.target.value === '') {
-                          field.handleChange(undefined!)
-                        } else {
-                          field.handleChange(Number(e.target.value))
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
                         }
-                      }}
-                      aria-invalid={isInvalid}
-                      placeholder="How many shares do you own?"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="costBasis"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
+                        htmlName={field.name}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="amount"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <NumberInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="How many shares do you own?"
+                        autoComplete="off"
+                        label={'Amount'}
 
-                // Get currency from quote data, fallback to household currency
-                const investmentType = form.getFieldValue('type')
-                const quote =
-                  investmentType === 'crypto'
-                    ? cryptoQuoteData.cryptoQuote
-                    : stockQuoteData.stockQuote
-                const currencyCode = quote?.currency ?? displayCurrencyCode
+                        htmlName={field.name}
+                        value={
+                          field.state.value === undefined
+                            ? null
+                            : field.state.value
+                        }
+                        onChange={(value) => field.handleChange(value)}
+                        step={0.0001}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="costBasis"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
 
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Cost Basis</FieldLabel>
-                    <FieldDescription> </FieldDescription>
-                    <CurrencyInput
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Please enter a number"
-                      onValueChange={(e) => {
-                        field.handleChange(e.floatValue!)
-                      }}
-                      value={field.state.value}
-                      locale={household.locale}
-                      currency={currencyCode}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      decimalScale={8}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button
-            disabled={isMutationInFlight}
-            type="submit"
-            form="new-investment-form"
-          >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
-          </Button>
-        </Field>
-      </CardFooter>
+                  // Get currency from quote data, fallback to household currency
+                  const investmentType = form.getFieldValue('type')
+                  const quote =
+                    investmentType === 'crypto'
+                      ? cryptoQuoteData.cryptoQuote
+                      : stockQuoteData.stockQuote
+                  const currencyCode = quote?.currency ?? displayCurrencyCode
+
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter a number"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={currencyCode}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        decimalScale={8}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
+        </Stack>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={'Reset'}
+              variant={'secondary'}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              form="new-investment-form"
+              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              variant={'primary'}
+
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? 'Creating...' : 'Create'}
+            </Button>
+          </Stack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

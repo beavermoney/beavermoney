@@ -1,14 +1,10 @@
+import { RouterListItem } from '@/components/router-list-item'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { VStack } from '@astryxdesign/core/Layout'
+import { Text } from '@astryxdesign/core/Text'
 import { useMemo } from 'react'
 import { graphql, useFragment } from 'react-relay'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
 import { useCurrency } from '@/hooks/use-currency'
 import {
   calculateNextPaymentDate,
@@ -16,10 +12,8 @@ import {
 } from '@/lib/date-range'
 import currency from 'currency.js'
 
-import type { subscriptionCardFragment$key } from './__generated__/subscriptionCardFragment.graphql'
-import { Link } from '@tanstack/react-router'
 import { getLogoDomainURL } from '@/lib/logo'
-import { cn } from '@/lib/utils'
+import type { subscriptionCardFragment$key } from './__generated__/subscriptionCardFragment.graphql'
 
 const SubscriptionCardFragment = graphql`
   fragment subscriptionCardFragment on RecurringSubscription {
@@ -38,12 +32,14 @@ const SubscriptionCardFragment = graphql`
 
 type SubscriptionCardProps = {
   fragmentRef: subscriptionCardFragment$key
+  isActive?: boolean
   className?: string
 }
 
 export function SubscriptionCard({
   fragmentRef,
-  className,
+  isActive = true,
+  className: _className,
 }: SubscriptionCardProps) {
   const data = useFragment(SubscriptionCardFragment, fragmentRef)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
@@ -75,48 +71,29 @@ export function SubscriptionCard({
   }, [data.cost, data.interval, data.intervalCount, data.startDate])
 
   return (
-    <Item
-      className={cn(className)}
-      render={
-        <Link
-          className="no-underline!"
-          from="/household/$householdId"
-          to="/household/$householdId/subscriptions/$subscriptionId"
-          search={(prev) => ({ ...prev })}
-          activeOptions={{ exact: true }}
-          params={{ subscriptionId: data.id }}
-        >
-          {({ isActive }) => (
-            <>
-              <ItemMedia variant="image">
-                <Avatar className="">
-                  <AvatarImage
-                    src={getLogoDomainURL(data.icon || '')}
-                    alt={data.icon || 'unknown logo'}
-                  />
-                  <AvatarFallback>{data.name}</AvatarFallback>
-                </Avatar>
-              </ItemMedia>
-              <ItemContent className="gap-px">
-                <ItemTitle className={cn(isActive && 'font-semibold')}>
-                  {data.name}
-                </ItemTitle>
-                <ItemDescription>{intervalText}</ItemDescription>
-              </ItemContent>
-              <ItemContent className="items-end gap-px">
-                <ItemTitle className="font-semibold tabular-nums">
-                  {formatCurrencyWithPrivacyMode({
-                    value: data.cost,
-                    currencyCode: data.householdCurrency.code,
-                  })}
-                </ItemTitle>
-                <ItemDescription>
-                  {formatNextPaymentDate(nextPaymentDate)}
-                </ItemDescription>
-              </ItemContent>
-            </>
+    <RouterListItem
+      from="/household/$householdId"
+      to="/household/$householdId/subscriptions/$subscriptionId"
+      params={{ subscriptionId: data.id }}
+      label={<Text maxLines={2}>{data.name}</Text>}
+      startContent={
+        <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
+      }
+      description={isActive ? intervalText : `Inactive · ${intervalText}`}
+      endContent={
+        <VStack gap={1} hAlign="end">
+          <Text type="label" hasTabularNumbers>
+            {formatCurrencyWithPrivacyMode({
+              value: data.cost,
+              currencyCode: data.householdCurrency.code,
+            })}
+          </Text>
+          {isActive && (
+            <Text type="supporting" color="secondary">
+              {formatNextPaymentDate(nextPaymentDate)}
+            </Text>
           )}
-        </Link>
+        </VStack>
       }
     />
   )

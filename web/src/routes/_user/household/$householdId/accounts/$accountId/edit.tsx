@@ -1,3 +1,6 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
@@ -6,11 +9,9 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
-import type { editAccountQuery } from './__generated__/editAccountQuery.graphql'
-import { environment } from '@/environment'
-import { PendingComponent } from '@/components/pending-component'
 import { EditAccount } from '../-components/edit-account'
-import { Item } from '@/components/ui/item'
+import type { editAccountQuery } from './__generated__/editAccountQuery.graphql'
+
 import invariant from 'tiny-invariant'
 
 export const Route = createFileRoute(
@@ -57,8 +58,8 @@ function RouteComponent() {
   invariant(data.node, 'Account not found')
 
   return (
-    <Item className="p-0">
+    <Stack direction="vertical" gap={4} className="max-w-2xl" width="100%">
       <EditAccount key={data.node.id} fragmentRef={data.node} />
-    </Item>
+    </Stack>
   )
 }

@@ -1,56 +1,37 @@
-import { graphql } from 'relay-runtime'
+import { FinanceDateInput } from '@/components/finance-date-input'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { NumberInput } from '@astryxdesign/core/NumberInput'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useMutation } from 'react-relay'
+import { useNavigate } from '@tanstack/react-router'
 import { capitalize } from 'lodash-es'
+import { useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useNavigate } from '@tanstack/react-router'
+import * as z from 'zod'
 import type { newSubscriptionMutation } from './__generated__/newSubscriptionMutation.graphql'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Calendar } from '@/components/ui/calendar'
-import { useHousehold } from '@/hooks/use-household'
-import { useUser } from '@/hooks/use-user'
-import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
-import { useHouseholdMembers } from '@/hooks/use-household-members'
-import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { useUser } from '@/hooks/use-user'
 import { commitMutationResult } from '@/lib/relay'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getLogoDomainURL } from '@/lib/logo'
-import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
+import { OwnerSelect } from '../../-components/owner-select'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
+import { getLogoDomainURL } from '@/lib/logo'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
 
@@ -101,6 +82,8 @@ const newSubscriptionMutation = graphql`
 `
 
 export function NewSubscription() {
+  const showToast = useToast()
+
   const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
@@ -176,12 +159,13 @@ export function NewSubscription() {
             },
             search: (prev) => ({ ...prev }),
           })
-          toast.success(
-            `${resultData.createRecurringSubscription.node.name} is ready to go!`,
-          )
+          showToast({
+            type: 'info',
+            body: `${resultData.createRecurringSubscription.node.name} is ready to go!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -192,346 +176,333 @@ export function NewSubscription() {
   })
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Subscription</CardTitle>
-        <CardDescription>
-          Track your recurring subscriptions in Beaver Money
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="new-subscription-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Netflix"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            {ownerOptions.length > 1 && (
+    <Card>
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>New Subscription</Heading>
+        </Stack>
+        <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="new-subscription-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
               <form.Field
-                name="ownerUserID"
+                name="name"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
-                      <OwnerSelect
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TextInput
+                        data-1p-ignore
                         id={field.name}
-                        name={field.name}
-                        options={ownerOptions}
-                        value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value)}
                         onBlur={field.handleBlur}
-                        ariaInvalid={isInvalid}
+                        aria-invalid={isInvalid}
+                        placeholder="Netflix"
+                        autoComplete="off"
+                        label={'Name'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
-            )}
-            <form.Field
-              name="icon"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Icon</FieldLabel>
-                    <FieldDescription>
-                      Enter a domain to fetch logo (e.g., netflix.com)
-                    </FieldDescription>
-                    <div className="flex items-center gap-3">
-                      <Input
-                        data-1p-ignore
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => {
-                          field.handleChange(e.target.value)
-                        }}
-                        aria-invalid={isInvalid}
-                        placeholder="e.g., netflix.com"
-                        autoComplete="off"
-                        className="flex-1"
-                      />
-                      {field.state.value && (
-                        <div className="flex items-center gap-2">
-                          <Avatar className="size-6">
-                            <AvatarImage
+              {ownerOptions.length > 1 && (
+                <form.Field
+                  name="ownerUserID"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <OwnerSelect
+                          id={field.name}
+                          name={field.name}
+                          options={ownerOptions}
+                          value={field.state.value}
+                          onValueChange={(value) => field.handleChange(value)}
+                          onBlur={field.handleBlur}
+                          ariaInvalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              )}
+              <form.Field
+                name="icon"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <Stack direction="horizontal" gap={3} align="center">
+                        <TextInput
+                          data-1p-ignore
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                          placeholder="e.g., netflix.com"
+                          autoComplete="off"
+                          label={'Logo domain (optional)'}
+
+                          value={String(field.state.value ?? '')}
+                          onChange={(_value, event) =>
+                            ((e) => {
+                              field.handleChange(e.target.value)
+                            })(event)
+                          }
+                          htmlName={field.name}
+                        />
+                        {field.state.value && (
+                          <Stack direction="horizontal" gap={2} align="center">
+                            <Avatar
                               src={getLogoDomainURL(field.state.value)}
                               alt={field.state.value}
+                              name={String(
+                                field.state.value.slice(0, 2).toUpperCase(),
+                              )}
                             />
-                            <AvatarFallback className="text-xs">
-                              {field.state.value.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
+                          </Stack>
+                        )}
+                      </Stack>
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </div>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="interval"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Interval</FieldLabel>
-                    <Combobox
-                      items={[...SUBSCRIPTION_INTERVALS]}
-                      value={field.state.value}
-                      onValueChange={(value) => field.handleChange(value || '')}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="interval"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
                     >
-                      <ComboboxInput
+                      <SearchSelect
+                        searchable={false}
+                        items={[...SUBSCRIPTION_INTERVALS]}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
                         id={field.name}
-                        name={field.name}
                         placeholder="Select an interval"
                         onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                        className="*:capitalize"
+                        label={'Interval'}
+                        renderOption={(item: string) => (
+                          <span>
+                            <Text type="label">{capitalize(item)}</Text>
+                            <span>{INTERVAL_DESCRIPTION[item]}</span>
+                          </span>
+                        )}
+                        emptyText={<>No items found.</>}
                       />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item: string) => (
-                            <ComboboxItem
-                              key={item}
-                              value={item}
-                              className="flex flex-col items-start gap-0"
-                            >
-                              <span className="font-semibold">
-                                {capitalize(item)}
-                              </span>
-                              <span>{INTERVAL_DESCRIPTION[item]}</span>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="intervalCount"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Interval Count</FieldLabel>
-                    <FieldDescription>
-                      How many intervals between charges (e.g., 2 = every 2
-                      months)
-                    </FieldDescription>
-                    <Input
-                      data-1p-ignore
-                      type="number"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10)
-                        if (!isNaN(val)) {
-                          field.handleChange(val)
-                        }
-                      }}
-                      aria-invalid={isInvalid}
-                      placeholder="1"
-                      autoComplete="off"
-                      min="1"
-                      max="100"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="startDate"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Start Date</FieldLabel>
-                    <FieldDescription>
-                      When does this subscription start?
-                    </FieldDescription>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            id={field.name}
-                            name={field.name}
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
-                            {field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )}
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent className="w-auto p-0" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.handleChange(date)
-                            }
-                          }}
-                          disabled={(date) => date < new Date('1900-01-01')}
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="currencyCode"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
-                    <Combobox
-                      items={SUPPORTED_CURRENCIES.map((c) => c.code)}
-                      value={field.state.value}
-                      onValueChange={(value) => {
-                        field.handleChange(value || '')
-                      }}
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="intervalCount"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
                     >
-                      <ComboboxInput
+                      <Text type="supporting" color="secondary">
+                        For example, 2 with Month means every two months.
+                      </Text>
+                      <NumberInput
+                        data-1p-ignore
                         id={field.name}
-                        name={field.name}
-                        placeholder="Select a currency"
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
+                        placeholder="1"
+                        autoComplete="off"
+                        label={'Repeat every'}
+
+                        htmlName={field.name}
+                        value={
+                          field.state.value === undefined
+                            ? null
+                            : field.state.value
+                        }
+                        onChange={(value) => field.handleChange(value)}
+                        min={1}
+                        max={365}
+                        step={1}
+                        isIntegerOnly
                       />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item: string) => (
-                            <ComboboxItem key={item} value={item}>
-                              {item}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="cost"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Cost</FieldLabel>
-                    <FieldDescription>
-                      How much does this subscription cost per interval?
-                    </FieldDescription>
-                    <CurrencyInput
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Please enter a number"
-                      onValueChange={(e) => {
-                        field.handleChange(e.value)
-                      }}
-                      value={field.state.value}
-                      locale={household.locale}
-                      currency={currencyCode}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      allowNegative={false}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button
-            disabled={isMutationInFlight}
-            type="submit"
-            form="new-subscription-form"
-          >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
-          </Button>
-        </Field>
-      </CardFooter>
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="startDate"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <FinanceDateInput
+                        id={field.name}
+                        label="Start date"
+                        value={field.state.value}
+                        onChange={field.handleChange}
+                        onBlur={field.handleBlur}
+                        disabledDate={(date) => date < new Date('1900-01-01')}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="currencyCode"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={SUPPORTED_CURRENCIES.map((c) => c.code)}
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                        }}
+                        id={field.name}
+                        placeholder="Select a currency"
+                        onBlur={field.handleBlur}
+                        label={'Currency'}
+                        renderOption={(item: string) => <span>{item}</span>}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="cost"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        aria-label="Cost per payment"
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter a number"
+                        onValueChange={(e) => {
+                          field.handleChange(e.value)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={currencyCode}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        allowNegative={false}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
+        </Stack>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={'Reset'}
+              variant={'secondary'}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              form="new-subscription-form"
+              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              variant={'primary'}
+
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? 'Creating...' : 'Create'}
+            </Button>
+          </Stack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

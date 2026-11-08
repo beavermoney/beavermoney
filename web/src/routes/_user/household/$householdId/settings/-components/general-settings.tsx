@@ -1,38 +1,28 @@
-import { graphql } from 'relay-runtime'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { FormError } from '@/components/form-error'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { Divider } from '@astryxdesign/core/Divider'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
+import { useState } from 'react'
 import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useState } from 'react'
+import * as z from 'zod'
 
-import type { generalSettingsHouseholdFragment$key } from './__generated__/generalSettingsHouseholdFragment.graphql'
 import type { generalSettingsCurrenciesFragment$key } from './__generated__/generalSettingsCurrenciesFragment.graphql'
-import type { generalSettingsUpdateHouseholdMutation } from './__generated__/generalSettingsUpdateHouseholdMutation.graphql'
 import type { generalSettingsDeleteHouseholdMutation } from './__generated__/generalSettingsDeleteHouseholdMutation.graphql'
+import type { generalSettingsHouseholdFragment$key } from './__generated__/generalSettingsHouseholdFragment.graphql'
+import type { generalSettingsUpdateHouseholdMutation } from './__generated__/generalSettingsUpdateHouseholdMutation.graphql'
 
 import { useUser } from '@/hooks/use-user'
-import { Button } from '@/components/ui/button'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+
 import { commitMutationResult } from '@/lib/relay'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -93,6 +83,8 @@ export function GeneralSettings({
   householdRef,
   currenciesRef,
 }: GeneralSettingsProps) {
+  const showToast = useToast()
+
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
   const { userHouseholds } = useFragment(
     generalSettingsCurrenciesFragment,
@@ -144,10 +136,10 @@ export function GeneralSettings({
             resultData.updateHousehold,
             'No data returned from mutation',
           )
-          toast.success('Household updated.')
+          showToast({ type: 'info', body: 'Household updated.' })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -166,7 +158,7 @@ export function GeneralSettings({
 
     match(result)
       .with({ status: 'success' }, () => {
-        toast.success('Household deleted.')
+        showToast({ type: 'info', body: 'Household deleted.' })
         setDeleteDialogOpen(false)
         navigate({
           to: '/household',
@@ -174,42 +166,48 @@ export function GeneralSettings({
         })
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(error.toString())
+        showToast({ type: 'error', body: error.toString() })
       })
       .exhaustive()
   }
 
   return (
-    <div className="flex max-w-md flex-col gap-5">
-      <form
+    <Stack direction="vertical" gap={5} className="max-w-2xl" width="100%">
+      <Stack
+        as="form"
+        direction="vertical"
+        gap={6}
         id="general-settings-form"
         onSubmit={(e) => {
           e.preventDefault()
           form.handleSubmit()
         }}
       >
-        <FieldGroup>
+        <FormLayout>
           <form.Field
             name="name"
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                  <Input
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                  <TextInput
                     data-1p-ignore
                     id={field.name}
-                    name={field.name}
-                    value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
                     aria-invalid={isInvalid}
                     placeholder="My Household"
                     autoComplete="off"
+                    label={'Name'}
+
+                    value={String(field.state.value ?? '')}
+                    onChange={(_value, event) =>
+                      ((e) => field.handleChange(e.target.value))(event)
+                    }
+                    htmlName={field.name}
                   />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
@@ -219,105 +217,154 @@ export function GeneralSettings({
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Locale</FieldLabel>
-                  <Input
+                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                  <TextInput
                     data-1p-ignore
                     id={field.name}
-                    name={field.name}
-                    value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
                     aria-invalid={isInvalid}
                     placeholder="en-CA"
                     autoComplete="off"
+                    label={'Locale'}
+
+                    value={String(field.state.value ?? '')}
+                    onChange={(_value, event) =>
+                      ((e) => field.handleChange(e.target.value))(event)
+                    }
+                    htmlName={field.name}
                   />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
+                  {isInvalid && <FormError errors={field.state.meta.errors} />}
+                </Stack>
               )
             }}
           />
-        </FieldGroup>
-        <div className="mt-3">
+        </FormLayout>
+        <Stack direction="horizontal" gap={2} justify="end" wrap="wrap">
           <Button
-            disabled={isUpdateInFlight}
             type="submit"
             form="general-settings-form"
-            size="sm"
+            label={String(isUpdateInFlight ? 'Saving...' : 'Save')}
+            variant={'primary'}
+
+            isDisabled={isUpdateInFlight}
           >
             {isUpdateInFlight ? 'Saving...' : 'Save'}
           </Button>
-        </div>
-      </form>
+        </Stack>
+      </Stack>
 
       {isAdmin && (
         <>
-          <Separator />
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-xs/relaxed font-medium">Delete household</p>
-              <p className="text-muted-foreground text-xs/relaxed">
+          <Divider />
+          <Stack
+            direction="horizontal"
+            gap={4}
+            align="center"
+            justify="between"
+            wrap="wrap"
+          >
+            <Stack direction="vertical" gap={1}>
+              <Text as="p" display="block">
+                Delete household
+              </Text>
+              <Text as="p" display="block" color="secondary">
                 Permanently remove this household and all its data.
-              </p>
-            </div>
-            <AlertDialog
-              open={deleteDialogOpen}
-              onOpenChange={(open) => {
-                setDeleteDialogOpen(open)
-                if (!open) setDeleteConfirmText('')
-              }}
-            >
-              <AlertDialogTrigger
-                render={
-                  <Button variant="destructive" size="sm">
-                    Delete
-                  </Button>
+              </Text>
+            </Stack>
+            <>
+              <Button
+                onClick={() =>
+                  ((open) => {
+                    setDeleteDialogOpen(open)
+                    if (!open) setDeleteConfirmText('')
+                  })(true)
                 }
-              />
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete household?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently delete{' '}
-                    <span className="text-foreground font-medium">
-                      {household.name}
-                    </span>{' '}
-                    and all associated data including accounts, transactions,
-                    and categories. This action cannot be undone.
-                    <br />
-                    Type{' '}
-                    <span className="text-destructive font-semibold">
-                      {household.name}
-                    </span>{' '}
-                    to confirm
-                    <Input
-                      data-1p-ignore
-                      id="delete-confirm"
-                      className="mt-1.5"
-                      value={deleteConfirmText}
-                      onChange={(e) => setDeleteConfirmText(e.target.value)}
-                      placeholder={'Enter household name to confirm'}
-                      autoComplete="off"
+                label={'Delete'}
+                variant={'destructive'}
+              >
+                Delete
+              </Button>
+              <Dialog
+                isOpen={deleteDialogOpen}
+                onOpenChange={(open) => {
+                  setDeleteDialogOpen(open)
+                  if (!open) setDeleteConfirmText('')
+                }}
+                purpose="info"
+                role="alertdialog"
+                padding={0}
+              >
+                <Layout
+                  padding={6}
+                  header={
+                    <DialogHeader
+                      title={<>Delete household?</>}
+                      onOpenChange={(open) => {
+                        setDeleteDialogOpen(open)
+                        if (!open) setDeleteConfirmText('')
+                      }}
                     />
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    variant="destructive"
-                    disabled={
-                      deleteConfirmText !== household.name || isDeleteInFlight
-                    }
-                    onClick={handleDelete}
-                  >
-                    {isDeleteInFlight ? 'Deleting...' : 'Delete'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+                  }
+                >
+                  <LayoutContent>
+                    <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                      <Stack direction="vertical" gap={4}>
+                        This will permanently delete{' '}
+                        <Text type="label">{household.name}</Text> and all
+                        associated data including accounts, transactions, and
+                        categories. This action cannot be undone.
+                        <br />
+                        Type <Text type="label">{household.name}</Text> to
+                        confirm
+                        <TextInput
+                          data-1p-ignore
+                          id="delete-confirm"
+                          placeholder={'Enter household name to confirm'}
+                          autoComplete="off"
+                          label={'Enter household name to confirm'}
+
+                          value={String(deleteConfirmText ?? '')}
+                          onChange={(_value, event) =>
+                            ((e) => setDeleteConfirmText(e.target.value))(event)
+                          }
+                        />
+                      </Stack>
+                      <Stack
+                        direction="horizontal"
+                        gap={3}
+                        align="center"
+                        wrap="wrap"
+                        justify="end"
+                      >
+                        <Button
+                          label="Cancel"
+                          onClick={() =>
+                            ((open) => {
+                              setDeleteDialogOpen(open)
+                              if (!open) setDeleteConfirmText('')
+                            })(false)
+                          }
+                        />
+                        <Button
+                          variant="destructive"
+                          isDisabled={
+                            deleteConfirmText !== household.name ||
+                            isDeleteInFlight
+                          }
+                          onClick={handleDelete}
+                          label="Delete"
+                        >
+                          {isDeleteInFlight ? 'Deleting...' : 'Delete'}
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </LayoutContent>
+                </Layout>
+              </Dialog>
+            </>
+          </Stack>
         </>
       )}
-    </div>
+    </Stack>
   )
 }

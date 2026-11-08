@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<17fc813dd9de0668121bf926b7f132f3>>
+ * @generated SignedSource<<1a00d95bc83b8beb4b1d229b8043e9b7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -87,24 +87,6 @@ v4 = {
     }
   ],
   "storageKey": null
-},
-v5 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "Transaction",
-  "kind": "LinkedField",
-  "name": "latestTransaction",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "datetime",
-      "storageKey": null
-    }
-  ],
-  "storageKey": null
 };
 return {
   "argumentDefinitions": [
@@ -165,8 +147,6 @@ return {
                   "kind": "InlineDataFragmentSpread",
                   "name": "transactionAccountPickerFragment",
                   "selections": [
-                    (v0/*: any*/),
-                    (v1/*: any*/),
                     (v2/*: any*/),
                     (v3/*: any*/),
                     {
@@ -180,16 +160,21 @@ return {
                     {
                       "alias": null,
                       "args": null,
-                      "concreteType": "User",
+                      "concreteType": "Transaction",
                       "kind": "LinkedField",
-                      "name": "user",
+                      "name": "latestTransaction",
                       "plural": false,
                       "selections": [
-                        (v2/*: any*/)
+                        {
+                          "alias": null,
+                          "args": null,
+                          "kind": "ScalarField",
+                          "name": "datetime",
+                          "storageKey": null
+                        }
                       ],
                       "storageKey": null
-                    },
-                    (v5/*: any*/)
+                    }
                   ],
                   "args": null,
                   "argumentDefinitions": []
@@ -235,8 +220,7 @@ return {
                   "name": "transactionCategoryPickerFragment",
                   "selections": [
                     (v2/*: any*/),
-                    (v3/*: any*/),
-                    (v5/*: any*/)
+                    (v3/*: any*/)
                   ],
                   "args": null,
                   "argumentDefinitions": []

@@ -1,14 +1,14 @@
-import { createContext, useCallback, useContext, useMemo } from 'react'
-import { graphql, useFragment } from 'react-relay'
 import { useStore } from '@tanstack/react-store'
 import currency from 'currency.js'
+import { identity } from 'lodash-es'
+import { createContext, useCallback, useContext, useMemo } from 'react'
+import { graphql, useFragment } from 'react-relay'
+import invariant from 'tiny-invariant'
 import type { useDisplayCurrencyFragment$key } from './__generated__/useDisplayCurrencyFragment.graphql'
 import {
   displayCurrencyIdStore,
   setDisplayCurrencyId,
 } from './display-currency-store'
-import { identity } from 'lodash-es'
-import invariant from 'tiny-invariant'
 import { useUserHousehold } from './use-user-household'
 
 const UseDisplayCurrencyFragment = graphql`

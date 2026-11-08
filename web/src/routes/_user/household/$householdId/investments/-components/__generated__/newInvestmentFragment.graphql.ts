@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<77de48b2d751ce98ee7fd5716265bb3a>>
+ * @generated SignedSource<<0d7ff8d6805aeddbc9ca0754a56ad370>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,9 +15,17 @@ export type newInvestmentFragment$data = {
   readonly accounts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly householdCurrency: {
+          readonly code: string;
+        };
+        readonly icon: string | null | undefined;
         readonly id: string;
+        readonly name: string;
         readonly type: AccountType;
-        readonly " $fragmentSpreads": FragmentRefs<"transactionAccountPickerFragment">;
+        readonly user: {
+          readonly name: string;
+        };
+        readonly value: string;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -30,20 +38,6 @@ export type newInvestmentFragment$key = {
 
 const node: ReaderFragment = (function(){
 var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v1 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "type",
-  "storageKey": null
-},
-v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -103,80 +97,64 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                (v0/*: any*/),
-                (v1/*: any*/),
                 {
-                  "kind": "InlineDataFragmentSpread",
-                  "name": "transactionAccountPickerFragment",
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "type",
+                  "storageKey": null
+                },
+                (v0/*: any*/),
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "icon",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "value",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "HouseholdCurrency",
+                  "kind": "LinkedField",
+                  "name": "householdCurrency",
+                  "plural": false,
                   "selections": [
-                    (v0/*: any*/),
-                    (v1/*: any*/),
-                    (v2/*: any*/),
                     {
                       "alias": null,
                       "args": null,
                       "kind": "ScalarField",
-                      "name": "icon",
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "kind": "ScalarField",
-                      "name": "balance",
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "concreteType": "HouseholdCurrency",
-                      "kind": "LinkedField",
-                      "name": "householdCurrency",
-                      "plural": false,
-                      "selections": [
-                        {
-                          "alias": null,
-                          "args": null,
-                          "kind": "ScalarField",
-                          "name": "code",
-                          "storageKey": null
-                        }
-                      ],
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "concreteType": "User",
-                      "kind": "LinkedField",
-                      "name": "user",
-                      "plural": false,
-                      "selections": [
-                        (v2/*: any*/)
-                      ],
-                      "storageKey": null
-                    },
-                    {
-                      "alias": null,
-                      "args": null,
-                      "concreteType": "Transaction",
-                      "kind": "LinkedField",
-                      "name": "latestTransaction",
-                      "plural": false,
-                      "selections": [
-                        {
-                          "alias": null,
-                          "args": null,
-                          "kind": "ScalarField",
-                          "name": "datetime",
-                          "storageKey": null
-                        }
-                      ],
+                      "name": "code",
                       "storageKey": null
                     }
                   ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
                   "args": null,
-                  "argumentDefinitions": []
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v0/*: any*/)
+                  ],
+                  "storageKey": null
                 }
               ],
               "storageKey": null
@@ -193,6 +171,6 @@ return {
 };
 })();
 
-(node as any).hash = "71b722e0007ba9aa5c2202c003d1de79";
+(node as any).hash = "3b7ba133bbef9b5bcb790b02eacbe4f2";
 
 export default node;

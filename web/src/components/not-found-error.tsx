@@ -1,46 +1,41 @@
+import { Button } from '@astryxdesign/core/Button'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
 import { useNavigate } from '@tanstack/react-router'
 import { SearchXIcon } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
 
 export function NotFoundError() {
   const navigate = useNavigate()
 
   return (
-    <Empty className="w-full">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <SearchXIcon />
-        </EmptyMedia>
-        <EmptyTitle>Page not found</EmptyTitle>
-        <EmptyDescription>
+    <Stack direction="vertical" gap={4}>
+      <Stack direction="vertical" gap={2}>
+        <Stack direction="vertical" gap={4}>
+          <AstryxIcon icon={SearchXIcon} />
+        </Stack>
+        <Heading level={2}>Page not found</Heading>
+        <Stack direction="vertical" gap={4}>
           We could not find what you were looking for. It may have been moved or
           deleted.
-        </EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent className="max-w-none flex-row justify-center">
+        </Stack>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
         <Button
-          className="cursor-pointer"
-          variant="outline"
           onClick={() => navigate({ to: '..' })}
+          label={'Go back'}
+          variant={'secondary'}
         >
           Go back
         </Button>
         <Button
-          className="cursor-pointer"
           onClick={() => navigate({ to: '/' })}
+          label={'Go home'}
+          variant={'primary'}
         >
           Go home
         </Button>
-      </EmptyContent>
-    </Empty>
+      </Stack>
+    </Stack>
   )
 }

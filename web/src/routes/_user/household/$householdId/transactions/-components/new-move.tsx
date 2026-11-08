@@ -1,40 +1,32 @@
-import { TransactionInvestmentPicker } from './transaction-investment-picker'
-import { graphql } from 'relay-runtime'
+import { FinanceDateInput } from '@/components/finance-date-input'
+import { FormError } from '@/components/form-error'
+import { Button } from '@astryxdesign/core/Button'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { NumberInput } from '@astryxdesign/core/NumberInput'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
+import { useMemo } from 'react'
+import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useMemo } from 'react'
-import type { newMoveMutation } from './__generated__/newMoveMutation.graphql'
+import * as z from 'zod'
 import type { newMoveFragment$key } from './__generated__/newMoveFragment.graphql'
+import type { newMoveMutation } from './__generated__/newMoveMutation.graphql'
+import { TransactionInvestmentPicker } from './transaction-investment-picker'
 
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { useHousehold } from '@/hooks/use-household'
-import { useUser } from '@/hooks/use-user'
-import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
-import { useHouseholdMembers } from '@/hooks/use-household-members'
-import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { Calendar } from '@/components/ui/calendar'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { useUser } from '@/hooks/use-user'
+import { commitMutationResult } from '@/lib/relay'
+import { OwnerSelect } from '../../-components/owner-select'
 
 const formSchema = z.object({
   description: z
@@ -102,6 +94,8 @@ type NewMoveProps = {
 }
 
 export function NewMove({ fragmentRef }: NewMoveProps) {
+  const showToast = useToast()
+
   const data = useFragment(newMoveFragment, fragmentRef)
 
   const [commitMutation, isMutationInFlight] =
@@ -169,7 +163,10 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
 
       // Validate same symbol
       if (fromInvestment.symbol !== toInvestment.symbol) {
-        toast.error('Investments must have the same symbol')
+        showToast({
+          type: 'error',
+          body: 'Investments must have the same symbol',
+        })
         return
       }
 
@@ -213,10 +210,10 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             'No data returned from mutation',
           )
 
-          toast.success('Investment moved successfully!')
+          showToast({ type: 'info', body: 'Investment moved successfully!' })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -243,16 +240,19 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
   }, [allInvestments, fromInvestment])
 
   return (
-    <Card className="w-full">
-      <CardContent>
-        <form
+    <Stack direction="vertical" gap={6}>
+      <Stack direction="vertical" gap={4}>
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="new-move-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="fromInvestmentId"
               validators={{
@@ -276,13 +276,12 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field
+                  <Stack
+                    direction="vertical"
+                    gap={2}
                     data-invalid={isInvalid}
                     data-transaction-initial-focus
                   >
-                    <FieldLabel htmlFor={field.name}>
-                      From Investment
-                    </FieldLabel>
                     <TransactionInvestmentPicker
                       investments={allInvestments}
                       name={field.name}
@@ -296,13 +295,12 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="toInvestmentId"
               validators={{
@@ -324,13 +322,13 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>To Investment</FieldLabel>
-                    <FieldDescription>
-                      {fromInvestment
-                        ? `Only showing investments with symbol: ${fromInvestment.symbol}`
-                        : 'Select from investment first'}
-                    </FieldDescription>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    {fromInvestment && (
+                      <Text type="supporting" color="secondary">
+                        Matching {fromInvestment.symbol} holdings in another
+                        account.
+                      </Text>
+                    )}
                     <TransactionInvestmentPicker
                       investments={toInvestments}
                       name={field.name}
@@ -343,57 +341,50 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                       disabledMessage="Select from investment first"
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="shares"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Shares</FieldLabel>
-                    <FieldDescription>
-                      Number of shares to move
-                    </FieldDescription>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <NumberInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      type="number"
-                      step="0.0001"
                       placeholder="0"
-                      value={field.state.value ?? ''}
                       onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        field.handleChange(value === '' ? 0 : Number(value))
-                      }}
                       aria-invalid={isInvalid}
+                      label={'Shares to move'}
+
+                      htmlName={field.name}
+                      value={
+                        field.state.value === undefined
+                          ? null
+                          : field.state.value
+                      }
+                      onChange={(value) => field.handleChange(value)}
+                      step={0.0001}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="pricePerShare"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Price per Share
-                    </FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
                       id={field.name}
                       name={field.name}
@@ -411,40 +402,41 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                       decimalScale={8}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="description"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="Move AAPL shares"
                       autoComplete="off"
+                      label={'Description'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             {ownerOptions.length > 1 && (
               <form.Field
                 name="ownerUserID"
@@ -452,8 +444,11 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
                       <OwnerSelect
                         id={field.name}
                         name={field.name}
@@ -464,82 +459,69 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                         ariaInvalid={isInvalid}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
             )}
-
             <form.Field
               name="datetime"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            id={field.name}
-                            name={field.name}
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
-                            {field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )}
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent className="w-auto p-0" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.handleChange(date)
-                            }
-                          }}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <FinanceDateInput
+                      id={field.name}
+                      label="Date"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onBlur={field.handleBlur}
+                      disabledDate={(date) =>
+                        date > new Date() || date < new Date('1900-01-01')
+                      }
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          </FormLayout>
+        </Stack>
+      </Stack>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+        as="footer"
+      >
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            label={'Reset'}
+            variant={'secondary'}
+          >
             Reset
           </Button>
           <Button
-            disabled={isMutationInFlight}
             type="submit"
             form="new-move-form"
+            label={String(isMutationInFlight ? 'Moving...' : 'Move')}
+            variant={'primary'}
+
+            isDisabled={isMutationInFlight}
           >
             {isMutationInFlight ? 'Moving...' : 'Move'}
           </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

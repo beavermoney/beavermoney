@@ -1,22 +1,27 @@
+import { Button } from '@astryxdesign/core/Button'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@astryxdesign/core/SegmentedControl'
+import { Stack } from '@astryxdesign/core/Stack'
+import { useEffect, useRef } from 'react'
 import { graphql, useFragment } from 'react-relay'
+import { NewBuy } from './new-buy'
 import { NewExpense } from './new-expense'
 import { NewIncome } from './new-income'
-import { NewTransfer } from './new-transfer'
-import { NewBuy } from './new-buy'
-import { NewSell } from './new-sell'
 import { NewMove } from './new-move'
-import { useEffect, useRef } from 'react'
-import { Button } from '@/components/ui/button'
-import { Item } from '@/components/ui/item'
+import { NewSell } from './new-sell'
+import { NewTransfer } from './new-transfer'
+
 import { logTransactionFragment$key } from './__generated__/logTransactionFragment.graphql'
-import { ScrollArea } from '@/components/ui/scroll-area'
+
 import { useHotkey } from '@tanstack/react-hotkeys'
 import invariant from 'tiny-invariant'
 
-import { focusInitialTransactionControl } from './transaction-focus'
-import { useLogTransaction } from '@/hooks/use-log-transaction'
 import type { LogTransactionType } from '@/hooks/log-transaction-store'
-import { cn } from '@/lib/utils'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { focusInitialTransactionControl } from './transaction-focus'
 
 const logTransactionFragment = graphql`
   fragment logTransactionFragment on Household
@@ -106,62 +111,45 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
   }, [selectedType])
 
   return (
-    <Item
-      ref={panelRef}
-      className="h-full min-h-0 w-full flex-col flex-nowrap items-stretch gap-0 overflow-hidden rounded-none border-0 p-0 [&_[data-slot=card]]:rounded-none [&_[data-slot=card]]:shadow-none [&_[data-slot=card]]:ring-0"
-    >
-      <div className="bg-muted/65 border-border flex w-full shrink-0 items-center gap-1.5 border-b px-2 py-2.5 sm:gap-2 sm:px-4">
-        <div
-          role="group"
-          aria-label="Transaction kind"
-          className="bg-background/80 ring-border flex shrink-0 gap-0.5 rounded-lg p-0.5 ring-1"
+    <Stack ref={panelRef} direction="vertical" gap={6}>
+      <Stack direction="vertical" gap={4}>
+        <SegmentedControl
+          label="Transaction kind"
+          value={mode}
+          onChange={(next) => handleModeChange(next as Mode)}
         >
-          {MODES.map((m) => {
-            const active = mode === m.value
-            return (
-              <button
-                key={m.value}
-                type="button"
-                aria-pressed={active}
-                onClick={() => handleModeChange(m.value)}
-                className={cn(
-                  'focus-visible:ring-ring/30 inline-flex h-7 cursor-pointer items-center justify-center rounded-md px-2 text-xs font-medium transition-colors outline-none focus-visible:ring-2 sm:px-2.5',
-                  active
-                    ? 'bg-foreground text-background'
-                    : 'hover:text-foreground hover:bg-muted text-muted-foreground',
-                )}
-              >
-                {m.label}
-              </button>
-            )
-          })}
-        </div>
+          {MODES.map((option) => (
+            <SegmentedControlItem
+              key={option.value}
+              value={option.value}
+              label={option.label}
+            />
+          ))}
+        </SegmentedControl>
 
-        <ScrollArea className="min-w-0 flex-1">
-          <div className="flex gap-1 px-px py-px sm:gap-1.5">
+        <ScrollableArea axis="inline" label="Transaction types">
+          <Stack direction="horizontal" gap={2}>
             {visibleTypes.map((t) => (
               <Button
                 key={t}
-                size="sm"
-                variant={selectedType === t ? 'default' : 'outline'}
-                className="h-8 rounded-lg px-2.5 sm:px-3"
                 onClick={() => setType(t)}
+                label={String(TYPE_LABELS[t])}
+                variant={selectedType === t ? 'primary' : 'secondary'}
               >
                 {TYPE_LABELS[t]}
               </Button>
             ))}
-          </div>
-        </ScrollArea>
-      </div>
-
-      <ScrollArea className="min-h-0 w-full flex-1 overflow-hidden [&_[data-slot=scroll-area-viewport]]:overflow-x-hidden [&_[data-slot=scroll-area-viewport]]:overscroll-contain">
+          </Stack>
+        </ScrollableArea>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
         {selectedType === 'expense' && <NewExpense fragmentRef={data} />}
         {selectedType === 'income' && <NewIncome fragmentRef={data} />}
         {selectedType === 'transfer' && <NewTransfer fragmentRef={data} />}
         {selectedType === 'buy' && <NewBuy fragmentRef={data} />}
         {selectedType === 'sell' && <NewSell fragmentRef={data} />}
         {selectedType === 'move' && <NewMove fragmentRef={data} />}
-      </ScrollArea>
-    </Item>
+      </Stack>
+    </Stack>
   )
 }

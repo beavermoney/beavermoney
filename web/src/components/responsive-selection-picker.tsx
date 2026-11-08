@@ -1,8 +1,5 @@
+import { SearchSelect } from './search-select'
 import type { ReactNode } from 'react'
-
-import { DesktopSelectionPopover } from '@/components/desktop-selection-popover'
-import { MobileSelectionDrawer } from '@/components/mobile-selection-drawer'
-import { useIsMobile } from '@/hooks/use-mobile'
 
 type ResponsiveSelectionPickerProps<T> = {
   items: ReadonlyArray<T>
@@ -33,41 +30,31 @@ export function ResponsiveSelectionPicker<T>({
   onBlur,
   invalid,
 }: ResponsiveSelectionPickerProps<T>) {
-  const isMobile = useIsMobile()
-
-  if (isMobile) {
-    return (
-      <MobileSelectionDrawer
-        groups={[{ items }]}
-        name={name}
-        value={value}
-        label={label}
-        placeholder={placeholder}
-        emptyMessage={emptyMessage}
-        getValue={getValue}
-        getLabel={getLabel}
-        renderItem={renderItem}
-        onValueChange={onValueChange}
-        onBlur={onBlur}
-        invalid={invalid}
-      />
-    )
-  }
-
   return (
-    <DesktopSelectionPopover
-      groups={[{ items }]}
-      name={name}
-      value={value}
+    <SearchSelect
+      items={items.map((item) => ({
+        value: getValue(item),
+        label: getLabel(item),
+        item,
+      }))}
+      value={
+        items
+          .filter((item) => getValue(item) === value)
+          .map((item) => ({
+            value: getValue(item),
+            label: getLabel(item),
+            item,
+          }))[0] ?? null
+      }
       label={label}
+      id={name}
+      name={name}
       placeholder={placeholder}
-      emptyMessage={emptyMessage}
-      getValue={getValue}
-      getLabel={getLabel}
-      renderItem={renderItem}
-      onValueChange={onValueChange}
-      onBlur={onBlur}
+      emptyText={emptyMessage}
       invalid={invalid}
+      onBlur={onBlur}
+      onChange={(option) => onValueChange(option?.value ?? '')}
+      renderOption={(option) => renderItem(option.item)}
     />
   )
 }

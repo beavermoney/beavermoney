@@ -1,40 +1,25 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { graphql } from 'relay-runtime'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { HomeIcon, SparklesIcon } from 'lucide-react'
 import { useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { HomeIcon, SparklesIcon } from 'lucide-react'
+import * as z from 'zod'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import { commitMutationResult } from '@/lib/relay'
 import { SUPPORTED_CURRENCIES, lookupCurrency } from '@/lib/currencies'
+import { commitMutationResult } from '@/lib/relay'
 
 import type { newHouseholdMutation } from './__generated__/newHouseholdMutation.graphql'
 
@@ -81,13 +66,15 @@ function getLocaleDisplayName(locale: string, currencyCode: string): string {
 
 function RouteComponent() {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
+    <Stack direction="vertical" gap={4} align="center" justify="center">
       <NewHouseholdForm />
-    </div>
+    </Stack>
   )
 }
 
 function NewHouseholdForm() {
+  const showToast = useToast()
+
   const navigate = useNavigate()
 
   const [commitMutation, isMutationInFlight] =
@@ -98,7 +85,10 @@ function NewHouseholdForm() {
       to: '/household/$householdId',
       params: { householdId: id },
     })
-    toast.success(`Welcome to ${name}! Your household is ready.`)
+    showToast({
+      type: 'info',
+      body: `Welcome to ${name}! Your household is ready.`,
+    })
   }
 
   const handleCreateDemo = () => {
@@ -126,7 +116,7 @@ function NewHouseholdForm() {
           )
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     })
@@ -173,7 +163,7 @@ function NewHouseholdForm() {
           )
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -186,188 +176,201 @@ function NewHouseholdForm() {
   const availableLocales = lookupCurrency(currencyCode)?.locales ?? []
 
   return (
-    <div className="flex w-full max-w-lg flex-col gap-3">
-      {/* Demo banner */}
-      <div className="bg-primary/8 border-primary/20 flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3">
-        <div className="bg-primary/15 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
-          <SparklesIcon className="text-primary h-4 w-4" strokeWidth={2} />
-        </div>
-        <p className="text-muted-foreground min-w-0 flex-1 text-sm">
-          New to Beaver Money?
-          <br />
-          <span className="text-foreground font-medium">
-            Try it with sample data first.
-          </span>
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isMutationInFlight}
-          onClick={handleCreateDemo}
-          className="border-primary/30 text-primary hover:bg-primary/10 hover:text-primary w-full sm:w-auto"
-        >
-          {isMutationInFlight ? 'Creating...' : 'Create demo'}
-        </Button>
-      </div>
-
-      {/* Main form card */}
-      <Card className="w-full">
-        <CardHeader className="text-center">
-          <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <HomeIcon className="text-primary h-8 w-8" strokeWidth={2} />
-          </div>
-          <CardTitle className="text-2xl">Create Your Household</CardTitle>
-          <CardDescription>
-            Set up your household to start tracking your finances together
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            id="new-household-form"
-            onSubmit={(e) => {
-              e.preventDefault()
-              form.handleSubmit()
-            }}
-          >
-            <FieldGroup>
-              <form.Field
-                name="name"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>
-                        Household Name
-                      </FieldLabel>
-                      <FieldDescription>
-                        Give your household a memorable name
-                      </FieldDescription>
-                      <Input
-                        data-1p-ignore
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        aria-invalid={isInvalid}
-                        placeholder="My Family"
-                        autoComplete="off"
-                        autoFocus
-                      />
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  )
-                }}
-              />
-              <form.Field
-                name="currencyCode"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Currency</FieldLabel>
-                      <FieldDescription>
-                        Your household's primary currency for reporting
-                      </FieldDescription>
-                      <Combobox
-                        items={SUPPORTED_CURRENCIES.map((c) => c.code)}
-                        value={field.state.value}
-                        onValueChange={(value) => {
-                          field.handleChange(value || '')
-                        }}
-                      >
-                        <ComboboxInput
-                          id={field.name}
-                          name={field.name}
-                          placeholder="Select a currency"
-                          onBlur={field.handleBlur}
-                          aria-invalid={isInvalid}
-                        />
-                        <ComboboxContent>
-                          <ComboboxEmpty>No currency found.</ComboboxEmpty>
-                          <ComboboxList>
-                            {(item: string) => (
-                              <ComboboxItem key={item} value={item}>
-                                {item}
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  )
-                }}
-              />
-              <form.Field
-                name="locale"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Locale</FieldLabel>
-                      <FieldDescription>
-                        Determines date and number formatting
-                      </FieldDescription>
-                      <Combobox
-                        key={currencyCode}
-                        items={availableLocales}
-                        value={field.state.value}
-                        onValueChange={(value: string | null) => {
-                          field.handleChange(value ?? '')
-                        }}
-                        itemToStringLabel={(item: string | null) => {
-                          if (!item || !currencyCode) return ''
-                          return getLocaleDisplayName(item, currencyCode)
-                        }}
-                      >
-                        <ComboboxInput
-                          id={field.name}
-                          name={field.name}
-                          placeholder="Select a locale"
-                          onBlur={field.handleBlur}
-                          aria-invalid={isInvalid}
-                        />
-                        <ComboboxContent>
-                          <ComboboxEmpty>No locale found.</ComboboxEmpty>
-                          <ComboboxList>
-                            {(item: string) => (
-                              <ComboboxItem key={item} value={item}>
-                                {getLocaleDisplayName(item, currencyCode)}
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  )
-                }}
-              />
-            </FieldGroup>
-          </form>
-        </CardContent>
-        <CardFooter>
+    <Stack
+      direction="vertical"
+      gap={6}
+      width="100%"
+      className="app-safe-area app-scroll-content"
+    >
+      <Stack
+        direction="vertical"
+        gap={6}
+        padding={6}
+        width="100%"
+        className="mx-auto max-w-2xl"
+      >
+        {/* Demo banner */}
+        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+          <Stack direction="horizontal" align="center" justify="center">
+            <AstryxIcon icon={SparklesIcon} strokeWidth={2} />
+          </Stack>
+          <Text as="p" display="block" color="secondary">
+            New to Beaver Money?
+            <br />
+            <Text type="label">Try it with sample data first.</Text>
+          </Text>
           <Button
-            disabled={isMutationInFlight}
-            type="submit"
-            form="new-household-form"
-            className="w-full"
-            size="lg"
+            onClick={handleCreateDemo}
+
+            label={String(isMutationInFlight ? 'Creating...' : 'Create demo')}
+            variant={'secondary'}
+
+            isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create Household'}
+            {isMutationInFlight ? 'Creating...' : 'Create demo'}
           </Button>
-        </CardFooter>
-      </Card>
-    </div>
+        </Stack>
+
+        {/* Main form card */}
+        <Card>
+          <Stack direction="vertical" gap={6}>
+            <Stack direction="vertical" gap={2} as="header">
+              <Stack direction="horizontal" align="center" justify="center">
+                <AstryxIcon icon={HomeIcon} strokeWidth={2} />
+              </Stack>
+              <Heading level={2}>Create Your Household</Heading>
+            </Stack>
+            <Stack direction="vertical" gap={4}>
+              <Stack
+                as="form"
+                direction="vertical"
+                gap={6}
+                id="new-household-form"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  form.handleSubmit()
+                }}
+              >
+                <FormLayout>
+                  <form.Field
+                    name="name"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Stack
+                          direction="vertical"
+                          gap={2}
+                          data-invalid={isInvalid}
+                        >
+                          <TextInput
+                            data-1p-ignore
+                            id={field.name}
+                            onBlur={field.handleBlur}
+                            aria-invalid={isInvalid}
+                            placeholder="My Family"
+                            autoComplete="off"
+                            label={'Household Name'}
+
+                            value={String(field.state.value ?? '')}
+                            onChange={(_value, event) =>
+                              ((e) => field.handleChange(e.target.value))(event)
+                            }
+                            htmlName={field.name}
+                            hasAutoFocus={true}
+                          />
+                          {isInvalid && (
+                            <FormError errors={field.state.meta.errors} />
+                          )}
+                        </Stack>
+                      )
+                    }}
+                  />
+                  <form.Field
+                    name="currencyCode"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Stack
+                          direction="vertical"
+                          gap={2}
+                          data-invalid={isInvalid}
+                        >
+                          <Text type="supporting" color="secondary">
+                            Your household's primary currency for reporting
+                          </Text>
+                          <SearchSelect
+                            items={SUPPORTED_CURRENCIES.map((c) => c.code)}
+                            value={field.state.value}
+                            onChange={(value) => {
+                              field.handleChange(value || '')
+                            }}
+                            id={field.name}
+                            placeholder="Select a currency"
+                            onBlur={field.handleBlur}
+                            label={'Currency'}
+                            renderOption={(item: string) => <span>{item}</span>}
+                            emptyText={<>No currency found.</>}
+                          />
+                          {isInvalid && (
+                            <FormError errors={field.state.meta.errors} />
+                          )}
+                        </Stack>
+                      )
+                    }}
+                  />
+                  <form.Field
+                    name="locale"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Stack
+                          direction="vertical"
+                          gap={2}
+                          data-invalid={isInvalid}
+                        >
+                          <Text type="supporting" color="secondary">
+                            Determines date and number formatting
+                          </Text>
+                          <SearchSelect
+                            key={currencyCode}
+                            items={availableLocales}
+                            value={field.state.value}
+                            onChange={(value: string | null) => {
+                              field.handleChange(value ?? '')
+                            }}
+                            getLabel={(item: string | null) => {
+                              if (!item || !currencyCode) return ''
+                              return getLocaleDisplayName(item, currencyCode)
+                            }}
+                            id={field.name}
+                            placeholder="Select a locale"
+                            onBlur={field.handleBlur}
+                            label={'Locale'}
+                            renderOption={(item: string) => (
+                              <span>
+                                {getLocaleDisplayName(item, currencyCode)}
+                              </span>
+                            )}
+                            emptyText={<>No locale found.</>}
+                          />
+                          {isInvalid && (
+                            <FormError errors={field.state.meta.errors} />
+                          )}
+                        </Stack>
+                      )
+                    }}
+                  />
+                </FormLayout>
+              </Stack>
+            </Stack>
+            <Stack
+              direction="horizontal"
+              gap={3}
+              align="center"
+              wrap="wrap"
+              justify="end"
+              as="footer"
+            >
+              <Button
+                type="submit"
+                form="new-household-form"
+
+                label={String(
+                  isMutationInFlight ? 'Creating...' : 'Create Household',
+                )}
+                variant={'primary'}
+
+                isDisabled={isMutationInFlight}
+              >
+                {isMutationInFlight ? 'Creating...' : 'Create Household'}
+              </Button>
+            </Stack>
+          </Stack>
+        </Card>
+      </Stack>
+    </Stack>
   )
 }

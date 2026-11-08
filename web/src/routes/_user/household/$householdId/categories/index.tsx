@@ -1,3 +1,8 @@
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { readViewUserIds } from '@/hooks/view-scope-store'
+import { parseDateRangeFromURL } from '@/lib/date-range'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
@@ -6,13 +11,8 @@ import {
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import { readViewUserIds } from '@/hooks/view-scope-store'
-import type { categoriesQuery } from './__generated__/categoriesQuery.graphql'
 import { CategoriesPanel } from './-components/categories-panel'
-import { parseDateRangeFromURL } from '@/lib/date-range'
-import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import type { categoriesQuery } from './__generated__/categoriesQuery.graphql'
 
 const query = graphql`
   query categoriesQuery(

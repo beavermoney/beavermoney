@@ -1,65 +1,66 @@
+import { Button } from '@astryxdesign/core/Button'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
+import { useToast } from '@astryxdesign/core/Toast'
 import { ErrorComponentProps, useNavigate } from '@tanstack/react-router'
 import { SearchXIcon } from 'lucide-react'
 import { useEffect } from 'react'
-import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
 import {
   clearHouseholdScopedStorage,
   isMembershipRevokedError,
 } from '@/lib/auth'
 
 export function GenericError(error: ErrorComponentProps) {
+  const showToast = useToast()
+
   const navigate = useNavigate()
   const isRevoked = isMembershipRevokedError(error.error)
 
   useEffect(() => {
     if (!isRevoked) return
     clearHouseholdScopedStorage()
-    toast.error('You no longer have access to this household.')
+    showToast({
+      type: 'error',
+      body: 'You no longer have access to this household.',
+    })
     navigate({ to: '/household' })
-  }, [isRevoked, navigate])
+  }, [isRevoked, navigate, showToast])
 
   if (isRevoked) {
     return null
   }
 
   return (
-    <Empty className="w-full">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <SearchXIcon />
-        </EmptyMedia>
-        <EmptyTitle>Something went wrong :(</EmptyTitle>
-        <EmptyDescription>
+    <Stack direction="vertical" gap={4}>
+      <Stack direction="vertical" gap={2}>
+        <Stack direction="vertical" gap={4}>
+          <AstryxIcon icon={SearchXIcon} />
+        </Stack>
+        <Heading level={2}>Something went wrong :(</Heading>
+        <Stack direction="vertical" gap={4}>
           {error.error instanceof Error
             ? error.error.message
             : 'An unexpected error occurred. Please try again.'}
-        </EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent className="max-w-none flex-row justify-center">
+        </Stack>
+      </Stack>
+      <Stack direction="vertical" gap={4}>
         <Button
-          className="cursor-pointer"
-          variant="outline"
           onClick={() => navigate({ to: '..' })}
+          label={'Go back'}
+          variant={'secondary'}
         >
           Go back
         </Button>
         <Button
-          className="cursor-pointer"
           onClick={() => navigate({ to: '/' })}
+          label={'Go home'}
+          variant={'primary'}
         >
           Go home
         </Button>
-      </EmptyContent>
-    </Empty>
+      </Stack>
+    </Stack>
   )
 }

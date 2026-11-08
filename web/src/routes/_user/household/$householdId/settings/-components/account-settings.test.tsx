@@ -25,7 +25,7 @@ import { AccountSettings } from './account-settings'
 vi.mock('@/hooks/use-household', () => ({
   useHousehold: () => ({ household: { id: 'household-1', locale: 'en-US' } }),
 }))
-vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+vi.mock('@astryxdesign/core/Toast', () => ({ useToast: () => vi.fn() }))
 
 afterEach(cleanup)
 

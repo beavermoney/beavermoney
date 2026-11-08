@@ -1,16 +1,14 @@
-import { cn } from '@/lib/utils'
-
 interface LogoProps {
   size?: number
   className?: string
 }
 
-export function Logo({ size = 100, className = '' }: LogoProps) {
+export function Logo({ size = 100, className: _className = '' }: LogoProps) {
   return (
     <img
       width={size}
       height={size}
-      className={cn('bg-transparent', className)}
+
       src="/assets/logo.png"
     />
   )

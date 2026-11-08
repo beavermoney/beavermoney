@@ -1,7 +1,7 @@
+import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { useHotkeySequence } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
 import { identity } from 'lodash-es'
-import { useLogTransaction } from '@/hooks/use-log-transaction'
 
 const Hotkeys = () => {
   const navigate = useNavigate()

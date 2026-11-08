@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bb89961647a629860aaa3c99e2452e66>>
+ * @generated SignedSource<<4256834e524d7a4d7718cecf7330efb6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,9 +12,6 @@ import { ReaderInlineDataFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type transactionCategoryPickerFragment$data = {
   readonly icon: string;
-  readonly latestTransaction: {
-    readonly datetime: any;
-  } | null | undefined;
   readonly name: string;
   readonly " $fragmentType": "transactionCategoryPickerFragment";
 };
@@ -28,6 +25,6 @@ const node: ReaderInlineDataFragment = {
   "name": "transactionCategoryPickerFragment"
 };
 
-(node as any).hash = "13dda3528cf01eafba02f6addbea9c46";
+(node as any).hash = "82a57772a3f8228a5854f29c94387ef5";
 
 export default node;

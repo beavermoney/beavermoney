@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1335e7a6d9de8f4acaf403b0aca7fd30>>
+ * @generated SignedSource<<e94835c6d720a00a932cf93b7cf4562d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type appSidebarFragment$data = {
-  readonly " $fragmentSpreads": FragmentRefs<"householdSwitcherFragment" | "navUserFragment">;
+  readonly " $fragmentSpreads": FragmentRefs<"householdSwitcherFragment">;
   readonly " $fragmentType": "appSidebarFragment";
 };
 export type appSidebarFragment$key = {
@@ -29,17 +29,12 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "FragmentSpread",
       "name": "householdSwitcherFragment"
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "navUserFragment"
     }
   ],
   "type": "Query",
   "abstractKey": null
 };
 
-(node as any).hash = "7bc92594887631434a15dc63db84223c";
+(node as any).hash = "67fa8ac0a1894ae7110d8bb227a3b97e";
 
 export default node;

@@ -1,14 +1,16 @@
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
-import { Link, LinkOptions } from '@tanstack/react-router'
-import currency from 'currency.js'
-import type { investmentCardFragment$key } from './__generated__/investmentCardFragment.graphql'
-import { cn } from '@/lib/utils'
+import { RouterListItem } from '@/components/router-list-item'
 import { useCurrency } from '@/hooks/use-currency'
-import { getPrettyTime } from '@/lib/time'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getLogoTickerURL } from '@/lib/logo'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { VStack } from '@astryxdesign/core/Layout'
+import { Text } from '@astryxdesign/core/Text'
+import { LinkOptions } from '@tanstack/react-router'
+import currency from 'currency.js'
+import { useFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
+import type { investmentCardFragment$key } from './__generated__/investmentCardFragment.graphql'
+
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
+import { getLogoTickerURL } from '@/lib/logo'
 
 const investmentCardFragment = graphql`
   fragment investmentCardFragment on Investment {
@@ -34,12 +36,14 @@ type InvestmentCardProps = {
   fragmentRef: investmentCardFragment$key
   linkOptions?: LinkOptions
   className?: string
+  showReturn?: boolean
 }
 
 export function InvestmentCard({
   fragmentRef,
   linkOptions,
-  className,
+  showReturn = true,
+  className: _className,
 }: InvestmentCardProps) {
   const data = useFragment(investmentCardFragment, fragmentRef)
 
@@ -65,68 +69,48 @@ export function InvestmentCard({
       ? `−${formattedPercent}`
       : formattedPercent
 
-  const returnClassName = cn(
-    'flex items-center gap-1.5 text-[0.6875rem] font-medium tabular-nums',
-    isPositive && 'text-emerald-600 dark:text-emerald-400',
-    isNegative && 'text-red-600 dark:text-red-400',
-    !isPositive && !isNegative && 'text-muted-foreground',
-  )
-
   return (
-    <Link
-      className={cn(
-        'hover:bg-muted flex flex-col gap-1.5 rounded-md border border-transparent p-3 text-xs/relaxed no-underline! transition-colors',
-        className,
-      )}
+    <RouterListItem
       from="/household/$householdId"
       to="/household/$householdId/investments/$investmentId"
-      search={(prev) => ({ ...prev })}
-      activeOptions={{ exact: true }}
-      activeProps={{ className: 'border-border' }}
       params={{ investmentId: data.id }}
       {...linkOptions}
-    >
-      <div className="flex items-center gap-2">
-        <Avatar className="size-6 text-[0.5rem]">
-          <AvatarImage
-            src={getLogoTickerURL(data.symbol || '')}
-            alt={data.symbol || 'unknown logo'}
-          />
-          <AvatarFallback>{data.symbol}</AvatarFallback>
-        </Avatar>
-        <span className="min-w-0 font-medium">{data.name}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold tabular-nums">
-          {formatCurrencyWithPrivacyMode({
-            value: data.value,
-            currencyCode: data.householdCurrency.code,
-          })}
-        </span>
-      </div>
-      <div className="text-muted-foreground flex items-center gap-1.5 text-[0.6875rem]">
-        <span className="tabular-nums">
-          {isPrivacyModeEnabled ? '•••' : data.amount} @{' '}
-          {formatCurrency({
-            value: data.quote,
-            currencyCode: data.householdCurrency.code,
-          })}
-        </span>
-        <span className="text-muted-foreground/40">·</span>
-      </div>
-      {hasShares && (
-        <div className={returnClassName}>
-          <span>
-            {formattedReturn} ({signedPercent})
-          </span>
-        </div>
-      )}
-
-      <div className="text-muted-foreground flex items-center gap-1.5 text-[0.6875rem]">
-        <span>{data.user.name}</span>
-        <span className="text-muted-foreground/40">·</span>
-        <span>{getPrettyTime(new Date(data.updateTime))}</span>
-      </div>
-    </Link>
+      label={data.name}
+      startContent={
+        <Avatar src={getLogoTickerURL(data.symbol || '')} name={data.name} />
+      }
+      description={
+        <VStack gap={1}>
+          <Text type="supporting">
+            {[data.symbol !== data.name ? data.symbol : null, data.user.name]
+              .filter(Boolean)
+              .join(' · ')}
+          </Text>
+          <Text type="supporting" hasTabularNumbers>
+            {isPrivacyModeEnabled ? '•••' : data.amount} shares ·{' '}
+            {formatCurrency({
+              value: data.quote,
+              currencyCode: data.householdCurrency.code,
+            })}{' '}
+            per share
+          </Text>
+        </VStack>
+      }
+      endContent={
+        <VStack gap={1} hAlign="end">
+          <Text type="label" hasTabularNumbers>
+            {formatCurrencyWithPrivacyMode({
+              value: data.value,
+              currencyCode: data.householdCurrency.code,
+            })}
+          </Text>
+          {showReturn && hasShares && (
+            <Text type="supporting" hasTabularNumbers>
+              {formattedReturn} ({signedPercent})
+            </Text>
+          )}
+        </VStack>
+      }
+    />
   )
 }

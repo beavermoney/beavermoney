@@ -1,307 +1,83 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
-@import '@fontsource-variable/inter';
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
+@import '@astryxdesign/theme-neutral/fonts.css';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import '@astryxdesign/core/reset.css';
+@import '@astryxdesign/core/astryx.css';
+@import '@astryxdesign/theme-neutral/theme.css';
+@import '@astryxdesign/core/tailwind-theme.css';
+@import 'tailwindcss/utilities.css' layer(utilities);
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme='light']) *):not(
+        [data-theme='light'],
+        [data-theme='light'] *
+      ) {
+      @slot;
+    }
+  }
+}
 
-/*
- * Beaver Money color and material tokens. Source of truth: DESIGN.md at the
- * project root. Warm hue 92° remains the through-line, now carried through a
- * rounded, translucent chrome system inspired by iOS material layering.
- */
+/* Financial series retain consistent meanings across charts and account lists. */
 :root {
-  --background: oklch(1 0.002 92); /* Paper White */
-  --foreground: oklch(0.145 0.005 92); /* Ink Near-Black */
-  --card: oklch(1 0.002 92); /* Paper White */
-  --card-foreground: oklch(0.145 0.005 92); /* Ink Near-Black */
-  --popover: oklch(1 0.002 92); /* Paper White */
-  --popover-foreground: oklch(0.145 0.005 92); /* Ink Near-Black */
-  --primary: oklch(0.852 0.199 91.936); /* Beaver Pelt Amber */
-  --primary-foreground: oklch(0.421 0.095 57.708); /* Walnut Roast */
-  --secondary: oklch(0.967 0.005 92); /* Light Vellum */
-  --secondary-foreground: oklch(0.21 0.008 92); /* Ink Deep */
-  --muted: oklch(0.97 0.005 92); /* Light Vellum */
-  --muted-foreground: oklch(0.556 0.008 92); /* Ink Mid */
-  --accent: oklch(0.97 0.005 92); /* Light Vellum */
-  --accent-foreground: oklch(0.205 0.008 92); /* Ink Deep */
-  --destructive: oklch(0.577 0.245 27.325); /* Crimson Error */
-  --border: oklch(0.922 0.005 92); /* Pencil Grey */
-  --input: oklch(0.922 0.005 92); /* Pencil Grey */
-  --ring: oklch(0.708 0.008 92); /* Graphite Mid */
-  --chart-1: oklch(0.87 0.005 92);
-  --chart-2: oklch(0.556 0.008 92);
-  --chart-3: oklch(0.439 0.01 92);
-  --chart-4: oklch(0.371 0.01 92);
-  --chart-5: oklch(0.269 0.008 92);
-  --chart-net-worth: oklch(0.72 0.19 142); /* Account Green */
-  --chart-liquidity: oklch(0.67 0.2 258); /* Account Blue */
-  --chart-investment: oklch(0.78 0.17 55); /* Account Amber */
-  --chart-property: oklch(0.65 0.22 340); /* Account Magenta */
-  --chart-receivable: oklch(0.7 0.18 200); /* Account Cyan */
-  --chart-liability: oklch(0.65 0.22 25); /* Account Red */
-  --chart-asset: oklch(0.72 0.17 300); /* Account Purple */
-  --radius: 0.625rem;
-  --glass-chrome: oklch(0.985 0.008 92 / 78%);
-  --glass-popover: oklch(0.995 0.005 92 / 88%);
-  --glass-border: oklch(1 0.002 92 / 72%);
-  --glass-shadow-color: oklch(0.145 0.005 92 / 14%);
-  --surface-shadow-color: oklch(0.145 0.005 92 / 7%);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --sidebar: oklch(0.985 0.005 92); /* Bone Cream */
-  --sidebar-foreground: oklch(0.145 0.005 92); /* Ink Near-Black */
-  --sidebar-primary: oklch(0.681 0.162 75.834); /* Burnished Gold */
-  --sidebar-primary-foreground: oklch(0.987 0.026 102.212); /* Cream */
-  --sidebar-accent: oklch(
-    0.95 0.007 92
-  ); /* Worn Vellum (lifted from 0.97 for visible hover/active delta) */
-  --sidebar-accent-foreground: oklch(0.205 0.008 92); /* Ink Deep */
-  --sidebar-border: oklch(0.922 0.005 92); /* Pencil Grey */
-  --sidebar-ring: oklch(0.708 0.008 92); /* Graphite Mid */
+  --chart-net-worth: var(--color-text-green);
+  --chart-liquidity: var(--color-text-blue);
+  --chart-investment: var(--color-text-orange);
+  --chart-property: var(--color-text-pink);
+  --chart-receivable: var(--color-text-cyan);
+  --chart-liability: var(--color-text-red);
+  --chart-asset: var(--color-text-purple);
 }
-
-.dark {
-  --background: oklch(0.145 0.005 92); /* Ink Near-Black */
-  --foreground: oklch(0.985 0.003 92); /* Cream */
-  --card: oklch(0.205 0.008 92); /* Ink Deep */
-  --card-foreground: oklch(0.985 0.003 92); /* Cream */
-  --popover: oklch(0.205 0.008 92); /* Ink Deep */
-  --popover-foreground: oklch(0.985 0.003 92); /* Cream */
-  --primary: oklch(0.795 0.184 86.047); /* Amber Deep */
-  --primary-foreground: oklch(0.421 0.095 57.708); /* Walnut Roast */
-  --secondary: oklch(0.274 0.01 92); /* Warm Walnut */
-  --secondary-foreground: oklch(0.985 0.003 92); /* Cream */
-  --muted: oklch(0.269 0.008 92); /* Warm Walnut */
-  --muted-foreground: oklch(0.708 0.008 92); /* Graphite Mid */
-  --accent: oklch(0.269 0.008 92); /* Warm Walnut */
-  --accent-foreground: oklch(0.985 0.003 92); /* Cream */
-  --destructive: oklch(
-    0.704 0.191 22.216
-  ); /* Crimson Error (lifted for dark canvas) */
-  --border: oklch(1 0.003 92 / 10%);
-  --input: oklch(1 0.003 92 / 15%);
-  --ring: oklch(0.556 0.008 92); /* Ink Mid */
-  /* Grey ramp lifted into the readable band on dark canvas (>=0.45). */
-  --chart-1: oklch(0.97 0.003 92);
-  --chart-2: oklch(0.85 0.005 92);
-  --chart-3: oklch(0.72 0.008 92);
-  --chart-4: oklch(0.58 0.008 92);
-  --chart-5: oklch(0.45 0.008 92);
-  --chart-net-worth: oklch(0.75 0.19 142);
-  --chart-liquidity: oklch(0.7 0.2 258);
-  --chart-investment: oklch(0.82 0.17 55);
-  --chart-property: oklch(0.68 0.22 340);
-  --chart-receivable: oklch(0.73 0.18 200);
-  --chart-liability: oklch(0.68 0.22 25);
-  --chart-asset: oklch(0.75 0.17 300);
-  --glass-chrome: oklch(0.205 0.01 92 / 76%);
-  --glass-popover: oklch(0.235 0.01 92 / 88%);
-  --glass-border: oklch(0.985 0.003 92 / 13%);
-  --glass-shadow-color: oklch(0.08 0.004 92 / 45%);
-  --surface-shadow-color: oklch(0.08 0.004 92 / 24%);
-  --sidebar: oklch(0.205 0.008 92); /* Ink Deep */
-  --sidebar-foreground: oklch(0.985 0.003 92); /* Cream */
-  --sidebar-primary: oklch(0.795 0.184 86.047); /* Amber Deep */
-  --sidebar-primary-foreground: oklch(0.987 0.026 102.212); /* Cream */
-  --sidebar-accent: oklch(0.269 0.008 92); /* Warm Walnut */
-  --sidebar-accent-foreground: oklch(0.985 0.003 92); /* Cream */
-  --sidebar-border: oklch(1 0.003 92 / 10%);
-  --sidebar-ring: oklch(0.556 0.008 92); /* Ink Mid */
-}
-
 @theme inline {
-  --font-sans: 'Inter Variable', sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
+  --color-chart-net-worth: var(--chart-net-worth);
+  --color-chart-liquidity: var(--chart-liquidity);
+  --color-chart-investment: var(--chart-investment);
+  --color-chart-property: var(--chart-property);
+  --color-chart-receivable: var(--chart-receivable);
   --color-chart-liability: var(--chart-liability);
   --color-chart-asset: var(--chart-asset);
-  --color-chart-receivable: var(--chart-receivable);
-  --color-chart-property: var(--chart-property);
-  --color-chart-investment: var(--chart-investment);
-  --color-chart-liquidity: var(--chart-liquidity);
-  --color-chart-net-worth: var(--chart-net-worth);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-  --font-heading: var(--font-sans);
 }
-
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html,
+  body,
+  #app {
+    min-height: 100%;
   }
   body {
-    @apply bg-background text-foreground relative font-sans;
+    margin: 0;
+    background: var(--color-background-body);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-body);
   }
-  html {
-    @apply font-sans;
-    -webkit-tap-highlight-color: transparent;
-  }
-  /*
-   * `:disabled` pseudo-class only matches form controls, so we also handle the
-   * `[disabled]` attribute (and aria-disabled) for `[role='button']` elements.
-   */
-  button:not(:disabled):not([aria-disabled='true']),
-  [role='button']:not([disabled]):not([aria-disabled='true']) {
-    cursor: pointer;
-  }
-
-  [data-base-ui-inert] {
-    z-index: 50;
+  * {
+    border-color: var(--color-border);
   }
 }
 
-/*
- * Material is reserved for chrome and floating layers. Ledger content stays
- * opaque so rows, decimals, and charts remain calm and precisely readable.
- */
-.liquid-glass-chrome,
-.liquid-glass-sidebar,
-.liquid-glass-popover {
-  border: 1px solid var(--glass-border);
-  box-shadow:
-    0 1px 2px var(--surface-shadow-color),
-    0 8px 24px var(--glass-shadow-color);
+/* Device insets are platform geometry, not component design tokens. Content
+   scrolls through the bottom inset; only pinned controls stay above it. */
+.app-safe-area {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
 }
 
-.liquid-glass-chrome,
-.liquid-glass-sidebar {
-  background: var(--glass-chrome);
+/* MobileNav is a portaled dialog, outside the shell. Its direct child is the
+   full-height drawer surface; inset it without shrinking the backdrop. */
+.app-mobile-nav > div {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
 }
 
-.liquid-glass-popover {
-  background: var(--glass-popover);
-}
-
-.liquid-glass-scrim {
-  background: oklch(0.12 0.006 92 / 38%);
-  backdrop-filter: blur(6px) saturate(1.08);
-  -webkit-backdrop-filter: blur(6px) saturate(1.08);
-}
-
-@supports (
-  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
-) {
-  .liquid-glass-chrome {
-    backdrop-filter: blur(24px) saturate(1.45);
-    -webkit-backdrop-filter: blur(24px) saturate(1.45);
-  }
-
-  .liquid-glass-sidebar {
-    backdrop-filter: blur(30px) saturate(1.3);
-    -webkit-backdrop-filter: blur(30px) saturate(1.3);
-  }
-
-  .liquid-glass-popover {
-    backdrop-filter: blur(28px) saturate(1.4);
-    -webkit-backdrop-filter: blur(28px) saturate(1.4);
-  }
-}
-
-.surface-card {
-  box-shadow: 0 1px 2px var(--surface-shadow-color);
-}
-
-@media (max-width: 47.999rem) {
-  .mobile-content-bottom-corners::before,
-  .mobile-content-bottom-corners::after {
-    position: absolute;
-    z-index: 20;
-    bottom: 0;
-    /* Include the one-pixel outer ring used by ledger surfaces. */
-    width: calc(var(--radius-2xl) + 1px);
-    height: calc(var(--radius-2xl) + 1px);
-    pointer-events: none;
-    content: '';
-  }
-
-  .mobile-content-bottom-corners::before {
-    left: calc(1rem - 1px);
-    background: radial-gradient(
-      circle at top right,
-      transparent calc(var(--radius-2xl) + 0.5px),
-      var(--background) calc(var(--radius-2xl) + 1px)
-    );
-  }
-
-  .mobile-content-bottom-corners::after {
-    right: calc(1rem - 1px);
-    background: radial-gradient(
-      circle at top left,
-      transparent calc(var(--radius-2xl) + 0.5px),
-      var(--background) calc(var(--radius-2xl) + 1px)
-    );
-  }
-}
-
-[data-slot='button'][data-variant='default'] {
-  box-shadow:
-    inset 0 1px 0 oklch(1 0.002 92 / 38%),
-    0 1px 2px var(--surface-shadow-color);
-}
-
-[data-slot='sheet-content'][data-side='left'] {
-  border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
-}
-
-[data-slot='sheet-content'][data-side='right'] {
-  border-radius: var(--radius-2xl) 0 0 var(--radius-2xl);
-}
-
-[data-slot='sheet-content'][data-side='top'] {
-  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
-}
-
-[data-slot='sheet-content'][data-side='bottom'] {
-  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  [data-slot='button'] {
-    transform: none !important;
-  }
+/* Padding belongs inside the scrollable content so the final row can clear
+   the home indicator without reserving a permanent opaque bottom strip. */
+.app-scroll-content {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

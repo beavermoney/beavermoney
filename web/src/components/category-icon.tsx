@@ -1,3 +1,5 @@
+import { CategoryGlyph } from '@/components/category-glyph'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import {
   ArrowLeftRightIcon,
   BanknoteArrowDownIcon,
@@ -6,13 +8,11 @@ import {
   WrenchIcon,
 } from 'lucide-react'
 import { dynamicIconImports, type IconName } from 'lucide-react/dynamic'
-import { CategoryGlyph } from '@/components/category-glyph'
-import { cn } from '@/lib/utils'
 
 export function CategoryIcon({
   type,
   icon,
-  size = 'default',
+  size: _size = 'default',
 }: {
   type: string
   icon?: string | null
@@ -28,28 +28,12 @@ export function CategoryIcon({
           : type === 'setup'
             ? WrenchIcon
             : ArrowLeftRightIcon
-  const fallback = <TypeIcon className="size-4" />
+  const fallback = <AstryxIcon icon={TypeIcon} />
 
   return (
-    <span
-      className={cn(
-        'text-muted-foreground flex shrink-0 items-center justify-center rounded-full',
-        size !== 'inline' && 'bg-muted',
-        size === 'inline' && 'size-4',
-        size === 'sm' && 'size-6',
-        size === 'default' && 'size-8',
-        type === 'expense' && 'text-destructive',
-        type === 'investment' && 'text-chart-investment',
-        type === 'income' && 'text-chart-net-worth',
-      )}
-      aria-hidden="true"
-    >
+    <span aria-hidden="true">
       {icon && Object.hasOwn(dynamicIconImports, icon) ? (
-        <CategoryGlyph
-          name={icon as IconName}
-          fallback={fallback}
-          className="size-4"
-        />
+        <CategoryGlyph name={icon as IconName} fallback={fallback} />
       ) : (
         fallback
       )}

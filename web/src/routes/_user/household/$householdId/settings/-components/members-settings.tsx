@@ -1,40 +1,23 @@
-import { graphql } from 'relay-runtime'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { DropdownMenu, DropdownMenuItem } from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { List, ListItem } from '@astryxdesign/core/List'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
+import { MoreVerticalIcon } from 'lucide-react'
+import { useState } from 'react'
 import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { toast } from 'sonner'
-import { useState } from 'react'
-import { MoreVerticalIcon } from 'lucide-react'
 
 import type { membersSettingsFragment$key } from './__generated__/membersSettingsFragment.graphql'
-import type { membersSettingsUpdateRoleMutation } from './__generated__/membersSettingsUpdateRoleMutation.graphql'
 import type { membersSettingsRemoveMutation } from './__generated__/membersSettingsRemoveMutation.graphql'
+import type { membersSettingsUpdateRoleMutation } from './__generated__/membersSettingsUpdateRoleMutation.graphql'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
-} from '@/components/ui/item'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { useUser } from '@/hooks/use-user'
 import { useUserHousehold } from '@/hooks/use-user-household'
 import { commitMutationResult } from '@/lib/relay'
@@ -115,6 +98,8 @@ type MembersSettingsProps = {
 }
 
 export function MembersSettings({ householdRef }: MembersSettingsProps) {
+  const showToast = useToast()
+
   const household = useFragment(membersSettingsFragment, householdRef)
   const { user } = useUser()
   const { userHousehold } = useUserHousehold()
@@ -155,14 +140,16 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
 
     match(result)
       .with({ status: 'success' }, () => {
-        toast.success(
-          nextRole === 'admin'
-            ? 'Member promoted to admin.'
-            : 'Admin demoted to member.',
-        )
+        showToast({
+          type: 'info',
+          body:
+            nextRole === 'admin'
+              ? 'Member promoted to admin.'
+              : 'Admin demoted to member.',
+        })
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(getRoleErrorMessage(error))
+        showToast({ type: 'error', body: getRoleErrorMessage(error) })
       })
       .exhaustive()
   }
@@ -184,23 +171,23 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
 
     match(result)
       .with({ status: 'success' }, () => {
-        toast.success('Member removed.')
+        showToast({ type: 'info', body: 'Member removed.' })
         setRemoveTargetId(null)
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(getRemoveErrorMessage(error))
+        showToast({ type: 'error', body: getRemoveErrorMessage(error) })
       })
       .exhaustive()
   }
 
   return (
-    <div className="flex max-w-md flex-col gap-3">
+    <Stack direction="vertical" gap={3} width="100%" className="max-w-2xl">
       {isAdmin && canInviteMore && (
-        <div>
+        <Stack direction="horizontal" gap={4}>
           <AddMemberDialog householdRef={household} />
-        </div>
+        </Stack>
       )}
-      <ItemGroup>
+      <List edge="outset" hasDividers>
         {household.userHouseholds.map((uh) => {
           const isCurrentUser = uh.user.id === user.id
           const isSynthetic = uh.user.isSynthetic
@@ -208,92 +195,129 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
           const nextRole: 'admin' | 'member' =
             uh.role === 'admin' ? 'member' : 'admin'
           return (
-            <Item key={uh.id} variant="outline" size="sm">
-              <ItemContent>
-                <ItemTitle>
-                  {uh.user.name}
-                  {isCurrentUser && (
-                    <span className="text-muted-foreground font-normal">
-                      (you)
-                    </span>
-                  )}
-                  <Badge variant={'outline'}>{uh.householdCurrency.code}</Badge>
-                </ItemTitle>
-                {uh.user.email && (
-                  <ItemDescription>{uh.user.email}</ItemDescription>
-                )}
-                {isSynthetic && (
-                  <ItemDescription>Shared owner — auto-managed</ItemDescription>
-                )}
-              </ItemContent>
-              {isSynthetic ? (
-                <Badge variant="outline">joint</Badge>
-              ) : (
-                <Badge variant={uh.role === 'admin' ? 'default' : 'secondary'}>
-                  {uh.role}
-                </Badge>
-              )}
-              {showActions && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer"
-                        aria-label={`Actions for ${uh.user.name}`}
-                      />
-                    }
+            <ListItem
+              key={uh.id}
+              label={uh.user.name + (isCurrentUser ? ' (you)' : '')}
+              description={
+                <Stack direction="vertical" gap={0.5}>
+                  <Text
+                    type="supporting"
+                    color="secondary"
+                    className="break-all"
                   >
-                    <MoreVerticalIcon className="size-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      disabled={isUpdateRoleInFlight}
-                      onClick={() => handleRoleChange(uh.id, nextRole)}
+                    {isSynthetic
+                      ? 'Shared owner — auto-managed'
+                      : uh.user.email}
+                  </Text>
+                  <Text type="supporting" color="secondary">
+                    {isSynthetic
+                      ? 'Joint'
+                      : uh.role === 'admin'
+                        ? 'Admin'
+                        : 'Member'}{' '}
+                    · {uh.householdCurrency.code}
+                  </Text>
+                </Stack>
+              }
+              endContent={
+                <Stack direction="horizontal" gap={2} align="center">
+                  {showActions && (
+                    <DropdownMenu
+                      alignment={'end'}
+                      renderTrigger={(triggerProps) => (
+                        <Button
+                          {...triggerProps}
+
+                          label={`Actions for ${uh.user.name}`}
+                          variant={'ghost'}
+
+                          isIconOnly
+                          icon={
+                            <>
+                              <AstryxIcon icon={MoreVerticalIcon} />
+                            </>
+                          }
+                        ></Button>
+                      )}
                     >
-                      {uh.role === 'admin' ? 'Make member' : 'Make admin'}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => setRemoveTargetId(uh.id)}
-                    >
-                      Remove from household
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </Item>
+                      <DropdownMenuItem
+                        isDisabled={isUpdateRoleInFlight}
+                        onClick={() => handleRoleChange(uh.id, nextRole)}
+                        label={
+                          <>
+                            {uh.role === 'admin' ? 'Make member' : 'Make admin'}
+                          </>
+                        }
+                      />
+                      <DropdownMenuItem
+                        onClick={() => setRemoveTargetId(uh.id)}
+                        label={<>Remove from household</>}
+                      />
+                    </DropdownMenu>
+                  )}
+                </Stack>
+              }
+            />
           )
         })}
-      </ItemGroup>
+      </List>
 
-      <AlertDialog
-        open={removeTargetId !== null}
-        onOpenChange={(open) => {
-          if (!open) setRemoveTargetId(null)
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove member?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove them from the household. They will lose access
-              immediately.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={isRemoveInFlight}
-              onClick={handleConfirmRemove}
-            >
-              {isRemoveInFlight ? 'Removing...' : 'Remove'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+      <>
+        <Dialog
+          isOpen={removeTargetId !== null}
+          onOpenChange={(open) => {
+            if (!open) setRemoveTargetId(null)
+          }}
+          purpose="info"
+          role="alertdialog"
+          padding={0}
+        >
+          <Layout
+            padding={6}
+            header={
+              <DialogHeader
+                title={<>Remove member?</>}
+                onOpenChange={(open) => {
+                  if (!open) setRemoveTargetId(null)
+                }}
+              />
+            }
+          >
+            <LayoutContent>
+              <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                <Text as="div" display="block" type="supporting">
+                  This will remove them from the household. They will lose
+                  access immediately.
+                </Text>
+                <Stack
+                  direction="horizontal"
+                  gap={3}
+                  align="center"
+                  wrap="wrap"
+                  justify="end"
+                >
+                  <Button
+                    label="Cancel"
+                    onClick={() =>
+                      ((open) => {
+                        if (!open) setRemoveTargetId(null)
+                      })(false)
+                    }
+                  />
+                  <Button
+                    variant="destructive"
+                    isDisabled={isRemoveInFlight}
+                    onClick={handleConfirmRemove}
+                    label="Remove member"
+                  >
+                    {isRemoveInFlight ? 'Removing...' : 'Remove'}
+                  </Button>
+                </Stack>
+              </Stack>
+            </LayoutContent>
+          </Layout>
+        </Dialog>
+      </>
+    </Stack>
   )
 }

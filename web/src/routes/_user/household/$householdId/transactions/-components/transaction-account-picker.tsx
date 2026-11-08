@@ -1,29 +1,21 @@
-import { DesktopSelectionPopover } from '@/components/desktop-selection-popover'
-import { MobileSelectionDrawer } from '@/components/mobile-selection-drawer'
-import { graphql } from 'react-relay'
-import type { transactionAccountPickerFragment$key } from './__generated__/transactionAccountPickerFragment.graphql'
-import { readInlineData } from 'relay-runtime'
-import { useEffect } from 'react'
-import { WalletIcon } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { SearchSelect } from '@/components/search-select'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
+import { Text } from '@astryxdesign/core/Text'
+import { Avatar } from '@astryxdesign/core/Avatar'
 import { useCurrency } from '@/hooks/use-currency'
 import { getLogoDomainURL } from '@/lib/logo'
-import { cn } from '@/lib/utils'
-import { newestActivityFirst } from '@/lib/sort-by-update-time'
+import { useEffect } from 'react'
+import { graphql } from 'react-relay'
+import { readInlineData } from 'relay-runtime'
+import type { transactionAccountPickerFragment$key } from './__generated__/transactionAccountPickerFragment.graphql'
 
 const accountFragment = graphql`
   fragment transactionAccountPickerFragment on Account @inline {
-    id
-    type
     name
     icon
     balance
     householdCurrency {
       code
-    }
-    user {
-      name
     }
     latestTransaction {
       datetime
@@ -31,7 +23,10 @@ const accountFragment = graphql`
   }
 `
 
-type Account = transactionAccountPickerFragment$key
+type Account = transactionAccountPickerFragment$key & {
+  id: string
+  type: string
+}
 
 type TransactionAccountPickerProps = {
   accounts: ReadonlyArray<Account>
@@ -41,17 +36,11 @@ type TransactionAccountPickerProps = {
   onValueChange: (value: string) => void
   onBlur: () => void
   invalid: boolean
+  expanded?: boolean
+  onExpand?: () => void
   disabled?: boolean
   preferredTypes?: ReadonlyArray<string>
 }
-
-const ACCOUNT_TYPES = [
-  ['liquidity', 'Liquidity'],
-  ['investment', 'Investment'],
-  ['property', 'Property'],
-  ['receivable', 'Receivable'],
-  ['liability', 'Liability'],
-] as const
 
 export function TransactionAccountPicker({
   accounts,
@@ -64,162 +53,69 @@ export function TransactionAccountPicker({
   disabled = false,
   preferredTypes,
 }: TransactionAccountPickerProps) {
-  const isMobile = useIsMobile()
-  const selected = accounts.find((account) => accountData(account).id === value)
-  const selectionAvailable = !value || selected !== undefined
-
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
+  const selected = accounts.find((account) => account.id === value)
   useEffect(() => {
-    if (!selectionAvailable) onValueChange('')
-  }, [onValueChange, selectionAvailable])
-
-  const orderedAccounts = newestAccountsFirst(accounts)
-  const preferredTypeSet = new Set(preferredTypes)
-  const groups = ACCOUNT_TYPES.map(([type, title], typeIndex) => ({
-    type,
-    title,
-    typeIndex,
-    accounts: orderedAccounts.filter(
-      (account) => accountData(account).type === type,
-    ),
-  }))
-    .filter((group) => group.accounts.length > 0)
-    .sort((a, b) => {
-      const aPreferred = preferredTypes
-        ? preferredTypeSet.has(a.type)
-          ? 0
-          : 1
-        : 0
-      const bPreferred = preferredTypes
-        ? preferredTypeSet.has(b.type)
-          ? 0
-          : 1
-        : 0
-      const aActivityTime = accountActivityTime(a.accounts[0])
-      const bActivityTime = accountActivityTime(b.accounts[0])
-      return (
-        aPreferred - bPreferred ||
-        bActivityTime.localeCompare(aActivityTime) ||
-        a.typeIndex - b.typeIndex
-      )
-    })
-  if (!isMobile) {
+    if (value && !selected) onValueChange('')
+  }, [value, selected, onValueChange])
+  const ordered = [...accounts].sort((a, b) => {
+    const preference =
+      Number(!preferredTypes?.includes(a.type)) -
+      Number(!preferredTypes?.includes(b.type))
     return (
-      <DesktopSelectionPopover
-        groups={groups.map((group) => ({
-          label: group.title,
-          items: group.accounts,
-        }))}
-        name={name}
-        value={value}
-        label={label}
-        placeholder={
-          disabled ? 'Select a source account first' : 'Select an account'
-        }
-        emptyMessage="No accounts available."
-        getValue={(account) => accountData(account).id}
-        getLabel={(account) => accountData(account).name}
-        renderItem={(account) => (
-          <AccountDetails
-            account={account}
-            selected={value === accountData(account).id}
-          />
-        )}
-        onValueChange={onValueChange}
-        onBlur={onBlur}
-        invalid={invalid}
-        disabled={disabled}
-        triggerClassName="h-12 justify-start p-2"
-      />
+      preference ||
+      (accountData(b).latestTransaction?.datetime ?? '').localeCompare(
+        accountData(a).latestTransaction?.datetime ?? '',
+      )
     )
-  }
-
+  })
   return (
-    <MobileSelectionDrawer
-      groups={groups.map((group) => ({
-        label: group.title,
-        items: group.accounts,
-      }))}
-      name={name}
-      value={value}
+    <SearchSelect
+      items={ordered}
+      value={selected ?? null}
       label={label}
-      placeholder={
-        disabled ? 'Select a source account first' : 'Select an account'
-      }
-      emptyMessage="No accounts available."
-      getValue={(account) => accountData(account).id}
+      id={name}
+      name={name}
+      placeholder="Search accounts"
       getLabel={(account) => accountData(account).name}
-      renderItem={(account) => (
-        <AccountDetails
-          account={account}
-          selected={value === accountData(account).id}
-        />
-      )}
-      onValueChange={onValueChange}
-      onBlur={onBlur}
+      getSearchText={(account) =>
+        `${account.type} ${accountData(account).householdCurrency.code}`
+      }
+      isDisabled={disabled}
+      disabledMessage="Select a source account first"
       invalid={invalid}
-      disabled={disabled}
+      onBlur={onBlur}
+      onChange={(account) => onValueChange(account?.id ?? '')}
+      emptyText="No matching accounts."
+      renderOption={(account) => {
+        const data = accountData(account)
+        return (
+          <HStack gap={2} vAlign="center">
+            <Avatar
+              name={data.name}
+              src={data.icon ? getLogoDomainURL(data.icon) : undefined}
+            />
+            <VStack gap={0.5}>
+              <Text maxLines={2}>{data.name}</Text>
+              <Text type="supporting" color="secondary">
+                {account.type} ·{' '}
+                {formatCurrencyWithPrivacyMode({
+                  value: data.balance,
+                  currencyCode: data.householdCurrency.code,
+                  liability: account.type === 'liability',
+                })}{' '}
+                {data.householdCurrency.code}
+              </Text>
+            </VStack>
+          </HStack>
+        )
+      }}
     />
   )
 }
-
-function newestAccountsFirst(accounts: ReadonlyArray<Account>): Account[] {
-  return newestActivityFirst(
-    accounts.map((account) => ({
-      account,
-      latestTransaction: accountData(account).latestTransaction,
-    })),
-  ).map(({ account }) => account)
-}
-
-function accountActivityTime(account: Account | undefined): string {
-  if (!account) return ''
-  return accountData(account).latestTransaction?.datetime ?? ''
-}
-
 function accountData(account: Account) {
   return readInlineData<transactionAccountPickerFragment$key>(
     accountFragment,
     account,
-  )
-}
-
-function AccountDetails({
-  account,
-  selected = false,
-}: {
-  account: Account
-  selected?: boolean
-}) {
-  const data = accountData(account)
-  const { formatCurrencyWithPrivacyMode } = useCurrency()
-  return (
-    <span className="flex min-w-0 flex-1 items-center gap-2">
-      <Avatar size="sm">
-        {data.icon && <AvatarImage src={getLogoDomainURL(data.icon)} alt="" />}
-        <AvatarFallback>
-          <WalletIcon className="size-4" aria-hidden="true" />
-        </AvatarFallback>
-      </Avatar>
-      <span className="flex min-w-0 flex-1 flex-col text-xs leading-4">
-        <span className="truncate" title={data.name}>
-          {data.name}
-        </span>
-        <span
-          className={cn(
-            'wrap-anywhere tabular-nums',
-            selected ? 'text-foreground' : 'text-muted-foreground',
-          )}
-        >
-          {formatCurrencyWithPrivacyMode({
-            value: data.balance,
-            currencyCode: data.householdCurrency.code,
-            liability: data.type === 'liability',
-          })}
-          <span> {data.householdCurrency.code}</span>
-          <span aria-hidden="true"> · </span>
-          <span>{data.user.name}</span>
-        </span>
-      </span>
-    </span>
   )
 }

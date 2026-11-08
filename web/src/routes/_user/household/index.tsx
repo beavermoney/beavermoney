@@ -1,9 +1,9 @@
+import { PendingComponent } from '@/components/pending-component'
+import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
+import { environment } from '@/environment'
 import { Navigate, createFileRoute } from '@tanstack/react-router'
 import { loadQuery, usePreloadedQuery } from 'react-relay'
 import { graphql } from 'relay-runtime'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
 import { householdQuery } from './__generated__/householdQuery.graphql'
 
 const query = graphql`

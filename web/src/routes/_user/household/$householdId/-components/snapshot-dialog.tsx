@@ -1,29 +1,27 @@
-import { graphql } from 'relay-runtime'
-import { useFragment, useMutation } from 'react-relay'
-import { useState } from 'react'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Text } from '@astryxdesign/core/Text'
+import { TextArea } from '@astryxdesign/core/TextArea'
+import { useToast } from '@astryxdesign/core/Toast'
 import currency from 'currency.js'
-import { match } from 'ts-pattern'
-import { toast } from 'sonner'
 import { capitalize } from 'lodash-es'
-import invariant from 'tiny-invariant'
 import { FlagIcon } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
+import invariant from 'tiny-invariant'
+import { match } from 'ts-pattern'
 import type { snapshotDialogFragment$key } from './__generated__/snapshotDialogFragment.graphql'
 import type { snapshotDialogMutation } from './__generated__/snapshotDialogMutation.graphql'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { useHousehold } from '@/hooks/use-household'
-import { useDisplayCurrency } from '@/hooks/use-display-currency'
+
 import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
-import { ItemTitle } from '@/components/ui/item'
 
 const SnapshotDialogFragment = graphql`
   fragment snapshotDialogFragment on Household
@@ -61,19 +59,17 @@ const CATEGORIES = [
   'liability',
 ] as const
 
-const CATEGORY_COLORS: Record<(typeof CATEGORIES)[number], string> = {
-  liquidity: 'var(--chart-liquidity)',
-  investment: 'var(--chart-investment)',
-  // property: 'var(--chart-property)',
-  receivable: 'var(--chart-receivable)',
-  liability: 'var(--chart-liability)',
-}
-
 type SnapshotDialogProps = {
   fragmentRef: snapshotDialogFragment$key
+  renderTrigger?: (open: () => void) => ReactNode
 }
 
-export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
+export function SnapshotDialog({
+  fragmentRef,
+  renderTrigger,
+}: SnapshotDialogProps) {
+  const showToast = useToast()
+
   const data = useFragment(SnapshotDialogFragment, fragmentRef)
   const { household } = useHousehold()
   const { displayCurrencyCode, convert } = useDisplayCurrency()
@@ -117,83 +113,101 @@ export function SnapshotDialog({ fragmentRef }: SnapshotDialogProps) {
 
     match(result)
       .with({ status: 'success' }, () => {
-        toast.success('Snapshot saved!')
+        showToast({ type: 'info', body: 'Snapshot saved!' })
         setNote('')
         setOpen(false)
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(`Failed to save snapshot: ${error}`)
+        showToast({ type: 'error', body: `Failed to save snapshot: ${error}` })
       })
       .exhaustive()
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button
-            variant="ghost"
-            className="size-9 shrink-0 cursor-pointer rounded-lg border-0 bg-clip-border"
-            aria-label="Save snapshot"
-          >
-            <FlagIcon />
-          </Button>
-        }
-      />
-      <DialogContent className="gap-3">
-        <DialogHeader>
-          <DialogTitle>Snapshot</DialogTitle>
-        </DialogHeader>
+    <>
+      {renderTrigger ? (
+        renderTrigger(() => setOpen(true))
+      ) : (
+        <Button
+          onClick={() => setOpen(true)}
 
-        <div className="bg-muted/50 rounded-lg px-3 py-2.5">
-          <p className="text-muted-foreground mb-0.5 text-xs">Net Worth</p>
-          <ItemTitle className="text-xl tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: netWorth,
-              currencyCode: displayCurrencyCode,
-            })}
-          </ItemTitle>
-        </div>
+          label={'Create snapshot'}
+          isIconOnly
+          variant={'ghost'}
 
-        <div className="flex flex-col gap-0">
-          {CATEGORIES.map((type, i) => (
-            <div
-              key={type}
-              className={`flex items-center justify-between py-1.5 ${i < CATEGORIES.length - 1 ? 'border-border/50 border-b' : ''}`}
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="size-1.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: CATEGORY_COLORS[type] }}
-                />
-                <span className="text-muted-foreground">
-                  {capitalize(type)}
-                </span>
-              </div>
-              <span className="tabular-nums">
-                {formatCurrencyWithPrivacyMode({
-                  value: breakdown[type],
-                  currencyCode: displayCurrencyCode,
-                  liability: type === 'liability',
-                })}
-              </span>
-            </div>
-          ))}
-        </div>
+          icon={<AstryxIcon icon={FlagIcon} />}
+        ></Button>
+      )}
+      <Dialog isOpen={open} onOpenChange={setOpen} purpose="info" padding={0}>
+        <Layout
+          padding={6}
+          header={<DialogHeader title={<>Snapshot</>} onOpenChange={setOpen} />}
+        >
+          <LayoutContent>
+            <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+              <Stack direction="vertical" gap={1}>
+                <Text as="p" display="block" color="secondary">
+                  Net Worth
+                </Text>
+                <Heading level={2}>
+                  {formatCurrencyWithPrivacyMode({
+                    value: netWorth,
+                    currencyCode: displayCurrencyCode,
+                  })}
+                </Heading>
+              </Stack>
+              <Stack direction="vertical" gap={2}>
+                {CATEGORIES.map((type) => (
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    wrap="wrap"
+                    justify="between"
+                    key={type}
+                  >
+                    <Text color="secondary">{capitalize(type)}</Text>
+                    <Text hasTabularNumbers>
+                      {formatCurrencyWithPrivacyMode({
+                        value: breakdown[type],
+                        currencyCode: displayCurrencyCode,
+                        liability: type === 'liability',
+                      })}
+                    </Text>
+                  </Stack>
+                ))}
+              </Stack>
+              <TextArea
+                placeholder="What changed since your last snapshot?"
+                label="Note (optional)"
 
-        <Textarea
-          placeholder="Add a note (optional)"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          className="min-h-16 resize-none"
-        />
+                value={String(note ?? '')}
+                onChange={(_value, event) =>
+                  ((e) => setNote(e.target.value))(event)
+                }
+              />
+              <Stack
+                direction="horizontal"
+                gap={3}
+                align="center"
+                wrap="wrap"
+                justify="end"
+              >
+                <Button
+                  onClick={handleSnapshot}
+                  label={String(isMutationInFlight ? 'Saving...' : 'Save')}
+                  variant={'primary'}
 
-        <DialogFooter showCloseButton>
-          <Button onClick={handleSnapshot} disabled={isMutationInFlight}>
-            {isMutationInFlight ? 'Saving...' : 'Save'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+                  isDisabled={isMutationInFlight}
+                >
+                  {isMutationInFlight ? 'Saving...' : 'Save'}
+                </Button>
+                <Button label="Cancel" onClick={() => setOpen(false)} />
+              </Stack>
+            </Stack>
+          </LayoutContent>
+        </Layout>
+      </Dialog>
+    </>
   )
 }

@@ -1,48 +1,28 @@
-import { graphql, useFragment, useMutation } from 'react-relay'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { DialogHeader } from '@astryxdesign/core/Dialog'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { match } from 'ts-pattern'
 import currency from 'currency.js'
+import { graphql, useMutation } from 'react-relay'
+import { match } from 'ts-pattern'
+import * as z from 'zod'
 
 import type { editTransactionEntryDialogUpdateMutation } from './__generated__/editTransactionEntryDialogUpdateMutation.graphql'
-import type { editTransactionEntryDialogAccountsFragment$key } from './__generated__/editTransactionEntryDialogAccountsFragment.graphql'
 
-import {
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
-import { useHousehold } from '@/hooks/use-household'
+import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { TransactionAccountPicker } from './transaction-account-picker'
-
-const editTransactionEntryDialogAccountsFragment = graphql`
-  fragment editTransactionEntryDialogAccountsFragment on Household
-  @argumentDefinitions(viewUserIds: { type: "[ID!]" }) {
-    accounts(where: { archived: false, userIDIn: $viewUserIds }) {
-      edges {
-        node {
-          id
-          householdCurrency {
-            code
-          }
-          ...transactionAccountPickerFragment
-        }
-      }
-    }
-  }
-`
+import { useHousehold } from '@/hooks/use-household'
+import { getLogoDomainURL } from '@/lib/logo'
+import { commitMutationResult } from '@/lib/relay'
+import { useEffect } from 'react'
 
 const editTransactionEntryDialogUpdateMutation = graphql`
   mutation editTransactionEntryDialogUpdateMutation(
@@ -73,11 +53,21 @@ const formSchema = z.object({
   accountId: z.string().min(1, 'Please select an account'),
 })
 
+export type EditEntryAccount = {
+  id: string
+  name: string
+  type: string
+  icon: string | null
+  value: string
+  householdCurrency: { code: string }
+  user: { name: string }
+}
+
 type EditTransactionEntryDialogProps = {
   entryId: string
   currentAmount: string
   currentAccountId: string
-  householdRef: editTransactionEntryDialogAccountsFragment$key
+  accounts: ReadonlyArray<EditEntryAccount>
   onClose: () => void
 }
 
@@ -85,17 +75,10 @@ export function EditTransactionEntryDialog({
   entryId,
   currentAmount,
   currentAccountId,
-  householdRef,
+  accounts,
   onClose,
 }: EditTransactionEntryDialogProps) {
-  const accountsData = useFragment(
-    editTransactionEntryDialogAccountsFragment,
-    householdRef,
-  )
-  const accounts =
-    accountsData.accounts.edges?.flatMap((edge) =>
-      edge?.node ? [edge.node] : [],
-    ) ?? []
+  const showToast = useToast()
 
   const [commitUpdate, isUpdateInFlight] =
     useMutation<editTransactionEntryDialogUpdateMutation>(
@@ -104,6 +87,7 @@ export function EditTransactionEntryDialog({
 
   const { household } = useHousehold()
   const { displayCurrencyCode } = useDisplayCurrency()
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
 
   const originalSign = parseFloat(currentAmount) < 0 ? -1 : 1
 
@@ -130,111 +114,197 @@ export function EditTransactionEntryDialog({
                 accountID: formData.accountId,
               },
             },
-            updater: (store) => {
-              store.get(household.id)?.invalidateRecord()
-            },
           },
         )
 
       match(result)
         .with({ status: 'success' }, () => {
-          toast.success('Entry updated successfully!')
+          showToast({ type: 'info', body: 'Entry updated successfully!' })
           onClose()
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
   })
 
+  const selectedAccountId = form.state.values.accountId
+  const accountSelectionAvailable =
+    !selectedAccountId ||
+    accounts.some((account) => account.id === selectedAccountId)
+
+  useEffect(() => {
+    if (!accountSelectionAvailable) form.setFieldValue('accountId', '')
+  }, [accountSelectionAvailable, form])
+
+  const accountById = new Map(accounts.map((a) => [a.id, a]))
+
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle>Edit Entry</DialogTitle>
-        <DialogDescription>
-          Update entry details. Switching the account also switches the
-          entry&apos;s currency.
-        </DialogDescription>
-      </DialogHeader>
+    <Layout
+      padding={6}
+      header={
+        <DialogHeader title="Edit Entry" onOpenChange={() => onClose()} />
+      }
+    >
+      <LayoutContent>
+        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+          <Text as="div" display="block" type="supporting">
+            Update entry details. Switching the account also switches the
+            entry&apos;s currency.
+          </Text>
 
-      <form
-        id="edit-entry-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          form.handleSubmit()
-        }}
-      >
-        <FieldGroup>
-          <form.Field
-            name="accountId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                  <TransactionAccountPicker
-                    accounts={accounts}
-                    name={field.name}
-                    value={field.state.value}
-                    label="Account"
-                    onValueChange={field.handleChange}
-                    onBlur={field.handleBlur}
-                    invalid={isInvalid}
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="edit-entry-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
             }}
-          />
-          <form.Field
-            name="amount"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              const selectedAccount = accounts.find(
-                (a) => a.id === form.state.values.accountId,
-              )
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
-                  <CurrencyInput
-                    id={field.name}
-                    name={field.name}
-                    placeholder="Please enter an amount"
-                    onValueChange={(e) => {
-                      field.handleChange(e.floatValue!)
-                    }}
-                    value={field.state.value}
-                    locale={household.locale}
-                    currency={
-                      selectedAccount?.householdCurrency.code ??
-                      displayCurrencyCode
-                    }
-                    onBlur={field.handleBlur}
-                    aria-invalid={isInvalid}
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
-            }}
-          />
-        </FieldGroup>
-      </form>
+          >
+            <FormLayout>
+              <form.Field
+                name="accountId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={accounts.map((a) => a.id)}
+                        getLabel={(item) => accountById.get(item)?.name ?? ''}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder="Select an account"
+                        onBlur={field.handleBlur}
+                        label={'Account'}
+                        renderOption={(item: string) => {
+                          const account = accounts.find(
+                            (acc) => acc.id === item,
+                          )
+                          if (!account) return null
+                          return (
+                            <Stack
+                              direction="horizontal"
+                              gap={3}
+                              align="center"
+                            >
+                              <Avatar
+                                src={
+                                  account.icon
+                                    ? getLogoDomainURL(account.icon)
+                                    : undefined
+                                }
+                                name={account.name}
+                              />
+                              <Stack
+                                direction="vertical"
+                                gap={0.5}
+                                className="min-w-0"
+                              >
+                                <Text>{account.name}</Text>
+                                <Text
+                                  type="supporting"
+                                  color="secondary"
+                                  hasTabularNumbers
+                                >
+                                  {formatCurrencyWithPrivacyMode({
+                                    value: account.value,
+                                    currencyCode:
+                                      account.householdCurrency.code,
+                                    liability: account.type === 'liability',
+                                  })}{' '}
+                                  · {account.user.name}
+                                </Text>
+                              </Stack>
+                            </Stack>
+                          )
+                        }}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="amount"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  const selectedAccount = accounts.find(
+                    (a) => a.id === form.state.values.accountId,
+                  )
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter an amount"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
 
-      <DialogFooter>
-        <Button variant="outline" type="button" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          form="edit-entry-form"
-          disabled={isUpdateInFlight}
-        >
-          {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </DialogFooter>
-    </>
+          <Stack
+            direction="horizontal"
+            gap={3}
+            align="center"
+            wrap="wrap"
+            justify="end"
+          >
+            <Button
+              type="button"
+              onClick={onClose}
+              label={'Cancel'}
+              variant={'secondary'}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="edit-entry-form"
+              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              variant={'primary'}
+
+              isDisabled={isUpdateInFlight}
+            >
+              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </Stack>
+        </Stack>
+      </LayoutContent>
+    </Layout>
   )
 }

@@ -1,3 +1,7 @@
+import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { readViewUserIds } from '@/hooks/view-scope-store'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
@@ -7,11 +11,7 @@ import {
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import { AccountsPanel } from './-components/accounts-panel'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import { readViewUserIds } from '@/hooks/view-scope-store'
 import type { accountsQuery } from './__generated__/accountsQuery.graphql'
-import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 
 const query = graphql`
   query accountsQuery($viewUserIds: [ID!]) {

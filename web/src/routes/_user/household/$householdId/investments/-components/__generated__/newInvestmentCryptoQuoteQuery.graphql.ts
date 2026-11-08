@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<51918d9d9c63d4315db89db10665b4db>>
+ * @generated SignedSource<<9ffd175ca9c2c66dff54ba3fe05cda81>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,6 @@
 import { ConcreteRequest } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type newInvestmentCryptoQuoteQuery$variables = {
-  skipQuote?: boolean | null | undefined;
   symbol?: string | null | undefined;
 };
 export type newInvestmentCryptoQuoteQuery$data = {
@@ -25,21 +24,18 @@ export type newInvestmentCryptoQuoteQuery = {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": true,
-    "kind": "LocalArgument",
-    "name": "skipQuote"
-  },
-  {
     "defaultValue": "",
     "kind": "LocalArgument",
     "name": "symbol"
   }
 ],
-v1 = {
-  "kind": "Variable",
-  "name": "symbol",
-  "variableName": "symbol"
-};
+v1 = [
+  {
+    "kind": "Variable",
+    "name": "symbol",
+    "variableName": "symbol"
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -48,14 +44,7 @@ return {
     "name": "newInvestmentCryptoQuoteQuery",
     "selections": [
       {
-        "args": [
-          {
-            "kind": "Variable",
-            "name": "skipQuote",
-            "variableName": "skipQuote"
-          },
-          (v1/*: any*/)
-        ],
+        "args": (v1/*: any*/),
         "kind": "FragmentSpread",
         "name": "newInvestmentCryptoQuoteFragment"
       }
@@ -70,73 +59,64 @@ return {
     "name": "newInvestmentCryptoQuoteQuery",
     "selections": [
       {
-        "condition": "skipQuote",
-        "kind": "Condition",
-        "passingValue": false,
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "CryptoQuoteResult",
+        "kind": "LinkedField",
+        "name": "cryptoQuote",
+        "plural": false,
         "selections": [
           {
             "alias": null,
-            "args": [
-              (v1/*: any*/)
-            ],
-            "concreteType": "CryptoQuoteResult",
-            "kind": "LinkedField",
-            "name": "cryptoQuote",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "currentPrice",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "symbol",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "exchange",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "name",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "currency",
-                "storageKey": null
-              }
-            ],
+            "args": null,
+            "kind": "ScalarField",
+            "name": "currentPrice",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "symbol",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "exchange",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "name",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "currency",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "c648e020e619e116dedae3cea0762716",
+    "cacheID": "639b1a74e079640558d8757cefb6a081",
     "id": null,
     "metadata": {},
     "name": "newInvestmentCryptoQuoteQuery",
     "operationKind": "query",
-    "text": "query newInvestmentCryptoQuoteQuery(\n  $skipQuote: Boolean = true\n  $symbol: String = \"\"\n) {\n  ...newInvestmentCryptoQuoteFragment_4moOa4\n}\n\nfragment newInvestmentCryptoQuoteFragment_4moOa4 on Query {\n  cryptoQuote(symbol: $symbol) @skip(if: $skipQuote) {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
+    "text": "query newInvestmentCryptoQuoteQuery(\n  $symbol: String = \"\"\n) {\n  ...newInvestmentCryptoQuoteFragment_3astM6\n}\n\nfragment newInvestmentCryptoQuoteFragment_3astM6 on Query {\n  cryptoQuote(symbol: $symbol) {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e564c7815c5d038f347f6c5cfe678b91";
+(node as any).hash = "317789480b4494719fff3e26c736976b";
 
 export default node;

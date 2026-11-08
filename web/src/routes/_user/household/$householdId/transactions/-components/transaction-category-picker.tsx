@@ -1,17 +1,14 @@
 import { CategoryIcon } from '@/components/category-icon'
 import { ResponsiveSelectionPicker } from '@/components/responsive-selection-picker'
+import { HStack } from '@astryxdesign/core/Layout'
 import { graphql } from 'react-relay'
 import { readInlineData } from 'relay-runtime'
 import type { transactionCategoryPickerFragment$key } from './__generated__/transactionCategoryPickerFragment.graphql'
-import { newestActivityFirst } from '@/lib/sort-by-update-time'
 
 const categoryFragment = graphql`
   fragment transactionCategoryPickerFragment on TransactionCategory @inline {
     name
     icon
-    latestTransaction {
-      datetime
-    }
   }
 `
 
@@ -37,21 +34,9 @@ export function TransactionCategoryPicker({
   onBlur,
   invalid,
 }: TransactionCategoryPickerProps) {
-  const orderedCategories = newestActivityFirst(
-    categories.map((category) => {
-      const latestTransaction = categoryData(category).latestTransaction
-      return {
-        category,
-        latestTransaction: latestTransaction
-          ? { datetime: latestTransaction.datetime }
-          : latestTransaction,
-      }
-    }),
-  ).map(({ category }) => category)
-
   return (
     <ResponsiveSelectionPicker
-      items={orderedCategories}
+      items={categories}
       name={name}
       value={value}
       label="Category"
@@ -74,15 +59,10 @@ function CategoryDetails({
 }) {
   const data = categoryData(category)
   return (
-    <>
+    <HStack gap={2} vAlign="center">
       <CategoryIcon type={category.type} icon={data.icon} size="inline" />
-      <span
-        className="min-w-0 flex-1 truncate text-xs leading-relaxed"
-        title={data.name}
-      >
-        {data.name}
-      </span>
-    </>
+      <span title={data.name}>{data.name}</span>
+    </HStack>
   )
 }
 

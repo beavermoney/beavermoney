@@ -1,12 +1,17 @@
-import currency from 'currency.js'
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
-import { useMemo } from 'react'
 import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import type { financialSummaryCardsFragment$key } from './__generated__/financialSummaryCardsFragment.graphql'
+import { useHousehold } from '@/hooks/use-household'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
+import { Card } from '@astryxdesign/core/Card'
+import { Grid } from '@astryxdesign/core/Grid'
+import { VStack } from '@astryxdesign/core/Layout'
+import { Heading, Text } from '@astryxdesign/core/Text'
+import currency from 'currency.js'
+import { useMemo } from 'react'
+import { useFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
+import type { financialSummaryCardsFragment$key } from './__generated__/financialSummaryCardsFragment.graphql'
 
 const FinancialSummaryCardsFragment = graphql`
   fragment financialSummaryCardsFragment on FinancialReport {
@@ -26,60 +31,76 @@ interface FinancialSummaryCardsProps {
 export function FinancialSummaryCards({
   fragmentRef,
 }: FinancialSummaryCardsProps) {
+  const isMobile = useIsMobile()
   const data = useFragment(FinancialSummaryCardsFragment, fragmentRef)
-  const { household: _household } = useHousehold()
+  const { household } = useHousehold()
+  const { isPrivacyModeEnabled } = usePrivacyMode()
   const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
-  const { isPrivacyModeEnabled } = usePrivacyMode()
-
-  const { totalIncome, totalExpenses, net, savingRate } = useMemo(() => {
-    const income = currency(data.incomeBreakdown.total)
-    const expenses = currency(data.expensesBreakdown.total)
+  const { totalIncome, totalExpenses, net } = useMemo(() => {
+    const income = currency(data.incomeBreakdown.total, { precision: 8 })
+    const expenses = currency(data.expensesBreakdown.total, { precision: 8 })
     const netAmount = income.subtract(expenses)
 
     return {
       totalIncome: income,
       totalExpenses: expenses,
       net: netAmount,
-      savingRate:
-        income.value === 0
-          ? ':('
-          : `${((netAmount.value / income.value) * 100).toFixed(2)}%`,
     }
   }, [data.incomeBreakdown, data.expensesBreakdown])
 
+  const savingsRate =
+    totalIncome.value > 0
+      ? new Intl.NumberFormat(household.locale, {
+          style: 'percent',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(net.value / totalIncome.value)
+      : '—'
+
+  const formatAmount = (value: currency) =>
+    formatCurrencyWithPrivacyMode({ value, currencyCode: displayCurrencyCode })
+
+  const metrics = [
+    { label: 'Expenses', value: formatAmount(totalExpenses) },
+    { label: 'Income', value: formatAmount(totalIncome) },
+    { label: 'Cash flow', value: formatAmount(net) },
+    {
+      label: 'Savings rate',
+      value: isPrivacyModeEnabled ? '•••••••' : savingsRate,
+    },
+  ]
+
+  if (isMobile) {
+    return (
+      <Card>
+        <Grid columns={2} gap={4}>
+          {metrics.map((metric) => (
+            <VStack key={metric.label} gap={1}>
+              <Text type="supporting" color="secondary">
+                {metric.label}
+              </Text>
+              <Text type="label" hasTabularNumbers className="break-words">
+                {metric.value}
+              </Text>
+            </VStack>
+          ))}
+        </Grid>
+      </Card>
+    )
+  }
+
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
-        Cash Flow
-      </span>
-      <div className="text-3xl font-semibold tracking-tight tabular-nums">
-        {formatCurrencyWithPrivacyMode({
-          value: net,
-          currencyCode: displayCurrencyCode,
-        })}
-      </div>
-      <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums">
-        <span>
-          {formatCurrencyWithPrivacyMode({
-            value: totalIncome,
-            currencyCode: displayCurrencyCode,
-          })}{' '}
-          <span className="text-muted-foreground/60">income</span>
-        </span>
-        <span>
-          {formatCurrencyWithPrivacyMode({
-            value: totalExpenses,
-            currencyCode: displayCurrencyCode,
-          })}{' '}
-          <span className="text-muted-foreground/60">expenses</span>
-        </span>
-        <span>
-          {isPrivacyModeEnabled ? '•••••••' : savingRate}{' '}
-          <span className="text-muted-foreground/60">saving rate</span>
-        </span>
-      </div>
-    </div>
+    <Grid columns={{ minWidth: 180, max: 4, repeat: 'fit' }} gap={4}>
+      {metrics.map((metric) => (
+        <Card key={metric.label}>
+          <VStack gap={3}>
+            <Text color="secondary">{metric.label}</Text>
+            <Heading level={2}>{metric.value}</Heading>
+          </VStack>
+        </Card>
+      ))}
+    </Grid>
   )
 }

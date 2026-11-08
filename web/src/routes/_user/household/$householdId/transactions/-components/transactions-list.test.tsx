@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
+import '@/test/browser-setup'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
-import type { ComponentProps } from 'react'
+import { useState, type ComponentProps } from 'react'
 import { TransactionsList } from './transactions-list'
 import type { TransactionsTable } from './transactions-table'
 import type { transactionsListFragment$key } from './__generated__/transactionsListFragment.graphql'
@@ -12,6 +13,7 @@ const relay = vi.hoisted(() => ({
   loadEditQuery: vi.fn(),
   disposeEditQuery: vi.fn(),
   invalidate: () => {},
+  queryRef: null as null | { variables: { transactionId: string } },
 }))
 const router = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -32,7 +34,11 @@ vi.mock('react-relay', () => ({
   useSubscribeToInvalidationState: (_ids: string[], callback: () => void) => {
     relay.invalidate = callback
   },
-  useQueryLoader: () => [null, relay.loadEditQuery, relay.disposeEditQuery],
+  useQueryLoader: () => [
+    relay.queryRef,
+    relay.loadEditQuery,
+    relay.disposeEditQuery,
+  ],
 }))
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => router.navigate,
@@ -58,7 +64,14 @@ vi.mock('react-intersection-observer', () => ({
 }))
 vi.mock('./transaction-card', () => ({ TransactionCard: () => null }))
 vi.mock('./edit-transaction-dialog', () => ({
-  EditTransactionDialog: () => null,
+  EditTransactionDialog: () => {
+    const [editingEntry, setEditingEntry] = useState(false)
+    return (
+      <button onClick={() => setEditingEntry(true)}>
+        {editingEntry ? 'Editing entry' : 'Transaction details'}
+      </button>
+    )
+  },
   EditTransactionDialogQuery: {},
 }))
 vi.mock('./transaction-dialog-preview', () => ({
@@ -79,6 +92,7 @@ afterEach(() => {
   cleanup()
   vi.clearAllMocks()
   router.search.edit_transaction_id = null
+  relay.queryRef = null
   router.searchFrom = undefined
   viewScope.viewUserIds = null
 })
@@ -162,4 +176,20 @@ it('reloads an open edit dialog when the household view scope changes', () => {
     { fetchPolicy: 'store-or-network' },
   )
   expect(relay.loadEditQuery).toHaveBeenCalledTimes(2)
+})
+
+it('starts at transaction details when the same transaction is reopened', () => {
+  router.search.edit_transaction_id = 'transaction-1'
+  relay.queryRef = { variables: { transactionId: 'transaction-1' } }
+  const { rerender } = render(<TransactionsList fragmentRef={fragmentRef} />)
+  fireEvent.click(screen.getByRole('button', { name: 'Transaction details' }))
+  expect(screen.getByRole('button', { name: 'Editing entry' })).toBeTruthy()
+  router.search.edit_transaction_id = null
+  rerender(<TransactionsList fragmentRef={fragmentRef} />)
+  router.search.edit_transaction_id = 'transaction-1'
+  rerender(<TransactionsList fragmentRef={fragmentRef} />)
+  expect(
+    screen.getByRole('button', { name: 'Transaction details' }),
+  ).toBeTruthy()
+  expect(screen.queryByRole('button', { name: 'Editing entry' })).toBeNull()
 })

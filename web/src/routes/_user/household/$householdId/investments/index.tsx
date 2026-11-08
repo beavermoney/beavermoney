@@ -1,3 +1,6 @@
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { readViewUserIds } from '@/hooks/view-scope-store'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
@@ -7,9 +10,6 @@ import {
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import { InvestmentsPanel } from './-components/investments-panel'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import { readViewUserIds } from '@/hooks/view-scope-store'
 import type { investmentsQuery } from './__generated__/investmentsQuery.graphql'
 
 const query = graphql`

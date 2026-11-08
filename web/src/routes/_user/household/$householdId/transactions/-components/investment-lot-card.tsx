@@ -1,17 +1,13 @@
-import { graphql } from 'relay-runtime'
-import { useFragment } from 'react-relay'
-import currency from 'currency.js'
 import { useCurrency } from '@/hooks/use-currency'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { VStack } from '@astryxdesign/core/Layout'
+import { ListItem } from '@astryxdesign/core/List'
+import { Text } from '@astryxdesign/core/Text'
+import currency from 'currency.js'
+import { useFragment } from 'react-relay'
+import { graphql } from 'relay-runtime'
+
 import { getLogoTickerURL } from '@/lib/logo'
-import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { investmentLotCardFragment$key } from './__generated__/investmentLotCardFragment.graphql'
 
@@ -39,13 +35,15 @@ const investmentLotCardFragment = graphql`
 
 export function InvestmentLotCard({
   fragmentRef,
-  isFirst,
-  isLast,
+  isFirst: _isFirst,
+  isLast: _isLast,
+  showDate = true,
   onClick,
 }: {
   fragmentRef: investmentLotCardFragment$key
   isFirst: boolean
   isLast: boolean
+  showDate?: boolean
   onClick?: () => void
 }) {
   const { formatCurrency } = useCurrency()
@@ -56,61 +54,34 @@ export function InvestmentLotCard({
   )
 
   return (
-    <Item
-      variant="default"
-      role={onClick ? 'button' : 'listitem'}
-      tabIndex={onClick ? 0 : undefined}
-      className={cn(
-        !isFirst && 'rounded-t-none border-t-0',
-        !isLast && 'rounded-b-none',
-        onClick && 'cursor-pointer',
-      )}
-      key={data.id}
+    <ListItem
       id={data.id}
+      label={data.transaction.category.name}
+      description={`${data.amount} ${data.investment.name} @ ${formatCurrency({ value: currency(data.price, { precision: 8 }), currencyCode: data.investment.householdCurrency.code })}`}
+      startContent={
+        <Avatar
+          src={getLogoTickerURL(data.investment.symbol || '')}
+          name={data.investment.name}
+        />
+      }
       onClick={onClick}
-      onKeyDown={(e) => {
-        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-          e.preventDefault()
-          onClick()
-        }
-      }}
-    >
-      <ItemMedia variant="image">
-        <Avatar>
-          <AvatarImage
-            src={getLogoTickerURL(data.investment.symbol || '')}
-            alt={data.investment.symbol || 'unknown logo'}
-          />
-          <AvatarFallback>{data.investment.symbol}</AvatarFallback>
-        </Avatar>
-      </ItemMedia>
-      <ItemContent className="gap-px">
-        <ItemTitle className="">
-          <span>{data.transaction.category.name}</span>
-        </ItemTitle>
-        <ItemDescription>
-          {data.amount} {data.investment.name} @{' '}
-          {formatCurrency({
-            value: currency(data.price, { precision: 8 }),
-            currencyCode: data.investment.householdCurrency.code,
-          })}
-        </ItemDescription>
-      </ItemContent>
-      <ItemContent className="items-end gap-px">
-        <ItemTitle className="">
-          <span className="font-semibold tabular-nums">
+      endContent={
+        <VStack gap={1} hAlign="end">
+          <Text type="label" hasTabularNumbers>
             {formatCurrency({
               value: currency(data.price, { precision: 8 }).multiply(
                 currency(data.amount, { precision: 8 }),
               ),
               currencyCode: data.investment.householdCurrency.code,
             })}
-          </span>
-        </ItemTitle>
-        <ItemDescription>
-          {format(new Date(data.transaction.datetime), 'LLL d')}
-        </ItemDescription>
-      </ItemContent>
-    </Item>
+          </Text>
+          {showDate && (
+            <Text type="supporting">
+              {format(new Date(data.transaction.datetime), 'LLL d')}
+            </Text>
+          )}
+        </VStack>
+      }
+    />
   )
 }

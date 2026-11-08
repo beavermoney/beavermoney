@@ -1,5 +1,11 @@
-import { TransactionsTable } from './transactions-table'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
 import {
   Suspense,
   useCallback,
@@ -8,27 +14,26 @@ import {
   useState,
   useTransition,
 } from 'react'
-import { toast } from 'sonner'
 import { graphql } from 'relay-runtime'
+import { TransactionsTable } from './transactions-table'
 
+import { ErrorBoundary } from '@sentry/react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useInView } from 'react-intersection-observer'
+import type { PreloadedQuery } from 'react-relay'
 import {
   usePaginationFragment,
   useQueryLoader,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import type { PreloadedQuery } from 'react-relay'
-import { useNavigate, useSearch } from '@tanstack/react-router'
-import { ErrorBoundary } from '@sentry/react'
-import { useInView } from 'react-intersection-observer'
 import { Fragment } from 'react/jsx-runtime'
-import { TransactionCard } from './transaction-card'
-import type { transactionsListRefetch } from './__generated__/transactionsListRefetch.graphql'
-import type { transactionsListFragment$key } from './__generated__/transactionsListFragment.graphql'
 import type { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
-import { Button } from '@/components/ui/button'
-import { ItemGroup } from '@/components/ui/item'
+import type { transactionsListFragment$key } from './__generated__/transactionsListFragment.graphql'
+import type { transactionsListRefetch } from './__generated__/transactionsListRefetch.graphql'
+import { TransactionCard } from './transaction-card'
+
 import { NodeType, useRegisterConnection } from '@/lib/relay'
-import { ScrollArea } from '@/components/ui/scroll-area'
+
 import {
   format,
   isSameDay,
@@ -41,17 +46,10 @@ import {
   EditTransactionDialog,
   EditTransactionDialogQuery,
 } from './edit-transaction-dialog'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { TransactionDialogPreview } from './transaction-dialog-preview'
-import type { transactionDialogPreviewFragment$key } from './__generated__/transactionDialogPreviewFragment.graphql'
+
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import type { transactionDialogPreviewFragment$key } from './__generated__/transactionDialogPreviewFragment.graphql'
+import { TransactionDialogPreview } from './transaction-dialog-preview'
 
 const transactionsListFragment = graphql`
   fragment transactionsListFragment on Household
@@ -95,6 +93,8 @@ type TransactionsListProps = {
 }
 
 export function TransactionsList({ fragmentRef }: TransactionsListProps) {
+  const showToast = useToast()
+
   const { data, loadNext, hasNext, isLoadingNext, refetch } =
     usePaginationFragment<
       transactionsListRefetch,
@@ -171,7 +171,10 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
             fetchPolicy: 'store-and-network',
             onComplete: (error) => {
               if (error)
-                toast.error('Could not sort transactions. Please try again.')
+                showToast({
+                  type: 'error',
+                  body: 'Could not sort transactions. Please try again.',
+                })
               else setLoadError(null)
             },
           },
@@ -179,7 +182,7 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
         setDirection(nextDirection)
       })
     },
-    [refetch],
+    [refetch, showToast],
   )
   useEffect(() => {
     if (isMobile && direction !== 'DESC' && !isSorting) changeSort('DESC')
@@ -247,14 +250,14 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
       onPreloadTransaction={preloadTransaction}
     />
   ) : (
-    <ScrollArea className="min-h-0 min-w-0 flex-1 overflow-hidden [&_[data-slot=scroll-area-viewport]]:overflow-x-hidden [&_[data-slot=scroll-area-viewport]]:overscroll-contain">
-      <div className="min-w-0 pr-2">
+    <ScrollableArea label="Scrollable content">
+      <Stack direction="vertical" gap={4}>
         {groups.map((group) => (
           <Fragment key={group.date.toISOString()}>
-            <div className="text-muted-foreground px-1 pt-3 pb-1.5 text-xs/relaxed font-medium tracking-[0.02em] first:pt-0">
+            <Text as="div" display="block" type="supporting">
               {formatDateHeader(group.date)}
-            </div>
-            <ItemGroup className="gap-2">
+            </Text>
+            <Stack direction="vertical" gap={2}>
               {group.transactions.map((transaction) => (
                 <TransactionCard
                   key={transaction.id}
@@ -262,28 +265,32 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
                   onPreload={preloadTransaction}
                 />
               ))}
-            </ItemGroup>
+            </Stack>
           </Fragment>
         ))}
         {loadError && (
-          <div
+          <Stack
+            direction="horizontal"
+            gap={2}
+            align="center"
+            justify="center"
             role="alert"
-            className="text-muted-foreground flex items-center justify-center gap-2 py-2 text-xs"
           >
             {loadError}
             <Button
-              variant="outline"
-              size="sm"
-              disabled={isLoadingNext}
               onClick={loadMore}
+              label={'Retry'}
+              variant={'secondary'}
+
+              isDisabled={isLoadingNext}
             >
               Retry
             </Button>
-          </div>
+          </Stack>
         )}
         <div ref={ref}></div>
-      </div>
-    </ScrollArea>
+      </Stack>
+    </ScrollableArea>
   )
 
   return (
@@ -338,49 +345,73 @@ function TransactionDetailDialog({
       : null
 
   return (
-    <Dialog
-      open={transactionId !== null}
-      onOpenChange={(open) => {
-        if (!open) onClose()
-      }}
-      onOpenChangeComplete={(open) => {
-        if (!open) onCloseComplete()
-      }}
-    >
-      <DialogContent>
+    <>
+      <Dialog
+        isOpen={transactionId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            onClose()
+            onCloseComplete()
+          }
+        }}
+        purpose="info"
+        padding={0}
+      >
         <ErrorBoundary
           key={retainedTransactionId ?? 'closed'}
           fallback={
-            <>
-              <DialogHeader>
-                <DialogTitle>Could not load transaction</DialogTitle>
-                <DialogDescription>
-                  Close the dialog and try opening the transaction again.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button variant="outline" onClick={onClose}>
-                  Close
-                </Button>
-              </DialogFooter>
-            </>
+            <Layout
+              padding={6}
+              header={
+                <DialogHeader
+                  title="Could not load transaction"
+                  onOpenChange={(open) => {
+                    if (!open) onClose()
+                  }}
+                />
+              }
+            >
+              <LayoutContent>
+                <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                  <Text type="supporting">
+                    Close the dialog and try opening the transaction again.
+                  </Text>
+                  <Stack direction="horizontal" justify="end">
+                    <Button
+                      onClick={onClose}
+                      label="Close"
+                      variant="secondary"
+                    />
+                  </Stack>
+                </Stack>
+              </LayoutContent>
+            </Layout>
           }
         >
-          {matchingQueryRef ? (
+          {matchingQueryRef && transactionId !== null ? (
             <Suspense
-              fallback={<TransactionDialogPreview fragmentRef={previewRef} />}
+              fallback={
+                <TransactionDialogPreview
+                  fragmentRef={previewRef}
+                  onClose={onClose}
+                />
+              }
             >
               <EditTransactionDialog
                 key={retainedTransactionId}
                 queryRef={matchingQueryRef}
+                onClose={onClose}
               />
             </Suspense>
           ) : (
-            <TransactionDialogPreview fragmentRef={previewRef} />
+            <TransactionDialogPreview
+              fragmentRef={previewRef}
+              onClose={onClose}
+            />
           )}
         </ErrorBoundary>
-      </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   )
 }
 

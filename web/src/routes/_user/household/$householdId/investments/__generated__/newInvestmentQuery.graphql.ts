@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<54b1dcdb6065455adf0575ce499beabb>>
+ * @generated SignedSource<<a88ce957be90ba7d16724ac49c32f9a9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -45,7 +45,45 @@ v2 = {
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
-};
+},
+v3 = [
+  {
+    "kind": "Literal",
+    "name": "symbol",
+    "value": ""
+  }
+],
+v4 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "currentPrice",
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "symbol",
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "exchange",
+    "storageKey": null
+  },
+  (v2/*: any*/),
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "currency",
+    "storageKey": null
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -164,7 +202,7 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "balance",
+                        "name": "value",
                         "storageKey": null
                       },
                       {
@@ -198,25 +236,6 @@ return {
                           (v1/*: any*/)
                         ],
                         "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "Transaction",
-                        "kind": "LinkedField",
-                        "name": "latestTransaction",
-                        "plural": false,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "datetime",
-                            "storageKey": null
-                          },
-                          (v1/*: any*/)
-                        ],
-                        "storageKey": null
                       }
                     ],
                     "storageKey": null
@@ -230,16 +249,36 @@ return {
           (v1/*: any*/)
         ],
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": (v3/*: any*/),
+        "concreteType": "StockQuoteResult",
+        "kind": "LinkedField",
+        "name": "stockQuote",
+        "plural": false,
+        "selections": (v4/*: any*/),
+        "storageKey": "stockQuote(symbol:\"\")"
+      },
+      {
+        "alias": null,
+        "args": (v3/*: any*/),
+        "concreteType": "CryptoQuoteResult",
+        "kind": "LinkedField",
+        "name": "cryptoQuote",
+        "plural": false,
+        "selections": (v4/*: any*/),
+        "storageKey": "cryptoQuote(symbol:\"\")"
       }
     ]
   },
   "params": {
-    "cacheID": "647a3eb23082537e8cd00dd967a45ac5",
+    "cacheID": "1d810242ad5cef50ed0a107d8e491352",
     "id": null,
     "metadata": {},
     "name": "newInvestmentQuery",
     "operationKind": "query",
-    "text": "query newInvestmentQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...newInvestmentFragment_3rIbPZ\n    id\n  }\n}\n\nfragment newInvestmentFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        type\n        ...transactionAccountPickerFragment\n      }\n    }\n  }\n}\n\nfragment transactionAccountPickerFragment on Account {\n  id\n  type\n  name\n  icon\n  balance\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  latestTransaction {\n    datetime\n    id\n  }\n}\n"
+    "text": "query newInvestmentQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...newInvestmentFragment_3rIbPZ\n    id\n  }\n  ...newInvestmentStockQuoteFragment\n  ...newInvestmentCryptoQuoteFragment\n}\n\nfragment newInvestmentCryptoQuoteFragment on Query {\n  cryptoQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n\nfragment newInvestmentFragment_3rIbPZ on Household {\n  accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        type\n        name\n        icon\n        value\n        householdCurrency {\n          code\n          id\n        }\n        user {\n          name\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment newInvestmentStockQuoteFragment on Query {\n  stockQuote(symbol: \"\") {\n    currentPrice\n    symbol\n    exchange\n    name\n    currency\n  }\n}\n"
   }
 };
 })();

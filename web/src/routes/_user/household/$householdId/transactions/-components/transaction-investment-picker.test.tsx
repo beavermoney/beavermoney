@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import '@/test/browser-setup'
 import {
   cleanup,
   fireEvent,
@@ -23,22 +24,11 @@ vi.mock('relay-runtime', async (importOriginal) => ({
   ...(await importOriginal<typeof import('relay-runtime')>()),
   readInlineData: (_fragment: unknown, fragmentRef: unknown) => fragmentRef,
 }))
-vi.mock('@/components/ui/avatar', () => ({
-  Avatar: ({ children }: { children: React.ReactNode }) => (
-    <span>{children}</span>
+vi.mock('@/components/selection-rows', () => ({
+  SelectionRows: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
   ),
-  AvatarFallback: ({ children }: { children: React.ReactNode }) => (
-    <span>{children}</span>
-  ),
-  AvatarImage: () => null,
 }))
-
-global.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-Element.prototype.scrollIntoView = vi.fn()
 
 const investments = [
   {
@@ -77,40 +67,34 @@ afterEach(() => {
   mobileState.value = true
 })
 
-it('keeps the mobile trigger stable while selecting an investment', async () => {
+it('searches investments by ticker and selects a result', async () => {
   render(<Picker />)
-
-  const trigger = screen.getByRole('button', {
-    name: 'Investment: Select an investment',
-  })
-  const triggerClassName = trigger.className
-
-  fireEvent.click(trigger)
-  fireEvent.click(await screen.findByText('Index Fund'))
-
-  const selectedTrigger = await screen.findByRole('button', {
-    name: 'Investment: Index Fund, IDX',
-  })
-  expect(selectedTrigger.className).toBe(triggerClassName)
-
-  fireEvent.click(selectedTrigger)
-  expect(await screen.findByText('Bitcoin')).toBeTruthy()
+  const input = screen.getByRole('combobox', { name: 'Investment' })
+  fireEvent.focus(input)
+  fireEvent.change(input, { target: { value: 'IDX' } })
+  fireEvent.click(await screen.findByRole('option', { name: /Index Fund/ }))
+  expect(screen.queryByRole('listbox')).toBeNull()
+  expect(screen.getByRole('button', { name: /Index Fund/ })).toBeTruthy()
 })
 
-it('shows investment identity in desktop options and the selected trigger', async () => {
-  mobileState.value = false
-  render(<Picker />)
-
-  fireEvent.click(
-    screen.getByRole('button', {
-      name: 'Investment: Select an investment',
-    }),
+it('keeps dependent investment choices disabled until an account is selected', () => {
+  render(
+    <TransactionInvestmentPicker
+      investments={[]}
+      name="investment"
+      label="Investment"
+      value=""
+      onValueChange={vi.fn()}
+      onBlur={vi.fn()}
+      invalid={false}
+      disabled
+    />,
   )
-  fireEvent.click(await screen.findByText('Index Fund'))
-
   expect(
-    screen.getByRole('button', { name: 'Investment: Index Fund, IDX' }),
-  ).toBeTruthy()
+    screen
+      .getByRole('combobox', { name: 'Investment' })
+      .getAttribute('aria-disabled'),
+  ).toBe('true')
 })
 
 it('clears an investment selection that falls outside the current view scope', async () => {

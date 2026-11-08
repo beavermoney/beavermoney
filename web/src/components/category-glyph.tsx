@@ -1,7 +1,12 @@
-import { useEffect, useSyncExternalStore, type ReactNode } from 'react'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Icon, type IconNode } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { dynamicIconImports, type IconName } from 'lucide-react/dynamic'
+import {
+  useEffect,
+  useSyncExternalStore,
+  type ReactNode,
+  type SVGProps,
+} from 'react'
 
 const icons = new Map<IconName, IconNode>()
 const pending = new Map<IconName, Promise<void>>()
@@ -10,7 +15,7 @@ const listeners = new Map<IconName, Set<() => void>>()
 export function CategoryGlyph({
   name,
   fallback,
-  className,
+  className: _className,
 }: {
   name: IconName
   fallback: ReactNode
@@ -46,15 +51,12 @@ export function CategoryGlyph({
     pending.set(name, request)
   }, [name])
 
+  const ResolvedIcon = (props: SVGProps<SVGSVGElement>) =>
+    iconNode ? <Icon iconNode={iconNode} {...props} /> : null
+
   return (
-    <span
-      className={cn(
-        'flex size-4 shrink-0 items-center justify-center [&>svg]:size-full',
-        className,
-      )}
-      aria-hidden="true"
-    >
-      {iconNode ? <Icon iconNode={iconNode} /> : fallback}
+    <span aria-hidden="true">
+      {iconNode ? <AstryxIcon icon={ResolvedIcon} /> : fallback}
     </span>
   )
 }

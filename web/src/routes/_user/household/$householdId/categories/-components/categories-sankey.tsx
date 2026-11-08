@@ -1,13 +1,15 @@
-import { useMemo } from 'react'
-import { graphql, useFragment } from 'react-relay'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Text } from '@astryxdesign/core/Text'
+import { Stack } from '@astryxdesign/core/Stack'
 import { ResponsiveSankey, type CustomSankeyLayerProps } from '@nivo/sankey'
 import currency from 'currency.js'
-import { InfoIcon } from 'lucide-react'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
-import { Item } from '@/components/ui/item'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { useCurrency } from '@/hooks/use-currency'
+import { useMemo } from 'react'
+import { graphql, useFragment } from 'react-relay'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+
+import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import type { categoriesSankeyFragment$key } from './__generated__/categoriesSankeyFragment.graphql'
 
@@ -288,13 +290,13 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
 
   if (!sankeyData) {
     return (
-      <Item
-        variant="outline"
-        className="flex items-center gap-2 overflow-x-auto"
-      >
-        <InfoIcon size="16" />
-        Log some transactions to see the Sankey chart
-      </Item>
+      <Stack direction="vertical" gap={2}>
+        <Heading level={2}>Cash flow</Heading>
+        <Text color="secondary">
+          Not enough income data to draw the category Sankey chart for this
+          period. Choose a wider date range or add income transactions.
+        </Text>
+      </Stack>
     )
   }
 
@@ -368,38 +370,36 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
   }
 
   return (
-    <Item
-      variant="outline"
-      className="flex-col items-stretch gap-0 overflow-hidden px-0 py-0"
-    >
-      <ScrollArea scrollbars="horizontal" className="w-full">
-        <div
-          className="min-w-120"
-          style={{ height: Math.max(360, sankeyData.nodes.length * 32) }}
-        >
-          <ResponsiveSankey
-            data={sankeyData}
-            margin={{ top: 32, right: 128, bottom: 32, left: 128 }}
-            align="justify"
-            sort="auto"
-            colors={(node) => (node as NivoNode).nodeColor}
-            nodeOpacity={1}
-            nodeHoverOpacity={1}
-            nodeThickness={10}
-            nodeSpacing={32}
-            nodeBorderWidth={0}
-            nodeBorderRadius={2}
-            linkOpacity={0.4}
-            linkHoverOpacity={0.4}
-            linkContract={2}
-            linkBlendMode="normal"
-            enableLinkGradient
-            enableLabels={false}
-            isInteractive={false}
-            layers={['links', 'nodes', customLabels]}
-          />
-        </div>
-      </ScrollArea>
-    </Item>
+    <Stack direction="vertical" gap={4}>
+      <Heading level={2}>Cash flow</Heading>
+      <Stack
+        direction="vertical"
+        gap={4}
+
+        style={{ height: Math.max(360, sankeyData.nodes.length * 32) }}
+      >
+        <ResponsiveSankey
+          data={sankeyData}
+          margin={{ top: 32, right: 128, bottom: 32, left: 128 }}
+          align="justify"
+          sort="auto"
+          colors={(node) => (node as NivoNode).nodeColor}
+          nodeOpacity={1}
+          nodeHoverOpacity={1}
+          nodeThickness={10}
+          nodeSpacing={32}
+          nodeBorderWidth={0}
+          nodeBorderRadius={2}
+          linkOpacity={0.4}
+          linkHoverOpacity={0.4}
+          linkContract={2}
+          linkBlendMode="normal"
+          enableLinkGradient
+          enableLabels={false}
+          isInteractive={false}
+          layers={['links', 'nodes', customLabels]}
+        />
+      </Stack>
+    </Stack>
   )
 }

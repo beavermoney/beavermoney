@@ -1,6 +1,10 @@
+import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import { NewInvestment } from './-components/new-investment'
-import { Item } from '@/components/ui/item'
+
+import { PendingComponent } from '@/components/pending-component'
+import { environment } from '@/environment'
+import { readViewUserIds } from '@/hooks/view-scope-store'
 import {
   fetchQuery,
   graphql,
@@ -8,10 +12,7 @@ import {
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
 import { type newInvestmentQuery } from './__generated__/newInvestmentQuery.graphql'
-import { readViewUserIds } from '@/hooks/view-scope-store'
 
 export const Route = createFileRoute(
   '/_user/household/$householdId/investments/new',
@@ -57,16 +58,12 @@ function RouteComponent() {
   })
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1">
-        <Item className="p-0">
-          <NewInvestment
-            newInvestmentFragmentRef={data.household}
-            newInvestmentStockQuoteFragmentRef={data}
-            newInvestmentCryptoQuoteFragmentRef={data}
-          />
-        </Item>
-      </div>
-    </div>
+    <Stack direction="vertical" width="100%" className="max-w-2xl">
+      <NewInvestment
+        newInvestmentFragmentRef={data.household}
+        newInvestmentStockQuoteFragmentRef={data}
+        newInvestmentCryptoQuoteFragmentRef={data}
+      />
+    </Stack>
   )
 }

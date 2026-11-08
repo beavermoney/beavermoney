@@ -1,8 +1,7 @@
-import { Link } from '@tanstack/react-router'
+import { RouterButton } from '@/components/router-button'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import type { LinkOptions } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
 
 type PageAddButtonProps = LinkOptions & {
   label: string
@@ -10,14 +9,10 @@ type PageAddButtonProps = LinkOptions & {
 
 export function PageAddButton({ label, ...linkOptions }: PageAddButtonProps) {
   return (
-    <Button
-      variant="outline"
-      nativeButton={false}
-      render={<Link {...linkOptions} />}
-      className="bg-background shrink-0"
-    >
-      <PlusIcon data-icon="inline-start" />
-      {label}
-    </Button>
+    <RouterButton
+      {...linkOptions}
+      label={label}
+      icon={<AstryxIcon icon={PlusIcon} />}
+    />
   )
 }

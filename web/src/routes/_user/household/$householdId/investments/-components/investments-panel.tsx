@@ -1,34 +1,26 @@
+import { Collapsible } from '@astryxdesign/core/Collapsible'
+import { Heading } from '@astryxdesign/core/Heading'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
+import { List } from '@astryxdesign/core/List'
+import { Selector } from '@astryxdesign/core/Selector'
+import { Stack, StackItem } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import currency from 'currency.js'
+import { groupBy, map } from 'lodash-es'
+import { useMemo } from 'react'
+import { useFragment } from 'react-relay'
+import { Fragment } from 'react/jsx-runtime'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
-import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion'
-import { useFragment } from 'react-relay'
-import { groupBy, map } from 'lodash-es'
-import { Fragment } from 'react/jsx-runtime'
-import { useMemo } from 'react'
-import currency from 'currency.js'
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
-import { InvestmentCard } from './investment-card'
 import type { investmentsPanelFragment$key } from './__generated__/investmentsPanelFragment.graphql'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-} from '@/components/ui/accordion'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
-import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { cn } from '@/lib/utils'
-import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
+import { InvestmentCard } from './investment-card'
+
 import { PageAddButton } from '@/components/page-add-button'
+import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHousehold } from '@/hooks/use-household'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 
 const GROUP_BY_OPTIONS = {
   account: 'By Account',
@@ -132,58 +124,51 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
 
   return (
     <Fragment>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-[0.6875rem] font-medium tracking-wider uppercase">
-            Total Investment
-          </span>
-          <div className="text-3xl font-semibold tracking-tight tabular-nums">
-            {formatCurrencyWithPrivacyMode({
-              value: totalInvestment,
-              currencyCode: displayCurrencyCode,
-            })}
-          </div>
-        </div>
+      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+        <VStack gap={1}>
+          <Heading level={1}>Investments</Heading>
+        </VStack>
         <PageAddButton
           label="Add investment"
           to="/household/$householdId/investments/new"
           params={{ householdId }}
         />
-      </div>
-      <div className="py-2"></div>
-
-      {/* Group By Dropdown */}
-      <div className="flex items-center justify-end">
-        <Select
-          name="group-investments"
-          value={groupByOption}
-          onValueChange={handleGroupByChange}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue>{GROUP_BY_OPTIONS[groupByOption]}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {(
-                Object.entries(GROUP_BY_OPTIONS) as [GroupByOption, string][]
-              ).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="py-2"></div>
-
-      <Accordion
-        key={groupByOption}
-        multiple
-        className="w-full"
-        defaultValue={Object.keys(groupedInvestments)}
+      </HStack>
+      <Stack
+        direction="horizontal"
+        gap={4}
+        align="end"
+        justify="between"
+        wrap="wrap"
       >
+        <Stack direction="vertical" gap={1}>
+          <Text color="secondary">Portfolio value</Text>
+          <Text as="div" display="block" type="display-3" hasTabularNumbers>
+            {formatCurrencyWithPrivacyMode({
+              value: totalInvestment,
+              currencyCode: displayCurrencyCode,
+            })}
+          </Text>
+        </Stack>
+        <Selector
+          value={groupByOption}
+          onChange={handleGroupByChange}
+          label="Group by"
+          isLabelHidden
+          options={[
+            ...[
+              ...(
+                Object.entries(GROUP_BY_OPTIONS) as [GroupByOption, string][]
+              ).map(([value, label]) => ({
+                value: value,
+                label: String(label),
+              })),
+            ],
+          ]}
+        />
+      </Stack>
+
+      <Stack direction="vertical" gap={4} key={groupByOption}>
         {map(groupedInvestments, (investments, groupKey) => {
           invariant(investments[0]?.node, 'Investment node is null')
           const groupLabel =
@@ -214,78 +199,52 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
               : null
 
           return (
-            <AccordionItem
+            <Collapsible
               value={groupKey}
               key={groupKey}
-              className="data-open:bg-transparent"
+              trigger={
+                <Stack
+                  direction="horizontal"
+                  gap={3}
+                  align="center"
+                  width="100%"
+                  wrap="wrap"
+                >
+                  <Text type="label">{groupLabel}</Text>
+                  {totalShares !== null && totalShares > 0 && (
+                    <Text type="supporting" hasTabularNumbers>
+                      {totalShares} shares
+                    </Text>
+                  )}
+                  <StackItem size="fill" />
+                  <Text type="supporting" hasTabularNumbers>
+                    {percentage.toFixed(2)}%
+                  </Text>
+                  <Text type="label" hasTabularNumbers>
+                    {formatCurrencyWithPrivacyMode({
+                      value,
+                      currencyCode: displayCurrencyCode,
+                    })}
+                  </Text>
+                </Stack>
+              }
+              defaultIsOpen
             >
-              <AccordionTrigger className="bg-muted/60 flex cursor-pointer items-center justify-normal gap-2 hover:no-underline **:data-[slot=accordion-trigger-icon]:ml-0">
-                <span>{groupLabel}</span>
-                {totalShares !== null && totalShares > 0 && (
-                  <span className="text-muted-foreground text-sm tabular-nums">
-                    {totalShares} shares
-                  </span>
-                )}
-                <span className="grow"></span>
-                <span className="text-muted-foreground tabular-nums">
-                  {percentage.toFixed(2)}%
-                </span>
-                <span className="mr-3 text-sm font-semibold tracking-wide tabular-nums">
-                  {formatCurrencyWithPrivacyMode({
-                    value,
-                    currencyCode: displayCurrencyCode,
-                  })}
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="-mx-2 pb-0">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-                  {investments.map((investment) => {
-                    invariant(investment?.node, 'Investment node is null')
-                    return (
-                      <InvestmentCard
-                        key={investment.node.id}
-                        fragmentRef={investment.node}
-                        className="rounded-none"
-                      />
-                    )
-                  })}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+              <List hasDividers edge="outset">
+                {investments.map((investment) => {
+                  invariant(investment?.node, 'Investment node is null')
+                  return (
+                    <InvestmentCard
+                      key={investment.node.id}
+                      fragmentRef={investment.node}
+                    />
+                  )
+                })}
+              </List>
+            </Collapsible>
           )
         })}
-      </Accordion>
+      </Stack>
     </Fragment>
-  )
-}
-
-function AccordionTrigger({
-  className,
-  children,
-  ...props
-}: AccordionPrimitive.Trigger.Props) {
-  return (
-    <AccordionPrimitive.Header className="flex">
-      <AccordionPrimitive.Trigger
-        data-slot="accordion-trigger"
-        className={cn(
-          '**:data-[slot=accordion-trigger-icon]:text-muted-foreground group/accordion-trigger flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-sm/relaxed font-semibold transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4',
-          className,
-        )}
-        {...props}
-      >
-        <ChevronDownIcon
-          strokeWidth={2}
-          data-slot="accordion-trigger-icon"
-          className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
-        />
-        <ChevronUpIcon
-          strokeWidth={2}
-          data-slot="accordion-trigger-icon"
-          className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
-        />
-        {children}
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
   )
 }

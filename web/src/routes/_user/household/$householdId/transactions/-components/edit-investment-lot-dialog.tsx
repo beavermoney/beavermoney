@@ -1,49 +1,29 @@
-import { graphql, useMutation } from 'react-relay'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Avatar } from '@astryxdesign/core/Avatar'
+import { Button } from '@astryxdesign/core/Button'
+import { DialogHeader } from '@astryxdesign/core/Dialog'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { NumberInput } from '@astryxdesign/core/NumberInput'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { match } from 'ts-pattern'
 import currency from 'currency.js'
 import { useEffect, useMemo } from 'react'
+import { graphql, useMutation } from 'react-relay'
+import { match } from 'ts-pattern'
+import * as z from 'zod'
 
 import type { editInvestmentLotDialogUpdateMutation } from './__generated__/editInvestmentLotDialogUpdateMutation.graphql'
 
-import {
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CurrencyInput } from '@/components/currency-input'
-import { commitMutationResult } from '@/lib/relay'
-import { getLogoDomainURL } from '@/lib/logo'
 import { useCurrency } from '@/hooks/use-currency'
-import { useHousehold } from '@/hooks/use-household'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHousehold } from '@/hooks/use-household'
+import { getLogoDomainURL } from '@/lib/logo'
+import { commitMutationResult } from '@/lib/relay'
 
 const editInvestmentLotDialogUpdateMutation = graphql`
   mutation editInvestmentLotDialogUpdateMutation(
@@ -111,6 +91,8 @@ export function EditInvestmentLotDialog({
   accounts,
   onClose,
 }: EditInvestmentLotDialogProps) {
+  const showToast = useToast()
+
   const [commitUpdate, isUpdateInFlight] =
     useMutation<editInvestmentLotDialogUpdateMutation>(
       editInvestmentLotDialogUpdateMutation,
@@ -156,19 +138,16 @@ export function EditInvestmentLotDialog({
                 investmentID: formData.investmentId,
               },
             },
-            updater: (store) => {
-              store.get(household.id)?.invalidateRecord()
-            },
           },
         )
 
       match(result)
         .with({ status: 'success' }, () => {
-          toast.success('Lot updated successfully!')
+          showToast({ type: 'info', body: 'Lot updated successfully!' })
           onClose()
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -195,228 +174,268 @@ export function EditInvestmentLotDialog({
   }, [selectedAccount])
 
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle>Edit Lot</DialogTitle>
-        <DialogDescription>
-          Update lot details. Switching the investment moves the lot&apos;s
-          shares.
-        </DialogDescription>
-      </DialogHeader>
+    <Layout
+      padding={6}
+      header={<DialogHeader title="Edit Lot" onOpenChange={() => onClose()} />}
+    >
+      <LayoutContent>
+        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+          <Text as="div" display="block" type="supporting">
+            Update lot details. Switching the investment moves the lot&apos;s
+            shares.
+          </Text>
 
-      <form
-        id="edit-lot-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          form.handleSubmit()
-        }}
-      >
-        <FieldGroup>
-          <form.Field
-            name="accountId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Account</FieldLabel>
-                  <Combobox
-                    items={investmentAccounts.map((account) => account.id)}
-                    itemToStringLabel={(item) =>
-                      investmentAccounts.find((acc) => acc.id === item)?.name ||
-                      ''
-                    }
-                    value={field.state.value}
-                    onValueChange={(value) => {
-                      field.handleChange(value || '')
-                      form.setFieldValue('investmentId', '')
-                    }}
-                  >
-                    <ComboboxInput
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Select an account"
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No items found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: string) => {
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="edit-lot-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              <form.Field
+                name="accountId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={investmentAccounts.map((account) => account.id)}
+                        getLabel={(item) =>
+                          investmentAccounts.find((acc) => acc.id === item)
+                            ?.name || ''
+                        }
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                          form.setFieldValue('investmentId', '')
+                        }}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder="Select an account"
+                        onBlur={field.handleBlur}
+                        label={'Account'}
+                        renderOption={(item: string) => {
                           const account = investmentAccounts.find(
                             (acc) => acc.id === item,
                           )
                           if (!account) return null
                           return (
-                            <ComboboxItem key={item} value={item}>
-                              <Item size="xs" className="p-0">
-                                <ItemMedia variant="image">
-                                  <Avatar className="size-6">
-                                    <AvatarImage
-                                      src={getLogoDomainURL(account.icon || '')}
-                                      alt={account.icon || 'unknown logo'}
-                                    />
-                                    <AvatarFallback>
-                                      {account.name}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                </ItemMedia>
-                                <ItemContent>
-                                  <ItemTitle>{account.name}</ItemTitle>
-                                  <ItemDescription>
-                                    <span className="tabular-nums">
-                                      {formatCurrencyWithPrivacyMode({
-                                        value: account.value,
-                                        currencyCode:
-                                          account.householdCurrency.code,
-                                        liability: account.type === 'liability',
-                                      })}
-                                    </span>
-                                    <span aria-hidden="true"> · </span>
-                                    {account.user.name}
-                                  </ItemDescription>
-                                </ItemContent>
-                              </Item>
-                            </ComboboxItem>
+                            <Stack
+                              direction="horizontal"
+                              gap={3}
+                              align="center"
+                            >
+                              <Avatar
+                                src={
+                                  account.icon
+                                    ? getLogoDomainURL(account.icon)
+                                    : undefined
+                                }
+                                name={account.name}
+                              />
+                              <Stack
+                                direction="vertical"
+                                gap={0.5}
+                                className="min-w-0"
+                              >
+                                <Text>{account.name}</Text>
+                                <Text
+                                  type="supporting"
+                                  color="secondary"
+                                  hasTabularNumbers
+                                >
+                                  {formatCurrencyWithPrivacyMode({
+                                    value: account.value,
+                                    currencyCode:
+                                      account.householdCurrency.code,
+                                    liability: account.type === 'liability',
+                                  })}{' '}
+                                  · {account.user.name}
+                                </Text>
+                              </Stack>
+                            </Stack>
                           )
                         }}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
-            }}
-          />
-
-          <form.Field
-            name="investmentId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Investment</FieldLabel>
-                  <Combobox
-                    items={availableInvestments.map((inv) => inv.id)}
-                    itemToStringLabel={(item) => {
-                      const inv = availableInvestments.find(
-                        (i) => i.id === item,
-                      )
-                      return inv ? `${inv.name} (${inv.symbol})` : ''
-                    }}
-                    value={field.state.value}
-                    onValueChange={(value) => {
-                      field.handleChange(value || '')
-                    }}
-                    disabled={!selectedAccount}
-                  >
-                    <ComboboxInput
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      placeholder={
-                        selectedAccount
-                          ? 'Select an investment'
-                          : 'Select an account first'
-                      }
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No items found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: string) => {
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="investmentId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={availableInvestments.map((inv) => inv.id)}
+                        getLabel={(item) => {
+                          const inv = availableInvestments.find(
+                            (i) => i.id === item,
+                          )
+                          return inv
+                            ? inv.symbol && inv.symbol !== inv.name
+                              ? `${inv.name} (${inv.symbol})`
+                              : inv.name
+                            : ''
+                        }}
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                        }}
+                        isDisabled={!selectedAccount}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder={
+                          selectedAccount
+                            ? 'Select an investment'
+                            : 'Select an account first'
+                        }
+                        onBlur={field.handleBlur}
+                        label={'Investment'}
+                        renderOption={(item: string) => {
                           const inv = availableInvestments.find(
                             (i) => i.id === item,
                           )
                           return (
-                            <ComboboxItem key={item} value={item}>
-                              {inv ? `${inv.name} (${inv.symbol})` : ''}
-                            </ComboboxItem>
+                            <span>
+                              {inv
+                                ? inv.symbol && inv.symbol !== inv.name
+                                  ? `${inv.name} (${inv.symbol})`
+                                  : inv.name
+                                : ''}
+                            </span>
                           )
                         }}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
-            }}
-          />
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="shares"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <NumberInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="10"
+                        autoComplete="off"
+                        label={'Shares'}
 
-          <form.Field
-            name="shares"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Shares</FieldLabel>
-                  <Input
-                    data-1p-ignore
-                    id={field.name}
-                    name={field.name}
-                    type="number"
-                    step="any"
-                    value={field.state.value || ''}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value)
-                      field.handleChange(isNaN(val) ? 0 : val)
-                    }}
-                    aria-invalid={isInvalid}
-                    placeholder="10"
-                    autoComplete="off"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
-            }}
-          />
+                        htmlName={field.name}
+                        value={
+                          field.state.value === undefined
+                            ? null
+                            : field.state.value
+                        }
+                        onChange={(value) => field.handleChange(value)}
+                        step={0.0001}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="pricePerShare"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter a price"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        decimalScale={8}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
 
-          <form.Field
-            name="pricePerShare"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Price per Share</FieldLabel>
-                  <CurrencyInput
-                    id={field.name}
-                    name={field.name}
-                    placeholder="Please enter a price"
-                    onValueChange={(e) => {
-                      field.handleChange(e.floatValue!)
-                    }}
-                    value={field.state.value}
-                    locale={household.locale}
-                    currency={
-                      selectedAccount?.householdCurrency.code ??
-                      displayCurrencyCode
-                    }
-                    onBlur={field.handleBlur}
-                    aria-invalid={isInvalid}
-                    decimalScale={8}
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              )
-            }}
-          />
-        </FieldGroup>
-      </form>
+          <Stack
+            direction="horizontal"
+            gap={3}
+            align="center"
+            wrap="wrap"
+            justify="end"
+          >
+            <Button
+              type="button"
+              onClick={onClose}
+              label={'Cancel'}
+              variant={'secondary'}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="edit-lot-form"
+              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              variant={'primary'}
 
-      <DialogFooter>
-        <Button variant="outline" type="button" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button type="submit" form="edit-lot-form" disabled={isUpdateInFlight}>
-          {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </DialogFooter>
-    </>
+              isDisabled={isUpdateInFlight}
+            >
+              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </Stack>
+        </Stack>
+      </LayoutContent>
+    </Layout>
   )
 }

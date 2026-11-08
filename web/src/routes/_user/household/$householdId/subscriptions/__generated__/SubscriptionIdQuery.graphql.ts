@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7c8c18100caf75f7b63a0bf11b7103af>>
+ * @generated SignedSource<<e632fb79e1f4f1aa655fd4d5bdc9dbd7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type SubscriptionIdQuery$variables = {
 export type SubscriptionIdQuery$data = {
   readonly node: {
     readonly id?: string;
-    readonly " $fragmentSpreads": FragmentRefs<"editSubscriptionFragment" | "subscriptionCardFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"editSubscriptionFragment">;
   } | null | undefined;
 };
 export type SubscriptionIdQuery = {
@@ -65,11 +65,6 @@ return {
             "kind": "InlineFragment",
             "selections": [
               (v2/*: any*/),
-              {
-                "args": null,
-                "kind": "FragmentSpread",
-                "name": "subscriptionCardFragment"
-              },
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -129,13 +124,6 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "cost",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
                 "name": "interval",
                 "storageKey": null
               },
@@ -156,19 +144,26 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "kind": "ScalarField",
+                "name": "cost",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
                 "name": "householdCurrency",
                 "plural": false,
                 "selections": [
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
                     "name": "code",
                     "storageKey": null
-                  },
-                  (v2/*: any*/)
+                  }
                 ],
                 "storageKey": null
               },
@@ -189,16 +184,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ad90aa68ec2c3cbf1f9eb2dca055af07",
+    "cacheID": "f528912a052e1b77e812c2d632461860",
     "id": null,
     "metadata": {},
     "name": "SubscriptionIdQuery",
     "operationKind": "query",
-    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...subscriptionCardFragment\n      ...editSubscriptionFragment\n    }\n    id\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  householdCurrency {\n    id\n    code\n  }\n  active\n}\n\nfragment subscriptionCardFragment on RecurringSubscription {\n  id\n  name\n  icon\n  cost\n  interval\n  intervalCount\n  startDate\n  householdCurrency {\n    code\n    id\n  }\n}\n"
+    "text": "query SubscriptionIdQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on RecurringSubscription {\n      id\n      ...editSubscriptionFragment\n    }\n    id\n  }\n}\n\nfragment editSubscriptionFragment on RecurringSubscription {\n  id\n  name\n  icon\n  interval\n  intervalCount\n  startDate\n  cost\n  householdCurrency {\n    id\n    code\n  }\n  active\n}\n"
   }
 };
 })();
 
-(node as any).hash = "fb9a2e114395528d8e31c75fef8505be";
+(node as any).hash = "7920f09b8e2914a6593fa13437be45c0";
 
 export default node;

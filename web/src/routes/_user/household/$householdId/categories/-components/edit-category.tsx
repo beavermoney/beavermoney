@@ -1,48 +1,29 @@
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { FormError } from '@/components/form-error'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
 import { graphql } from 'relay-runtime'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
+import { useNavigate } from '@tanstack/react-router'
 import { useFragment, useMutation } from 'react-relay'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useNavigate } from '@tanstack/react-router'
-import type { editCategoryMutation } from './__generated__/editCategoryMutation.graphql'
-import type { editCategoryFragment$key } from './__generated__/editCategoryFragment.graphql'
+import * as z from 'zod'
 import type { editCategoryDeleteMutation } from './__generated__/editCategoryDeleteMutation.graphql'
+import type { editCategoryFragment$key } from './__generated__/editCategoryFragment.graphql'
+import type { editCategoryMutation } from './__generated__/editCategoryMutation.graphql'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { commitMutationResult } from '@/lib/relay'
-import { IconPicker, type IconName } from '@/components/ui/icon-picker'
-import { AlertTriangleIcon } from 'lucide-react'
+import { IconPicker, type IconName } from '@/components/icon-picker'
+import { commitMutationResult, NodeType, useDeleteNode } from '@/lib/relay'
 import { useState } from 'react'
-import { NodeType, useDeleteNode } from '@/lib/relay'
 
 const formSchema = z.object({
   name: z
@@ -90,6 +71,8 @@ type EditCategoryProps = {
 }
 
 export function EditCategory({ fragmentRef }: EditCategoryProps) {
+  const showToast = useToast()
+
   const data = useFragment(editCategoryFragment, fragmentRef)
 
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
@@ -135,12 +118,13 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
             'No data returned from mutation',
           )
 
-          toast.success(
-            `${resultData.updateTransactionCategory.node.name} updated!`,
-          )
+          showToast({
+            type: 'info',
+            body: `${resultData.updateTransactionCategory.node.name} updated!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -163,128 +147,174 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
           to: '/household/$householdId/categories',
           search: (prev) => ({ ...prev }),
         })
-        toast.success('Category deleted!')
+        showToast({ type: 'info', body: 'Category deleted!' })
       })
       .with({ status: 'error' }, ({ error }) => {
-        toast.error(error.toString())
+        showToast({ type: 'error', body: error.toString() })
       })
       .exhaustive()
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Edit Category</CardTitle>
-        <CardDescription>Update your category details</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="edit-category-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Groceries"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="icon"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Icon</FieldLabel>
-                    <IconPicker
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value as IconName}
-                      onValueChange={(value) => field.handleChange(value)}
-                      className="max-w-min"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
-            <AlertDialogTrigger
-              render={
-                <Button
-                  variant="destructive"
-                  type="button"
-                  disabled={
-                    isDeleteMutationInFlight || isUpdateMutationInFlight
-                  }
-                />
-              }
-            >
-              Delete
-            </AlertDialogTrigger>
-            <AlertDialogContent size="sm">
-              <AlertDialogHeader>
-                <AlertDialogMedia>
-                  <AlertTriangleIcon className="text-destructive" />
-                </AlertDialogMedia>
-                <AlertDialogTitle>Delete Category</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  category.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  variant="destructive"
-                  onClick={handleDelete}
-                  disabled={isDeleteMutationInFlight}
-                >
-                  {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <Button
-            disabled={isUpdateMutationInFlight}
-            type="submit"
-            form="edit-category-form"
+    <Card>
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>Edit Category</Heading>
+        </Stack>
+        <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="edit-category-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
           >
-            {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
-          </Button>
-        </Field>
-      </CardFooter>
+            <FormLayout>
+              <form.Field
+                name="name"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TextInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="Groceries"
+                        autoComplete="off"
+                        label={'Name'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="icon"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <IconPicker
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value as IconName}
+                        onValueChange={(value) => field.handleChange(value)}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
+        </Stack>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <>
+              <Button
+                onClick={() => setDeleteAlertOpen(true)}
+                type="button"
+                label={'Delete'}
+                variant={'destructive'}
+
+                isDisabled={
+                  isDeleteMutationInFlight || isUpdateMutationInFlight
+                }
+              >
+                Delete
+              </Button>
+              <Dialog
+                isOpen={deleteAlertOpen}
+                onOpenChange={setDeleteAlertOpen}
+                purpose="info"
+                role="alertdialog"
+                padding={0}
+              >
+                <Layout
+                  padding={6}
+                  header={
+                    <DialogHeader
+                      title={<>Delete Category</>}
+                      onOpenChange={setDeleteAlertOpen}
+                    />
+                  }
+                >
+                  <LayoutContent>
+                    <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                      <Text as="div" display="block" type="supporting">
+                        This action cannot be undone. This will permanently
+                        delete the category.
+                      </Text>
+                      <Stack
+                        direction="horizontal"
+                        gap={3}
+                        align="center"
+                        wrap="wrap"
+                        justify="end"
+                      >
+                        <Button
+                          label="Cancel"
+                          onClick={() => setDeleteAlertOpen(false)}
+                        />
+                        <Button
+                          variant="destructive"
+                          onClick={handleDelete}
+                          isDisabled={isDeleteMutationInFlight}
+                          label="Delete"
+                        >
+                          {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </LayoutContent>
+                </Layout>
+              </Dialog>
+            </>
+            <Button
+              type="submit"
+              form="edit-category-form"
+              label={String(isUpdateMutationInFlight ? 'Saving...' : 'Save')}
+              variant={'primary'}
+
+              isDisabled={isUpdateMutationInFlight}
+            >
+              {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
+            </Button>
+          </Stack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

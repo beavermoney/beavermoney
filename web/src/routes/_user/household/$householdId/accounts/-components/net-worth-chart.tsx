@@ -1,34 +1,37 @@
+import { Heading } from '@astryxdesign/core/Heading'
+import { useCurrency } from '@/hooks/use-currency'
+import { useDisplayCurrency } from '@/hooks/use-display-currency'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
+import { Button } from '@astryxdesign/core/Button'
+import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { Spinner } from '@astryxdesign/core/Spinner'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import currency from 'currency.js'
+import { useMemo, useState, useTransition } from 'react'
 import {
   fetchQuery,
   graphql,
   useLazyLoadQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
-import { useMemo, useState, useTransition } from 'react'
-import invariant from 'tiny-invariant'
-import currency from 'currency.js'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts'
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from '@/components/ui/chart'
-import { cn } from '@/lib/utils'
-import { useHousehold } from '@/hooks/use-household'
-import { useDisplayCurrency } from '@/hooks/use-display-currency'
-import { useCurrency } from '@/hooks/use-currency'
-import { usePrivacyMode } from '@/hooks/use-privacy-mode'
-import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { Button } from '@/components/ui/button'
-import { Item } from '@/components/ui/item'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Spinner } from '@/components/ui/spinner'
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+
+import { environment } from '@/environment'
 import type {
   SnapshotWhereInput,
   netWorthChartQuery,
 } from './__generated__/netWorthChartQuery.graphql'
-import { environment } from '@/environment'
 
 function buildRateMap(
   rates: ReadonlyArray<{
@@ -59,16 +62,6 @@ function niceStep(rawStep: number): number {
   const fraction = rawStep / Math.pow(10, exponent)
   const nice = fraction < 1.5 ? 1 : fraction < 3 ? 2 : fraction < 7 ? 5 : 10
   return nice * Math.pow(10, exponent)
-}
-
-function isImproving(series: SeriesKey | null, change: number): boolean {
-  if (series === 'liability') return change < 0
-  return change > 0
-}
-
-function isWorsening(series: SeriesKey | null, change: number): boolean {
-  if (series === 'liability') return change > 0
-  return change < 0
 }
 
 const NetWorthChartQuery = graphql`
@@ -168,7 +161,7 @@ const chartConfig = {
   property: { label: 'Property', color: 'var(--chart-property)' },
   receivable: { label: 'Receivable', color: 'var(--chart-receivable)' },
   liability: { label: 'Liability', color: 'var(--chart-liability)' },
-} satisfies ChartConfig
+}
 
 export function NetWorthChart() {
   const { household } = useHousehold()
@@ -348,44 +341,38 @@ export function NetWorthChart() {
     return value > 0 ? `+${formatted}` : value < 0 ? `-${formatted}` : formatted
   }
 
-  if (chartData.length === 0) {
-    return null
-  }
-
   return (
-    <Item className="w-full flex-col items-stretch gap-0 p-0">
-      <ScrollArea className="w-full">
-        <div className="flex gap-1 py-px">
-          {SERIES.map((s) => {
-            const active = activeSeries.has(s.key)
-            return (
-              <Button
-                key={s.key}
-                variant="outline"
-                size="sm"
-                className="h-5 px-1.5 text-xs transition-colors"
-                style={
-                  active
-                    ? {
-                        borderColor: s.color,
-                        color: s.color,
-                        backgroundColor: `color-mix(in srgb, ${s.color} 12%, transparent)`,
-                      }
-                    : { color: 'var(--muted-foreground)' }
-                }
-                onClick={() => toggleSeries(s.key)}
-              >
-                {s.label}
-              </Button>
-            )
-          })}
-        </div>
-      </ScrollArea>
-      <div className="py-1"></div>
-      {hasActiveSeries ? (
-        <ChartContainer
-          config={chartConfig}
-          className={`h-44 w-full transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
+    <Stack direction="vertical" gap={4}>
+      <Heading level={2}>Account history</Heading>
+      {chartData.length > 0 && (
+        <ScrollableArea axis="inline" label="Account history series">
+          <Stack direction="horizontal" gap={1}>
+            {SERIES.map((s) => {
+              const active = activeSeries.has(s.key)
+              return (
+                <Button
+                  key={s.key}
+                  onClick={() => toggleSeries(s.key)}
+                  label={String(s.label)}
+                  variant={active ? 'primary' : 'secondary'}
+                >
+                  {s.label}
+                </Button>
+              )
+            })}
+          </Stack>
+        </ScrollableArea>
+      )}
+      {chartData.length === 0 ? (
+        <Text color="secondary">
+          No snapshots in this period. Choose a wider date range, or create a
+          snapshot from the toolbar to start tracking balances.
+        </Text>
+      ) : hasActiveSeries ? (
+        <ResponsiveContainer
+          width="100%"
+          height={240}
+          initialDimension={{ width: 640, height: 240 }}
         >
           <AreaChart
             data={chartData}
@@ -401,16 +388,8 @@ export function NetWorthChart() {
                   x2="0"
                   y2="1"
                 >
-                  <stop
-                    offset="5%"
-                    stopColor={`var(--color-${s.key})`}
-                    stopOpacity={0.3}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={`var(--color-${s.key})`}
-                    stopOpacity={0}
-                  />
+                  <stop offset="5%" stopColor={s.color} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={s.color} stopOpacity={0} />
                 </linearGradient>
               ))}
             </defs>
@@ -446,44 +425,24 @@ export function NetWorthChart() {
                 })
               }
             />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(_, payload) => {
-                    const ts = payload?.[0]?.payload?.date
-                    return typeof ts === 'number'
-                      ? new Date(ts).toLocaleDateString(household.locale, {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })
-                      : ''
-                  }}
-                  formatter={(value, name, item) => {
-                    invariant(
-                      typeof value === 'number',
-                      'chart value must be a number',
-                    )
-                    return (
-                      <>
-                        <div
-                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="text-muted-foreground">
-                          {chartConfig[name as SeriesKey]?.label ?? name}
-                        </span>
-                        <span className="text-foreground ml-auto pl-4 font-mono font-medium tabular-nums">
-                          {formatCurrencyWithPrivacyMode({
-                            value: currency(value),
-                            currencyCode: displayCurrency,
-                          })}
-                        </span>
-                      </>
-                    )
-                  }}
-                />
+            <Tooltip
+              contentStyle={{
+                background: 'var(--color-background-popover)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-container)',
+              }}
+              labelFormatter={(label) =>
+                typeof label === 'number'
+                  ? new Date(label).toLocaleDateString(household.locale)
+                  : String(label)
               }
+              formatter={(value, name) => [
+                formatCurrencyWithPrivacyMode({
+                  value: currency(Number(value)),
+                  currencyCode: displayCurrency,
+                }),
+                chartConfig[name as SeriesKey]?.label ?? String(name),
+              ]}
             />
 
             {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
@@ -491,56 +450,45 @@ export function NetWorthChart() {
                 key={s.key}
                 type="monotone"
                 dataKey={s.key}
-                stroke={`var(--color-${s.key})`}
+                stroke={s.color}
                 strokeWidth={2}
                 fill={`url(#${s.key}Gradient)`}
               />
             ))}
           </AreaChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       ) : (
-        <div
-          className={`text-muted-foreground flex h-44 w-full items-center justify-center text-xs transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}
-        >
+        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
           Select at least one series to view chart
-        </div>
+        </Stack>
       )}
-      <div className="flex items-center gap-2 pt-1 pb-2.5">
+      <Stack direction="horizontal" gap={2} align="center">
         {singleSeriesStats && (
-          <div
-            className={cn(
-              'text-muted-foreground min-w-0 text-xs tabular-nums',
-              isImproving(selectedSeries, singleSeriesStats.absoluteChange) &&
-                'text-emerald-600 dark:text-emerald-400',
-              isWorsening(selectedSeries, singleSeriesStats.absoluteChange) &&
-                'text-red-600 dark:text-red-400',
-            )}
-          >
-            <span className="">
+          <Stack direction="vertical" gap={4}>
+            <Text>
               {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)} (
               {isPrivacyModeEnabled
                 ? '•••'
                 : formatSignedPercent(singleSeriesStats.percentChange)}
               )
-            </span>
-          </div>
+            </Text>
+          </Stack>
         )}
-        <div className="grow"></div>
-        <div className="flex items-center justify-end gap-0.5">
-          {isPending && <Spinner className="text-muted-foreground size-3" />}
+        <Stack direction="horizontal" gap={0.5} align="center" justify="end">
+          {isPending && <Spinner />}
           {DURATIONS.map((d) => (
             <Button
               key={d}
-              variant={duration === d ? 'default' : 'ghost'}
-              size="sm"
-              className="h-5 px-1.5 text-xs"
+
               onClick={() => startTransition(() => setDuration(d))}
+              label={String(d)}
+              variant={duration === d ? 'primary' : 'ghost'}
             >
               {d}
             </Button>
           ))}
-        </div>
-      </div>
-    </Item>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

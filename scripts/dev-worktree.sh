@@ -68,6 +68,8 @@ load_shared_env() {
   fi
   set +a
 
+  # Optional isolated database for review instances.
+  export POSTGRES_URL="${DEV_POSTGRES_URL:-$POSTGRES_URL}"
   export PORT="$API_PORT"
   export WEB_URL="http://localhost:$WEB_PORT"
   export VITE_SERVER_URL="http://localhost:$API_PORT"
@@ -80,7 +82,7 @@ frontend_url() {
 
 wait_until_ready() {
   local attempts=0
-  while (( attempts < 90 )); do
+  while (( attempts < ${DEV_STARTUP_TIMEOUT:-180} )); do
     if curl --silent --fail --max-time 2 "http://localhost:$API_PORT/health" >/dev/null &&
       curl --silent --fail --max-time 2 "http://localhost:$WEB_PORT" >/dev/null; then
       return

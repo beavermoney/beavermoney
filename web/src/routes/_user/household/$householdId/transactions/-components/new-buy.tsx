@@ -1,40 +1,32 @@
-import { TransactionAccountPicker } from './transaction-account-picker'
-import { TransactionInvestmentPicker } from './transaction-investment-picker'
-import { graphql } from 'relay-runtime'
+import { FinanceDateInput } from '@/components/finance-date-input'
+import { FormError } from '@/components/form-error'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { Button } from '@astryxdesign/core/Button'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Stack } from '@astryxdesign/core/Stack'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useFragment, useMutation } from 'react-relay'
 import currency from 'currency.js'
+import { useEffect, useMemo } from 'react'
+import { useFragment, useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useEffect, useMemo } from 'react'
-import type { newBuyMutation } from './__generated__/newBuyMutation.graphql'
+import * as z from 'zod'
 import type { newBuyFragment$key } from './__generated__/newBuyFragment.graphql'
-import { useLogTransaction } from '@/hooks/use-log-transaction'
+import type { newBuyMutation } from './__generated__/newBuyMutation.graphql'
+import { TransactionAccountPicker } from './transaction-account-picker'
+import { TransactionInvestmentPicker } from './transaction-investment-picker'
 
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { useHousehold } from '@/hooks/use-household'
-import { useUser } from '@/hooks/use-user'
-import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
-import { useHouseholdMembers } from '@/hooks/use-household-members'
-import { OwnerSelect } from '../../-components/owner-select'
 import { CurrencyInput } from '@/components/currency-input'
+import { useDefaultOwnerUserID } from '@/hooks/use-default-owner-user-id'
+import { useHousehold } from '@/hooks/use-household'
+import { useHouseholdMembers } from '@/hooks/use-household-members'
+import { useUser } from '@/hooks/use-user'
 import { commitMutationResult } from '@/lib/relay'
-import { Calendar } from '@/components/ui/calendar'
+import { OwnerSelect } from '../../-components/owner-select'
+
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 const formSchema = z.object({
@@ -102,6 +94,8 @@ type NewBuyProps = {
 }
 
 export function NewBuy({ fragmentRef }: NewBuyProps) {
+  const showToast = useToast()
+
   const data = useFragment(newBuyFragment, fragmentRef)
 
   const [commitMutation, isMutationInFlight] =
@@ -189,10 +183,13 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
             'No data returned from mutation',
           )
 
-          toast.success('Buy transaction created successfully!')
+          showToast({
+            type: 'info',
+            body: 'Buy transaction created successfully!',
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
@@ -240,27 +237,31 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
   }, [defaults, form, setDefaults])
 
   return (
-    <Card className="w-full">
-      <CardContent>
-        <form
+    <Stack direction="vertical" gap={6}>
+      <Stack direction="vertical" gap={4}>
+        <Stack
+          as="form"
+          direction="vertical"
+          gap={6}
           id="new-buy-form"
           onSubmit={(e) => {
             e.preventDefault()
             form.handleSubmit()
           }}
         >
-          <FieldGroup>
+          <FormLayout>
             <form.Field
               name="accountId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field
+                  <Stack
+                    direction="vertical"
+                    gap={2}
                     data-invalid={isInvalid}
                     data-transaction-initial-focus
                   >
-                    <FieldLabel htmlFor={field.name}>Account</FieldLabel>
                     <TransactionAccountPicker
                       accounts={investmentAccounts}
                       name={field.name}
@@ -274,21 +275,19 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       invalid={isInvalid}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="investmentId"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Investment</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <TransactionInvestmentPicker
                       investments={availableInvestments}
                       name={field.name}
@@ -300,25 +299,23 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       disabled={!selectedAccount}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="shares"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Shares</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
-                      data-1p-ignore
                       id={field.name}
                       name={field.name}
+                      aria-label="Shares"
                       value={field.state.value}
                       locale={household.locale}
                       currency={
@@ -328,31 +325,26 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       decimalScale={8}
                       showCurrencySymbol={false}
                       onBlur={field.handleBlur}
-                      onValueChange={(values) => {
+                      onValueChange={(values) =>
                         field.handleChange(values.floatValue!)
-                      }}
+                      }
                       aria-invalid={isInvalid}
                       placeholder="10"
-                      autoComplete="off"
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="pricePerShare"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      Price per Share
-                    </FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
                       id={field.name}
                       name={field.name}
@@ -371,21 +363,19 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       decimalScale={8}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="totalPaid"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Total Paid</FieldLabel>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
                     <CurrencyInput
                       id={field.name}
                       name={field.name}
@@ -404,40 +394,41 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                       decimalScale={8}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             <form.Field
               name="description"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                    <Input
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <TextInput
                       data-1p-ignore
                       id={field.name}
-                      name={field.name}
-                      value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
                       placeholder="Buy AAPL shares"
                       autoComplete="off"
+                      label={'Description'}
+
+                      value={String(field.state.value ?? '')}
+                      onChange={(_value, event) =>
+                        ((e) => field.handleChange(e.target.value))(event)
+                      }
+                      htmlName={field.name}
                     />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-
             {ownerOptions.length > 1 && (
               <form.Field
                 name="ownerUserID"
@@ -445,8 +436,11 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
-                    <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor={field.name}>Owner</FieldLabel>
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
                       <OwnerSelect
                         id={field.name}
                         name={field.name}
@@ -457,82 +451,69 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                         ariaInvalid={isInvalid}
                       />
                       {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Field>
+                    </Stack>
                   )
                 }}
               />
             )}
-
             <form.Field
               name="datetime"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Date</FieldLabel>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            id={field.name}
-                            name={field.name}
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
-                            {field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )}
-                          </Button>
-                        }
-                      />
-                      <DropdownMenuContent className="w-auto p-0" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.state.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.handleChange(date)
-                            }
-                          }}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
+                    <FinanceDateInput
+                      id={field.name}
+                      label="Date"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onBlur={field.handleBlur}
+                      disabledDate={(date) =>
+                        date > new Date() || date < new Date('1900-01-01')
+                      }
+                    />
                     {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
+                      <FormError errors={field.state.meta.errors} />
                     )}
-                  </Field>
+                  </Stack>
                 )
               }}
             />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
+          </FormLayout>
+        </Stack>
+      </Stack>
+      <Stack
+        direction="horizontal"
+        gap={3}
+        align="center"
+        wrap="wrap"
+        justify="end"
+        as="footer"
+      >
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            label={'Reset'}
+            variant={'secondary'}
+          >
             Reset
           </Button>
           <Button
-            disabled={isMutationInFlight}
             type="submit"
             form="new-buy-form"
+            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            variant={'primary'}
+
+            isDisabled={isMutationInFlight}
           >
             {isMutationInFlight ? 'Creating...' : 'Create'}
           </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }

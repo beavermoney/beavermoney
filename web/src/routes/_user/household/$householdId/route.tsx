@@ -1,13 +1,20 @@
+import { Stack } from '@astryxdesign/core/Stack'
 import {
-  EyeIcon,
-  EyeOffIcon,
-  Moon,
-  Sun,
-  GripVertical,
-  X,
-  RefreshCwIcon,
-} from 'lucide-react'
+  RouteContentBoundary,
+  NavigationProgress,
+} from '@/components/route-content-boundary'
+import { LayoutContent } from '@astryxdesign/core/Layout'
+import { MobileNavToggle } from '@astryxdesign/core/MobileNav'
+import { notifyError } from '@/lib/notifications'
+import { Button } from '@astryxdesign/core/Button'
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { DropdownMenu } from '@astryxdesign/core/DropdownMenu'
+import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { HStack, Layout, LayoutHeader } from '@astryxdesign/core/Layout'
+import { PlusIcon, Settings2Icon, EllipsisIcon, FlagIcon } from 'lucide-react'
 
+import { AppSidebar } from '@/components/app-sidebar'
+import { useToast } from '@astryxdesign/core/Toast'
 import {
   Outlet,
   createFileRoute,
@@ -16,65 +23,49 @@ import {
   useRouter,
   useRouterState,
 } from '@tanstack/react-router'
-import { toast } from 'sonner'
-import { commitLocalUpdate, fetchQuery, graphql } from 'relay-runtime'
+import { useStore } from '@tanstack/react-store'
+import { useCallback } from 'react'
 import {
   loadQuery,
   useMutation,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
+import { commitLocalUpdate, fetchQuery, graphql } from 'relay-runtime'
 import { z } from 'zod'
-import { Rnd } from 'react-rnd'
-import { useCallback } from 'react'
-import { useStore } from '@tanstack/react-store'
 import type { routeHouseholdIdQuery } from './__generated__/routeHouseholdIdQuery.graphql'
 import type { routeRefreshAccountDataMutation } from './__generated__/routeRefreshAccountDataMutation.graphql'
-import { AppSidebar } from '@/components/app-sidebar'
-import { AppActionDock } from '@/components/app-action-dock'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Breadcrumb, BreadcrumbList } from '@/components/ui/breadcrumb'
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
-import { Button } from '@/components/ui/button'
-import { Item } from '@/components/ui/item'
-import { usePrivacyMode } from '@/hooks/use-privacy-mode'
-import { HouseholdProvider } from '@/hooks/use-household'
-import { HouseholdMembersProvider } from '@/hooks/use-household-members'
-import { DisplayCurrencyProvider } from '@/hooks/use-display-currency'
+
+import { AppShell } from '@astryxdesign/core/AppShell'
+
+import { CommandMenu } from '@/components/command-menu'
+import { GenericError } from '@/components/generic-error'
+import { NotFoundError } from '@/components/not-found-error'
+import { PendingComponent } from '@/components/pending-component'
+import { useTheme } from '@/components/theme-provider'
+import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
+import { environment } from '@/environment'
 import {
   displayCurrencyIdStore,
   setDisplayCurrencyId,
 } from '@/hooks/display-currency-store'
+import { DisplayCurrencyProvider } from '@/hooks/use-display-currency'
+import { HouseholdProvider } from '@/hooks/use-household'
+import { HouseholdMembersProvider } from '@/hooks/use-household-members'
+import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { UserProvider } from '@/hooks/use-user'
-import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
+import { UserHouseholdProvider } from '@/hooks/use-user-household'
+import { readViewUserIds } from '@/hooks/view-scope-store'
 import {
   clearHouseholdScopedStorage,
   isMembershipRevokedError,
 } from '@/lib/auth'
-import { useTheme } from '@/components/theme-provider'
-import { PendingComponent } from '@/components/pending-component'
-import { environment } from '@/environment'
-import { readViewUserIds } from '@/hooks/view-scope-store'
-import { CommandMenu } from '@/components/command-menu'
-import { LogTransaction } from './transactions/-components/log-transaction'
-import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
-import { SnapshotDialog } from './-components/snapshot-dialog'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { useLogTransaction } from '@/hooks/use-log-transaction'
-import { cn } from '@/lib/utils'
 import Hotkeys from './-components/hotkeys'
-import { NotFoundError } from '@/components/not-found-error'
-import { UserHouseholdProvider } from '@/hooks/use-user-household'
-import { GenericError } from '@/components/generic-error'
+import { SnapshotDialog } from './-components/snapshot-dialog'
+import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
+import { LogTransaction } from './transactions/-components/log-transaction'
 
 import { identity } from 'lodash-es'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
@@ -145,7 +136,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
     } catch (error) {
       if (isMembershipRevokedError(error)) {
         clearHouseholdScopedStorage()
-        toast.error('You no longer have access to this household.')
+        notifyError('You no longer have access to this household.')
         throw redirect({ to: '/household' })
       }
       throw error
@@ -162,6 +153,8 @@ export const Route = createFileRoute('/_user/household/$householdId')({
 })
 
 function RouteComponent() {
+  const showToast = useToast()
+
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
   const data = usePreloadedQuery<routeHouseholdIdQuery>(
@@ -208,19 +201,20 @@ function RouteComponent() {
       },
       onCompleted: (response, errors) => {
         if (errors?.length || !response?.refresh) {
-          toast.error(
-            `Sync failed: ${errors?.[0]?.message ?? 'No data was refreshed'}`,
-          )
+          showToast({
+            type: 'error',
+            body: `Sync failed: ${errors?.[0]?.message ?? 'No data was refreshed'}`,
+          })
           return
         }
 
-        toast.success('Account data refreshed.')
+        showToast({ type: 'info', body: 'Account data refreshed.' })
       },
       onError: (error) => {
-        toast.error(`Sync failed: ${error.message}`)
+        showToast({ type: 'error', body: `Sync failed: ${error.message}` })
       },
     })
-  }, [commitRefresh, params.householdId])
+  }, [commitRefresh, params.householdId, showToast])
 
   useSubscribeToInvalidationState([params.householdId], () => {
     fetchQuery(
@@ -231,6 +225,30 @@ function RouteComponent() {
     ).subscribe({})
   })
 
+  const preferenceItems = [
+    {
+      label: isPrivacyModeEnabled ? 'Show balances' : 'Hide balances',
+      onClick: togglePrivacyMode,
+    },
+    {
+      label: 'Refresh account data',
+      onClick: handleRefreshAccountData,
+      isDisabled: isRefreshInFlight,
+    },
+    {
+      label: 'Light appearance',
+      onClick: () => setTheme('light'),
+    },
+    {
+      label: 'Dark appearance',
+      onClick: () => setTheme('dark'),
+    },
+    {
+      label: 'System appearance',
+      onClick: () => setTheme('system'),
+    },
+  ]
+
   return (
     <UserProvider userRef={data.user}>
       <HouseholdProvider householdRef={data.household}>
@@ -239,119 +257,100 @@ function RouteComponent() {
             <DisplayCurrencyProvider householdRef={data.household}>
               <Hotkeys />
               <CommandMenu />
-              <SidebarProvider className="h-dvh min-h-0 min-w-0 overflow-hidden">
-                <AppSidebar fragmentRef={data} />
-                <SidebarInset className="h-dvh min-h-0 min-w-0 overflow-hidden md:h-[calc(100dvh-1rem)]">
-                  <header className="liquid-glass-chrome z-30 mx-2 mt-2 flex h-11 shrink-0 items-center rounded-xl p-1 transition-[width,height] duration-200 ease-[var(--ease-out-quint)]">
-                    <SidebarTrigger className="cursor-pointer" />
-                    <div className="flex flex-1 items-center px-3">
-                      <Breadcrumb>
-                        <BreadcrumbList></BreadcrumbList>
-                      </Breadcrumb>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      {!isOnSettingsPage && (
-                        <div>
-                          <ViewScopeSwitcher />
-                        </div>
-                      )}
-                      {currencies.length > 1 && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            render={
-                              <Button
-                                variant="ghost"
-                                className="h-9 cursor-pointer rounded-lg border-0 bg-clip-border px-2 font-mono text-xs"
-                              >
-                                {activeCurrencyCode || 'Currency'}
-                              </Button>
-                            }
-                          />
-                          <DropdownMenuContent align="end" className="min-w-0">
-                            {currencies.map((hc) => (
-                              <DropdownMenuItem
-                                key={hc.id}
-                                onClick={() => handleCurrencyChange(hc.id)}
-                                className={cn(
-                                  'justify-center font-mono',
-                                  hc.id === displayCurrencyId && 'font-bold',
-                                )}
-                              >
-                                {hc.code}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                      <div>
-                        <SnapshotDialog fragmentRef={data.household} />
-                      </div>
-                      <div className="hidden md:block">
-                        <Button
-                          variant="ghost"
-                          className="size-9 shrink-0 cursor-pointer rounded-lg border-0 bg-clip-border"
-                          onClick={handleRefreshAccountData}
-                          disabled={isRefreshInFlight}
-                          aria-label="Refresh account data"
-                        >
-                          <RefreshCwIcon
-                            className={isRefreshInFlight ? 'animate-spin' : ''}
-                          />
-                        </Button>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          render={
-                            <Button
-                              variant="ghost"
-                              className="size-9 shrink-0 cursor-pointer rounded-lg border-0 bg-clip-border"
-                            >
-                              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                              <span className="sr-only">Toggle theme</span>
-                            </Button>
-                          }
-                        ></DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setTheme('light')}>
-                            Light
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setTheme('dark')}>
-                            Dark
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setTheme('system')}>
-                            System
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      <Button
-                        variant="ghost"
-                        className="size-9 shrink-0 cursor-pointer rounded-lg border-0 bg-clip-border"
-                        onClick={togglePrivacyMode}
-                        aria-label={
-                          isPrivacyModeEnabled
-                            ? 'Show financial values'
-                            : 'Hide financial values'
-                        }
+              <AppShell
+                className="app-safe-area"
+                sideNav={<AppSidebar fragmentRef={data} />}
+                mobileNav={{ hasToggle: false }}
+              >
+                <Layout
+                  height="fill"
+                  header={
+                    <LayoutHeader hasDivider>
+                      <HStack
+                        hAlign="between"
+                        vAlign="center"
+                        gap={3}
+                        wrap="wrap"
                       >
-                        {isPrivacyModeEnabled ? <EyeIcon /> : <EyeOffIcon />}
-                      </Button>
-                    </div>
-                  </header>
-                  <div className="mobile-content-bottom-corners relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-                    <Outlet />
-                  </div>
-                  <AppActionDock
-                    isMobile={isMobile}
-                    isRefreshing={isRefreshInFlight}
-                    onRefresh={handleRefreshAccountData}
-                  />
-                </SidebarInset>
+                        <HStack gap={2} vAlign="center">
+                          {currencies.length > 1 && (
+                            <DropdownMenu
+                              button={{
+                                label: activeCurrencyCode,
+                                variant: 'secondary',
+                              }}
+                              items={currencies.map((hc) => ({
+                                label: hc.code,
+                                onClick: () => handleCurrencyChange(hc.id),
+                              }))}
+                            />
+                          )}
+                          {!isMobile && !isOnSettingsPage && (
+                            <ViewScopeSwitcher />
+                          )}
+                        </HStack>
+                        <HStack gap={2} vAlign="center">
+                          {isMobile ? (
+                            <SnapshotDialog
+                              fragmentRef={data.household}
+                              renderTrigger={(openSnapshot) => (
+                                <DropdownMenu
+                                  button={{
+                                    label: 'More actions',
+                                    icon: <AstryxIcon icon={EllipsisIcon} />,
+                                    isIconOnly: true,
+                                    variant: 'ghost',
+                                  }}
+                                  footer={
+                                    !isOnSettingsPage ? (
+                                      <ViewScopeSwitcher />
+                                    ) : undefined
+                                  }
+                                  items={[
+                                    {
+                                      label: 'Create snapshot',
+                                      icon: <AstryxIcon icon={FlagIcon} />,
+                                      onClick: openSnapshot,
+                                    },
+                                    ...preferenceItems,
+                                  ]}
+                                />
+                              )}
+                            />
+                          ) : (
+                            <>
+                              <SnapshotDialog fragmentRef={data.household} />
+                              <DropdownMenu
+                                button={{
+                                  label: 'Preferences',
+                                  icon: <AstryxIcon icon={Settings2Icon} />,
+                                  isIconOnly: true,
+                                  variant: 'ghost',
+                                }}
+                                items={preferenceItems}
+                              />
+                            </>
+                          )}
+                          <NewEntryButton />
+                          {isMobile && <MobileNavToggle />}
+                        </HStack>
+                      </HStack>
+                    </LayoutHeader>
+                  }
+                  content={
+                    <>
+                      <NavigationProgress />
+                      <RouteContentBoundary>
+                        <Outlet />
+                      </RouteContentBoundary>
+                    </>
+                  }
+                />
 
                 {!isMobile && (
                   <FloatingLogTransactionWindow fragmentRef={data.household} />
                 )}
-              </SidebarProvider>
+              </AppShell>
             </DisplayCurrencyProvider>
           </UserHouseholdProvider>
         </HouseholdMembersProvider>
@@ -371,51 +370,45 @@ function FloatingLogTransactionWindow({
     useLogTransaction()
 
   return (
-    <Rnd
-      enableResizing={{
-        top: false,
-        right: false,
-        bottom: false,
-        left: false,
-        topRight: false,
-        bottomRight: false,
-        bottomLeft: false,
-        topLeft: false,
+    <Dialog
+      isOpen={logTransactionType !== null}
+      onOpenChange={(open) => {
+        if (!open) closeLogTransaction()
       }}
-      default={{
-        x: window.innerWidth / 2 - 300,
-        y: window.innerHeight / 2 - 400,
-        width: '420',
-        height: 'auto',
-      }}
-      bounds="window"
-      dragHandleClassName="drag-handle"
-      style={{ zIndex: 50 }}
+      purpose="info"
+      width={640}
+      padding={0}
     >
-      {logTransactionType && (
-        <Item
-          className={cn(
-            'liquid-glass-popover h-full w-full gap-0 overflow-hidden rounded-2xl p-0',
-          )}
-        >
-          <div className="drag-handle flex w-full cursor-move items-center justify-between border-b px-4 py-2">
-            <div className="flex items-center gap-2">
-              <GripVertical className="text-muted-foreground h-5 w-5" />
-              <span className="text-sm font-semibold">Log Transaction</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={closeLogTransaction}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      <Layout
+        padding={6}
+        header={
+          <DialogHeader
+            title="New transaction"
+            onOpenChange={(open) => {
+              if (!open) closeLogTransaction()
+            }}
+          />
+        }
+      >
+        <LayoutContent>
+          <Stack direction="vertical" paddingBlockStart={4}>
+            {logTransactionType && <LogTransaction fragmentRef={fragmentRef} />}
+          </Stack>
+        </LayoutContent>
+      </Layout>
+    </Dialog>
+  )
+}
 
-          <LogTransaction fragmentRef={fragmentRef} />
-        </Item>
-      )}
-    </Rnd>
+function NewEntryButton() {
+  const isMobile = useIsMobile()
+  const { open } = useLogTransaction()
+  return (
+    <Button
+      label={isMobile ? 'New' : 'New entry'}
+      aria-label="New entry"
+      icon={<AstryxIcon icon={PlusIcon} />}
+      onClick={() => open('expense')}
+    />
   )
 }

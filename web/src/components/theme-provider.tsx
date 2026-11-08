@@ -1,5 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react'
 import { LOCAL_STORAGE_THEME_KEY } from '@/constant'
+import { Theme as AstryxTheme } from '@astryxdesign/core/theme'
+import { neutralTheme } from '@astryxdesign/theme-neutral/built'
+import { createContext, useContext, useState } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -31,24 +33,6 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) || defaultTheme) as Theme,
   )
 
-  useEffect(() => {
-    const root = window.document.documentElement
-
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-
-      root.classList.add(systemTheme)
-      return
-    }
-
-    root.classList.add(theme)
-  }, [theme])
-
   const value = {
     theme,
     setTheme: (t: Theme) => {
@@ -59,7 +43,9 @@ export function ThemeProvider({
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
+      <AstryxTheme theme={neutralTheme} mode={theme}>
+        {children}
+      </AstryxTheme>
     </ThemeProviderContext.Provider>
   )
 }

@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react'
-import { RefreshCwIcon } from 'lucide-react'
-import { toast } from 'sonner'
+import { Button } from '@astryxdesign/core/Button'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 const MIN_UPDATE_CHECK_INTERVAL_MS = 60_000
 const UPDATE_TOAST_ID = 'pwa-update-available'
 
 export function PwaUpdatePrompt() {
+  const showToast = useToast()
   const registrationRef = useRef<ServiceWorkerRegistration>(null)
   const lastUpdateCheckRef = useRef(0)
   const {
@@ -52,31 +53,23 @@ export function PwaUpdatePrompt() {
   }, [])
 
   useEffect(() => {
-    if (!needRefresh) {
-      toast.dismiss(UPDATE_TOAST_ID)
-      return
-    }
-
-    toast('Update available', {
-      id: UPDATE_TOAST_ID,
-      description: 'Reload to use the latest version of Beaver Money.',
-      duration: Infinity,
-      dismissible: false,
-      icon: <RefreshCwIcon className="size-4" aria-hidden="true" />,
-      action: {
-        label: 'Update',
-        onClick: () => void updateServiceWorker(true),
-      },
-      cancel: {
-        label: 'Later',
-        onClick: () => setNeedRefresh(false),
-      },
+    if (!needRefresh) return
+    const hide = showToast({
+      uniqueID: UPDATE_TOAST_ID,
+      body: 'Update available. Reload to use the latest version of Beaver Money.',
+      isAutoHide: false,
+      onHide: () => setNeedRefresh(false),
+      endContent: (
+        <Button
+          label="Update"
+          size="sm"
+          onClick={() => void updateServiceWorker(true)}
+        >
+          Update
+        </Button>
+      ),
     })
-
-    return () => {
-      toast.dismiss(UPDATE_TOAST_ID)
-    }
-  }, [needRefresh, setNeedRefresh, updateServiceWorker])
-
+    return hide
+  }, [needRefresh, setNeedRefresh, updateServiceWorker, showToast])
   return null
 }

@@ -1,41 +1,26 @@
-import { graphql } from 'relay-runtime'
+import { FormError } from '@/components/form-error'
+import { SearchSelect } from '@/components/search-select'
+import { Button } from '@astryxdesign/core/Button'
+import { Card } from '@astryxdesign/core/Card'
+import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { TextInput } from '@astryxdesign/core/TextInput'
+import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
-import { toast } from 'sonner'
-import * as z from 'zod'
-import { useMutation } from 'react-relay'
+import { useNavigate } from '@tanstack/react-router'
 import { capitalize } from 'lodash-es'
+import { useMutation } from 'react-relay'
+import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
-import { useNavigate } from '@tanstack/react-router'
+import * as z from 'zod'
 import type { newCategoryMutation } from './__generated__/newCategoryMutation.graphql'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
-import { commitMutationResult } from '@/lib/relay'
-import { IconPicker, type IconName } from '@/components/ui/icon-picker'
+import { IconPicker, type IconName } from '@/components/icon-picker'
 import { useHousehold } from '@/hooks/use-household'
+import { commitMutationResult } from '@/lib/relay'
 
 const CATEGORY_TYPES = ['expense', 'income'] as const
 
@@ -50,7 +35,9 @@ const formSchema = z.object({
     .min(1, 'Category name must be at least 1 character.')
     .max(32, 'Category name must be at most 32 characters.'),
   icon: z.string(),
-  type: z.enum(['expense', 'income']),
+  type: z.enum(['expense', 'income'], {
+    error: 'Please select a category type.',
+  }),
 })
 
 const newCategoryMutation = graphql`
@@ -66,6 +53,8 @@ const newCategoryMutation = graphql`
 `
 
 export function NewCategory() {
+  const showToast = useToast()
+
   const navigate = useNavigate()
 
   const { household } = useHousehold()
@@ -115,145 +104,161 @@ export function NewCategory() {
             to: '/household/$householdId/categories',
             search: (prev) => ({ ...prev }),
           })
-          toast.success(
-            `${resultData.createTransactionCategory.node.name} is ready to go!`,
-          )
+          showToast({
+            type: 'info',
+            body: `${resultData.createTransactionCategory.node.name} is ready to go!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
-          toast.error(error.toString())
+          showToast({ type: 'error', body: error.toString() })
         })
         .exhaustive()
     },
   })
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>New Category</CardTitle>
-        <CardDescription>
-          Create a new category for your transactions
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="new-category-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                    <Input
-                      data-1p-ignore
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Groceries"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="icon"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Icon</FieldLabel>
-                    <IconPicker
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value as IconName}
-                      onValueChange={(value) => field.handleChange(value)}
-                      className="max-w-min"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-            <form.Field
-              name="type"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Type</FieldLabel>
-                    <Combobox
-                      items={[...CATEGORY_TYPES]}
-                      value={field.state.value}
-                      onValueChange={(value) => field.handleChange(value || '')}
+    <Card>
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>New Category</Heading>
+        </Stack>
+        <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="new-category-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              <form.Field
+                name="name"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
                     >
-                      <ComboboxInput
+                      <TextInput
+                        data-1p-ignore
                         id={field.name}
-                        name={field.name}
-                        placeholder="Select a type"
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        className="*:capitalize"
+                        placeholder="Groceries"
+                        autoComplete="off"
+                        label={'Name'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
                       />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item: string) => (
-                            <ComboboxItem
-                              key={item}
-                              value={item}
-                              className="flex flex-col items-start gap-0"
-                            >
-                              <span className="font-semibold">
-                                {capitalize(item)}
-                              </span>
-                              <span>{CATEGORY_TYPE_DESCRIPTION[item]}</span>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button
-            disabled={isMutationInFlight}
-            type="submit"
-            form="new-category-form"
-          >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
-          </Button>
-        </Field>
-      </CardFooter>
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="icon"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <IconPicker
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value as IconName}
+                        onValueChange={(value) => field.handleChange(value)}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="type"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        searchable={false}
+                        items={[...CATEGORY_TYPES]}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
+                        id={field.name}
+                        placeholder="Select a type"
+                        onBlur={field.handleBlur}
+                        label={'Type'}
+                        renderOption={(item: string) => (
+                          <span>
+                            <Text type="label">{capitalize(item)}</Text>
+                            <span>{CATEGORY_TYPE_DESCRIPTION[item]}</span>
+                          </span>
+                        )}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
+        </Stack>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={'Reset'}
+              variant={'secondary'}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              form="new-category-form"
+              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              variant={'primary'}
+
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? 'Creating...' : 'Create'}
+            </Button>
+          </Stack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0480255f4d6a602b5fd95b59a1ab3de3>>
+ * @generated SignedSource<<2b1c56b7afe3bed8836406156c1e6e89>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type newInvestmentStockQuoteFragment$data = {
-  readonly stockQuote?: {
+  readonly stockQuote: {
     readonly currency: string;
     readonly currentPrice: string;
     readonly exchange: string;
@@ -30,11 +30,6 @@ import newInvestmentStockQuoteQuery_graphql from './newInvestmentStockQuoteQuery
 const node: ReaderFragment = {
   "argumentDefinitions": [
     {
-      "defaultValue": true,
-      "kind": "LocalArgument",
-      "name": "skipQuote"
-    },
-    {
       "defaultValue": "",
       "kind": "LocalArgument",
       "name": "symbol"
@@ -51,69 +46,62 @@ const node: ReaderFragment = {
   "name": "newInvestmentStockQuoteFragment",
   "selections": [
     {
-      "condition": "skipQuote",
-      "kind": "Condition",
-      "passingValue": false,
+      "alias": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "symbol",
+          "variableName": "symbol"
+        }
+      ],
+      "concreteType": "StockQuoteResult",
+      "kind": "LinkedField",
+      "name": "stockQuote",
+      "plural": false,
       "selections": [
         {
           "alias": null,
-          "args": [
-            {
-              "kind": "Variable",
-              "name": "symbol",
-              "variableName": "symbol"
-            }
-          ],
-          "concreteType": "StockQuoteResult",
-          "kind": "LinkedField",
-          "name": "stockQuote",
-          "plural": false,
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "currentPrice",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "symbol",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "exchange",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "name",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "currency",
-              "storageKey": null
-            }
-          ],
+          "args": null,
+          "kind": "ScalarField",
+          "name": "currentPrice",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "symbol",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "exchange",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "name",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "currency",
           "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     }
   ],
   "type": "Query",
   "abstractKey": null
 };
 
-(node as any).hash = "9688bc2218e2e2c6981404e83a42ada3";
+(node as any).hash = "b0e75f93e89ead741191522dd816a989";
 
 export default node;

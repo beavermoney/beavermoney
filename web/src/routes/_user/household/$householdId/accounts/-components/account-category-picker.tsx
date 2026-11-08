@@ -32,11 +32,7 @@ export function AccountCategoryPicker({
       emptyMessage="No account categories available."
       getValue={(option) => option.value}
       getLabel={(option) => option.label}
-      renderItem={(option) => (
-        <span className="min-w-0 flex-1 truncate text-xs leading-relaxed">
-          {option.label}
-        </span>
-      )}
+      renderItem={(option) => <span>{option.label}</span>}
       onValueChange={(nextValue) =>
         onValueChange(nextValue === NONE_VALUE ? '' : nextValue)
       }

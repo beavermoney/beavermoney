@@ -24,7 +24,6 @@ web/src/
 │           ├── subscriptions/
 │           └── settings/
 ├── components/              # Shared components (use Relay fragments)
-│   ├── ui/                  # shadcn/ui base components (30+)
 │   └── layouts/             # Layout primitives
 ├── hooks/                   # Custom hooks (Context + Relay pattern)
 ├── lib/                     # Utilities (direct imports, no barrels)
@@ -169,7 +168,7 @@ Provider hierarchy in `$householdId/route.tsx`: UserProvider → HouseholdProvid
 
 | Location                | Contains                                                  | Data-Aware?                       |
 | ----------------------- | --------------------------------------------------------- | --------------------------------- |
-| `components/ui/`        | shadcn/ui primitives (Button, Card, Dialog...)            | No                                |
+| `@astryxdesign/core`    | UI primitives imported directly                           | No                                |
 | `components/`           | Shared business components (sidebar, nav, currency-input) | Yes (Relay fragments)             |
 | `routes/*/-components/` | Route-scoped components (forms, panels, cards)            | Yes (Relay fragments + mutations) |
 
@@ -187,18 +186,18 @@ Provider hierarchy in `$householdId/route.tsx`: UserProvider → HouseholdProvid
 
 ## WHERE TO LOOK
 
-| Task                             | Location                                              |
-| -------------------------------- | ----------------------------------------------------- |
-| Add new route                    | `src/routes/` following feature module pattern        |
-| Add route-scoped component       | `src/routes/[feature]/-components/`                   |
-| Add shared component             | `src/components/` (with Relay fragment if data-aware) |
-| Add/modify shadcn component      | `src/components/ui/`                                  |
-| Add custom hook                  | `src/hooks/` (Context + Relay fragment pattern)       |
-| Add utility                      | `src/lib/` (direct import, no barrel)                 |
-| Modify Relay environment         | `src/environment.ts`                                  |
-| Modify search params             | Feature's `route.tsx` (Zod validation)                |
-| Add Relay mutation               | In `-components/` file, use `commitMutationResult`    |
-| Register connection for deletion | `useRegisterConnection` in list component             |
+| Task                             | Location                                               |
+| -------------------------------- | ------------------------------------------------------ |
+| Add new route                    | `src/routes/` following feature module pattern         |
+| Add route-scoped component       | `src/routes/[feature]/-components/`                    |
+| Add shared component             | `src/components/` (with Relay fragment if data-aware)  |
+| Add UI component                 | Import from `@astryxdesign/core`; consult its CLI docs |
+| Add custom hook                  | `src/hooks/` (Context + Relay fragment pattern)        |
+| Add utility                      | `src/lib/` (direct import, no barrel)                  |
+| Modify Relay environment         | `src/environment.ts`                                   |
+| Modify search params             | Feature's `route.tsx` (Zod validation)                 |
+| Add Relay mutation               | In `-components/` file, use `commitMutationResult`     |
+| Register connection for deletion | `useRegisterConnection` in list component              |
 
 ## ANTI-PATTERNS
 
@@ -218,3 +217,38 @@ Provider hierarchy in `$householdId/route.tsx`: UserProvider → HouseholdProvid
 - React Compiler enabled via `babel-plugin-react-compiler`
 - `edit_transaction_id` search param triggers the edit dialog in household layout
 - Log Transaction window state lives in `@/hooks/log-transaction-store` (TanStack Store) and is consumed via `useLogTransaction()` — desktop renders a floating Rnd window, mobile navigates to `/transactions/new`
+
+<!-- ASTRYX:START -->
+
+Astryx v0.7.11 · 174 components
+CLI: run every command as `pnpm exec astryx <cmd>` (shown below as `astryx ...`).
+
+SETUP (once, in app entry e.g. main.tsx) — without these, components render unstyled:
+import "@astryxdesign/core/reset.css";
+import "@astryxdesign/core/astryx.css";
+
+WORKFLOW — start every page from a template, never from scratch:
+
+1. `astryx build "<idea>"` — names the template to scaffold from and the parts it lacks.
+2. `astryx template <name> <path>` — scaffold it; keep its frame, gap and padding; replace the content.
+3. `astryx template <Block>` for parts it lacks; `astryx component <Name>` to read props before using one.
+   Changing an existing page? Keep it: skip step 2 and add blocks/components inside its sections.
+   Before you deliver a build, run `astryx doctor --built <dir>`; don't deliver it if it fails.
+
+RULES:
+
+- No <div> — components handle all layout and spacing.
+- Read `astryx docs layout` before changing a template's frame.
+- Dense data = rows (Table, List/Item), not Card-wrapped lists. Badge = counts only.
+- Style with component props first, then Tailwind utilities backed by tokens. No raw hex/px.
+- Palettes and custom colors go through the theme, never :root overrides. Run `astryx theme add <slug>` to import; `theme eject <slug>` only forks source. See `astryx docs theme`.
+- SELF-CHECK: re-read the file; replace any style={{…}}, raw <div>/<span>, imported .css/@apply, or hardcoded/arbitrary value (bg-[#fff], p-[13px]) with the component or a token-backed utility.
+
+`astryx help` lists every command. Key ones beyond the workflow:
+search "<query>" find any component / hook / doc / template
+discover <words> integrations you could add
+docs <topic> getting-started, principles, tokens, theme … (`astryx docs` lists all)
+docs cli commands and API reference
+docs authoring build an integration package, and every field it holds
+upgrade --from <old version> --apply run after a dependency bump
+<!-- ASTRYX:END -->

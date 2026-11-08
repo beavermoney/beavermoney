@@ -1,222 +1,91 @@
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
-import {
-  LinkOptions,
-  useNavigate,
-  useParams,
-  useSearch,
-} from '@tanstack/react-router'
-import { random } from 'lodash-es'
-import { useCallback, useEffect, useState } from 'react'
+import { CommandPalette } from '@astryxdesign/core/CommandPalette'
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
+import { useCallback, useEffect, useRef } from 'react'
 
 export function CommandMenu() {
   const navigate = useNavigate()
-  const { householdId } = useParams({
+  const selecting = useRef(false)
+  const { householdId } = useParams({ from: '/_user/household/$householdId' })
+  const { command_open: isOpen } = useSearch({
     from: '/_user/household/$householdId',
   })
-
-  const search = useSearch({
-    from: '/_user/household/$householdId',
-  })
-
-  const [value, setValue] = useState('')
-  const { open: openLogTransaction } = useLogTransaction()
-
-  const open = search.command_open
+  const { open: openTransaction } = useLogTransaction()
   const setOpen = useCallback(
-    (val: boolean | ((v: boolean) => boolean)) => {
-      const commandOpen = typeof val === 'function' ? val(open) : val
-      if (!commandOpen) {
-        setValue('')
-      }
-      navigate({
+    (open: boolean) => {
+      void navigate({
         to: '.',
-        search: (old) => ({
-          ...old,
-          command_open: commandOpen,
-        }),
+        search: (old) => ({ ...old, command_open: open }),
       })
     },
-    [navigate, open, setValue],
+    [navigate],
   )
-
   useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
+    const down = (event: KeyboardEvent) => {
+      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault()
+        setOpen(!isOpen)
       }
     }
     document.addEventListener('keydown', down)
     return () => document.removeEventListener('keydown', down)
-  }, [setOpen])
-
-  const handleSelect = (opts: LinkOptions) => {
-    navigate(opts)
-    setValue('')
-  }
-
+  }, [isOpen, setOpen])
+  const destinations = [
+    { label: 'Transactions', to: '/household/$householdId/transactions' },
+    { label: 'Accounts', to: '/household/$householdId/accounts' },
+    { label: 'Investments', to: '/household/$householdId/investments' },
+    { label: 'Categories', to: '/household/$householdId/categories' },
+    { label: 'Subscriptions', to: '/household/$householdId/subscriptions' },
+    { label: 'New Account', to: '/household/$householdId/accounts/new' },
+    { label: 'New Investment', to: '/household/$householdId/investments/new' },
+    { label: 'New Category', to: '/household/$householdId/categories/new' },
+    {
+      label: 'New Subscription',
+      to: '/household/$householdId/subscriptions/new',
+    },
+  ] as const
+  const items = [
+    ...destinations.map((item) => ({
+      id: item.label,
+      label: item.label,
+      run: () =>
+        navigate({
+          to: item.to,
+          params: { householdId },
+          search: (prev) => ({ ...prev, command_open: false }),
+        }),
+    })),
+    {
+      id: 'New Transaction',
+      label: 'New Transaction',
+      run: () => {
+        setOpen(false)
+        openTransaction('expense')
+      },
+    },
+  ]
   return (
-    <CommandDialog className="sm:max-w-80" open={open} onOpenChange={setOpen}>
-      <Command>
-        <CommandInput
-          id={String(open) + String(random())}
-          placeholder="Type a command or search..."
-          value={value}
-          onValueChange={setValue}
-        />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-
-          <CommandGroup heading="Navigate">
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/transactions',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              Transactions
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/accounts',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              Accounts
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/investments',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              Investments
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/categories',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              Categories
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/subscriptions',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              Subscriptions
-            </CommandItem>
-          </CommandGroup>
-
-          <CommandGroup heading="Create">
-            <CommandItem
-              onSelect={() => {
-                setOpen(false)
-                openLogTransaction('expense')
-              }}
-            >
-              New Transaction
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/accounts/new',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              New Account
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/investments/new',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              New Investment
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/categories/new',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              New Category
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                handleSelect({
-                  to: '/household/$householdId/subscriptions/new',
-                  params: { householdId },
-                  search: (prev) => ({
-                    ...prev,
-                    command_open: false,
-                  }),
-                })
-              }
-            >
-              New Subscription
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </Command>
-    </CommandDialog>
+    <CommandPalette
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open && selecting.current) {
+          selecting.current = false
+          return
+        }
+        setOpen(open)
+      }}
+      label="Search commands"
+      searchSource={{
+        bootstrap: () => items,
+        search: (query) =>
+          items.filter((item) =>
+            item.label.toLowerCase().includes(query.toLowerCase()),
+          ),
+      }}
+      onValueChange={(id) => {
+        selecting.current = true
+        void items.find((item) => item.id === id)?.run()
+      }}
+    />
   )
 }

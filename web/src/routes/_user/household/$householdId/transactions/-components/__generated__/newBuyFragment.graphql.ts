@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f1b85d1d7c63c2c9a1e03e48d7ca804e>>
+ * @generated SignedSource<<f662b81e0a7a8c56cc7e9c2e9ad7a24b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -162,8 +162,6 @@ return {
                   "kind": "InlineDataFragmentSpread",
                   "name": "transactionAccountPickerFragment",
                   "selections": [
-                    (v0/*: any*/),
-                    (v1/*: any*/),
                     (v2/*: any*/),
                     {
                       "alias": null,
@@ -180,18 +178,6 @@ return {
                       "storageKey": null
                     },
                     (v3/*: any*/),
-                    {
-                      "alias": null,
-                      "args": null,
-                      "concreteType": "User",
-                      "kind": "LinkedField",
-                      "name": "user",
-                      "plural": false,
-                      "selections": [
-                        (v2/*: any*/)
-                      ],
-                      "storageKey": null
-                    },
                     (v4/*: any*/)
                   ],
                   "args": null,
@@ -219,7 +205,6 @@ return {
                           "name": "symbol",
                           "storageKey": null
                         },
-                        (v1/*: any*/),
                         (v4/*: any*/)
                       ],
                       "args": null,

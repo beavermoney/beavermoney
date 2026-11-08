@@ -1,17 +1,14 @@
+import { Button } from '@astryxdesign/core/Button'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
+import { useToast } from '@astryxdesign/core/Toast'
+import { List, ListItem } from '@astryxdesign/core/List'
 import { useState } from 'react'
 import { graphql, useFragment, useMutation } from 'react-relay'
-import { Archive, ArchiveRestore } from 'lucide-react'
-import { toast } from 'sonner'
 import type { accountSettingsFragment$key } from './__generated__/accountSettingsFragment.graphql'
 import type { accountSettingsUnarchiveMutation } from './__generated__/accountSettingsUnarchiveMutation.graphql'
-import { Button } from '@/components/ui/button'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
+
 import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
 
@@ -50,6 +47,7 @@ export function AccountSettings({
 }: {
   fragmentRef: accountSettingsFragment$key
 }) {
+  const showToast = useToast()
   const data = useFragment(fragment, fragmentRef)
   const { household } = useHousehold()
   const [commit, isInFlight] =
@@ -72,91 +70,68 @@ export function AccountSettings({
     )
     setPendingId(null)
     if (result.status === 'error') {
-      toast.error(`Could not unarchive ${name}. Please try again.`)
+      showToast({
+        type: 'error',
+        body: `Could not unarchive ${name}. Please try again.`,
+      })
       return
     }
     setFeedback(`${name} is active again. You can find it in Accounts.`)
-    toast.success(`${name} unarchived.`)
+    showToast({ type: 'info', body: `${name} unarchived.` })
   }
 
   return (
-    <section
-      className="flex min-w-0 flex-col gap-5"
-      aria-labelledby="account-settings-title"
+    <Stack
+      direction="vertical"
+      gap={4}
+      as="section"
+
+      aria-label="Account settings"
     >
-      <header className="flex flex-col gap-1">
-        <h1
-          id="account-settings-title"
-          className="text-lg font-semibold tracking-tight"
-        >
-          Account settings
-        </h1>
-        <p className="text-muted-foreground text-xs/relaxed">
-          Bring archived accounts back into your ledger.
-        </p>
-      </header>
-      <section
+      <Stack
+        direction="vertical"
+        gap={4}
+        as="section"
         aria-labelledby="archived-accounts-title"
-        className="flex flex-col gap-3"
       >
-        <div className="flex flex-col gap-1">
-          <h2 id="archived-accounts-title" className="text-sm font-medium">
+        <Stack direction="vertical" gap={1}>
+          <Heading level={2} id="archived-accounts-title">
             Archived accounts
-          </h2>
-          <p className="text-muted-foreground max-w-prose text-xs/relaxed">
+          </Heading>
+          <Text as="p" display="block" color="secondary">
             Unarchiving makes an account available for new transactions again.
             Its history stays intact.
-          </p>
-        </div>
+          </Text>
+        </Stack>
         {accounts.length === 0 ? (
-          <Empty className="border py-8">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Archive aria-hidden="true" />
-              </EmptyMedia>
-              <EmptyTitle>No archived accounts</EmptyTitle>
-              <EmptyDescription>
-                Accounts you archive will appear here when you need them again.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <Text color="secondary">No archived accounts</Text>
         ) : (
-          <ul className="divide-y border-y">
+          <List hasDividers edge="outset">
             {accounts.map((account) => (
-              <li
+              <ListItem
                 key={account.id}
-                className="flex items-center justify-between gap-3 py-3"
-              >
-                <div className="flex min-w-0 flex-col gap-0.5">
-                  <p className="text-sm font-medium wrap-anywhere">
-                    {account.name}
-                  </p>
-                  <p className="text-muted-foreground text-xs/relaxed wrap-anywhere">
-                    {account.user.name} ·{' '}
-                    <span className="capitalize">{account.type}</span> ·{' '}
-                    {account.householdCurrency.code}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  disabled={isInFlight}
-                  aria-label={`Unarchive ${account.name}`}
-                  onClick={() => unarchive(account.id, account.name)}
-                >
-                  <ArchiveRestore data-icon="inline-start" aria-hidden="true" />
-                  {pendingId === account.id ? 'Unarchiving…' : 'Unarchive'}
-                </Button>
-              </li>
+                id={account.id}
+                label={<Text maxLines={2}>{account.name}</Text>}
+                description={`${account.user.name} · ${account.type} · ${account.householdCurrency.code}`}
+                endContent={
+                  <Button
+                    onClick={() => unarchive(account.id, account.name)}
+                    label={
+                      pendingId === account.id ? 'Unarchiving…' : 'Unarchive'
+                    }
+                    aria-label={`Unarchive ${account.name}`}
+                    variant="secondary"
+                    isDisabled={isInFlight}
+                  />
+                }
+              />
             ))}
-          </ul>
+          </List>
         )}
-      </section>
-      <p
-        role="status"
-        className="text-muted-foreground text-xs/relaxed empty:hidden"
-      >
+      </Stack>
+      <Text as="p" display="block" color="secondary" role="status">
         {feedback}
-      </p>
-    </section>
+      </Text>
+    </Stack>
   )
 }
