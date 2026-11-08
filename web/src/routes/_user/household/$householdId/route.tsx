@@ -1,3 +1,9 @@
+import { Stack } from '@astryxdesign/core/Stack'
+import {
+  RouteContentBoundary,
+  NavigationProgress,
+} from '@/components/route-content-boundary'
+import { LayoutContent } from '@astryxdesign/core/Layout'
 import { MobileNavToggle } from '@astryxdesign/core/MobileNav'
 import { notifyError } from '@/lib/notifications'
 import { Button } from '@astryxdesign/core/Button'
@@ -252,6 +258,7 @@ function RouteComponent() {
               <Hotkeys />
               <CommandMenu />
               <AppShell
+                className="app-safe-area"
                 sideNav={<AppSidebar fragmentRef={data} />}
                 mobileNav={{ hasToggle: false }}
               >
@@ -330,7 +337,14 @@ function RouteComponent() {
                       </HStack>
                     </LayoutHeader>
                   }
-                  content={<Outlet />}
+                  content={
+                    <>
+                      <NavigationProgress />
+                      <RouteContentBoundary>
+                        <Outlet />
+                      </RouteContentBoundary>
+                    </>
+                  }
                 />
 
                 {!isMobile && (
@@ -361,25 +375,38 @@ function FloatingLogTransactionWindow({
       onOpenChange={(open) => {
         if (!open) closeLogTransaction()
       }}
-      purpose="form"
+      purpose="info"
       width={640}
+      padding={0}
     >
-      <DialogHeader
-        title="New transaction"
-        onOpenChange={(open) => {
-          if (!open) closeLogTransaction()
-        }}
-      />
-      {logTransactionType && <LogTransaction fragmentRef={fragmentRef} />}
+      <Layout
+        padding={6}
+        header={
+          <DialogHeader
+            title="New transaction"
+            onOpenChange={(open) => {
+              if (!open) closeLogTransaction()
+            }}
+          />
+        }
+      >
+        <LayoutContent>
+          <Stack direction="vertical" paddingBlockStart={4}>
+            {logTransactionType && <LogTransaction fragmentRef={fragmentRef} />}
+          </Stack>
+        </LayoutContent>
+      </Layout>
     </Dialog>
   )
 }
 
 function NewEntryButton() {
+  const isMobile = useIsMobile()
   const { open } = useLogTransaction()
   return (
     <Button
-      label="New entry"
+      label={isMobile ? 'New' : 'New entry'}
+      aria-label="New entry"
       icon={<AstryxIcon icon={PlusIcon} />}
       onClick={() => open('expense')}
     />

@@ -1,3 +1,4 @@
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { Badge } from '@astryxdesign/core/Badge'
 import { Button } from '@astryxdesign/core/Button'
@@ -89,170 +90,182 @@ export function TransactionDialogPreview({
     : []
 
   return (
-    <>
-      <DialogHeader
-        title="Edit Transaction"
-        onOpenChange={onClose ? () => onClose() : undefined}
-      />
-      <Text as="div" display="block" type="supporting">
-        Update transaction details. Click on entries or lots below to edit them
-        individually.
-      </Text>
+    <Layout
+      padding={6}
+      header={
+        <DialogHeader
+          title="Edit Transaction"
+          onOpenChange={onClose ? () => onClose() : undefined}
+        />
+      }
+    >
+      <LayoutContent>
+        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+          <Text as="div" display="block" type="supporting">
+            Update transaction details. Click on entries or lots below to edit
+            them individually.
+          </Text>
 
-      <Stack direction="horizontal" align="center">
-        {transaction
-          ? previewItems.map((item, index) => (
-              <Fragment key={item.id}>
-                {index !== 0 && <Divider />}
-                {item.type === 'entry' ? (
-                  <Stack
-                    direction="horizontal"
-                    gap={3}
-                    align="center"
-                    wrap="wrap"
-                  >
-                    <Stack direction="vertical" gap={4}>
-                      <CategoryIcon
-                        type={transaction.category.type}
-                        icon={transaction.category.icon}
-                      />
+          <Stack direction="vertical" gap={2}>
+            {transaction
+              ? previewItems.map((item, index) => (
+                  <Fragment key={item.id}>
+                    {index !== 0 && <Divider />}
+                    {item.type === 'entry' ? (
+                      <Stack
+                        direction="horizontal"
+                        gap={3}
+                        align="center"
+                        wrap="wrap"
+                      >
+                        <Stack direction="vertical" gap={4}>
+                          <CategoryIcon
+                            type={transaction.category.type}
+                            icon={transaction.category.icon}
+                          />
+                        </Stack>
+                        <Stack direction="vertical" gap={4}>
+                          <Stack direction="vertical" gap={4}>
+                            <span>{transaction.category.name}</span>
+                            {transaction.excludeFromReports && (
+                              <Badge label={<>Excluded</>} />
+                            )}
+                          </Stack>
+                          <Stack direction="vertical" gap={4}>
+                            {item.entry.account.name}
+                          </Stack>
+                        </Stack>
+                        <Stack direction="vertical" gap={4}>
+                          <Stack direction="vertical" gap={4}>
+                            <Text type="label" hasTabularNumbers>
+                              {formatCurrencyWithPrivacyMode({
+                                value: item.entry.amount,
+                                currencyCode:
+                                  item.entry.account.householdCurrency.code,
+                              })}
+                            </Text>
+                          </Stack>
+                          <Stack direction="vertical" gap={4}>
+                            {date}
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    ) : (
+                      <Stack
+                        direction="horizontal"
+                        gap={3}
+                        align="center"
+                        wrap="wrap"
+                      >
+                        <Stack direction="vertical" gap={4}>
+                          <Avatar name={String(item.lot.investment.symbol)} />
+                        </Stack>
+                        <Stack direction="vertical" gap={4}>
+                          <Stack direction="vertical" gap={4}>
+                            {transaction.category.name}
+                          </Stack>
+                          <Stack direction="vertical" gap={4}>
+                            {isPrivacyModeEnabled
+                              ? '•••••••'
+                              : quantityFormatter.format(
+                                  Number(item.lot.amount),
+                                )}{' '}
+                            {item.lot.investment.name}@{' '}
+                            {formatCurrencyWithPrivacyMode({
+                              value: item.lot.price,
+                              currencyCode:
+                                item.lot.investment.householdCurrency.code,
+                            })}
+                          </Stack>
+                        </Stack>
+                        <Stack direction="vertical" gap={4}>
+                          <Stack direction="vertical" gap={4}>
+                            <Text type="label" hasTabularNumbers>
+                              {formatCurrencyWithPrivacyMode({
+                                value: currency(item.lot.price, {
+                                  precision: 8,
+                                }).multiply(
+                                  currency(item.lot.amount, { precision: 8 }),
+                                ),
+                                currencyCode:
+                                  item.lot.investment.householdCurrency.code,
+                              })}
+                            </Text>
+                          </Stack>
+                          <Stack direction="vertical" gap={4}>
+                            {date}
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Fragment>
+                ))
+              : [0, 1].map((row) => (
+                  <Fragment key={row}>
+                    {row !== 0 && <Divider />}
+                    <Stack
+                      direction="horizontal"
+                      gap={3}
+                      align="center"
+                      wrap="wrap"
+                      aria-hidden="true"
+                    >
+                      <Stack direction="vertical" gap={4}>
+                        <Skeleton height={24} />
+                      </Stack>
+                      <Stack direction="vertical" gap={4}>
+                        <Skeleton height={24} />
+                        <Skeleton height={24} />
+                      </Stack>
+                      <Stack direction="vertical" gap={4}>
+                        <Skeleton height={24} />
+                        <Skeleton height={24} />
+                      </Stack>
                     </Stack>
-                    <Stack direction="vertical" gap={4}>
-                      <Stack direction="vertical" gap={4}>
-                        <span>{transaction.category.name}</span>
-                        {transaction.excludeFromReports && (
-                          <Badge label={<>Excluded</>} />
-                        )}
-                      </Stack>
-                      <Stack direction="vertical" gap={4}>
-                        {item.entry.account.name}
-                      </Stack>
-                    </Stack>
-                    <Stack direction="vertical" gap={4}>
-                      <Stack direction="vertical" gap={4}>
-                        <Text type="label" hasTabularNumbers>
-                          {formatCurrencyWithPrivacyMode({
-                            value: item.entry.amount,
-                            currencyCode:
-                              item.entry.account.householdCurrency.code,
-                          })}
-                        </Text>
-                      </Stack>
-                      <Stack direction="vertical" gap={4}>
-                        {date}
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                ) : (
-                  <Stack
-                    direction="horizontal"
-                    gap={3}
-                    align="center"
-                    wrap="wrap"
-                  >
-                    <Stack direction="vertical" gap={4}>
-                      <Avatar name={String(item.lot.investment.symbol)} />
-                    </Stack>
-                    <Stack direction="vertical" gap={4}>
-                      <Stack direction="vertical" gap={4}>
-                        {transaction.category.name}
-                      </Stack>
-                      <Stack direction="vertical" gap={4}>
-                        {isPrivacyModeEnabled
-                          ? '•••••••'
-                          : quantityFormatter.format(
-                              Number(item.lot.amount),
-                            )}{' '}
-                        {item.lot.investment.name}@{' '}
-                        {formatCurrencyWithPrivacyMode({
-                          value: item.lot.price,
-                          currencyCode:
-                            item.lot.investment.householdCurrency.code,
-                        })}
-                      </Stack>
-                    </Stack>
-                    <Stack direction="vertical" gap={4}>
-                      <Stack direction="vertical" gap={4}>
-                        <Text type="label" hasTabularNumbers>
-                          {formatCurrencyWithPrivacyMode({
-                            value: currency(item.lot.price, {
-                              precision: 8,
-                            }).multiply(
-                              currency(item.lot.amount, { precision: 8 }),
-                            ),
-                            currencyCode:
-                              item.lot.investment.householdCurrency.code,
-                          })}
-                        </Text>
-                      </Stack>
-                      <Stack direction="vertical" gap={4}>
-                        {date}
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                )}
-              </Fragment>
-            ))
-          : [0, 1].map((row) => (
-              <Fragment key={row}>
-                {row !== 0 && <Divider />}
-                <Stack
-                  direction="horizontal"
-                  gap={3}
-                  align="center"
-                  wrap="wrap"
-                  aria-hidden="true"
-                >
-                  <Stack direction="vertical" gap={4}>
-                    <Skeleton height={24} />
-                  </Stack>
-                  <Stack direction="vertical" gap={4}>
-                    <Skeleton height={24} />
-                    <Skeleton height={24} />
-                  </Stack>
-                  <Stack direction="vertical" gap={4}>
-                    <Skeleton height={24} />
-                    <Skeleton height={24} />
-                  </Stack>
-                </Stack>
-              </Fragment>
-            ))}
-      </Stack>
-
-      <Stack direction="vertical" gap={4}>
-        <Stack direction="vertical" gap={4} aria-hidden="true">
-          <Stack direction="vertical" gap={4}>
-            <PreviewField label="Description" />
-            <PreviewField label="Date" />
-            <PreviewField label="Category" />
-            <fieldset data-slot="transaction-dialog-preview-field">
-              <legend>Options</legend>
-              <Stack direction="vertical" gap={4} data-slot="checkbox-group">
-                <Stack direction="vertical" gap={2}>
-                  <PreviewButton label="Exclude from reports" />
-                </Stack>
-              </Stack>
-            </fieldset>
+                  </Fragment>
+                ))}
           </Stack>
+
+          <Stack direction="vertical" gap={4}>
+            <Stack direction="vertical" gap={4} aria-hidden="true">
+              <Stack direction="vertical" gap={4}>
+                <PreviewField label="Description" />
+                <PreviewField label="Date" />
+                <PreviewField label="Category" />
+                <fieldset data-slot="transaction-dialog-preview-field">
+                  <legend>Options</legend>
+                  <Stack
+                    direction="vertical"
+                    gap={4}
+                    data-slot="checkbox-group"
+                  >
+                    <Stack direction="vertical" gap={2}>
+                      <PreviewButton label="Exclude from reports" />
+                    </Stack>
+                  </Stack>
+                </fieldset>
+              </Stack>
+            </Stack>
+          </Stack>
+
+          <Stack
+            direction="horizontal"
+            gap={3}
+            align="center"
+            wrap="wrap"
+            justify="end"
+            aria-hidden="true"
+          >
+            <PreviewButton label="Delete" variant="destructive" />
+            <PreviewButton label="Save Changes" />
+          </Stack>
+
+          <span className="sr-only" role="status">
+            Loading transaction editing controls
+          </span>
         </Stack>
-      </Stack>
-
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        aria-hidden="true"
-      >
-        <PreviewButton label="Delete" variant="destructive" />
-        <PreviewButton label="Save Changes" />
-      </Stack>
-
-      <span className="sr-only" role="status">
-        Loading transaction editing controls
-      </span>
-    </>
+      </LayoutContent>
+    </Layout>
   )
 }
 

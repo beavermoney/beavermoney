@@ -13,12 +13,8 @@ export const Route = createFileRoute(
 function RouteComponent() {
   return (
     <HouseholdContentLayout>
-      <Stack direction="horizontal">
-        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-          <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-            <NewAccount />
-          </Stack>
-        </Stack>
+      <Stack direction="vertical" width="100%" className="max-w-2xl">
+        <NewAccount />
       </Stack>
     </HouseholdContentLayout>
   )

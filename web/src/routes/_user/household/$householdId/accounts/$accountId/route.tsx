@@ -1,3 +1,5 @@
+import { RouteContentBoundary } from '@/components/route-content-boundary'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
@@ -9,7 +11,12 @@ import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { useToast } from '@astryxdesign/core/Toast'
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Outlet,
+  useNavigate,
+  useRouterState,
+} from '@tanstack/react-router'
 import {
   ArchiveIcon,
   EditIcon,
@@ -90,6 +97,9 @@ function RouteComponent() {
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
   const navigate = useNavigate()
+  const isEditing = useRouterState({
+    select: (state) => state.location.pathname.endsWith('/edit'),
+  })
 
   const data = usePreloadedQuery<routeAccountIdQuery>(
     RouteAccountIdQuery,
@@ -183,13 +193,14 @@ function RouteComponent() {
 
   return (
     <HouseholdContentLayout>
-      <Stack direction="vertical">
+      <Stack direction="vertical" gap={6}>
         {/* Fixed header section */}
         <Stack direction="vertical" gap={4}>
           <Stack direction="horizontal" gap={2} align="center">
             <Button
               onClick={() => navigate({ to: '..', search: identity })}
               label={'Back'}
+              width="fit-content"
               variant={'secondary'}
             >
               Back
@@ -245,14 +256,18 @@ function RouteComponent() {
               />
             </DropdownMenu>
           </Stack>
-          <Stack direction="vertical" gap={4}>
-            <AccountCard fragmentRef={data.node} />
-          </Stack>
-          <Divider />
+          {!isEditing && (
+            <>
+              <AccountCard fragmentRef={data.node} />
+              <Divider />
+            </>
+          )}
         </Stack>
 
-        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-          <Outlet />
+        <Stack direction="vertical" gap={4}>
+          <RouteContentBoundary>
+            <Outlet />
+          </RouteContentBoundary>
         </Stack>
 
         {/* Delete Alert Dialog */}
@@ -260,38 +275,49 @@ function RouteComponent() {
           <Dialog
             isOpen={deleteAlertOpen}
             onOpenChange={setDeleteAlertOpen}
-            purpose="form"
+            purpose="info"
             role="alertdialog"
+            padding={0}
           >
-            <DialogHeader
-              title={<>Delete Account</>}
-              onOpenChange={setDeleteAlertOpen}
-            />
-            <Text as="div" display="block" type="supporting">
-              This action cannot be undone. This will permanently delete the
-              account. Delete is only allowed if there are no transactions or
-              investments attached.
-            </Text>
-            <Stack
-              direction="horizontal"
-              gap={3}
-              align="center"
-              wrap="wrap"
-              justify="end"
+            <Layout
+              padding={6}
+              header={
+                <DialogHeader
+                  title={<>Delete Account</>}
+                  onOpenChange={setDeleteAlertOpen}
+                />
+              }
             >
-              <Button
-                label="Cancel"
-                onClick={() => setDeleteAlertOpen(false)}
-              />
-              <Button
-                variant="destructive"
-                onClick={handleDelete}
-                isDisabled={isDeleteMutationInFlight}
-                label="Delete account"
-              >
-                {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
-              </Button>
-            </Stack>
+              <LayoutContent>
+                <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                  <Text as="div" display="block" type="supporting">
+                    This action cannot be undone. This will permanently delete
+                    the account. Delete is only allowed if there are no
+                    transactions or investments attached.
+                  </Text>
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    wrap="wrap"
+                    justify="end"
+                  >
+                    <Button
+                      label="Cancel"
+                      onClick={() => setDeleteAlertOpen(false)}
+                    />
+                    <Button
+                      variant="destructive"
+                      onClick={handleDelete}
+                      isDisabled={isDeleteMutationInFlight}
+                      label="Delete account"
+                    >
+                      {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </Stack>
+                </Stack>
+              </LayoutContent>
+            </Layout>
           </Dialog>
         </>
 
@@ -300,38 +326,49 @@ function RouteComponent() {
           <Dialog
             isOpen={archiveAlertOpen}
             onOpenChange={setArchiveAlertOpen}
-            purpose="form"
+            purpose="info"
             role="alertdialog"
+            padding={0}
           >
-            <DialogHeader
-              title={<>Archive Account</>}
-              onOpenChange={setArchiveAlertOpen}
-            />
-            <Text as="div" display="block" type="supporting">
-              This will archive the account and hide it from the main list.
-              Archive is only allowed when the account value is zero. You can
-              unarchive it later in Settings → Accounts.
-            </Text>
-            <Stack
-              direction="horizontal"
-              gap={3}
-              align="center"
-              wrap="wrap"
-              justify="end"
+            <Layout
+              padding={6}
+              header={
+                <DialogHeader
+                  title={<>Archive Account</>}
+                  onOpenChange={setArchiveAlertOpen}
+                />
+              }
             >
-              <Button
-                label="Cancel"
-                onClick={() => setArchiveAlertOpen(false)}
-              />
-              <Button
-                onClick={handleArchive}
-                isDisabled={isArchiveMutationInFlight}
-                label="Archive account"
-                variant="destructive"
-              >
-                {isArchiveMutationInFlight ? 'Archiving...' : 'Archive'}
-              </Button>
-            </Stack>
+              <LayoutContent>
+                <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                  <Text as="div" display="block" type="supporting">
+                    This will archive the account and hide it from the main
+                    list. Archive is only allowed when the account value is
+                    zero. You can unarchive it later in Settings → Accounts.
+                  </Text>
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    wrap="wrap"
+                    justify="end"
+                  >
+                    <Button
+                      label="Cancel"
+                      onClick={() => setArchiveAlertOpen(false)}
+                    />
+                    <Button
+                      onClick={handleArchive}
+                      isDisabled={isArchiveMutationInFlight}
+                      label="Archive account"
+                      variant="destructive"
+                    >
+                      {isArchiveMutationInFlight ? 'Archiving...' : 'Archive'}
+                    </Button>
+                  </Stack>
+                </Stack>
+              </LayoutContent>
+            </Layout>
           </Dialog>
         </>
       </Stack>

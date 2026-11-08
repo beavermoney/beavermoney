@@ -1,7 +1,9 @@
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
+import { Heading } from '@astryxdesign/core/Heading'
 import { Text } from '@astryxdesign/core/Text'
 import { TextArea } from '@astryxdesign/core/TextArea'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -56,14 +58,6 @@ const CATEGORIES = [
   'receivable',
   'liability',
 ] as const
-
-const CATEGORY_COLORS: Record<(typeof CATEGORIES)[number], string> = {
-  liquidity: 'var(--chart-liquidity)',
-  investment: 'var(--chart-investment)',
-  // property: 'var(--chart-property)',
-  receivable: 'var(--chart-receivable)',
-  liability: 'var(--chart-liability)',
-}
 
 type SnapshotDialogProps = {
   fragmentRef: snapshotDialogFragment$key
@@ -144,68 +138,75 @@ export function SnapshotDialog({
           icon={<AstryxIcon icon={FlagIcon} />}
         ></Button>
       )}
-      <Dialog isOpen={open} onOpenChange={setOpen} purpose="form">
-        <DialogHeader title={<>Snapshot</>} onOpenChange={setOpen} />
-        <Stack direction="vertical" gap={4}>
-          <Text as="p" display="block" color="secondary">
-            Net Worth
-          </Text>
-          <Stack direction="vertical" gap={4}>
-            {formatCurrencyWithPrivacyMode({
-              value: netWorth,
-              currencyCode: displayCurrencyCode,
-            })}
-          </Stack>
-        </Stack>
-        <Stack direction="vertical" gap={0}>
-          {CATEGORIES.map((type) => (
-            <Stack
-              direction="horizontal"
-              gap={3}
-              align="center"
-              wrap="wrap"
-              justify="between"
-              key={type}
-            >
-              <Stack direction="horizontal" gap={2} align="center">
-                <span style={{ backgroundColor: CATEGORY_COLORS[type] }} />
-                <Text type="supporting">{capitalize(type)}</Text>
-              </Stack>
-              <Text hasTabularNumbers>
-                {formatCurrencyWithPrivacyMode({
-                  value: breakdown[type],
-                  currencyCode: displayCurrencyCode,
-                  liability: type === 'liability',
-                })}
-              </Text>
-            </Stack>
-          ))}
-        </Stack>
-        <TextArea
-          placeholder="Add a note (optional)"
-          label={'Add a note (optional)'}
-
-          value={String(note ?? '')}
-          onChange={(_value, event) => ((e) => setNote(e.target.value))(event)}
-        />
-        <Stack
-          direction="horizontal"
-          gap={3}
-          align="center"
-          wrap="wrap"
-          justify="end"
+      <Dialog isOpen={open} onOpenChange={setOpen} purpose="info" padding={0}>
+        <Layout
+          padding={6}
+          header={<DialogHeader title={<>Snapshot</>} onOpenChange={setOpen} />}
         >
-          <Button
-            onClick={handleSnapshot}
-            label={String(isMutationInFlight ? 'Saving...' : 'Save')}
-            variant={'primary'}
+          <LayoutContent>
+            <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+              <Stack direction="vertical" gap={1}>
+                <Text as="p" display="block" color="secondary">
+                  Net Worth
+                </Text>
+                <Heading level={2}>
+                  {formatCurrencyWithPrivacyMode({
+                    value: netWorth,
+                    currencyCode: displayCurrencyCode,
+                  })}
+                </Heading>
+              </Stack>
+              <Stack direction="vertical" gap={2}>
+                {CATEGORIES.map((type) => (
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    wrap="wrap"
+                    justify="between"
+                    key={type}
+                  >
+                    <Text color="secondary">{capitalize(type)}</Text>
+                    <Text hasTabularNumbers>
+                      {formatCurrencyWithPrivacyMode({
+                        value: breakdown[type],
+                        currencyCode: displayCurrencyCode,
+                        liability: type === 'liability',
+                      })}
+                    </Text>
+                  </Stack>
+                ))}
+              </Stack>
+              <TextArea
+                placeholder="What changed since your last snapshot?"
+                label="Note (optional)"
 
-            isDisabled={isMutationInFlight}
-          >
-            {isMutationInFlight ? 'Saving...' : 'Save'}
-          </Button>
-          <Button label="Cancel" onClick={() => setOpen(false)} />
-        </Stack>
+                value={String(note ?? '')}
+                onChange={(_value, event) =>
+                  ((e) => setNote(e.target.value))(event)
+                }
+              />
+              <Stack
+                direction="horizontal"
+                gap={3}
+                align="center"
+                wrap="wrap"
+                justify="end"
+              >
+                <Button
+                  onClick={handleSnapshot}
+                  label={String(isMutationInFlight ? 'Saving...' : 'Save')}
+                  variant={'primary'}
+
+                  isDisabled={isMutationInFlight}
+                >
+                  {isMutationInFlight ? 'Saving...' : 'Save'}
+                </Button>
+                <Button label="Cancel" onClick={() => setOpen(false)} />
+              </Stack>
+            </Stack>
+          </LayoutContent>
+        </Layout>
       </Dialog>
     </>
   )

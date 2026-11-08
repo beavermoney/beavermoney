@@ -1,9 +1,9 @@
-import { Badge } from '@astryxdesign/core/Badge'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { DropdownMenu, DropdownMenuItem } from '@astryxdesign/core/DropdownMenu'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
-import { ListItem } from '@astryxdesign/core/List'
+import { List, ListItem } from '@astryxdesign/core/List'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -181,13 +181,13 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
   }
 
   return (
-    <Stack direction="vertical" gap={3}>
+    <Stack direction="vertical" gap={3} width="100%" className="max-w-2xl">
       {isAdmin && canInviteMore && (
-        <Stack direction="vertical" gap={4}>
+        <Stack direction="horizontal" gap={4}>
           <AddMemberDialog householdRef={household} />
         </Stack>
       )}
-      <Stack direction="vertical" gap={2}>
+      <List edge="outset" hasDividers>
         {household.userHouseholds.map((uh) => {
           const isCurrentUser = uh.user.id === user.id
           const isSynthetic = uh.user.isSynthetic
@@ -199,12 +199,28 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
               key={uh.id}
               label={uh.user.name + (isCurrentUser ? ' (you)' : '')}
               description={
-                isSynthetic ? 'Shared owner — auto-managed' : uh.user.email
+                <Stack direction="vertical" gap={0.5}>
+                  <Text
+                    type="supporting"
+                    color="secondary"
+                    className="break-all"
+                  >
+                    {isSynthetic
+                      ? 'Shared owner — auto-managed'
+                      : uh.user.email}
+                  </Text>
+                  <Text type="supporting" color="secondary">
+                    {isSynthetic
+                      ? 'Joint'
+                      : uh.role === 'admin'
+                        ? 'Admin'
+                        : 'Member'}{' '}
+                    · {uh.householdCurrency.code}
+                  </Text>
+                </Stack>
               }
               endContent={
                 <Stack direction="horizontal" gap={2} align="center">
-                  <Badge label={uh.householdCurrency.code} />
-                  <Badge label={isSynthetic ? 'joint' : uh.role} />
                   {showActions && (
                     <DropdownMenu
                       alignment={'end'}
@@ -244,7 +260,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
             />
           )
         })}
-      </Stack>
+      </List>
 
       <>
         <Dialog
@@ -252,43 +268,54 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
           onOpenChange={(open) => {
             if (!open) setRemoveTargetId(null)
           }}
-          purpose="form"
+          purpose="info"
           role="alertdialog"
+          padding={0}
         >
-          <DialogHeader
-            title={<>Remove member?</>}
-            onOpenChange={(open) => {
-              if (!open) setRemoveTargetId(null)
-            }}
-          />
-          <Text as="div" display="block" type="supporting">
-            This will remove them from the household. They will lose access
-            immediately.
-          </Text>
-          <Stack
-            direction="horizontal"
-            gap={3}
-            align="center"
-            wrap="wrap"
-            justify="end"
-          >
-            <Button
-              label="Cancel"
-              onClick={() =>
-                ((open) => {
+          <Layout
+            padding={6}
+            header={
+              <DialogHeader
+                title={<>Remove member?</>}
+                onOpenChange={(open) => {
                   if (!open) setRemoveTargetId(null)
-                })(false)
-              }
-            />
-            <Button
-              variant="destructive"
-              isDisabled={isRemoveInFlight}
-              onClick={handleConfirmRemove}
-              label="Remove member"
-            >
-              {isRemoveInFlight ? 'Removing...' : 'Remove'}
-            </Button>
-          </Stack>
+                }}
+              />
+            }
+          >
+            <LayoutContent>
+              <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                <Text as="div" display="block" type="supporting">
+                  This will remove them from the household. They will lose
+                  access immediately.
+                </Text>
+                <Stack
+                  direction="horizontal"
+                  gap={3}
+                  align="center"
+                  wrap="wrap"
+                  justify="end"
+                >
+                  <Button
+                    label="Cancel"
+                    onClick={() =>
+                      ((open) => {
+                        if (!open) setRemoveTargetId(null)
+                      })(false)
+                    }
+                  />
+                  <Button
+                    variant="destructive"
+                    isDisabled={isRemoveInFlight}
+                    onClick={handleConfirmRemove}
+                    label="Remove member"
+                  >
+                    {isRemoveInFlight ? 'Removing...' : 'Remove'}
+                  </Button>
+                </Stack>
+              </Stack>
+            </LayoutContent>
+          </Layout>
         </Dialog>
       </>
     </Stack>

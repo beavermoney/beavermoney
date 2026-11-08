@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import '@/test/browser-setup'
 import {
   cleanup,
   fireEvent,
@@ -66,39 +67,34 @@ afterEach(() => {
   mobileState.value = true
 })
 
-it('collapses to the selected investment and expands when clicked', () => {
+it('searches investments by ticker and selects a result', async () => {
   render(<Picker />)
-
-  fireEvent.click(screen.getByRole('radio', { name: /Index Fund/ }))
-  const summary = screen.getByRole('button', {
-    name: 'Investment: Index Fund',
-  })
-  expect(screen.queryByRole('radio', { name: /Bitcoin/ })).toBeNull()
-
-  fireEvent.click(summary)
-  expect(screen.getByRole('radio', { name: /Bitcoin/ })).not.toBeNull()
+  const input = screen.getByRole('combobox', { name: 'Investment' })
+  fireEvent.focus(input)
+  fireEvent.change(input, { target: { value: 'IDX' } })
+  fireEvent.click(await screen.findByRole('option', { name: /Index Fund/ }))
+  expect(screen.queryByRole('listbox')).toBeNull()
+  expect(screen.getByRole('button', { name: /Index Fund/ })).toBeTruthy()
 })
 
-it('shows investment identity in desktop options and the selected trigger', () => {
-  mobileState.value = false
-  render(<Picker />)
-
-  fireEvent.click(
-    screen.getByRole('button', {
-      name: 'Investment: Select an investment',
-    }),
+it('keeps dependent investment choices disabled until an account is selected', () => {
+  render(
+    <TransactionInvestmentPicker
+      investments={[]}
+      name="investment"
+      label="Investment"
+      value=""
+      onValueChange={vi.fn()}
+      onBlur={vi.fn()}
+      invalid={false}
+      disabled
+    />,
   )
   expect(
-    screen.getByRole('group', { name: 'Scrollable content' }),
-  ).not.toBeNull()
-  fireEvent.click(
-    screen.getByRole('menuitemradio', { name: 'Index Fund, IDX' }),
-  )
-
-  expect(screen.queryByRole('menu')).toBeNull()
-  expect(
-    screen.getByRole('button', { name: 'Investment: Index Fund, IDX' }),
-  ).toBeTruthy()
+    screen
+      .getByRole('combobox', { name: 'Investment' })
+      .getAttribute('aria-disabled'),
+  ).toBe('true')
 })
 
 it('clears an investment selection that falls outside the current view scope', async () => {

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import '@/test/browser-setup'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -46,31 +47,23 @@ afterEach(() => {
   mobileState.value = true
 })
 
-it('collapses to the selected category and expands when clicked', () => {
+it('searches categories and allows keyboard selection', async () => {
   render(<Picker />)
-
-  fireEvent.click(screen.getByRole('radio', { name: 'Groceries' }))
-  const summary = screen.getByRole('button', { name: 'Category: Groceries' })
-  expect(screen.queryByRole('radio', { name: 'Transport' })).toBeNull()
-
-  fireEvent.click(summary)
-  expect(screen.getByRole('radio', { name: 'Transport' })).not.toBeNull()
+  const input = screen.getByRole('combobox', { name: 'Category' })
+  fireEvent.focus(input)
+  fireEvent.change(input, { target: { value: 'groc' } })
+  expect(await screen.findByRole('option', { name: /Groceries/ })).toBeTruthy()
+  expect(screen.queryByRole('option', { name: /Transport/ })).toBeNull()
+  fireEvent.keyDown(input, { key: 'ArrowDown' })
+  fireEvent.keyDown(input, { key: 'Enter' })
+  expect(screen.queryByRole('listbox')).toBeNull()
+  expect(screen.getByRole('button', { name: /Groceries/ })).toBeTruthy()
 })
 
-it('shows the full category display in desktop options and the selected trigger', () => {
-  mobileState.value = false
+it('shows a useful empty search result', async () => {
   render(<Picker />)
-
-  fireEvent.click(
-    screen.getByRole('button', { name: 'Category: Select a category' }),
-  )
-  expect(
-    screen.getByRole('group', { name: 'Scrollable content' }),
-  ).not.toBeNull()
-  fireEvent.click(screen.getByRole('menuitemradio', { name: 'Groceries' }))
-
-  expect(screen.queryByRole('menu')).toBeNull()
-  expect(
-    screen.getByRole('button', { name: 'Category: Groceries' }),
-  ).toBeTruthy()
+  const input = screen.getByRole('combobox', { name: 'Category' })
+  fireEvent.focus(input)
+  fireEvent.change(input, { target: { value: 'no-such-category' } })
+  expect(await screen.findByText('No categories available.')).toBeTruthy()
 })

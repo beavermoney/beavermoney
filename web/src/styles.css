@@ -57,3 +57,27 @@
     border-color: var(--color-border);
   }
 }
+
+/* Device insets are platform geometry, not component design tokens. Content
+   scrolls through the bottom inset; only pinned controls stay above it. */
+.app-safe-area {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+/* MobileNav is a portaled dialog, outside the shell. Its direct child is the
+   full-height drawer surface; inset it without shrinking the backdrop. */
+.app-mobile-nav > div {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+/* Padding belongs inside the scrollable content so the final row can clear
+   the home indicator without reserving a permanent opaque bottom strip. */
+.app-scroll-content {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

@@ -11,19 +11,28 @@ export const Route = createFileRoute('/login/')({
 
 function RouteComponent() {
   return (
-    <Stack direction="vertical" gap={10} align="center" justify="center">
-      <Stack direction="vertical" gap={6} align="center">
-        <Link to="/">
-          <Logo size={96} />
-          <Stack direction="vertical" gap={1} align="center">
-            <Heading level={1}>
-              Log your transactions.
-              <br />
-              Build your dam.
-            </Heading>
-            <Text as="p" display="block" color="secondary">
-              Login with your Google account
-            </Text>
+    <Stack
+      direction="vertical"
+      gap={10}
+      align="center"
+      justify="center"
+      minHeight="100dvh"
+      className="app-safe-area app-scroll-content"
+    >
+      <Stack direction="vertical" gap={6} align="center" padding={6}>
+        <Link to="/" className="text-center">
+          <Stack direction="vertical" gap={6} align="center">
+            <Logo size={96} />
+            <Stack direction="vertical" gap={1} align="center">
+              <Heading level={1}>
+                Log your transactions.
+                <br />
+                Build your dam.
+              </Heading>
+              <Text as="p" display="block" color="secondary">
+                Login with your Google account
+              </Text>
+            </Stack>
           </Stack>
         </Link>
         <LoginForm />

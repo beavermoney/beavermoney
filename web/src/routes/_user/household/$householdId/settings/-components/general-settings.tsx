@@ -1,3 +1,4 @@
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
@@ -171,7 +172,7 @@ export function GeneralSettings({
   }
 
   return (
-    <Stack direction="vertical" gap={5}>
+    <Stack direction="vertical" gap={5} className="max-w-2xl" width="100%">
       <Stack
         as="form"
         direction="vertical"
@@ -260,8 +261,9 @@ export function GeneralSettings({
             gap={4}
             align="center"
             justify="between"
+            wrap="wrap"
           >
-            <Stack direction="vertical" gap={4}>
+            <Stack direction="vertical" gap={1}>
               <Text as="p" display="block">
                 Delete household
               </Text>
@@ -288,63 +290,76 @@ export function GeneralSettings({
                   setDeleteDialogOpen(open)
                   if (!open) setDeleteConfirmText('')
                 }}
-                purpose="form"
+                purpose="info"
                 role="alertdialog"
+                padding={0}
               >
-                <DialogHeader
-                  title={<>Delete household?</>}
-                  onOpenChange={(open) => {
-                    setDeleteDialogOpen(open)
-                    if (!open) setDeleteConfirmText('')
-                  }}
-                />
-                <Stack direction="vertical" gap={4}>
-                  This will permanently delete{' '}
-                  <Text type="label">{household.name}</Text> and all associated
-                  data including accounts, transactions, and categories. This
-                  action cannot be undone.
-                  <br />
-                  Type <Text type="label">{household.name}</Text> to confirm
-                  <TextInput
-                    data-1p-ignore
-                    id="delete-confirm"
-                    placeholder={'Enter household name to confirm'}
-                    autoComplete="off"
-                    label={'Enter household name to confirm'}
-
-                    value={String(deleteConfirmText ?? '')}
-                    onChange={(_value, event) =>
-                      ((e) => setDeleteConfirmText(e.target.value))(event)
-                    }
-                  />
-                </Stack>
-                <Stack
-                  direction="horizontal"
-                  gap={3}
-                  align="center"
-                  wrap="wrap"
-                  justify="end"
-                >
-                  <Button
-                    label="Cancel"
-                    onClick={() =>
-                      ((open) => {
+                <Layout
+                  padding={6}
+                  header={
+                    <DialogHeader
+                      title={<>Delete household?</>}
+                      onOpenChange={(open) => {
                         setDeleteDialogOpen(open)
                         if (!open) setDeleteConfirmText('')
-                      })(false)
-                    }
-                  />
-                  <Button
-                    variant="destructive"
-                    isDisabled={
-                      deleteConfirmText !== household.name || isDeleteInFlight
-                    }
-                    onClick={handleDelete}
-                    label="Delete"
-                  >
-                    {isDeleteInFlight ? 'Deleting...' : 'Delete'}
-                  </Button>
-                </Stack>
+                      }}
+                    />
+                  }
+                >
+                  <LayoutContent>
+                    <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                      <Stack direction="vertical" gap={4}>
+                        This will permanently delete{' '}
+                        <Text type="label">{household.name}</Text> and all
+                        associated data including accounts, transactions, and
+                        categories. This action cannot be undone.
+                        <br />
+                        Type <Text type="label">{household.name}</Text> to
+                        confirm
+                        <TextInput
+                          data-1p-ignore
+                          id="delete-confirm"
+                          placeholder={'Enter household name to confirm'}
+                          autoComplete="off"
+                          label={'Enter household name to confirm'}
+
+                          value={String(deleteConfirmText ?? '')}
+                          onChange={(_value, event) =>
+                            ((e) => setDeleteConfirmText(e.target.value))(event)
+                          }
+                        />
+                      </Stack>
+                      <Stack
+                        direction="horizontal"
+                        gap={3}
+                        align="center"
+                        wrap="wrap"
+                        justify="end"
+                      >
+                        <Button
+                          label="Cancel"
+                          onClick={() =>
+                            ((open) => {
+                              setDeleteDialogOpen(open)
+                              if (!open) setDeleteConfirmText('')
+                            })(false)
+                          }
+                        />
+                        <Button
+                          variant="destructive"
+                          isDisabled={
+                            deleteConfirmText !== household.name ||
+                            isDeleteInFlight
+                          }
+                          onClick={handleDelete}
+                          label="Delete"
+                        >
+                          {isDeleteInFlight ? 'Deleting...' : 'Delete'}
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </LayoutContent>
+                </Layout>
               </Dialog>
             </>
           </Stack>

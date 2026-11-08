@@ -36,11 +36,13 @@ type InvestmentCardProps = {
   fragmentRef: investmentCardFragment$key
   linkOptions?: LinkOptions
   className?: string
+  showReturn?: boolean
 }
 
 export function InvestmentCard({
   fragmentRef,
   linkOptions,
+  showReturn = true,
   className: _className,
 }: InvestmentCardProps) {
   const data = useFragment(investmentCardFragment, fragmentRef)
@@ -80,7 +82,9 @@ export function InvestmentCard({
       description={
         <VStack gap={1}>
           <Text type="supporting">
-            {data.symbol} · {data.user.name}
+            {[data.symbol !== data.name ? data.symbol : null, data.user.name]
+              .filter(Boolean)
+              .join(' · ')}
           </Text>
           <Text type="supporting" hasTabularNumbers>
             {isPrivacyModeEnabled ? '•••' : data.amount} shares ·{' '}
@@ -100,7 +104,7 @@ export function InvestmentCard({
               currencyCode: data.householdCurrency.code,
             })}
           </Text>
-          {hasShares && (
+          {showReturn && hasShares && (
             <Text type="supporting" hasTabularNumbers>
               {formattedReturn} ({signedPercent})
             </Text>

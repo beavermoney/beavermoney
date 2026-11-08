@@ -120,35 +120,60 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
 
   return (
     <Card>
-      <Stack direction="vertical" gap={2} as="header">
-        <Stack direction="horizontal" gap={3} align="center">
-          <Avatar
-            src={getLogoDomainURL(data.icon || '')}
-            name={String(data.name)}
-          />
-          <Stack direction="vertical" gap={4}>
-            <Heading level={2}>Edit Account</Heading>
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Stack direction="horizontal" gap={3} align="center">
+            <Avatar
+              src={getLogoDomainURL(data.icon || '')}
+              name={String(data.name)}
+            />
             <Stack direction="vertical" gap={4}>
-              Update your account details
+              <Heading level={2}>Edit Account</Heading>
             </Stack>
           </Stack>
         </Stack>
-      </Stack>
-      <Stack direction="vertical" gap={4}>
-        <Stack
-          as="form"
-          direction="vertical"
-          gap={6}
-          id="edit-account-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FormLayout>
-            {ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(data.type) && (
+        <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="edit-account-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              {ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(data.type) && (
+                <form.Field
+                  name="category"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <label htmlFor={field.name}>Category (optional)</label>
+                        <AccountCategoryPicker
+                          name={field.name}
+                          value={field.state.value}
+                          onValueChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                          invalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              )}
               <form.Field
-                name="category"
+                name="name"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -158,13 +183,20 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
                       gap={2}
                       data-invalid={isInvalid}
                     >
-                      <label htmlFor={field.name}>Category (optional)</label>
-                      <AccountCategoryPicker
-                        name={field.name}
-                        value={field.state.value}
-                        onValueChange={field.handleChange}
+                      <TextInput
+                        data-1p-ignore
+                        id={field.name}
                         onBlur={field.handleBlur}
-                        invalid={isInvalid}
+                        aria-invalid={isInvalid}
+                        placeholder="My Account"
+                        autoComplete="off"
+                        label={'Name'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -173,86 +205,61 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
                   )
                 }}
               />
-            )}
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="My Account"
-                      autoComplete="off"
-                      label={'Name'}
+              <form.Field
+                name="icon"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TextInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="chase.com"
+                        autoComplete="off"
+                        label={'Icon URL'}
 
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="icon"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="chase.com"
-                      autoComplete="off"
-                      label={'Icon URL'}
-
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-          </FormLayout>
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
         </Stack>
-      </Stack>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        as="footer"
-      >
-        <Button
-          type="submit"
-          form="edit-account-form"
-          label={String(isUpdateMutationInFlight ? 'Saving...' : 'Save')}
-          variant={'primary'}
-
-          isDisabled={isUpdateMutationInFlight}
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
         >
-          {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
-        </Button>
+          <Button
+            type="submit"
+            form="edit-account-form"
+            label={String(isUpdateMutationInFlight ? 'Saving...' : 'Save')}
+            variant={'primary'}
+
+            isDisabled={isUpdateMutationInFlight}
+          >
+            {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
+          </Button>
+        </Stack>
       </Stack>
     </Card>
   )

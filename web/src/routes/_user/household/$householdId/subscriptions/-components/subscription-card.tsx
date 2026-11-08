@@ -32,11 +32,13 @@ const SubscriptionCardFragment = graphql`
 
 type SubscriptionCardProps = {
   fragmentRef: subscriptionCardFragment$key
+  isActive?: boolean
   className?: string
 }
 
 export function SubscriptionCard({
   fragmentRef,
+  isActive = true,
   className: _className,
 }: SubscriptionCardProps) {
   const data = useFragment(SubscriptionCardFragment, fragmentRef)
@@ -73,11 +75,11 @@ export function SubscriptionCard({
       from="/household/$householdId"
       to="/household/$householdId/subscriptions/$subscriptionId"
       params={{ subscriptionId: data.id }}
-      label={data.name}
+      label={<Text maxLines={2}>{data.name}</Text>}
       startContent={
         <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
       }
-      description={intervalText}
+      description={isActive ? intervalText : `Inactive · ${intervalText}`}
       endContent={
         <VStack gap={1} hAlign="end">
           <Text type="label" hasTabularNumbers>
@@ -86,9 +88,11 @@ export function SubscriptionCard({
               currencyCode: data.householdCurrency.code,
             })}
           </Text>
-          <Text type="supporting">
-            {formatNextPaymentDate(nextPaymentDate)}
-          </Text>
+          {isActive && (
+            <Text type="supporting" color="secondary">
+              {formatNextPaymentDate(nextPaymentDate)}
+            </Text>
+          )}
         </VStack>
       }
     />

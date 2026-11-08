@@ -1,6 +1,7 @@
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
@@ -353,36 +354,41 @@ function TransactionDetailDialog({
             onCloseComplete()
           }
         }}
-        purpose="form"
+        purpose="info"
+        padding={0}
       >
         <ErrorBoundary
           key={retainedTransactionId ?? 'closed'}
           fallback={
-            <>
-              <DialogHeader
-                title={<>Could not load transaction</>}
-                onOpenChange={(open) => {
-                  if (!open) onClose()
-                }}
-              />
-              <Text as="div" display="block" type="supporting">
-                Close the dialog and try opening the transaction again.
-              </Text>
-              <Stack
-                direction="horizontal"
-                gap={3}
-                align="center"
-                wrap="wrap"
-                justify="end"
-              >
-                <Button onClick={onClose} label={'Close'} variant={'secondary'}>
-                  Close
-                </Button>
-              </Stack>
-            </>
+            <Layout
+              padding={6}
+              header={
+                <DialogHeader
+                  title="Could not load transaction"
+                  onOpenChange={(open) => {
+                    if (!open) onClose()
+                  }}
+                />
+              }
+            >
+              <LayoutContent>
+                <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+                  <Text type="supporting">
+                    Close the dialog and try opening the transaction again.
+                  </Text>
+                  <Stack direction="horizontal" justify="end">
+                    <Button
+                      onClick={onClose}
+                      label="Close"
+                      variant="secondary"
+                    />
+                  </Stack>
+                </Stack>
+              </LayoutContent>
+            </Layout>
           }
         >
-          {matchingQueryRef ? (
+          {matchingQueryRef && transactionId !== null ? (
             <Suspense
               fallback={
                 <TransactionDialogPreview

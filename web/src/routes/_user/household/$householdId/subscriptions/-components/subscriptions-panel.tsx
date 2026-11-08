@@ -12,6 +12,7 @@ import { useMemo } from 'react'
 import { graphql, usePaginationFragment } from 'react-relay'
 import invariant from 'tiny-invariant'
 
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
@@ -72,6 +73,7 @@ const SORT_OPTIONS = {
 type SortOption = keyof typeof SORT_OPTIONS
 
 export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
+  const isMobile = useIsMobile()
   const { data } = usePaginationFragment(
     SubscriptionsPanelFragment,
     fragmentRef,
@@ -183,63 +185,87 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
       }
     }, [data, sortBy, convert])
 
+  const inactiveSubscriptions = (
+    data.recurringSubscriptions.edges ?? []
+  ).flatMap((edge) => (edge?.node && !edge.node.active ? [edge.node] : []))
+
   return (
     <VStack gap={6}>
       <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
-        <Heading level={1}>Subscriptions</Heading>
+        <VStack gap={1}>
+          <Heading level={1}>Subscriptions</Heading>
+        </VStack>
         <PageAddButton
           label="Add subscription"
           to="/household/$householdId/subscriptions/new"
           params={{ householdId }}
         />
       </HStack>
-      <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
-        <Card>
-          <VStack gap={3}>
-            <Text color="secondary">Monthly spend</Text>
-            <Heading level={2}>
-              {formatCurrencyWithPrivacyMode({
-                value: monthlyAverage,
-                currencyCode: displayCurrencyCode,
-              })}
-            </Heading>
-          </VStack>
-        </Card>
-        <Card>
-          <VStack gap={3}>
-            <Text color="secondary">Yearly spend</Text>
-            <Heading level={2}>
-              {formatCurrencyWithPrivacyMode({
-                value: yearlyAverage,
-                currencyCode: displayCurrencyCode,
-              })}
-            </Heading>
-          </VStack>
-        </Card>
-        <Card>
-          <VStack gap={3}>
-            <Text color="secondary">Subscriptions</Text>
-            <Heading level={2}>{activeCount}</Heading>
-          </VStack>
-        </Card>
-      </Grid>
-      <Section>
+      {activeCount > 0 &&
+        (isMobile ? (
+          <Card>
+            <VStack gap={3}>
+              <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
+                <Text color="secondary">Monthly spend</Text>
+                <Text type="label" hasTabularNumbers>
+                  {formatCurrencyWithPrivacyMode({
+                    value: monthlyAverage,
+                    currencyCode: displayCurrencyCode,
+                  })}
+                </Text>
+              </HStack>
+              <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
+                <Text color="secondary">Yearly spend</Text>
+                <Text type="label" hasTabularNumbers>
+                  {formatCurrencyWithPrivacyMode({
+                    value: yearlyAverage,
+                    currencyCode: displayCurrencyCode,
+                  })}
+                </Text>
+              </HStack>
+            </VStack>
+          </Card>
+        ) : (
+          <Grid columns={2} gap={4}>
+            {[
+              { label: 'Monthly spend', value: monthlyAverage },
+              { label: 'Yearly spend', value: yearlyAverage },
+            ].map((metric) => (
+              <Card key={metric.label}>
+                <VStack gap={3}>
+                  <Text color="secondary">{metric.label}</Text>
+                  <Heading level={2}>
+                    {formatCurrencyWithPrivacyMode({
+                      value: metric.value,
+                      currencyCode: displayCurrencyCode,
+                    })}
+                  </Heading>
+                </VStack>
+              </Card>
+            ))}
+          </Grid>
+        ))}
+      <Section padding={6}>
         <VStack gap={4}>
-          <HStack hAlign="between" vAlign="center">
-            <Heading level={3}>Recurring payments</Heading>
-            <Selector
-              label="Sort subscriptions"
-              isLabelHidden
-              value={sortBy}
-              onChange={handleSortChange}
-              options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
-                value,
-                label,
-              }))}
-            />
+          <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
+            <Heading level={3}>
+              Recurring payments{activeCount > 0 ? ` (${activeCount})` : ''}
+            </Heading>
+            {activeCount > 1 && (
+              <Selector
+                label="Sort subscriptions"
+                isLabelHidden
+                value={sortBy}
+                onChange={handleSortChange}
+                options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
+                  value,
+                  label,
+                }))}
+              />
+            )}
           </HStack>
           {sortedSubscriptions.length ? (
-            <List hasDividers>
+            <List hasDividers edge="outset">
               {sortedSubscriptions.map((subscription) => (
                 <SubscriptionCard
                   key={subscription.id}
@@ -252,6 +278,22 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
               title="No subscriptions yet"
               description="Add a recurring payment to see your upcoming costs."
             />
+          )}
+          {inactiveSubscriptions.length > 0 && (
+            <VStack gap={3}>
+              <Heading level={3}>
+                Inactive subscriptions ({inactiveSubscriptions.length})
+              </Heading>
+              <List hasDividers edge="outset">
+                {inactiveSubscriptions.map((subscription) => (
+                  <SubscriptionCard
+                    key={subscription.id}
+                    fragmentRef={subscription}
+                    isActive={false}
+                  />
+                ))}
+              </List>
+            </VStack>
           )}
         </VStack>
       </Section>

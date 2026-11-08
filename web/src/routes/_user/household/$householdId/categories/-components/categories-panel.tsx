@@ -1,7 +1,8 @@
 import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Heading } from '@astryxdesign/core/Heading'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { List } from '@astryxdesign/core/List'
-import { Stack } from '@astryxdesign/core/Stack'
+import { Stack, StackItem } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
 import { capitalize, groupBy, map } from 'lodash-es'
@@ -156,21 +157,22 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
 
   return (
     <Fragment>
-      <Heading level={1}>Categories</Heading>
-      <FinancialSummaryCards fragmentRef={financialReport} />
-
-      <Stack direction="horizontal" gap={2} align="center" justify="between">
-        <DateRangeFilter
-          startDate={startDate}
-          endDate={endDate}
-          onDateRangeChange={onDateRangeChange}
-        />
+      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+        <VStack gap={1}>
+          <Heading level={1}>Categories</Heading>
+        </VStack>
         <PageAddButton
           label="Add category"
           to="/household/$householdId/categories/new"
           params={{ householdId }}
         />
-      </Stack>
+      </HStack>
+      <DateRangeFilter
+        startDate={startDate}
+        endDate={endDate}
+        onDateRangeChange={onDateRangeChange}
+      />
+      <FinancialSummaryCards fragmentRef={financialReport} />
 
       <CategoriesSankey fragmentRef={financialReport} />
 
@@ -191,9 +193,10 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                   gap={3}
                   align="center"
                   width="100%"
+                  wrap="wrap"
                 >
-                  <span>{capitalize(type)}</span>
-                  <span></span>
+                  <Text type="label">{capitalize(type)}</Text>
+                  <StackItem size="fill" />
                   {typeAggregate && (
                     <Text type="label" hasTabularNumbers>
                       {formatCurrencyWithPrivacyMode({
@@ -206,7 +209,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
               }
               defaultIsOpen
             >
-              <List hasDividers>
+              <List hasDividers edge="outset">
                 {categories.map((category) => {
                   invariant(category?.node, 'Category node is null')
                   return (

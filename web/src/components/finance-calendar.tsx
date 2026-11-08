@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile'
 import {
   Calendar,
   type DateRange,
@@ -25,9 +26,11 @@ type Props = {
 )
 // Finance forms keep Date objects; Astryx calendars use local ISO dates.
 export function FinanceCalendar(props: Props) {
+  const isMobile = useIsMobile()
   const common = {
     className: props.className,
-    numberOfMonths: props.numberOfMonths === 2 ? (2 as const) : (1 as const),
+    numberOfMonths:
+      props.numberOfMonths === 2 && !isMobile ? (2 as const) : (1 as const),
     dateConstraints: props.disabled
       ? [(date: Date) => !props.disabled!(date)]
       : undefined,

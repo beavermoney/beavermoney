@@ -11,7 +11,6 @@ import {
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import { EditSubscription } from './-components/edit-subscription'
-import { SubscriptionCard } from './-components/subscription-card'
 
 import { identity } from 'lodash-es'
 import invariant from 'tiny-invariant'
@@ -37,7 +36,6 @@ const subscriptionIdQuery = graphql`
     node(id: $id) {
       ... on RecurringSubscription {
         id
-        ...subscriptionCardFragment
         ...editSubscriptionFragment
       }
     }
@@ -72,13 +70,13 @@ function RouteComponent() {
         <Button
           onClick={() => navigate({ to: '..', search: identity })}
           label={'Back'}
+          width="fit-content"
           variant={'secondary'}
         >
           Back
         </Button>
       </Stack>
-      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-        <SubscriptionCard fragmentRef={data.node} />
+      <Stack direction="vertical" gap={4} className="max-w-2xl">
         <EditSubscription key={data.node.id} fragmentRef={data.node} />
       </Stack>
     </Stack>

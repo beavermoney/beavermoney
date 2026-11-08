@@ -108,13 +108,14 @@ function RouteComponent() {
         <Button
           onClick={() => navigate({ to: '..' })}
           label={'Back'}
+          width="fit-content"
           variant={'secondary'}
         >
           Back
         </Button>
       </Stack>
       <Stack direction="vertical" gap={4}>
-        <InvestmentCard fragmentRef={data.node} />
+        <InvestmentCard fragmentRef={data.node} showReturn={false} />
       </Stack>
       <InvestmentDetail fragmentRef={data.node} />
       <Divider />
@@ -150,38 +151,44 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
 
   return (
     <Card>
-      <Stack direction="vertical" gap={2} as="header">
-        <Heading level={2}>Performance</Heading>
-      </Stack>
       <Stack direction="vertical" gap={4}>
-        <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
-          <Stack direction="vertical" gap={1}>
-            <Text type="supporting">Cost Basis</Text>
-            <Text type="label" hasTabularNumbers>
-              {formatCurrencyWithPrivacyMode({
-                value: data.costBasis,
-                currencyCode: data.householdCurrency.code,
-              })}
-            </Text>
-          </Stack>
-          <Stack direction="vertical" gap={1}>
-            <Text type="supporting">Avg Cost / Share</Text>
-            <Text type="label" hasTabularNumbers>
-              {formatCurrency({
-                value: data.averageCost,
-                currencyCode: data.householdCurrency.code,
-              })}
-            </Text>
-          </Stack>
-          <Stack direction="vertical" gap={1}>
-            <Text type="supporting">Unrealized Return</Text>
-            <span>{signedReturn}</span>
-          </Stack>
-          <Stack direction="vertical" gap={1}>
-            <Text type="supporting">Return %</Text>
-            <span>{signedPercent}</span>
-          </Stack>
-        </Grid>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>Performance</Heading>
+        </Stack>
+        <Stack direction="vertical" gap={4}>
+          <Grid columns={{ minWidth: 140, max: 4, repeat: 'fit' }} gap={4}>
+            <Stack direction="vertical" gap={1}>
+              <Text type="supporting">Cost Basis</Text>
+              <Text type="label" hasTabularNumbers>
+                {formatCurrencyWithPrivacyMode({
+                  value: data.costBasis,
+                  currencyCode: data.householdCurrency.code,
+                })}
+              </Text>
+            </Stack>
+            <Stack direction="vertical" gap={1}>
+              <Text type="supporting">Avg Cost / Share</Text>
+              <Text type="label" hasTabularNumbers>
+                {formatCurrency({
+                  value: data.averageCost,
+                  currencyCode: data.householdCurrency.code,
+                })}
+              </Text>
+            </Stack>
+            <Stack direction="vertical" gap={1}>
+              <Text type="supporting">Unrealized Return</Text>
+              <Text type="label" hasTabularNumbers>
+                {signedReturn}
+              </Text>
+            </Stack>
+            <Stack direction="vertical" gap={1}>
+              <Text type="supporting">Return %</Text>
+              <Text type="label" hasTabularNumbers>
+                {signedPercent}
+              </Text>
+            </Stack>
+          </Grid>
+        </Stack>
       </Stack>
     </Card>
   )

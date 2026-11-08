@@ -265,7 +265,13 @@ export function DateRangeFilter({
   ]
 
   return (
-    <Stack direction="horizontal" gap={4} align="center" justify="between">
+    <Stack
+      direction="horizontal"
+      gap={4}
+      align="center"
+      justify="between"
+      wrap="wrap"
+    >
       <Stack direction="horizontal" gap={2} align="center">
         <Button
           onClick={handlePrevious}
@@ -282,9 +288,10 @@ export function DateRangeFilter({
         ></Button>
 
         <Popover
+          width="max-content"
           isOpen={isPickerOpen}
           onOpenChange={setIsPickerOpen}
-          label="Choose value"
+          label="Choose date range"
           alignment={'start'}
           content={
             <>
@@ -300,7 +307,7 @@ export function DateRangeFilter({
                       const year = parseInt(value, 10)
                       handleMonthSelect(selectedMonth, year)
                     }}
-                    label={'Select option'}
+                    label="Year"
                     isLabelHidden
                     options={[
                       ...yearOptions.map((year) => ({
@@ -309,7 +316,7 @@ export function DateRangeFilter({
                       })),
                     ]}
                   />
-                  <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
+                  <Grid columns={3} gap={4}>
                     {monthOptions.map((month, index) => (
                       <Button
                         key={month}
@@ -332,7 +339,7 @@ export function DateRangeFilter({
                   <Text as="div" display="block" type="label">
                     Select Year
                   </Text>
-                  <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
+                  <Grid columns={3} gap={4}>
                     {yearOptions.map((year) => (
                       <Button
                         key={year}

@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Card } from '@astryxdesign/core/Card'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
 import { Grid } from '@astryxdesign/core/Grid'
@@ -89,6 +90,7 @@ type GroupByOption = keyof typeof GROUP_BY_OPTIONS
 type SortOption = keyof typeof SORT_OPTIONS
 
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
+  const isMobile = useIsMobile()
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const { household } = useHousehold()
   const { displayCurrencyCode, convert } = useDisplayCurrency()
@@ -239,9 +241,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
       <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
         <VStack gap={1}>
           <Heading level={1}>Accounts</Heading>
-          <Text color="secondary">
-            Your household's balances, in one place.
-          </Text>
         </VStack>
         <PageAddButton
           label="Add account"
@@ -249,27 +248,55 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
           params={{ householdId }}
         />
       </HStack>
-      <Grid columns={{ minWidth: 240, repeat: 'fit' }} gap={4}>
-        {displayOptions.map((option, index) => (
-          <Card key={option.label}>
-            <VStack gap={3}>
-              <Text color="secondary">{option.label}</Text>
-              <Heading level={2}>
-                {formatCurrencyWithPrivacyMode({
-                  value: option.value,
-                  currencyCode: displayCurrencyCode,
-                  liability: index === 2,
-                })}
-              </Heading>
-              <Text type="supporting">{displayCurrencyCode}</Text>
-            </VStack>
-          </Card>
-        ))}
-      </Grid>
+      {isMobile ? (
+        <Card>
+          <VStack gap={3}>
+            {displayOptions.map((option, index) => (
+              <HStack
+                key={option.label}
+                hAlign="between"
+                vAlign="center"
+                gap={3}
+                wrap="wrap"
+              >
+                <Text color="secondary">{option.label}</Text>
+                <Text type="label" hasTabularNumbers>
+                  {formatCurrencyWithPrivacyMode({
+                    value: option.value,
+                    currencyCode: displayCurrencyCode,
+                    liability: index === 2,
+                  })}
+                </Text>
+              </HStack>
+            ))}
+            <Text type="supporting" color="secondary">
+              {displayCurrencyCode}
+            </Text>
+          </VStack>
+        </Card>
+      ) : (
+        <Grid columns={{ minWidth: 240, max: 3, repeat: 'fit' }} gap={4}>
+          {displayOptions.map((option, index) => (
+            <Card key={option.label}>
+              <VStack gap={3}>
+                <Text color="secondary">{option.label}</Text>
+                <Heading level={2}>
+                  {formatCurrencyWithPrivacyMode({
+                    value: option.value,
+                    currencyCode: displayCurrencyCode,
+                    liability: index === 2,
+                  })}
+                </Heading>
+                <Text type="supporting">{displayCurrencyCode}</Text>
+              </VStack>
+            </Card>
+          ))}
+        </Grid>
+      )}
       <Suspense fallback={<Skeleton height={200} />}>
         <NetWorthChart />
       </Suspense>
-      <Section>
+      <Section padding={6}>
         <VStack gap={4}>
           <HStack gap={3} vAlign="end" wrap="wrap">
             <TextInput
@@ -308,6 +335,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                   : capitalize(key)
               return (
                 <List
+                  edge="outset"
                   key={key}
                   hasDividers
                   header={

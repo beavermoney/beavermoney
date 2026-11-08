@@ -1,4 +1,5 @@
-import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Heading } from '@astryxdesign/core/Heading'
+import { Text } from '@astryxdesign/core/Text'
 import { Stack } from '@astryxdesign/core/Stack'
 import { ResponsiveSankey, type CustomSankeyLayerProps } from '@nivo/sankey'
 import currency from 'currency.js'
@@ -10,7 +11,6 @@ import { useDisplayCurrency } from '@/hooks/use-display-currency'
 
 import { useCurrency } from '@/hooks/use-currency'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
-import { InfoIcon } from 'lucide-react'
 import type { categoriesSankeyFragment$key } from './__generated__/categoriesSankeyFragment.graphql'
 
 const CategoriesSankeyFragment = graphql`
@@ -290,9 +290,12 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
 
   if (!sankeyData) {
     return (
-      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-        <AstryxIcon icon={InfoIcon} size="md" />
-        Log some transactions to see the Sankey chart
+      <Stack direction="vertical" gap={2}>
+        <Heading level={2}>Cash flow</Heading>
+        <Text color="secondary">
+          Not enough income data to draw the category Sankey chart for this
+          period. Choose a wider date range or add income transactions.
+        </Text>
       </Stack>
     )
   }
@@ -368,6 +371,7 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
 
   return (
     <Stack direction="vertical" gap={4}>
+      <Heading level={2}>Cash flow</Heading>
       <Stack
         direction="vertical"
         gap={4}

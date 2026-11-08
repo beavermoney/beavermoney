@@ -58,7 +58,7 @@ function RouteComponent() {
   invariant(data.node, 'Account not found')
 
   return (
-    <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+    <Stack direction="vertical" gap={4} className="max-w-2xl" width="100%">
       <EditAccount key={data.node.id} fragmentRef={data.node} />
     </Stack>
   )

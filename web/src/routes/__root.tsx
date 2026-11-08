@@ -1,3 +1,4 @@
+import { AstryxRouterProvider } from '@/components/astryx-router-provider'
 import { NotificationListener } from '@/components/notification-listener'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { createRootRoute } from '@tanstack/react-router'
@@ -23,7 +24,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <PrivacyModeProvider>
         <ToastViewport position={isMobile ? 'topEnd' : 'bottomEnd'}>
           <NotificationListener />
-          {children}
+          <AstryxRouterProvider>{children}</AstryxRouterProvider>
           {import.meta.env.VITE_SHOW_DEVTOOLS === 'true' && (
             <TanStackDevtools
               eventBusConfig={{ port: env.VITE_DEVTOOLS_PORT }}

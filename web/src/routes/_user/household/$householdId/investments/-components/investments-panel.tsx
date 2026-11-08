@@ -1,8 +1,9 @@
 import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Heading } from '@astryxdesign/core/Heading'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { List } from '@astryxdesign/core/List'
 import { Selector } from '@astryxdesign/core/Selector'
-import { Stack } from '@astryxdesign/core/Stack'
+import { Stack, StackItem } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
 import { groupBy, map } from 'lodash-es'
@@ -123,10 +124,25 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
 
   return (
     <Fragment>
-      <Heading level={1}>Investments</Heading>
-      <Stack direction="horizontal" gap={4} align="start" justify="between">
+      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+        <VStack gap={1}>
+          <Heading level={1}>Investments</Heading>
+        </VStack>
+        <PageAddButton
+          label="Add investment"
+          to="/household/$householdId/investments/new"
+          params={{ householdId }}
+        />
+      </HStack>
+      <Stack
+        direction="horizontal"
+        gap={4}
+        align="end"
+        justify="between"
+        wrap="wrap"
+      >
         <Stack direction="vertical" gap={1}>
-          <Text type="label">Total Investment</Text>
+          <Text color="secondary">Portfolio value</Text>
           <Text as="div" display="block" type="display-3" hasTabularNumbers>
             {formatCurrencyWithPrivacyMode({
               value: totalInvestment,
@@ -134,15 +150,6 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
             })}
           </Text>
         </Stack>
-        <PageAddButton
-          label="Add investment"
-          to="/household/$householdId/investments/new"
-          params={{ householdId }}
-        />
-      </Stack>
-
-      {/* Group By Dropdown */}
-      <Stack direction="horizontal" align="center" justify="end">
         <Selector
           value={groupByOption}
           onChange={handleGroupByChange}
@@ -201,14 +208,15 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                   gap={3}
                   align="center"
                   width="100%"
+                  wrap="wrap"
                 >
-                  <span>{groupLabel}</span>
+                  <Text type="label">{groupLabel}</Text>
                   {totalShares !== null && totalShares > 0 && (
                     <Text type="supporting" hasTabularNumbers>
                       {totalShares} shares
                     </Text>
                   )}
-                  <span></span>
+                  <StackItem size="fill" />
                   <Text type="supporting" hasTabularNumbers>
                     {percentage.toFixed(2)}%
                   </Text>
@@ -222,7 +230,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
               }
               defaultIsOpen
             >
-              <List hasDividers>
+              <List hasDividers edge="outset">
                 {investments.map((investment) => {
                   invariant(investment?.node, 'Investment node is null')
                   return (

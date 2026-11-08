@@ -16,7 +16,7 @@ import { Button } from '@astryxdesign/core/Button'
 import { Item } from '@astryxdesign/core/Item'
 import { Text } from '@astryxdesign/core/Text'
 import { useAppShellMobile } from '@astryxdesign/core/AppShell'
-import { Check, ChevronUp, LogOut, Plus, Settings, Users } from 'lucide-react'
+import { Check, ChevronUp, LogOut, Plus } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { graphql, useFragment } from 'react-relay'
 
@@ -54,22 +54,16 @@ export function HouseholdSwitcher({
     <DropdownMenu
       placement="above"
       alignment="start"
-      menuWidth={320}
+      menuWidth={260}
       menuMaxHeight={560}
       renderTrigger={(triggerProps) =>
         iconOnly ? (
           <Button
             {...triggerProps}
-            label={`${activeHousehold.name}, household and account menu`}
+            label={`${data.user.name}, user menu`}
             variant="ghost"
             isIconOnly
-            icon={
-              <Avatar
-                aria-hidden="true"
-                name={activeHousehold.name}
-                size="sm"
-              />
-            }
+            icon={<Avatar aria-hidden="true" name={data.user.name} size="sm" />}
           />
         ) : (
           <Item
@@ -79,58 +73,18 @@ export function HouseholdSwitcher({
             }
             as="button"
             role="button"
-            label={activeHousehold.name}
-            aria-label={`${activeHousehold.name}, household and account menu`}
+            label={data.user.name}
+            aria-label={`${data.user.name}, user menu`}
             density="compact"
             className="w-full text-left"
             startContent={
-              <Avatar
-                aria-hidden="true"
-                name={activeHousehold.name}
-                size="sm"
-              />
+              <Avatar aria-hidden="true" name={data.user.name} size="sm" />
             }
             endContent={<Icon icon={ChevronUp} size="sm" />}
           />
         )
       }
-      header={
-        <HStack gap={3} vAlign="center" padding={3}>
-          <Avatar aria-hidden="true" name={activeHousehold.name} />
-          <VStack gap={0}>
-            <Text type="label">{activeHousehold.name}</Text>
-            <Text type="supporting" color="secondary">
-              Household
-            </Text>
-          </VStack>
-        </HStack>
-      }
     >
-      <DropdownMenuGroup>
-        <DropdownMenuItem
-          label="Household settings"
-          icon={Settings}
-          onClick={() => {
-            closeMobileNav()
-            void navigate({
-              to: '/household/$householdId/settings/general',
-              params: { householdId: activeHousehold.id },
-            })
-          }}
-        />
-        <DropdownMenuItem
-          label="Members"
-          icon={Users}
-          onClick={() => {
-            closeMobileNav()
-            void navigate({
-              to: '/household/$householdId/settings/members',
-              params: { householdId: activeHousehold.id },
-            })
-          }}
-        />
-      </DropdownMenuGroup>
-      <DropdownMenuDivider />
       <DropdownMenuGroup
         title={
           <HStack gap={2} vAlign="center">

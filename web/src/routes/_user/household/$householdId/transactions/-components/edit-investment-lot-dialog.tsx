@@ -1,3 +1,4 @@
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -173,225 +174,268 @@ export function EditInvestmentLotDialog({
   }, [selectedAccount])
 
   return (
-    <>
-      <DialogHeader title="Edit Lot" onOpenChange={() => onClose()} />
-      <Text as="div" display="block" type="supporting">
-        Update lot details. Switching the investment moves the lot&apos;s
-        shares.
-      </Text>
+    <Layout
+      padding={6}
+      header={<DialogHeader title="Edit Lot" onOpenChange={() => onClose()} />}
+    >
+      <LayoutContent>
+        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+          <Text as="div" display="block" type="supporting">
+            Update lot details. Switching the investment moves the lot&apos;s
+            shares.
+          </Text>
 
-      <Stack
-        as="form"
-        direction="vertical"
-        gap={6}
-        id="edit-lot-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          form.handleSubmit()
-        }}
-      >
-        <FormLayout>
-          <form.Field
-            name="accountId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                  <SearchSelect
-                    items={investmentAccounts.map((account) => account.id)}
-                    getLabel={(item) =>
-                      investmentAccounts.find((acc) => acc.id === item)?.name ||
-                      ''
-                    }
-                    value={field.state.value}
-                    onChange={(value) => {
-                      field.handleChange(value || '')
-                      form.setFieldValue('investmentId', '')
-                    }}
-                    data-1p-ignore
-                    id={field.name}
-                    placeholder="Select an account"
-                    onBlur={field.handleBlur}
-                    label={'Account'}
-                    renderOption={(item: string) => {
-                      const account = investmentAccounts.find(
-                        (acc) => acc.id === item,
-                      )
-                      if (!account) return null
-                      return (
-                        <span>
-                          <Stack
-                            direction="horizontal"
-                            gap={3}
-                            align="center"
-                            wrap="wrap"
-                          >
-                            <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="edit-lot-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              <form.Field
+                name="accountId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={investmentAccounts.map((account) => account.id)}
+                        getLabel={(item) =>
+                          investmentAccounts.find((acc) => acc.id === item)
+                            ?.name || ''
+                        }
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                          form.setFieldValue('investmentId', '')
+                        }}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder="Select an account"
+                        onBlur={field.handleBlur}
+                        label={'Account'}
+                        renderOption={(item: string) => {
+                          const account = investmentAccounts.find(
+                            (acc) => acc.id === item,
+                          )
+                          if (!account) return null
+                          return (
+                            <Stack
+                              direction="horizontal"
+                              gap={3}
+                              align="center"
+                            >
                               <Avatar
-                                src={getLogoDomainURL(account.icon || '')}
-                                alt={account.icon || 'unknown logo'}
-                                name={String(account.name)}
+                                src={
+                                  account.icon
+                                    ? getLogoDomainURL(account.icon)
+                                    : undefined
+                                }
+                                name={account.name}
                               />
-                            </Stack>
-                            <Stack direction="vertical" gap={4}>
-                              <Stack direction="vertical" gap={4}>
-                                {account.name}
-                              </Stack>
-                              <Stack direction="vertical" gap={4}>
-                                <Text hasTabularNumbers>
+                              <Stack
+                                direction="vertical"
+                                gap={0.5}
+                                className="min-w-0"
+                              >
+                                <Text>{account.name}</Text>
+                                <Text
+                                  type="supporting"
+                                  color="secondary"
+                                  hasTabularNumbers
+                                >
                                   {formatCurrencyWithPrivacyMode({
                                     value: account.value,
                                     currencyCode:
                                       account.householdCurrency.code,
                                     liability: account.type === 'liability',
-                                  })}
+                                  })}{' '}
+                                  · {account.user.name}
                                 </Text>
-                                <span aria-hidden="true"> · </span>
-                                {account.user.name}
                               </Stack>
                             </Stack>
-                          </Stack>
-                        </span>
-                      )
-                    }}
-                    emptyText={<>No items found.</>}
-                  />
-                  {isInvalid && <FormError errors={field.state.meta.errors} />}
-                </Stack>
-              )
-            }}
-          />
-          <form.Field
-            name="investmentId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                  <SearchSelect
-                    items={availableInvestments.map((inv) => inv.id)}
-                    getLabel={(item) => {
-                      const inv = availableInvestments.find(
-                        (i) => i.id === item,
-                      )
-                      return inv ? `${inv.name} (${inv.symbol})` : ''
-                    }}
-                    value={field.state.value}
-                    onChange={(value) => {
-                      field.handleChange(value || '')
-                    }}
-                    isDisabled={!selectedAccount}
-                    data-1p-ignore
-                    id={field.name}
-                    placeholder={
-                      selectedAccount
-                        ? 'Select an investment'
-                        : 'Select an account first'
-                    }
-                    onBlur={field.handleBlur}
-                    label={'Investment'}
-                    renderOption={(item: string) => {
-                      const inv = availableInvestments.find(
-                        (i) => i.id === item,
-                      )
-                      return (
-                        <span>{inv ? `${inv.name} (${inv.symbol})` : ''}</span>
-                      )
-                    }}
-                    emptyText={<>No items found.</>}
-                  />
-                  {isInvalid && <FormError errors={field.state.meta.errors} />}
-                </Stack>
-              )
-            }}
-          />
-          <form.Field
-            name="shares"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                  <NumberInput
-                    data-1p-ignore
-                    id={field.name}
-                    onBlur={field.handleBlur}
-                    aria-invalid={isInvalid}
-                    placeholder="10"
-                    autoComplete="off"
-                    label={'Shares'}
+                          )
+                        }}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="investmentId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={availableInvestments.map((inv) => inv.id)}
+                        getLabel={(item) => {
+                          const inv = availableInvestments.find(
+                            (i) => i.id === item,
+                          )
+                          return inv
+                            ? inv.symbol && inv.symbol !== inv.name
+                              ? `${inv.name} (${inv.symbol})`
+                              : inv.name
+                            : ''
+                        }}
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                        }}
+                        isDisabled={!selectedAccount}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder={
+                          selectedAccount
+                            ? 'Select an investment'
+                            : 'Select an account first'
+                        }
+                        onBlur={field.handleBlur}
+                        label={'Investment'}
+                        renderOption={(item: string) => {
+                          const inv = availableInvestments.find(
+                            (i) => i.id === item,
+                          )
+                          return (
+                            <span>
+                              {inv
+                                ? inv.symbol && inv.symbol !== inv.name
+                                  ? `${inv.name} (${inv.symbol})`
+                                  : inv.name
+                                : ''}
+                            </span>
+                          )
+                        }}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="shares"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <NumberInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="10"
+                        autoComplete="off"
+                        label={'Shares'}
 
-                    htmlName={field.name}
-                    value={
-                      field.state.value === undefined ? null : field.state.value
-                    }
-                    onChange={(value) => field.handleChange(value)}
-                    step={0.0001}
-                  />
-                  {isInvalid && <FormError errors={field.state.meta.errors} />}
-                </Stack>
-              )
-            }}
-          />
-          <form.Field
-            name="pricePerShare"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                  <CurrencyInput
-                    id={field.name}
-                    name={field.name}
-                    placeholder="Please enter a price"
-                    onValueChange={(e) => {
-                      field.handleChange(e.floatValue!)
-                    }}
-                    value={field.state.value}
-                    locale={household.locale}
-                    currency={
-                      selectedAccount?.householdCurrency.code ??
-                      displayCurrencyCode
-                    }
-                    onBlur={field.handleBlur}
-                    aria-invalid={isInvalid}
-                    decimalScale={8}
-                  />
-                  {isInvalid && <FormError errors={field.state.meta.errors} />}
-                </Stack>
-              )
-            }}
-          />
-        </FormLayout>
-      </Stack>
+                        htmlName={field.name}
+                        value={
+                          field.state.value === undefined
+                            ? null
+                            : field.state.value
+                        }
+                        onChange={(value) => field.handleChange(value)}
+                        step={0.0001}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="pricePerShare"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter a price"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        decimalScale={8}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
 
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-      >
-        <Button
-          type="button"
-          onClick={onClose}
-          label={'Cancel'}
-          variant={'secondary'}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          form="edit-lot-form"
-          label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
-          variant={'primary'}
+          <Stack
+            direction="horizontal"
+            gap={3}
+            align="center"
+            wrap="wrap"
+            justify="end"
+          >
+            <Button
+              type="button"
+              onClick={onClose}
+              label={'Cancel'}
+              variant={'secondary'}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="edit-lot-form"
+              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              variant={'primary'}
 
-          isDisabled={isUpdateInFlight}
-        >
-          {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </Stack>
-    </>
+              isDisabled={isUpdateInFlight}
+            >
+              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </Stack>
+        </Stack>
+      </LayoutContent>
+    </Layout>
   )
 }

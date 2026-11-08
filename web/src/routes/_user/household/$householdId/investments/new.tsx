@@ -58,16 +58,12 @@ function RouteComponent() {
   })
 
   return (
-    <Stack direction="horizontal">
-      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-          <NewInvestment
-            newInvestmentFragmentRef={data.household}
-            newInvestmentStockQuoteFragmentRef={data}
-            newInvestmentCryptoQuoteFragmentRef={data}
-          />
-        </Stack>
-      </Stack>
+    <Stack direction="vertical" width="100%" className="max-w-2xl">
+      <NewInvestment
+        newInvestmentFragmentRef={data.household}
+        newInvestmentStockQuoteFragmentRef={data}
+        newInvestmentCryptoQuoteFragmentRef={data}
+      />
     </Stack>
   )
 }

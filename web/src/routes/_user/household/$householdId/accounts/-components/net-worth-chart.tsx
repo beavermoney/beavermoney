@@ -1,4 +1,3 @@
-import { EmptyState } from '@astryxdesign/core/EmptyState'
 import { Heading } from '@astryxdesign/core/Heading'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
@@ -345,28 +344,30 @@ export function NetWorthChart() {
   return (
     <Stack direction="vertical" gap={4}>
       <Heading level={2}>Account history</Heading>
-      <ScrollableArea axis="inline" label="Scrollable content">
-        <Stack direction="horizontal" gap={1}>
-          {SERIES.map((s) => {
-            const active = activeSeries.has(s.key)
-            return (
-              <Button
-                key={s.key}
-                onClick={() => toggleSeries(s.key)}
-                label={String(s.label)}
-                variant={active ? 'primary' : 'secondary'}
-              >
-                {s.label}
-              </Button>
-            )
-          })}
-        </Stack>
-      </ScrollableArea>
+      {chartData.length > 0 && (
+        <ScrollableArea axis="inline" label="Account history series">
+          <Stack direction="horizontal" gap={1}>
+            {SERIES.map((s) => {
+              const active = activeSeries.has(s.key)
+              return (
+                <Button
+                  key={s.key}
+                  onClick={() => toggleSeries(s.key)}
+                  label={String(s.label)}
+                  variant={active ? 'primary' : 'secondary'}
+                >
+                  {s.label}
+                </Button>
+              )
+            })}
+          </Stack>
+        </ScrollableArea>
+      )}
       {chartData.length === 0 ? (
-        <EmptyState
-          title="No snapshots in this period"
-          description="Choose a wider date range, or use Create snapshot in the toolbar to start tracking your balances."
-        />
+        <Text color="secondary">
+          No snapshots in this period. Choose a wider date range, or create a
+          snapshot from the toolbar to start tracking balances.
+        </Text>
       ) : hasActiveSeries ? (
         <ResponsiveContainer
           width="100%"

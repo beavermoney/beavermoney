@@ -81,7 +81,9 @@ export function FinancialSummaryCards({
               <Text type="supporting" color="secondary">
                 {metric.label}
               </Text>
-              <Heading level={3}>{metric.value}</Heading>
+              <Text type="label" hasTabularNumbers className="break-words">
+                {metric.value}
+              </Text>
             </VStack>
           ))}
         </Grid>
@@ -90,7 +92,7 @@ export function FinancialSummaryCards({
   }
 
   return (
-    <Grid columns={{ minWidth: 220, repeat: 'fit' }} gap={4}>
+    <Grid columns={{ minWidth: 180, max: 4, repeat: 'fit' }} gap={4}>
       {metrics.map((metric) => (
         <Card key={metric.label}>
           <VStack gap={3}>

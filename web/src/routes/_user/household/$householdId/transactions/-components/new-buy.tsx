@@ -1,10 +1,9 @@
-import { FinanceCalendar } from '@/components/finance-calendar'
+import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { Button } from '@astryxdesign/core/Button'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
 import { NumberInput } from '@astryxdesign/core/NumberInput'
-import { Popover } from '@astryxdesign/core/Popover'
 import { Stack } from '@astryxdesign/core/Stack'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -264,7 +263,6 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                     data-invalid={isInvalid}
                     data-transaction-initial-focus
                   >
-                    <label htmlFor={field.name}>Account</label>
                     <TransactionAccountPicker
                       accounts={investmentAccounts}
                       name={field.name}
@@ -291,7 +289,6 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>Investment</label>
                     <TransactionInvestmentPicker
                       investments={availableInvestments}
                       name={field.name}
@@ -468,57 +465,16 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>Date</label>
-                    <Popover
-                      label="Choose value"
-                      alignment={'start'}
-                      content={
-                        <>
-                          <FinanceCalendar
-                            mode="single"
-                            selected={field.state.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                field.handleChange(date)
-                              }
-                            }}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                          />
-                        </>
+                    <FinanceDateInput
+                      id={field.name}
+                      label="Date"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onBlur={field.handleBlur}
+                      disabledDate={(date) =>
+                        date > new Date() || date < new Date('1900-01-01')
                       }
-                    >
-                      {(triggerProps) => (
-                        <Button
-                          {...triggerProps}
-                          id={field.name}
-                          name={field.name}
-                          type="button"
-
-                          label={String(
-                            field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            ),
-                          )}
-                          variant={'secondary'}
-                        >
-                          {field.state.value.toLocaleDateString(
-                            household.locale,
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )}
-                        </Button>
-                      )}
-                    </Popover>
+                    />
                     {isInvalid && (
                       <FormError errors={field.state.meta.errors} />
                     )}

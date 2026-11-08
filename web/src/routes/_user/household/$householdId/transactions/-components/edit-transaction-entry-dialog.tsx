@@ -1,3 +1,4 @@
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -140,147 +141,170 @@ export function EditTransactionEntryDialog({
   const accountById = new Map(accounts.map((a) => [a.id, a]))
 
   return (
-    <>
-      <DialogHeader title="Edit Entry" onOpenChange={() => onClose()} />
-      <Text as="div" display="block" type="supporting">
-        Update entry details. Switching the account also switches the
-        entry&apos;s currency.
-      </Text>
+    <Layout
+      padding={6}
+      header={
+        <DialogHeader title="Edit Entry" onOpenChange={() => onClose()} />
+      }
+    >
+      <LayoutContent>
+        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+          <Text as="div" display="block" type="supporting">
+            Update entry details. Switching the account also switches the
+            entry&apos;s currency.
+          </Text>
 
-      <Stack
-        as="form"
-        direction="vertical"
-        gap={6}
-        id="edit-entry-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          form.handleSubmit()
-        }}
-      >
-        <FormLayout>
-          <form.Field
-            name="accountId"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              return (
-                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                  <SearchSelect
-                    items={accounts.map((a) => a.id)}
-                    getLabel={(item) => accountById.get(item)?.name ?? ''}
-                    value={field.state.value}
-                    onChange={(value) => field.handleChange(value || '')}
-                    data-1p-ignore
-                    id={field.name}
-                    placeholder="Select an account"
-                    onBlur={field.handleBlur}
-                    label={'Account'}
-                    renderOption={(item: string) => {
-                      const account = accounts.find((acc) => acc.id === item)
-                      if (!account) return null
-                      return (
-                        <span>
-                          <Stack
-                            direction="horizontal"
-                            gap={3}
-                            align="center"
-                            wrap="wrap"
-                          >
-                            <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="edit-entry-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              <form.Field
+                name="accountId"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={accounts.map((a) => a.id)}
+                        getLabel={(item) => accountById.get(item)?.name ?? ''}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
+                        data-1p-ignore
+                        id={field.name}
+                        placeholder="Select an account"
+                        onBlur={field.handleBlur}
+                        label={'Account'}
+                        renderOption={(item: string) => {
+                          const account = accounts.find(
+                            (acc) => acc.id === item,
+                          )
+                          if (!account) return null
+                          return (
+                            <Stack
+                              direction="horizontal"
+                              gap={3}
+                              align="center"
+                            >
                               <Avatar
-                                src={getLogoDomainURL(account.icon || '')}
-                                alt={account.icon || 'unknown logo'}
-                                name={String(account.name)}
+                                src={
+                                  account.icon
+                                    ? getLogoDomainURL(account.icon)
+                                    : undefined
+                                }
+                                name={account.name}
                               />
-                            </Stack>
-                            <Stack direction="vertical" gap={4}>
-                              <Stack direction="vertical" gap={4}>
-                                {account.name}
-                              </Stack>
-                              <Stack direction="vertical" gap={4}>
-                                <Text hasTabularNumbers>
+                              <Stack
+                                direction="vertical"
+                                gap={0.5}
+                                className="min-w-0"
+                              >
+                                <Text>{account.name}</Text>
+                                <Text
+                                  type="supporting"
+                                  color="secondary"
+                                  hasTabularNumbers
+                                >
                                   {formatCurrencyWithPrivacyMode({
                                     value: account.value,
                                     currencyCode:
                                       account.householdCurrency.code,
                                     liability: account.type === 'liability',
-                                  })}
+                                  })}{' '}
+                                  · {account.user.name}
                                 </Text>
-                                <span aria-hidden="true"> · </span>
-                                {account.user.name}
                               </Stack>
                             </Stack>
-                          </Stack>
-                        </span>
-                      )
-                    }}
-                    emptyText={<>No items found.</>}
-                  />
-                  {isInvalid && <FormError errors={field.state.meta.errors} />}
-                </Stack>
-              )
-            }}
-          />
-          <form.Field
-            name="amount"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid
-              const selectedAccount = accounts.find(
-                (a) => a.id === form.state.values.accountId,
-              )
-              return (
-                <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                  <CurrencyInput
-                    id={field.name}
-                    name={field.name}
-                    placeholder="Please enter an amount"
-                    onValueChange={(e) => {
-                      field.handleChange(e.floatValue!)
-                    }}
-                    value={field.state.value}
-                    locale={household.locale}
-                    currency={
-                      selectedAccount?.householdCurrency.code ??
-                      displayCurrencyCode
-                    }
-                    onBlur={field.handleBlur}
-                    aria-invalid={isInvalid}
-                  />
-                  {isInvalid && <FormError errors={field.state.meta.errors} />}
-                </Stack>
-              )
-            }}
-          />
-        </FormLayout>
-      </Stack>
+                          )
+                        }}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="amount"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  const selectedAccount = accounts.find(
+                    (a) => a.id === form.state.values.accountId,
+                  )
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter an amount"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
 
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-      >
-        <Button
-          type="button"
-          onClick={onClose}
-          label={'Cancel'}
-          variant={'secondary'}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          form="edit-entry-form"
-          label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
-          variant={'primary'}
+          <Stack
+            direction="horizontal"
+            gap={3}
+            align="center"
+            wrap="wrap"
+            justify="end"
+          >
+            <Button
+              type="button"
+              onClick={onClose}
+              label={'Cancel'}
+              variant={'secondary'}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="edit-entry-form"
+              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              variant={'primary'}
 
-          isDisabled={isUpdateInFlight}
-        >
-          {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </Stack>
-    </>
+              isDisabled={isUpdateInFlight}
+            >
+              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </Stack>
+        </Stack>
+      </LayoutContent>
+    </Layout>
   )
 }

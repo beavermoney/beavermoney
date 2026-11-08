@@ -10,10 +10,8 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   return (
-    <Stack direction="vertical">
-      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-        <NewSubscription />
-      </Stack>
+    <Stack direction="vertical" width="100%" className="max-w-2xl">
+      <NewSubscription />
     </Stack>
   )
 }

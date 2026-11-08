@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3cc764182490b1b25aa3cb097dc043b1>>
+ * @generated SignedSource<<b2bc33eec7864f407dea0cf8d1f8dcd7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -173,7 +173,6 @@ return {
                       "selections": [
                         (v1/*: any*/),
                         (v3/*: any*/),
-                        (v2/*: any*/),
                         {
                           "alias": null,
                           "args": null,

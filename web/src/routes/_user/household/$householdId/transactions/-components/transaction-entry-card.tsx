@@ -37,11 +37,13 @@ export function TransactionEntryCard({
   fragmentRef,
   isFirst: _isFirst,
   isLast: _isLast,
+  showDate = true,
   onClick,
 }: {
   fragmentRef: transactionEntryCardFragment$key
   isFirst: boolean
   isLast: boolean
+  showDate?: boolean
   onClick?: () => void
 }) {
   const { formatCurrency } = useCurrency()
@@ -71,9 +73,11 @@ export function TransactionEntryCard({
               currencyCode: data.account.householdCurrency.code,
             })}
           </Text>
-          <Text type="supporting">
-            {format(new Date(data.transaction.datetime), 'LLL d')}
-          </Text>
+          {showDate && (
+            <Text type="supporting">
+              {format(new Date(data.transaction.datetime), 'LLL d')}
+            </Text>
+          )}
           {data.transaction.excludeFromReports && <Badge label="Excluded" />}
         </VStack>
       }

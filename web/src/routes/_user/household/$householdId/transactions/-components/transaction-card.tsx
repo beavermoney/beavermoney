@@ -104,6 +104,7 @@ export function TransactionCard({
             {index !== 0 && <Divider />}
             <InvestmentLotCard
               fragmentRef={item.lot}
+              showDate={false}
               isFirst={index === 0}
               isLast={index === sortedItems.length - 1}
             />
@@ -113,6 +114,7 @@ export function TransactionCard({
             {index !== 0 && <Divider />}
             <TransactionEntryCard
               fragmentRef={item.entry}
+              showDate={false}
               isFirst={index === 0}
               isLast={index === sortedItems.length - 1}
             />

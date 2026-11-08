@@ -363,7 +363,7 @@ export function TransactionsTable({
           idKey="id"
           hasHover
           emptyState="No transactions in this date range."
-          textOverflow="truncate"
+          textOverflow="wrap"
           columns={visibleColumns.map((column) => ({
             key: column.id,
             header: column.header,

@@ -1,10 +1,9 @@
 import { Button } from '@astryxdesign/core/Button'
 import { Heading } from '@astryxdesign/core/Heading'
-import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { useToast } from '@astryxdesign/core/Toast'
-import { Archive, ArchiveRestore } from 'lucide-react'
+import { List, ListItem } from '@astryxdesign/core/List'
 import { useState } from 'react'
 import { graphql, useFragment, useMutation } from 'react-relay'
 import type { accountSettingsFragment$key } from './__generated__/accountSettingsFragment.graphql'
@@ -87,16 +86,8 @@ export function AccountSettings({
       gap={4}
       as="section"
 
-      aria-labelledby="account-settings-title"
+      aria-label="Account settings"
     >
-      <Stack direction="vertical" gap={4} as="header">
-        <Heading level={1} id="account-settings-title">
-          Account settings
-        </Heading>
-        <Text as="p" display="block" color="secondary">
-          Bring archived accounts back into your ledger.
-        </Text>
-      </Stack>
       <Stack
         direction="vertical"
         gap={4}
@@ -113,47 +104,29 @@ export function AccountSettings({
           </Text>
         </Stack>
         {accounts.length === 0 ? (
-          <Stack direction="vertical" gap={4}>
-            <Stack direction="vertical" gap={2}>
-              <Stack direction="vertical" gap={4}>
-                <AstryxIcon icon={Archive} aria-hidden="true" />
-              </Stack>
-              <Heading level={2}>No archived accounts</Heading>
-              <Stack direction="vertical" gap={4}>
-                Accounts you archive will appear here when you need them again.
-              </Stack>
-            </Stack>
-          </Stack>
+          <Text color="secondary">No archived accounts</Text>
         ) : (
-          <ul>
+          <List hasDividers edge="outset">
             {accounts.map((account) => (
-              <li key={account.id}>
-                <Stack direction="vertical" gap={0.5}>
-                  <Text as="p" display="block">
-                    {account.name}
-                  </Text>
-                  <Text as="p" display="block" color="secondary">
-                    {account.user.name} · <Text>{account.type}</Text> ·{' '}
-                    {account.householdCurrency.code}
-                  </Text>
-                </Stack>
-                <Button
-                  onClick={() => unarchive(account.id, account.name)}
-                  label={`Unarchive ${account.name}`}
-                  variant={'secondary'}
-
-                  isDisabled={isInFlight}
-                >
-                  <AstryxIcon
-                    icon={ArchiveRestore}
-                    data-icon="inline-start"
-                    aria-hidden="true"
+              <ListItem
+                key={account.id}
+                id={account.id}
+                label={<Text maxLines={2}>{account.name}</Text>}
+                description={`${account.user.name} · ${account.type} · ${account.householdCurrency.code}`}
+                endContent={
+                  <Button
+                    onClick={() => unarchive(account.id, account.name)}
+                    label={
+                      pendingId === account.id ? 'Unarchiving…' : 'Unarchive'
+                    }
+                    aria-label={`Unarchive ${account.name}`}
+                    variant="secondary"
+                    isDisabled={isInFlight}
                   />
-                  {pendingId === account.id ? 'Unarchiving…' : 'Unarchive'}
-                </Button>
-              </li>
+                }
+              />
             ))}
-          </ul>
+          </List>
         )}
       </Stack>
       <Text as="p" display="block" color="secondary" role="status">

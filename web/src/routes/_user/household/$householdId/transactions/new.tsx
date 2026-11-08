@@ -82,7 +82,7 @@ function RouteComponent() {
   }
 
   return (
-    <Stack direction="vertical" gap={6}>
+    <Stack direction="vertical" gap={6} className="max-w-2xl" width="100%">
       <Heading level={1}>New transaction</Heading>
       <Stack direction="vertical" gap={4}>
         <LogTransaction fragmentRef={data.household} />

@@ -35,7 +35,9 @@ const formSchema = z.object({
     .min(1, 'Category name must be at least 1 character.')
     .max(32, 'Category name must be at most 32 characters.'),
   icon: z.string(),
-  type: z.enum(['expense', 'income']),
+  type: z.enum(['expense', 'income'], {
+    error: 'Please select a category type.',
+  }),
 })
 
 const newCategoryMutation = graphql`
@@ -116,133 +118,145 @@ export function NewCategory() {
 
   return (
     <Card>
-      <Stack direction="vertical" gap={2} as="header">
-        <Heading level={2}>New Category</Heading>
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>New Category</Heading>
+        </Stack>
         <Stack direction="vertical" gap={4}>
-          Create a new category for your transactions
-        </Stack>
-      </Stack>
-      <Stack direction="vertical" gap={4}>
-        <Stack
-          as="form"
-          direction="vertical"
-          gap={6}
-          id="new-category-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FormLayout>
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="Groceries"
-                      autoComplete="off"
-                      label={'Name'}
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="new-category-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
+              <form.Field
+                name="name"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TextInput
+                        data-1p-ignore
+                        id={field.name}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        placeholder="Groceries"
+                        autoComplete="off"
+                        label={'Name'}
 
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="icon"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <IconPicker
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value as IconName}
-                      onValueChange={(value) => field.handleChange(value)}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="type"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <SearchSelect
-                      items={[...CATEGORY_TYPES]}
-                      value={field.state.value}
-                      onChange={(value) => field.handleChange(value || '')}
-                      id={field.name}
-                      placeholder="Select a type"
-                      onBlur={field.handleBlur}
-                      label={'Type'}
-                      renderOption={(item: string) => (
-                        <span>
-                          <Text type="label">{capitalize(item)}</Text>
-                          <span>{CATEGORY_TYPE_DESCRIPTION[item]}</span>
-                        </span>
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                      emptyText={<>No items found.</>}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-          </FormLayout>
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="icon"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <IconPicker
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value as IconName}
+                        onValueChange={(value) => field.handleChange(value)}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="type"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        searchable={false}
+                        items={[...CATEGORY_TYPES]}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
+                        id={field.name}
+                        placeholder="Select a type"
+                        onBlur={field.handleBlur}
+                        label={'Type'}
+                        renderOption={(item: string) => (
+                          <span>
+                            <Text type="label">{capitalize(item)}</Text>
+                            <span>{CATEGORY_TYPE_DESCRIPTION[item]}</span>
+                          </span>
+                        )}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
         </Stack>
-      </Stack>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        as="footer"
-      >
-        <Stack direction="horizontal" gap={2} wrap="wrap">
-          <Button
-            type="button"
-            onClick={() => form.reset()}
-            label={'Reset'}
-            variant={'secondary'}
-          >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            form="new-category-form"
-            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
-            variant={'primary'}
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={'Reset'}
+              variant={'secondary'}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              form="new-category-form"
+              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              variant={'primary'}
 
-            isDisabled={isMutationInFlight}
-          >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
-          </Button>
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? 'Creating...' : 'Create'}
+            </Button>
+          </Stack>
         </Stack>
       </Stack>
     </Card>

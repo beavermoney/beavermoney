@@ -91,7 +91,7 @@ export function CategoryCard({
       description={
         transactionCount
           ? `${transactionCount} transaction${transactionCount === 1 ? '' : 's'}`
-          : 'No transactions this period'
+          : undefined
       }
       endContent={
         <Text hasTabularNumbers>

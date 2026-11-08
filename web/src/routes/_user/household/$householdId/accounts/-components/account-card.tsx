@@ -1,8 +1,8 @@
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { ProgressBar } from '@astryxdesign/core/ProgressBar'
 import { Stack } from '@astryxdesign/core/Stack'
+import { Heading } from '@astryxdesign/core/Heading'
 import { Text } from '@astryxdesign/core/Text'
-import { Link, LinkOptions } from '@tanstack/react-router'
 import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import type { accountCardFragment$key } from './__generated__/accountCardFragment.graphql'
@@ -35,15 +35,9 @@ const accountCardFragment = graphql`
 
 type AccountCardProps = {
   fragmentRef: accountCardFragment$key
-  linkOptions?: LinkOptions
-  className?: string
 }
 
-export function AccountCard({
-  fragmentRef,
-  linkOptions,
-  className: _className,
-}: AccountCardProps) {
+export function AccountCard({ fragmentRef }: AccountCardProps) {
   const data = useFragment(accountCardFragment, fragmentRef)
 
   const balance = currency(data.balance)
@@ -63,14 +57,10 @@ export function AccountCard({
       : 0
 
   return (
-    <Link
-      from="/household/$householdId"
-      to="/household/$householdId/accounts/$accountId"
-      search={(prev) => ({ ...prev })}
-      activeOptions={{ exact: true }}
-
-      params={{ accountId: data.id }}
-      {...linkOptions}
+    <Stack
+      direction="vertical"
+      gap={3}
+      aria-labelledby={`account-${data.id}-name`}
     >
       <Stack direction="horizontal" gap={2} align="center">
         <Avatar
@@ -78,7 +68,9 @@ export function AccountCard({
           alt={data.icon || 'unknown logo'}
           name={String(data.name.slice(0, 2))}
         />
-        <span>{data.name}</span>
+        <Heading level={2} id={`account-${data.id}-name`}>
+          {data.name}
+        </Heading>
       </Stack>
       <Stack direction="horizontal" gap={2}>
         <Text type="label" hasTabularNumbers>
@@ -90,13 +82,13 @@ export function AccountCard({
         </Text>
       </Stack>
       <Stack direction="horizontal" gap={1.5} align="center">
-        <span>{data.user.name}</span>
+        <Text color="secondary">{data.user.name}</Text>
         <Text type="supporting">·</Text>
-        <span>
+        <Text color="secondary">
           {data.latestTransaction
             ? getRelativeDate(new Date(data.latestTransaction.datetime))
-            : 'Never used'}
-        </span>
+            : 'No activity yet'}
+        </Text>
       </Stack>
       {showProgress && (
         <Stack direction="vertical" gap={1}>
@@ -117,6 +109,6 @@ export function AccountCard({
           </Stack>
         </Stack>
       )}
-    </Link>
+    </Stack>
   )
 }

@@ -37,11 +37,13 @@ export function InvestmentLotCard({
   fragmentRef,
   isFirst: _isFirst,
   isLast: _isLast,
+  showDate = true,
   onClick,
 }: {
   fragmentRef: investmentLotCardFragment$key
   isFirst: boolean
   isLast: boolean
+  showDate?: boolean
   onClick?: () => void
 }) {
   const { formatCurrency } = useCurrency()
@@ -73,9 +75,11 @@ export function InvestmentLotCard({
               currencyCode: data.investment.householdCurrency.code,
             })}
           </Text>
-          <Text type="supporting">
-            {format(new Date(data.transaction.datetime), 'LLL d')}
-          </Text>
+          {showDate && (
+            <Text type="supporting">
+              {format(new Date(data.transaction.datetime), 'LLL d')}
+            </Text>
+          )}
         </VStack>
       }
     />

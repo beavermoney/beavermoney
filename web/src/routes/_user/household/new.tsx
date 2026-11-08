@@ -176,192 +176,201 @@ function NewHouseholdForm() {
   const availableLocales = lookupCurrency(currencyCode)?.locales ?? []
 
   return (
-    <Stack direction="vertical" gap={3}>
-      {/* Demo banner */}
-      <Stack direction="horizontal" gap={3} align="center">
-        <Stack direction="horizontal" align="center" justify="center">
-          <AstryxIcon icon={SparklesIcon} strokeWidth={2} />
-        </Stack>
-        <Text as="p" display="block" color="secondary">
-          New to Beaver Money?
-          <br />
-          <Text type="label">Try it with sample data first.</Text>
-        </Text>
-        <Button
-          onClick={handleCreateDemo}
-
-          label={String(isMutationInFlight ? 'Creating...' : 'Create demo')}
-          variant={'secondary'}
-
-          isDisabled={isMutationInFlight}
-        >
-          {isMutationInFlight ? 'Creating...' : 'Create demo'}
-        </Button>
-      </Stack>
-
-      {/* Main form card */}
-      <Card>
-        <Stack direction="vertical" gap={2} as="header">
+    <Stack
+      direction="vertical"
+      gap={6}
+      width="100%"
+      className="app-safe-area app-scroll-content"
+    >
+      <Stack
+        direction="vertical"
+        gap={6}
+        padding={6}
+        width="100%"
+        className="mx-auto max-w-2xl"
+      >
+        {/* Demo banner */}
+        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
           <Stack direction="horizontal" align="center" justify="center">
-            <AstryxIcon icon={HomeIcon} strokeWidth={2} />
+            <AstryxIcon icon={SparklesIcon} strokeWidth={2} />
           </Stack>
-          <Heading level={2}>Create Your Household</Heading>
-          <Stack direction="vertical" gap={4}>
-            Set up your household to start tracking your finances together
-          </Stack>
-        </Stack>
-        <Stack direction="vertical" gap={4}>
-          <Stack
-            as="form"
-            direction="vertical"
-            gap={6}
-            id="new-household-form"
-            onSubmit={(e) => {
-              e.preventDefault()
-              form.handleSubmit()
-            }}
-          >
-            <FormLayout>
-              <form.Field
-                name="name"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <Stack direction="vertical" gap={4}>
-                        Give your household a memorable name
-                      </Stack>
-                      <TextInput
-                        data-1p-ignore
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                        placeholder="My Family"
-                        autoComplete="off"
-                        label={'Household Name'}
-
-                        value={String(field.state.value ?? '')}
-                        onChange={(_value, event) =>
-                          ((e) => field.handleChange(e.target.value))(event)
-                        }
-                        htmlName={field.name}
-                        hasAutoFocus={true}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
-              <form.Field
-                name="currencyCode"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <Stack direction="vertical" gap={4}>
-                        Your household's primary currency for reporting
-                      </Stack>
-                      <SearchSelect
-                        items={SUPPORTED_CURRENCIES.map((c) => c.code)}
-                        value={field.state.value}
-                        onChange={(value) => {
-                          field.handleChange(value || '')
-                        }}
-                        id={field.name}
-                        placeholder="Select a currency"
-                        onBlur={field.handleBlur}
-                        label={'Currency'}
-                        renderOption={(item: string) => <span>{item}</span>}
-                        emptyText={<>No currency found.</>}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
-              <form.Field
-                name="locale"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <Stack direction="vertical" gap={4}>
-                        Determines date and number formatting
-                      </Stack>
-                      <SearchSelect
-                        key={currencyCode}
-                        items={availableLocales}
-                        value={field.state.value}
-                        onChange={(value: string | null) => {
-                          field.handleChange(value ?? '')
-                        }}
-                        getLabel={(item: string | null) => {
-                          if (!item || !currencyCode) return ''
-                          return getLocaleDisplayName(item, currencyCode)
-                        }}
-                        id={field.name}
-                        placeholder="Select a locale"
-                        onBlur={field.handleBlur}
-                        label={'Locale'}
-                        renderOption={(item: string) => (
-                          <span>
-                            {getLocaleDisplayName(item, currencyCode)}
-                          </span>
-                        )}
-                        emptyText={<>No locale found.</>}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
-            </FormLayout>
-          </Stack>
-        </Stack>
-        <Stack
-          direction="horizontal"
-          gap={3}
-          align="center"
-          wrap="wrap"
-          justify="end"
-          as="footer"
-        >
+          <Text as="p" display="block" color="secondary">
+            New to Beaver Money?
+            <br />
+            <Text type="label">Try it with sample data first.</Text>
+          </Text>
           <Button
-            type="submit"
-            form="new-household-form"
+            onClick={handleCreateDemo}
 
-            label={String(
-              isMutationInFlight ? 'Creating...' : 'Create Household',
-            )}
-            variant={'primary'}
+            label={String(isMutationInFlight ? 'Creating...' : 'Create demo')}
+            variant={'secondary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create Household'}
+            {isMutationInFlight ? 'Creating...' : 'Create demo'}
           </Button>
         </Stack>
-      </Card>
+
+        {/* Main form card */}
+        <Card>
+          <Stack direction="vertical" gap={6}>
+            <Stack direction="vertical" gap={2} as="header">
+              <Stack direction="horizontal" align="center" justify="center">
+                <AstryxIcon icon={HomeIcon} strokeWidth={2} />
+              </Stack>
+              <Heading level={2}>Create Your Household</Heading>
+            </Stack>
+            <Stack direction="vertical" gap={4}>
+              <Stack
+                as="form"
+                direction="vertical"
+                gap={6}
+                id="new-household-form"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  form.handleSubmit()
+                }}
+              >
+                <FormLayout>
+                  <form.Field
+                    name="name"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Stack
+                          direction="vertical"
+                          gap={2}
+                          data-invalid={isInvalid}
+                        >
+                          <TextInput
+                            data-1p-ignore
+                            id={field.name}
+                            onBlur={field.handleBlur}
+                            aria-invalid={isInvalid}
+                            placeholder="My Family"
+                            autoComplete="off"
+                            label={'Household Name'}
+
+                            value={String(field.state.value ?? '')}
+                            onChange={(_value, event) =>
+                              ((e) => field.handleChange(e.target.value))(event)
+                            }
+                            htmlName={field.name}
+                            hasAutoFocus={true}
+                          />
+                          {isInvalid && (
+                            <FormError errors={field.state.meta.errors} />
+                          )}
+                        </Stack>
+                      )
+                    }}
+                  />
+                  <form.Field
+                    name="currencyCode"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Stack
+                          direction="vertical"
+                          gap={2}
+                          data-invalid={isInvalid}
+                        >
+                          <Text type="supporting" color="secondary">
+                            Your household's primary currency for reporting
+                          </Text>
+                          <SearchSelect
+                            items={SUPPORTED_CURRENCIES.map((c) => c.code)}
+                            value={field.state.value}
+                            onChange={(value) => {
+                              field.handleChange(value || '')
+                            }}
+                            id={field.name}
+                            placeholder="Select a currency"
+                            onBlur={field.handleBlur}
+                            label={'Currency'}
+                            renderOption={(item: string) => <span>{item}</span>}
+                            emptyText={<>No currency found.</>}
+                          />
+                          {isInvalid && (
+                            <FormError errors={field.state.meta.errors} />
+                          )}
+                        </Stack>
+                      )
+                    }}
+                  />
+                  <form.Field
+                    name="locale"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid
+                      return (
+                        <Stack
+                          direction="vertical"
+                          gap={2}
+                          data-invalid={isInvalid}
+                        >
+                          <Text type="supporting" color="secondary">
+                            Determines date and number formatting
+                          </Text>
+                          <SearchSelect
+                            key={currencyCode}
+                            items={availableLocales}
+                            value={field.state.value}
+                            onChange={(value: string | null) => {
+                              field.handleChange(value ?? '')
+                            }}
+                            getLabel={(item: string | null) => {
+                              if (!item || !currencyCode) return ''
+                              return getLocaleDisplayName(item, currencyCode)
+                            }}
+                            id={field.name}
+                            placeholder="Select a locale"
+                            onBlur={field.handleBlur}
+                            label={'Locale'}
+                            renderOption={(item: string) => (
+                              <span>
+                                {getLocaleDisplayName(item, currencyCode)}
+                              </span>
+                            )}
+                            emptyText={<>No locale found.</>}
+                          />
+                          {isInvalid && (
+                            <FormError errors={field.state.meta.errors} />
+                          )}
+                        </Stack>
+                      )
+                    }}
+                  />
+                </FormLayout>
+              </Stack>
+            </Stack>
+            <Stack
+              direction="horizontal"
+              gap={3}
+              align="center"
+              wrap="wrap"
+              justify="end"
+              as="footer"
+            >
+              <Button
+                type="submit"
+                form="new-household-form"
+
+                label={String(
+                  isMutationInFlight ? 'Creating...' : 'Create Household',
+                )}
+                variant={'primary'}
+
+                isDisabled={isMutationInFlight}
+              >
+                {isMutationInFlight ? 'Creating...' : 'Create Household'}
+              </Button>
+            </Stack>
+          </Stack>
+        </Card>
+      </Stack>
     </Stack>
   )
 }

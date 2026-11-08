@@ -1,3 +1,5 @@
+import { HStack } from '@astryxdesign/core/Layout'
+import { Text } from '@astryxdesign/core/Text'
 import { SearchSelect } from '@/components/search-select'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { UserIcon, UsersIcon } from 'lucide-react'
@@ -40,19 +42,19 @@ export function OwnerSelect({
       id={id}
       placeholder={placeholder}
       onBlur={onBlur}
-      label={'Value'}
+      label="Owner"
       renderOption={(item: string) => {
         const owner = options.find((o) => o.id === item)
         if (!owner) return null
         return (
-          <span>
+          <HStack gap={2} vAlign="center">
             {owner.isSynthetic ? (
               <AstryxIcon icon={UsersIcon} />
             ) : (
               <AstryxIcon icon={UserIcon} />
             )}
-            <span>{owner.name}</span>
-          </span>
+            <Text>{owner.name}</Text>
+          </HStack>
         )
       }}
       emptyText={<>No owners.</>}

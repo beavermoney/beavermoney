@@ -1,11 +1,11 @@
-import { FinanceCalendar } from '@/components/finance-calendar'
+import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
 import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
+import { DialogHeader } from '@astryxdesign/core/Dialog'
 import { Divider } from '@astryxdesign/core/Divider'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
-import { Popover } from '@astryxdesign/core/Popover'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -29,7 +29,6 @@ import type { editTransactionDialogHouseholdFragment$key } from './__generated__
 import type { editTransactionDialogTransactionFragment$key } from './__generated__/editTransactionDialogTransactionFragment.graphql'
 import type { editTransactionDialogUpdateMutation } from './__generated__/editTransactionDialogUpdateMutation.graphql'
 
-import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
 import { useNavigate } from '@tanstack/react-router'
 import currency from 'currency.js'
@@ -208,8 +207,6 @@ export function EditTransactionDialog({
   )
 
   const navigate = useNavigate()
-
-  const { household } = useHousehold()
 
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
 
@@ -411,238 +408,20 @@ export function EditTransactionDialog({
       })
   }, [transaction])
 
-  return (
-    <>
-      <DialogHeader title="Edit Transaction" onOpenChange={() => onClose?.()} />
-      <Text as="div" display="block" type="supporting">
-        Update transaction details. Click on entries or lots below to edit them
-        individually.
-      </Text>
-
-      <Stack direction="horizontal" align="center">
-        {sortedItems.map((item, index) =>
-          item.type === 'lot' ? (
-            <Fragment key={item.lot.id}>
-              {index !== 0 && <Divider />}
-              <InvestmentLotCard
-                fragmentRef={item.lot}
-                isFirst={index === 0}
-                isLast={index === sortedItems.length - 1}
-                onClick={() =>
-                  openLotEdit({
-                    id: item.lot.id,
-                    amount: item.lot.amount,
-                    price: item.lot.price,
-                    investmentId: item.lot.investment.id,
-                    accountId: item.lot.investment.account.id,
-                  })
-                }
-              />
-            </Fragment>
-          ) : (
-            <Fragment key={item.entry.id}>
-              {index !== 0 && <Divider />}
-              <TransactionEntryCard
-                fragmentRef={item.entry}
-                isFirst={index === 0}
-                isLast={index === sortedItems.length - 1}
-                onClick={() =>
-                  openEntryEdit({
-                    id: item.entry.id,
-                    amount: item.entry.amount,
-                    accountId: item.entry.account.id,
-                  })
-                }
-              />
-            </Fragment>
-          ),
-        )}
-      </Stack>
-
-      <Stack direction="vertical" gap={4}>
-        {/* Edit form */}
-        <Stack
-          as="form"
-          direction="vertical"
-          gap={6}
-          id="edit-transaction-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FormLayout>
-            <form.Field
-              name="description"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="Transaction description"
-                      autoComplete="off"
-                      label={'Description'}
-
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="datetime"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>Date</label>
-                    <Popover
-                      label="Choose value"
-                      alignment={'start'}
-                      content={
-                        <>
-                          <FinanceCalendar
-                            mode="single"
-                            selected={field.state.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                field.handleChange(date)
-                              }
-                            }}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                          />
-                        </>
-                      }
-                    >
-                      {(triggerProps) => (
-                        <Button
-                          {...triggerProps}
-                          id={field.name}
-                          name={field.name}
-                          type="button"
-
-                          label={String(
-                            field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            ),
-                          )}
-                          variant={'secondary'}
-                        >
-                          {field.state.value.toLocaleDateString(
-                            household.locale,
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )}
-                        </Button>
-                      )}
-                    </Popover>
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="categoryId"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>Category</label>
-                    <TransactionCategoryPicker
-                      categories={allCategories}
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <fieldset>
-              <legend>Options</legend>
-              <Stack direction="vertical" gap={4} data-slot="checkbox-group">
-                <form.Field
-                  name="excludeFromReports"
-                  children={(field) => {
-                    return (
-                      <Stack direction="vertical" gap={2}>
-                        <CheckboxInput
-                          id={field.name}
-                          htmlName={field.name}
-                          value={field.state.value}
-                          onChange={field.handleChange}
-                          onBlur={field.handleBlur}
-                          label={'Exclude from reports'}
-                        />
-                      </Stack>
-                    )
-                  }}
-                />
-              </Stack>
-            </fieldset>
-          </FormLayout>
-        </Stack>
-      </Stack>
-
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-      >
-        <>
-          <Button
-            onClick={() => setDeleteAlertOpen(true)}
-            type="button"
-            label={'Delete'}
-            variant={'destructive'}
-
-            isDisabled={isDeleteInFlight || isUpdateInFlight}
-          >
-            Delete
-          </Button>
-          <Dialog
-            isOpen={deleteAlertOpen}
+  if (deleteAlertOpen)
+    return (
+      <Layout
+        key="delete-confirmation"
+        padding={6}
+        header={
+          <DialogHeader
+            title={<>Delete Transaction</>}
             onOpenChange={setDeleteAlertOpen}
-            purpose="form"
-            role="alertdialog"
-          >
-            <DialogHeader
-              title={<>Delete Transaction</>}
-              onOpenChange={setDeleteAlertOpen}
-            />
+          />
+        }
+      >
+        <LayoutContent>
+          <Stack direction="vertical" gap={6} paddingBlockStart={4}>
             <Text as="div" display="block" type="supporting">
               This action cannot be undone. This will permanently delete the
               transaction and all associated entries and investment lots.
@@ -667,63 +446,257 @@ export function EditTransactionDialog({
                 {isDeleteInFlight ? 'Deleting...' : 'Delete'}
               </Button>
             </Stack>
-          </Dialog>
-        </>
-        <Button
-          type="submit"
-          form="edit-transaction-form"
-          label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
-          variant={'primary'}
+          </Stack>
+        </LayoutContent>
+      </Layout>
+    )
 
-          isDisabled={isUpdateInFlight || isDeleteInFlight}
-        >
-          {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </Stack>
+  if (entryDialogOpen && editingEntry)
+    return (
+      <EditTransactionEntryDialog
+        key={editingEntry.id}
+        entryId={editingEntry.id}
+        currentAmount={editingEntry.amount}
+        currentAccountId={editingEntry.accountId}
+        accounts={accountsList}
+        onClose={() => setEntryDialogOpen(false)}
+      />
+    )
 
-      <>
-        <Dialog
-          isOpen={entryDialogOpen}
-          onOpenChange={(open) => {
-            if (!open) setEntryDialogOpen(false)
-          }}
-          purpose="form"
-        >
-          {editingEntry && (
-            <EditTransactionEntryDialog
-              key={editingEntry.id}
-              entryId={editingEntry.id}
-              currentAmount={editingEntry.amount}
-              currentAccountId={editingEntry.accountId}
-              accounts={accountsList}
-              onClose={() => setEntryDialogOpen(false)}
-            />
-          )}
-        </Dialog>
-      </>
+  if (lotDialogOpen && editingLot)
+    return (
+      <EditInvestmentLotDialog
+        key={editingLot.id}
+        lotId={editingLot.id}
+        currentAmount={editingLot.amount}
+        currentPrice={editingLot.price}
+        currentInvestmentId={editingLot.investmentId}
+        currentAccountId={editingLot.accountId}
+        accounts={accountsList}
+        onClose={() => setLotDialogOpen(false)}
+      />
+    )
 
-      <>
-        <Dialog
-          isOpen={lotDialogOpen}
-          onOpenChange={(open) => {
-            if (!open) setLotDialogOpen(false)
-          }}
-          purpose="form"
-        >
-          {editingLot && (
-            <EditInvestmentLotDialog
-              key={editingLot.id}
-              lotId={editingLot.id}
-              currentAmount={editingLot.amount}
-              currentPrice={editingLot.price}
-              currentInvestmentId={editingLot.investmentId}
-              currentAccountId={editingLot.accountId}
-              accounts={accountsList}
-              onClose={() => setLotDialogOpen(false)}
-            />
-          )}
-        </Dialog>
-      </>
-    </>
+  return (
+    <Layout
+      padding={6}
+      header={
+        <DialogHeader
+          title="Edit Transaction"
+          onOpenChange={() => onClose?.()}
+        />
+      }
+    >
+      <LayoutContent>
+        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+          <Text as="div" display="block" type="supporting">
+            Update transaction details. Click on entries or lots below to edit
+            them individually.
+          </Text>
+
+          <Stack direction="vertical" gap={2}>
+            {sortedItems.map((item, index) =>
+              item.type === 'lot' ? (
+                <Fragment key={item.lot.id}>
+                  {index !== 0 && <Divider />}
+                  <InvestmentLotCard
+                    fragmentRef={item.lot}
+                    isFirst={index === 0}
+                    isLast={index === sortedItems.length - 1}
+                    onClick={() =>
+                      openLotEdit({
+                        id: item.lot.id,
+                        amount: item.lot.amount,
+                        price: item.lot.price,
+                        investmentId: item.lot.investment.id,
+                        accountId: item.lot.investment.account.id,
+                      })
+                    }
+                  />
+                </Fragment>
+              ) : (
+                <Fragment key={item.entry.id}>
+                  {index !== 0 && <Divider />}
+                  <TransactionEntryCard
+                    fragmentRef={item.entry}
+                    isFirst={index === 0}
+                    isLast={index === sortedItems.length - 1}
+                    onClick={() =>
+                      openEntryEdit({
+                        id: item.entry.id,
+                        amount: item.entry.amount,
+                        accountId: item.entry.account.id,
+                      })
+                    }
+                  />
+                </Fragment>
+              ),
+            )}
+          </Stack>
+
+          <Stack direction="vertical" gap={4}>
+            {/* Edit form */}
+            <Stack
+              as="form"
+              direction="vertical"
+              gap={6}
+              id="edit-transaction-form"
+              onSubmit={(e) => {
+                e.preventDefault()
+                form.handleSubmit()
+              }}
+            >
+              <FormLayout>
+                <form.Field
+                  name="description"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <TextInput
+                          data-1p-ignore
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                          placeholder="Transaction description"
+                          autoComplete="off"
+                          label={'Description'}
+
+                          value={String(field.state.value ?? '')}
+                          onChange={(_value, event) =>
+                            ((e) => field.handleChange(e.target.value))(event)
+                          }
+                          htmlName={field.name}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+                <form.Field
+                  name="datetime"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <FinanceDateInput
+                          id={field.name}
+                          label="Date"
+                          value={field.state.value}
+                          onChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                          disabledDate={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+                <form.Field
+                  name="categoryId"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <label htmlFor={field.name}>Category</label>
+                        <TransactionCategoryPicker
+                          categories={allCategories}
+                          name={field.name}
+                          value={field.state.value}
+                          onValueChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                          invalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+                <fieldset>
+                  <legend>Options</legend>
+                  <Stack
+                    direction="vertical"
+                    gap={4}
+                    data-slot="checkbox-group"
+                  >
+                    <form.Field
+                      name="excludeFromReports"
+                      children={(field) => {
+                        return (
+                          <Stack direction="vertical" gap={2}>
+                            <CheckboxInput
+                              id={field.name}
+                              htmlName={field.name}
+                              value={field.state.value}
+                              onChange={field.handleChange}
+                              onBlur={field.handleBlur}
+                              label={'Exclude from reports'}
+                            />
+                          </Stack>
+                        )
+                      }}
+                    />
+                  </Stack>
+                </fieldset>
+              </FormLayout>
+            </Stack>
+          </Stack>
+
+          <Stack
+            direction="horizontal"
+            gap={3}
+            align="center"
+            wrap="wrap"
+            justify="end"
+          >
+            <>
+              <Button
+                onClick={() => setDeleteAlertOpen(true)}
+                type="button"
+                label={'Delete'}
+                variant={'destructive'}
+
+                isDisabled={isDeleteInFlight || isUpdateInFlight}
+              >
+                Delete
+              </Button>
+            </>
+            <Button
+              type="submit"
+              form="edit-transaction-form"
+              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              variant={'primary'}
+
+              isDisabled={isUpdateInFlight || isDeleteInFlight}
+            >
+              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </Stack>
+        </Stack>
+      </LayoutContent>
+    </Layout>
   )
 }

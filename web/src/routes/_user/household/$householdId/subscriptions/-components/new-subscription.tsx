@@ -1,4 +1,4 @@
-import { FinanceCalendar } from '@/components/finance-calendar'
+import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -7,7 +7,6 @@ import { Card } from '@astryxdesign/core/Card'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
 import { Heading } from '@astryxdesign/core/Heading'
 import { NumberInput } from '@astryxdesign/core/NumberInput'
-import { Popover } from '@astryxdesign/core/Popover'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -178,56 +177,24 @@ export function NewSubscription() {
 
   return (
     <Card>
-      <Stack direction="vertical" gap={2} as="header">
-        <Heading level={2}>New Subscription</Heading>
-        <Stack direction="vertical" gap={4}>
-          Track your recurring subscriptions in Beaver Money
+      <Stack direction="vertical" gap={6}>
+        <Stack direction="vertical" gap={2} as="header">
+          <Heading level={2}>New Subscription</Heading>
         </Stack>
-      </Stack>
-      <Stack direction="vertical" gap={4}>
-        <Stack
-          as="form"
-          direction="vertical"
-          gap={6}
-          id="new-subscription-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FormLayout>
-            <form.Field
-              name="name"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TextInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="Netflix"
-                      autoComplete="off"
-                      label={'Name'}
-
-                      value={String(field.state.value ?? '')}
-                      onChange={(_value, event) =>
-                        ((e) => field.handleChange(e.target.value))(event)
-                      }
-                      htmlName={field.name}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            {ownerOptions.length > 1 && (
+        <Stack direction="vertical" gap={4}>
+          <Stack
+            as="form"
+            direction="vertical"
+            gap={6}
+            id="new-subscription-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
+            }}
+          >
+            <FormLayout>
               <form.Field
-                name="ownerUserID"
+                name="name"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -237,14 +204,20 @@ export function NewSubscription() {
                       gap={2}
                       data-invalid={isInvalid}
                     >
-                      <OwnerSelect
+                      <TextInput
+                        data-1p-ignore
                         id={field.name}
-                        name={field.name}
-                        options={ownerOptions}
-                        value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value)}
                         onBlur={field.handleBlur}
-                        ariaInvalid={isInvalid}
+                        aria-invalid={isInvalid}
+                        placeholder="Netflix"
+                        autoComplete="off"
+                        label={'Name'}
+
+                        value={String(field.state.value ?? '')}
+                        onChange={(_value, event) =>
+                          ((e) => field.handleChange(e.target.value))(event)
+                        }
+                        htmlName={field.name}
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -253,277 +226,281 @@ export function NewSubscription() {
                   )
                 }}
               />
-            )}
-            <form.Field
-              name="icon"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <Stack direction="vertical" gap={4}>
-                      Enter a domain to fetch logo (e.g., netflix.com)
+              {ownerOptions.length > 1 && (
+                <form.Field
+                  name="ownerUserID"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <OwnerSelect
+                          id={field.name}
+                          name={field.name}
+                          options={ownerOptions}
+                          value={field.state.value}
+                          onValueChange={(value) => field.handleChange(value)}
+                          onBlur={field.handleBlur}
+                          ariaInvalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              )}
+              <form.Field
+                name="icon"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <Stack direction="horizontal" gap={3} align="center">
+                        <TextInput
+                          data-1p-ignore
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                          placeholder="e.g., netflix.com"
+                          autoComplete="off"
+                          label={'Logo domain (optional)'}
+
+                          value={String(field.state.value ?? '')}
+                          onChange={(_value, event) =>
+                            ((e) => {
+                              field.handleChange(e.target.value)
+                            })(event)
+                          }
+                          htmlName={field.name}
+                        />
+                        {field.state.value && (
+                          <Stack direction="horizontal" gap={2} align="center">
+                            <Avatar
+                              src={getLogoDomainURL(field.state.value)}
+                              alt={field.state.value}
+                              name={String(
+                                field.state.value.slice(0, 2).toUpperCase(),
+                              )}
+                            />
+                          </Stack>
+                        )}
+                      </Stack>
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
                     </Stack>
-                    <Stack direction="horizontal" gap={3} align="center">
-                      <TextInput
+                  )
+                }}
+              />
+              <form.Field
+                name="interval"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        searchable={false}
+                        items={[...SUBSCRIPTION_INTERVALS]}
+                        value={field.state.value}
+                        onChange={(value) => field.handleChange(value || '')}
+                        id={field.name}
+                        placeholder="Select an interval"
+                        onBlur={field.handleBlur}
+                        label={'Interval'}
+                        renderOption={(item: string) => (
+                          <span>
+                            <Text type="label">{capitalize(item)}</Text>
+                            <span>{INTERVAL_DESCRIPTION[item]}</span>
+                          </span>
+                        )}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="intervalCount"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <Text type="supporting" color="secondary">
+                        For example, 2 with Month means every two months.
+                      </Text>
+                      <NumberInput
                         data-1p-ignore
                         id={field.name}
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        placeholder="e.g., netflix.com"
+                        placeholder="1"
                         autoComplete="off"
-                        label={'Icon'}
+                        label={'Repeat every'}
 
-                        value={String(field.state.value ?? '')}
-                        onChange={(_value, event) =>
-                          ((e) => {
-                            field.handleChange(e.target.value)
-                          })(event)
-                        }
                         htmlName={field.name}
+                        value={
+                          field.state.value === undefined
+                            ? null
+                            : field.state.value
+                        }
+                        onChange={(value) => field.handleChange(value)}
+                        min={1}
+                        max={365}
+                        step={1}
+                        isIntegerOnly
                       />
-                      {field.state.value && (
-                        <Stack direction="horizontal" gap={2} align="center">
-                          <Avatar
-                            src={getLogoDomainURL(field.state.value)}
-                            alt={field.state.value}
-                            name={String(
-                              field.state.value.slice(0, 2).toUpperCase(),
-                            )}
-                          />
-                        </Stack>
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
                       )}
                     </Stack>
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="interval"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <SearchSelect
-                      items={[...SUBSCRIPTION_INTERVALS]}
-                      value={field.state.value}
-                      onChange={(value) => field.handleChange(value || '')}
-                      id={field.name}
-                      placeholder="Select an interval"
-                      onBlur={field.handleBlur}
-                      label={'Interval'}
-                      renderOption={(item: string) => (
-                        <span>
-                          <Text type="label">{capitalize(item)}</Text>
-                          <span>{INTERVAL_DESCRIPTION[item]}</span>
-                        </span>
-                      )}
-                      emptyText={<>No items found.</>}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="intervalCount"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <Stack direction="vertical" gap={4}>
-                      How many intervals between charges (e.g., 2 = every 2
-                      months)
-                    </Stack>
-                    <NumberInput
-                      data-1p-ignore
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      placeholder="1"
-                      autoComplete="off"
-                      label={'Interval Count'}
-
-                      htmlName={field.name}
-                      value={
-                        field.state.value === undefined
-                          ? null
-                          : field.state.value
-                      }
-                      onChange={(value) => field.handleChange(value)}
-                      min={1}
-                      max={365}
-                      step={1}
-                      isIntegerOnly
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="startDate"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>Start Date</label>
-                    <Stack direction="vertical" gap={4}>
-                      When does this subscription start?
-                    </Stack>
-                    <Popover
-                      label="Choose value"
-                      alignment={'start'}
-                      content={
-                        <>
-                          <FinanceCalendar
-                            mode="single"
-                            selected={field.state.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                field.handleChange(date)
-                              }
-                            }}
-                            disabled={(date) => date < new Date('1900-01-01')}
-                          />
-                        </>
-                      }
+                  )
+                }}
+              />
+              <form.Field
+                name="startDate"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
                     >
-                      {(triggerProps) => (
-                        <Button
-                          {...triggerProps}
-                          id={field.name}
-                          name={field.name}
-                          type="button"
-
-                          label={String(
-                            field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            ),
-                          )}
-                          variant={'secondary'}
-                        >
-                          {field.state.value.toLocaleDateString(
-                            household.locale,
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )}
-                        </Button>
+                      <FinanceDateInput
+                        id={field.name}
+                        label="Start date"
+                        value={field.state.value}
+                        onChange={field.handleChange}
+                        onBlur={field.handleBlur}
+                        disabledDate={(date) => date < new Date('1900-01-01')}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
                       )}
-                    </Popover>
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="currencyCode"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <SearchSelect
-                      items={SUPPORTED_CURRENCIES.map((c) => c.code)}
-                      value={field.state.value}
-                      onChange={(value) => {
-                        field.handleChange(value || '')
-                      }}
-                      id={field.name}
-                      placeholder="Select a currency"
-                      onBlur={field.handleBlur}
-                      label={'Currency'}
-                      renderOption={(item: string) => <span>{item}</span>}
-                      emptyText={<>No items found.</>}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="cost"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <Stack direction="vertical" gap={4}>
-                      How much does this subscription cost per interval?
                     </Stack>
-                    <CurrencyInput
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Please enter a number"
-                      onValueChange={(e) => {
-                        field.handleChange(e.value)
-                      }}
-                      value={field.state.value}
-                      locale={household.locale}
-                      currency={currencyCode}
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      allowNegative={false}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-          </FormLayout>
+                  )
+                }}
+              />
+              <form.Field
+                name="currencyCode"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <SearchSelect
+                        items={SUPPORTED_CURRENCIES.map((c) => c.code)}
+                        value={field.state.value}
+                        onChange={(value) => {
+                          field.handleChange(value || '')
+                        }}
+                        id={field.name}
+                        placeholder="Select a currency"
+                        onBlur={field.handleBlur}
+                        label={'Currency'}
+                        renderOption={(item: string) => <span>{item}</span>}
+                        emptyText={<>No items found.</>}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="cost"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        aria-label="Cost per payment"
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter a number"
+                        onValueChange={(e) => {
+                          field.handleChange(e.value)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={currencyCode}
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        allowNegative={false}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </FormLayout>
+          </Stack>
         </Stack>
-      </Stack>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        as="footer"
-      >
-        <Stack direction="horizontal" gap={2} wrap="wrap">
-          <Button
-            type="button"
-            onClick={() => form.reset()}
-            label={'Reset'}
-            variant={'secondary'}
-          >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            form="new-subscription-form"
-            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
-            variant={'primary'}
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+          as="footer"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={'Reset'}
+              variant={'secondary'}
+            >
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              form="new-subscription-form"
+              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              variant={'primary'}
 
-            isDisabled={isMutationInFlight}
-          >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
-          </Button>
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? 'Creating...' : 'Create'}
+            </Button>
+          </Stack>
         </Stack>
       </Stack>
     </Card>

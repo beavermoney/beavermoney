@@ -1,3 +1,5 @@
+import { HStack } from '@astryxdesign/core/Layout'
+import { Text } from '@astryxdesign/core/Text'
 import { Typeahead } from '@astryxdesign/core/Typeahead'
 import type { LucideProps } from 'lucide-react'
 import {
@@ -35,7 +37,6 @@ export function IconPicker({
     <Typeahead
       id={id}
       label="Icon"
-      isLabelHidden
       placeholder="Search icons"
       value={options.find((icon) => icon.id === value) ?? null}
       onChange={(icon) => {
@@ -52,10 +53,10 @@ export function IconPicker({
             .slice(0, 40),
       }}
       renderItem={(icon) => (
-        <span>
-          <Icon name={icon.id as IconName} />
-          {icon.label}
-        </span>
+        <HStack gap={2} vAlign="center">
+          <Icon name={icon.id as IconName} className="size-4 shrink-0" />
+          <Text>{icon.label}</Text>
+        </HStack>
       )}
       maxMenuItems={40}
     />

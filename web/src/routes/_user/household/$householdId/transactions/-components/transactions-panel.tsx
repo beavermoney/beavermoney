@@ -95,7 +95,9 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
 
   return (
     <Stack direction="vertical" gap={6}>
-      <Heading level={1}>Transactions</Heading>
+      <Stack direction="vertical" gap={1}>
+        <Heading level={1}>Transactions</Heading>
+      </Stack>
       {dateFilter}
       <FinancialSummaryCards fragmentRef={data.financialReport} />
       <TransactionsList

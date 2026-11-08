@@ -1,10 +1,10 @@
-import { FinanceCalendar } from '@/components/finance-calendar'
+import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
 import { NumberInput } from '@astryxdesign/core/NumberInput'
-import { Popover } from '@astryxdesign/core/Popover'
 import { Stack } from '@astryxdesign/core/Stack'
+import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
@@ -282,7 +282,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                     data-invalid={isInvalid}
                     data-transaction-initial-focus
                   >
-                    <label htmlFor={field.name}>From Investment</label>
                     <TransactionInvestmentPicker
                       investments={allInvestments}
                       name={field.name}
@@ -324,12 +323,12 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>To Investment</label>
-                    <Stack direction="vertical" gap={4}>
-                      {fromInvestment
-                        ? `Only showing investments with symbol: ${fromInvestment.symbol}`
-                        : 'Select from investment first'}
-                    </Stack>
+                    {fromInvestment && (
+                      <Text type="supporting" color="secondary">
+                        Matching {fromInvestment.symbol} holdings in another
+                        account.
+                      </Text>
+                    )}
                     <TransactionInvestmentPicker
                       investments={toInvestments}
                       name={field.name}
@@ -355,16 +354,13 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <Stack direction="vertical" gap={4}>
-                      Number of shares to move
-                    </Stack>
                     <NumberInput
                       data-1p-ignore
                       id={field.name}
                       placeholder="0"
                       onBlur={field.handleBlur}
                       aria-invalid={isInvalid}
-                      label={'Shares'}
+                      label={'Shares to move'}
 
                       htmlName={field.name}
                       value={
@@ -477,57 +473,16 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <label htmlFor={field.name}>Date</label>
-                    <Popover
-                      label="Choose value"
-                      alignment={'start'}
-                      content={
-                        <>
-                          <FinanceCalendar
-                            mode="single"
-                            selected={field.state.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                field.handleChange(date)
-                              }
-                            }}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                          />
-                        </>
+                    <FinanceDateInput
+                      id={field.name}
+                      label="Date"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onBlur={field.handleBlur}
+                      disabledDate={(date) =>
+                        date > new Date() || date < new Date('1900-01-01')
                       }
-                    >
-                      {(triggerProps) => (
-                        <Button
-                          {...triggerProps}
-                          id={field.name}
-                          name={field.name}
-                          type="button"
-
-                          label={String(
-                            field.state.value.toLocaleDateString(
-                              household.locale,
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            ),
-                          )}
-                          variant={'secondary'}
-                        >
-                          {field.state.value.toLocaleDateString(
-                            household.locale,
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )}
-                        </Button>
-                      )}
-                    </Popover>
+                    />
                     {isInvalid && (
                       <FormError errors={field.state.meta.errors} />
                     )}

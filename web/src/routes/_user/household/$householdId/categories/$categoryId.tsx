@@ -109,12 +109,13 @@ function RouteComponent() {
           <Button
             onClick={() => navigate({ to: '..', search: identity })}
             label={'Back'}
+            width="fit-content"
             variant={'secondary'}
           >
             Back
           </Button>
         </Stack>
-        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+        <Stack direction="vertical" gap={4} className="max-w-2xl">
           <CategoryCard
             categoryRef={data.node}
             financialReportRef={data.household.financialReport}
