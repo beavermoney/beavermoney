@@ -636,7 +636,9 @@ export function EditTransactionDialog({
                   }}
                 />
                 <fieldset>
-                  <legend>Options</legend>
+                  <legend className="mb-2">
+                    <Text type="label">Options</Text>
+                  </legend>
                   <Stack
                     direction="vertical"
                     gap={4}

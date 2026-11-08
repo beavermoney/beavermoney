@@ -1,5 +1,4 @@
 import { Selector } from '@astryxdesign/core/Selector'
-import { Typeahead } from '@astryxdesign/core/Typeahead'
 import type { ReactNode } from 'react'
 
 type SearchSelectProps<T> = {
@@ -22,7 +21,7 @@ type SearchSelectProps<T> = {
   searchable?: boolean
 }
 
-// Keep domain objects intact while Astryx owns search, keyboard navigation and selection.
+// Keep domain objects intact while Astryx owns the searchable selector surface.
 export function SearchSelect<T>({
   items,
   value,
@@ -57,55 +56,34 @@ export function SearchSelect<T>({
     label: text(item),
     item,
   }))
-  if (!searchable)
-    return (
-      <Selector
-        {...props}
-        label={label}
-        htmlName={name}
-        hasClear
-        status={invalid ? { type: 'error' } : undefined}
-        options={options.map((option) => ({
-          value: option.id,
-          label: option.label,
-        }))}
-        value={value == null ? null : key(value)}
-        onChange={(next) =>
-          onChange?.(options.find((option) => option.id === next)?.item ?? null)
-        }
-        width="100%"
-      />
-    )
+  const optionText = (id: string) => options.find((option) => option.id === id)
   return (
-    <Typeahead
+    <Selector
       {...props}
       label={label}
-      status={invalid ? { type: 'error' } : undefined}
+      htmlName={name}
+      hasClear
+      hasSearch={searchable}
+      presentation="adaptive"
       disabledMessage={disabledMessage}
-      value={
-        value == null
-          ? null
-          : (options.find((option) => option.id === key(value)) ?? null)
-      }
-      onChange={(next) => onChange?.(next?.item ?? null)}
-      placeholder={props.placeholder ?? `Search ${label.toLowerCase()}`}
-      hasEntriesOnFocus
-      minQueryLength={0}
-      debounceMs={0}
-      maxMenuItems={8}
+      searchPlaceholder={`Search ${label.toLowerCase()}`}
+      emptyText={emptyText}
       emptySearchText={emptyText}
-      searchSource={{
-        bootstrap: () => options,
-        search: (query) =>
-          options.filter((option) =>
-            `${option.label} ${getSearchText?.(option.item) ?? ''}`
-              .toLocaleLowerCase()
-              .includes(query.trim().toLocaleLowerCase()),
-          ),
+      status={invalid ? { type: 'error' } : undefined}
+      options={options.map((option) => ({
+        value: option.id,
+        // Selector searches its option labels; render the concise display text below.
+        label: `${option.label} ${getSearchText?.(option.item) ?? ''}`.trim(),
+      }))}
+      renderValue={(option) => optionText(option.value)?.label ?? option.label}
+      renderOption={(option) => {
+        const entry = optionText(option.value)
+        return entry
+          ? (renderOption?.(entry.item) ?? entry.label)
+          : option.label
       }}
-      renderItem={
-        renderOption ? (option) => renderOption(option.item) : undefined
-      }
+      value={value == null ? null : key(value)}
+      onChange={(next) => onChange?.(optionText(next ?? '')?.item ?? null)}
       width="100%"
     />
   )

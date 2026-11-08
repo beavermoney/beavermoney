@@ -1,3 +1,4 @@
+import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
@@ -271,105 +272,27 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                 )
               }}
             />
-            <form.Field
-              name="fromAccountId"
-              validators={{
-                onChange: ({ value, fieldApi }) => {
-                  if (!value) {
-                    return undefined
-                  }
-                  const toAccountId = fieldApi.form.getFieldValue('toAccountId')
-                  if (toAccountId && value === toAccountId) {
-                    // Trigger validation on toAccountId field to show error there
-                    fieldApi.form.validateField('toAccountId', 'change')
-                  } else if (toAccountId) {
-                    // Clear error on toAccountId if it exists
-                    fieldApi.form.validateField('toAccountId', 'change')
-                  }
-                  return undefined
-                },
-              }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TransactionAccountPicker
-                      accounts={availableAccounts}
-                      name={field.name}
-                      label="From Account"
-                      value={field.state.value}
-                      onValueChange={(value) => {
-                        field.handleChange(value)
-                        setEditingAccount(null)
-                        if (value === toAccountId)
-                          form.setFieldValue('toAccountId', '')
-                      }}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                      expanded={activeAccountPicker === 'fromAccountId'}
-                      onExpand={() => setEditingAccount('fromAccountId')}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="toAccountId"
-              validators={{
-                onChange: ({ value, fieldApi }) => {
-                  if (!value) {
-                    return undefined // Let zod handle the "required" validation
-                  }
-                  const fromAccountId =
-                    fieldApi.form.getFieldValue('fromAccountId')
-                  if (fromAccountId && value === fromAccountId) {
-                    return {
-                      message: 'Cannot transfer to the same account',
-                    }
-                  }
-                  return undefined
-                },
-              }}
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <TransactionAccountPicker
-                      accounts={availableAccounts.filter(
-                        (account) => account.id !== fromAccountId,
-                      )}
-                      name={field.name}
-                      label="To Account"
-                      value={field.state.value}
-                      onValueChange={(value) => {
-                        field.handleChange(value)
-                        setEditingAccount(null)
-                      }}
-                      onBlur={field.handleBlur}
-                      invalid={isInvalid}
-                      expanded={activeAccountPicker === 'toAccountId'}
-                      onExpand={() => setEditingAccount('toAccountId')}
-                      disabled={!fromAccountId}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            {!isDifferentCurrency ? (
+            <Grid
+              columns={{ minWidth: 240, max: 2 }}
+              gap={4}
+              align="start"
+              justify="stretch"
+            >
               <form.Field
-                name="amount"
+                name="fromAccountId"
                 validators={{
-                  onChange: ({ value }) => {
-                    if (!value || value <= 0) {
-                      return { message: 'Amount must be positive' }
+                  onChange: ({ value, fieldApi }) => {
+                    if (!value) {
+                      return undefined
+                    }
+                    const toAccountId =
+                      fieldApi.form.getFieldValue('toAccountId')
+                    if (toAccountId && value === toAccountId) {
+                      // Trigger validation on toAccountId field to show error there
+                      fieldApi.form.validateField('toAccountId', 'change')
+                    } else if (toAccountId) {
+                      // Clear error on toAccountId if it exists
+                      fieldApi.form.validateField('toAccountId', 'change')
                     }
                     return undefined
                   },
@@ -383,21 +306,21 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                       gap={2}
                       data-invalid={isInvalid}
                     >
-                      <CurrencyInput
-                        id={field.name}
+                      <TransactionAccountPicker
+                        accounts={availableAccounts}
                         name={field.name}
-                        placeholder="Please enter an amount"
-                        onValueChange={(e) => {
-                          field.handleChange(e.floatValue!)
-                        }}
+                        label="From Account"
                         value={field.state.value}
-                        locale={household.locale}
-                        currency={
-                          fromAccount?.householdCurrency.code ??
-                          displayCurrencyCode
-                        }
+                        onValueChange={(value) => {
+                          field.handleChange(value)
+                          setEditingAccount(null)
+                          if (value === toAccountId)
+                            form.setFieldValue('toAccountId', '')
+                        }}
                         onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
+                        invalid={isInvalid}
+                        expanded={activeAccountPicker === 'fromAccountId'}
+                        onExpand={() => setEditingAccount('fromAccountId')}
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -406,8 +329,50 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                   )
                 }}
               />
-            ) : (
-              <>
+              {!isDifferentCurrency ? (
+                <form.Field
+                  name="amount"
+                  validators={{
+                    onChange: ({ value }) => {
+                      if (!value || value <= 0) {
+                        return { message: 'Amount must be positive' }
+                      }
+                      return undefined
+                    },
+                  }}
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <CurrencyInput
+                          id={field.name}
+                          name={field.name}
+                          placeholder="Please enter an amount"
+                          onValueChange={(e) => {
+                            field.handleChange(e.floatValue!)
+                          }}
+                          value={field.state.value}
+                          locale={household.locale}
+                          currency={
+                            fromAccount?.householdCurrency.code ??
+                            displayCurrencyCode
+                          }
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              ) : (
                 <form.Field
                   name="debitAmount"
                   validators={{
@@ -450,7 +415,65 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                     )
                   }}
                 />
-
+              )}
+            </Grid>
+            <Grid
+              columns={isDifferentCurrency ? { minWidth: 240, max: 2 } : 1}
+              gap={4}
+              align="start"
+              justify="stretch"
+            >
+              <form.Field
+                name="toAccountId"
+                validators={{
+                  onChange: ({ value, fieldApi }) => {
+                    if (!value) {
+                      return undefined // Let zod handle the "required" validation
+                    }
+                    const fromAccountId =
+                      fieldApi.form.getFieldValue('fromAccountId')
+                    if (fromAccountId && value === fromAccountId) {
+                      return {
+                        message: 'Cannot transfer to the same account',
+                      }
+                    }
+                    return undefined
+                  },
+                }}
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <TransactionAccountPicker
+                        accounts={availableAccounts.filter(
+                          (account) => account.id !== fromAccountId,
+                        )}
+                        name={field.name}
+                        label="To Account"
+                        value={field.state.value}
+                        onValueChange={(value) => {
+                          field.handleChange(value)
+                          setEditingAccount(null)
+                        }}
+                        onBlur={field.handleBlur}
+                        invalid={isInvalid}
+                        expanded={activeAccountPicker === 'toAccountId'}
+                        onExpand={() => setEditingAccount('toAccountId')}
+                        disabled={!fromAccountId}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              {isDifferentCurrency && (
                 <form.Field
                   name="creditAmount"
                   validators={{
@@ -493,8 +516,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                     )
                   }}
                 />
-              </>
-            )}
+              )}
+            </Grid>
             <form.Field
               name="description"
               children={(field) => {
@@ -524,26 +547,62 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                 )
               }}
             />
-            {ownerOptions.length > 1 && (
+            <Grid
+              columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
+              gap={4}
+              align="start"
+              justify="stretch"
+            >
+              {ownerOptions.length > 1 && (
+                <form.Field
+                  name="ownerUserID"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <OwnerSelect
+                          id={field.name}
+                          name={field.name}
+                          options={ownerOptions}
+                          value={field.state.value}
+                          onValueChange={(value) => field.handleChange(value)}
+                          onBlur={field.handleBlur}
+                          ariaInvalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              )}
               <form.Field
-                name="ownerUserID"
+                name="datetime"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
                     <Stack
                       direction="vertical"
+                      width="100%"
                       gap={2}
                       data-invalid={isInvalid}
                     >
-                      <OwnerSelect
+                      <FinanceDateInput
                         id={field.name}
-                        name={field.name}
-                        options={ownerOptions}
+                        label="Date"
                         value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value)}
+                        onChange={field.handleChange}
                         onBlur={field.handleBlur}
-                        ariaInvalid={isInvalid}
+                        disabledDate={(date) =>
+                          date > new Date() || date < new Date('1900-01-01')
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -552,31 +611,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                   )
                 }}
               />
-            )}
-            <form.Field
-              name="datetime"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <FinanceDateInput
-                      id={field.name}
-                      label="Date"
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      disabledDate={(date) =>
-                        date > new Date() || date < new Date('1900-01-01')
-                      }
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            </Grid>
           </FormLayout>
         </Stack>
       </Stack>

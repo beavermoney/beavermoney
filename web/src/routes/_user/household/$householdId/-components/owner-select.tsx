@@ -1,6 +1,9 @@
-import { HStack } from '@astryxdesign/core/Layout'
+import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
-import { SearchSelect } from '@/components/search-select'
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@astryxdesign/core/SegmentedControl'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { UserIcon, UsersIcon } from 'lucide-react'
 
@@ -18,7 +21,6 @@ type OwnerSelectProps = {
   name?: string
   onBlur?: () => void
   ariaInvalid?: boolean
-  placeholder?: string
 }
 
 export function OwnerSelect({
@@ -29,35 +31,30 @@ export function OwnerSelect({
   name,
   onBlur,
   ariaInvalid,
-  placeholder = 'Select an owner',
 }: OwnerSelectProps) {
   return (
-    <SearchSelect
-      name={name}
-      invalid={ariaInvalid}
-      items={options.map((o) => o.id)}
-      getLabel={(item) => options.find((o) => o.id === item)?.name ?? ''}
-      value={value}
-      onChange={(next) => onValueChange(next || '')}
-      id={id}
-      placeholder={placeholder}
-      onBlur={onBlur}
-      label="Owner"
-      renderOption={(item: string) => {
-        const owner = options.find((o) => o.id === item)
-        if (!owner) return null
-        return (
-          <HStack gap={2} vAlign="center">
-            {owner.isSynthetic ? (
-              <AstryxIcon icon={UsersIcon} />
-            ) : (
-              <AstryxIcon icon={UserIcon} />
-            )}
-            <Text>{owner.name}</Text>
-          </HStack>
-        )
-      }}
-      emptyText={<>No owners.</>}
-    />
+    <Stack direction="vertical" gap={1}>
+      <Text type="label">Owner</Text>
+      {name && <input type="hidden" name={name} value={value} />}
+      <SegmentedControl
+        id={id}
+        label="Owner"
+        value={value}
+        onChange={onValueChange}
+        onBlur={onBlur}
+        aria-invalid={ariaInvalid}
+      >
+        {options.map((owner) => (
+          <SegmentedControlItem
+            key={owner.id}
+            value={owner.id}
+            label={owner.name}
+            icon={
+              <AstryxIcon icon={owner.isSynthetic ? UsersIcon : UserIcon} />
+            }
+          />
+        ))}
+      </SegmentedControl>
+    </Stack>
   )
 }

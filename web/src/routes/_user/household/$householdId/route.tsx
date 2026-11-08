@@ -377,6 +377,7 @@ function FloatingLogTransactionWindow({
       }}
       purpose="info"
       width={640}
+      maxHeight="calc(100dvh - var(--spacing-4) - var(--spacing-4))"
       padding={0}
     >
       <Layout

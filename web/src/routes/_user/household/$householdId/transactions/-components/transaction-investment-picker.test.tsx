@@ -69,8 +69,8 @@ afterEach(() => {
 
 it('searches investments by ticker and selects a result', async () => {
   render(<Picker />)
-  const input = screen.getByRole('combobox', { name: 'Investment' })
-  fireEvent.focus(input)
+  fireEvent.click(screen.getByRole('button', { name: /Investment/ }))
+  const input = screen.getByRole('combobox')
   fireEvent.change(input, { target: { value: 'IDX' } })
   fireEvent.click(await screen.findByRole('option', { name: /Index Fund/ }))
   expect(screen.queryByRole('listbox')).toBeNull()
@@ -92,7 +92,7 @@ it('keeps dependent investment choices disabled until an account is selected', (
   )
   expect(
     screen
-      .getByRole('combobox', { name: 'Investment' })
+      .getByRole('button', { name: /Investment/ })
       .getAttribute('aria-disabled'),
   ).toBe('true')
 })

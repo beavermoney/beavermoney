@@ -49,8 +49,8 @@ afterEach(() => {
 
 it('searches categories and allows keyboard selection', async () => {
   render(<Picker />)
-  const input = screen.getByRole('combobox', { name: 'Category' })
-  fireEvent.focus(input)
+  fireEvent.click(screen.getByRole('button', { name: /Category/ }))
+  const input = screen.getByRole('combobox')
   fireEvent.change(input, { target: { value: 'groc' } })
   expect(await screen.findByRole('option', { name: /Groceries/ })).toBeTruthy()
   expect(screen.queryByRole('option', { name: /Transport/ })).toBeNull()
@@ -62,8 +62,8 @@ it('searches categories and allows keyboard selection', async () => {
 
 it('shows a useful empty search result', async () => {
   render(<Picker />)
-  const input = screen.getByRole('combobox', { name: 'Category' })
-  fireEvent.focus(input)
+  fireEvent.click(screen.getByRole('button', { name: /Category/ }))
+  const input = screen.getByRole('combobox')
   fireEvent.change(input, { target: { value: 'no-such-category' } })
   expect(await screen.findByText('No categories available.')).toBeTruthy()
 })

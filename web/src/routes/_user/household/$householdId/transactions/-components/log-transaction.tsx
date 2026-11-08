@@ -1,5 +1,4 @@
 import { Button } from '@astryxdesign/core/Button'
-import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
 import {
   SegmentedControl,
   SegmentedControlItem,
@@ -112,7 +111,7 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
 
   return (
     <Stack ref={panelRef} direction="vertical" gap={6}>
-      <Stack direction="vertical" gap={4}>
+      <Stack direction="horizontal" gap={4} vAlign="center" wrap="wrap">
         <SegmentedControl
           label="Transaction kind"
           value={mode}
@@ -127,20 +126,24 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
           ))}
         </SegmentedControl>
 
-        <ScrollableArea axis="inline" label="Transaction types">
-          <Stack direction="horizontal" gap={2}>
-            {visibleTypes.map((t) => (
-              <Button
-                key={t}
-                onClick={() => setType(t)}
-                label={String(TYPE_LABELS[t])}
-                variant={selectedType === t ? 'primary' : 'secondary'}
-              >
-                {TYPE_LABELS[t]}
-              </Button>
-            ))}
-          </Stack>
-        </ScrollableArea>
+        <Stack
+          direction="horizontal"
+          gap={2}
+          wrap="wrap"
+          role="group"
+          aria-label="Transaction types"
+        >
+          {visibleTypes.map((t) => (
+            <Button
+              key={t}
+              onClick={() => setType(t)}
+              label={String(TYPE_LABELS[t])}
+              variant={selectedType === t ? 'primary' : 'secondary'}
+            >
+              {TYPE_LABELS[t]}
+            </Button>
+          ))}
+        </Stack>
       </Stack>
       <Stack direction="vertical" gap={4}>
         {selectedType === 'expense' && <NewExpense fragmentRef={data} />}

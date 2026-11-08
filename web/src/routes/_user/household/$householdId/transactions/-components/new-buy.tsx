@@ -1,3 +1,4 @@
+import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
@@ -305,101 +306,120 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                 )
               }}
             />
-            <form.Field
-              name="shares"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <CurrencyInput
-                      id={field.name}
-                      name={field.name}
-                      aria-label="Shares"
-                      value={field.state.value}
-                      locale={household.locale}
-                      currency={
-                        selectedAccount?.householdCurrency.code ??
-                        displayCurrencyCode
-                      }
-                      decimalScale={8}
-                      showCurrencySymbol={false}
-                      onBlur={field.handleBlur}
-                      onValueChange={(values) =>
-                        field.handleChange(values.floatValue!)
-                      }
-                      aria-invalid={isInvalid}
-                      placeholder="10"
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="pricePerShare"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <CurrencyInput
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Please enter a price"
-                      onValueChange={(e) => {
-                        field.handleChange(e.floatValue!)
-                      }}
-                      value={field.state.value}
-                      locale={household.locale}
-                      currency={
-                        selectedAccount?.householdCurrency.code ??
-                        displayCurrencyCode
-                      }
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      decimalScale={8}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
-            <form.Field
-              name="totalPaid"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <CurrencyInput
-                      id={field.name}
-                      name={field.name}
-                      placeholder="Total amount paid"
-                      onValueChange={(e) => {
-                        field.handleChange(e.floatValue!)
-                      }}
-                      value={field.state.value}
-                      locale={household.locale}
-                      currency={
-                        selectedAccount?.householdCurrency.code ??
-                        displayCurrencyCode
-                      }
-                      onBlur={field.handleBlur}
-                      aria-invalid={isInvalid}
-                      decimalScale={8}
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            <Grid
+              columns={{ minWidth: 160, max: 3 }}
+              gap={4}
+              align="start"
+              justify="stretch"
+            >
+              <form.Field
+                name="shares"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        aria-label="Shares"
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        decimalScale={8}
+                        showCurrencySymbol={false}
+                        onBlur={field.handleBlur}
+                        onValueChange={(values) =>
+                          field.handleChange(values.floatValue!)
+                        }
+                        aria-invalid={isInvalid}
+                        placeholder="10"
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="pricePerShare"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Please enter a price"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        decimalScale={8}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+              <form.Field
+                name="totalPaid"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Stack
+                      direction="vertical"
+                      gap={2}
+                      data-invalid={isInvalid}
+                    >
+                      <CurrencyInput
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Total amount paid"
+                        onValueChange={(e) => {
+                          field.handleChange(e.floatValue!)
+                        }}
+                        value={field.state.value}
+                        locale={household.locale}
+                        currency={
+                          selectedAccount?.householdCurrency.code ??
+                          displayCurrencyCode
+                        }
+                        onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
+                        decimalScale={8}
+                      />
+                      {isInvalid && (
+                        <FormError errors={field.state.meta.errors} />
+                      )}
+                    </Stack>
+                  )
+                }}
+              />
+            </Grid>
             <form.Field
               name="description"
               children={(field) => {
@@ -429,26 +449,62 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                 )
               }}
             />
-            {ownerOptions.length > 1 && (
+            <Grid
+              columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
+              gap={4}
+              align="start"
+              justify="stretch"
+            >
+              {ownerOptions.length > 1 && (
+                <form.Field
+                  name="ownerUserID"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <OwnerSelect
+                          id={field.name}
+                          name={field.name}
+                          options={ownerOptions}
+                          value={field.state.value}
+                          onValueChange={(value) => field.handleChange(value)}
+                          onBlur={field.handleBlur}
+                          ariaInvalid={isInvalid}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              )}
               <form.Field
-                name="ownerUserID"
+                name="datetime"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
                   return (
                     <Stack
                       direction="vertical"
+                      width="100%"
                       gap={2}
                       data-invalid={isInvalid}
                     >
-                      <OwnerSelect
+                      <FinanceDateInput
                         id={field.name}
-                        name={field.name}
-                        options={ownerOptions}
+                        label="Date"
                         value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value)}
+                        onChange={field.handleChange}
                         onBlur={field.handleBlur}
-                        ariaInvalid={isInvalid}
+                        disabledDate={(date) =>
+                          date > new Date() || date < new Date('1900-01-01')
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -457,31 +513,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                   )
                 }}
               />
-            )}
-            <form.Field
-              name="datetime"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <FinanceDateInput
-                      id={field.name}
-                      label="Date"
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      onBlur={field.handleBlur}
-                      disabledDate={(date) =>
-                        date > new Date() || date < new Date('1900-01-01')
-                      }
-                    />
-                    {isInvalid && (
-                      <FormError errors={field.state.meta.errors} />
-                    )}
-                  </Stack>
-                )
-              }}
-            />
+            </Grid>
           </FormLayout>
         </Stack>
       </Stack>
