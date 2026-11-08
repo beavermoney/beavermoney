@@ -3,7 +3,6 @@ import { FormError } from '@/components/form-error'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { Button } from '@astryxdesign/core/Button'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
-import { NumberInput } from '@astryxdesign/core/NumberInput'
 import { Stack } from '@astryxdesign/core/Stack'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -313,23 +312,24 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-                    <NumberInput
-                      data-1p-ignore
+                    <CurrencyInput
                       id={field.name}
+                      name={field.name}
+                      aria-label="Shares"
+                      value={field.state.value}
+                      locale={household.locale}
+                      currency={
+                        selectedAccount?.householdCurrency.code ??
+                        displayCurrencyCode
+                      }
+                      decimalScale={8}
+                      showCurrencySymbol={false}
                       onBlur={field.handleBlur}
+                      onValueChange={(values) =>
+                        field.handleChange(values.floatValue!)
+                      }
                       aria-invalid={isInvalid}
                       placeholder="10"
-                      autoComplete="off"
-                      label={'Shares'}
-
-                      htmlName={field.name}
-                      value={
-                        field.state.value === undefined
-                          ? null
-                          : field.state.value
-                      }
-                      onChange={(value) => field.handleChange(value)}
-                      step={0.0001}
                     />
                     {isInvalid && (
                       <FormError errors={field.state.meta.errors} />

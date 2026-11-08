@@ -11,15 +11,23 @@ type CurrencyInputProps = Omit<
   currency: string
   value?: string | number
   decimalScale?: number
+  showCurrencySymbol?: boolean
   allowNegative?: boolean
   onValueChange?: (values: { floatValue?: number; value: string }) => void
 }
 
-function valueToRaw(value: string | number | undefined): string {
+function valueToRaw(
+  value: string | number | undefined,
+  decimalSeparator: string,
+): string {
   if (value == null) return ''
   if (typeof value === 'string') return value
-  if (value === 0) return ''
-  return String(value)
+  return String(value).replace('.', decimalSeparator)
+}
+
+function rawToFloat(raw: string, decimalSeparator: string) {
+  const parsed = parseFloat(raw.replace(decimalSeparator, '.'))
+  return Number.isNaN(parsed) ? undefined : parsed
 }
 
 export function CurrencyInput({
@@ -28,6 +36,7 @@ export function CurrencyInput({
   currency,
   decimalScale = 2,
   allowNegative = false,
+  showCurrencySymbol = true,
   onValueChange,
   value,
   ...props
@@ -37,7 +46,20 @@ export function CurrencyInput({
     currency,
   )
 
-  const [rawValue, setRawValue] = useState(() => valueToRaw(value))
+  const [rawValue, setRawValue] = useState(() =>
+    valueToRaw(value, decimalSeparator),
+  )
+  const [lastValue, setLastValue] = useState(value)
+  if (!Object.is(value, lastValue)) {
+    const nextRawValue = valueToRaw(value, decimalSeparator)
+    setLastValue(value)
+    if (
+      rawToFloat(rawValue, decimalSeparator) !==
+      rawToFloat(nextRawValue, decimalSeparator)
+    ) {
+      setRawValue(nextRawValue)
+    }
+  }
 
   const validate = useCallback(
     (raw: string): string => {
@@ -99,7 +121,9 @@ export function CurrencyInput({
       isDisabled={disabled}
       status={props['aria-invalid'] === true ? { type: 'error' } : undefined}
     >
-      {prefix && <InputGroupText>{prefix}</InputGroupText>}
+      {showCurrencySymbol && prefix && (
+        <InputGroupText>{prefix}</InputGroupText>
+      )}
       <TextInput
         id={props.id}
         onBlur={props.onBlur}
@@ -122,7 +146,9 @@ export function CurrencyInput({
         value={rawValue}
         onChange={(_value, event) => handleChange(event)}
       />
-      {suffix && <InputGroupText>{suffix}</InputGroupText>}
+      {showCurrencySymbol && suffix && (
+        <InputGroupText>{suffix}</InputGroupText>
+      )}
     </InputGroup>
   )
 }

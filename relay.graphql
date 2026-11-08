@@ -2544,6 +2544,11 @@ type TransactionCategory implements Node {
   isImmutable: Boolean!
   household: Household!
   transactions: [Transaction!]
+  """
+  Most recent transaction assigned to this category. Null when the category
+  has never been used.
+  """
+  latestTransaction: Transaction
 }
 
 """

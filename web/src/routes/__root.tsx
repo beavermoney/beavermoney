@@ -1,3 +1,4 @@
+import { PwaUpdatePrompt } from '@/components/pwa-update-prompt'
 import { AstryxRouterProvider } from '@/components/astryx-router-provider'
 import { NotificationListener } from '@/components/notification-listener'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -24,6 +25,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <PrivacyModeProvider>
         <ToastViewport position={isMobile ? 'topEnd' : 'bottomEnd'}>
           <NotificationListener />
+          <PwaUpdatePrompt />
           <AstryxRouterProvider>{children}</AstryxRouterProvider>
           {import.meta.env.VITE_SHOW_DEVTOOLS === 'true' && (
             <TanStackDevtools

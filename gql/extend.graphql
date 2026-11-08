@@ -13,6 +13,14 @@ extend type Account {
   latestTransaction: Transaction
 }
 
+extend type TransactionCategory {
+  """
+  Most recent transaction assigned to this category. Null when the category
+  has never been used.
+  """
+  latestTransaction: Transaction
+}
+
 extend type Investment {
   """
   Most recent transaction involving this investment. Null when the investment

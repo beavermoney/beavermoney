@@ -48,6 +48,7 @@ type ResolverRoot interface {
 	RecurringSubscription() RecurringSubscriptionResolver
 	SnapshotEntry() SnapshotEntryResolver
 	SnapshotRate() SnapshotRateResolver
+	TransactionCategory() TransactionCategoryResolver
 	TransactionEntry() TransactionEntryResolver
 	AccountWhereInput() AccountWhereInputResolver
 	CreateAccountInput() CreateAccountInputResolver
@@ -505,16 +506,17 @@ type ComplexityRoot struct {
 	}
 
 	TransactionCategory struct {
-		CreateTime   func(childComplexity int) int
-		Household    func(childComplexity int) int
-		HouseholdID  func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Icon         func(childComplexity int) int
-		IsImmutable  func(childComplexity int) int
-		Name         func(childComplexity int) int
-		Transactions func(childComplexity int) int
-		Type         func(childComplexity int) int
-		UpdateTime   func(childComplexity int) int
+		CreateTime        func(childComplexity int) int
+		Household         func(childComplexity int) int
+		HouseholdID       func(childComplexity int) int
+		ID                func(childComplexity int) int
+		Icon              func(childComplexity int) int
+		IsImmutable       func(childComplexity int) int
+		LatestTransaction func(childComplexity int) int
+		Name              func(childComplexity int) int
+		Transactions      func(childComplexity int) int
+		Type              func(childComplexity int) int
+		UpdateTime        func(childComplexity int) int
 	}
 
 	TransactionCategoryConnection struct {
@@ -706,6 +708,9 @@ type SnapshotEntryResolver interface {
 }
 type SnapshotRateResolver interface {
 	Rate(ctx context.Context, obj *ent.SnapshotRate) (string, error)
+}
+type TransactionCategoryResolver interface {
+	LatestTransaction(ctx context.Context, obj *ent.TransactionCategory) (*ent.Transaction, error)
 }
 type TransactionEntryResolver interface {
 	Amount(ctx context.Context, obj *ent.TransactionEntry) (string, error)
@@ -3066,6 +3071,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.TransactionCategory.IsImmutable(childComplexity), true
+	case "TransactionCategory.latestTransaction":
+		if e.ComplexityRoot.TransactionCategory.LatestTransaction == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TransactionCategory.LatestTransaction(childComplexity), true
 	case "TransactionCategory.name":
 		if e.ComplexityRoot.TransactionCategory.Name == nil {
 			break
@@ -4345,6 +4356,8 @@ func (ec *executionContext) childFields_TransactionCategory(ctx context.Context,
 		return ec.fieldContext_TransactionCategory_household(ctx, field)
 	case "transactions":
 		return ec.fieldContext_TransactionCategory_transactions(ctx, field)
+	case "latestTransaction":
+		return ec.fieldContext_TransactionCategory_latestTransaction(ctx, field)
 	}
 	return nil, fmt.Errorf("no field named %q was found under type TransactionCategory", field.Name)
 }
@@ -15465,6 +15478,38 @@ func (ec *executionContext) fieldContext_TransactionCategory_transactions(_ cont
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Transaction(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TransactionCategory_latestTransaction(ctx context.Context, field graphql.CollectedField, obj *ent.TransactionCategory) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TransactionCategory_latestTransaction(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.TransactionCategory().LatestTransaction(ctx, obj)
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *ent.Transaction) graphql.Marshaler {
+			return ec.marshalOTransaction2ᚖbeavermoneyᚗappᚋentᚐTransaction(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_TransactionCategory_latestTransaction(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TransactionCategory",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return ec.childFields_Transaction(ctx, field)
 		},
@@ -34528,6 +34573,44 @@ func (ec *executionContext) _TransactionCategory(ctx context.Context, sel ast.Se
 					}
 				}()
 				res = ec._TransactionCategory_transactions(ctx, field, obj)
+				if res == graphql.RequiredNull {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.IsDeferred() {
+				deferredFieldSet.AddField(field)
+				fieldIndex := len(deferredFieldSet.Values) - 1
+				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, deferredFieldSet)
+				})
+
+				for _, deferrable := range field.Deferrables {
+					view, ok := deferLabelToView[deferrable.Label]
+					if !ok {
+						view = deferredFieldSet.NewView()
+						deferLabelToView[deferrable.Label] = view
+					}
+					view.AddIndices(fieldIndex)
+				}
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "latestTransaction":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TransactionCategory_latestTransaction(ctx, field, obj)
 				if res == graphql.RequiredNull {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

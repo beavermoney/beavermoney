@@ -36,6 +36,8 @@ func TestLatestTransactionResolvers(t *testing.T) {
 		SetHouseholdCurrencyID(currency.ID).SetQuote(decimal.NewFromInt(1)).SaveX(ctx)
 	category := client.TransactionCategory.Create().SetName("Test").SetIcon("test").
 		SetType(transactioncategory.TypeIncome).SetHouseholdID(householdID).SaveX(ctx)
+	unusedCategory := client.TransactionCategory.Create().SetName("Unused").SetIcon("test").
+		SetType(transactioncategory.TypeIncome).SetHouseholdID(householdID).SaveX(ctx)
 
 	older := client.Transaction.Create().SetHouseholdID(householdID).SetUserID(userID).
 		SetCategoryID(category.ID).SetDescription("Cash").SetDatetime(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)).SaveX(ctx)
@@ -66,5 +68,15 @@ func TestLatestTransactionResolvers(t *testing.T) {
 	latest, err = investmentResolver.LatestTransaction(queryCtx, unusedInvestment)
 	if err != nil || latest != nil {
 		t.Fatalf("unused investment latest = %#v, err = %v; want nil", latest, err)
+	}
+
+	categoryResolver := &transactionCategoryResolver{r}
+	latest, err = categoryResolver.LatestTransaction(queryCtx, category)
+	if err != nil || latest == nil || latest.ID != newer.ID {
+		t.Fatalf("used category latest = %#v, err = %v; want transaction %d", latest, err, newer.ID)
+	}
+	latest, err = categoryResolver.LatestTransaction(queryCtx, unusedCategory)
+	if err != nil || latest != nil {
+		t.Fatalf("unused category latest = %#v, err = %v; want nil", latest, err)
 	}
 }

@@ -486,6 +486,11 @@ var (
 				Columns: []*schema.Column{TransactionsColumns[4]},
 			},
 			{
+				Name:    "transaction_category_id_datetime",
+				Unique:  false,
+				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[4]},
+			},
+			{
 				Name:    "transaction_household_id_user_id_datetime",
 				Unique:  false,
 				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[8], TransactionsColumns[4]},

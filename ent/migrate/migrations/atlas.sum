@@ -1,4 +1,4 @@
-h1:rlWoFrxHqBCHAIY8tgu3Kt9pBO4GFK0A1/UM+yV6mJQ=
+h1:flHfaJFWPynh1WPb0t9WmKwplpH0OMM8cESAoFxHJ/c=
 20250114164520_init.up.sql h1:kLD19UMVgiQpXOcjVFQacyoZG9bNFyqN3pOveynp7lQ=
 20251227201721_balance-trigger.up.sql h1:s8dl6hthzA9WTMbpLrWsVYo4bsssRu+Y0ngJF5/EGjM=
 20251228225913_amount-trigger.up.sql h1:KLlttiUI43zcXXLl7oK/9InIhxcuCHEm6t171sA5miI=
@@ -34,3 +34,4 @@ h1:rlWoFrxHqBCHAIY8tgu3Kt9pBO4GFK0A1/UM+yV6mJQ=
 20260512212623_drop-tx-entry-currency.up.sql h1:LbkyFyc7QTIRe+FxUuwijwgh3pqYzNxqtVtjD1y3gTQ=
 20260519212623_add-one-to-one-rate.up.sql h1:41LBpcRFFE23vA92iEW8QFzlhfB0PQb7p0yUhktrqqs=
 20260908022554_latest-transaction-indexes.up.sql h1:MgA1QmOexBHE3OUZr848uLqQiW2lcVXdu0z8swMQ388=
+20260908090000_category-recency-index.up.sql h1:svV3REyS57Wq8r4D0E/4BLU0ACRzgfee6zV4t01FuIY=

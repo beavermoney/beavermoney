@@ -147,3 +147,15 @@ func (r *investmentResolver) UnrealizedReturnPercent(ctx context.Context, obj *e
 	}
 	return obj.Value.Sub(basis).Div(basis).String(), nil
 }
+
+// LatestTransaction is the resolver for the latestTransaction field.
+func (r *transactionCategoryResolver) LatestTransaction(ctx context.Context, obj *ent.TransactionCategory) (*ent.Transaction, error) {
+	txn, err := r.entClient.Transaction.Query().
+		Where(transaction.CategoryIDEQ(obj.ID)).
+		Order(ent.Desc(transaction.FieldDatetime), ent.Desc(transaction.FieldID)).
+		First(ctx)
+	if ent.IsNotFound(err) {
+		return nil, nil
+	}
+	return txn, err
+}

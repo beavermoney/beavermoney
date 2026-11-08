@@ -900,6 +900,11 @@ func (r *Resolver) SnapshotEntry() SnapshotEntryResolver { return &snapshotEntry
 // SnapshotRate returns SnapshotRateResolver implementation.
 func (r *Resolver) SnapshotRate() SnapshotRateResolver { return &snapshotRateResolver{r} }
 
+// TransactionCategory returns TransactionCategoryResolver implementation.
+func (r *Resolver) TransactionCategory() TransactionCategoryResolver {
+	return &transactionCategoryResolver{r}
+}
+
 // TransactionEntry returns TransactionEntryResolver implementation.
 func (r *Resolver) TransactionEntry() TransactionEntryResolver { return &transactionEntryResolver{r} }
 
@@ -993,6 +998,7 @@ type (
 	recurringSubscriptionResolver            struct{ *Resolver }
 	snapshotEntryResolver                    struct{ *Resolver }
 	snapshotRateResolver                     struct{ *Resolver }
+	transactionCategoryResolver              struct{ *Resolver }
 	transactionEntryResolver                 struct{ *Resolver }
 	accountWhereInputResolver                struct{ *Resolver }
 	createAccountInputResolver               struct{ *Resolver }
