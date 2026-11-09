@@ -1,0 +1,35 @@
+{
+	admin off
+	persist_config off
+	auto_https off
+	servers {
+		trusted_proxies static private_ranges 100.0.0.0/8
+	}
+}
+
+:{$PORT:8080} {
+	root * /app/dist
+	encode gzip zstd
+	header {
+		X-Content-Type-Options nosniff
+		Cache-Control "no-store"
+		CDN-Cache-Control "no-store"
+		Cloudflare-CDN-Cache-Control "no-store"
+		-Server
+	}
+	respond /health 200
+
+	# Missing bundles must return 404 rather than HTML with a JavaScript URL.
+	handle /assets/* {
+		file_server
+	}
+	handle /sw.js {
+		file_server
+	}
+	handle {
+		try_files {path} {path}.html {path}/index.html /index.html
+		file_server {
+			hide .git .env*
+		}
+	}
+}
