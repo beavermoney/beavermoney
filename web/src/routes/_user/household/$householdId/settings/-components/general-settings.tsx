@@ -1,3 +1,8 @@
+import { useTheme } from '@/components/theme-provider'
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@astryxdesign/core/SegmentedControl'
 import { useWeekStart, type WeekStart } from '@/hooks/use-week-start'
 import { Selector } from '@astryxdesign/core/Selector'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
@@ -86,6 +91,7 @@ export function GeneralSettings({
   currenciesRef,
 }: GeneralSettingsProps) {
   const { weekStartsOn, setWeekStartsOn } = useWeekStart()
+  const { theme, setTheme } = useTheme()
   const showToast = useToast()
 
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
@@ -257,6 +263,26 @@ export function GeneralSettings({
       </Stack>
 
       <Divider />
+      <Stack direction="vertical" gap={2}>
+        <Text type="label">Appearance</Text>
+        <SegmentedControl
+          label="Appearance"
+          value={theme}
+          layout="fill"
+          onChange={(value) => {
+            if (value === 'light' || value === 'dark' || value === 'system')
+              setTheme(value)
+          }}
+        >
+          <SegmentedControlItem value="light" label="Light" />
+          <SegmentedControlItem value="dark" label="Dark" />
+          <SegmentedControlItem value="system" label="System" />
+        </SegmentedControl>
+        <Text type="supporting">
+          System follows your device’s appearance. Changes save automatically on
+          this device.
+        </Text>
+      </Stack>
       <Stack direction="vertical" gap={2}>
         <Selector
           label="First day of week"

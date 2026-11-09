@@ -42,7 +42,6 @@ import { CommandMenu } from '@/components/command-menu'
 import { GenericError } from '@/components/generic-error'
 import { NotFoundError } from '@/components/not-found-error'
 import { PendingComponent } from '@/components/pending-component'
-import { useTheme } from '@/components/theme-provider'
 import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
 import { environment } from '@/environment'
 import {
@@ -164,7 +163,6 @@ function RouteComponent() {
   const isMobile = useIsMobile()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const { isPrivacyModeEnabled, togglePrivacyMode } = usePrivacyMode()
-  const { setTheme } = useTheme()
   const router = useRouter()
   const isOnSettingsPage = pathname.includes('/settings')
   const [commitRefresh, isRefreshInFlight] =
@@ -234,18 +232,6 @@ function RouteComponent() {
       label: 'Refresh account data',
       onClick: handleRefreshAccountData,
       isDisabled: isRefreshInFlight,
-    },
-    {
-      label: 'Light appearance',
-      onClick: () => setTheme('light'),
-    },
-    {
-      label: 'Dark appearance',
-      onClick: () => setTheme('dark'),
-    },
-    {
-      label: 'System appearance',
-      onClick: () => setTheme('system'),
     },
   ]
 
