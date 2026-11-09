@@ -6,26 +6,13 @@ import { useNavigate } from '@tanstack/react-router'
 import { env } from '@/env'
 
 export function LoginForm({
-  className: _className,
+  className,
   ...props
 }: React.ComponentProps<'div'>) {
   const { t } = useLingui()
   const navigate = useNavigate()
   return (
-    <Stack direction="vertical" gap={4} {...props}>
-      {!import.meta.env.PROD && (
-        <Button
-          type="button"
-          onClick={() => {
-            navigate({
-              href: env.VITE_SERVER_URL + '/auth/local/callback',
-              reloadDocument: true,
-            })
-          }}
-          label={t`Sandbox`}
-          variant={'secondary'}
-        />
-      )}
+    <Stack direction="vertical" gap={3} className={className} {...props}>
       <Button
         type="button"
         onClick={() => {
@@ -34,8 +21,10 @@ export function LoginForm({
             reloadDocument: true,
           })
         }}
-        label={t`Login with Google`}
-        variant={'secondary'}
+        label={t`Continue with Google`}
+        variant="primary"
+        size="lg"
+        width="100%"
         icon={
           <svg
             width="16"
@@ -51,6 +40,20 @@ export function LoginForm({
           </svg>
         }
       />
+      {!import.meta.env.PROD && (
+        <Button
+          type="button"
+          onClick={() => {
+            navigate({
+              href: env.VITE_SERVER_URL + '/auth/local/callback',
+              reloadDocument: true,
+            })
+          }}
+          label={t`Sandbox`}
+          variant="ghost"
+          width="100%"
+        />
+      )}
     </Stack>
   )
 }

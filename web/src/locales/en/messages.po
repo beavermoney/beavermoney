@@ -102,9 +102,17 @@ msgstr "3 months"
 msgid "6 months"
 msgstr "6 months"
 
+#: src/routes/login.index.tsx
+msgid "A clearer view of your money starts here."
+msgstr "A clearer view of your money starts here."
+
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "A household can only have two members. Remove one before adding another."
 msgstr "A household can only have two members. Remove one before adding another."
+
+#: src/routes/login.index.tsx
+msgid "A little attention. A clearer picture."
+msgstr "A little attention. A clearer picture."
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
@@ -349,8 +357,16 @@ msgid "Beaver Money. All rights reserved."
 msgstr "Beaver Money. All rights reserved."
 
 #: src/routes/login.index.tsx
-msgid "Build your dam."
-msgstr "Build your dam."
+msgid "Bring your accounts together."
+msgstr "Bring your accounts together."
+
+#: src/routes/login.index.tsx
+msgid "Build your dam, day by day."
+msgstr "Build your dam, day by day."
+
+#: src/routes/login.index.tsx
+msgid "Built with care. Built for clarity."
+msgstr "Built with care. Built for clarity."
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
@@ -552,6 +568,10 @@ msgstr "Coffee at Starbucks"
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Columns"
 msgstr "Columns"
+
+#: src/components/login-form.tsx
+msgid "Continue with Google"
+msgstr "Continue with Google"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Cost (High to Low)"
@@ -1216,6 +1236,10 @@ msgstr "Investments must have the same symbol"
 msgid "Joint"
 msgstr "Joint"
 
+#: src/routes/login.index.tsx
+msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
+msgstr "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
+
 #: src/components/language-selector.tsx
 msgid "Language"
 msgstr "Language"
@@ -1279,20 +1303,12 @@ msgid "Log out"
 msgstr "Log out"
 
 #: src/routes/login.index.tsx
-msgid "Log your transactions."
-msgstr "Log your transactions."
+msgid "Log with intention."
+msgstr "Log with intention."
 
 #: src/routes/index.tsx
 msgid "Log your transactions. Build your dam."
 msgstr "Log your transactions. Build your dam."
-
-#: src/components/login-form.tsx
-msgid "Login with Google"
-msgstr "Login with Google"
-
-#: src/routes/login.index.tsx
-msgid "Login with your Google account"
-msgstr "Login with your Google account"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -1311,6 +1327,10 @@ msgstr "Make admin"
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "Make member"
 msgstr "Make member"
+
+#: src/routes/login.index.tsx
+msgid "Make yourself<0/>at home."
+msgstr "Make yourself<0/>at home."
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1596,6 +1616,10 @@ msgstr "Not enough income data to draw the category Sankey chart for this period
 msgid "Note (optional)"
 msgstr "Note (optional)"
 
+#: src/routes/login.index.tsx
+msgid "One Google account. Your own space for the everyday."
+msgstr "One Google account. Your own space for the everyday."
+
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "Only household admins can add members."
 msgstr "Only household admins can add members."
@@ -1611,6 +1635,10 @@ msgstr "Only household admins can remove members."
 #: src/routes/index.tsx
 msgid "Open Source"
 msgstr "Open Source"
+
+#: src/routes/login.index.tsx
+msgid "Open source on GitHub"
+msgstr "Open source on GitHub"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -1651,6 +1679,10 @@ msgstr "Performance"
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Permanently remove this household and all its data."
 msgstr "Permanently remove this household and all its data."
+
+#: src/routes/login.index.tsx
+msgid "Personal finances. Shared perspective."
+msgstr "Personal finances. Shared perspective."
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -2510,6 +2542,14 @@ msgstr "You no longer have access to this household."
 #: src/routes/_user/household/new.tsx
 msgid "Your household's primary currency for reporting"
 msgstr "Your household's primary currency for reporting"
+
+#: src/routes/login.index.tsx
+msgid "Your money,<0/>made clearer."
+msgstr "Your money,<0/>made clearer."
+
+#: src/routes/login.index.tsx
+msgid "YOUR NEXT CHAPTER"
+msgstr "YOUR NEXT CHAPTER"
 
 #: src/components/not-logged-in-error.tsx
 msgid "Your session may have expired. Please log in again to continue."
