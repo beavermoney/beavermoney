@@ -434,3 +434,25 @@
     gap: var(--spacing-1);
   }
 }
+
+/* Astryx caps submenu flyouts at 300px. Calendar dialogs need their full
+   intrinsic height; retain the viewport cap and all native surface styling. */
+[popover]:has([data-date-range-picker]),
+[data-astryx-submenu-regions='flyout']:has([data-date-range-picker]) {
+  max-height: calc(100dvh - var(--spacing-8));
+  max-block-size: calc(100dvh - var(--spacing-8));
+}
+
+/* Picker flyouts contain controls in their header slot, with no menu rows.
+   Remove the unused row region so every surface has the same bottom inset. */
+[data-astryx-submenu-regions='flyout']:has([data-date-range-picker])
+  > [role='menu']:empty {
+  display: none;
+}
+
+/* Long year menus scroll from their first frame, before overflow measurement. */
+[role='menu'][data-testid='date-period-year'] {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}

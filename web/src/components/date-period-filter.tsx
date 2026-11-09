@@ -3,7 +3,12 @@ import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { Trans } from '@lingui/react/macro'
 import { ProgressBar } from '@astryxdesign/core/ProgressBar'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { Popover } from '@astryxdesign/core/Popover'
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuGroup,
+  DropdownMenuSubMenu,
+} from '@astryxdesign/core/DropdownMenu'
 import {
   FinanceCalendar,
   type FinanceDateRange,
@@ -13,31 +18,24 @@ import {
   dateKey,
   detectPeriod,
   periodRange,
-  weekDays,
   type DatePeriod,
 } from '@/lib/date-period'
 import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { Button } from '@astryxdesign/core/Button'
+import { List, ListItem } from '@astryxdesign/core/List'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Icon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
+import { addDays, addMonths, addWeeks, addYears, parseISO } from 'date-fns'
 import {
-  addDays,
-  addMonths,
-  addWeeks,
-  addYears,
-  parseISO,
-  startOfWeek,
-} from 'date-fns'
-import {
-  CalendarDays,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Undo2,
 } from 'lucide-react'
-import { useRef, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 type Props = {
   startDate: string
@@ -52,15 +50,14 @@ export function DatePeriodFilter({
   const format = useDateFormatter()
   const { t } = useLingui()
   const titles: Record<DatePeriod, string> = {
-    week: t`View by week`,
-    month: t`View by month`,
-    year: t`View by year`,
-    calendar: t`Calendar view`,
+    week: t`Week`,
+    month: t`Month`,
+    year: t`Year`,
+    calendar: t`Calendar`,
     custom: t`Custom range`,
   }
 
   const isMobile = useIsMobile()
-  const triggerRef = useRef<HTMLButtonElement>(null!)
   const startDate = dateKey(parseISO(startValue))
   const endDate = dateKey(parseISO(endValue))
   const { weekStartsOn } = useWeekStart()
@@ -71,8 +68,7 @@ export function DatePeriodFilter({
     end: string
   } | null>(null)
   const [draft, setDraft] = useState<FinanceDateRange>()
-  const [yearCount, setYearCount] = useState(11)
-  const [weekCount, setWeekCount] = useState(52)
+  const [page, setPage] = useState(0)
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const mode =
@@ -82,14 +78,7 @@ export function DatePeriodFilter({
   const start = parseISO(startDate)
   const end = parseISO(endDate)
   const today = new Date()
-  const newestYear = Math.max(today.getFullYear(), start.getFullYear())
-  const years = Array.from(
-    { length: Math.max(yearCount, newestYear - start.getFullYear() + 1) },
-    (_, i) => newestYear - i,
-  )
-  const newestWeek = startOfWeek(start > today ? start : today, {
-    weekStartsOn,
-  })
+  const monthYear = Math.min(start.getFullYear(), today.getFullYear()) + page
   const rangeLabel = `${format(start, start.getFullYear() === end.getFullYear() ? 'MMM d' : 'MMM d, yyyy')} – ${format(end, 'MMM d, yyyy')}`
   const label =
     mode === 'month'
@@ -98,7 +87,14 @@ export function DatePeriodFilter({
         ? format(start, 'yyyy')
         : mode === 'calendar'
           ? format(start, 'MMM d, yyyy')
-          : rangeLabel
+          : mode === 'week' &&
+              startDate === periodRange('week', today, weekStartsOn)[0]
+            ? t`This week`
+            : mode === 'week' &&
+                startDate ===
+                  periodRange('week', addWeeks(today, -1), weekStartsOn)[0]
+              ? t`Last week`
+              : rangeLabel
   function apply(nextMode: DatePeriod, range: [string, string], close = true) {
     if (pending) return
     setError(null)
@@ -113,6 +109,7 @@ export function DatePeriodFilter({
     })
   }
   function select(nextMode: Exclude<DatePeriod, 'custom'>, date: Date) {
+    if (periodRange(nextMode, date, weekStartsOn)[0] > dateKey(today)) return
     apply(nextMode, periodRange(nextMode, date, weekStartsOn))
   }
   function navigate(direction: number) {
@@ -128,6 +125,7 @@ export function DatePeriodFilter({
     select(mode, next)
   }
   function chooseMode(next: DatePeriod) {
+    setPage(0)
     if (next === 'calendar') {
       select('calendar', start)
       return
@@ -142,20 +140,31 @@ export function DatePeriodFilter({
     range[0] === startDate && range[1] === endDate
   const viewsContent = (
     <Stack direction="vertical" gap={3}>
-      <Text type="large" weight="semibold">
-        <Trans>Date view</Trans>
-      </Text>
-      {(Object.keys(titles) as DatePeriod[]).map((option) => (
-        <Button
-          size={isMobile ? 'lg' : 'md'}
-          key={option}
-          label={titles[option]}
-          icon={<Icon icon={CalendarDays} />}
-          variant={mode === option ? 'primary' : 'secondary'}
-          isDisabled={pending}
-          onClick={() => chooseMode(option)}
-        />
-      ))}
+      <List
+        density={isMobile ? 'balanced' : 'compact'}
+        header={
+          <Text type={isMobile ? 'large' : 'label'} weight="semibold">
+            <Trans>Date view</Trans>
+          </Text>
+        }
+      >
+        {(Object.keys(titles) as DatePeriod[]).map((option) => (
+          <ListItem
+            key={option}
+            label={titles[option]}
+            aria-haspopup={option === 'calendar' ? undefined : 'dialog'}
+            isSelected={mode === option}
+            endContent={
+              <Stack direction="horizontal" gap={2} align="center">
+                {mode === option && <Icon icon={Check} />}
+                {option !== 'calendar' && <Icon icon={ChevronRight} />}
+              </Stack>
+            }
+            isDisabled={pending}
+            onClick={() => chooseMode(option)}
+          />
+        ))}
+      </List>
       {error && <Text role="alert">{error}</Text>}
     </Stack>
   )
@@ -165,145 +174,171 @@ export function DatePeriodFilter({
       content: (
         <Stack
           direction="vertical"
-          gap={4}
-          className={isMobile ? 'h-full min-h-0' : 'h-96 min-h-0'}
+          gap={!isMobile || view === 'week' || view === 'year' ? 2 : 4}
         >
-          <Stack
-            direction="horizontal"
-            justify="between"
-            align="center"
-            className="shrink-0"
-          >
-            <Text type="large" weight="semibold">
-              {titles[view]}
-            </Text>
-            <Button
-              size={isMobile ? 'lg' : 'md'}
-              label={t`Switch view`}
-              variant="ghost"
-              isDisabled={pending}
-              onClick={() => setStep('views')}
-            />
-          </Stack>
-          <Stack
-            direction="vertical"
-            gap={4}
-            className="min-h-0 flex-1 [scrollbar-gutter:stable] overflow-y-auto pe-2"
-            role="region"
-            aria-label={t`${titles[view]} options`}
-            tabIndex={0}
-          >
-            {error && <Text role="alert">{error}</Text>}
-            {view === 'year' &&
-              years.map((year) => (
+          {isMobile && (
+            <Stack
+              direction="horizontal"
+              justify="between"
+              align="center"
+              gap={4}
+            >
+              <Text type={isMobile ? 'large' : 'label'} weight="semibold">
+                {titles[view]}
+              </Text>
+              {isMobile && (
                 <Button
-                  size={isMobile ? 'lg' : 'md'}
-                  key={year}
-                  label={String(year)}
-                  variant={
-                    selected(
-                      periodRange('year', new Date(year, 0, 1), weekStartsOn),
-                    )
-                      ? 'primary'
-                      : 'secondary'
-                  }
-                  isDisabled={pending}
-                  onClick={() => select('year', new Date(year, 0, 1))}
+                  size="sm"
+                  label={t`Back`}
+                  variant="ghost"
+                  icon={<Icon icon={ChevronLeft} />}
+                  onClick={() => setStep('views')}
                 />
-              ))}
-            {view === 'month' &&
-              years.map((year) => (
-                <Stack key={year} direction="vertical" gap={2}>
-                  <Text type="label">{year}</Text>
-                  <Grid columns={3} gap={2}>
-                    {Array.from({ length: 12 }, (_, month) => {
-                      const date = new Date(year, month, 1)
-                      return (
-                        <Button
-                          size={isMobile ? 'lg' : 'md'}
-                          key={month}
-                          label={format(date, 'MMM')}
-                          aria-label={format(date, 'MMMM yyyy')}
-                          variant={
-                            selected(periodRange('month', date, weekStartsOn))
-                              ? 'primary'
-                              : 'secondary'
-                          }
-                          isDisabled={pending}
-                          onClick={() => select('month', date)}
-                        />
-                      )
-                    })}
-                  </Grid>
-                </Stack>
-              ))}
-            {(view === 'year' || view === 'month') && (
+              )}
+            </Stack>
+          )}
+          {error && <Text role="alert">{error}</Text>}
+          {view === 'month' && (
+            <Stack
+              direction="horizontal"
+              justify="between"
+              align="center"
+              gap={2}
+            >
               <Button
-                size={isMobile ? 'lg' : 'md'}
-                label={t`Show earlier years`}
+                size="sm"
+                isIconOnly
+                label={t`Previous year`}
+                icon={<Icon icon={ChevronLeft} />}
                 variant="ghost"
-                onClick={() => setYearCount(years.length + 10)}
+                onClick={() => setPage(page - 1)}
               />
-            )}
-            {view === 'week' && (
-              <>
-                {Array.from({ length: weekCount }, (_, i) => {
-                  const date = addWeeks(newestWeek, -i)
-                  const days = weekDays(date, weekStartsOn)
-                  const range = periodRange('week', date, weekStartsOn)
-                  const title = `${format(days[0], 'MMM d, yyyy')} – ${format(days[6], 'MMM d, yyyy')}`
+              <Text weight="medium">{String(monthYear)}</Text>
+              <Button
+                size="sm"
+                isIconOnly
+                label={t`Next year`}
+                icon={<Icon icon={ChevronRight} />}
+                variant="ghost"
+                isDisabled={monthYear >= today.getFullYear()}
+                onClick={() => setPage(page + 1)}
+              />
+            </Stack>
+          )}
+          {view === 'month' && (
+            <Grid columns={3} gap={isMobile ? 2 : 1}>
+              {Array.from({ length: 12 }, (_, index) => {
+                const month = index
+                const date = new Date(monthYear, month, 1)
+                return (
+                  <Button
+                    key={month}
+                    size={isMobile ? 'lg' : 'md'}
+                    label={format(date, 'MMM')}
+                    aria-label={format(date, 'MMMM yyyy')}
+                    variant={
+                      selected(periodRange('month', date, weekStartsOn))
+                        ? 'primary'
+                        : 'secondary'
+                    }
+                    isDisabled={pending || dateKey(date) > dateKey(today)}
+                    onClick={() => select('month', date)}
+                  />
+                )
+              })}
+            </Grid>
+          )}
+          {view === 'week' && (
+            <Stack
+              height={isMobile ? '50dvh' : '16rem'}
+              isScrollable
+              className="overscroll-contain pe-2"
+              aria-label={titles[view]}
+            >
+              <List density={isMobile ? 'balanced' : 'compact'}>
+                {Array.from({ length: 209 }, (_, i) => {
+                  const date = addWeeks(today, -i)
+                  const range = periodRange(view, date, weekStartsOn)
                   return (
-                    <Button
+                    <ListItem
                       key={range[0]}
-                      size={isMobile ? 'lg' : 'md'}
-                      label={title}
-                      variant={selected(range) ? 'primary' : 'secondary'}
+                      label={
+                        i === 0
+                          ? t`This week`
+                          : i === 1
+                            ? t`Last week`
+                            : `${format(parseISO(range[0]), 'MMM d')} – ${format(parseISO(range[1]), 'MMM d, yyyy')}`
+                      }
+                      isSelected={selected(range)}
+                      endContent={
+                        selected(range) ? <Icon icon={Check} /> : undefined
+                      }
                       isDisabled={pending}
-                      onClick={() => select('week', date)}
+                      onClick={() => select(view, date)}
                     />
                   )
                 })}
+              </List>
+            </Stack>
+          )}
+          {view === 'year' && (
+            <Stack
+              height={isMobile ? '40dvh' : '16rem'}
+              isScrollable
+              className="overscroll-contain pe-2"
+              aria-label={titles.year}
+            >
+              <Grid columns={3} gap={2}>
+                {Array.from({ length: 101 }, (_, index) => {
+                  const date = addYears(today, -index)
+                  return (
+                    <Button
+                      key={date.getFullYear()}
+                      label={format(date, 'yyyy')}
+                      size={isMobile ? 'lg' : 'md'}
+                      variant={
+                        selected(periodRange('year', date, weekStartsOn))
+                          ? 'primary'
+                          : 'secondary'
+                      }
+                      isDisabled={pending}
+                      onClick={() => select('year', date)}
+                    />
+                  )
+                })}
+              </Grid>
+            </Stack>
+          )}
+          {view === 'custom' && (
+            <>
+              <FinanceCalendar
+                className="p-0"
+                mode="range"
+                selected={draft}
+                onSelect={setDraft}
+              />
+              <Stack direction="horizontal" gap={2} justify="end">
                 <Button
                   size={isMobile ? 'lg' : 'md'}
-                  label={t`Show earlier weeks`}
-                  variant="ghost"
-                  onClick={() => setWeekCount((count) => count + 52)}
+                  label={t`Cancel`}
+                  variant="secondary"
+                  isDisabled={pending}
+                  onClick={() => setStep(null)}
                 />
-              </>
-            )}
-            {view === 'custom' && (
-              <>
-                <FinanceCalendar
-                  mode="range"
-                  selected={draft}
-                  onSelect={setDraft}
+                <Button
+                  size={isMobile ? 'lg' : 'md'}
+                  variant="primary"
+                  label={t`Apply range`}
+                  isLoading={pending}
+                  isDisabled={!draft?.from || !draft.to}
+                  onClick={() => {
+                    if (draft?.from && draft.to)
+                      apply('custom', [dateKey(draft.from), dateKey(draft.to)])
+                  }}
                 />
-                <Stack direction="horizontal" gap={2} justify="end">
-                  <Button
-                    size={isMobile ? 'lg' : 'md'}
-                    label={t`Cancel`}
-                    variant="secondary"
-                    isDisabled={pending}
-                    onClick={() => setStep(null)}
-                  />
-                  <Button
-                    size={isMobile ? 'lg' : 'md'}
-                    variant="primary"
-                    label={t`Apply range`}
-                    isLoading={pending}
-                    isDisabled={!draft?.from || !draft.to}
-                    onClick={() => {
-                      if (draft?.from && draft.to)
-                        apply('custom', [
-                          dateKey(draft.from),
-                          dateKey(draft.to),
-                        ])
-                    }}
-                  />
-                </Stack>
-              </>
-            )}
-          </Stack>
+              </Stack>
+            </>
+          )}
         </Stack>
       ),
     }),
@@ -329,25 +364,116 @@ export function DatePeriodFilter({
           isDisabled={pending || mode === 'custom'}
           onClick={() => navigate(-1)}
         />
-        <Button
-          size={isMobile ? 'lg' : 'md'}
-          ref={triggerRef}
-          label={label}
-          aria-haspopup="dialog"
-          aria-expanded={step !== null}
-          icon={<Icon icon={ChevronDown} />}
-          variant="secondary"
-          isLoading={pending}
-          onClick={() => setStep('views')}
-          className={isMobile ? 'min-w-0 flex-1' : undefined}
-        />
+        {isMobile ? (
+          <Button
+            size={isMobile ? 'lg' : 'md'}
+            label={label}
+            aria-haspopup="dialog"
+            aria-expanded={step !== null}
+            icon={<Icon icon={ChevronDown} />}
+            variant="secondary"
+            isLoading={pending}
+            onClick={() => {
+              setPage(0)
+              setStep('views')
+            }}
+            className={isMobile ? 'min-w-0 flex-1' : undefined}
+          />
+        ) : (
+          <DropdownMenu
+            presentation="popover"
+            isMenuOpen={step !== null}
+            onOpenChange={(open) => {
+              if (!pending) {
+                setPage(0)
+                setStep(open ? 'views' : null)
+              }
+            }}
+            menuWidth={160}
+            renderTrigger={(props) => (
+              <Button
+                {...props}
+                label={label}
+                icon={<Icon icon={ChevronDown} />}
+                variant="secondary"
+                isLoading={pending}
+              />
+            )}
+          >
+            <DropdownMenuGroup title={t`Date view`}>
+              {(Object.keys(titles) as DatePeriod[]).map((option) =>
+                option === 'calendar' ? (
+                  <DropdownMenuItem
+                    key={option}
+                    label={titles[option]}
+                    endContent={
+                      mode === option ? <Icon icon={Check} /> : undefined
+                    }
+                    isDisabled={pending}
+                    onClick={() => chooseMode(option)}
+                  />
+                ) : (
+                  <DropdownMenuSubMenu
+                    key={option}
+                    label={titles[option]}
+                    presentation="flyout"
+                    menuDataTestId={`date-period-${option}`}
+                    menuWidth={
+                      option === 'custom'
+                        ? 320
+                        : option === 'week'
+                          ? 240
+                          : option === 'month'
+                            ? 256
+                            : 128
+                    }
+                    isDisabled={pending}
+                    onOpenChange={(open) => {
+                      if (open) chooseMode(option)
+                    }}
+                    header={
+                      option === 'year' ? undefined : (
+                        <Stack data-date-range-picker>
+                          {
+                            periodContents.find(({ view }) => view === option)
+                              ?.content
+                          }
+                        </Stack>
+                      )
+                    }
+                  >
+                    {option === 'year' &&
+                      Array.from({ length: 101 }, (_, index) => {
+                        const date = addYears(today, -index)
+                        return (
+                          <DropdownMenuItem
+                            key={date.getFullYear()}
+                            label={format(date, 'yyyy')}
+                            endContent={
+                              selected(
+                                periodRange('year', date, weekStartsOn),
+                              ) ? (
+                                <Icon icon={Check} />
+                              ) : undefined
+                            }
+                            isDisabled={pending}
+                            onClick={() => select('year', date)}
+                          />
+                        )
+                      })}
+                  </DropdownMenuSubMenu>
+                ),
+              )}
+            </DropdownMenuGroup>
+          </DropdownMenu>
+        )}
         <Button
           size={isMobile ? 'lg' : 'md'}
           label={t`Next period`}
           isIconOnly
           icon={<Icon icon={ChevronRight} />}
           variant="secondary"
-          isDisabled={pending || mode === 'custom'}
+          isDisabled={pending || mode === 'custom' || endDate >= dateKey(today)}
           onClick={() => navigate(1)}
         />
         {(mode !== 'month' ||
@@ -373,7 +499,7 @@ export function DatePeriodFilter({
           }}
         />
       )}
-      {isMobile ? (
+      {isMobile && (
         <>
           <BottomSheet
             label={t`Choose date view`}
@@ -389,27 +515,12 @@ export function DatePeriodFilter({
               label={titles[view]}
               isOpen={step === view}
               onOpenChange={onOpenChange}
-              height="capped"
+              height="hug"
             >
               {content}
             </BottomSheet>
           ))}
         </>
-      ) : (
-        <Popover
-          anchorRef={triggerRef}
-          label={step && step !== 'views' ? titles[step] : t`Choose date view`}
-          isOpen={step !== null}
-          onOpenChange={onOpenChange}
-          width="max-content"
-          content={
-            <Stack className="w-80">
-              {step === 'views'
-                ? viewsContent
-                : periodContents.find((item) => item.view === step)?.content}
-            </Stack>
-          }
-        />
       )}
     </Stack>
   )
