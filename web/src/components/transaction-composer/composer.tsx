@@ -26,6 +26,7 @@ export function MobileTransactionComposer({
   initialCategory,
   embedded = false,
   onPendingChange,
+  onDeleteRequest,
 }: {
   stableAmounts?: boolean
   kind: string
@@ -33,6 +34,7 @@ export function MobileTransactionComposer({
   initialCategory?: { name: string; type: string; icon?: string | null }
   embedded?: boolean
   onPendingChange?: (pending: boolean) => void
+  onDeleteRequest?: () => void
   header?: ReactNode
   category?: ReactNode
   entryRows?: ReactNode
@@ -199,7 +201,22 @@ export function MobileTransactionComposer({
               <Stack gap={4}>
                 <Stack ref={setKeypadTarget} />
                 {error && <Text role="alert">{error}</Text>}
-                <Grid columns={mode === 'edit' ? 1 : 2} gap={3}>
+                <Grid
+                  columns={mode === 'edit' && !onDeleteRequest ? 1 : 2}
+                  gap={3}
+                >
+                  {mode === 'edit' && onDeleteRequest && (
+                    <Button
+                      label="Delete transaction"
+                      variant="destructive"
+                      size="lg"
+                      width="100%"
+                      isDisabled={busy}
+                      onClick={() => {
+                        onDeleteRequest()
+                      }}
+                    />
+                  )}
                   {mode === 'create' && (
                     <Button
                       label="Save again"

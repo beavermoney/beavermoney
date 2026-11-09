@@ -261,9 +261,18 @@ it('requires explicit deletion confirmation and keeps drafts when cancelled', ()
   fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
     target: { value: 'Changed note' },
   })
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
   fireEvent.click(screen.getByRole('button', { name: 'Delete transaction' }))
   expect(mocks.remove).not.toHaveBeenCalled()
-  fireEvent.click(screen.getByRole('button', { name: 'Cancel deletion' }))
+  const confirmation = screen.getByRole('alertdialog', {
+    name: 'Delete transaction?',
+  })
+  expect(within(confirmation).queryByRole('textbox')).toBeNull()
+  expect(
+    within(confirmation).queryByRole('button', { name: 'Done' }),
+  ).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
   expect(
     (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
       .value,
@@ -318,4 +327,48 @@ it('keeps investment account and symbol disabled while editing amounts in a fixe
   await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
   expect(variables().entry0Input.accountID).toBeUndefined()
   expect(variables().lot0Input.investmentID).toBeUndefined()
+})
+
+it('offers Delete beside Save and only deletes after confirmation', () => {
+  open()
+  expect(screen.getByRole('button', { name: 'Save' })).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Delete transaction' }))
+  expect(mocks.remove).not.toHaveBeenCalled()
+  fireEvent.click(
+    within(screen.getByRole('alertdialog')).getByRole('button', {
+      name: 'Delete transaction',
+    }),
+  )
+  expect(mocks.remove).toHaveBeenCalledTimes(1)
+})
+
+it('prevents repeat deletion while pending and lets a failed deletion be retried', async () => {
+  let rejectDelete!: (reason: Error) => void
+  mocks.remove.mockImplementationOnce(
+    () =>
+      new Promise<void>((_, reject) => {
+        rejectDelete = reject
+      }),
+  )
+  open()
+  fireEvent.click(screen.getByRole('button', { name: 'Delete transaction' }))
+  const confirmation = screen.getByRole('alertdialog')
+  const remove = within(confirmation).getByRole('button', {
+    name: 'Delete transaction',
+  })
+  fireEvent.click(remove)
+  fireEvent.click(remove)
+  expect(mocks.remove).toHaveBeenCalledTimes(1)
+  fireEvent.click(within(confirmation).getByRole('button', { name: 'Cancel' }))
+  expect(screen.getByRole('alertdialog')).toBeTruthy()
+  rejectDelete(new Error('Offline'))
+  await screen.findByText(
+    'Could not delete this transaction. Please try again.',
+  )
+  fireEvent.click(
+    within(screen.getByRole('alertdialog')).getByRole('button', {
+      name: 'Delete transaction',
+    }),
+  )
+  await waitFor(() => expect(mocks.remove).toHaveBeenCalledTimes(2))
 })

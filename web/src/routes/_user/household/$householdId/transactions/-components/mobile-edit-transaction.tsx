@@ -1,3 +1,4 @@
+import { TransactionDeleteConfirmation } from '@/components/transaction-composer/delete-confirmation'
 import { InvestmentIcon } from '@/components/investment-icon'
 import { ComposerTransferRows } from '@/components/transaction-composer/transfer-rows'
 import { FinanceDateInput } from '@/components/finance-date-input'
@@ -468,169 +469,157 @@ export function MobileEditTransaction({
   )
 
   return (
-    <MobileTransactionComposer
-      mode="edit"
-      header={
-        lots.length ? (
-          lots.length === 2 ? (
-            <>
-              <Text type="label">Move</Text>
-              {investmentSymbol(sourceLot)}
-              <Text type="supporting">from</Text>
-              {investmentAccount(sourceLot)}
-              <Text type="supporting">to</Text>
-              {investmentAccount(1 - sourceLot)}
-            </>
-          ) : (
-            <>
-              {investmentAccount(0)}
-              <Text type="label">{transaction.category.name}</Text>
-              {investmentSymbol(0)}
-            </>
-          )
-        ) : undefined
-      }
-      stableAmounts={lots.length > 0}
-      embedded
-      kind={transaction.category.type}
-      initialCategory={transaction.category}
-      firstAmount={firstAmount}
-      pending={pending || deleting}
-      onPendingChange={onPendingChange}
-      onSave={save}
-      category={
-        <TransactionCategoryPicker
-          categories={categories}
-          name="category"
-          value={categoryId}
-          onValueChange={setCategoryId}
-          onBlur={() => {}}
-          invalid={attempted && !categoryId}
-        />
-      }
-      entryRows={
-        transfer ? (
-          <ComposerTransferRows
-            fromAccount={entryAccount(firstEntry)}
-            fromAmount={entryAmount(firstEntry)}
-            toAccount={entryAccount(1 - firstEntry)}
-            toAmount={sharedAmount ? undefined : entryAmount(1 - firstEntry)}
+    <>
+      <MobileTransactionComposer
+        mode="edit"
+        header={
+          lots.length ? (
+            lots.length === 2 ? (
+              <>
+                <Text type="label">Move</Text>
+                {investmentSymbol(sourceLot)}
+                <Text type="supporting">from</Text>
+                {investmentAccount(sourceLot)}
+                <Text type="supporting">to</Text>
+                {investmentAccount(1 - sourceLot)}
+              </>
+            ) : (
+              <>
+                {investmentAccount(0)}
+                <Text type="label">{transaction.category.name}</Text>
+                {investmentSymbol(0)}
+              </>
+            )
+          ) : undefined
+        }
+        stableAmounts={lots.length > 0}
+        embedded
+        kind={transaction.category.type}
+        initialCategory={transaction.category}
+        firstAmount={firstAmount}
+        pending={pending || deleting}
+        onPendingChange={onPendingChange}
+        onSave={save}
+        onDeleteRequest={() => setConfirmDelete(true)}
+        category={
+          <TransactionCategoryPicker
+            categories={categories}
+            name="category"
+            value={categoryId}
+            onValueChange={setCategoryId}
+            onBlur={() => {}}
+            invalid={attempted && !categoryId}
           />
-        ) : undefined
-      }
-      amounts={
-        <>
-          {lots.map((lot, i) => (
-            <Fragment key={lot.id}>
-              <EditAmount
-                name={`lot-${i}-shares`}
-                label={
-                  lots.length > 1
-                    ? `${i === 0 ? 'From' : 'To'} shares`
-                    : 'Shares'
-                }
-                value={lot.amount}
-                currencyCode={
-                  accountMap.get(lot.accountId)!.householdCurrency.code
-                }
-                shares
-                scale={scaleFor(originalLots[i].amount, 8)}
-                invalid={attempted && !isPositive(lot.amount)}
-                onChange={(amount) =>
-                  setLots((current) =>
-                    current.map((l, index) =>
-                      index === i ? { ...l, amount } : l,
-                    ),
-                  )
-                }
-              />
-            </Fragment>
-          ))}
-          {lots.map((lot, i) => (
-            <Fragment key={lot.id}>
-              <EditAmount
-                name={`lot-${i}-price`}
-                label="Price per share"
-                value={lot.price}
-                currencyCode={
-                  accountMap.get(lot.accountId)!.householdCurrency.code
-                }
-                scale={scaleFor(originalLots[i].price, 8)}
-                invalid={attempted && !/^\d+(\.\d+)?$/.test(lot.price)}
-                onChange={(price) =>
-                  setLots((current) =>
-                    current.map((l, index) =>
-                      index === i ? { ...l, price } : l,
-                    ),
-                  )
-                }
-              />
-            </Fragment>
-          ))}
-          {!transfer && entries.map((_, i) => entryAmount(i))}
-        </>
-      }
-      chips={
-        <>
-          {!transfer && !lots.length && entries.map((_, i) => entryAccount(i))}
-          <Button
-            label={`Owner: ${transaction.user.name}`}
-            isDisabled
-            variant="secondary"
-            tooltip="The transaction owner cannot be changed."
-          >
-            {transaction.user.name}
-          </Button>
-        </>
-      }
-      date={
-        <FinanceDateInput
-          id="date"
-          label="Date"
-          value={date}
-          onChange={setDate}
-          onBlur={() => {}}
-          disabledDate={(d) => d > new Date() || d < new Date('1900-01-01')}
-        />
-      }
-      details={
-        <>
-          <TextInput
-            label="Description"
-            value={description}
-            onChange={setDescription}
-          />
-          <CheckboxInput
-            label="Exclude from reports"
-            value={excluded}
-            onChange={setExcluded}
-          />
-          {confirmDelete ? (
-            <Stack gap={3}>
-              <Text>
-                Delete this transaction and all its entries? This cannot be
-                undone.
-              </Text>
-              <Button
-                label="Cancel deletion"
-                onClick={() => setConfirmDelete(false)}
-              />
-              <Button
-                label="Delete permanently"
-                variant="destructive"
-                onClick={() => void onDelete()}
-              />
-            </Stack>
-          ) : (
-            <Button
-              label="Delete transaction"
-              variant="destructive"
-              onClick={() => setConfirmDelete(true)}
+        }
+        entryRows={
+          transfer ? (
+            <ComposerTransferRows
+              fromAccount={entryAccount(firstEntry)}
+              fromAmount={entryAmount(firstEntry)}
+              toAccount={entryAccount(1 - firstEntry)}
+              toAmount={sharedAmount ? undefined : entryAmount(1 - firstEntry)}
             />
-          )}
-        </>
-      }
-    />
+          ) : undefined
+        }
+        amounts={
+          <>
+            {lots.map((lot, i) => (
+              <Fragment key={lot.id}>
+                <EditAmount
+                  name={`lot-${i}-shares`}
+                  label={
+                    lots.length > 1
+                      ? `${i === 0 ? 'From' : 'To'} shares`
+                      : 'Shares'
+                  }
+                  value={lot.amount}
+                  currencyCode={
+                    accountMap.get(lot.accountId)!.householdCurrency.code
+                  }
+                  shares
+                  scale={scaleFor(originalLots[i].amount, 8)}
+                  invalid={attempted && !isPositive(lot.amount)}
+                  onChange={(amount) =>
+                    setLots((current) =>
+                      current.map((l, index) =>
+                        index === i ? { ...l, amount } : l,
+                      ),
+                    )
+                  }
+                />
+              </Fragment>
+            ))}
+            {lots.map((lot, i) => (
+              <Fragment key={lot.id}>
+                <EditAmount
+                  name={`lot-${i}-price`}
+                  label="Price per share"
+                  value={lot.price}
+                  currencyCode={
+                    accountMap.get(lot.accountId)!.householdCurrency.code
+                  }
+                  scale={scaleFor(originalLots[i].price, 8)}
+                  invalid={attempted && !/^\d+(\.\d+)?$/.test(lot.price)}
+                  onChange={(price) =>
+                    setLots((current) =>
+                      current.map((l, index) =>
+                        index === i ? { ...l, price } : l,
+                      ),
+                    )
+                  }
+                />
+              </Fragment>
+            ))}
+            {!transfer && entries.map((_, i) => entryAmount(i))}
+          </>
+        }
+        chips={
+          <>
+            {!transfer &&
+              !lots.length &&
+              entries.map((_, i) => entryAccount(i))}
+            <Button
+              label={`Owner: ${transaction.user.name}`}
+              isDisabled
+              variant="secondary"
+              tooltip="The transaction owner cannot be changed."
+            >
+              {transaction.user.name}
+            </Button>
+          </>
+        }
+        date={
+          <FinanceDateInput
+            id="date"
+            label="Date"
+            value={date}
+            onChange={setDate}
+            onBlur={() => {}}
+            disabledDate={(d) => d > new Date() || d < new Date('1900-01-01')}
+          />
+        }
+        details={
+          <>
+            <TextInput
+              label="Description"
+              value={description}
+              onChange={setDescription}
+            />
+            <CheckboxInput
+              label="Exclude from reports"
+              value={excluded}
+              onChange={setExcluded}
+            />
+          </>
+        }
+      />
+      <TransactionDeleteConfirmation
+        isOpen={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        pending={pending || deleting}
+        onDelete={onDelete}
+      />
+    </>
   )
 }
 
