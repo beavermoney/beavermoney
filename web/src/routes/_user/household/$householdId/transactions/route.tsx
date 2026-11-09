@@ -1,8 +1,10 @@
+import { LayoutContent } from '@astryxdesign/core/Layout'
 import { GenericError } from '@/components/generic-error'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { getDefaultDates } from '@/lib/date-range'
 import {
   Outlet,
+  useRouterState,
   createFileRoute,
   stripSearchParams,
 } from '@tanstack/react-router'
@@ -27,6 +29,16 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const isList = useRouterState({
+    select: (state) =>
+      state.location.pathname.replace(/\/$/, '').endsWith('/transactions'),
+  })
+  if (isList)
+    return (
+      <LayoutContent padding={0} isScrollable={false}>
+        <Outlet />
+      </LayoutContent>
+    )
   return (
     <HouseholdContentLayout>
       <Outlet />

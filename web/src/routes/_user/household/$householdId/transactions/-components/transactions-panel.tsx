@@ -1,3 +1,4 @@
+import { Layout, LayoutHeader, LayoutContent } from '@astryxdesign/core/Layout'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
 import { useHousehold } from '@/hooks/use-household'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
@@ -95,16 +96,28 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   )
 
   return (
-    <Stack direction="vertical" gap={6}>
-      <Stack direction="vertical" gap={1}>
-        <Heading level={1}>Transactions</Heading>
-      </Stack>
-      {dateFilter}
-      <FinancialSummaryCards fragmentRef={data.financialReport} />
-      <TransactionsList
-        key={`${startDate}-${endDate}-${viewUserIds?.join(',') ?? 'all'}`}
-        fragmentRef={data}
-      />
-    </Stack>
+    <Layout
+      height="fill"
+      padding={6}
+      header={
+        <LayoutHeader label="Transaction filters">
+          <Stack direction="vertical" gap={6}>
+            <Heading level={1}>Transactions</Heading>
+            {dateFilter}
+          </Stack>
+        </LayoutHeader>
+      }
+      content={
+        <LayoutContent>
+          <Stack direction="vertical" gap={6}>
+            <FinancialSummaryCards fragmentRef={data.financialReport} />
+            <TransactionsList
+              key={`${startDate}-${endDate}-${viewUserIds?.join(',') ?? 'all'}`}
+              fragmentRef={data}
+            />
+          </Stack>
+        </LayoutContent>
+      }
+    />
   )
 }

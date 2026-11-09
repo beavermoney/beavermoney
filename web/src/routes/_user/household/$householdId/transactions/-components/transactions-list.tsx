@@ -12,27 +12,14 @@ import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
-import { useToast } from '@astryxdesign/core/Toast'
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { graphql } from 'relay-runtime'
-import { TransactionsTable } from './transactions-table'
 
 import { ErrorBoundary } from '@sentry/react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useInView } from 'react-intersection-observer'
 import type { PreloadedQuery } from 'react-relay'
-import {
-  usePaginationFragment,
-  useQueryLoader,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
+import { usePaginationFragment, useQueryLoader } from 'react-relay'
 import { Fragment } from 'react/jsx-runtime'
 import type { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
 import type { transactionsListFragment$key } from './__generated__/transactionsListFragment.graphql'
@@ -101,13 +88,10 @@ type TransactionsListProps = {
 }
 
 export function TransactionsList({ fragmentRef }: TransactionsListProps) {
-  const showToast = useToast()
-
-  const { data, loadNext, hasNext, isLoadingNext, refetch } =
-    usePaginationFragment<
-      transactionsListRefetch,
-      transactionsListFragment$key
-    >(transactionsListFragment, fragmentRef)
+  const { data, loadNext, hasNext, isLoadingNext } = usePaginationFragment<
+    transactionsListRefetch,
+    transactionsListFragment$key
+  >(transactionsListFragment, fragmentRef)
 
   const isMobile = useIsMobile()
   const editTransactionId = useSearch({
@@ -123,8 +107,6 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     string | null
   >(null)
   const [loadError, setLoadError] = useState<string | null>(null)
-  const [direction, setDirection] = useState<'ASC' | 'DESC'>('DESC')
-  const [isSorting, startTransition] = useTransition()
   const preloadTransaction = useCallback(
     (transactionId: string) => {
       const scopeKey = viewUserIds?.join(',') ?? 'all'
@@ -140,20 +122,6 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     },
     [loadEditQuery, viewUserIds],
   )
-  const openTransaction = useCallback(
-    (transactionId: string) => {
-      preloadTransaction(transactionId)
-      navigate({
-        to: '.',
-        resetScroll: false,
-        search: (previous) => ({
-          ...previous,
-          edit_transaction_id: transactionId,
-        }),
-      })
-    },
-    [navigate, preloadTransaction],
-  )
   useEffect(() => {
     if (editTransactionId) {
       preloadTransaction(editTransactionId)
@@ -166,75 +134,31 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     setRetainedTransactionId(null)
     disposeEditQuery()
   }, [disposeEditQuery, editTransactionId])
-  const changeSort = useCallback(
-    (nextDirection: 'ASC' | 'DESC') => {
-      startTransition(() => {
-        refetch(
-          {
-            orderBy: { field: 'DATETIME', direction: nextDirection },
-            cursor: null,
-            count: 20,
-          },
-          {
-            fetchPolicy: 'store-and-network',
-            onComplete: (error) => {
-              if (error)
-                showToast({
-                  type: 'error',
-                  body: 'Could not sort transactions. Please try again.',
-                })
-              else setLoadError(null)
-            },
-          },
-        )
-        setDirection(nextDirection)
-      })
-    },
-    [refetch, showToast],
-  )
-  useEffect(() => {
-    if (isMobile && direction !== 'DESC' && !isSorting) changeSort('DESC')
-  }, [isMobile, direction, isSorting, changeSort])
-
-  // Page-level invalidation refreshes DESC. Refresh the active ASC connection too.
-  useSubscribeToInvalidationState([data.id], () => {
-    if (direction !== 'ASC') return
-    startTransition(() => {
-      refetch(
-        {
-          cursor: null,
-          count: Math.max(20, data.transactions.edges?.length ?? 0),
-        },
-        { fetchPolicy: 'network-only' },
-      )
-    })
-  })
-
   const loadMore = useCallback(() => {
-    if (isLoadingNext || isSorting || !hasNext) return
+    if (isLoadingNext || !hasNext) return
     loadNext(isMobile ? 20 : 50, {
       onComplete: (error) => {
         setLoadError(error ? 'Could not load more transactions.' : null)
       },
     })
-  }, [loadNext, isMobile, isLoadingNext, isSorting, hasNext])
+  }, [loadNext, isMobile, isLoadingNext, hasNext])
 
   useRegisterConnection(data.transactions.__id, NodeType.Transaction)
 
   const [ref, inView] = useInView()
 
   useEffect(() => {
-    if (isMobile && inView && !loadError) {
+    if (inView && !loadError) {
       loadMore()
     }
-  }, [isMobile, inView, loadError, loadMore])
+  }, [inView, loadError, loadMore])
 
   const transactions =
     data.transactions.edges?.flatMap((edge) =>
       edge?.node ? [edge.node] : [],
     ) ?? []
   const groups: { date: Date; transactions: typeof transactions }[] = []
-  if (isMobile) {
+  {
     for (const transaction of transactions) {
       const date = startOfDay(parseISO(transaction.datetime))
       const last = groups[groups.length - 1]
@@ -245,25 +169,12 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
   }
 
   const list =
-    transactions.length === 0 && !hasNext && !isSorting && !loadError ? (
+    transactions.length === 0 && !hasNext && !loadError ? (
       <EmptyState
         icon={<Icon icon={ReceiptText} />}
         title="No transactions found"
         description="No transactions match your current filters. Try another date range or adjust your filters."
         headingLevel={2}
-      />
-    ) : !isMobile ? (
-      <TransactionsTable
-        fragmentRef={transactions}
-        direction={direction}
-        onToggleSort={() => changeSort(direction === 'DESC' ? 'ASC' : 'DESC')}
-        isSorting={isSorting}
-        hasNext={hasNext}
-        isLoadingNext={isLoadingNext}
-        onLoadMore={loadMore}
-        loadError={loadError}
-        onOpenTransaction={openTransaction}
-        onPreloadTransaction={preloadTransaction}
       />
     ) : (
       <ScrollableArea label="Scrollable content">
