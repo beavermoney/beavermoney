@@ -75,6 +75,9 @@ export function TransactionCard({
   const lot = lots[0]
   const isTransfer =
     data.category.type === 'transfer' || data.category.name === 'Move'
+  const isInvestmentTrade =
+    data.category.type === 'investment' &&
+    (data.category.name === 'Buy' || data.category.name === 'Sell')
   const accountNames = entries.length
     ? entries.map((entry) => entry.account.name)
     : lots.map((item) => item.investment.account.name)
@@ -144,13 +147,25 @@ export function TransactionCard({
                   <Token
                     key={amount.id}
                     size="sm"
-                    color={isTransfer ? 'blue' : incoming ? 'green' : 'red'}
+                    color={
+                      isTransfer
+                        ? 'blue'
+                        : isInvestmentTrade
+                          ? 'purple'
+                          : incoming
+                            ? 'green'
+                            : 'red'
+                    }
                     description={
                       isTransfer
                         ? t`Transfer`
-                        : incoming
-                          ? t`Money in`
-                          : t`Money out`
+                        : isInvestmentTrade
+                          ? data.category.name === 'Buy'
+                            ? t`Investment buy`
+                            : t`Investment sell`
+                          : incoming
+                            ? t`Money in`
+                            : t`Money out`
                     }
                     label={
                       amount.quantity

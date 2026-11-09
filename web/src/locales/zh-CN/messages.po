@@ -1233,6 +1233,10 @@ msgstr "投资"
 msgid "Investment account"
 msgstr "投资账户"
 
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment buy"
+msgstr "买入投资"
+
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Investment moved successfully!"
 msgstr "投资已转移！"
@@ -1248,6 +1252,10 @@ msgstr "投资名称不能超过 32 个字符。"
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Investment not found"
 msgstr "未找到投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment sell"
+msgstr "卖出投资"
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Investment symbol must be at least 1 character."

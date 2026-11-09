@@ -2,20 +2,19 @@ import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutHeader, LayoutContent } from '@astryxdesign/core/Layout'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
-import { useHousehold } from '@/hooks/use-household'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import { parseDateRangeFromURL } from '@/lib/date-range'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { parseISO } from 'date-fns'
 import { useFragment, useRelayEnvironment } from 'react-relay'
-import { fetchQuery, graphql } from 'relay-runtime'
+import { graphql } from 'relay-runtime'
 import { DatePeriodFilter as DateRangeFilter } from '@/components/date-period-filter'
-import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
-import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
-import transactionsPanelRefetchQueryNode from './__generated__/transactionsPanelRefetchQuery.graphql'
+import {
+  transactionRangeVariables,
+  withPreparedTransactionRange,
+} from '../-data/transaction-range'
 import { TransactionsList } from './transactions-list'
 
 const transactionsPanelFragment = graphql`
@@ -50,44 +49,21 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
   const endDate = parseISO(search.end).toISOString()
   const navigate = useNavigate()
   const environment = useRelayEnvironment()
-  const { household } = useHousehold()
   const { viewUserIds } = useHouseholdViewScope()
 
   const data = useFragment(transactionsPanelFragment, fragmentRef)
 
   const onDateRangeChange = async (start: string, end: string) => {
-    const period = parseDateRangeFromURL(start, end)
-    const nextWhere: TransactionWhereInput = {
-      datetimeGTE: period.startDate,
-      datetimeLT: period.endDate,
-      ...(viewUserIds !== null && {
-        hasTransactionEntriesWith: [
-          { hasAccountWith: [{ userIDIn: viewUserIds }] },
-        ],
-      }),
-    }
-
-    await fetchQuery<transactionsPanelRefetchQuery>(
+    await withPreparedTransactionRange(
       environment,
-      transactionsPanelRefetchQueryNode,
-      {
-        id: household.id,
-        where: nextWhere,
-        startDate: period.startDate,
-        endDate: period.endDate,
-        viewUserIds: viewUserIds ?? null,
-      },
-    ).toPromise()
-
-    await navigate({
-      to: '.',
-      resetScroll: false,
-      search: (prev) => ({
-        ...prev,
-        start,
-        end,
-      }),
-    })
+      transactionRangeVariables(start, end, viewUserIds ?? null),
+      () =>
+        navigate({
+          to: '.',
+          resetScroll: false,
+          search: (prev) => ({ ...prev, start, end }),
+        }),
+    )
   }
 
   const dateFilter = (

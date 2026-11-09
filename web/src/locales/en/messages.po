@@ -1233,6 +1233,10 @@ msgstr "Investment"
 msgid "Investment account"
 msgstr "Investment account"
 
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment buy"
+msgstr "Investment buy"
+
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Investment moved successfully!"
 msgstr "Investment moved successfully!"
@@ -1248,6 +1252,10 @@ msgstr "Investment name must be at most 32 characters."
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Investment not found"
 msgstr "Investment not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment sell"
+msgstr "Investment sell"
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Investment symbol must be at least 1 character."
