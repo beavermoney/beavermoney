@@ -289,6 +289,10 @@ msgstr "转出金额"
 msgid "An unexpected error occurred. Please try again."
 msgstr "发生意外错误，请重试。"
 
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Appearance"
+msgstr "外观"
+
 #: src/components/date-period-filter.tsx
 msgid "Apply range"
 msgstr "应用日期范围"
@@ -692,9 +696,9 @@ msgstr "每日合计"
 msgid "Daily totals for loaded transactions"
 msgstr "已加载交易的每日合计"
 
-#: src/routes/_user/household/$householdId/route.tsx
-msgid "Dark appearance"
-msgstr "深色外观"
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Dark"
+msgstr "深色"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -1230,9 +1234,9 @@ msgstr "负债"
 msgid "Liability"
 msgstr "负债"
 
-#: src/routes/_user/household/$householdId/route.tsx
-msgid "Light appearance"
-msgstr "浅色外观"
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Light"
+msgstr "浅色"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
@@ -2140,9 +2144,13 @@ msgstr "代码"
 msgid "Sync failed: {0}"
 msgstr "同步失败：{0}"
 
-#: src/routes/_user/household/$householdId/route.tsx
-msgid "System appearance"
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System"
 msgstr "跟随系统"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System follows your device’s appearance. Changes save automatically on this device."
+msgstr "跟随系统将使用设备的外观设置。更改会自动保存在此设备上。"
 
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "That user is already a household member."

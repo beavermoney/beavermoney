@@ -1,6 +1,11 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { LanguageSelector } from '@/components/language-selector'
+import { useTheme } from '@/components/theme-provider'
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@astryxdesign/core/SegmentedControl'
 import { useWeekStart, type WeekStart } from '@/hooks/use-week-start'
 import { Selector } from '@astryxdesign/core/Selector'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
@@ -90,6 +95,7 @@ export function GeneralSettings({
   })
 
   const { weekStartsOn, setWeekStartsOn } = useWeekStart()
+  const { theme, setTheme } = useTheme()
   const showToast = useToast()
 
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
@@ -262,6 +268,30 @@ export function GeneralSettings({
 
       <Divider />
       <LanguageSelector />
+      <Stack direction="vertical" gap={2}>
+        <Text type="label">
+          <Trans>Appearance</Trans>
+        </Text>
+        <SegmentedControl
+          label={t`Appearance`}
+          value={theme}
+          layout="fill"
+          onChange={(value) => {
+            if (value === 'light' || value === 'dark' || value === 'system')
+              setTheme(value)
+          }}
+        >
+          <SegmentedControlItem value="light" label={t`Light`} />
+          <SegmentedControlItem value="dark" label={t`Dark`} />
+          <SegmentedControlItem value="system" label={t`System`} />
+        </SegmentedControl>
+        <Text type="supporting">
+          <Trans>
+            System follows your device’s appearance. Changes save automatically
+            on this device.
+          </Trans>
+        </Text>
+      </Stack>
       <Stack direction="vertical" gap={2}>
         <Selector
           label={t`First day of week`}

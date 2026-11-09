@@ -289,6 +289,10 @@ msgstr "Amount to debit"
 msgid "An unexpected error occurred. Please try again."
 msgstr "An unexpected error occurred. Please try again."
 
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Appearance"
+msgstr "Appearance"
+
 #: src/components/date-period-filter.tsx
 msgid "Apply range"
 msgstr "Apply range"
@@ -692,9 +696,9 @@ msgstr "Daily totals"
 msgid "Daily totals for loaded transactions"
 msgstr "Daily totals for loaded transactions"
 
-#: src/routes/_user/household/$householdId/route.tsx
-msgid "Dark appearance"
-msgstr "Dark appearance"
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Dark"
+msgstr "Dark"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -1230,9 +1234,9 @@ msgstr "Liabilities"
 msgid "Liability"
 msgstr "Liability"
 
-#: src/routes/_user/household/$householdId/route.tsx
-msgid "Light appearance"
-msgstr "Light appearance"
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Light"
+msgstr "Light"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
@@ -2140,9 +2144,13 @@ msgstr "Symbol"
 msgid "Sync failed: {0}"
 msgstr "Sync failed: {0}"
 
-#: src/routes/_user/household/$householdId/route.tsx
-msgid "System appearance"
-msgstr "System appearance"
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System"
+msgstr "System"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System follows your device’s appearance. Changes save automatically on this device."
+msgstr "System follows your device’s appearance. Changes save automatically on this device."
 
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "That user is already a household member."
