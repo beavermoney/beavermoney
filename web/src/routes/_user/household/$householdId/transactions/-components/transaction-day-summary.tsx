@@ -45,6 +45,8 @@ export function TransactionDaySummary({
     convert,
     viewUserIds,
   )
+  if (income.intValue === 0 && expense.intValue === 0) return null
+
   const format = (value: currency) =>
     formatCurrencyWithPrivacyMode({ value, currencyCode: displayCurrencyCode })
   return (
@@ -58,20 +60,24 @@ export function TransactionDaySummary({
         isPartial ? 'Daily totals for loaded transactions' : 'Daily totals'
       }
     >
-      <Token
-        size="sm"
-        color="green"
-        label={format(income)}
-        description="Daily income"
-        aria-label={`Daily income: ${format(income)}`}
-      />
-      <Token
-        size="sm"
-        color="red"
-        label={format(expense)}
-        description="Daily expenses"
-        aria-label={`Daily expenses: ${format(expense)}`}
-      />
+      {income.intValue !== 0 && (
+        <Token
+          size="sm"
+          color="green"
+          label={format(income)}
+          description="Daily income"
+          aria-label={`Daily income: ${format(income)}`}
+        />
+      )}
+      {expense.intValue !== 0 && (
+        <Token
+          size="sm"
+          color="red"
+          label={format(expense)}
+          description="Daily expenses"
+          aria-label={`Daily expenses: ${format(expense)}`}
+        />
+      )}
       {isPartial && <Text type="supporting">Totals so far</Text>}
     </Stack>
   )
