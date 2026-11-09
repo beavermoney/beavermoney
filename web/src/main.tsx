@@ -1,3 +1,4 @@
+import { AppI18nProvider } from '@/components/app-i18n-provider'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
@@ -34,9 +35,14 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ThemeProvider defaultTheme="system" storageKey={LOCAL_STORAGE_THEME_KEY}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
+      <AppI18nProvider>
+        <ThemeProvider
+          defaultTheme="system"
+          storageKey={LOCAL_STORAGE_THEME_KEY}
+        >
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </AppI18nProvider>
     </StrictMode>,
   )
 }

@@ -1,0 +1,2636 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-09 16:30+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+
+#. placeholder {0}: transactions.length
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "{0, plural, one {# transaction loaded} other {# transactions loaded}}"
+msgstr "{0, plural, one {# transaction loaded} other {# transactions loaded}}"
+
+#. placeholder {0}: transactions.length
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "{0, plural, one {# transaction} other {# transactions}}"
+msgstr "{0, plural, one {# transaction} other {# transactions}}"
+
+#. placeholder {0}: resultData.createAccount.node.name
+#. placeholder {0}: resultData.createInvestment.node.name
+#. placeholder {0}: resultData.createRecurringSubscription.node.name
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "{0} is ready to go!"
+msgstr "{0} is ready to go!"
+
+#. placeholder {0}: titles[view]
+#: src/components/date-period-filter.tsx
+msgid "{0} options"
+msgstr "{0} options"
+
+#. placeholder {0}: selectedMembers.length
+#: src/routes/_user/household/$householdId/-components/view-scope-switcher.tsx
+msgid "{0} selected"
+msgstr "{0} selected"
+
+#. placeholder {0}: i === 0 ? t`From` : t`To`
+#. placeholder {0}: isPrivacyModeEnabled ? '••••' : amount.value
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "{0} shares"
+msgstr "{0} shares"
+
+#. placeholder {0}: resultData.updateAccount.node.name
+#. placeholder {0}: resultData.updateRecurringSubscription.node.name
+#. placeholder {0}: resultData.updateTransactionCategory.node.name
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "{0} updated!"
+msgstr "{0} updated!"
+
+#. placeholder {0}: data.user.name
+#: src/components/household-switcher.tsx
+msgid "{0}, user menu"
+msgstr "{0}, user menu"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "{count, plural, one {Every month} other {Every # months}}"
+msgstr "{count, plural, one {Every month} other {Every # months}}"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "{count, plural, one {Every week} other {Every # weeks}}"
+msgstr "{count, plural, one {Every week} other {Every # weeks}}"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "{count, plural, one {Every year} other {Every # years}}"
+msgstr "{count, plural, one {Every year} other {Every # years}}"
+
+#: src/lib/date-range.ts
+msgid "{daysUntil, plural, one {in # day} other {in # days}}"
+msgstr "{daysUntil, plural, one {in # day} other {in # days}}"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "{name} is active again. You can find it in Accounts."
+msgstr "{name} is active again. You can find it in Accounts."
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "{name} unarchived."
+msgstr "{name} unarchived."
+
+#: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
+msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
+msgstr "{transactionCount, plural, one {# transaction} other {# transactions}}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "1 month"
+msgstr "1 month"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "1 year"
+msgstr "1 year"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "3 months"
+msgstr "3 months"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "6 months"
+msgstr "6 months"
+
+#: src/routes/login.index.tsx
+msgid "A clearer view of your money starts here."
+msgstr "A clearer view of your money starts here."
+
+#: src/routes/index.tsx
+msgid "A day in your life"
+msgstr "A day in your life"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "A household can only have two members. Remove one before adding another."
+msgstr "A household can only have two members. Remove one before adding another."
+
+#: src/routes/index.tsx
+#: src/routes/login.index.tsx
+msgid "A little attention. A clearer picture."
+msgstr "A little attention. A clearer picture."
+
+#: src/routes/index.tsx
+msgid "A little more clarity.<0/>Starting today."
+msgstr "A little more clarity.<0/>Starting today."
+
+#: src/routes/index.tsx
+msgid "A shared life. A shared perspective."
+msgstr "A shared life. A shared perspective."
+
+#: src/routes/index.tsx
+msgid "A thoughtful home for your money. Track the everyday, bring your accounts together, and see the bigger picture."
+msgstr "A thoughtful home for your money. Track the everyday, bring your accounts together, and see the bigger picture."
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Account"
+msgstr "Account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Account / Movement"
+msgstr "Account / Movement"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account archived!"
+msgstr "Account archived!"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
+msgid "Account category"
+msgstr "Account category"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Account data refreshed."
+msgstr "Account data refreshed."
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account deleted!"
+msgstr "Account deleted!"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account Detail"
+msgstr "Account Detail"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Account history"
+msgstr "Account history"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Account history series"
+msgstr "Account history series"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Account name must be at least 1 character."
+msgstr "Account name must be at least 1 character."
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Account name must be at most 32 characters."
+msgstr "Account name must be at most 32 characters."
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "Account name must be at most 64 characters."
+msgstr "Account name must be at most 64 characters."
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/edit.tsx
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account not found"
+msgstr "Account not found"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+#: src/routes/_user/household/$householdId/settings/route.tsx
+msgid "Account settings"
+msgstr "Account settings"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+msgid "Account type"
+msgstr "Account type"
+
+#: src/components/app-sidebar.tsx
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Accounts"
+msgstr "Accounts"
+
+#: src/routes/index.tsx
+msgid "Accounts · Investments · Multiple currencies"
+msgstr "Accounts · Investments · Multiple currencies"
+
+#: src/constant.ts
+msgid "Accounts that hold investments, such as brokerage accounts"
+msgstr "Accounts that hold investments, such as brokerage accounts"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Actions"
+msgstr "Actions"
+
+#. placeholder {0}: uh.user.name
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Actions for {0}"
+msgstr "Actions for {0}"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Add a recurring payment to see your upcoming costs."
+msgstr "Add a recurring payment to see your upcoming costs."
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Add account"
+msgstr "Add account"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Add amount"
+msgstr "Add amount"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-panel.tsx
+msgid "Add category"
+msgstr "Add category"
+
+#: src/components/household-switcher.tsx
+msgid "Add household"
+msgstr "Add household"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Add household member"
+msgstr "Add household member"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "Add investment"
+msgstr "Add investment"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Add member"
+msgstr "Add member"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Add note / options"
+msgstr "Add note / options"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Add subscription"
+msgstr "Add subscription"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Add your first account to start tracking your balances."
+msgstr "Add your first account to start tracking your balances."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Adding..."
+msgstr "Adding..."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Admin"
+msgstr "Admin"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Admin demoted to member."
+msgstr "Admin demoted to member."
+
+#: src/routes/_user/household/$householdId/-components/view-scope-switcher.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "All"
+msgstr "All"
+
+#: src/components/currency-input.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Amount"
+msgstr "Amount"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Amount must be positive"
+msgstr "Amount must be positive"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Amount to credit"
+msgstr "Amount to credit"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Amount to debit"
+msgstr "Amount to debit"
+
+#: src/components/generic-error.tsx
+msgid "An unexpected error occurred. Please try again."
+msgstr "An unexpected error occurred. Please try again."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Appearance"
+msgstr "Appearance"
+
+#: src/components/date-period-filter.tsx
+msgid "Apply range"
+msgstr "Apply range"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archive"
+msgstr "Archive"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archive account"
+msgstr "Archive account"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archive Account"
+msgstr "Archive Account"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Archived accounts"
+msgstr "Archived accounts"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archiving..."
+msgstr "Archiving..."
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Asset"
+msgstr "Asset"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Assets"
+msgstr "Assets"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "At least one admin must remain."
+msgstr "At least one admin must remain."
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Avg Cost / Share"
+msgstr "Avg Cost / Share"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/$categoryId.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+#: src/routes/_user/household/$householdId/subscriptions/$subscriptionId.tsx
+msgid "Back"
+msgstr "Back"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Balance"
+msgstr "Balance"
+
+#: src/routes/index.tsx
+msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
+msgstr "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
+
+#: src/routes/login.index.tsx
+msgid "Bring your accounts together."
+msgstr "Bring your accounts together."
+
+#: src/routes/index.tsx
+msgid "Build your dam"
+msgstr "Build your dam"
+
+#: src/routes/login.index.tsx
+msgid "Build your dam, day by day."
+msgstr "Build your dam, day by day."
+
+#: src/routes/index.tsx
+#: src/routes/login.index.tsx
+msgid "Built with care. Built for clarity."
+msgstr "Built with care. Built for clarity."
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Buy"
+msgstr "Buy"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Buy AAPL shares"
+msgstr "Buy AAPL shares"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Buy transaction created successfully!"
+msgstr "Buy transaction created successfully!"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "By Account"
+msgstr "By Account"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "By category"
+msgstr "By category"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "By Symbol"
+msgstr "By Symbol"
+
+#: src/components/date-period-filter.tsx
+msgid "Calendar view"
+msgstr "Calendar view"
+
+#: src/components/date-period-filter.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Cannot move to the same investment"
+msgstr "Cannot move to the same investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Cannot transfer to the same account"
+msgstr "Cannot transfer to the same account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "Card Content"
+msgstr "Card Content"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "Card Footer"
+msgstr "Card Footer"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+msgid "cash"
+msgstr "cash"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Cash"
+msgstr "Cash"
+
+#: src/components/financial-summary-cards.tsx
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Cash flow"
+msgstr "Cash flow"
+
+#: src/constant.ts
+msgid "Cash or cash-equivalent accounts, such as checking or savings"
+msgstr "Cash or cash-equivalent accounts, such as checking or savings"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/categories/-components/categories-panel.tsx
+msgid "Categories"
+msgstr "Categories"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Category"
+msgstr "Category"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "CATEGORY"
+msgstr "CATEGORY"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Category (optional)"
+msgstr "Category (optional)"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "Category deleted!"
+msgstr "Category deleted!"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Category name must be at least 1 character."
+msgstr "Category name must be at least 1 character."
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Category name must be at most 32 characters."
+msgstr "Category name must be at most 32 characters."
+
+#: src/routes/_user/household/$householdId/categories/$categoryId.tsx
+msgid "Category not found"
+msgstr "Category not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Change account"
+msgstr "Change account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Change source"
+msgstr "Change source"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Charged monthly"
+msgstr "Charged monthly"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Charged weekly"
+msgstr "Charged weekly"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Charged yearly"
+msgstr "Charged yearly"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Check the highlighted fields before saving."
+msgstr "Check the highlighted fields before saving."
+
+#: src/components/transaction-composer/controls.tsx
+msgid "Choose"
+msgstr "Choose"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Choose a category"
+msgstr "Choose a category"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Choose a category."
+msgstr "Choose a category."
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose an account"
+msgstr "Choose an account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose an investment"
+msgstr "Choose an investment"
+
+#: src/components/date-period-filter.tsx
+msgid "Choose date view"
+msgstr "Choose date view"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose the destination account"
+msgstr "Choose the destination account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose the destination investment"
+msgstr "Choose the destination investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose the source account"
+msgstr "Choose the source account"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Choose your investment and enter its details."
+msgstr "Choose your investment and enter its details."
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/new.tsx
+msgid "Close"
+msgstr "Close"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Close the dialog and try opening the transaction again."
+msgstr "Close the dialog and try opening the transaction again."
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+msgid "Coffee at Starbucks"
+msgstr "Coffee at Starbucks"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Columns"
+msgstr "Columns"
+
+#: src/components/login-form.tsx
+msgid "Continue with Google"
+msgstr "Continue with Google"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Cost (High to Low)"
+msgstr "Cost (High to Low)"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Cost (Low to High)"
+msgstr "Cost (Low to High)"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Cost Basis"
+msgstr "Cost Basis"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Cost per payment"
+msgstr "Cost per payment"
+
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "Could not delete this transaction. Please try again."
+msgstr "Could not delete this transaction. Please try again."
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Could not load more transactions."
+msgstr "Could not load more transactions."
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Could not load transaction"
+msgstr "Could not load transaction"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Could not save. Your entry is still here—please try again."
+msgstr "Could not save. Your entry is still here—please try again."
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Could not unarchive {name}. Please try again."
+msgstr "Could not unarchive {name}. Please try again."
+
+#: src/components/date-period-filter.tsx
+msgid "Could not update dates. Please try again."
+msgstr "Could not update dates. Please try again."
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Create"
+msgstr "Create"
+
+#: src/routes/_user/household/new.tsx
+msgid "Create demo"
+msgstr "Create demo"
+
+#: src/routes/_user/household/new.tsx
+msgid "Create Household"
+msgstr "Create Household"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Create snapshot"
+msgstr "Create snapshot"
+
+#: src/routes/_user/household/new.tsx
+msgid "Create Your Household"
+msgstr "Create Your Household"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Creating..."
+msgstr "Creating..."
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Credit Amount"
+msgstr "Credit Amount"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Credit amount must be positive"
+msgstr "Credit amount must be positive"
+
+#: src/hooks/use-finance-label.ts
+msgid "Crypto"
+msgstr "Crypto"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Currency"
+msgstr "Currency"
+
+#: src/routes/_user/household/new.tsx
+msgid "Currency is required."
+msgstr "Currency is required."
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Currency not found"
+msgstr "Currency not found"
+
+#: src/components/date-period-filter.tsx
+msgid "Custom range"
+msgstr "Custom range"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily expenses"
+msgstr "Daily expenses"
+
+#. placeholder {0}: format(expense)
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily expenses: {0}"
+msgstr "Daily expenses: {0}"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily income"
+msgstr "Daily income"
+
+#. placeholder {0}: format(income)
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily income: {0}"
+msgstr "Daily income: {0}"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily totals"
+msgstr "Daily totals"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily totals for loaded transactions"
+msgstr "Daily totals for loaded transactions"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Dark"
+msgstr "Dark"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Date"
+msgstr "Date"
+
+#: src/components/date-period-filter.tsx
+msgid "Date view"
+msgstr "Date view"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Date, newest first. Sort oldest first"
+msgstr "Date, newest first. Sort oldest first"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Date, oldest first. Sort newest first"
+msgstr "Date, oldest first. Sort newest first"
+
+#: src/hooks/use-finance-label.ts
+msgid "Day"
+msgstr "Day"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Debit Amount"
+msgstr "Debit Amount"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Debit amount must be positive"
+msgstr "Debit amount must be positive"
+
+#: src/constant.ts
+msgid "Debts or obligations you owe to others, such as credit cards or loans"
+msgstr "Debts or obligations you owe to others, such as credit cards or loans"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Decimal separator"
+msgstr "Decimal separator"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Deficit"
+msgstr "Deficit"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Delete"
+msgstr "Delete"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Delete account"
+msgstr "Delete account"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Delete Account"
+msgstr "Delete Account"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "Delete Category"
+msgstr "Delete Category"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Delete household"
+msgstr "Delete household"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Delete household?"
+msgstr "Delete household?"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Delete last digit"
+msgstr "Delete last digit"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Delete Recurring Subscription"
+msgstr "Delete Recurring Subscription"
+
+#: src/components/transaction-composer/composer.tsx
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "Delete transaction"
+msgstr "Delete transaction"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Delete Transaction"
+msgstr "Delete Transaction"
+
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "Delete transaction?"
+msgstr "Delete transaction?"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Deleting..."
+msgstr "Deleting..."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Description"
+msgstr "Description"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Description must be at most 256 characters."
+msgstr "Description must be at most 256 characters."
+
+#: src/routes/_user/household/new.tsx
+msgid "Determines date and number formatting"
+msgstr "Determines date and number formatting"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Display currency"
+msgstr "Display currency"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Done"
+msgstr "Done"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "e.g. BTC-CAD"
+msgstr "e.g. BTC-CAD"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "e.g. iShares Core Equity ETF Portfolio"
+msgstr "e.g. iShares Core Equity ETF Portfolio"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "e.g. XEQT.TO"
+msgstr "e.g. XEQT.TO"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "e.g., chase.com"
+msgstr "e.g., chase.com"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "e.g., netflix.com"
+msgstr "e.g., netflix.com"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Edit"
+msgstr "Edit"
+
+#. placeholder {0}: financeLabel(kind)
+#: src/components/transaction-composer/composer.tsx
+msgid "Edit {0}"
+msgstr "Edit {0}"
+
+#. placeholder {0}: raw || '0'
+#: src/components/transaction-composer/controls.tsx
+msgid "Edit {label}: {prefix}{0}{suffix}"
+msgstr "Edit {label}: {prefix}{0}{suffix}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "Edit Account"
+msgstr "Edit Account"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "Edit Category"
+msgstr "Edit Category"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Edit Entry"
+msgstr "Edit Entry"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Edit Lot"
+msgstr "Edit Lot"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Edit Subscription"
+msgstr "Edit Subscription"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Edit transaction"
+msgstr "Edit transaction"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Edit Transaction"
+msgstr "Edit Transaction"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Email"
+msgstr "Email"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Email is required."
+msgstr "Email is required."
+
+#. placeholder {0}: financeLabel(kind)
+#: src/components/transaction-composer/composer.tsx
+msgid "Enter {0}"
+msgstr "Enter {0}"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price."
+msgstr "Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price."
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Enter a Yahoo Finance symbol to look up its price."
+msgstr "Enter a Yahoo Finance symbol to look up its price."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Enter household name to confirm"
+msgstr "Enter household name to confirm"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Entry updated successfully!"
+msgstr "Entry updated successfully!"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Equals"
+msgstr "Equals"
+
+#: src/routes/index.tsx
+msgid "EXAMPLE"
+msgstr "EXAMPLE"
+
+#: src/routes/index.tsx
+msgid "Example transaction ledger"
+msgstr "Example transaction ledger"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Exclude from reports"
+msgstr "Exclude from reports"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-entry-card.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Excluded"
+msgstr "Excluded"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Excluded from reports"
+msgstr "Excluded from reports"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Expense"
+msgstr "Expense"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+msgid "Expense created successfully!"
+msgstr "Expense created successfully!"
+
+#: src/components/financial-summary-cards.tsx
+msgid "Expenses"
+msgstr "Expenses"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Failed to save snapshot: {error}"
+msgstr "Failed to save snapshot: {error}"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "First day of week"
+msgstr "First day of week"
+
+#: src/routes/index.tsx
+msgid "Food & drink"
+msgstr "Food & drink"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "For example, 2 with Month means every two months."
+msgstr "For example, 2 with Month means every two months."
+
+#: src/routes/index.tsx
+msgid "For you. For your household. At your pace."
+msgstr "For you. For your household. At your pace."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Friday"
+msgstr "Friday"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "from"
+msgstr "from"
+
+#: src/components/transaction-composer/transfer-rows.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "From"
+msgstr "From"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "From account"
+msgstr "From account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "From Account"
+msgstr "From Account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "From account not found"
+msgstr "From account not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "From amount"
+msgstr "From amount"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "From Investment"
+msgstr "From Investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "From investment not found"
+msgstr "From investment not found"
+
+#: src/routes/index.tsx
+msgid "From your first coffee to your long-term investments, give every part of your finances a place."
+msgstr "From your first coffee to your long-term investments, give every part of your finances a place."
+
+#: src/components/app-sidebar.tsx
+msgid "General"
+msgstr "General"
+
+#: src/routes/_user/household/$householdId/settings/route.tsx
+msgid "General settings"
+msgstr "General settings"
+
+#: src/routes/index.tsx
+msgid "Get started"
+msgstr "Get started"
+
+#: src/components/generic-error.tsx
+#: src/components/not-found-error.tsx
+msgid "Go back"
+msgstr "Go back"
+
+#: src/components/generic-error.tsx
+#: src/components/not-found-error.tsx
+#: src/components/not-logged-in-error.tsx
+msgid "Go home"
+msgstr "Go home"
+
+#: src/components/not-logged-in-error.tsx
+msgid "Go to login"
+msgstr "Go to login"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Groceries"
+msgstr "Groceries"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "Group by"
+msgstr "Group by"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Hide balances"
+msgstr "Hide balances"
+
+#: src/components/nav-projects.tsx
+#: src/routes/index.tsx
+msgid "Household"
+msgstr "Household"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Household deleted."
+msgstr "Household deleted."
+
+#: src/routes/_user/household/new.tsx
+msgid "Household Name"
+msgstr "Household Name"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Household name is required."
+msgstr "Household name is required."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Household name must be at most 64 characters."
+msgstr "Household name must be at most 64 characters."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Household updated."
+msgstr "Household updated."
+
+#: src/routes/index.tsx
+msgid "Households · Members · Shared clarity"
+msgstr "Households · Members · Shared clarity"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "How many shares do you own?"
+msgstr "How many shares do you own?"
+
+#: src/components/icon-picker.tsx
+msgid "Icon"
+msgstr "Icon"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "Icon URL"
+msgstr "Icon URL"
+
+#: src/routes/index.tsx
+msgid "Illustrative entries in Canadian dollars."
+msgstr "Illustrative entries in Canadian dollars."
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "Inactive · {intervalText}"
+msgstr "Inactive · {intervalText}"
+
+#. placeholder {0}: inactiveSubscriptions.length
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Inactive subscriptions ({0})"
+msgstr "Inactive subscriptions ({0})"
+
+#: src/components/financial-summary-cards.tsx
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/index.tsx
+msgid "Income"
+msgstr "Income"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+msgid "Income created successfully!"
+msgstr "Income created successfully!"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Interval"
+msgstr "Interval"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Interval count must be at least 1."
+msgstr "Interval count must be at least 1."
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Interval count must be at most 100."
+msgstr "Interval count must be at most 100."
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+msgid "Invested"
+msgstr "Invested"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+msgid "Invested "
+msgstr "Invested "
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Investment"
+msgstr "Investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "Investment account"
+msgstr "Investment account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment buy"
+msgstr "Investment buy"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Investment moved successfully!"
+msgstr "Investment moved successfully!"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment name must be at least 1 character."
+msgstr "Investment name must be at least 1 character."
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment name must be at most 32 characters."
+msgstr "Investment name must be at most 32 characters."
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Investment not found"
+msgstr "Investment not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment sell"
+msgstr "Investment sell"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment symbol must be at least 1 character."
+msgstr "Investment symbol must be at least 1 character."
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment symbol must be at most 32 characters."
+msgstr "Investment symbol must be at most 32 characters."
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Investments"
+msgstr "Investments"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Investments must have the same symbol"
+msgstr "Investments must have the same symbol"
+
+#: src/components/public-header.tsx
+msgid "Join us on Discord"
+msgstr "Join us on Discord"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Joint"
+msgstr "Joint"
+
+#: src/routes/login.index.tsx
+msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
+msgstr "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
+
+#: src/routes/index.tsx
+msgid "Know your money.<0/>Build your dam."
+msgstr "Know your money.<0/>Build your dam."
+
+#: src/components/language-selector.tsx
+msgid "Language"
+msgstr "Language"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Largest first"
+msgstr "Largest first"
+
+#: src/routes/index.tsx
+msgid "Less scattered.<0/>More understood."
+msgstr "Less scattered.<0/>More understood."
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Liabilities"
+msgstr "Liabilities"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Liability"
+msgstr "Liability"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Light"
+msgstr "Light"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Liquidity"
+msgstr "Liquidity"
+
+#: src/components/route-content-boundary.tsx
+msgid "Loading content"
+msgstr "Loading content"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Loading more transactions…"
+msgstr "Loading more transactions…"
+
+#: src/components/route-content-boundary.tsx
+msgid "Loading page"
+msgstr "Loading page"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Loading transaction editing controls"
+msgstr "Loading transaction editing controls"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Locale"
+msgstr "Locale"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Locale is required."
+msgstr "Locale is required."
+
+#: src/routes/index.tsx
+msgid "Log income, expenses, and transfers with intention. Organize transactions into categories and keep recurring subscriptions in view."
+msgstr "Log income, expenses, and transfers with intention. Organize transactions into categories and keep recurring subscriptions in view."
+
+#: src/components/household-switcher.tsx
+msgid "Log out"
+msgstr "Log out"
+
+#: src/routes/login.index.tsx
+msgid "Log with intention."
+msgstr "Log with intention."
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Logo domain (optional)"
+msgstr "Logo domain (optional)"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Lot updated successfully!"
+msgstr "Lot updated successfully!"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Make admin"
+msgstr "Make admin"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Make member"
+msgstr "Make member"
+
+#: src/routes/login.index.tsx
+msgid "Make yourself<0/>at home."
+msgstr "Make yourself<0/>at home."
+
+#: src/routes/index.tsx
+msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+msgstr "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+
+#. placeholder {0}: fromInvestment.symbol
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Matching {0} holdings in another account."
+msgstr "Matching {0} holdings in another account."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Member"
+msgstr "Member"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Member added."
+msgstr "Member added."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Member changes are disabled on the demo household."
+msgstr "Member changes are disabled on the demo household."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Member promoted to admin."
+msgstr "Member promoted to admin."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Member removed."
+msgstr "Member removed."
+
+#: src/components/app-sidebar.tsx
+#: src/routes/_user/household/$householdId/settings/route.tsx
+msgid "Members"
+msgstr "Members"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Monday"
+msgstr "Monday"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Money coming in"
+msgstr "Money coming in"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Money going out"
+msgstr "Money going out"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Money in"
+msgstr "Money in"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Money out"
+msgstr "Money out"
+
+#: src/constant.ts
+msgid "Money owed to you, such as pending reimbursements or money lent"
+msgstr "Money owed to you, such as pending reimbursements or money lent"
+
+#: src/hooks/use-finance-label.ts
+msgid "Month"
+msgstr "Month"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+msgid "Monthly salary"
+msgstr "Monthly salary"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Monthly spend"
+msgstr "Monthly spend"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "More actions"
+msgstr "More actions"
+
+#: src/routes/index.tsx
+msgid "Morning coffee"
+msgstr "Morning coffee"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Move"
+msgstr "Move"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Move AAPL shares"
+msgstr "Move AAPL shares"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Moving..."
+msgstr "Moving..."
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "My Account"
+msgstr "My Account"
+
+#: src/routes/_user/household/new.tsx
+msgid "My Family"
+msgstr "My Family"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "My Household"
+msgstr "My Household"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Name"
+msgstr "Name"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Name (A-Z)"
+msgstr "Name (A-Z)"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Name (Z-A)"
+msgstr "Name (Z-A)"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Name A–Z"
+msgstr "Name A–Z"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Net Worth"
+msgstr "Net Worth"
+
+#: src/lib/time.ts
+msgid "Never"
+msgstr "Never"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "New"
+msgstr "New"
+
+#. placeholder {0}: financeLabel(kind)
+#: src/components/transaction-composer/composer.tsx
+msgid "New {0}"
+msgstr "New {0}"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "New Account"
+msgstr "New Account"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "New Category"
+msgstr "New Category"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "New entry"
+msgstr "New entry"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "New Investment"
+msgstr "New Investment"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "New Subscription"
+msgstr "New Subscription"
+
+#: src/routes/_user/household/new.tsx
+msgid "New to Beaver Money?"
+msgstr "New to Beaver Money?"
+
+#: src/routes/_user/household/$householdId/route.tsx
+#: src/routes/_user/household/$householdId/transactions/new.tsx
+msgid "New transaction"
+msgstr "New transaction"
+
+#: src/components/command-menu.tsx
+msgid "New Transaction"
+msgstr "New Transaction"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Next Payment"
+msgstr "Next Payment"
+
+#: src/components/date-period-filter.tsx
+msgid "Next period"
+msgstr "Next period"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
+msgid "No account categories available."
+msgstr "No account categories available."
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "No accounts found"
+msgstr "No accounts found"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "No activity yet"
+msgstr "No activity yet"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "No archived accounts"
+msgstr "No archived accounts"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "No categories available."
+msgstr "No categories available."
+
+#: src/routes/_user/household/new.tsx
+msgid "No currency found."
+msgstr "No currency found."
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "No data was refreshed"
+msgstr "No data was refreshed"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "No items found."
+msgstr "No items found."
+
+#: src/routes/_user/household/new.tsx
+msgid "No locale found."
+msgstr "No locale found."
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "No matching accounts."
+msgstr "No matching accounts."
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "No matching categories."
+msgstr "No matching categories."
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "No matching investments available."
+msgstr "No matching investments available."
+
+#: src/components/search-select.tsx
+#: src/components/transaction-composer/controls.tsx
+msgid "No matching options."
+msgstr "No matching options."
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "No snapshots in this period. Choose a wider date range, or create a snapshot from the toolbar to start tracking balances."
+msgstr "No snapshots in this period. Choose a wider date range, or create a snapshot from the toolbar to start tracking balances."
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "No subscriptions yet"
+msgstr "No subscriptions yet"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "No transactions found"
+msgstr "No transactions found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "No transactions match your current filters. Try another date range or adjust your filters."
+msgstr "No transactions match your current filters. Try another date range or adjust your filters."
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "None (Taxable)"
+msgstr "None (Taxable)"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
+msgstr "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Note (optional)"
+msgstr "Note (optional)"
+
+#: src/routes/index.tsx
+msgid "One entry at a time."
+msgstr "One entry at a time."
+
+#: src/routes/login.index.tsx
+msgid "One Google account. Your own space for the everyday."
+msgstr "One Google account. Your own space for the everyday."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Only household admins can add members."
+msgstr "Only household admins can add members."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Only household admins can change roles."
+msgstr "Only household admins can change roles."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Only household admins can remove members."
+msgstr "Only household admins can remove members."
+
+#: src/components/public-header.tsx
+msgid "Open source on GitHub"
+msgstr "Open source on GitHub"
+
+#: src/routes/index.tsx
+msgid "OPEN SOURCE. OPEN POSSIBILITIES."
+msgstr "OPEN SOURCE. OPEN POSSIBILITIES."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Options"
+msgstr "Options"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Other Expenses"
+msgstr "Other Expenses"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Other Income"
+msgstr "Other Income"
+
+#: src/routes/_user/household/$householdId/-components/owner-select.tsx
+msgid "Owner"
+msgstr "Owner"
+
+#. placeholder {0}: transaction.user.name
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "Owner: {0}"
+msgstr "Owner: {0}"
+
+#: src/components/not-found-error.tsx
+msgid "Page not found"
+msgstr "Page not found"
+
+#: src/routes/index.tsx
+msgid "Payday"
+msgstr "Payday"
+
+#: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
+msgid "per share"
+msgstr "per share"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Performance"
+msgstr "Performance"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Permanently remove this household and all its data."
+msgstr "Permanently remove this household and all its data."
+
+#: src/routes/login.index.tsx
+msgid "Personal finances. Shared perspective."
+msgstr "Personal finances. Shared perspective."
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Please enter a number"
+msgstr "Please enter a number"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Please enter a price"
+msgstr "Please enter a price"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Please enter a valid email."
+msgstr "Please enter a valid email."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please enter an amount"
+msgstr "Please enter an amount"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select a category"
+msgstr "Please select a category"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Please select a category type."
+msgstr "Please select a category type."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Please select a currency."
+msgstr "Please select a currency."
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select a from account"
+msgstr "Please select a from account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Please select a from investment"
+msgstr "Please select a from investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select a to account"
+msgstr "Please select a to account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Please select a to investment"
+msgstr "Please select a to investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Please select an account"
+msgstr "Please select an account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Please select an investment"
+msgstr "Please select an investment"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select an owner"
+msgstr "Please select an owner"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "Portfolio value"
+msgstr "Portfolio value"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Preferences"
+msgstr "Preferences"
+
+#: src/components/date-period-filter.tsx
+msgid "Previous period"
+msgstr "Previous period"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Price per share"
+msgstr "Price per share"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Price per share must be positive"
+msgstr "Price per share must be positive"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Property"
+msgstr "Property"
+
+#: src/constant.ts
+msgid "Real estate or other valuable property"
+msgstr "Real estate or other valuable property"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Receivable"
+msgstr "Receivable"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Recently active"
+msgstr "Recently active"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Recurring payments"
+msgstr "Recurring payments"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Refresh account data"
+msgstr "Refresh account data"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove"
+msgstr "Remove"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove from household"
+msgstr "Remove from household"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove member"
+msgstr "Remove member"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove member?"
+msgstr "Remove member?"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Removing..."
+msgstr "Removing..."
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Repeat every"
+msgstr "Repeat every"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Reset"
+msgstr "Reset"
+
+#: src/components/date-period-filter.tsx
+msgid "Reset to this month"
+msgstr "Reset to this month"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Retry"
+msgstr "Retry"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Return %"
+msgstr "Return %"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Role"
+msgstr "Role"
+
+#: src/components/login-form.tsx
+msgid "Sandbox"
+msgstr "Sandbox"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Saturday"
+msgstr "Saturday"
+
+#: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Save"
+msgstr "Save"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Save again"
+msgstr "Save again"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Save Changes"
+msgstr "Save Changes"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Saved automatically on this device."
+msgstr "Saved automatically on this device."
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Saving..."
+msgstr "Saving..."
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Saving…"
+msgstr "Saving…"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Savings"
+msgstr "Savings"
+
+#: src/components/financial-summary-cards.tsx
+msgid "Savings rate"
+msgstr "Savings rate"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Scrollable content"
+msgstr "Scrollable content"
+
+#. placeholder {0}: label.toLowerCase()
+#: src/components/search-select.tsx
+#: src/components/transaction-composer/controls.tsx
+msgid "Search {0}"
+msgstr "Search {0}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "Search accounts"
+msgstr "Search accounts"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Search by name"
+msgstr "Search by name"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Search categories"
+msgstr "Search categories"
+
+#: src/components/command-menu.tsx
+msgid "Search commands"
+msgstr "Search commands"
+
+#: src/components/icon-picker.tsx
+msgid "Search icons"
+msgstr "Search icons"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "Search investments"
+msgstr "Search investments"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Select a category"
+msgstr "Select a category"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Select a currency"
+msgstr "Select a currency"
+
+#: src/routes/_user/household/new.tsx
+msgid "Select a locale"
+msgstr "Select a locale"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "Select a source account first"
+msgstr "Select a source account first"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Select a type"
+msgstr "Select a type"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Select an account"
+msgstr "Select an account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "Select an account first"
+msgstr "Select an account first"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Select an interval"
+msgstr "Select an interval"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Select an investment"
+msgstr "Select an investment"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Select at least one series to view chart"
+msgstr "Select at least one series to view chart"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Select currency"
+msgstr "Select currency"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Select from investment first"
+msgstr "Select from investment first"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Sell"
+msgstr "Sell"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Sell AAPL shares"
+msgstr "Sell AAPL shares"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Sell transaction created successfully!"
+msgstr "Sell transaction created successfully!"
+
+#: src/components/app-sidebar.tsx
+#: src/constant.ts
+msgid "Settings"
+msgstr "Settings"
+
+#: src/hooks/use-finance-label.ts
+msgid "Setup"
+msgstr "Setup"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Shared owner — auto-managed"
+msgstr "Shared owner — auto-managed"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "shares"
+msgstr "shares"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Shares"
+msgstr "Shares"
+
+#: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
+msgid "shares ·"
+msgstr "shares ·"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "shares @"
+msgstr "shares @"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Shares must be positive"
+msgstr "Shares must be positive"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Shares to move"
+msgstr "Shares to move"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Show balances"
+msgstr "Show balances"
+
+#: src/components/date-period-filter.tsx
+msgid "Show earlier weeks"
+msgstr "Show earlier weeks"
+
+#: src/components/date-period-filter.tsx
+msgid "Show earlier years"
+msgstr "Show earlier years"
+
+#: src/routes/index.tsx
+msgid "SMALL HABITS. A BIGGER PICTURE."
+msgstr "SMALL HABITS. A BIGGER PICTURE."
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Snapshot"
+msgstr "Snapshot"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Snapshot saved!"
+msgstr "Snapshot saved!"
+
+#: src/components/generic-error.tsx
+msgid "Something went wrong :("
+msgstr "Something went wrong :("
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Something went wrong. Please try again."
+msgstr "Something went wrong. Please try again."
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Sort by"
+msgstr "Sort by"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Sort subscriptions"
+msgstr "Sort subscriptions"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Sorting transactions…"
+msgstr "Sorting transactions…"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Start date"
+msgstr "Start date"
+
+#: src/hooks/use-finance-label.ts
+msgid "Stock"
+msgstr "Stock"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Subscription deleted!"
+msgstr "Subscription deleted!"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Subscription name must be at least 1 character."
+msgstr "Subscription name must be at least 1 character."
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Subscription name must be at most 64 characters."
+msgstr "Subscription name must be at most 64 characters."
+
+#: src/routes/_user/household/$householdId/subscriptions/$subscriptionId.tsx
+msgid "Subscription not found"
+msgstr "Subscription not found"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Subscriptions"
+msgstr "Subscriptions"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Subtract"
+msgstr "Subtract"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Sunday"
+msgstr "Sunday"
+
+#: src/components/date-period-filter.tsx
+msgid "Switch view"
+msgstr "Switch view"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Symbol"
+msgstr "Symbol"
+
+#. placeholder {0}: error.message
+#. placeholder {0}: errors?.[0]?.message ?? t`No data was refreshed`
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Sync failed: {0}"
+msgstr "Sync failed: {0}"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System"
+msgstr "System"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System follows your device’s appearance. Changes save automatically on this device."
+msgstr "System follows your device’s appearance. Changes save automatically on this device."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "That user is already a household member."
+msgstr "That user is already a household member."
+
+#: src/routes/index.tsx
+msgid "The details make the difference."
+msgstr "The details make the difference."
+
+#: src/routes/index.tsx
+msgid "The everyday, accounted for."
+msgstr "The everyday, accounted for."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
+msgstr "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "The joint owner's role is fixed and can't be changed."
+msgstr "The joint owner's role is fixed and can't be changed."
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "The transaction owner cannot be changed."
+msgstr "The transaction owner cannot be changed."
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "This action cannot be undone. This will permanently delete the account. Delete is only allowed if there are no transactions or investments attached."
+msgstr "This action cannot be undone. This will permanently delete the account. Delete is only allowed if there are no transactions or investments attached."
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "This action cannot be undone. This will permanently delete the category."
+msgstr "This action cannot be undone. This will permanently delete the category."
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "This action cannot be undone. This will permanently delete the recurring subscription."
+msgstr "This action cannot be undone. This will permanently delete the recurring subscription."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "This action cannot be undone. This will permanently delete the transaction and all associated entries and investment lots."
+msgstr "This action cannot be undone. This will permanently delete the transaction and all associated entries and investment lots."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "This household is in an unexpected state. Refresh and try again."
+msgstr "This household is in an unexpected state. Refresh and try again."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
+msgstr "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
+msgstr "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
+
+#. placeholder {0}: household.name
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "This will permanently delete <0>{0}</0> and all associated data including accounts, transactions, and categories. This action cannot be undone."
+msgstr "This will permanently delete <0>{0}</0> and all associated data including accounts, transactions, and categories. This action cannot be undone."
+
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "This will permanently remove this transaction and its entries. You can’t undo this."
+msgstr "This will permanently remove this transaction and its entries. You can’t undo this."
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "This will remove them from the household. They will lose access immediately."
+msgstr "This will remove them from the household. They will lose access immediately."
+
+#: src/routes/index.tsx
+msgid "Three moments. One clear record."
+msgstr "Three moments. One clear record."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Thursday"
+msgstr "Thursday"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "to"
+msgstr "to"
+
+#: src/components/transaction-composer/transfer-rows.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "To"
+msgstr "To"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "To account"
+msgstr "To account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "To Account"
+msgstr "To Account"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "To account not found"
+msgstr "To account not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "To amount"
+msgstr "To amount"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "To Investment"
+msgstr "To Investment"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "To investment not found"
+msgstr "To investment not found"
+
+#: src/lib/date-range.ts
+msgid "today"
+msgstr "today"
+
+#: src/components/finance-date-input.tsx
+#: src/lib/time.ts
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Today"
+msgstr "Today"
+
+#: src/lib/date-range.ts
+msgid "tomorrow"
+msgstr "tomorrow"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Total amount paid"
+msgstr "Total amount paid"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Total amount received"
+msgstr "Total amount received"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Total Income"
+msgstr "Total Income"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Total paid"
+msgstr "Total paid"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Total paid must be positive"
+msgstr "Total paid must be positive"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Total received"
+msgstr "Total received"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Total received must be positive"
+msgstr "Total received must be positive"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Totals so far"
+msgstr "Totals so far"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Transaction"
+msgstr "Transaction"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction deleted successfully!"
+msgstr "Transaction deleted successfully!"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction description"
+msgstr "Transaction description"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Transaction details"
+msgstr "Transaction details"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-panel.tsx
+msgid "Transaction filters"
+msgstr "Transaction filters"
+
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Transaction kind"
+msgstr "Transaction kind"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "Transaction not found"
+msgstr "Transaction not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Transaction types"
+msgstr "Transaction types"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction updated successfully!"
+msgstr "Transaction updated successfully!"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Transactions"
+msgstr "Transactions"
+
+#: src/routes/index.tsx
+msgid "Transactions · Categories · Subscriptions"
+msgstr "Transactions · Categories · Subscriptions"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Transfer"
+msgstr "Transfer"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Transfer created successfully!"
+msgstr "Transfer created successfully!"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Transfer to savings"
+msgstr "Transfer to savings"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Transfer type"
+msgstr "Transfer type"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Try another account name."
+msgstr "Try another account name."
+
+#: src/routes/_user/household/new.tsx
+msgid "Try it with sample data first."
+msgstr "Try it with sample data first."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Tuesday"
+msgstr "Tuesday"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Type"
+msgstr "Type"
+
+#. placeholder {0}: household.name
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Type <0>{0}</0> to confirm"
+msgstr "Type <0>{0}</0> to confirm"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Unable to find a quote for this symbol."
+msgstr "Unable to find a quote for this symbol."
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchive"
+msgstr "Unarchive"
+
+#. placeholder {0}: account.name
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchive {0}"
+msgstr "Unarchive {0}"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchiving makes an account available for new transactions again. Its history stays intact."
+msgstr "Unarchiving makes an account available for new transactions again. Its history stays intact."
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchiving…"
+msgstr "Unarchiving…"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Unrealized Return"
+msgstr "Unrealized Return"
+
+#: src/components/pwa-update-prompt.tsx
+msgid "Update"
+msgstr "Update"
+
+#: src/components/pwa-update-prompt.tsx
+msgid "Update available. Reload to use the latest version of Beaver Money."
+msgstr "Update available. Reload to use the latest version of Beaver Money."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Update entry details. Switching the account also switches the entry's currency."
+msgstr "Update entry details. Switching the account also switches the entry's currency."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Update lot details. Switching the investment moves the lot's shares."
+msgstr "Update lot details. Switching the investment moves the lot's shares."
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Update transaction details. Click on entries or lots below to edit them individually."
+msgstr "Update transaction details. Click on entries or lots below to edit them individually."
+
+#: src/components/date-period-filter.tsx
+msgid "Updating date range"
+msgstr "Updating date range"
+
+#: src/routes/index.tsx
+msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+msgstr "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+
+#: src/components/date-period-filter.tsx
+msgid "View by month"
+msgstr "View by month"
+
+#: src/components/date-period-filter.tsx
+msgid "View by week"
+msgstr "View by week"
+
+#: src/components/date-period-filter.tsx
+msgid "View by year"
+msgstr "View by year"
+
+#: src/components/not-found-error.tsx
+msgid "We could not find what you were looking for. It may have been moved or deleted."
+msgstr "We could not find what you were looking for. It may have been moved or deleted."
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
+msgstr "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Wednesday"
+msgstr "Wednesday"
+
+#: src/hooks/use-finance-label.ts
+msgid "Week"
+msgstr "Week"
+
+#: src/routes/index.tsx
+msgid "Weekly groceries"
+msgstr "Weekly groceries"
+
+#: src/routes/_user/household/new.tsx
+msgid "Welcome to {name}! Your household is ready."
+msgstr "Welcome to {name}! Your household is ready."
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "What changed since your last snapshot?"
+msgstr "What changed since your last snapshot?"
+
+#: src/hooks/use-finance-label.ts
+msgid "Year"
+msgstr "Year"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Yearly spend"
+msgstr "Yearly spend"
+
+#: src/components/finance-date-input.tsx
+#: src/lib/time.ts
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Yesterday"
+msgstr "Yesterday"
+
+#: src/components/not-logged-in-error.tsx
+msgid "You are not logged in"
+msgstr "You are not logged in"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "You can't remove yourself from the household."
+msgstr "You can't remove yourself from the household."
+
+#: src/components/generic-error.tsx
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "You no longer have access to this household."
+msgstr "You no longer have access to this household."
+
+#: src/routes/_user/household/new.tsx
+msgid "Your household's primary currency for reporting"
+msgstr "Your household's primary currency for reporting"
+
+#: src/routes/login.index.tsx
+msgid "Your money,<0/>made clearer."
+msgstr "Your money,<0/>made clearer."
+
+#: src/routes/login.index.tsx
+msgid "YOUR NEXT CHAPTER"
+msgstr "YOUR NEXT CHAPTER"
+
+#: src/components/not-logged-in-error.tsx
+msgid "Your session may have expired. Please log in again to continue."
+msgstr "Your session may have expired. Please log in again to continue."
+
+#: src/routes/index.tsx
+msgid "Your whole picture, in one place."
+msgstr "Your whole picture, in one place."

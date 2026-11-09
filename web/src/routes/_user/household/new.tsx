@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Button } from '@astryxdesign/core/Button'
@@ -36,19 +38,15 @@ export const Route = createFileRoute('/_user/household/new')({
   component: RouteComponent,
 })
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Household name is required.')
-    .max(64, 'Household name must be at most 64 characters.'),
-  currencyCode: z.string().min(1, 'Currency is required.'),
-  locale: z.string().min(1, 'Locale is required.'),
-})
-
-const languageNames = new Intl.DisplayNames(['en'], { type: 'language' })
-const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
-
-function getLocaleDisplayName(locale: string, currencyCode: string): string {
+function getLocaleDisplayName(
+  locale: string,
+  currencyCode: string,
+  displayLocale: string,
+): string {
+  const languageNames = new Intl.DisplayNames([displayLocale], {
+    type: 'language',
+  })
+  const regionNames = new Intl.DisplayNames([displayLocale], { type: 'region' })
   const [, region] = locale.split('-')
   const languageName = languageNames.of(locale) ?? locale
   const regionName = region ? regionNames.of(region) : null
@@ -73,6 +71,16 @@ function RouteComponent() {
 }
 
 function NewHouseholdForm() {
+  const { t, i18n } = useLingui()
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Household name is required.`)
+      .max(64, t`Household name must be at most 64 characters.`),
+    currencyCode: z.string().min(1, t`Currency is required.`),
+    locale: z.string().min(1, t`Locale is required.`),
+  })
+
   const showToast = useToast()
 
   const navigate = useNavigate()
@@ -87,7 +95,7 @@ function NewHouseholdForm() {
     })
     showToast({
       type: 'info',
-      body: `Welcome to ${name}! Your household is ready.`,
+      body: t`Welcome to ${name}! Your household is ready.`,
     })
   }
 
@@ -195,19 +203,21 @@ function NewHouseholdForm() {
             <AstryxIcon icon={SparklesIcon} strokeWidth={2} />
           </Stack>
           <Text as="p" display="block" color="secondary">
-            New to Beaver Money?
+            <Trans>New to Beaver Money?</Trans>
             <br />
-            <Text type="label">Try it with sample data first.</Text>
+            <Text type="label">
+              <Trans>Try it with sample data first.</Trans>
+            </Text>
           </Text>
           <Button
             onClick={handleCreateDemo}
 
-            label={String(isMutationInFlight ? 'Creating...' : 'Create demo')}
+            label={String(isMutationInFlight ? t`Creating...` : t`Create demo`)}
             variant={'secondary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create demo'}
+            {isMutationInFlight ? t`Creating...` : t`Create demo`}
           </Button>
         </Stack>
 
@@ -218,7 +228,9 @@ function NewHouseholdForm() {
               <Stack direction="horizontal" align="center" justify="center">
                 <AstryxIcon icon={HomeIcon} strokeWidth={2} />
               </Stack>
-              <Heading level={2}>Create Your Household</Heading>
+              <Heading level={2}>
+                <Trans>Create Your Household</Trans>
+              </Heading>
             </Stack>
             <Stack direction="vertical" gap={4}>
               <Stack
@@ -248,9 +260,9 @@ function NewHouseholdForm() {
                             id={field.name}
                             onBlur={field.handleBlur}
                             aria-invalid={isInvalid}
-                            placeholder="My Family"
+                            placeholder={t`My Family`}
                             autoComplete="off"
-                            label={'Household Name'}
+                            label={t`Household Name`}
 
                             value={String(field.state.value ?? '')}
                             onChange={(_value, event) =>
@@ -278,7 +290,9 @@ function NewHouseholdForm() {
                           data-invalid={isInvalid}
                         >
                           <Text type="supporting" color="secondary">
-                            Your household's primary currency for reporting
+                            <Trans>
+                              Your household's primary currency for reporting
+                            </Trans>
                           </Text>
                           <SearchSelect
                             items={SUPPORTED_CURRENCIES.map((c) => c.code)}
@@ -287,11 +301,15 @@ function NewHouseholdForm() {
                               field.handleChange(value || '')
                             }}
                             id={field.name}
-                            placeholder="Select a currency"
+                            placeholder={t`Select a currency`}
                             onBlur={field.handleBlur}
-                            label={'Currency'}
+                            label={t`Currency`}
                             renderOption={(item: string) => <span>{item}</span>}
-                            emptyText={<>No currency found.</>}
+                            emptyText={
+                              <>
+                                <Trans>No currency found.</Trans>
+                              </>
+                            }
                           />
                           {isInvalid && (
                             <FormError errors={field.state.meta.errors} />
@@ -312,7 +330,7 @@ function NewHouseholdForm() {
                           data-invalid={isInvalid}
                         >
                           <Text type="supporting" color="secondary">
-                            Determines date and number formatting
+                            <Trans>Determines date and number formatting</Trans>
                           </Text>
                           <SearchSelect
                             key={currencyCode}
@@ -323,18 +341,30 @@ function NewHouseholdForm() {
                             }}
                             getLabel={(item: string | null) => {
                               if (!item || !currencyCode) return ''
-                              return getLocaleDisplayName(item, currencyCode)
+                              return getLocaleDisplayName(
+                                item,
+                                currencyCode,
+                                i18n.locale,
+                              )
                             }}
                             id={field.name}
-                            placeholder="Select a locale"
+                            placeholder={t`Select a locale`}
                             onBlur={field.handleBlur}
-                            label={'Locale'}
+                            label={t`Locale`}
                             renderOption={(item: string) => (
                               <span>
-                                {getLocaleDisplayName(item, currencyCode)}
+                                {getLocaleDisplayName(
+                                  item,
+                                  currencyCode,
+                                  i18n.locale,
+                                )}
                               </span>
                             )}
-                            emptyText={<>No locale found.</>}
+                            emptyText={
+                              <>
+                                <Trans>No locale found.</Trans>
+                              </>
+                            }
                           />
                           {isInvalid && (
                             <FormError errors={field.state.meta.errors} />
@@ -359,13 +389,13 @@ function NewHouseholdForm() {
                 form="new-household-form"
 
                 label={String(
-                  isMutationInFlight ? 'Creating...' : 'Create Household',
+                  isMutationInFlight ? t`Creating...` : t`Create Household`,
                 )}
                 variant={'primary'}
 
                 isDisabled={isMutationInFlight}
               >
-                {isMutationInFlight ? 'Creating...' : 'Create Household'}
+                {isMutationInFlight ? t`Creating...` : t`Create Household`}
               </Button>
             </Stack>
           </Stack>

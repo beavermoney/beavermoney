@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutHeader, LayoutContent } from '@astryxdesign/core/Layout'
 import { FinancialSummaryCards } from '@/components/financial-summary-cards'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
@@ -39,6 +41,7 @@ type TransactionsPanelProps = {
 }
 
 export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
+  const { t } = useLingui()
   const search = useSearch({
     from: '/_user/household/$householdId/transactions',
   })
@@ -76,9 +79,11 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
       height="fill"
       padding={6}
       header={
-        <LayoutHeader label="Transaction filters">
+        <LayoutHeader label={t`Transaction filters`}>
           <Stack direction="vertical" gap={6}>
-            <Heading level={1}>Transactions</Heading>
+            <Heading level={1}>
+              <Trans>Transactions</Trans>
+            </Heading>
             {dateFilter}
           </Stack>
         </LayoutHeader>

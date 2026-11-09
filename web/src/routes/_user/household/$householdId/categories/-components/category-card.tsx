@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { plural } from '@lingui/core/macro'
 import { CategoryIcon } from '@/components/category-icon'
 import { RouterListItem } from '@/components/router-list-item'
 import { Text } from '@astryxdesign/core/Text'
@@ -55,6 +57,8 @@ export function CategoryCard({
   financialReportRef,
   className: _className,
 }: CategoryCardProps) {
+  const { t } = useLingui()
+
   const category = useFragment(categoryCardCategoryFragment, categoryRef)
   const financialReport = useFragment(
     categoryCardFinancialReportFragment,
@@ -90,7 +94,12 @@ export function CategoryCard({
       startContent={<CategoryIcon type={category.type} icon={category.icon} />}
       description={
         transactionCount
-          ? `${transactionCount} transaction${transactionCount === 1 ? '' : 's'}`
+          ? t({
+              message: plural(transactionCount, {
+                one: '# transaction',
+                other: '# transactions',
+              }),
+            })
           : undefined
       }
       endContent={

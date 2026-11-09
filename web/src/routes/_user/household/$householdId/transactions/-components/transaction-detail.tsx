@@ -1,3 +1,4 @@
+import { Trans } from '@lingui/react/macro'
 import { Card } from '@astryxdesign/core/Card'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -34,7 +35,7 @@ export function TransactionDetail({ fragmentRef }: TransactionDetailProps) {
   if (data.node == null) {
     return (
       <Stack direction="vertical" gap={4}>
-        Transaction not found
+        <Trans>Transaction not found</Trans>
       </Stack>
     )
   }
@@ -42,7 +43,9 @@ export function TransactionDetail({ fragmentRef }: TransactionDetailProps) {
   return (
     <Card>
       <Stack direction="vertical" gap={2} as="header">
-        <Heading level={2}>CATEGORY</Heading>
+        <Heading level={2}>
+          <Trans>CATEGORY</Trans>
+        </Heading>
         <Stack direction="vertical" gap={4}>
           {data.node.description}
         </Stack>
@@ -52,7 +55,7 @@ export function TransactionDetail({ fragmentRef }: TransactionDetailProps) {
       </Stack>
       <Stack direction="vertical" gap={4}>
         <Text as="p" display="block">
-          Card Content
+          <Trans>Card Content</Trans>
         </Text>
       </Stack>
       <Stack
@@ -64,7 +67,7 @@ export function TransactionDetail({ fragmentRef }: TransactionDetailProps) {
         as="footer"
       >
         <Text as="p" display="block">
-          Card Footer
+          <Trans>Card Footer</Trans>
         </Text>
       </Stack>
     </Card>

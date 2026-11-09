@@ -1,3 +1,5 @@
+import type { MessageDescriptor } from '@lingui/core'
+import { msg } from '@lingui/core/macro'
 import { LinkOptions } from '@tanstack/react-router'
 import type { HotkeySequence } from '@tanstack/react-hotkeys'
 import {
@@ -36,13 +38,12 @@ export const CATEGORY_TYPE_LIST = [
   'setup',
 ] as const
 
-export const ACCOUNT_TYPE_DESCRIPTION: Record<string, string> = {
-  liquidity: 'Cash or cash-equivalent accounts, such as checking or savings',
-  investment: 'Accounts that hold investments, such as brokerage accounts',
-  property: 'Real estate or other valuable property',
-  receivable: 'Money owed to you, such as pending reimbursements or money lent',
-  liability:
-    'Debts or obligations you owe to others, such as credit cards or loans',
+export const ACCOUNT_TYPE_DESCRIPTION: Record<string, MessageDescriptor> = {
+  liquidity: msg`Cash or cash-equivalent accounts, such as checking or savings`,
+  investment: msg`Accounts that hold investments, such as brokerage accounts`,
+  property: msg`Real estate or other valuable property`,
+  receivable: msg`Money owed to you, such as pending reimbursements or money lent`,
+  liability: msg`Debts or obligations you owe to others, such as credit cards or loans`,
 }
 
 export const ACCOUNT_CATEGORY_LIST = [
@@ -96,13 +97,13 @@ export const ACCOUNT_CATEGORY_APPLICABLE_TYPES = new Set([
 ])
 
 export const NAV: Array<{
-  name: string
+  name: MessageDescriptor
   link: LinkOptions
   icon: LucideIcon
   shortcut: HotkeySequence
 }> = [
   {
-    name: 'Transactions',
+    name: msg`Transactions`,
     link: {
       to: '/household/$householdId/transactions',
       activeOptions: {
@@ -117,7 +118,7 @@ export const NAV: Array<{
     shortcut: ['G', 'T'],
   },
   {
-    name: 'Accounts',
+    name: msg`Accounts`,
     link: {
       to: '/household/$householdId/accounts',
       activeOptions: {
@@ -132,7 +133,7 @@ export const NAV: Array<{
     shortcut: ['G', 'A'],
   },
   {
-    name: 'Investments',
+    name: msg`Investments`,
     link: {
       to: '/household/$householdId/investments',
       activeOptions: {
@@ -147,7 +148,7 @@ export const NAV: Array<{
     shortcut: ['G', 'I'],
   },
   {
-    name: 'Categories',
+    name: msg`Categories`,
     link: {
       to: '/household/$householdId/categories',
       activeOptions: {
@@ -162,7 +163,7 @@ export const NAV: Array<{
     shortcut: ['G', 'C'],
   },
   {
-    name: 'Subscriptions',
+    name: msg`Subscriptions`,
     link: {
       to: '/household/$householdId/subscriptions',
       activeOptions: {
@@ -177,7 +178,7 @@ export const NAV: Array<{
     shortcut: ['G', 'S'],
   },
   {
-    name: 'Settings',
+    name: msg`Settings`,
     link: {
       to: '/household/$householdId/settings',
       activeOptions: {

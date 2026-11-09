@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import {
   editAmount,
   calculateAmount,
@@ -25,6 +26,7 @@ export function ComposerKeypad({
   pending: PendingCalculation | null
   setPending: (next: PendingCalculation | null) => void
 }) {
+  const { t } = useLingui()
   function press(key: string) {
     if (key === '+' || key === '-') {
       setPending({ left: value || '0', operator: key, right: '' })
@@ -80,15 +82,15 @@ export function ComposerKeypad({
               className="composer-key"
               label={
                 key === 'backspace'
-                  ? 'Delete last digit'
+                  ? t`Delete last digit`
                   : key === decimal
-                    ? 'Decimal separator'
+                    ? t`Decimal separator`
                     : key === '-'
-                      ? 'Subtract'
+                      ? t`Subtract`
                       : key === '+'
-                        ? 'Add amount'
+                        ? t`Add amount`
                         : key === '='
-                          ? 'Equals'
+                          ? t`Equals`
                           : key
               }
               onClick={() => press(key)}

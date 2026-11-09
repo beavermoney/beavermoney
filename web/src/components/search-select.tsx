@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { useComposer } from './transaction-composer/context'
 import { ComposerChoice } from './transaction-composer/controls'
 import { Selector } from '@astryxdesign/core/Selector'
@@ -52,6 +53,8 @@ export function SearchSelect<T>({
   disabledMessage,
   ...props
 }: SearchSelectProps<T>) {
+  const { t } = useLingui()
+
   const composer = useComposer()
   const [query, setQuery] = useState('')
   const text = (item: T) =>
@@ -83,9 +86,9 @@ export function SearchSelect<T>({
     return (
       <Stack gap={3}>
         <TextInput
-          label={`Search ${label.toLowerCase()}`}
+          label={t`Search ${label.toLowerCase()}`}
           isLabelHidden
-          placeholder={`Search ${label.toLowerCase()}`}
+          placeholder={t`Search ${label.toLowerCase()}`}
           value={query}
           onChange={setQuery}
         />
@@ -103,7 +106,7 @@ export function SearchSelect<T>({
           </Card>
         ))}
         {!matches.length && (
-          <Text type="supporting">{emptyText ?? 'No matching options.'}</Text>
+          <Text type="supporting">{emptyText ?? t`No matching options.`}</Text>
         )}
       </Stack>
     )
@@ -140,7 +143,7 @@ export function SearchSelect<T>({
       hasSearch={searchable}
       presentation="adaptive"
       disabledMessage={disabledMessage}
-      searchPlaceholder={`Search ${label.toLowerCase()}`}
+      searchPlaceholder={t`Search ${label.toLowerCase()}`}
       emptyText={emptyText}
       emptySearchText={emptyText}
       status={invalid ? { type: 'error' } : undefined}

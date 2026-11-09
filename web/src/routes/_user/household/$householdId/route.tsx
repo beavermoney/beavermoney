@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { Stack } from '@astryxdesign/core/Stack'
 import {
   RouteContentBoundary,
@@ -135,7 +137,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
     } catch (error) {
       if (isMembershipRevokedError(error)) {
         clearHouseholdScopedStorage()
-        notifyError('You no longer have access to this household.')
+        notifyError(t`You no longer have access to this household.`)
         throw redirect({ to: '/household' })
       }
       throw error
@@ -152,6 +154,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
 })
 
 function RouteComponent() {
+  const { t } = useLingui()
   const showToast = useToast()
 
   const params = Route.useParams()
@@ -201,18 +204,18 @@ function RouteComponent() {
         if (errors?.length || !response?.refresh) {
           showToast({
             type: 'error',
-            body: `Sync failed: ${errors?.[0]?.message ?? 'No data was refreshed'}`,
+            body: t`Sync failed: ${errors?.[0]?.message ?? t`No data was refreshed`}`,
           })
           return
         }
 
-        showToast({ type: 'info', body: 'Account data refreshed.' })
+        showToast({ type: 'info', body: t`Account data refreshed.` })
       },
       onError: (error) => {
-        showToast({ type: 'error', body: `Sync failed: ${error.message}` })
+        showToast({ type: 'error', body: t`Sync failed: ${error.message}` })
       },
     })
-  }, [commitRefresh, params.householdId, showToast])
+  }, [t, commitRefresh, params.householdId, showToast])
 
   useSubscribeToInvalidationState([params.householdId], () => {
     fetchQuery(
@@ -225,11 +228,11 @@ function RouteComponent() {
 
   const preferenceItems = [
     {
-      label: isPrivacyModeEnabled ? 'Show balances' : 'Hide balances',
+      label: isPrivacyModeEnabled ? t`Show balances` : t`Hide balances`,
       onClick: togglePrivacyMode,
     },
     {
-      label: 'Refresh account data',
+      label: t`Refresh account data`,
       onClick: handleRefreshAccountData,
       isDisabled: isRefreshInFlight,
     },
@@ -282,7 +285,7 @@ function RouteComponent() {
                               renderTrigger={(openSnapshot) => (
                                 <DropdownMenu
                                   button={{
-                                    label: 'More actions',
+                                    label: t`More actions`,
                                     icon: <AstryxIcon icon={EllipsisIcon} />,
                                     isIconOnly: true,
                                     variant: 'ghost',
@@ -294,7 +297,7 @@ function RouteComponent() {
                                   }
                                   items={[
                                     {
-                                      label: 'Create snapshot',
+                                      label: t`Create snapshot`,
                                       icon: <AstryxIcon icon={FlagIcon} />,
                                       onClick: openSnapshot,
                                     },
@@ -308,7 +311,7 @@ function RouteComponent() {
                               <SnapshotDialog fragmentRef={data.household} />
                               <DropdownMenu
                                 button={{
-                                  label: 'Preferences',
+                                  label: t`Preferences`,
                                   icon: <AstryxIcon icon={Settings2Icon} />,
                                   isIconOnly: true,
                                   variant: 'ghost',
@@ -352,6 +355,7 @@ type FloatingLogTransactionWindowProps = {
 function FloatingLogTransactionWindow({
   fragmentRef,
 }: FloatingLogTransactionWindowProps) {
+  const { t } = useLingui()
   const { type: logTransactionType, close: closeLogTransaction } =
     useLogTransaction()
 
@@ -370,7 +374,7 @@ function FloatingLogTransactionWindow({
         padding={6}
         header={
           <DialogHeader
-            title="New transaction"
+            title={t`New transaction`}
             onOpenChange={(open) => {
               if (!open) closeLogTransaction()
             }}
@@ -388,12 +392,13 @@ function FloatingLogTransactionWindow({
 }
 
 function NewEntryButton() {
+  const { t } = useLingui()
   const isMobile = useIsMobile()
   const { open } = useLogTransaction()
   return (
     <Button
-      label={isMobile ? 'New' : 'New entry'}
-      aria-label="New entry"
+      label={isMobile ? t`New` : t`New entry`}
+      aria-label={t`New entry`}
       icon={<AstryxIcon icon={PlusIcon} />}
       onClick={() => open('expense')}
     />

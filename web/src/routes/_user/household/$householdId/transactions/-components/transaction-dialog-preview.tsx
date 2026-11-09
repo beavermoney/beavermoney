@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useDateFormatter } from '@/hooks/use-date-formatter'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { Badge } from '@astryxdesign/core/Badge'
@@ -8,7 +11,6 @@ import { Skeleton } from '@astryxdesign/core/Skeleton'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
-import { format } from 'date-fns'
 import { Fragment } from 'react'
 import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
@@ -63,6 +65,8 @@ export function TransactionDialogPreview({
   fragmentRef,
   onClose,
 }: TransactionDialogPreviewProps) {
+  const format = useDateFormatter()
+  const { t } = useLingui()
   const transaction = useFragment(transactionDialogPreviewFragment, fragmentRef)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { household } = useHousehold()
@@ -94,7 +98,7 @@ export function TransactionDialogPreview({
       padding={6}
       header={
         <DialogHeader
-          title="Edit Transaction"
+          title={t`Edit Transaction`}
           onOpenChange={onClose ? () => onClose() : undefined}
         />
       }
@@ -102,8 +106,10 @@ export function TransactionDialogPreview({
       <LayoutContent>
         <Stack direction="vertical" gap={6} paddingBlockStart={4}>
           <Text as="div" display="block" type="supporting">
-            Update transaction details. Click on entries or lots below to edit
-            them individually.
+            <Trans>
+              Update transaction details. Click on entries or lots below to edit
+              them individually.
+            </Trans>
           </Text>
 
           <Stack direction="vertical" gap={2}>
@@ -128,7 +134,13 @@ export function TransactionDialogPreview({
                           <Stack direction="vertical" gap={4}>
                             <span>{transaction.category.name}</span>
                             {transaction.excludeFromReports && (
-                              <Badge label={<>Excluded</>} />
+                              <Badge
+                                label={
+                                  <>
+                                    <Trans>Excluded</Trans>
+                                  </>
+                                }
+                              />
                             )}
                           </Stack>
                           <Stack direction="vertical" gap={4}>
@@ -229,12 +241,14 @@ export function TransactionDialogPreview({
           <Stack direction="vertical" gap={4}>
             <Stack direction="vertical" gap={4} aria-hidden="true">
               <Stack direction="vertical" gap={4}>
-                <PreviewField label="Description" />
-                <PreviewField label="Date" />
-                <PreviewField label="Category" />
+                <PreviewField label={t`Description`} />
+                <PreviewField label={t`Date`} />
+                <PreviewField label={t`Category`} />
                 <fieldset data-slot="transaction-dialog-preview-field">
                   <legend className="mb-2">
-                    <Text type="label">Options</Text>
+                    <Text type="label">
+                      <Trans>Options</Trans>
+                    </Text>
                   </legend>
                   <Stack
                     direction="vertical"
@@ -242,7 +256,7 @@ export function TransactionDialogPreview({
                     data-slot="checkbox-group"
                   >
                     <Stack direction="vertical" gap={2}>
-                      <PreviewButton label="Exclude from reports" />
+                      <PreviewButton label={t`Exclude from reports`} />
                     </Stack>
                   </Stack>
                 </fieldset>
@@ -258,12 +272,12 @@ export function TransactionDialogPreview({
             justify="end"
             aria-hidden="true"
           >
-            <PreviewButton label="Delete" variant="destructive" />
-            <PreviewButton label="Save Changes" />
+            <PreviewButton label={t`Delete`} variant="destructive" />
+            <PreviewButton label={t`Save Changes`} />
           </Stack>
 
           <span className="sr-only" role="status">
-            Loading transaction editing controls
+            <Trans>Loading transaction editing controls</Trans>
           </span>
         </Stack>
       </LayoutContent>

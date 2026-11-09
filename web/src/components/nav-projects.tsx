@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { useAppShellMobile } from '@astryxdesign/core/AppShell'
 import { Kbd } from '@astryxdesign/core/Kbd'
 import { SideNavItem, SideNavSection } from '@astryxdesign/core/SideNav'
@@ -11,7 +12,7 @@ import type { LucideIcon } from 'lucide-react'
 
 export function NavProjects({
   projects,
-  title = 'Household',
+  title,
 }: {
   title?: string
   projects: {
@@ -21,13 +22,15 @@ export function NavProjects({
     shortcut?: HotkeySequence
   }[]
 }) {
+  const { t } = useLingui()
+
   const { closeMobileNav } = useAppShellMobile()
   const router = useRouter()
   const location = useRouterState({
     select: (state) => state.location,
   })
   return (
-    <SideNavSection title={title}>
+    <SideNavSection title={title ?? t`Household`}>
       {projects.map((item) => {
         const href = router.buildLocation(item.link).href
         return (

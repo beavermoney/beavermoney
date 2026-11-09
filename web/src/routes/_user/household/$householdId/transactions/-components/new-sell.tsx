@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Text } from '@astryxdesign/core/Text'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { InvestmentStart } from './investment-start'
@@ -35,19 +37,6 @@ import { commitMutationResult } from '@/lib/relay'
 import { OwnerSelect } from '../../-components/owner-select'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-
-const formSchema = z.object({
-  description: z
-    .string()
-    .max(256, 'Description must be at most 256 characters.'),
-  shares: z.number().positive('Shares must be positive'),
-  pricePerShare: z.number().positive('Price per share must be positive'),
-  totalReceived: z.number().positive('Total received must be positive'),
-  datetime: z.date(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-  accountId: z.string().min(1, 'Please select an account'),
-  investmentId: z.string().min(1, 'Please select an investment'),
-})
 
 const newSellFragment = graphql`
   fragment newSellFragment on Household
@@ -101,6 +90,20 @@ type NewSellProps = {
 }
 
 export function NewSell({ fragmentRef }: NewSellProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    description: z
+      .string()
+      .max(256, t`Description must be at most 256 characters.`),
+    shares: z.number().positive(t`Shares must be positive`),
+    pricePerShare: z.number().positive(t`Price per share must be positive`),
+    totalReceived: z.number().positive(t`Total received must be positive`),
+    datetime: z.date(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+    accountId: z.string().min(1, t`Please select an account`),
+    investmentId: z.string().min(1, t`Please select an investment`),
+  })
+
   const showToast = useToast()
   const isMobile = useIsMobile()
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
@@ -198,7 +201,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
 
           showToast({
             type: 'info',
-            body: 'Sell transaction created successfully!',
+            body: t`Sell transaction created successfully!`,
           })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
@@ -272,7 +275,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
               <TransactionAccountPicker
                 accounts={investmentAccounts}
                 name={field.name}
-                label="Account"
+                label={t`Account`}
                 value={field.state.value}
                 onValueChange={(value) => {
                   field.handleChange(value)
@@ -298,7 +301,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
               <TransactionInvestmentPicker
                 investments={availableInvestments}
                 name={field.name}
-                label="Investment"
+                label={t`Investment`}
                 value={field.state.value}
                 onValueChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -323,7 +326,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                 <CurrencyInput
                   id={field.name}
                   name={field.name}
-                  aria-label="Shares"
+                  aria-label={t`Shares`}
                   value={field.state.value}
                   locale={household.locale}
                   currency={displayCurrencyCode}
@@ -343,7 +346,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                   aria-invalid={isInvalid}
                   placeholder="10"
                   autoComplete="off"
-                  label={'Shares'}
+                  label={t`Shares`}
 
                   htmlName={field.name}
                   value={
@@ -368,9 +371,10 @@ export function NewSell({ fragmentRef }: NewSellProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Price per share`}
                 id={field.name}
                 name={field.name}
-                placeholder="Please enter a price"
+                placeholder={t`Please enter a price`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -398,9 +402,10 @@ export function NewSell({ fragmentRef }: NewSellProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Total received`}
                 id={field.name}
                 name={field.name}
-                placeholder="Total amount received"
+                placeholder={t`Total amount received`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -432,9 +437,9 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                 id={field.name}
                 onBlur={field.handleBlur}
                 aria-invalid={isInvalid}
-                placeholder="Sell AAPL shares"
+                placeholder={t`Sell AAPL shares`}
                 autoComplete="off"
-                label={'Description'}
+                label={t`Description`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -486,7 +491,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
             >
               <FinanceDateInput
                 id={field.name}
-                label="Date"
+                label={t`Date`}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -509,7 +514,9 @@ export function NewSell({ fragmentRef }: NewSellProps) {
         header={
           <>
             {fields.accountId}
-            <Text type="label">Sell</Text>
+            <Text type="label">
+              <Trans>Sell</Trans>
+            </Text>
             {fields.investmentId}
           </>
         }
@@ -602,20 +609,20 @@ export function NewSell({ fragmentRef }: NewSellProps) {
           <Button
             type="button"
             onClick={() => form.reset()}
-            label={'Reset'}
+            label={t`Reset`}
             variant={'secondary'}
           >
-            Reset
+            <Trans>Reset</Trans>
           </Button>
           <Button
             type="submit"
             form="new-sell-form"
-            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
             variant={'primary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
+            {isMutationInFlight ? t`Creating...` : t`Create`}
           </Button>
         </Stack>
       </Stack>

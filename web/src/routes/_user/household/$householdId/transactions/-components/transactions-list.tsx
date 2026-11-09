@@ -1,3 +1,7 @@
+import { formatLocalizedDate } from '@/lib/localized-date'
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { Card } from '@astryxdesign/core/Card'
 import { TransactionDaySummary } from './transaction-day-summary'
 import { Divider } from '@astryxdesign/core/Divider'
@@ -29,7 +33,6 @@ import { TransactionCard } from './transaction-card'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
 
 import {
-  format,
   isSameDay,
   parseISO,
   startOfDay,
@@ -88,6 +91,7 @@ type TransactionsListProps = {
 }
 
 export function TransactionsList({ fragmentRef }: TransactionsListProps) {
+  const { t, i18n } = useLingui()
   const { data, loadNext, hasNext, isLoadingNext } = usePaginationFragment<
     transactionsListRefetch,
     transactionsListFragment$key
@@ -138,10 +142,10 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     if (isLoadingNext || !hasNext) return
     loadNext(isMobile ? 20 : 50, {
       onComplete: (error) => {
-        setLoadError(error ? 'Could not load more transactions.' : null)
+        setLoadError(error ? t`Could not load more transactions.` : null)
       },
     })
-  }, [loadNext, isMobile, isLoadingNext, hasNext])
+  }, [t, loadNext, isMobile, isLoadingNext, hasNext])
 
   useRegisterConnection(data.transactions.__id, NodeType.Transaction)
 
@@ -172,12 +176,12 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     transactions.length === 0 && !hasNext && !loadError ? (
       <EmptyState
         icon={<Icon icon={ReceiptText} />}
-        title="No transactions found"
-        description="No transactions match your current filters. Try another date range or adjust your filters."
+        title={t`No transactions found`}
+        description={t`No transactions match your current filters. Try another date range or adjust your filters.`}
         headingLevel={2}
       />
     ) : (
-      <ScrollableArea label="Scrollable content">
+      <ScrollableArea label={t`Scrollable content`}>
         <Stack direction="vertical" gap={4}>
           {groups.map((group, groupIndex) => (
             <Card key={group.date.toISOString()} padding={0}>
@@ -189,7 +193,7 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
                 padding={3}
               >
                 <Text weight="semibold" textWrap="nowrap">
-                  {formatDateHeader(group.date)}
+                  {formatDateHeader(group.date, i18n.locale)}
                 </Text>
                 <TransactionDaySummary
                   fragmentRef={group.transactions}
@@ -221,12 +225,12 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
               {loadError}
               <Button
                 onClick={loadMore}
-                label={'Retry'}
+                label={t`Retry`}
                 variant={'secondary'}
 
                 isDisabled={isLoadingNext}
               >
-                Retry
+                <Trans>Retry</Trans>
               </Button>
             </Stack>
           )}
@@ -281,6 +285,7 @@ function TransactionDetailDialog({
   onClose,
   onCloseComplete,
 }: TransactionDetailDialogProps) {
+  const { t } = useLingui()
   const mobile = useIsMobile()
   const [editingPending, setEditingPending] = useState(false)
   const Surface = mobile ? BottomSheet : Dialog
@@ -293,7 +298,7 @@ function TransactionDetailDialog({
     <>
       <Surface
         className={mobile ? 'transaction-composer-sheet' : undefined}
-        label="Edit transaction"
+        label={t`Edit transaction`}
         {...(mobile ? { height: 'hug' as const } : {})}
         isOpen={transactionId !== null}
         onOpenChange={(open) => {
@@ -312,7 +317,7 @@ function TransactionDetailDialog({
               padding={6}
               header={
                 <DialogHeader
-                  title="Could not load transaction"
+                  title={t`Could not load transaction`}
                   onOpenChange={(open) => {
                     if (!open) onClose()
                   }}
@@ -322,12 +327,14 @@ function TransactionDetailDialog({
               <LayoutContent>
                 <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                   <Text type="supporting">
-                    Close the dialog and try opening the transaction again.
+                    <Trans>
+                      Close the dialog and try opening the transaction again.
+                    </Trans>
                   </Text>
                   <Stack direction="horizontal" justify="end">
                     <Button
                       onClick={onClose}
-                      label="Close"
+                      label={t`Close`}
                       variant="secondary"
                     />
                   </Stack>
@@ -364,9 +371,9 @@ function TransactionDetailDialog({
   )
 }
 
-function formatDateHeader(date: Date): string {
+function formatDateHeader(date: Date, locale: string): string {
   const today = startOfToday()
-  if (isSameDay(date, today)) return 'Today'
-  if (isSameDay(date, subDays(today, 1))) return 'Yesterday'
-  return format(date, 'MMMM d')
+  if (isSameDay(date, today)) return t`Today`
+  if (isSameDay(date, subDays(today, 1))) return t`Yesterday`
+  return formatLocalizedDate(date, 'MMMM d', locale)
 }

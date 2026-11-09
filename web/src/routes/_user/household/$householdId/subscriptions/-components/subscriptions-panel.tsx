@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Card } from '@astryxdesign/core/Card'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
 import { Grid } from '@astryxdesign/core/Grid'
@@ -62,17 +64,17 @@ type SubscriptionsPanelProps = {
   fragmentRef: subscriptionsPanelFragment$key
 }
 
-const SORT_OPTIONS = {
-  cost_high: 'Cost (High to Low)',
-  cost_low: 'Cost (Low to High)',
-  next_payment: 'Next Payment',
-  name_az: 'Name (A-Z)',
-  name_za: 'Name (Z-A)',
-} as const
-
-type SortOption = keyof typeof SORT_OPTIONS
-
 export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
+  const { t } = useLingui()
+  type SortOption = keyof typeof SORT_OPTIONS
+  const SORT_OPTIONS = {
+    cost_high: t`Cost (High to Low)`,
+    cost_low: t`Cost (Low to High)`,
+    next_payment: t`Next Payment`,
+    name_az: t`Name (A-Z)`,
+    name_za: t`Name (Z-A)`,
+  } as const
+
   const isMobile = useIsMobile()
   const { data } = usePaginationFragment(
     SubscriptionsPanelFragment,
@@ -193,10 +195,12 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
     <VStack gap={6}>
       <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
         <VStack gap={1}>
-          <Heading level={1}>Subscriptions</Heading>
+          <Heading level={1}>
+            <Trans>Subscriptions</Trans>
+          </Heading>
         </VStack>
         <PageAddButton
-          label="Add subscription"
+          label={t`Add subscription`}
           to="/household/$householdId/subscriptions/new"
           params={{ householdId }}
         />
@@ -206,7 +210,9 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
           <Card>
             <VStack gap={3}>
               <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
-                <Text color="secondary">Monthly spend</Text>
+                <Text color="secondary">
+                  <Trans>Monthly spend</Trans>
+                </Text>
                 <Text type="label" hasTabularNumbers>
                   {formatCurrencyWithPrivacyMode({
                     value: monthlyAverage,
@@ -215,7 +221,9 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
                 </Text>
               </HStack>
               <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
-                <Text color="secondary">Yearly spend</Text>
+                <Text color="secondary">
+                  <Trans>Yearly spend</Trans>
+                </Text>
                 <Text type="label" hasTabularNumbers>
                   {formatCurrencyWithPrivacyMode({
                     value: yearlyAverage,
@@ -228,8 +236,8 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         ) : (
           <Grid columns={2} gap={4}>
             {[
-              { label: 'Monthly spend', value: monthlyAverage },
-              { label: 'Yearly spend', value: yearlyAverage },
+              { label: t`Monthly spend`, value: monthlyAverage },
+              { label: t`Yearly spend`, value: yearlyAverage },
             ].map((metric) => (
               <Card key={metric.label}>
                 <VStack gap={3}>
@@ -249,11 +257,12 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
         <VStack gap={4}>
           <HStack hAlign="between" vAlign="center" gap={3} wrap="wrap">
             <Heading level={3}>
-              Recurring payments{activeCount > 0 ? ` (${activeCount})` : ''}
+              <Trans>Recurring payments</Trans>
+              {activeCount > 0 ? ` (${activeCount})` : ''}
             </Heading>
             {activeCount > 1 && (
               <Selector
-                label="Sort subscriptions"
+                label={t`Sort subscriptions`}
                 isLabelHidden
                 value={sortBy}
                 onChange={handleSortChange}
@@ -275,14 +284,16 @@ export function SubscriptionsPanel({ fragmentRef }: SubscriptionsPanelProps) {
             </List>
           ) : (
             <EmptyState
-              title="No subscriptions yet"
-              description="Add a recurring payment to see your upcoming costs."
+              title={t`No subscriptions yet`}
+              description={t`Add a recurring payment to see your upcoming costs.`}
             />
           )}
           {inactiveSubscriptions.length > 0 && (
             <VStack gap={3}>
               <Heading level={3}>
-                Inactive subscriptions ({inactiveSubscriptions.length})
+                <Trans>
+                  Inactive subscriptions ({inactiveSubscriptions.length})
+                </Trans>
               </Heading>
               <List hasDividers edge="outset">
                 {inactiveSubscriptions.map((subscription) => (

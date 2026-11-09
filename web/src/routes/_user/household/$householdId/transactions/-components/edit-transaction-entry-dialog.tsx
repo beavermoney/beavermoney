@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
@@ -48,11 +50,6 @@ const editTransactionEntryDialogUpdateMutation = graphql`
   }
 `
 
-const formSchema = z.object({
-  amount: z.number().positive('Amount must be positive'),
-  accountId: z.string().min(1, 'Please select an account'),
-})
-
 export type EditEntryAccount = {
   id: string
   name: string
@@ -78,6 +75,12 @@ export function EditTransactionEntryDialog({
   accounts,
   onClose,
 }: EditTransactionEntryDialogProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    amount: z.number().positive(t`Amount must be positive`),
+    accountId: z.string().min(1, t`Please select an account`),
+  })
+
   const showToast = useToast()
 
   const [commitUpdate, isUpdateInFlight] =
@@ -119,7 +122,7 @@ export function EditTransactionEntryDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          showToast({ type: 'info', body: 'Entry updated successfully!' })
+          showToast({ type: 'info', body: t`Entry updated successfully!` })
           onClose()
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -144,14 +147,16 @@ export function EditTransactionEntryDialog({
     <Layout
       padding={6}
       header={
-        <DialogHeader title="Edit Entry" onOpenChange={() => onClose()} />
+        <DialogHeader title={t`Edit Entry`} onOpenChange={() => onClose()} />
       }
     >
       <LayoutContent>
         <Stack direction="vertical" gap={6} paddingBlockStart={4}>
           <Text as="div" display="block" type="supporting">
-            Update entry details. Switching the account also switches the
-            entry&apos;s currency.
+            <Trans>
+              Update entry details. Switching the account also switches the
+              entry&apos;s currency.
+            </Trans>
           </Text>
 
           <Stack
@@ -183,9 +188,9 @@ export function EditTransactionEntryDialog({
                         onChange={(value) => field.handleChange(value || '')}
                         data-1p-ignore
                         id={field.name}
-                        placeholder="Select an account"
+                        placeholder={t`Select an account`}
                         onBlur={field.handleBlur}
-                        label={'Account'}
+                        label={t`Account`}
                         renderOption={(item: string) => {
                           const account = accounts.find(
                             (acc) => acc.id === item,
@@ -228,7 +233,11 @@ export function EditTransactionEntryDialog({
                             </Stack>
                           )
                         }}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -252,9 +261,10 @@ export function EditTransactionEntryDialog({
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
+                        aria-label={t`Amount`}
                         id={field.name}
                         name={field.name}
-                        placeholder="Please enter an amount"
+                        placeholder={t`Please enter an amount`}
                         onValueChange={(e) => {
                           field.handleChange(e.floatValue!)
                         }}
@@ -287,20 +297,20 @@ export function EditTransactionEntryDialog({
             <Button
               type="button"
               onClick={onClose}
-              label={'Cancel'}
+              label={t`Cancel`}
               variant={'secondary'}
             >
-              Cancel
+              <Trans>Cancel</Trans>
             </Button>
             <Button
               type="submit"
               form="edit-entry-form"
-              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              label={String(isUpdateInFlight ? t`Saving...` : t`Save Changes`)}
               variant={'primary'}
 
               isDisabled={isUpdateInFlight}
             >
-              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+              {isUpdateInFlight ? t`Saving...` : t`Save Changes`}
             </Button>
           </Stack>
         </Stack>

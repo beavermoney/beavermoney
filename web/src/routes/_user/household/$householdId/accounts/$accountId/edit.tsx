@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -41,6 +42,7 @@ const editAccountQuery = graphql`
 `
 
 function RouteComponent() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
@@ -55,7 +57,7 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  invariant(data.node, 'Account not found')
+  invariant(data.node, t`Account not found`)
 
   return (
     <Stack direction="vertical" gap={4} className="max-w-2xl" width="100%">

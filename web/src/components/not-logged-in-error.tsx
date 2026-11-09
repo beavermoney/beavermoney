@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
@@ -6,6 +8,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { ShieldAlertIcon } from 'lucide-react'
 
 export function NotLoggedInError() {
+  const { t } = useLingui()
   const navigate = useNavigate()
 
   return (
@@ -14,25 +17,29 @@ export function NotLoggedInError() {
         <Stack direction="vertical" gap={4}>
           <AstryxIcon icon={ShieldAlertIcon} />
         </Stack>
-        <Heading level={2}>You are not logged in</Heading>
+        <Heading level={2}>
+          <Trans>You are not logged in</Trans>
+        </Heading>
         <Stack direction="vertical" gap={4}>
-          Your session may have expired. Please log in again to continue.
+          <Trans>
+            Your session may have expired. Please log in again to continue.
+          </Trans>
         </Stack>
       </Stack>
       <Stack direction="vertical" gap={4}>
         <Button
           onClick={() => navigate({ to: '/' })}
-          label={'Go home'}
+          label={t`Go home`}
           variant={'secondary'}
         >
-          Go home
+          <Trans>Go home</Trans>
         </Button>
         <Button
           onClick={() => navigate({ to: '/login' })}
-          label={'Go to login'}
+          label={t`Go to login`}
           variant={'primary'}
         >
-          Go to login
+          <Trans>Go to login</Trans>
         </Button>
       </Stack>
     </Stack>

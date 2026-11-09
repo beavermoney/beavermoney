@@ -239,7 +239,7 @@ it('preserves archived accounts and exact share precision on metadata-only edits
 it('requires Done after account selection and can clear an existing note', async () => {
   open()
   fireEvent.click(screen.getByRole('button', { name: 'Account: Checking' }))
-  fireEvent.click(screen.getByRole('button', { name: /Savings.*liquidity/ }))
+  fireEvent.click(screen.getByRole('button', { name: /Savings.*Liquidity/ }))
   expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
   fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))

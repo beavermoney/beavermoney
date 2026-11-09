@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
@@ -50,13 +52,6 @@ const editInvestmentLotDialogUpdateMutation = graphql`
   }
 `
 
-const formSchema = z.object({
-  shares: z.number().positive('Shares must be positive'),
-  pricePerShare: z.number().positive('Price per share must be positive'),
-  accountId: z.string().min(1, 'Please select an account'),
-  investmentId: z.string().min(1, 'Please select an investment'),
-})
-
 export type EditLotAccount = {
   id: string
   name: string
@@ -91,6 +86,14 @@ export function EditInvestmentLotDialog({
   accounts,
   onClose,
 }: EditInvestmentLotDialogProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    shares: z.number().positive(t`Shares must be positive`),
+    pricePerShare: z.number().positive(t`Price per share must be positive`),
+    accountId: z.string().min(1, t`Please select an account`),
+    investmentId: z.string().min(1, t`Please select an investment`),
+  })
+
   const showToast = useToast()
 
   const [commitUpdate, isUpdateInFlight] =
@@ -143,7 +146,7 @@ export function EditInvestmentLotDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          showToast({ type: 'info', body: 'Lot updated successfully!' })
+          showToast({ type: 'info', body: t`Lot updated successfully!` })
           onClose()
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -176,13 +179,17 @@ export function EditInvestmentLotDialog({
   return (
     <Layout
       padding={6}
-      header={<DialogHeader title="Edit Lot" onOpenChange={() => onClose()} />}
+      header={
+        <DialogHeader title={t`Edit Lot`} onOpenChange={() => onClose()} />
+      }
     >
       <LayoutContent>
         <Stack direction="vertical" gap={6} paddingBlockStart={4}>
           <Text as="div" display="block" type="supporting">
-            Update lot details. Switching the investment moves the lot&apos;s
-            shares.
+            <Trans>
+              Update lot details. Switching the investment moves the lot&apos;s
+              shares.
+            </Trans>
           </Text>
 
           <Stack
@@ -220,9 +227,9 @@ export function EditInvestmentLotDialog({
                         }}
                         data-1p-ignore
                         id={field.name}
-                        placeholder="Select an account"
+                        placeholder={t`Select an account`}
                         onBlur={field.handleBlur}
-                        label={'Account'}
+                        label={t`Account`}
                         renderOption={(item: string) => {
                           const account = investmentAccounts.find(
                             (acc) => acc.id === item,
@@ -265,7 +272,11 @@ export function EditInvestmentLotDialog({
                             </Stack>
                           )
                         }}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -306,11 +317,11 @@ export function EditInvestmentLotDialog({
                         id={field.name}
                         placeholder={
                           selectedAccount
-                            ? 'Select an investment'
-                            : 'Select an account first'
+                            ? t`Select an investment`
+                            : t`Select an account first`
                         }
                         onBlur={field.handleBlur}
-                        label={'Investment'}
+                        label={t`Investment`}
                         renderOption={(item: string) => {
                           const inv = availableInvestments.find(
                             (i) => i.id === item,
@@ -325,7 +336,11 @@ export function EditInvestmentLotDialog({
                             </span>
                           )
                         }}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -352,7 +367,7 @@ export function EditInvestmentLotDialog({
                         aria-invalid={isInvalid}
                         placeholder="10"
                         autoComplete="off"
-                        label={'Shares'}
+                        label={t`Shares`}
 
                         htmlName={field.name}
                         value={
@@ -382,9 +397,10 @@ export function EditInvestmentLotDialog({
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
+                        aria-label={t`Price per share`}
                         id={field.name}
                         name={field.name}
-                        placeholder="Please enter a price"
+                        placeholder={t`Please enter a price`}
                         onValueChange={(e) => {
                           field.handleChange(e.floatValue!)
                         }}
@@ -418,20 +434,20 @@ export function EditInvestmentLotDialog({
             <Button
               type="button"
               onClick={onClose}
-              label={'Cancel'}
+              label={t`Cancel`}
               variant={'secondary'}
             >
-              Cancel
+              <Trans>Cancel</Trans>
             </Button>
             <Button
               type="submit"
               form="edit-lot-form"
-              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              label={String(isUpdateInFlight ? t`Saving...` : t`Save Changes`)}
               variant={'primary'}
 
               isDisabled={isUpdateInFlight}
             >
-              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+              {isUpdateInFlight ? t`Saving...` : t`Save Changes`}
             </Button>
           </Stack>
         </Stack>

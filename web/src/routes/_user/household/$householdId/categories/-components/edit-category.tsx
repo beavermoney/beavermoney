@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
@@ -24,14 +26,6 @@ import type { editCategoryMutation } from './__generated__/editCategoryMutation.
 import { IconPicker, type IconName } from '@/components/icon-picker'
 import { commitMutationResult, NodeType, useDeleteNode } from '@/lib/relay'
 import { useState } from 'react'
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Category name must be at least 1 character.')
-    .max(32, 'Category name must be at most 32 characters.'),
-  icon: z.string(),
-})
 
 const editCategoryFragment = graphql`
   fragment editCategoryFragment on TransactionCategory {
@@ -71,6 +65,15 @@ type EditCategoryProps = {
 }
 
 export function EditCategory({ fragmentRef }: EditCategoryProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Category name must be at least 1 character.`)
+      .max(32, t`Category name must be at most 32 characters.`),
+    icon: z.string(),
+  })
+
   const showToast = useToast()
 
   const data = useFragment(editCategoryFragment, fragmentRef)
@@ -120,7 +123,7 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
 
           showToast({
             type: 'info',
-            body: `${resultData.updateTransactionCategory.node.name} updated!`,
+            body: t`${resultData.updateTransactionCategory.node.name} updated!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -147,7 +150,7 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
           to: '/household/$householdId/categories',
           search: (prev) => ({ ...prev }),
         })
-        showToast({ type: 'info', body: 'Category deleted!' })
+        showToast({ type: 'info', body: t`Category deleted!` })
       })
       .with({ status: 'error' }, ({ error }) => {
         showToast({ type: 'error', body: error.toString() })
@@ -159,7 +162,9 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
     <Card>
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>Edit Category</Heading>
+          <Heading level={2}>
+            <Trans>Edit Category</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Stack
@@ -189,9 +194,9 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
                         id={field.name}
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        placeholder="Groceries"
+                        placeholder={t`Groceries`}
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -246,14 +251,14 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
               <Button
                 onClick={() => setDeleteAlertOpen(true)}
                 type="button"
-                label={'Delete'}
+                label={t`Delete`}
                 variant={'destructive'}
 
                 isDisabled={
                   isDeleteMutationInFlight || isUpdateMutationInFlight
                 }
               >
-                Delete
+                <Trans>Delete</Trans>
               </Button>
               <Dialog
                 isOpen={deleteAlertOpen}
@@ -266,7 +271,11 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
                   padding={6}
                   header={
                     <DialogHeader
-                      title={<>Delete Category</>}
+                      title={
+                        <>
+                          <Trans>Delete Category</Trans>
+                        </>
+                      }
                       onOpenChange={setDeleteAlertOpen}
                     />
                   }
@@ -274,8 +283,10 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
                   <LayoutContent>
                     <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                       <Text as="div" display="block" type="supporting">
-                        This action cannot be undone. This will permanently
-                        delete the category.
+                        <Trans>
+                          This action cannot be undone. This will permanently
+                          delete the category.
+                        </Trans>
                       </Text>
                       <Stack
                         direction="horizontal"
@@ -285,16 +296,18 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
                         justify="end"
                       >
                         <Button
-                          label="Cancel"
+                          label={t`Cancel`}
                           onClick={() => setDeleteAlertOpen(false)}
                         />
                         <Button
                           variant="destructive"
                           onClick={handleDelete}
                           isDisabled={isDeleteMutationInFlight}
-                          label="Delete"
+                          label={t`Delete`}
                         >
-                          {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+                          {isDeleteMutationInFlight
+                            ? t`Deleting...`
+                            : t`Delete`}
                         </Button>
                       </Stack>
                     </Stack>
@@ -305,12 +318,12 @@ export function EditCategory({ fragmentRef }: EditCategoryProps) {
             <Button
               type="submit"
               form="edit-category-form"
-              label={String(isUpdateMutationInFlight ? 'Saving...' : 'Save')}
+              label={String(isUpdateMutationInFlight ? t`Saving...` : t`Save`)}
               variant={'primary'}
 
               isDisabled={isUpdateMutationInFlight}
             >
-              {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
+              {isUpdateMutationInFlight ? t`Saving...` : t`Save`}
             </Button>
           </Stack>
         </Stack>

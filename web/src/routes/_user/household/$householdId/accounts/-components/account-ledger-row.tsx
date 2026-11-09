@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { VStack } from '@astryxdesign/core/Layout'
 import { ListItem } from '@astryxdesign/core/List'
@@ -49,6 +51,7 @@ export function AccountLedgerRow({
   displayCurrencyCode,
   share,
 }: AccountLedgerRowProps) {
+  const { t, i18n } = useLingui()
   const data = useFragment(AccountLedgerRowFragment, fragmentRef)
   const router = useRouter()
   const { household } = useHousehold()
@@ -72,7 +75,7 @@ export function AccountLedgerRow({
   return (
     <ListItem
       label={data.name}
-      description={`${data.user.name} · ${data.householdCurrency.code} · ${data.latestTransaction ? getRelativeDate(new Date(data.latestTransaction.datetime)) : 'No activity yet'}`}
+      description={`${data.user.name} · ${data.householdCurrency.code} · ${data.latestTransaction ? getRelativeDate(new Date(data.latestTransaction.datetime), i18n.locale) : t`No activity yet`}`}
       startContent={
         <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
       }
@@ -83,7 +86,7 @@ export function AccountLedgerRow({
           </Text>
           {data.type === 'investment' && (
             <Text type="supporting">
-              Cash{' '}
+              <Trans>Cash</Trans>{' '}
               {formatCurrencyWithPrivacyMode({
                 value: data.balance,
                 currencyCode: data.householdCurrency.code,

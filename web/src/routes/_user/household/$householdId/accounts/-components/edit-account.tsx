@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
 import { getLogoDomainURL } from '@/lib/logo'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -25,15 +27,6 @@ import { ACCOUNT_CATEGORY_APPLICABLE_TYPES } from '@/constant'
 import { commitMutationResult } from '@/lib/relay'
 
 import { AccountCategoryPicker } from './account-category-picker'
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Account name must be at least 1 character.')
-    .max(64, 'Account name must be at most 64 characters.'),
-  icon: z.string(),
-  category: z.string(),
-})
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const editAccountFragment = graphql`
@@ -65,6 +58,16 @@ type EditAccountProps = {
 }
 
 export function EditAccount({ fragmentRef }: EditAccountProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Account name must be at least 1 character.`)
+      .max(64, t`Account name must be at most 64 characters.`),
+    icon: z.string(),
+    category: z.string(),
+  })
+
   const showToast = useToast()
 
   const data = useFragment(editAccountFragment, fragmentRef)
@@ -108,7 +111,7 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
           )
           showToast({
             type: 'info',
-            body: `${resultData.updateAccount.node.name} updated!`,
+            body: t`${resultData.updateAccount.node.name} updated!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -128,7 +131,9 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
               name={String(data.name)}
             />
             <Stack direction="vertical" gap={4}>
-              <Heading level={2}>Edit Account</Heading>
+              <Heading level={2}>
+                <Trans>Edit Account</Trans>
+              </Heading>
             </Stack>
           </Stack>
         </Stack>
@@ -156,7 +161,9 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
                         gap={2}
                         data-invalid={isInvalid}
                       >
-                        <label htmlFor={field.name}>Category (optional)</label>
+                        <label htmlFor={field.name}>
+                          <Trans>Category (optional)</Trans>
+                        </label>
                         <AccountCategoryPicker
                           name={field.name}
                           value={field.state.value}
@@ -188,9 +195,9 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
                         id={field.name}
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        placeholder="My Account"
+                        placeholder={t`My Account`}
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -223,7 +230,7 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
                         aria-invalid={isInvalid}
                         placeholder="chase.com"
                         autoComplete="off"
-                        label={'Icon URL'}
+                        label={t`Icon URL`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -252,12 +259,12 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
           <Button
             type="submit"
             form="edit-account-form"
-            label={String(isUpdateMutationInFlight ? 'Saving...' : 'Save')}
+            label={String(isUpdateMutationInFlight ? t`Saving...` : t`Save`)}
             variant={'primary'}
 
             isDisabled={isUpdateMutationInFlight}
           >
-            {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
+            {isUpdateMutationInFlight ? t`Saving...` : t`Save`}
           </Button>
         </Stack>
       </Stack>

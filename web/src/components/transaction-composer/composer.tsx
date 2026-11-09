@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { CategoryIcon } from '@/components/category-icon'
 import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { Button } from '@astryxdesign/core/Button'
@@ -46,6 +49,8 @@ export function MobileTransactionComposer({
   pending: boolean
   onSave: (again: boolean) => Promise<boolean>
 }) {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
   const [isOpen, setOpen] = useState(mode === 'edit' || !category)
   const [selectedCategory, setSelectedCategory] = useState<{
     name: string
@@ -75,9 +80,9 @@ export function MobileTransactionComposer({
     setError('')
     try {
       const valid = await onSave(again)
-      if (!valid) setError('Check the highlighted fields before saving.')
+      if (!valid) setError(t`Check the highlighted fields before saving.`)
     } catch {
-      setError('Could not save. Your entry is still here—please try again.')
+      setError(t`Could not save. Your entry is still here—please try again.`)
     } finally {
       setSaving(false)
     }
@@ -105,11 +110,14 @@ export function MobileTransactionComposer({
         <Stack gap={4}>
           {category ?? (
             <Text type="supporting">
-              Choose your investment and enter its details.
+              <Trans>Choose your investment and enter its details.</Trans>
             </Text>
           )}
           {!category && (
-            <Button label={`Enter ${kind}`} onClick={() => setOpen(true)} />
+            <Button
+              label={t`Enter ${financeLabel(kind)}`}
+              onClick={() => setOpen(true)}
+            />
           )}
         </Stack>
       )}
@@ -120,14 +128,18 @@ export function MobileTransactionComposer({
         onOpenChange={(open) => {
           if (!busy) setOpen(open)
         }}
-        label={`${mode === 'edit' ? 'Edit' : 'New'} ${kind}`}
+        label={
+          mode === 'edit'
+            ? t`Edit ${financeLabel(kind)}`
+            : t`New ${financeLabel(kind)}`
+        }
         purpose={busy ? 'required' : 'info'}
         height="hug"
         padding={4}
       >
         <fieldset
           disabled={busy}
-          aria-label="Transaction details"
+          aria-label={t`Transaction details`}
           className="min-w-0"
         >
           <Stack className="composer-workspace">
@@ -155,7 +167,9 @@ export function MobileTransactionComposer({
                 >
                   <Button
                     variant="ghost"
-                    label={selectedCategory?.name || `New ${kind}`}
+                    label={
+                      selectedCategory?.name || t`New ${financeLabel(kind)}`
+                    }
                     icon={
                       selectedCategory ? (
                         <CategoryIcon
@@ -188,7 +202,7 @@ export function MobileTransactionComposer({
                 {chips}
                 <Button
                   type="button"
-                  label="Add note / options"
+                  label={t`Add note / options`}
                   onClick={() => setEditor('details')}
                 />
               </ComposerChipRail>
@@ -207,7 +221,7 @@ export function MobileTransactionComposer({
                 >
                   {mode === 'edit' && onDeleteRequest && (
                     <Button
-                      label="Delete transaction"
+                      label={t`Delete transaction`}
                       variant="destructive"
                       size="lg"
                       width="100%"
@@ -219,7 +233,7 @@ export function MobileTransactionComposer({
                   )}
                   {mode === 'create' && (
                     <Button
-                      label="Save again"
+                      label={t`Save again`}
                       size="lg"
                       width="100%"
                       isDisabled={busy}
@@ -227,7 +241,7 @@ export function MobileTransactionComposer({
                     />
                   )}
                   <Button
-                    label={busy ? 'Saving…' : 'Save'}
+                    label={busy ? t`Saving…` : t`Save`}
                     size="lg"
                     width="100%"
                     variant="primary"
@@ -243,7 +257,7 @@ export function MobileTransactionComposer({
             >
               <Stack ref={setTarget} gap={3} className="composer-editor" />
               <Button
-                label="Done"
+                label={t`Done`}
                 size="lg"
                 width="100%"
                 variant="secondary"

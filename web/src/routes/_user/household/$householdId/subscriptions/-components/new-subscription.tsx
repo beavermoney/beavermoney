@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
@@ -13,7 +16,6 @@ import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { capitalize } from 'lodash-es'
 import { useMutation } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -34,31 +36,6 @@ import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 import { getLogoDomainURL } from '@/lib/logo'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
-
-const INTERVAL_DESCRIPTION: Record<string, string> = {
-  week: 'Charged weekly',
-  month: 'Charged monthly',
-  year: 'Charged yearly',
-}
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Subscription name must be at least 1 character.')
-    .max(64, 'Subscription name must be at most 64 characters.'),
-  icon: z.string(),
-  interval: z.enum(['week', 'month', 'year']),
-  intervalCount: z
-    .number()
-    .int()
-    .min(1, 'Interval count must be at least 1.')
-    .max(100, 'Interval count must be at most 100.'),
-  startDate: z.date(),
-  cost: z.string(),
-  currencyCode: z.string(),
-  active: z.boolean(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-})
 
 const newSubscriptionMutation = graphql`
   mutation newSubscriptionMutation($input: CreateRecurringSubscriptionInput!) {
@@ -82,6 +59,33 @@ const newSubscriptionMutation = graphql`
 `
 
 export function NewSubscription() {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
+  const INTERVAL_DESCRIPTION: Record<string, string> = {
+    week: t`Charged weekly`,
+    month: t`Charged monthly`,
+    year: t`Charged yearly`,
+  }
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Subscription name must be at least 1 character.`)
+      .max(64, t`Subscription name must be at most 64 characters.`),
+    icon: z.string(),
+    interval: z.enum(['week', 'month', 'year']),
+    intervalCount: z
+      .number()
+      .int()
+      .min(1, t`Interval count must be at least 1.`)
+      .max(100, t`Interval count must be at most 100.`),
+    startDate: z.date(),
+    cost: z.string(),
+    currencyCode: z.string(),
+    active: z.boolean(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+  })
+
   const showToast = useToast()
 
   const navigate = useNavigate()
@@ -118,7 +122,7 @@ export function NewSubscription() {
       const currencyID = household.householdCurrencies?.find(
         (hc) => hc.code === formData.currencyCode,
       )?.id
-      invariant(currencyID, 'Currency not found')
+      invariant(currencyID, t`Currency not found`)
 
       const result = await commitMutationResult<newSubscriptionMutation>(
         commitMutation,
@@ -161,7 +165,7 @@ export function NewSubscription() {
           })
           showToast({
             type: 'info',
-            body: `${resultData.createRecurringSubscription.node.name} is ready to go!`,
+            body: t`${resultData.createRecurringSubscription.node.name} is ready to go!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -179,7 +183,9 @@ export function NewSubscription() {
     <Card>
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>New Subscription</Heading>
+          <Heading level={2}>
+            <Trans>New Subscription</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Stack
@@ -211,7 +217,7 @@ export function NewSubscription() {
                         aria-invalid={isInvalid}
                         placeholder="Netflix"
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -272,9 +278,9 @@ export function NewSubscription() {
                           id={field.name}
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
-                          placeholder="e.g., netflix.com"
+                          placeholder={t`e.g., netflix.com`}
                           autoComplete="off"
-                          label={'Logo domain (optional)'}
+                          label={t`Logo domain (optional)`}
 
                           value={String(field.state.value ?? '')}
                           onChange={(_value, event) =>
@@ -320,16 +326,20 @@ export function NewSubscription() {
                         value={field.state.value}
                         onChange={(value) => field.handleChange(value || '')}
                         id={field.name}
-                        placeholder="Select an interval"
+                        placeholder={t`Select an interval`}
                         onBlur={field.handleBlur}
-                        label={'Interval'}
+                        label={t`Interval`}
                         renderOption={(item: string) => (
                           <span>
-                            <Text type="label">{capitalize(item)}</Text>
+                            <Text type="label">{financeLabel(item)}</Text>
                             <span>{INTERVAL_DESCRIPTION[item]}</span>
                           </span>
                         )}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -350,7 +360,9 @@ export function NewSubscription() {
                       data-invalid={isInvalid}
                     >
                       <Text type="supporting" color="secondary">
-                        For example, 2 with Month means every two months.
+                        <Trans>
+                          For example, 2 with Month means every two months.
+                        </Trans>
                       </Text>
                       <NumberInput
                         data-1p-ignore
@@ -359,7 +371,7 @@ export function NewSubscription() {
                         aria-invalid={isInvalid}
                         placeholder="1"
                         autoComplete="off"
-                        label={'Repeat every'}
+                        label={t`Repeat every`}
 
                         htmlName={field.name}
                         value={
@@ -393,7 +405,7 @@ export function NewSubscription() {
                     >
                       <FinanceDateInput
                         id={field.name}
-                        label="Start date"
+                        label={t`Start date`}
                         value={field.state.value}
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}
@@ -424,11 +436,15 @@ export function NewSubscription() {
                           field.handleChange(value || '')
                         }}
                         id={field.name}
-                        placeholder="Select a currency"
+                        placeholder={t`Select a currency`}
                         onBlur={field.handleBlur}
-                        label={'Currency'}
+                        label={t`Currency`}
                         renderOption={(item: string) => <span>{item}</span>}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -449,10 +465,10 @@ export function NewSubscription() {
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
-                        aria-label="Cost per payment"
+                        aria-label={t`Cost per payment`}
                         id={field.name}
                         name={field.name}
-                        placeholder="Please enter a number"
+                        placeholder={t`Please enter a number`}
                         onValueChange={(e) => {
                           field.handleChange(e.value)
                         }}
@@ -485,20 +501,20 @@ export function NewSubscription() {
             <Button
               type="button"
               onClick={() => form.reset()}
-              label={'Reset'}
+              label={t`Reset`}
               variant={'secondary'}
             >
-              Reset
+              <Trans>Reset</Trans>
             </Button>
             <Button
               type="submit"
               form="new-subscription-form"
-              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
               variant={'primary'}
 
               isDisabled={isMutationInFlight}
             >
-              {isMutationInFlight ? 'Creating...' : 'Create'}
+              {isMutationInFlight ? t`Creating...` : t`Create`}
             </Button>
           </Stack>
         </Stack>

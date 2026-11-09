@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -38,25 +40,6 @@ import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
 import { getLogoDomainURL } from '@/lib/logo'
 import { AccountTypePicker } from './account-type-picker'
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Account name must be at least 1 character.')
-    .max(32, 'Account name must be at most 32 characters.'),
-  icon: z.string(),
-  currencyCode: z.string(),
-  type: z.literal([
-    'liquidity',
-    'investment',
-    'property',
-    'receivable',
-    'liability',
-  ]),
-  category: z.string(),
-  balance: z.number(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-})
-
 const newAccountMutation = graphql`
   mutation newAccountMutation($input: CreateAccountInput!) {
     createAccount(input: $input) {
@@ -71,6 +54,26 @@ const newAccountMutation = graphql`
 `
 
 export function NewAccount() {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Account name must be at least 1 character.`)
+      .max(32, t`Account name must be at most 32 characters.`),
+    icon: z.string(),
+    currencyCode: z.string(),
+    type: z.literal([
+      'liquidity',
+      'investment',
+      'property',
+      'receivable',
+      'liability',
+    ]),
+    category: z.string(),
+    balance: z.number(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+  })
+
   const showToast = useToast()
 
   const navigate = useNavigate()
@@ -105,7 +108,7 @@ export function NewAccount() {
       const currencyID = household.householdCurrencies?.find(
         (hc) => hc.code === formData.currencyCode,
       )?.id
-      invariant(currencyID, 'Currency not found')
+      invariant(currencyID, t`Currency not found`)
 
       const balance =
         formData.type === 'liability'
@@ -151,7 +154,7 @@ export function NewAccount() {
           })
           showToast({
             type: 'info',
-            body: `${resultData.createAccount.node.name} is ready to go!`,
+            body: t`${resultData.createAccount.node.name} is ready to go!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -172,7 +175,9 @@ export function NewAccount() {
     <Card>
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>New Account</Heading>
+          <Heading level={2}>
+            <Trans>New Account</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Stack
@@ -204,7 +209,7 @@ export function NewAccount() {
                         aria-invalid={isInvalid}
                         placeholder="Wealthsimple Chequing"
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -265,9 +270,9 @@ export function NewAccount() {
                           id={field.name}
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
-                          placeholder="e.g., chase.com"
+                          placeholder={t`e.g., chase.com`}
                           autoComplete="off"
-                          label={'Logo domain (optional)'}
+                          label={t`Logo domain (optional)`}
 
                           value={String(field.state.value ?? '')}
                           onChange={(_value, event) =>
@@ -305,7 +310,9 @@ export function NewAccount() {
                   const errorId = `${field.name}-error`
                   return (
                     <fieldset data-invalid={isInvalid}>
-                      <legend id={labelId}>Type</legend>
+                      <legend id={labelId}>
+                        <Trans>Type</Trans>
+                      </legend>
                       <AccountTypePicker
                         value={field.state.value}
                         onValueChange={field.handleChange}
@@ -347,14 +354,18 @@ export function NewAccount() {
                             field.handleChange(item?.value ?? '')
                           }
                           id={field.name}
-                          placeholder="None (Taxable)"
+                          placeholder={t`None (Taxable)`}
                           onBlur={field.handleBlur}
-                          label={'Category (optional)'}
+                          label={t`Category (optional)`}
                           renderOption={(item: {
                             value: string
                             label: string
                           }) => <span>{item.label}</span>}
-                          emptyText={<>No items found.</>}
+                          emptyText={
+                            <>
+                              <Trans>No items found.</Trans>
+                            </>
+                          }
                         />
                         {isInvalid && (
                           <FormError errors={field.state.meta.errors} />
@@ -382,11 +393,15 @@ export function NewAccount() {
                           field.handleChange(value || '')
                         }}
                         id={field.name}
-                        placeholder="Select a currency"
+                        placeholder={t`Select a currency`}
                         onBlur={field.handleBlur}
-                        label={'Currency'}
+                        label={t`Currency`}
                         renderOption={(item: string) => <span>{item}</span>}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -407,9 +422,10 @@ export function NewAccount() {
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
+                        aria-label={t`Balance`}
                         id={field.name}
                         name={field.name}
-                        placeholder="Please enter a number"
+                        placeholder={t`Please enter a number`}
                         onValueChange={(e) => {
                           field.handleChange(e.floatValue!)
                         }}
@@ -443,20 +459,20 @@ export function NewAccount() {
             <Button
               type="button"
               onClick={() => form.reset()}
-              label={'Reset'}
+              label={t`Reset`}
               variant={'secondary'}
             >
-              Reset
+              <Trans>Reset</Trans>
             </Button>
             <Button
               type="submit"
               form="new-account-form"
-              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
               variant={'primary'}
 
               isDisabled={isMutationInFlight}
             >
-              {isMutationInFlight ? 'Creating...' : 'Create'}
+              {isMutationInFlight ? t`Creating...` : t`Create`}
             </Button>
           </Stack>
         </Stack>

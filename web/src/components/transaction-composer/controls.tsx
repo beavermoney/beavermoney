@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import type { PendingCalculation } from './amount-entry'
 import { Button } from '@astryxdesign/core/Button'
 import { Card } from '@astryxdesign/core/Card'
@@ -56,6 +58,7 @@ export function ComposerChoice<T>({
   hideChipLabel?: boolean
   renderChipIcon?: (item: T) => ReactNode
 }) {
+  const { t } = useLingui()
   const composer = useComposer()
   const [query, setQuery] = useState('')
   if (!composer) return null
@@ -68,7 +71,7 @@ export function ComposerChoice<T>({
     <>
       <Button
         type="button"
-        label={`${label}: ${value == null ? 'Choose' : getLabel(value)}`}
+        label={`${label}: ${value == null ? t`Choose` : getLabel(value)}`}
         icon={value == null ? undefined : renderChipIcon?.(value)}
         isDisabled={disabled}
         aria-invalid={invalid}
@@ -84,7 +87,7 @@ export function ComposerChoice<T>({
         ) : hideChipLabel && value != null ? (
           getLabel(value)
         ) : (
-          `${label}: ${value == null ? 'Choose' : getLabel(value)}`
+          `${label}: ${value == null ? t`Choose` : getLabel(value)}`
         )}
       </Button>
       <ComposerEditor name={name}>
@@ -92,8 +95,8 @@ export function ComposerChoice<T>({
           <Text type="label">{label}</Text>
           {searchable && (
             <TextInput
-              label={`Search ${label.toLowerCase()}`}
-              placeholder={`Search ${label.toLowerCase()}`}
+              label={t`Search ${label.toLowerCase()}`}
+              placeholder={t`Search ${label.toLowerCase()}`}
               isLabelHidden
               value={query}
               onChange={setQuery}
@@ -115,7 +118,9 @@ export function ComposerChoice<T>({
                 </Card>
               ))}
               {matches.length === 0 && (
-                <Text type="supporting">No matching options.</Text>
+                <Text type="supporting">
+                  <Trans>No matching options.</Trans>
+                </Text>
               )}
             </Stack>
           </Stack>
@@ -150,6 +155,8 @@ export function ComposerAmount({
   invalid?: boolean
   disabled?: boolean
 }) {
+  const { t } = useLingui()
+
   const [pending, setPending] = useState<PendingCalculation | null>(null)
   const composer = useComposer()
   if (!composer) return null
@@ -159,7 +166,7 @@ export function ComposerAmount({
     <>
       <Button
         type="button"
-        label={`Edit ${label}: ${prefix}${raw || '0'}${suffix}`}
+        label={t`Edit ${label}: ${prefix}${raw || '0'}${suffix}`}
         width="100%"
         className="composer-amount"
         isDisabled={disabled}

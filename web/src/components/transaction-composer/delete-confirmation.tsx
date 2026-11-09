@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { AlertDialog } from '@astryxdesign/core/AlertDialog'
 import { useState } from 'react'
 
@@ -12,6 +13,7 @@ export function TransactionDeleteConfirmation({
   pending: boolean
   onDelete: () => Promise<void>
 }) {
+  const { t } = useLingui()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const busy = pending || submitting
@@ -24,12 +26,12 @@ export function TransactionDeleteConfirmation({
           onOpenChange(open)
         }
       }}
-      title="Delete transaction?"
+      title={t`Delete transaction?`}
       description={
         error ||
-        'This will permanently remove this transaction and its entries. You can’t undo this.'
+        t`This will permanently remove this transaction and its entries. You can’t undo this.`
       }
-      actionLabel="Delete transaction"
+      actionLabel={t`Delete transaction`}
       isActionLoading={busy}
       onAction={async () => {
         if (busy) return
@@ -38,7 +40,7 @@ export function TransactionDeleteConfirmation({
         try {
           await onDelete()
         } catch {
-          setError('Could not delete this transaction. Please try again.')
+          setError(t`Could not delete this transaction. Please try again.`)
         } finally {
           setSubmitting(false)
         }

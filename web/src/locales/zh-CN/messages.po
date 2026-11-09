@@ -1,0 +1,2636 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-09 16:30+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: zh-CN\n"
+
+#. placeholder {0}: transactions.length
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "{0, plural, one {# transaction loaded} other {# transactions loaded}}"
+msgstr "{0, plural, other {已加载 # 笔交易}}"
+
+#. placeholder {0}: transactions.length
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "{0, plural, one {# transaction} other {# transactions}}"
+msgstr "{0, plural, other {# 笔交易}}"
+
+#. placeholder {0}: resultData.createAccount.node.name
+#. placeholder {0}: resultData.createInvestment.node.name
+#. placeholder {0}: resultData.createRecurringSubscription.node.name
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "{0} is ready to go!"
+msgstr "{0} 已创建！"
+
+#. placeholder {0}: titles[view]
+#: src/components/date-period-filter.tsx
+msgid "{0} options"
+msgstr "{0}选项"
+
+#. placeholder {0}: selectedMembers.length
+#: src/routes/_user/household/$householdId/-components/view-scope-switcher.tsx
+msgid "{0} selected"
+msgstr "已选择 {0} 项"
+
+#. placeholder {0}: i === 0 ? t`From` : t`To`
+#. placeholder {0}: isPrivacyModeEnabled ? '••••' : amount.value
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "{0} shares"
+msgstr "{0} 股"
+
+#. placeholder {0}: resultData.updateAccount.node.name
+#. placeholder {0}: resultData.updateRecurringSubscription.node.name
+#. placeholder {0}: resultData.updateTransactionCategory.node.name
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "{0} updated!"
+msgstr "{0} 已更新！"
+
+#. placeholder {0}: data.user.name
+#: src/components/household-switcher.tsx
+msgid "{0}, user menu"
+msgstr "{0}，用户菜单"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "{count, plural, one {Every month} other {Every # months}}"
+msgstr "{count, plural, other {每 # 个月}}"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "{count, plural, one {Every week} other {Every # weeks}}"
+msgstr "{count, plural, other {每 # 周}}"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "{count, plural, one {Every year} other {Every # years}}"
+msgstr "{count, plural, other {每 # 年}}"
+
+#: src/lib/date-range.ts
+msgid "{daysUntil, plural, one {in # day} other {in # days}}"
+msgstr "{daysUntil, plural, other {# 天后}}"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "{name} is active again. You can find it in Accounts."
+msgstr "{name} 已恢复使用，可在“账户”中找到。"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "{name} unarchived."
+msgstr "{name} 已取消归档。"
+
+#: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
+msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
+msgstr "{transactionCount, plural, other {# 笔交易}}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "1 month"
+msgstr "1 个月"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "1 year"
+msgstr "1 年"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "3 months"
+msgstr "3 个月"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "6 months"
+msgstr "6 个月"
+
+#: src/routes/login.index.tsx
+msgid "A clearer view of your money starts here."
+msgstr "从这里开始，把收支看得更清楚。"
+
+#: src/routes/index.tsx
+msgid "A day in your life"
+msgstr "生活中的一天"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "A household can only have two members. Remove one before adding another."
+msgstr "一个家庭最多可有两位成员。请先移除一位成员再添加。"
+
+#: src/routes/index.tsx
+#: src/routes/login.index.tsx
+msgid "A little attention. A clearer picture."
+msgstr "用心记录，从容掌握。"
+
+#: src/routes/index.tsx
+msgid "A little more clarity.<0/>Starting today."
+msgstr "让收支更清楚，<0/>就从今天开始。"
+
+#: src/routes/index.tsx
+msgid "A shared life. A shared perspective."
+msgstr "共同生活，一起掌握。"
+
+#: src/routes/index.tsx
+msgid "A thoughtful home for your money. Track the everyday, bring your accounts together, and see the bigger picture."
+msgstr "为你的财务找个家。记录日常收支，汇集各个账户，看清财务全貌。"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Account"
+msgstr "账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Account / Movement"
+msgstr "账户 / 变动"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account archived!"
+msgstr "账户已归档！"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
+msgid "Account category"
+msgstr "账户类别"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Account data refreshed."
+msgstr "账户数据已刷新。"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account deleted!"
+msgstr "账户已删除！"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account Detail"
+msgstr "账户详情"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Account history"
+msgstr "账户历史"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Account history series"
+msgstr "账户历史数据系列"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Account name must be at least 1 character."
+msgstr "账户名称不能为空。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Account name must be at most 32 characters."
+msgstr "账户名称不能超过 32 个字符。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "Account name must be at most 64 characters."
+msgstr "账户名称不能超过 64 个字符。"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/edit.tsx
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account not found"
+msgstr "未找到账户"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+#: src/routes/_user/household/$householdId/settings/route.tsx
+msgid "Account settings"
+msgstr "账户设置"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+msgid "Account type"
+msgstr "账户类型"
+
+#: src/components/app-sidebar.tsx
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Accounts"
+msgstr "账户"
+
+#: src/routes/index.tsx
+msgid "Accounts · Investments · Multiple currencies"
+msgstr "账户 · 投资 · 多币种"
+
+#: src/constant.ts
+msgid "Accounts that hold investments, such as brokerage accounts"
+msgstr "用于持有投资的账户，例如证券账户"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Actions"
+msgstr "操作"
+
+#. placeholder {0}: uh.user.name
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Actions for {0}"
+msgstr "{0}的操作"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Add a recurring payment to see your upcoming costs."
+msgstr "添加一项定期付款，即可查看即将发生的支出。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Add account"
+msgstr "添加账户"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Add amount"
+msgstr "添加金额"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-panel.tsx
+msgid "Add category"
+msgstr "添加分类"
+
+#: src/components/household-switcher.tsx
+msgid "Add household"
+msgstr "添加家庭"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Add household member"
+msgstr "添加家庭成员"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "Add investment"
+msgstr "添加投资"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Add member"
+msgstr "添加成员"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Add note / options"
+msgstr "添加备注 / 选项"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Add subscription"
+msgstr "添加订阅"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Add your first account to start tracking your balances."
+msgstr "添加第一个账户，开始记录余额。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Adding..."
+msgstr "正在添加…"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Admin"
+msgstr "管理员"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Admin demoted to member."
+msgstr "管理员已改为普通成员。"
+
+#: src/routes/_user/household/$householdId/-components/view-scope-switcher.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "All"
+msgstr "全部"
+
+#: src/components/currency-input.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Amount"
+msgstr "金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Amount must be positive"
+msgstr "金额必须大于零"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Amount to credit"
+msgstr "转入金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Amount to debit"
+msgstr "转出金额"
+
+#: src/components/generic-error.tsx
+msgid "An unexpected error occurred. Please try again."
+msgstr "发生意外错误，请重试。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Appearance"
+msgstr "外观"
+
+#: src/components/date-period-filter.tsx
+msgid "Apply range"
+msgstr "应用日期范围"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archive"
+msgstr "归档"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archive account"
+msgstr "归档账户"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archive Account"
+msgstr "归档账户"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Archived accounts"
+msgstr "已归档账户"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Archiving..."
+msgstr "正在归档…"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Asset"
+msgstr "资产"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Assets"
+msgstr "资产"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "At least one admin must remain."
+msgstr "必须保留至少一位管理员。"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Avg Cost / Share"
+msgstr "每股平均成本"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/$categoryId.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+#: src/routes/_user/household/$householdId/subscriptions/$subscriptionId.tsx
+msgid "Back"
+msgstr "返回"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Balance"
+msgstr "余额"
+
+#: src/routes/index.tsx
+msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
+msgstr "将账户、投资和不同币种汇于一处。掌握余额变化，看清资金流向。"
+
+#: src/routes/login.index.tsx
+msgid "Bring your accounts together."
+msgstr "所有账户，一目了然。"
+
+#: src/routes/index.tsx
+msgid "Build your dam"
+msgstr "开始筑坝"
+
+#: src/routes/login.index.tsx
+msgid "Build your dam, day by day."
+msgstr "日积月累，筑起你的水坝。"
+
+#: src/routes/index.tsx
+#: src/routes/login.index.tsx
+msgid "Built with care. Built for clarity."
+msgstr "用心打造，让每一笔更清楚。"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Buy"
+msgstr "买入"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Buy AAPL shares"
+msgstr "买入 AAPL 股票"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Buy transaction created successfully!"
+msgstr "买入交易已创建！"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "By Account"
+msgstr "按账户"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "By category"
+msgstr "按类别"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "By Symbol"
+msgstr "按代码"
+
+#: src/components/date-period-filter.tsx
+msgid "Calendar view"
+msgstr "日历视图"
+
+#: src/components/date-period-filter.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Cancel"
+msgstr "取消"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Cannot move to the same investment"
+msgstr "不能转移到同一项投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Cannot transfer to the same account"
+msgstr "不能转账到同一账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "Card Content"
+msgstr "卡片内容"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "Card Footer"
+msgstr "卡片页脚"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+msgid "cash"
+msgstr "现金"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Cash"
+msgstr "现金"
+
+#: src/components/financial-summary-cards.tsx
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Cash flow"
+msgstr "现金流"
+
+#: src/constant.ts
+msgid "Cash or cash-equivalent accounts, such as checking or savings"
+msgstr "现金或现金等价物账户，例如支票账户或储蓄账户"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/categories/-components/categories-panel.tsx
+msgid "Categories"
+msgstr "分类"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Category"
+msgstr "分类"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "CATEGORY"
+msgstr "分类"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "Category (optional)"
+msgstr "分类（可选）"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "Category deleted!"
+msgstr "分类已删除！"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Category name must be at least 1 character."
+msgstr "分类名称不能为空。"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Category name must be at most 32 characters."
+msgstr "分类名称不能超过 32 个字符。"
+
+#: src/routes/_user/household/$householdId/categories/$categoryId.tsx
+msgid "Category not found"
+msgstr "未找到分类"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Change account"
+msgstr "更换账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Change source"
+msgstr "更换转出方"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Charged monthly"
+msgstr "按月扣费"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Charged weekly"
+msgstr "按周扣费"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Charged yearly"
+msgstr "按年扣费"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Check the highlighted fields before saving."
+msgstr "保存前请检查标出的字段。"
+
+#: src/components/transaction-composer/controls.tsx
+msgid "Choose"
+msgstr "选择"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Choose a category"
+msgstr "选择分类"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Choose a category."
+msgstr "请选择分类。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose an account"
+msgstr "选择账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose an investment"
+msgstr "选择投资"
+
+#: src/components/date-period-filter.tsx
+msgid "Choose date view"
+msgstr "选择日期视图"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose the destination account"
+msgstr "选择转入账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose the destination investment"
+msgstr "选择转入投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Choose the source account"
+msgstr "选择转出账户"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Choose your investment and enter its details."
+msgstr "选择投资并填写详细信息。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/new.tsx
+msgid "Close"
+msgstr "关闭"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Close the dialog and try opening the transaction again."
+msgstr "请关闭对话框，然后重新打开这笔交易。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+msgid "Coffee at Starbucks"
+msgstr "星巴克咖啡"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Columns"
+msgstr "显示列"
+
+#: src/components/login-form.tsx
+msgid "Continue with Google"
+msgstr "使用 Google 继续"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Cost (High to Low)"
+msgstr "费用从高到低"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Cost (Low to High)"
+msgstr "费用从低到高"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Cost Basis"
+msgstr "成本基础"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Cost per payment"
+msgstr "每次付款金额"
+
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "Could not delete this transaction. Please try again."
+msgstr "无法删除这笔交易，请重试。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Could not load more transactions."
+msgstr "无法加载更多交易。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Could not load transaction"
+msgstr "无法加载交易"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Could not save. Your entry is still here—please try again."
+msgstr "无法保存。你填写的内容仍已保留，请重试。"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Could not unarchive {name}. Please try again."
+msgstr "无法取消归档 {name}，请重试。"
+
+#: src/components/date-period-filter.tsx
+msgid "Could not update dates. Please try again."
+msgstr "无法更新日期，请重试。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Create"
+msgstr "创建"
+
+#: src/routes/_user/household/new.tsx
+msgid "Create demo"
+msgstr "创建演示家庭"
+
+#: src/routes/_user/household/new.tsx
+msgid "Create Household"
+msgstr "创建家庭"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Create snapshot"
+msgstr "创建快照"
+
+#: src/routes/_user/household/new.tsx
+msgid "Create Your Household"
+msgstr "创建你的家庭"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Creating..."
+msgstr "正在创建…"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Credit Amount"
+msgstr "转入金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Credit amount must be positive"
+msgstr "转入金额必须大于零"
+
+#: src/hooks/use-finance-label.ts
+msgid "Crypto"
+msgstr "加密货币"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Currency"
+msgstr "货币"
+
+#: src/routes/_user/household/new.tsx
+msgid "Currency is required."
+msgstr "请选择货币。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Currency not found"
+msgstr "未找到货币"
+
+#: src/components/date-period-filter.tsx
+msgid "Custom range"
+msgstr "自定义范围"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily expenses"
+msgstr "当日支出"
+
+#. placeholder {0}: format(expense)
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily expenses: {0}"
+msgstr "当日支出：{0}"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily income"
+msgstr "当日收入"
+
+#. placeholder {0}: format(income)
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily income: {0}"
+msgstr "当日收入：{0}"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily totals"
+msgstr "每日合计"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Daily totals for loaded transactions"
+msgstr "已加载交易的每日合计"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Dark"
+msgstr "深色"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Date"
+msgstr "日期"
+
+#: src/components/date-period-filter.tsx
+msgid "Date view"
+msgstr "日期视图"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Date, newest first. Sort oldest first"
+msgstr "日期，最新在前。改为最早在前"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Date, oldest first. Sort newest first"
+msgstr "日期，最早在前。改为最新在前"
+
+#: src/hooks/use-finance-label.ts
+msgid "Day"
+msgstr "天"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Debit Amount"
+msgstr "转出金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Debit amount must be positive"
+msgstr "转出金额必须大于零"
+
+#: src/constant.ts
+msgid "Debts or obligations you owe to others, such as credit cards or loans"
+msgstr "你欠他人的债务，例如信用卡欠款或贷款"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Decimal separator"
+msgstr "小数点"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Deficit"
+msgstr "赤字"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Delete"
+msgstr "删除"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Delete account"
+msgstr "删除账户"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Delete Account"
+msgstr "删除账户"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "Delete Category"
+msgstr "删除分类"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Delete household"
+msgstr "删除家庭"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Delete household?"
+msgstr "删除家庭？"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Delete last digit"
+msgstr "删除最后一位数字"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Delete Recurring Subscription"
+msgstr "删除定期订阅"
+
+#: src/components/transaction-composer/composer.tsx
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "Delete transaction"
+msgstr "删除交易"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Delete Transaction"
+msgstr "删除交易"
+
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "Delete transaction?"
+msgstr "删除交易？"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Deleting..."
+msgstr "正在删除…"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Description"
+msgstr "描述"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Description must be at most 256 characters."
+msgstr "描述不能超过 256 个字符。"
+
+#: src/routes/_user/household/new.tsx
+msgid "Determines date and number formatting"
+msgstr "决定日期和数字的显示格式"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Display currency"
+msgstr "显示货币"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Done"
+msgstr "完成"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "e.g. BTC-CAD"
+msgstr "例如 BTC-CAD"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "e.g. iShares Core Equity ETF Portfolio"
+msgstr "例如 iShares Core Equity ETF Portfolio"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "e.g. XEQT.TO"
+msgstr "例如 XEQT.TO"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "e.g., chase.com"
+msgstr "例如 chase.com"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "e.g., netflix.com"
+msgstr "例如 netflix.com"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Edit"
+msgstr "编辑"
+
+#. placeholder {0}: financeLabel(kind)
+#: src/components/transaction-composer/composer.tsx
+msgid "Edit {0}"
+msgstr "编辑{0}"
+
+#. placeholder {0}: raw || '0'
+#: src/components/transaction-composer/controls.tsx
+msgid "Edit {label}: {prefix}{0}{suffix}"
+msgstr "编辑{label}：{prefix}{0}{suffix}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "Edit Account"
+msgstr "编辑账户"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "Edit Category"
+msgstr "编辑分类"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Edit Entry"
+msgstr "编辑分录"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Edit Lot"
+msgstr "编辑投资批次"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Edit Subscription"
+msgstr "编辑订阅"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "Edit transaction"
+msgstr "编辑交易"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Edit Transaction"
+msgstr "编辑交易"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Email"
+msgstr "电子邮箱"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Email is required."
+msgstr "请输入电子邮箱。"
+
+#. placeholder {0}: financeLabel(kind)
+#: src/components/transaction-composer/composer.tsx
+msgid "Enter {0}"
+msgstr "输入{0}"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price."
+msgstr "输入货币对（如 BTC-CAD 或 ETH-USD）以查询价格。"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Enter a Yahoo Finance symbol to look up its price."
+msgstr "输入雅虎财经代码以查询价格。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Enter household name to confirm"
+msgstr "输入家庭名称以确认"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Entry updated successfully!"
+msgstr "分录已更新！"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Equals"
+msgstr "等于"
+
+#: src/routes/index.tsx
+msgid "EXAMPLE"
+msgstr "示例"
+
+#: src/routes/index.tsx
+msgid "Example transaction ledger"
+msgstr "交易账本示例"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Exclude from reports"
+msgstr "不计入报表"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-entry-card.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Excluded"
+msgstr "已排除"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Excluded from reports"
+msgstr "不计入报表"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Expense"
+msgstr "支出"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+msgid "Expense created successfully!"
+msgstr "支出已创建！"
+
+#: src/components/financial-summary-cards.tsx
+msgid "Expenses"
+msgstr "支出"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Failed to save snapshot: {error}"
+msgstr "无法保存快照：{error}"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "First day of week"
+msgstr "每周起始日"
+
+#: src/routes/index.tsx
+msgid "Food & drink"
+msgstr "餐饮"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "For example, 2 with Month means every two months."
+msgstr "例如，选择“月”并输入 2 表示每两个月一次。"
+
+#: src/routes/index.tsx
+msgid "For you. For your household. At your pace."
+msgstr "为你，也为家人。按自己的节奏来。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Friday"
+msgstr "星期五"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "from"
+msgstr "从"
+
+#: src/components/transaction-composer/transfer-rows.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "From"
+msgstr "从"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "From account"
+msgstr "转出账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "From Account"
+msgstr "转出账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "From account not found"
+msgstr "未找到转出账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "From amount"
+msgstr "转出金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "From Investment"
+msgstr "转出投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "From investment not found"
+msgstr "未找到转出投资"
+
+#: src/routes/index.tsx
+msgid "From your first coffee to your long-term investments, give every part of your finances a place."
+msgstr "从早晨的第一杯咖啡到长期投资，让每一笔钱都有迹可循。"
+
+#: src/components/app-sidebar.tsx
+msgid "General"
+msgstr "通用"
+
+#: src/routes/_user/household/$householdId/settings/route.tsx
+msgid "General settings"
+msgstr "通用设置"
+
+#: src/routes/index.tsx
+msgid "Get started"
+msgstr "开始使用"
+
+#: src/components/generic-error.tsx
+#: src/components/not-found-error.tsx
+msgid "Go back"
+msgstr "返回"
+
+#: src/components/generic-error.tsx
+#: src/components/not-found-error.tsx
+#: src/components/not-logged-in-error.tsx
+msgid "Go home"
+msgstr "返回首页"
+
+#: src/components/not-logged-in-error.tsx
+msgid "Go to login"
+msgstr "前往登录"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Groceries"
+msgstr "日常采购"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "Group by"
+msgstr "分组方式"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Hide balances"
+msgstr "隐藏余额"
+
+#: src/components/nav-projects.tsx
+#: src/routes/index.tsx
+msgid "Household"
+msgstr "家庭"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Household deleted."
+msgstr "家庭已删除。"
+
+#: src/routes/_user/household/new.tsx
+msgid "Household Name"
+msgstr "家庭名称"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Household name is required."
+msgstr "请输入家庭名称。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Household name must be at most 64 characters."
+msgstr "家庭名称不能超过 64 个字符。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Household updated."
+msgstr "家庭已更新。"
+
+#: src/routes/index.tsx
+msgid "Households · Members · Shared clarity"
+msgstr "家庭 · 成员 · 共同掌握"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "How many shares do you own?"
+msgstr "你持有多少股？"
+
+#: src/components/icon-picker.tsx
+msgid "Icon"
+msgstr "图标"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "Icon URL"
+msgstr "图标网址"
+
+#: src/routes/index.tsx
+msgid "Illustrative entries in Canadian dollars."
+msgstr "以上为示例记录，金额以加元计。"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
+msgid "Inactive · {intervalText}"
+msgstr "已停用 · {intervalText}"
+
+#. placeholder {0}: inactiveSubscriptions.length
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Inactive subscriptions ({0})"
+msgstr "已停用的订阅（{0}）"
+
+#: src/components/financial-summary-cards.tsx
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/index.tsx
+msgid "Income"
+msgstr "收入"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+msgid "Income created successfully!"
+msgstr "收入已创建！"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Interval"
+msgstr "周期"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Interval count must be at least 1."
+msgstr "周期间隔至少为 1。"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Interval count must be at most 100."
+msgstr "周期间隔不能超过 100。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+msgid "Invested"
+msgstr "投入金额"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+msgid "Invested "
+msgstr "投入金额"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Investment"
+msgstr "投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "Investment account"
+msgstr "投资账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment buy"
+msgstr "买入投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Investment moved successfully!"
+msgstr "投资已转移！"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment name must be at least 1 character."
+msgstr "投资名称不能为空。"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment name must be at most 32 characters."
+msgstr "投资名称不能超过 32 个字符。"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Investment not found"
+msgstr "未找到投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Investment sell"
+msgstr "卖出投资"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment symbol must be at least 1 character."
+msgstr "投资代码不能为空。"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Investment symbol must be at most 32 characters."
+msgstr "投资代码不能超过 32 个字符。"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
+msgid "Investments"
+msgstr "投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Investments must have the same symbol"
+msgstr "投资代码必须相同"
+
+#: src/components/public-header.tsx
+msgid "Join us on Discord"
+msgstr "加入 Discord 社区"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Joint"
+msgstr "共同持有"
+
+#: src/routes/login.index.tsx
+msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
+msgstr "记录日常点滴，看清收支全貌。用心管理你和家人的每一笔钱。"
+
+#: src/routes/index.tsx
+msgid "Know your money.<0/>Build your dam."
+msgstr "看清收支，<0/>筑起水坝。"
+
+#: src/components/language-selector.tsx
+msgid "Language"
+msgstr "语言"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Largest first"
+msgstr "金额从大到小"
+
+#: src/routes/index.tsx
+msgid "Less scattered.<0/>More understood."
+msgstr "少一点零散，<0/>多一份明白。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Liabilities"
+msgstr "负债"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Liability"
+msgstr "负债"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Light"
+msgstr "浅色"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Liquidity"
+msgstr "流动资金"
+
+#: src/components/route-content-boundary.tsx
+msgid "Loading content"
+msgstr "正在加载内容"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Loading more transactions…"
+msgstr "正在加载更多交易…"
+
+#: src/components/route-content-boundary.tsx
+msgid "Loading page"
+msgstr "正在加载页面"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Loading transaction editing controls"
+msgstr "正在加载交易编辑功能"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Locale"
+msgstr "地区格式"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Locale is required."
+msgstr "请选择地区格式。"
+
+#: src/routes/index.tsx
+msgid "Log income, expenses, and transfers with intention. Organize transactions into categories and keep recurring subscriptions in view."
+msgstr "用心记录收入、支出和转账。为交易归类，让定期订阅也一目了然。"
+
+#: src/components/household-switcher.tsx
+msgid "Log out"
+msgstr "退出登录"
+
+#: src/routes/login.index.tsx
+msgid "Log with intention."
+msgstr "用心记下每一笔。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Logo domain (optional)"
+msgstr "标志域名（可选）"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Lot updated successfully!"
+msgstr "投资批次已更新！"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Make admin"
+msgstr "设为管理员"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Make member"
+msgstr "设为普通成员"
+
+#: src/routes/login.index.tsx
+msgid "Make yourself<0/>at home."
+msgstr "你的账本，<0/>从这里开始。"
+
+#: src/routes/index.tsx
+msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+msgstr "一起管理家庭财务，兼顾每个人的账户。将点滴收支汇集起来，共同掌握全貌。"
+
+#. placeholder {0}: fromInvestment.symbol
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Matching {0} holdings in another account."
+msgstr "其他账户中匹配的 {0} 持仓。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Member"
+msgstr "成员"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Member added."
+msgstr "成员已添加。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Member changes are disabled on the demo household."
+msgstr "演示家庭不支持更改成员。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Member promoted to admin."
+msgstr "成员已设为管理员。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Member removed."
+msgstr "成员已移除。"
+
+#: src/components/app-sidebar.tsx
+#: src/routes/_user/household/$householdId/settings/route.tsx
+msgid "Members"
+msgstr "成员"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Monday"
+msgstr "星期一"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Money coming in"
+msgstr "资金流入"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Money going out"
+msgstr "资金流出"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Money in"
+msgstr "流入"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Money out"
+msgstr "流出"
+
+#: src/constant.ts
+msgid "Money owed to you, such as pending reimbursements or money lent"
+msgstr "他人欠你的款项，例如待报销费用或借出款项"
+
+#: src/hooks/use-finance-label.ts
+msgid "Month"
+msgstr "月"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+msgid "Monthly salary"
+msgstr "月薪"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Monthly spend"
+msgstr "每月支出"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "More actions"
+msgstr "更多操作"
+
+#: src/routes/index.tsx
+msgid "Morning coffee"
+msgstr "早晨的咖啡"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Move"
+msgstr "转移"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Move AAPL shares"
+msgstr "转移 AAPL 股票"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Moving..."
+msgstr "正在转移…"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+msgid "My Account"
+msgstr "我的账户"
+
+#: src/routes/_user/household/new.tsx
+msgid "My Family"
+msgstr "我的家庭"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "My Household"
+msgstr "我的家庭"
+
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Name"
+msgstr "名称"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Name (A-Z)"
+msgstr "名称从 A 到 Z"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Name (Z-A)"
+msgstr "名称从 Z 到 A"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Name A–Z"
+msgstr "名称从 A 到 Z"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Net Worth"
+msgstr "净资产"
+
+#: src/lib/time.ts
+msgid "Never"
+msgstr "从未"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "New"
+msgstr "新建"
+
+#. placeholder {0}: financeLabel(kind)
+#: src/components/transaction-composer/composer.tsx
+msgid "New {0}"
+msgstr "新建{0}"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "New Account"
+msgstr "新建账户"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "New Category"
+msgstr "新建分类"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "New entry"
+msgstr "新建分录"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "New Investment"
+msgstr "新建投资"
+
+#: src/components/command-menu.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "New Subscription"
+msgstr "新建订阅"
+
+#: src/routes/_user/household/new.tsx
+msgid "New to Beaver Money?"
+msgstr "初次使用 Beaver Money？"
+
+#: src/routes/_user/household/$householdId/route.tsx
+#: src/routes/_user/household/$householdId/transactions/new.tsx
+msgid "New transaction"
+msgstr "新建交易"
+
+#: src/components/command-menu.tsx
+msgid "New Transaction"
+msgstr "新建交易"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Next Payment"
+msgstr "下次付款"
+
+#: src/components/date-period-filter.tsx
+msgid "Next period"
+msgstr "下一时段"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
+msgid "No account categories available."
+msgstr "暂无账户类别。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "No accounts found"
+msgstr "未找到账户"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-card.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "No activity yet"
+msgstr "暂无记录"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "No archived accounts"
+msgstr "没有已归档账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "No categories available."
+msgstr "暂无分类。"
+
+#: src/routes/_user/household/new.tsx
+msgid "No currency found."
+msgstr "未找到货币。"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "No data was refreshed"
+msgstr "没有刷新任何数据"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "No items found."
+msgstr "未找到项目。"
+
+#: src/routes/_user/household/new.tsx
+msgid "No locale found."
+msgstr "未找到地区格式。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "No matching accounts."
+msgstr "没有匹配的账户。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "No matching categories."
+msgstr "没有匹配的分类。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "No matching investments available."
+msgstr "没有匹配的投资。"
+
+#: src/components/search-select.tsx
+#: src/components/transaction-composer/controls.tsx
+msgid "No matching options."
+msgstr "没有匹配的选项。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "No snapshots in this period. Choose a wider date range, or create a snapshot from the toolbar to start tracking balances."
+msgstr "此时段内没有快照。请选择更大的日期范围，或从工具栏创建快照以开始追踪余额。"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "No subscriptions yet"
+msgstr "暂无订阅"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "No transactions found"
+msgstr "未找到交易"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+msgid "No transactions match your current filters. Try another date range or adjust your filters."
+msgstr "没有符合当前筛选条件的交易。请尝试其他日期范围或调整筛选条件。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+msgid "None (Taxable)"
+msgstr "无（应税账户）"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
+msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择更大的日期范围或添加收入交易。"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Note (optional)"
+msgstr "备注（可选）"
+
+#: src/routes/index.tsx
+msgid "One entry at a time."
+msgstr "从每一笔记录开始。"
+
+#: src/routes/login.index.tsx
+msgid "One Google account. Your own space for the everyday."
+msgstr "使用 Google 账号，进入你的日常记账空间。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Only household admins can add members."
+msgstr "只有家庭管理员可以添加成员。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Only household admins can change roles."
+msgstr "只有家庭管理员可以更改角色。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Only household admins can remove members."
+msgstr "只有家庭管理员可以移除成员。"
+
+#: src/components/public-header.tsx
+msgid "Open source on GitHub"
+msgstr "在 GitHub 查看开源代码"
+
+#: src/routes/index.tsx
+msgid "OPEN SOURCE. OPEN POSSIBILITIES."
+msgstr "开放源代码，更多可能。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Options"
+msgstr "选项"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Other Expenses"
+msgstr "其他支出"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Other Income"
+msgstr "其他收入"
+
+#: src/routes/_user/household/$householdId/-components/owner-select.tsx
+msgid "Owner"
+msgstr "持有人"
+
+#. placeholder {0}: transaction.user.name
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "Owner: {0}"
+msgstr "持有人：{0}"
+
+#: src/components/not-found-error.tsx
+msgid "Page not found"
+msgstr "页面不存在"
+
+#: src/routes/index.tsx
+msgid "Payday"
+msgstr "工资到账"
+
+#: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
+msgid "per share"
+msgstr "每股"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Performance"
+msgstr "收益表现"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Permanently remove this household and all its data."
+msgstr "永久删除此家庭及其所有数据。"
+
+#: src/routes/login.index.tsx
+msgid "Personal finances. Shared perspective."
+msgstr "个人财务，家人共览。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Please enter a number"
+msgstr "请输入数字"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Please enter a price"
+msgstr "请输入价格"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Please enter a valid email."
+msgstr "请输入有效的电子邮箱。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please enter an amount"
+msgstr "请输入金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select a category"
+msgstr "请选择分类"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+msgid "Please select a category type."
+msgstr "请选择分类类型。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Please select a currency."
+msgstr "请选择货币。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select a from account"
+msgstr "请选择转出账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Please select a from investment"
+msgstr "请选择转出投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select a to account"
+msgstr "请选择转入账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Please select a to investment"
+msgstr "请选择转入投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Please select an account"
+msgstr "请选择账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Please select an investment"
+msgstr "请选择投资"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Please select an owner"
+msgstr "请选择持有人"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "Portfolio value"
+msgstr "投资组合市值"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Preferences"
+msgstr "偏好设置"
+
+#: src/components/date-period-filter.tsx
+msgid "Previous period"
+msgstr "上一时段"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Price per share"
+msgstr "每股价格"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Price per share must be positive"
+msgstr "每股价格必须大于零"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Property"
+msgstr "不动产"
+
+#: src/constant.ts
+msgid "Real estate or other valuable property"
+msgstr "房产或其他有价值的财产"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Receivable"
+msgstr "应收款"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Recently active"
+msgstr "最近使用"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Recurring payments"
+msgstr "定期付款"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Refresh account data"
+msgstr "刷新账户数据"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove"
+msgstr "移除"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove from household"
+msgstr "从家庭中移除"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove member"
+msgstr "移除成员"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Remove member?"
+msgstr "移除成员？"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Removing..."
+msgstr "正在移除…"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Repeat every"
+msgstr "重复间隔"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Reset"
+msgstr "重置"
+
+#: src/components/date-period-filter.tsx
+msgid "Reset to this month"
+msgstr "重置为本月"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Retry"
+msgstr "重试"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Return %"
+msgstr "收益率"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Role"
+msgstr "角色"
+
+#: src/components/login-form.tsx
+msgid "Sandbox"
+msgstr "本地测试登录"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Saturday"
+msgstr "星期六"
+
+#: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Save"
+msgstr "保存"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Save again"
+msgstr "再次保存"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Save Changes"
+msgstr "保存更改"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Saved automatically on this device."
+msgstr "已自动保存在此设备上。"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Saving..."
+msgstr "正在保存…"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Saving…"
+msgstr "正在保存…"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Savings"
+msgstr "结余"
+
+#: src/components/financial-summary-cards.tsx
+msgid "Savings rate"
+msgstr "结余率"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Scrollable content"
+msgstr "可滚动内容"
+
+#. placeholder {0}: label.toLowerCase()
+#: src/components/search-select.tsx
+#: src/components/transaction-composer/controls.tsx
+msgid "Search {0}"
+msgstr "搜索{0}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "Search accounts"
+msgstr "搜索账户"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Search by name"
+msgstr "按名称搜索"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Search categories"
+msgstr "搜索分类"
+
+#: src/components/command-menu.tsx
+msgid "Search commands"
+msgstr "搜索命令"
+
+#: src/components/icon-picker.tsx
+msgid "Search icons"
+msgstr "搜索图标"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "Search investments"
+msgstr "搜索投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Select a category"
+msgstr "选择分类"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+#: src/routes/_user/household/new.tsx
+msgid "Select a currency"
+msgstr "选择货币"
+
+#: src/routes/_user/household/new.tsx
+msgid "Select a locale"
+msgstr "选择地区格式"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "Select a source account first"
+msgstr "请先选择转出账户"
+
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Select a type"
+msgstr "选择类型"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Select an account"
+msgstr "选择账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "Select an account first"
+msgstr "请先选择账户"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Select an interval"
+msgstr "选择周期"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Select an investment"
+msgstr "选择投资"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Select at least one series to view chart"
+msgstr "请至少选择一个数据系列以查看图表"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "Select currency"
+msgstr "选择货币"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Select from investment first"
+msgstr "请先选择转出投资"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Sell"
+msgstr "卖出"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Sell AAPL shares"
+msgstr "卖出 AAPL 股票"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Sell transaction created successfully!"
+msgstr "卖出交易已创建！"
+
+#: src/components/app-sidebar.tsx
+#: src/constant.ts
+msgid "Settings"
+msgstr "设置"
+
+#: src/hooks/use-finance-label.ts
+msgid "Setup"
+msgstr "初始设置"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Shared owner — auto-managed"
+msgstr "共同持有人 — 自动管理"
+
+#: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+msgid "shares"
+msgstr "股"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Shares"
+msgstr "股数"
+
+#: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
+msgid "shares ·"
+msgstr "股 ·"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "shares @"
+msgstr "股，单价"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Shares must be positive"
+msgstr "股数必须大于零"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "Shares to move"
+msgstr "转移股数"
+
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Show balances"
+msgstr "显示余额"
+
+#: src/components/date-period-filter.tsx
+msgid "Show earlier weeks"
+msgstr "显示更早的周"
+
+#: src/components/date-period-filter.tsx
+msgid "Show earlier years"
+msgstr "显示更早的年份"
+
+#: src/routes/index.tsx
+msgid "SMALL HABITS. A BIGGER PICTURE."
+msgstr "小小习惯，看清全貌。"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Snapshot"
+msgstr "快照"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Snapshot saved!"
+msgstr "快照已保存！"
+
+#: src/components/generic-error.tsx
+msgid "Something went wrong :("
+msgstr "出错了 :("
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "Something went wrong. Please try again."
+msgstr "出错了，请重试。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Sort by"
+msgstr "排序方式"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Sort subscriptions"
+msgstr "订阅排序"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Sorting transactions…"
+msgstr "正在排序交易…"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Start date"
+msgstr "开始日期"
+
+#: src/hooks/use-finance-label.ts
+msgid "Stock"
+msgstr "股票"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "Subscription deleted!"
+msgstr "订阅已删除！"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Subscription name must be at least 1 character."
+msgstr "订阅名称不能为空。"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
+msgid "Subscription name must be at most 64 characters."
+msgstr "订阅名称不能超过 64 个字符。"
+
+#: src/routes/_user/household/$householdId/subscriptions/$subscriptionId.tsx
+msgid "Subscription not found"
+msgstr "未找到订阅"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Subscriptions"
+msgstr "订阅"
+
+#: src/components/transaction-composer/keypad.tsx
+msgid "Subtract"
+msgstr "减去"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Sunday"
+msgstr "星期日"
+
+#: src/components/date-period-filter.tsx
+msgid "Switch view"
+msgstr "切换视图"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Symbol"
+msgstr "代码"
+
+#. placeholder {0}: error.message
+#. placeholder {0}: errors?.[0]?.message ?? t`No data was refreshed`
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "Sync failed: {0}"
+msgstr "同步失败：{0}"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System"
+msgstr "跟随系统"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "System follows your device’s appearance. Changes save automatically on this device."
+msgstr "跟随系统将使用设备的外观设置。更改会自动保存在此设备上。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "That user is already a household member."
+msgstr "该用户已经是家庭成员。"
+
+#: src/routes/index.tsx
+msgid "The details make the difference."
+msgstr "每个细节，都有意义。"
+
+#: src/routes/index.tsx
+msgid "The everyday, accounted for."
+msgstr "日常点滴，笔笔有数。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
+msgstr "无法直接移除共同持有人。移除另一位成员后，共同持有人将自动清除。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "The joint owner's role is fixed and can't be changed."
+msgstr "共同持有人的角色是固定的，无法更改。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "The transaction owner cannot be changed."
+msgstr "无法更改交易的持有人。"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "This action cannot be undone. This will permanently delete the account. Delete is only allowed if there are no transactions or investments attached."
+msgstr "此操作无法撤销，将永久删除账户。只有未关联任何交易或投资的账户才能删除。"
+
+#: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+msgid "This action cannot be undone. This will permanently delete the category."
+msgstr "此操作无法撤销，将永久删除此分类。"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+msgid "This action cannot be undone. This will permanently delete the recurring subscription."
+msgstr "此操作无法撤销，将永久删除此定期订阅。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "This action cannot be undone. This will permanently delete the transaction and all associated entries and investment lots."
+msgstr "此操作无法撤销，将永久删除此交易及其关联的所有分录和投资批次。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "This household is in an unexpected state. Refresh and try again."
+msgstr "此家庭的状态异常，请刷新后重试。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
+msgstr "此成员或共同持有人名下仍有账户、投资或订阅。请先删除或归档这些项目。"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
+msgstr "此操作会归档账户并将其从主列表隐藏。只有余额为零的账户才能归档。之后可在“设置 → 账户”中取消归档。"
+
+#. placeholder {0}: household.name
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "This will permanently delete <0>{0}</0> and all associated data including accounts, transactions, and categories. This action cannot be undone."
+msgstr "此操作将永久删除 <0>{0}</0> 及其关联的所有数据，包括账户、交易和分类。此操作无法撤销。"
+
+#: src/components/transaction-composer/delete-confirmation.tsx
+msgid "This will permanently remove this transaction and its entries. You can’t undo this."
+msgstr "此操作将永久删除这笔交易及其分录，且无法撤销。"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "This will remove them from the household. They will lose access immediately."
+msgstr "此操作将把该成员移出家庭，其访问权限将立即失效。"
+
+#: src/routes/index.tsx
+msgid "Three moments. One clear record."
+msgstr "三个生活片段，一本清楚的账。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Thursday"
+msgstr "星期四"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "to"
+msgstr "至"
+
+#: src/components/transaction-composer/transfer-rows.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "To"
+msgstr "至"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "To account"
+msgstr "转入账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "To Account"
+msgstr "转入账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "To account not found"
+msgstr "未找到转入账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "To amount"
+msgstr "转入金额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "To Investment"
+msgstr "转入投资"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+msgid "To investment not found"
+msgstr "未找到转入投资"
+
+#: src/lib/date-range.ts
+msgid "today"
+msgstr "今天"
+
+#: src/components/finance-date-input.tsx
+#: src/lib/time.ts
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Today"
+msgstr "今天"
+
+#: src/lib/date-range.ts
+msgid "tomorrow"
+msgstr "明天"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Total amount paid"
+msgstr "支付总额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Total amount received"
+msgstr "收取总额"
+
+#: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
+msgid "Total Income"
+msgstr "总收入"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Total paid"
+msgstr "支付总额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+msgid "Total paid must be positive"
+msgstr "支付总额必须大于零"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Total received"
+msgstr "收取总额"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+msgid "Total received must be positive"
+msgstr "收取总额必须大于零"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Totals so far"
+msgstr "当前合计"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Transaction"
+msgstr "交易"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction deleted successfully!"
+msgstr "交易已删除！"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction description"
+msgstr "交易描述"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Transaction details"
+msgstr "交易详情"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-panel.tsx
+msgid "Transaction filters"
+msgstr "交易筛选"
+
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Transaction kind"
+msgstr "交易种类"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
+msgid "Transaction not found"
+msgstr "未找到交易"
+
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+msgid "Transaction types"
+msgstr "交易类型"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction updated successfully!"
+msgstr "交易已更新！"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Transactions"
+msgstr "交易"
+
+#: src/routes/index.tsx
+msgid "Transactions · Categories · Subscriptions"
+msgstr "交易 · 分类 · 订阅"
+
+#: src/hooks/use-finance-label.ts
+#: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+msgid "Transfer"
+msgstr "转账"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Transfer created successfully!"
+msgstr "转账已创建！"
+
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+msgid "Transfer to savings"
+msgstr "转入储蓄账户"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
+msgid "Transfer type"
+msgstr "转账类型"
+
+#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
+msgid "Try another account name."
+msgstr "请尝试其他账户名称。"
+
+#: src/routes/_user/household/new.tsx
+msgid "Try it with sample data first."
+msgstr "先用示例数据体验一下。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Tuesday"
+msgstr "星期二"
+
+#: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
+#: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Type"
+msgstr "类型"
+
+#. placeholder {0}: household.name
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Type <0>{0}</0> to confirm"
+msgstr "输入 <0>{0}</0> 以确认"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Unable to find a quote for this symbol."
+msgstr "无法找到此代码的报价。"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchive"
+msgstr "取消归档"
+
+#. placeholder {0}: account.name
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchive {0}"
+msgstr "取消归档 {0}"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchiving makes an account available for new transactions again. Its history stays intact."
+msgstr "取消归档后，可再次为此账户添加交易。历史记录将完整保留。"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Unarchiving…"
+msgstr "正在取消归档…"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Unrealized Return"
+msgstr "未实现收益"
+
+#: src/components/pwa-update-prompt.tsx
+msgid "Update"
+msgstr "更新"
+
+#: src/components/pwa-update-prompt.tsx
+msgid "Update available. Reload to use the latest version of Beaver Money."
+msgstr "有可用更新。重新加载以使用最新版 Beaver Money。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+msgid "Update entry details. Switching the account also switches the entry's currency."
+msgstr "更新分录详情。更换账户时，分录货币也会随之更改。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
+msgid "Update lot details. Switching the investment moves the lot's shares."
+msgstr "更新投资批次详情。更换投资时，该批次的股份也会转移。"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Update transaction details. Click on entries or lots below to edit them individually."
+msgstr "更新交易详情。点击下方的分录或投资批次可单独编辑。"
+
+#: src/components/date-period-filter.tsx
+msgid "Updating date range"
+msgstr "正在更新日期范围"
+
+#: src/routes/index.tsx
+msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+msgstr "用 Beaver Money 管理日常财务，也可以自行部署。代码开放，选择由你。"
+
+#: src/components/date-period-filter.tsx
+msgid "View by month"
+msgstr "按月查看"
+
+#: src/components/date-period-filter.tsx
+msgid "View by week"
+msgstr "按周查看"
+
+#: src/components/date-period-filter.tsx
+msgid "View by year"
+msgstr "按年查看"
+
+#: src/components/not-found-error.tsx
+msgid "We could not find what you were looking for. It may have been moved or deleted."
+msgstr "未找到你要查看的内容，可能已被移动或删除。"
+
+#: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
+msgid "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
+msgstr "未找到使用此邮箱的用户。请对方先使用 Google 登录一次，然后重试。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Wednesday"
+msgstr "星期三"
+
+#: src/hooks/use-finance-label.ts
+msgid "Week"
+msgstr "周"
+
+#: src/routes/index.tsx
+msgid "Weekly groceries"
+msgstr "每周采购"
+
+#: src/routes/_user/household/new.tsx
+msgid "Welcome to {name}! Your household is ready."
+msgstr "欢迎加入 {name}！你的家庭已创建。"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "What changed since your last snapshot?"
+msgstr "与上次快照相比有哪些变化？"
+
+#: src/hooks/use-finance-label.ts
+msgid "Year"
+msgstr "年"
+
+#: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
+msgid "Yearly spend"
+msgstr "每年支出"
+
+#: src/components/finance-date-input.tsx
+#: src/lib/time.ts
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Yesterday"
+msgstr "昨天"
+
+#: src/components/not-logged-in-error.tsx
+msgid "You are not logged in"
+msgstr "你尚未登录"
+
+#: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
+msgid "You can't remove yourself from the household."
+msgstr "你无法将自己移出家庭。"
+
+#: src/components/generic-error.tsx
+#: src/routes/_user/household/$householdId/route.tsx
+msgid "You no longer have access to this household."
+msgstr "你已无权访问此家庭。"
+
+#: src/routes/_user/household/new.tsx
+msgid "Your household's primary currency for reporting"
+msgstr "用于家庭报表的主要货币"
+
+#: src/routes/login.index.tsx
+msgid "Your money,<0/>made clearer."
+msgstr "每一笔钱，<0/>都更清楚。"
+
+#: src/routes/login.index.tsx
+msgid "YOUR NEXT CHAPTER"
+msgstr "开启新篇章"
+
+#: src/components/not-logged-in-error.tsx
+msgid "Your session may have expired. Please log in again to continue."
+msgstr "你的登录可能已过期，请重新登录后继续。"
+
+#: src/routes/index.tsx
+msgid "Your whole picture, in one place."
+msgstr "财务全貌，尽在一处。"

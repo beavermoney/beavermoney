@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
@@ -66,31 +69,31 @@ const removeMutation = graphql`
 function getRoleErrorMessage(error: unknown): string {
   const msg = String(error)
   if (msg.includes('LAST_ADMIN_PROTECTED'))
-    return 'At least one admin must remain.'
+    return t`At least one admin must remain.`
   if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
-    return 'Only household admins can change roles.'
+    return t`Only household admins can change roles.`
   if (msg.includes('SYNTHETIC_USER_ROLE_CHANGE_NOT_ALLOWED'))
-    return "The joint owner's role is fixed and can't be changed."
+    return t`The joint owner's role is fixed and can't be changed.`
   if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
-    return 'Member changes are disabled on the demo household.'
-  return 'Something went wrong. Please try again.'
+    return t`Member changes are disabled on the demo household.`
+  return t`Something went wrong. Please try again.`
 }
 
 function getRemoveErrorMessage(error: unknown): string {
   const msg = String(error)
   if (msg.includes('LAST_ADMIN_PROTECTED'))
-    return 'At least one admin must remain.'
+    return t`At least one admin must remain.`
   if (msg.includes('MEMBER_HAS_OWNED_RECORDS'))
-    return 'This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first.'
+    return t`This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first.`
   if (msg.includes('SELF_REMOVAL_NOT_ALLOWED'))
-    return "You can't remove yourself from the household."
+    return t`You can't remove yourself from the household.`
   if (msg.includes('SYNTHETIC_USER_REMOVAL_NOT_ALLOWED'))
-    return "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
+    return t`The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up.`
   if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
-    return 'Only household admins can remove members.'
+    return t`Only household admins can remove members.`
   if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
-    return 'Member changes are disabled on the demo household.'
-  return 'Something went wrong. Please try again.'
+    return t`Member changes are disabled on the demo household.`
+  return t`Something went wrong. Please try again.`
 }
 
 type MembersSettingsProps = {
@@ -98,6 +101,7 @@ type MembersSettingsProps = {
 }
 
 export function MembersSettings({ householdRef }: MembersSettingsProps) {
+  const { t } = useLingui()
   const showToast = useToast()
 
   const household = useFragment(membersSettingsFragment, householdRef)
@@ -144,8 +148,8 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
           type: 'info',
           body:
             nextRole === 'admin'
-              ? 'Member promoted to admin.'
-              : 'Admin demoted to member.',
+              ? t`Member promoted to admin.`
+              : t`Admin demoted to member.`,
         })
       })
       .with({ status: 'error' }, ({ error }) => {
@@ -171,7 +175,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
 
     match(result)
       .with({ status: 'success' }, () => {
-        showToast({ type: 'info', body: 'Member removed.' })
+        showToast({ type: 'info', body: t`Member removed.` })
         setRemoveTargetId(null)
       })
       .with({ status: 'error' }, ({ error }) => {
@@ -206,15 +210,15 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                     className="break-all"
                   >
                     {isSynthetic
-                      ? 'Shared owner — auto-managed'
+                      ? t`Shared owner — auto-managed`
                       : uh.user.email}
                   </Text>
                   <Text type="supporting" color="secondary">
                     {isSynthetic
-                      ? 'Joint'
+                      ? t`Joint`
                       : uh.role === 'admin'
-                        ? 'Admin'
-                        : 'Member'}{' '}
+                        ? t`Admin`
+                        : t`Member`}{' '}
                     · {uh.householdCurrency.code}
                   </Text>
                 </Stack>
@@ -228,7 +232,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                         <Button
                           {...triggerProps}
 
-                          label={`Actions for ${uh.user.name}`}
+                          label={t`Actions for ${uh.user.name}`}
                           variant={'ghost'}
 
                           isIconOnly
@@ -245,13 +249,19 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                         onClick={() => handleRoleChange(uh.id, nextRole)}
                         label={
                           <>
-                            {uh.role === 'admin' ? 'Make member' : 'Make admin'}
+                            {uh.role === 'admin'
+                              ? t`Make member`
+                              : t`Make admin`}
                           </>
                         }
                       />
                       <DropdownMenuItem
                         onClick={() => setRemoveTargetId(uh.id)}
-                        label={<>Remove from household</>}
+                        label={
+                          <>
+                            <Trans>Remove from household</Trans>
+                          </>
+                        }
                       />
                     </DropdownMenu>
                   )}
@@ -276,7 +286,11 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
             padding={6}
             header={
               <DialogHeader
-                title={<>Remove member?</>}
+                title={
+                  <>
+                    <Trans>Remove member?</Trans>
+                  </>
+                }
                 onOpenChange={(open) => {
                   if (!open) setRemoveTargetId(null)
                 }}
@@ -286,8 +300,10 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
             <LayoutContent>
               <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                 <Text as="div" display="block" type="supporting">
-                  This will remove them from the household. They will lose
-                  access immediately.
+                  <Trans>
+                    This will remove them from the household. They will lose
+                    access immediately.
+                  </Trans>
                 </Text>
                 <Stack
                   direction="horizontal"
@@ -297,7 +313,7 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                   justify="end"
                 >
                   <Button
-                    label="Cancel"
+                    label={t`Cancel`}
                     onClick={() =>
                       ((open) => {
                         if (!open) setRemoveTargetId(null)
@@ -308,9 +324,9 @@ export function MembersSettings({ householdRef }: MembersSettingsProps) {
                     variant="destructive"
                     isDisabled={isRemoveInFlight}
                     onClick={handleConfirmRemove}
-                    label="Remove member"
+                    label={t`Remove member`}
                   >
-                    {isRemoveInFlight ? 'Removing...' : 'Remove'}
+                    {isRemoveInFlight ? t`Removing...` : t`Remove`}
                   </Button>
                 </Stack>
               </Stack>

@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
@@ -21,15 +24,6 @@ import type { addMemberDialogMutation } from './__generated__/addMemberDialogMut
 
 import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required.')
-    .email('Please enter a valid email.'),
-  role: z.enum(['admin', 'member']),
-  householdCurrencyID: z.string().min(1, 'Please select a currency.'),
-})
 
 const addMemberDialogFragment = graphql`
   fragment addMemberDialogFragment on Household {
@@ -70,18 +64,18 @@ const addMemberDialogMutation = graphql`
 function getErrorMessage(error: unknown): string {
   const msg = String(error)
   if (msg.includes('MEMBER_EMAIL_NOT_REGISTERED'))
-    return "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
+    return t`We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again.`
   if (msg.includes('MEMBER_ALREADY_EXISTS'))
-    return 'That user is already a household member.'
+    return t`That user is already a household member.`
   if (msg.includes('HOUSEHOLD_MAX_REAL_USERS_REACHED'))
-    return 'A household can only have two members. Remove one before adding another.'
+    return t`A household can only have two members. Remove one before adding another.`
   if (msg.includes('HOUSEHOLD_HAS_SYNTHETIC_USER'))
-    return 'This household is in an unexpected state. Refresh and try again.'
+    return t`This household is in an unexpected state. Refresh and try again.`
   if (msg.includes('MEMBER_MUTATION_LOCKED_ON_DEMO_HOUSEHOLD'))
-    return 'Member changes are disabled on the demo household.'
+    return t`Member changes are disabled on the demo household.`
   if (msg.includes('NOT_HOUSEHOLD_ADMIN'))
-    return 'Only household admins can add members.'
-  return 'Something went wrong. Please try again.'
+    return t`Only household admins can add members.`
+  return t`Something went wrong. Please try again.`
 }
 
 type AddMemberDialogProps = {
@@ -93,6 +87,16 @@ export function AddMemberDialog({
   householdRef,
   trigger,
 }: AddMemberDialogProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    email: z
+      .string()
+      .min(1, t`Email is required.`)
+      .email(t`Please enter a valid email.`),
+    role: z.enum(['admin', 'member']),
+    householdCurrencyID: z.string().min(1, t`Please select a currency.`),
+  })
+
   const showToast = useToast()
 
   const data = useFragment(addMemberDialogFragment, householdRef)
@@ -137,7 +141,7 @@ export function AddMemberDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          showToast({ type: 'info', body: 'Member added.' })
+          showToast({ type: 'info', body: t`Member added.` })
           form.reset()
           setOpen(false)
         })
@@ -151,11 +155,11 @@ export function AddMemberDialog({
   return (
     <>
       <Button
-        label="Add member"
+        label={t`Add member`}
         icon={<AstryxIcon icon={UserPlusIcon} />}
         onClick={() => setOpen(true)}
       >
-        {trigger ?? 'Add member'}
+        {trigger ?? t`Add member`}
       </Button>
       <Dialog
         isOpen={open}
@@ -170,7 +174,11 @@ export function AddMemberDialog({
           padding={6}
           header={
             <DialogHeader
-              title={<>Add household member</>}
+              title={
+                <>
+                  <Trans>Add household member</Trans>
+                </>
+              }
               onOpenChange={(next) => {
                 setOpen(next)
                 if (!next) form.reset()
@@ -209,7 +217,7 @@ export function AddMemberDialog({
                             aria-invalid={isInvalid}
                             placeholder="user@example.com"
                             autoComplete="off"
-                            label={'Email'}
+                            label={t`Email`}
 
                             value={String(field.state.value ?? '')}
                             onChange={(_value, event) =>
@@ -245,12 +253,12 @@ export function AddMemberDialog({
                             }}
                             id={field.name}
                             aria-invalid={isInvalid}
-                            label="Role"
+                            label={t`Role`}
 
                             options={[
                               ...[
-                                { value: 'member', label: String('Member') },
-                                { value: 'admin', label: String('Admin') },
+                                { value: 'member', label: String(t`Member`) },
+                                { value: 'admin', label: String(t`Admin`) },
                               ],
                             ]}
                           />
@@ -279,7 +287,7 @@ export function AddMemberDialog({
                             }
                             id={field.name}
                             aria-invalid={isInvalid}
-                            label="Display currency"
+                            label={t`Display currency`}
 
                             options={[
                               ...[
@@ -289,7 +297,7 @@ export function AddMemberDialog({
                                 })),
                               ],
                             ]}
-                            placeholder={'Select currency'}
+                            placeholder={t`Select currency`}
                           />
                           {isInvalid && (
                             <FormError errors={field.state.meta.errors} />
@@ -310,15 +318,15 @@ export function AddMemberDialog({
                 <Button
                   type="submit"
                   form="add-member-form"
-                  label={String(isInFlight ? 'Adding...' : 'Add member')}
+                  label={String(isInFlight ? t`Adding...` : t`Add member`)}
                   variant={'primary'}
 
                   isDisabled={isInFlight}
                 >
-                  {isInFlight ? 'Adding...' : 'Add member'}
+                  {isInFlight ? t`Adding...` : t`Add member`}
                 </Button>
                 <Button
-                  label="Cancel"
+                  label={t`Cancel`}
                   onClick={() =>
                     ((next) => {
                       setOpen(next)

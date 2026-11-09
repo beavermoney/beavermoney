@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { HStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
 import { Typeahead } from '@astryxdesign/core/Typeahead'
@@ -33,11 +34,12 @@ export function IconPicker({
   id?: string
   onBlur?: () => void
 }) {
+  const { t } = useLingui()
   return (
     <Typeahead
       id={id}
-      label="Icon"
-      placeholder="Search icons"
+      label={t`Icon`}
+      placeholder={t`Search icons`}
       value={options.find((icon) => icon.id === value) ?? null}
       onChange={(icon) => {
         if (icon) onValueChange?.(icon.id as IconName)

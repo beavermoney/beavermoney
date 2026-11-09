@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { useLingui } from '@lingui/react/macro'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Text } from '@astryxdesign/core/Text'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -127,6 +129,7 @@ function processCategories(
 
 function buildNivoSankeyData(
   colors: Record<NodeKind, string>,
+  labels: { income: string; expenses: string },
   incomeBreakdown: {
     readonly total: string
     readonly categories: ReadonlyArray<{
@@ -158,13 +161,13 @@ function buildNivoSankeyData(
   const incomeCats = processCategories(
     incomeBreakdown.categories,
     8,
-    'Other Income',
+    labels.income,
     incomeTotal,
   )
   const expenseCats = processCategories(
     expensesBreakdown.categories,
     8,
-    'Other Expenses',
+    labels.expenses,
     incomeTotal,
   )
 
@@ -257,13 +260,6 @@ function buildNivoSankeyData(
   return { nodes, links }
 }
 
-function getNodeLabel(node: NivoNode): string {
-  if (node.id === '__total_income__') return 'Total Income'
-  if (node.id === '__savings__') return 'Savings'
-  if (node.id === '__deficit__') return 'Deficit'
-  return node.id.replace(/^(inc_|exp_)/, '')
-}
-
 const ICON_SIZE = 14
 const ICON_GAP = 4
 
@@ -272,6 +268,13 @@ interface CategoriesSankeyProps {
 }
 
 export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
+  const { t } = useLingui()
+  function getNodeLabel(node: NivoNode): string {
+    if (node.id === '__total_income__') return t`Total Income`
+    if (node.id === '__savings__') return t`Savings`
+    if (node.id === '__deficit__') return t`Deficit`
+    return node.id.replace(/^(inc_|exp_)/, '')
+  }
   const data = useFragment(CategoriesSankeyFragment, fragmentRef)
   const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
@@ -282,19 +285,24 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
     () =>
       buildNivoSankeyData(
         nodeColors,
+        { income: t`Other Income`, expenses: t`Other Expenses` },
         data.incomeBreakdown,
         data.expensesBreakdown,
       ),
-    [nodeColors, data.incomeBreakdown, data.expensesBreakdown],
+    [t, nodeColors, data.incomeBreakdown, data.expensesBreakdown],
   )
 
   if (!sankeyData) {
     return (
       <Stack direction="vertical" gap={2}>
-        <Heading level={2}>Cash flow</Heading>
+        <Heading level={2}>
+          <Trans>Cash flow</Trans>
+        </Heading>
         <Text color="secondary">
-          Not enough income data to draw the category Sankey chart for this
-          period. Choose a wider date range or add income transactions.
+          <Trans>
+            Not enough income data to draw the category Sankey chart for this
+            period. Choose a wider date range or add income transactions.
+          </Trans>
         </Text>
       </Stack>
     )
@@ -371,7 +379,9 @@ export function CategoriesSankey({ fragmentRef }: CategoriesSankeyProps) {
 
   return (
     <Stack direction="vertical" gap={4}>
-      <Heading level={2}>Cash flow</Heading>
+      <Heading level={2}>
+        <Trans>Cash flow</Trans>
+      </Heading>
       <Stack
         direction="vertical"
         gap={4}

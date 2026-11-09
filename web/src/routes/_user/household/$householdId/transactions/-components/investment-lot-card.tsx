@@ -1,3 +1,4 @@
+import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { useCurrency } from '@/hooks/use-currency'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { VStack } from '@astryxdesign/core/Layout'
@@ -8,7 +9,6 @@ import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
 
 import { getLogoTickerURL } from '@/lib/logo'
-import { format } from 'date-fns'
 import { investmentLotCardFragment$key } from './__generated__/investmentLotCardFragment.graphql'
 
 const investmentLotCardFragment = graphql`
@@ -48,6 +48,7 @@ export function InvestmentLotCard({
 }) {
   const { formatCurrency } = useCurrency()
 
+  const format = useDateFormatter()
   const data = useFragment<investmentLotCardFragment$key>(
     investmentLotCardFragment,
     fragmentRef,

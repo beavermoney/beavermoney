@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
@@ -13,6 +15,7 @@ import {
 } from '@/lib/auth'
 
 export function GenericError(error: ErrorComponentProps) {
+  const { t } = useLingui()
   const showToast = useToast()
 
   const navigate = useNavigate()
@@ -23,10 +26,10 @@ export function GenericError(error: ErrorComponentProps) {
     clearHouseholdScopedStorage()
     showToast({
       type: 'error',
-      body: 'You no longer have access to this household.',
+      body: t`You no longer have access to this household.`,
     })
     navigate({ to: '/household' })
-  }, [isRevoked, navigate, showToast])
+  }, [t, isRevoked, navigate, showToast])
 
   if (isRevoked) {
     return null
@@ -38,27 +41,29 @@ export function GenericError(error: ErrorComponentProps) {
         <Stack direction="vertical" gap={4}>
           <AstryxIcon icon={SearchXIcon} />
         </Stack>
-        <Heading level={2}>Something went wrong :(</Heading>
+        <Heading level={2}>
+          <Trans>Something went wrong :(</Trans>
+        </Heading>
         <Stack direction="vertical" gap={4}>
           {error.error instanceof Error
             ? error.error.message
-            : 'An unexpected error occurred. Please try again.'}
+            : t`An unexpected error occurred. Please try again.`}
         </Stack>
       </Stack>
       <Stack direction="vertical" gap={4}>
         <Button
           onClick={() => navigate({ to: '..' })}
-          label={'Go back'}
+          label={t`Go back`}
           variant={'secondary'}
         >
-          Go back
+          <Trans>Go back</Trans>
         </Button>
         <Button
           onClick={() => navigate({ to: '/' })}
-          label={'Go home'}
+          label={t`Go home`}
           variant={'primary'}
         >
-          Go home
+          <Trans>Go home</Trans>
         </Button>
       </Stack>
     </Stack>

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
@@ -70,6 +72,7 @@ const CategoryIdQuery = graphql`
 `
 
 function RouteComponent() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const search = Route.useSearch()
   const queryRef = Route.useLoaderData()
@@ -98,7 +101,7 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  invariant(data.node, 'Category not found')
+  invariant(data.node, t`Category not found`)
 
   const navigate = useNavigate()
 
@@ -108,11 +111,11 @@ function RouteComponent() {
         <Stack direction="vertical" gap={4}>
           <Button
             onClick={() => navigate({ to: '..', search: identity })}
-            label={'Back'}
+            label={t`Back`}
             width="fit-content"
             variant={'secondary'}
           >
-            Back
+            <Trans>Back</Trans>
           </Button>
         </Stack>
         <Stack direction="vertical" gap={4} className="max-w-2xl">

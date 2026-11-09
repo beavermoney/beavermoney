@@ -1,3 +1,6 @@
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -47,6 +50,8 @@ export function AccountSettings({
 }: {
   fragmentRef: accountSettingsFragment$key
 }) {
+  const financeLabel = useFinanceLabel()
+  const { t } = useLingui()
   const showToast = useToast()
   const data = useFragment(fragment, fragmentRef)
   const { household } = useHousehold()
@@ -72,12 +77,12 @@ export function AccountSettings({
     if (result.status === 'error') {
       showToast({
         type: 'error',
-        body: `Could not unarchive ${name}. Please try again.`,
+        body: t`Could not unarchive ${name}. Please try again.`,
       })
       return
     }
-    setFeedback(`${name} is active again. You can find it in Accounts.`)
-    showToast({ type: 'info', body: `${name} unarchived.` })
+    setFeedback(t`${name} is active again. You can find it in Accounts.`)
+    showToast({ type: 'info', body: t`${name} unarchived.` })
   }
 
   return (
@@ -86,7 +91,7 @@ export function AccountSettings({
       gap={4}
       as="section"
 
-      aria-label="Account settings"
+      aria-label={t`Account settings`}
     >
       <Stack
         direction="vertical"
@@ -96,15 +101,19 @@ export function AccountSettings({
       >
         <Stack direction="vertical" gap={1}>
           <Heading level={2} id="archived-accounts-title">
-            Archived accounts
+            <Trans>Archived accounts</Trans>
           </Heading>
           <Text as="p" display="block" color="secondary">
-            Unarchiving makes an account available for new transactions again.
-            Its history stays intact.
+            <Trans>
+              Unarchiving makes an account available for new transactions again.
+              Its history stays intact.
+            </Trans>
           </Text>
         </Stack>
         {accounts.length === 0 ? (
-          <Text color="secondary">No archived accounts</Text>
+          <Text color="secondary">
+            <Trans>No archived accounts</Trans>
+          </Text>
         ) : (
           <List hasDividers edge="outset">
             {accounts.map((account) => (
@@ -112,14 +121,14 @@ export function AccountSettings({
                 key={account.id}
                 id={account.id}
                 label={<Text maxLines={2}>{account.name}</Text>}
-                description={`${account.user.name} · ${account.type} · ${account.householdCurrency.code}`}
+                description={`${account.user.name} · ${financeLabel(account.type)} · ${account.householdCurrency.code}`}
                 endContent={
                   <Button
                     onClick={() => unarchive(account.id, account.name)}
                     label={
-                      pendingId === account.id ? 'Unarchiving…' : 'Unarchive'
+                      pendingId === account.id ? t`Unarchiving…` : t`Unarchive`
                     }
-                    aria-label={`Unarchive ${account.name}`}
+                    aria-label={t`Unarchive ${account.name}`}
                     variant="secondary"
                     isDisabled={isInFlight}
                   />

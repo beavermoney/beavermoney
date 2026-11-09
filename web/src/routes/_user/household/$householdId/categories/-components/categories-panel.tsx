@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Heading } from '@astryxdesign/core/Heading'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
@@ -5,7 +8,7 @@ import { List } from '@astryxdesign/core/List'
 import { Stack, StackItem } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
-import { capitalize, groupBy, map } from 'lodash-es'
+import { groupBy, map } from 'lodash-es'
 import { useMemo } from 'react'
 import { useFragment, useRelayEnvironment } from 'react-relay'
 import { Fragment } from 'react/jsx-runtime'
@@ -77,6 +80,8 @@ type CategoriesListPageProps = {
 }
 
 export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
   const search = useSearch({
     from: '/_user/household/$householdId/categories',
   })
@@ -160,10 +165,12 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
     <Fragment>
       <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
         <VStack gap={1}>
-          <Heading level={1}>Categories</Heading>
+          <Heading level={1}>
+            <Trans>Categories</Trans>
+          </Heading>
         </VStack>
         <PageAddButton
-          label="Add category"
+          label={t`Add category`}
           to="/household/$householdId/categories/new"
           params={{ householdId }}
         />
@@ -196,7 +203,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                   width="100%"
                   wrap="wrap"
                 >
-                  <Text type="label">{capitalize(type)}</Text>
+                  <Text type="label">{financeLabel(type)}</Text>
                   <StackItem size="fill" />
                   {typeAggregate && (
                     <Text type="label" hasTabularNumbers>
