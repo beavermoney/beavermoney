@@ -226,19 +226,32 @@ export function DatePeriodFilter({
                 const month = index
                 const date = new Date(monthYear, month, 1)
                 return (
-                  <Button
-                    key={month}
-                    size={isMobile ? 'lg' : 'md'}
-                    label={format(date, 'MMM')}
-                    aria-label={format(date, 'MMMM yyyy')}
-                    variant={
-                      selected(periodRange('month', date, weekStartsOn))
-                        ? 'primary'
-                        : 'secondary'
-                    }
-                    isDisabled={pending || dateKey(date) > dateKey(today)}
-                    onClick={() => select('month', date)}
-                  />
+                  <Stack key={month} className="relative">
+                    <Button
+                      width="100%"
+                      size={isMobile ? 'lg' : 'md'}
+                      label={format(date, 'MMM')}
+                      aria-label={format(date, 'MMMM yyyy')}
+                      variant="secondary"
+                      aria-pressed={selected(
+                        periodRange('month', date, weekStartsOn),
+                      )}
+                      className={
+                        selected(periodRange('month', date, weekStartsOn))
+                          ? 'bg-accent-muted'
+                          : undefined
+                      }
+                      isDisabled={pending || dateKey(date) > dateKey(today)}
+                      onClick={() => select('month', date)}
+                    />
+                    {selected(periodRange('month', date, weekStartsOn)) && (
+                      <Icon
+                        icon={Check}
+                        size="xsm"
+                        className="pointer-events-none absolute end-1 top-1"
+                      />
+                    )}
+                  </Stack>
                 )
               })}
             </Grid>
@@ -291,10 +304,24 @@ export function DatePeriodFilter({
                       key={date.getFullYear()}
                       label={format(date, 'yyyy')}
                       size={isMobile ? 'lg' : 'md'}
-                      variant={
+                      variant="secondary"
+                      aria-pressed={selected(
+                        periodRange('year', date, weekStartsOn),
+                      )}
+                      className={
                         selected(periodRange('year', date, weekStartsOn))
-                          ? 'primary'
-                          : 'secondary'
+                          ? 'bg-accent-muted'
+                          : undefined
+                      }
+                      endContent={
+                        <Icon
+                          icon={Check}
+                          className={
+                            selected(periodRange('year', date, weekStartsOn))
+                              ? undefined
+                              : 'invisible'
+                          }
+                        />
                       }
                       isDisabled={pending}
                       onClick={() => select('year', date)}
@@ -434,6 +461,16 @@ export function DatePeriodFilter({
                           <DropdownMenuItem
                             key={date.getFullYear()}
                             label={format(date, 'yyyy')}
+                            aria-current={
+                              selected(
+                                periodRange('year', date, weekStartsOn),
+                              ) || undefined
+                            }
+                            className={
+                              selected(periodRange('year', date, weekStartsOn))
+                                ? 'bg-accent-muted'
+                                : undefined
+                            }
                             endContent={
                               selected(
                                 periodRange('year', date, weekStartsOn),
