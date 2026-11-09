@@ -106,13 +106,30 @@ msgstr "6 months"
 msgid "A clearer view of your money starts here."
 msgstr "A clearer view of your money starts here."
 
+#: src/routes/index.tsx
+msgid "A day in your life"
+msgstr "A day in your life"
+
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "A household can only have two members. Remove one before adding another."
 msgstr "A household can only have two members. Remove one before adding another."
 
+#: src/routes/index.tsx
 #: src/routes/login.index.tsx
 msgid "A little attention. A clearer picture."
 msgstr "A little attention. A clearer picture."
+
+#: src/routes/index.tsx
+msgid "A little more clarity.<0/>Starting today."
+msgstr "A little more clarity.<0/>Starting today."
+
+#: src/routes/index.tsx
+msgid "A shared life. A shared perspective."
+msgstr "A shared life. A shared perspective."
+
+#: src/routes/index.tsx
+msgid "A thoughtful home for your money. Track the everyday, bring your accounts together, and see the bigger picture."
+msgstr "A thoughtful home for your money. Track the everyday, bring your accounts together, and see the bigger picture."
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
@@ -191,6 +208,10 @@ msgstr "Account type"
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Accounts"
 msgstr "Accounts"
+
+#: src/routes/index.tsx
+msgid "Accounts · Investments · Multiple currencies"
+msgstr "Accounts · Investments · Multiple currencies"
 
 #: src/constant.ts
 msgid "Accounts that hold investments, such as brokerage accounts"
@@ -353,17 +374,22 @@ msgid "Balance"
 msgstr "Balance"
 
 #: src/routes/index.tsx
-msgid "Beaver Money. All rights reserved."
-msgstr "Beaver Money. All rights reserved."
+msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
+msgstr "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
 
 #: src/routes/login.index.tsx
 msgid "Bring your accounts together."
 msgstr "Bring your accounts together."
 
+#: src/routes/index.tsx
+msgid "Build your dam"
+msgstr "Build your dam"
+
 #: src/routes/login.index.tsx
 msgid "Build your dam, day by day."
 msgstr "Build your dam, day by day."
 
+#: src/routes/index.tsx
 #: src/routes/login.index.tsx
 msgid "Built with care. Built for clarity."
 msgstr "Built with care. Built for clarity."
@@ -958,6 +984,14 @@ msgstr "Entry updated successfully!"
 msgid "Equals"
 msgstr "Equals"
 
+#: src/routes/index.tsx
+msgid "EXAMPLE"
+msgstr "EXAMPLE"
+
+#: src/routes/index.tsx
+msgid "Example transaction ledger"
+msgstr "Example transaction ledger"
+
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -993,18 +1027,22 @@ msgstr "Expenses"
 msgid "Failed to save snapshot: {error}"
 msgstr "Failed to save snapshot: {error}"
 
-#: src/routes/index.tsx
-msgid "Financial Insights"
-msgstr "Financial Insights"
-
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "First day of week"
 msgstr "First day of week"
+
+#: src/routes/index.tsx
+msgid "Food & drink"
+msgstr "Food & drink"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "For example, 2 with Month means every two months."
 msgstr "For example, 2 with Month means every two months."
+
+#: src/routes/index.tsx
+msgid "For you. For your household. At your pace."
+msgstr "For you. For your household. At your pace."
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Friday"
@@ -1046,8 +1084,8 @@ msgid "From investment not found"
 msgstr "From investment not found"
 
 #: src/routes/index.tsx
-msgid "Fully open source and self-hostable for complete control"
-msgstr "Fully open source and self-hostable for complete control"
+msgid "From your first coffee to your long-term investments, give every part of your finances a place."
+msgstr "From your first coffee to your long-term investments, give every part of your finances a place."
 
 #: src/components/app-sidebar.tsx
 msgid "General"
@@ -1058,12 +1096,8 @@ msgid "General settings"
 msgstr "General settings"
 
 #: src/routes/index.tsx
-msgid "Get clear reports and visualizations of your money flow"
-msgstr "Get clear reports and visualizations of your money flow"
-
-#: src/routes/index.tsx
-msgid "Get Started"
-msgstr "Get Started"
+msgid "Get started"
+msgstr "Get started"
 
 #: src/components/generic-error.tsx
 #: src/components/not-found-error.tsx
@@ -1095,16 +1129,13 @@ msgid "Hide balances"
 msgstr "Hide balances"
 
 #: src/components/nav-projects.tsx
+#: src/routes/index.tsx
 msgid "Household"
 msgstr "Household"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Household deleted."
 msgstr "Household deleted."
-
-#: src/routes/index.tsx
-msgid "Household Management"
-msgstr "Household Management"
 
 #: src/routes/_user/household/new.tsx
 msgid "Household Name"
@@ -1124,6 +1155,10 @@ msgstr "Household name must be at most 64 characters."
 msgid "Household updated."
 msgstr "Household updated."
 
+#: src/routes/index.tsx
+msgid "Households · Members · Shared clarity"
+msgstr "Households · Members · Shared clarity"
+
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "How many shares do you own?"
 msgstr "How many shares do you own?"
@@ -1135,6 +1170,10 @@ msgstr "Icon"
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "Icon URL"
 msgstr "Icon URL"
+
+#: src/routes/index.tsx
+msgid "Illustrative entries in Canadian dollars."
+msgstr "Illustrative entries in Canadian dollars."
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
 msgid "Inactive · {intervalText}"
@@ -1148,6 +1187,7 @@ msgstr "Inactive subscriptions ({0})"
 #: src/components/financial-summary-cards.tsx
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/index.tsx
 msgid "Income"
 msgstr "Income"
 
@@ -1217,10 +1257,6 @@ msgstr "Investment symbol must be at least 1 character."
 msgid "Investment symbol must be at most 32 characters."
 msgstr "Investment symbol must be at most 32 characters."
 
-#: src/routes/index.tsx
-msgid "Investment Tracking"
-msgstr "Investment Tracking"
-
 #: src/components/command-menu.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
@@ -1232,6 +1268,10 @@ msgstr "Investments"
 msgid "Investments must have the same symbol"
 msgstr "Investments must have the same symbol"
 
+#: src/components/public-header.tsx
+msgid "Join us on Discord"
+msgstr "Join us on Discord"
+
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "Joint"
 msgstr "Joint"
@@ -1240,6 +1280,10 @@ msgstr "Joint"
 msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
 msgstr "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
 
+#: src/routes/index.tsx
+msgid "Know your money.<0/>Build your dam."
+msgstr "Know your money.<0/>Build your dam."
+
 #: src/components/language-selector.tsx
 msgid "Language"
 msgstr "Language"
@@ -1247,6 +1291,10 @@ msgstr "Language"
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 msgid "Largest first"
 msgstr "Largest first"
+
+#: src/routes/index.tsx
+msgid "Less scattered.<0/>More understood."
+msgstr "Less scattered.<0/>More understood."
 
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 msgid "Liabilities"
@@ -1295,8 +1343,8 @@ msgid "Locale is required."
 msgstr "Locale is required."
 
 #: src/routes/index.tsx
-msgid "Log income, expenses, transfers, and investments effortlessly"
-msgstr "Log income, expenses, transfers, and investments effortlessly"
+msgid "Log income, expenses, and transfers with intention. Organize transactions into categories and keep recurring subscriptions in view."
+msgstr "Log income, expenses, and transfers with intention. Organize transactions into categories and keep recurring subscriptions in view."
 
 #: src/components/household-switcher.tsx
 msgid "Log out"
@@ -1305,10 +1353,6 @@ msgstr "Log out"
 #: src/routes/login.index.tsx
 msgid "Log with intention."
 msgstr "Log with intention."
-
-#: src/routes/index.tsx
-msgid "Log your transactions. Build your dam."
-msgstr "Log your transactions. Build your dam."
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -1331,6 +1375,10 @@ msgstr "Make member"
 #: src/routes/login.index.tsx
 msgid "Make yourself<0/>at home."
 msgstr "Make yourself<0/>at home."
+
+#: src/routes/index.tsx
+msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+msgstr "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1389,10 +1437,6 @@ msgstr "Money out"
 msgid "Money owed to you, such as pending reimbursements or money lent"
 msgstr "Money owed to you, such as pending reimbursements or money lent"
 
-#: src/routes/index.tsx
-msgid "Monitor your portfolio with stocks and crypto support"
-msgstr "Monitor your portfolio with stocks and crypto support"
-
 #: src/hooks/use-finance-label.ts
 msgid "Month"
 msgstr "Month"
@@ -1409,6 +1453,10 @@ msgstr "Monthly spend"
 msgid "More actions"
 msgstr "More actions"
 
+#: src/routes/index.tsx
+msgid "Morning coffee"
+msgstr "Morning coffee"
+
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -1423,10 +1471,6 @@ msgstr "Move AAPL shares"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Moving..."
 msgstr "Moving..."
-
-#: src/routes/index.tsx
-msgid "Multi-Currency"
-msgstr "Multi-Currency"
 
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "My Account"
@@ -1616,6 +1660,10 @@ msgstr "Not enough income data to draw the category Sankey chart for this period
 msgid "Note (optional)"
 msgstr "Note (optional)"
 
+#: src/routes/index.tsx
+msgid "One entry at a time."
+msgstr "One entry at a time."
+
 #: src/routes/login.index.tsx
 msgid "One Google account. Your own space for the everyday."
 msgstr "One Google account. Your own space for the everyday."
@@ -1632,13 +1680,13 @@ msgstr "Only household admins can change roles."
 msgid "Only household admins can remove members."
 msgstr "Only household admins can remove members."
 
-#: src/routes/index.tsx
-msgid "Open Source"
-msgstr "Open Source"
-
-#: src/routes/login.index.tsx
+#: src/components/public-header.tsx
 msgid "Open source on GitHub"
 msgstr "Open source on GitHub"
+
+#: src/routes/index.tsx
+msgid "OPEN SOURCE. OPEN POSSIBILITIES."
+msgstr "OPEN SOURCE. OPEN POSSIBILITIES."
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -1667,6 +1715,10 @@ msgstr "Owner: {0}"
 #: src/components/not-found-error.tsx
 msgid "Page not found"
 msgstr "Page not found"
+
+#: src/routes/index.tsx
+msgid "Payday"
+msgstr "Payday"
 
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "per share"
@@ -2092,6 +2144,10 @@ msgstr "Show earlier weeks"
 msgid "Show earlier years"
 msgstr "Show earlier years"
 
+#: src/routes/index.tsx
+msgid "SMALL HABITS. A BIGGER PICTURE."
+msgstr "SMALL HABITS. A BIGGER PICTURE."
+
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Snapshot"
 msgstr "Snapshot"
@@ -2188,6 +2244,14 @@ msgstr "System follows your device’s appearance. Changes save automatically on
 msgid "That user is already a household member."
 msgstr "That user is already a household member."
 
+#: src/routes/index.tsx
+msgid "The details make the difference."
+msgstr "The details make the difference."
+
+#: src/routes/index.tsx
+msgid "The everyday, accounted for."
+msgstr "The everyday, accounted for."
+
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
 msgstr "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
@@ -2240,6 +2304,10 @@ msgstr "This will permanently remove this transaction and its entries. You can�
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "This will remove them from the household. They will lose access immediately."
 msgstr "This will remove them from the household. They will lose access immediately."
+
+#: src/routes/index.tsx
+msgid "Three moments. One clear record."
+msgstr "Three moments. One clear record."
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Thursday"
@@ -2329,14 +2397,6 @@ msgstr "Total received must be positive"
 msgid "Totals so far"
 msgstr "Totals so far"
 
-#: src/routes/index.tsx
-msgid "Track finances in multiple currencies with automatic conversion"
-msgstr "Track finances in multiple currencies with automatic conversion"
-
-#: src/routes/index.tsx
-msgid "Track finances together with multiple people in one household"
-msgstr "Track finances together with multiple people in one household"
-
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
 msgstr "Transaction"
@@ -2361,10 +2421,6 @@ msgstr "Transaction filters"
 msgid "Transaction kind"
 msgstr "Transaction kind"
 
-#: src/routes/index.tsx
-msgid "Transaction Logging"
-msgstr "Transaction Logging"
-
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
 msgid "Transaction not found"
 msgstr "Transaction not found"
@@ -2383,6 +2439,10 @@ msgstr "Transaction updated successfully!"
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transactions"
 msgstr "Transactions"
+
+#: src/routes/index.tsx
+msgid "Transactions · Categories · Subscriptions"
+msgstr "Transactions · Categories · Subscriptions"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
@@ -2475,6 +2535,10 @@ msgstr "Update transaction details. Click on entries or lots below to edit them 
 msgid "Updating date range"
 msgstr "Updating date range"
 
+#: src/routes/index.tsx
+msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+msgstr "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+
 #: src/components/date-period-filter.tsx
 msgid "View by month"
 msgstr "View by month"
@@ -2502,6 +2566,10 @@ msgstr "Wednesday"
 #: src/hooks/use-finance-label.ts
 msgid "Week"
 msgstr "Week"
+
+#: src/routes/index.tsx
+msgid "Weekly groceries"
+msgstr "Weekly groceries"
 
 #: src/routes/_user/household/new.tsx
 msgid "Welcome to {name}! Your household is ready."
@@ -2554,3 +2622,7 @@ msgstr "YOUR NEXT CHAPTER"
 #: src/components/not-logged-in-error.tsx
 msgid "Your session may have expired. Please log in again to continue."
 msgstr "Your session may have expired. Please log in again to continue."
+
+#: src/routes/index.tsx
+msgid "Your whole picture, in one place."
+msgstr "Your whole picture, in one place."

@@ -106,13 +106,30 @@ msgstr "6 个月"
 msgid "A clearer view of your money starts here."
 msgstr "从这里开始，把收支看得更清楚。"
 
+#: src/routes/index.tsx
+msgid "A day in your life"
+msgstr "生活中的一天"
+
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "A household can only have two members. Remove one before adding another."
 msgstr "一个家庭最多可有两位成员。请先移除一位成员再添加。"
 
+#: src/routes/index.tsx
 #: src/routes/login.index.tsx
 msgid "A little attention. A clearer picture."
 msgstr "用心记录，从容掌握。"
+
+#: src/routes/index.tsx
+msgid "A little more clarity.<0/>Starting today."
+msgstr "让收支更清楚，<0/>就从今天开始。"
+
+#: src/routes/index.tsx
+msgid "A shared life. A shared perspective."
+msgstr "共同生活，一起掌握。"
+
+#: src/routes/index.tsx
+msgid "A thoughtful home for your money. Track the everyday, bring your accounts together, and see the bigger picture."
+msgstr "为你的财务找个家。记录日常收支，汇集各个账户，看清财务全貌。"
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
@@ -191,6 +208,10 @@ msgstr "账户类型"
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Accounts"
 msgstr "账户"
+
+#: src/routes/index.tsx
+msgid "Accounts · Investments · Multiple currencies"
+msgstr "账户 · 投资 · 多币种"
 
 #: src/constant.ts
 msgid "Accounts that hold investments, such as brokerage accounts"
@@ -353,17 +374,22 @@ msgid "Balance"
 msgstr "余额"
 
 #: src/routes/index.tsx
-msgid "Beaver Money. All rights reserved."
-msgstr "Beaver Money。保留所有权利。"
+msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
+msgstr "将账户、投资和不同币种汇于一处。掌握余额变化，看清资金流向。"
 
 #: src/routes/login.index.tsx
 msgid "Bring your accounts together."
 msgstr "所有账户，一目了然。"
 
+#: src/routes/index.tsx
+msgid "Build your dam"
+msgstr "开始筑坝"
+
 #: src/routes/login.index.tsx
 msgid "Build your dam, day by day."
 msgstr "日积月累，筑起你的水坝。"
 
+#: src/routes/index.tsx
 #: src/routes/login.index.tsx
 msgid "Built with care. Built for clarity."
 msgstr "用心打造，让每一笔更清楚。"
@@ -958,6 +984,14 @@ msgstr "分录已更新！"
 msgid "Equals"
 msgstr "等于"
 
+#: src/routes/index.tsx
+msgid "EXAMPLE"
+msgstr "示例"
+
+#: src/routes/index.tsx
+msgid "Example transaction ledger"
+msgstr "交易账本示例"
+
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -993,18 +1027,22 @@ msgstr "支出"
 msgid "Failed to save snapshot: {error}"
 msgstr "无法保存快照：{error}"
 
-#: src/routes/index.tsx
-msgid "Financial Insights"
-msgstr "财务洞察"
-
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "First day of week"
 msgstr "每周起始日"
+
+#: src/routes/index.tsx
+msgid "Food & drink"
+msgstr "餐饮"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "For example, 2 with Month means every two months."
 msgstr "例如，选择“月”并输入 2 表示每两个月一次。"
+
+#: src/routes/index.tsx
+msgid "For you. For your household. At your pace."
+msgstr "为你，也为家人。按自己的节奏来。"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Friday"
@@ -1046,8 +1084,8 @@ msgid "From investment not found"
 msgstr "未找到转出投资"
 
 #: src/routes/index.tsx
-msgid "Fully open source and self-hostable for complete control"
-msgstr "完全开源，支持自行部署，让你全面掌控"
+msgid "From your first coffee to your long-term investments, give every part of your finances a place."
+msgstr "从早晨的第一杯咖啡到长期投资，让每一笔钱都有迹可循。"
 
 #: src/components/app-sidebar.tsx
 msgid "General"
@@ -1058,11 +1096,7 @@ msgid "General settings"
 msgstr "通用设置"
 
 #: src/routes/index.tsx
-msgid "Get clear reports and visualizations of your money flow"
-msgstr "通过清晰的报表和图表了解资金流向"
-
-#: src/routes/index.tsx
-msgid "Get Started"
+msgid "Get started"
 msgstr "开始使用"
 
 #: src/components/generic-error.tsx
@@ -1095,16 +1129,13 @@ msgid "Hide balances"
 msgstr "隐藏余额"
 
 #: src/components/nav-projects.tsx
+#: src/routes/index.tsx
 msgid "Household"
 msgstr "家庭"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Household deleted."
 msgstr "家庭已删除。"
-
-#: src/routes/index.tsx
-msgid "Household Management"
-msgstr "家庭管理"
 
 #: src/routes/_user/household/new.tsx
 msgid "Household Name"
@@ -1124,6 +1155,10 @@ msgstr "家庭名称不能超过 64 个字符。"
 msgid "Household updated."
 msgstr "家庭已更新。"
 
+#: src/routes/index.tsx
+msgid "Households · Members · Shared clarity"
+msgstr "家庭 · 成员 · 共同掌握"
+
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "How many shares do you own?"
 msgstr "你持有多少股？"
@@ -1135,6 +1170,10 @@ msgstr "图标"
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "Icon URL"
 msgstr "图标网址"
+
+#: src/routes/index.tsx
+msgid "Illustrative entries in Canadian dollars."
+msgstr "以上为示例记录，金额以加元计。"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
 msgid "Inactive · {intervalText}"
@@ -1148,6 +1187,7 @@ msgstr "已停用的订阅（{0}）"
 #: src/components/financial-summary-cards.tsx
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
+#: src/routes/index.tsx
 msgid "Income"
 msgstr "收入"
 
@@ -1217,10 +1257,6 @@ msgstr "投资代码不能为空。"
 msgid "Investment symbol must be at most 32 characters."
 msgstr "投资代码不能超过 32 个字符。"
 
-#: src/routes/index.tsx
-msgid "Investment Tracking"
-msgstr "投资追踪"
-
 #: src/components/command-menu.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
@@ -1232,6 +1268,10 @@ msgstr "投资"
 msgid "Investments must have the same symbol"
 msgstr "投资代码必须相同"
 
+#: src/components/public-header.tsx
+msgid "Join us on Discord"
+msgstr "加入 Discord 社区"
+
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "Joint"
 msgstr "共同持有"
@@ -1240,6 +1280,10 @@ msgstr "共同持有"
 msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
 msgstr "记录日常点滴，看清收支全貌。用心管理你和家人的每一笔钱。"
 
+#: src/routes/index.tsx
+msgid "Know your money.<0/>Build your dam."
+msgstr "看清收支，<0/>筑起水坝。"
+
 #: src/components/language-selector.tsx
 msgid "Language"
 msgstr "语言"
@@ -1247,6 +1291,10 @@ msgstr "语言"
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 msgid "Largest first"
 msgstr "金额从大到小"
+
+#: src/routes/index.tsx
+msgid "Less scattered.<0/>More understood."
+msgstr "少一点零散，<0/>多一份明白。"
 
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 msgid "Liabilities"
@@ -1295,8 +1343,8 @@ msgid "Locale is required."
 msgstr "请选择地区格式。"
 
 #: src/routes/index.tsx
-msgid "Log income, expenses, transfers, and investments effortlessly"
-msgstr "轻松记录收入、支出、转账和投资"
+msgid "Log income, expenses, and transfers with intention. Organize transactions into categories and keep recurring subscriptions in view."
+msgstr "用心记录收入、支出和转账。为交易归类，让定期订阅也一目了然。"
 
 #: src/components/household-switcher.tsx
 msgid "Log out"
@@ -1305,10 +1353,6 @@ msgstr "退出登录"
 #: src/routes/login.index.tsx
 msgid "Log with intention."
 msgstr "用心记下每一笔。"
-
-#: src/routes/index.tsx
-msgid "Log your transactions. Build your dam."
-msgstr "记录每一笔收支，筑起你的财富堤坝。"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -1331,6 +1375,10 @@ msgstr "设为普通成员"
 #: src/routes/login.index.tsx
 msgid "Make yourself<0/>at home."
 msgstr "你的账本，<0/>从这里开始。"
+
+#: src/routes/index.tsx
+msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+msgstr "一起管理家庭财务，兼顾每个人的账户。将点滴收支汇集起来，共同掌握全貌。"
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1389,10 +1437,6 @@ msgstr "流出"
 msgid "Money owed to you, such as pending reimbursements or money lent"
 msgstr "他人欠你的款项，例如待报销费用或借出款项"
 
-#: src/routes/index.tsx
-msgid "Monitor your portfolio with stocks and crypto support"
-msgstr "追踪投资组合，支持股票和加密货币"
-
 #: src/hooks/use-finance-label.ts
 msgid "Month"
 msgstr "月"
@@ -1409,6 +1453,10 @@ msgstr "每月支出"
 msgid "More actions"
 msgstr "更多操作"
 
+#: src/routes/index.tsx
+msgid "Morning coffee"
+msgstr "早晨的咖啡"
+
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -1423,10 +1471,6 @@ msgstr "转移 AAPL 股票"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Moving..."
 msgstr "正在转移…"
-
-#: src/routes/index.tsx
-msgid "Multi-Currency"
-msgstr "多币种支持"
 
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "My Account"
@@ -1616,6 +1660,10 @@ msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择
 msgid "Note (optional)"
 msgstr "备注（可选）"
 
+#: src/routes/index.tsx
+msgid "One entry at a time."
+msgstr "从每一笔记录开始。"
+
 #: src/routes/login.index.tsx
 msgid "One Google account. Your own space for the everyday."
 msgstr "使用 Google 账号，进入你的日常记账空间。"
@@ -1632,13 +1680,13 @@ msgstr "只有家庭管理员可以更改角色。"
 msgid "Only household admins can remove members."
 msgstr "只有家庭管理员可以移除成员。"
 
-#: src/routes/index.tsx
-msgid "Open Source"
-msgstr "开源"
-
-#: src/routes/login.index.tsx
+#: src/components/public-header.tsx
 msgid "Open source on GitHub"
 msgstr "在 GitHub 查看开源代码"
+
+#: src/routes/index.tsx
+msgid "OPEN SOURCE. OPEN POSSIBILITIES."
+msgstr "开放源代码，更多可能。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -1667,6 +1715,10 @@ msgstr "持有人：{0}"
 #: src/components/not-found-error.tsx
 msgid "Page not found"
 msgstr "页面不存在"
+
+#: src/routes/index.tsx
+msgid "Payday"
+msgstr "工资到账"
 
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "per share"
@@ -2092,6 +2144,10 @@ msgstr "显示更早的周"
 msgid "Show earlier years"
 msgstr "显示更早的年份"
 
+#: src/routes/index.tsx
+msgid "SMALL HABITS. A BIGGER PICTURE."
+msgstr "小小习惯，看清全貌。"
+
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Snapshot"
 msgstr "快照"
@@ -2188,6 +2244,14 @@ msgstr "跟随系统将使用设备的外观设置。更改会自动保存在此
 msgid "That user is already a household member."
 msgstr "该用户已经是家庭成员。"
 
+#: src/routes/index.tsx
+msgid "The details make the difference."
+msgstr "每个细节，都有意义。"
+
+#: src/routes/index.tsx
+msgid "The everyday, accounted for."
+msgstr "日常点滴，笔笔有数。"
+
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "The joint owner can't be removed directly. Remove your partner instead and the joint owner will be cleaned up."
 msgstr "无法直接移除共同持有人。移除另一位成员后，共同持有人将自动清除。"
@@ -2240,6 +2304,10 @@ msgstr "此操作将永久删除这笔交易及其分录，且无法撤销。"
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "This will remove them from the household. They will lose access immediately."
 msgstr "此操作将把该成员移出家庭，其访问权限将立即失效。"
+
+#: src/routes/index.tsx
+msgid "Three moments. One clear record."
+msgstr "三个生活片段，一本清楚的账。"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Thursday"
@@ -2329,14 +2397,6 @@ msgstr "收取总额必须大于零"
 msgid "Totals so far"
 msgstr "当前合计"
 
-#: src/routes/index.tsx
-msgid "Track finances in multiple currencies with automatic conversion"
-msgstr "记录多币种财务，支持自动换算"
-
-#: src/routes/index.tsx
-msgid "Track finances together with multiple people in one household"
-msgstr "与家庭成员一起管理财务"
-
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
 msgstr "交易"
@@ -2361,10 +2421,6 @@ msgstr "交易筛选"
 msgid "Transaction kind"
 msgstr "交易种类"
 
-#: src/routes/index.tsx
-msgid "Transaction Logging"
-msgstr "交易记录"
-
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
 msgid "Transaction not found"
 msgstr "未找到交易"
@@ -2383,6 +2439,10 @@ msgstr "交易已更新！"
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transactions"
 msgstr "交易"
+
+#: src/routes/index.tsx
+msgid "Transactions · Categories · Subscriptions"
+msgstr "交易 · 分类 · 订阅"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
@@ -2475,6 +2535,10 @@ msgstr "更新交易详情。点击下方的分录或投资批次可单独编辑
 msgid "Updating date range"
 msgstr "正在更新日期范围"
 
+#: src/routes/index.tsx
+msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+msgstr "用 Beaver Money 管理日常财务，也可以自行部署。代码开放，选择由你。"
+
 #: src/components/date-period-filter.tsx
 msgid "View by month"
 msgstr "按月查看"
@@ -2502,6 +2566,10 @@ msgstr "星期三"
 #: src/hooks/use-finance-label.ts
 msgid "Week"
 msgstr "周"
+
+#: src/routes/index.tsx
+msgid "Weekly groceries"
+msgstr "每周采购"
 
 #: src/routes/_user/household/new.tsx
 msgid "Welcome to {name}! Your household is ready."
@@ -2554,3 +2622,7 @@ msgstr "开启新篇章"
 #: src/components/not-logged-in-error.tsx
 msgid "Your session may have expired. Please log in again to continue."
 msgstr "你的登录可能已过期，请重新登录后继续。"
+
+#: src/routes/index.tsx
+msgid "Your whole picture, in one place."
+msgstr "财务全貌，尽在一处。"

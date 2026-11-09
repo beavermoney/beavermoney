@@ -325,3 +325,112 @@
     flex-wrap: wrap;
   }
 }
+
+/* Public home and login share the same header, neutral theme and spacing. */
+.home-main {
+  margin-inline: var(--spacing-6);
+}
+.home-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: calc(var(--spacing-10) * 2);
+  padding: calc(var(--spacing-10) * 2);
+  min-height: 42rem;
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-container);
+}
+.home-hero-copy {
+  max-width: 42ch;
+}
+.home-ledger {
+  padding: var(--spacing-8);
+  background: var(--color-background-card);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-container);
+  min-width: 0;
+}
+.home-ledger-row,
+.home-feature {
+  border-top: 1px solid var(--color-border);
+}
+.home-ledger-amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.home-ledger-caption {
+  padding-top: var(--spacing-6);
+}
+.home-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--spacing-10) * 2);
+  padding: calc(var(--spacing-10) * 3) calc(var(--spacing-10) * 2);
+}
+.home-section-intro {
+  max-width: 36ch;
+  padding-top: var(--spacing-8);
+}
+.home-closing {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  align-items: center;
+  gap: var(--spacing-10);
+  padding: calc(var(--spacing-10) * 2);
+  border-top: 1px solid var(--color-border);
+}
+.home-closing > :first-child {
+  max-width: 48ch;
+}
+.home-closing > :last-child {
+  justify-self: center;
+}
+@media (max-width: 1000px) {
+  .home-hero,
+  .home-details,
+  .home-closing {
+    padding: var(--spacing-10);
+    gap: var(--spacing-10);
+  }
+}
+@media (max-width: 760px) {
+  .home-main {
+    margin-inline: var(--spacing-4);
+  }
+  .home-hero,
+  .home-details,
+  .home-closing {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--spacing-8) var(--spacing-6);
+  }
+  .home-hero {
+    padding-block: var(--spacing-10);
+  }
+  .home-ledger {
+    padding: var(--spacing-5);
+  }
+  .home-closing > :last-child {
+    justify-self: start;
+  }
+}
+@media (max-width: 380px) {
+  .public-wordmark {
+    display: none;
+  }
+  .home-hero,
+  .home-details,
+  .home-closing {
+    padding-inline: var(--spacing-4);
+  }
+  .home-ledger {
+    padding-inline: var(--spacing-4);
+  }
+  .login-header {
+    padding-inline: var(--spacing-4);
+    gap: var(--spacing-2);
+  }
+  .login-brand {
+    gap: var(--spacing-1);
+  }
+}
