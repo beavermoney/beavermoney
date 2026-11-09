@@ -1,3 +1,5 @@
+import { useWeekStart, type WeekStart } from '@/hooks/use-week-start'
+import { Selector } from '@astryxdesign/core/Selector'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
@@ -83,6 +85,7 @@ export function GeneralSettings({
   householdRef,
   currenciesRef,
 }: GeneralSettingsProps) {
+  const { weekStartsOn, setWeekStartsOn } = useWeekStart()
   const showToast = useToast()
 
   const household = useFragment(generalSettingsHouseholdFragment, householdRef)
@@ -253,6 +256,27 @@ export function GeneralSettings({
         </Stack>
       </Stack>
 
+      <Divider />
+      <Stack direction="vertical" gap={2}>
+        <Selector
+          label="First day of week"
+          presentation="adaptive"
+          value={String(weekStartsOn)}
+          onChange={(value) => {
+            if (value !== null) setWeekStartsOn(Number(value) as WeekStart)
+          }}
+          options={[
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+          ].map((label, value) => ({ label, value: String(value) }))}
+        />
+        <Text color="secondary">Saved automatically on this device.</Text>
+      </Stack>
       {isAdmin && (
         <>
           <Divider />

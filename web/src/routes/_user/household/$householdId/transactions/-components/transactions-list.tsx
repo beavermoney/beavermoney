@@ -1,3 +1,9 @@
+import { Card } from '@astryxdesign/core/Card'
+import { TransactionDaySummary } from './transaction-day-summary'
+import { Divider } from '@astryxdesign/core/Divider'
+import { EmptyState } from '@astryxdesign/core/EmptyState'
+import { Icon } from '@astryxdesign/core/Icon'
+import { ReceiptText } from 'lucide-react'
 import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@astryxdesign/core/Button'
@@ -76,6 +82,7 @@ const transactionsListFragment = graphql`
         node {
           id
           datetime
+          ...transactionDaySummaryFragment
           ...transactionCardFragment
           ...transactionDialogPreviewFragment
           ...transactionsTableFragment
@@ -237,62 +244,85 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     }
   }
 
-  const list = !isMobile ? (
-    <TransactionsTable
-      fragmentRef={transactions}
-      direction={direction}
-      onToggleSort={() => changeSort(direction === 'DESC' ? 'ASC' : 'DESC')}
-      isSorting={isSorting}
-      hasNext={hasNext}
-      isLoadingNext={isLoadingNext}
-      onLoadMore={loadMore}
-      loadError={loadError}
-      onOpenTransaction={openTransaction}
-      onPreloadTransaction={preloadTransaction}
-    />
-  ) : (
-    <ScrollableArea label="Scrollable content">
-      <Stack direction="vertical" gap={4}>
-        {groups.map((group) => (
-          <Fragment key={group.date.toISOString()}>
-            <Text as="div" display="block" type="supporting">
-              {formatDateHeader(group.date)}
-            </Text>
-            <Stack direction="vertical" gap={2}>
-              {group.transactions.map((transaction) => (
-                <TransactionCard
-                  key={transaction.id}
-                  fragmentRef={transaction}
-                  onPreload={preloadTransaction}
+  const list =
+    transactions.length === 0 && !hasNext && !isSorting && !loadError ? (
+      <EmptyState
+        icon={<Icon icon={ReceiptText} />}
+        title="No transactions found"
+        description="No transactions match your current filters. Try another date range or adjust your filters."
+        headingLevel={2}
+      />
+    ) : !isMobile ? (
+      <TransactionsTable
+        fragmentRef={transactions}
+        direction={direction}
+        onToggleSort={() => changeSort(direction === 'DESC' ? 'ASC' : 'DESC')}
+        isSorting={isSorting}
+        hasNext={hasNext}
+        isLoadingNext={isLoadingNext}
+        onLoadMore={loadMore}
+        loadError={loadError}
+        onOpenTransaction={openTransaction}
+        onPreloadTransaction={preloadTransaction}
+      />
+    ) : (
+      <ScrollableArea label="Scrollable content">
+        <Stack direction="vertical" gap={4}>
+          {groups.map((group, groupIndex) => (
+            <Card key={group.date.toISOString()} padding={0}>
+              <Stack
+                direction="horizontal"
+                gap={3}
+                align="center"
+                justify="between"
+                padding={3}
+              >
+                <Text weight="semibold" textWrap="nowrap">
+                  {formatDateHeader(group.date)}
+                </Text>
+                <TransactionDaySummary
+                  fragmentRef={group.transactions}
+                  isPartial={hasNext && groupIndex === groups.length - 1}
                 />
-              ))}
-            </Stack>
-          </Fragment>
-        ))}
-        {loadError && (
-          <Stack
-            direction="horizontal"
-            gap={2}
-            align="center"
-            justify="center"
-            role="alert"
-          >
-            {loadError}
-            <Button
-              onClick={loadMore}
-              label={'Retry'}
-              variant={'secondary'}
-
-              isDisabled={isLoadingNext}
+              </Stack>
+              <Divider />
+              <Stack direction="vertical" gap={0}>
+                {group.transactions.map((transaction, index) => (
+                  <Fragment key={transaction.id}>
+                    {index > 0 && <Divider />}
+                    <TransactionCard
+                      fragmentRef={transaction}
+                      onPreload={preloadTransaction}
+                    />
+                  </Fragment>
+                ))}
+              </Stack>
+            </Card>
+          ))}
+          {loadError && (
+            <Stack
+              direction="horizontal"
+              gap={2}
+              align="center"
+              justify="center"
+              role="alert"
             >
-              Retry
-            </Button>
-          </Stack>
-        )}
-        <div ref={ref}></div>
-      </Stack>
-    </ScrollableArea>
-  )
+              {loadError}
+              <Button
+                onClick={loadMore}
+                label={'Retry'}
+                variant={'secondary'}
+
+                isDisabled={isLoadingNext}
+              >
+                Retry
+              </Button>
+            </Stack>
+          )}
+          <div ref={ref}></div>
+        </Stack>
+      </ScrollableArea>
+    )
 
   return (
     <>

@@ -28,7 +28,7 @@ import { parseISO } from 'date-fns'
 import type { categoriesPanelRefetch } from './__generated__/categoriesPanelRefetch.graphql'
 import categoriesPanelRefetchNode from './__generated__/categoriesPanelRefetch.graphql'
 import { CategoriesSankey } from './categories-sankey'
-import { DateRangeFilter } from './date-range-filter'
+import { DatePeriodFilter as DateRangeFilter } from '@/components/date-period-filter'
 
 const CategoriesPanelFragment = graphql`
   fragment categoriesPanelFragment on Household
@@ -145,8 +145,9 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
       },
     ).toPromise()
 
-    navigate({
+    await navigate({
       to: '.',
+      resetScroll: false,
       search: (prev) => ({
         ...prev,
         start,

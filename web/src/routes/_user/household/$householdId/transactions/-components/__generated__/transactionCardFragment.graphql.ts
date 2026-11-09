@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<04fc61db05b6b5b3e8ff4dc135a53602>>
+ * @generated SignedSource<<af438e05ae095be1e4ee0e806438ce9b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,21 +9,42 @@
 // @ts-nocheck
 
 import { ReaderFragment } from 'relay-runtime';
+export type InvestmentType = "crypto" | "stock" | "%future added value";
+export type TransactionCategoryType = "expense" | "income" | "investment" | "setup" | "transfer" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type transactionCardFragment$data = {
   readonly category: {
+    readonly icon: string;
     readonly name: string;
+    readonly type: TransactionCategoryType;
   };
+  readonly excludeFromReports: boolean;
   readonly id: string;
   readonly investmentLots: ReadonlyArray<{
     readonly amount: string;
     readonly id: string;
-    readonly " $fragmentSpreads": FragmentRefs<"investmentLotCardFragment">;
+    readonly investment: {
+      readonly account: {
+        readonly name: string;
+      };
+      readonly householdCurrency: {
+        readonly code: string;
+      };
+      readonly name: string;
+      readonly symbol: string;
+      readonly type: InvestmentType;
+    };
+    readonly price: string;
   }> | null | undefined;
   readonly transactionEntries: ReadonlyArray<{
+    readonly account: {
+      readonly householdCurrency: {
+        readonly code: string;
+      };
+      readonly name: string;
+    };
     readonly amount: string;
     readonly id: string;
-    readonly " $fragmentSpreads": FragmentRefs<"transactionEntryCardFragment">;
   }> | null | undefined;
   readonly " $fragmentType": "transactionCardFragment";
 };
@@ -46,6 +67,38 @@ v1 = {
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "HouseholdCurrency",
+  "kind": "LinkedField",
+  "name": "householdCurrency",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "code",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
 };
 return {
   "argumentDefinitions": [],
@@ -57,6 +110,13 @@ return {
     {
       "alias": null,
       "args": null,
+      "kind": "ScalarField",
+      "name": "excludeFromReports",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": "TransactionEntry",
       "kind": "LinkedField",
       "name": "transactionEntries",
@@ -65,9 +125,17 @@ return {
         (v0/*: any*/),
         (v1/*: any*/),
         {
+          "alias": null,
           "args": null,
-          "kind": "FragmentSpread",
-          "name": "transactionEntryCardFragment"
+          "concreteType": "Account",
+          "kind": "LinkedField",
+          "name": "account",
+          "plural": false,
+          "selections": [
+            (v2/*: any*/),
+            (v3/*: any*/)
+          ],
+          "storageKey": null
         }
       ],
       "storageKey": null
@@ -83,9 +151,44 @@ return {
         (v0/*: any*/),
         (v1/*: any*/),
         {
+          "alias": null,
           "args": null,
-          "kind": "FragmentSpread",
-          "name": "investmentLotCardFragment"
+          "kind": "ScalarField",
+          "name": "price",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "Investment",
+          "kind": "LinkedField",
+          "name": "investment",
+          "plural": false,
+          "selections": [
+            (v2/*: any*/),
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "symbol",
+              "storageKey": null
+            },
+            (v4/*: any*/),
+            {
+              "alias": null,
+              "args": null,
+              "concreteType": "Account",
+              "kind": "LinkedField",
+              "name": "account",
+              "plural": false,
+              "selections": [
+                (v2/*: any*/)
+              ],
+              "storageKey": null
+            },
+            (v3/*: any*/)
+          ],
+          "storageKey": null
         }
       ],
       "storageKey": null
@@ -98,11 +201,13 @@ return {
       "name": "category",
       "plural": false,
       "selections": [
+        (v2/*: any*/),
+        (v4/*: any*/),
         {
           "alias": null,
           "args": null,
           "kind": "ScalarField",
-          "name": "name",
+          "name": "icon",
           "storageKey": null
         }
       ],
@@ -114,6 +219,6 @@ return {
 };
 })();
 
-(node as any).hash = "96548bfe3c9f1c8286443a83b4ecd4b9";
+(node as any).hash = "9850aa259a7a7b68f2e81a2596a9e253";
 
 export default node;

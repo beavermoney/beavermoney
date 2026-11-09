@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<001d38551dde8825a83ed97121738924>>
+ * @generated SignedSource<<6f3734015f61e12879334ca602e1db63>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -114,13 +114,6 @@ v7 = {
 v8 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "icon",
-  "storageKey": null
-},
-v9 = {
-  "alias": null,
-  "args": null,
   "concreteType": "TransactionCategory",
   "kind": "LinkedField",
   "name": "category",
@@ -129,18 +122,24 @@ v9 = {
     (v2/*: any*/),
     (v6/*: any*/),
     (v7/*: any*/),
-    (v8/*: any*/)
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "icon",
+      "storageKey": null
+    }
   ],
   "storageKey": null
 },
-v10 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
 },
-v11 = {
+v10 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -186,7 +185,7 @@ return {
               (v3/*: any*/),
               (v4/*: any*/),
               (v5/*: any*/),
-              (v9/*: any*/),
+              (v8/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -228,7 +227,14 @@ return {
               (v3/*: any*/),
               (v4/*: any*/),
               (v5/*: any*/),
-              (v9/*: any*/),
+              (v8/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "excludeFromReports",
+                "storageKey": null
+              },
               {
                 "alias": null,
                 "args": null,
@@ -238,7 +244,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v10/*: any*/),
+                  (v9/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -248,43 +254,8 @@ return {
                     "plural": false,
                     "selections": [
                       (v6/*: any*/),
-                      (v11/*: any*/),
+                      (v10/*: any*/),
                       (v2/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Transaction",
-                    "kind": "LinkedField",
-                    "name": "transaction",
-                    "plural": false,
-                    "selections": [
-                      (v2/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "excludeFromReports",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "TransactionCategory",
-                        "kind": "LinkedField",
-                        "name": "category",
-                        "plural": false,
-                        "selections": [
-                          (v6/*: any*/),
-                          (v7/*: any*/),
-                          (v8/*: any*/),
-                          (v2/*: any*/)
-                        ],
-                        "storageKey": null
-                      },
-                      (v4/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -300,7 +271,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v10/*: any*/),
+                  (v9/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -324,26 +295,13 @@ return {
                         "name": "symbol",
                         "storageKey": null
                       },
-                      (v11/*: any*/),
-                      (v2/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Transaction",
-                    "kind": "LinkedField",
-                    "name": "transaction",
-                    "plural": false,
-                    "selections": [
-                      (v2/*: any*/),
+                      (v7/*: any*/),
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "TransactionCategory",
+                        "concreteType": "Account",
                         "kind": "LinkedField",
-                        "name": "category",
+                        "name": "account",
                         "plural": false,
                         "selections": [
                           (v6/*: any*/),
@@ -351,7 +309,8 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v4/*: any*/)
+                      (v10/*: any*/),
+                      (v2/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -367,12 +326,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7bc38bcf9a792c3a6831ad30cd13236a",
+    "cacheID": "1764fd68893b9f05d7e7a4c35b825214",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogUpdateMutation",
     "operationKind": "mutation",
-    "text": "mutation editTransactionDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n) {\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n        icon\n      }\n      ...transactionCardFragment\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  transactionEntries {\n    id\n    amount\n    ...transactionEntryCardFragment\n  }\n  investmentLots {\n    id\n    amount\n    ...investmentLotCardFragment\n  }\n  category {\n    name\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "mutation editTransactionDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n) {\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n        icon\n      }\n      ...transactionCardFragment\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
   }
 };
 })();

@@ -1,3 +1,4 @@
+import { useWeekStart } from '@/hooks/use-week-start'
 import { useIsMobile } from '@/hooks/use-mobile'
 import {
   Calendar,
@@ -27,7 +28,9 @@ type Props = {
 // Finance forms keep Date objects; Astryx calendars use local ISO dates.
 export function FinanceCalendar(props: Props) {
   const isMobile = useIsMobile()
+  const { weekStartsOn } = useWeekStart()
   const common = {
+    weekStartsOn,
     className: props.className,
     numberOfMonths:
       props.numberOfMonths === 2 && !isMobile ? (2 as const) : (1 as const),

@@ -8,7 +8,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { parseISO } from 'date-fns'
 import { useFragment, useRelayEnvironment } from 'react-relay'
 import { fetchQuery, graphql } from 'relay-runtime'
-import { DateRangeFilter } from '../../categories/-components/date-range-filter'
+import { DatePeriodFilter as DateRangeFilter } from '@/components/date-period-filter'
 import type { TransactionWhereInput } from './__generated__/transactionsListRefetch.graphql'
 import type { transactionsPanelFragment$key } from './__generated__/transactionsPanelFragment.graphql'
 import type { transactionsPanelRefetchQuery } from './__generated__/transactionsPanelRefetchQuery.graphql'
@@ -75,8 +75,9 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
       },
     ).toPromise()
 
-    navigate({
+    await navigate({
       to: '.',
+      resetScroll: false,
       search: (prev) => ({
         ...prev,
         start,
