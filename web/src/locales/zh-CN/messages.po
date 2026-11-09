@@ -2518,14 +2518,6 @@ msgstr "正在取消归档…"
 msgid "Unrealized Return"
 msgstr "未实现收益"
 
-#: src/components/pwa-update-prompt.tsx
-msgid "Update"
-msgstr "更新"
-
-#: src/components/pwa-update-prompt.tsx
-msgid "Update available. Reload to use the latest version of Beaver Money."
-msgstr "有可用更新。重新加载以使用最新版 Beaver Money。"
-
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 msgid "Update entry details. Switching the account also switches the entry's currency."
 msgstr "更新分录详情。更换账户时，分录货币也会随之更改。"

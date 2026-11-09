@@ -10,6 +10,11 @@ import * as Sentry from '@sentry/react'
 import { LOCAL_STORAGE_THEME_KEY } from './constant'
 import { env } from './env'
 import './styles.css'
+import { retireOfflineCache } from './lib/retire-offline-cache'
+
+void retireOfflineCache().catch(() => {
+  // Storage may be unavailable; never block the online app from starting.
+})
 
 Sentry.init({
   dsn: env.VITE_SENTRY_DSN,

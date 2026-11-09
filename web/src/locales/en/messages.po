@@ -2518,14 +2518,6 @@ msgstr "Unarchiving…"
 msgid "Unrealized Return"
 msgstr "Unrealized Return"
 
-#: src/components/pwa-update-prompt.tsx
-msgid "Update"
-msgstr "Update"
-
-#: src/components/pwa-update-prompt.tsx
-msgid "Update available. Reload to use the latest version of Beaver Money."
-msgstr "Update available. Reload to use the latest version of Beaver Money."
-
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 msgid "Update entry details. Switching the account also switches the entry's currency."
 msgstr "Update entry details. Switching the account also switches the entry's currency."
