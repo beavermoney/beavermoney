@@ -288,13 +288,6 @@
   position: absolute;
   bottom: var(--spacing-8);
 }
-.login-source {
-  color: var(--color-text-secondary);
-}
-.login-source:hover {
-  color: var(--color-text-primary);
-  text-decoration: underline;
-}
 @media (max-width: 900px) {
   .login-story {
     padding: var(--spacing-10);

@@ -1,9 +1,10 @@
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { LanguageSelector } from '@/components/language-selector'
 import { LoginForm } from '@/components/login-form'
 import { Logo } from '@/components/logo'
 import { Theme } from '@astryxdesign/core/theme'
 import { neutralTheme } from '@astryxdesign/theme-neutral/built'
+import { IconButton } from '@astryxdesign/core/IconButton'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/login/')({
 })
 
 function RouteComponent() {
+  const { t } = useLingui()
   return (
     <Stack
       direction="vertical"
@@ -25,7 +27,26 @@ function RouteComponent() {
           <Logo size={32} />
           <Text weight="semibold">Beaver Money</Text>
         </Link>
-        <LanguageSelector compact />
+        <Stack direction="horizontal" gap={2} align="center">
+          <LanguageSelector compact />
+          <IconButton
+            href="https://github.com/beavermoney/beavermoney"
+            label={t`Open source on GitHub`}
+            tooltip={t`Open source on GitHub`}
+            variant="ghost"
+            icon={
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M12 .297a12 12 0 0 0-3.793 23.385c.6.111.82-.261.82-.577v-2.234c-3.338.725-4.043-1.416-4.043-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.835 2.807 1.305 3.492.998.108-.776.419-1.305.762-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.323 3.301 1.23a11.52 11.52 0 0 1 6.006 0c2.291-1.553 3.297-1.23 3.297-1.23.654 1.652.243 2.873.12 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.216.694.825.576A12.001 12.001 0 0 0 12 .297Z" />
+              </svg>
+            }
+          />
+        </Stack>
       </header>
       <main className="login-main">
         <Theme theme={neutralTheme} mode="dark">
@@ -152,12 +173,6 @@ function RouteComponent() {
         <Text type="supporting" color="secondary">
           <Trans>Built with care. Built for clarity.</Trans>
         </Text>
-        <a
-          href="https://github.com/beavermoney/beavermoney"
-          className="login-source"
-        >
-          <Trans>Open source on GitHub</Trans> ↗
-        </a>
       </footer>
     </Stack>
   )
