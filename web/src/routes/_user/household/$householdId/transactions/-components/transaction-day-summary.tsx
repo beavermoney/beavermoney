@@ -1,11 +1,10 @@
 import { useLingui } from '@lingui/react/macro'
-import { Trans } from '@lingui/react/macro'
 import { transactionDayTotals } from '@/lib/transaction-day-totals'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { Stack } from '@astryxdesign/core/Stack'
-import { Text } from '@astryxdesign/core/Text'
+import { Spinner } from '@astryxdesign/core/Spinner'
 import { Token } from '@astryxdesign/core/Token'
 import currency from 'currency.js'
 import { useFragment } from 'react-relay'
@@ -48,6 +47,22 @@ export function TransactionDaySummary({
     convert,
     viewUserIds,
   )
+  if (isPartial) {
+    return (
+      <Stack
+        direction="horizontal"
+        align="center"
+        justify="end"
+        className="h-6"
+      >
+        <Spinner
+          size="sm"
+          shade="subtle"
+          aria-label={t`Loading daily totals`}
+        />
+      </Stack>
+    )
+  }
   if (income.intValue === 0 && expense.intValue === 0) return null
 
   const format = (value: currency) =>
@@ -59,9 +74,7 @@ export function TransactionDaySummary({
       wrap="wrap"
       justify="end"
       className="min-w-0"
-      aria-label={
-        isPartial ? t`Daily totals for loaded transactions` : t`Daily totals`
-      }
+      aria-label={t`Daily totals`}
     >
       {income.intValue !== 0 && (
         <Token
@@ -80,11 +93,6 @@ export function TransactionDaySummary({
           description={t`Daily expenses`}
           aria-label={t`Daily expenses: ${format(expense)}`}
         />
-      )}
-      {isPartial && (
-        <Text type="supporting">
-          <Trans>Totals so far</Trans>
-        </Text>
       )}
     </Stack>
   )
