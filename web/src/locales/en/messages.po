@@ -730,10 +730,6 @@ msgstr "Daily income: {0}"
 msgid "Daily totals"
 msgstr "Daily totals"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
-msgid "Daily totals for loaded transactions"
-msgstr "Daily totals for loaded transactions"
-
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Dark"
 msgstr "Dark"
@@ -1323,6 +1319,10 @@ msgstr "Liquidity"
 #: src/components/route-content-boundary.tsx
 msgid "Loading content"
 msgstr "Loading content"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Loading daily totals"
+msgstr "Loading daily totals"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Loading more transactions…"
@@ -2397,10 +2397,6 @@ msgstr "Total received"
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Total received must be positive"
 msgstr "Total received must be positive"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
-msgid "Totals so far"
-msgstr "Totals so far"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"

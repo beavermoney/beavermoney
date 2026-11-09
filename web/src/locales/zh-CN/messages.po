@@ -730,10 +730,6 @@ msgstr "当日收入：{0}"
 msgid "Daily totals"
 msgstr "每日合计"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
-msgid "Daily totals for loaded transactions"
-msgstr "已加载交易的每日合计"
-
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Dark"
 msgstr "深色"
@@ -1323,6 +1319,10 @@ msgstr "流动资金"
 #: src/components/route-content-boundary.tsx
 msgid "Loading content"
 msgstr "正在加载内容"
+
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
+msgid "Loading daily totals"
+msgstr "正在加载每日汇总"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Loading more transactions…"
@@ -2397,10 +2397,6 @@ msgstr "收取总额"
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Total received must be positive"
 msgstr "收取总额必须大于零"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
-msgid "Totals so far"
-msgstr "当前合计"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
