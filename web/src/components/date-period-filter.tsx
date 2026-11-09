@@ -226,33 +226,32 @@ export function DatePeriodFilter({
                 const month = index
                 const date = new Date(monthYear, month, 1)
                 return (
-                  <Button
-                    key={month}
-                    size={isMobile ? 'lg' : 'md'}
-                    label={format(date, 'MMM')}
-                    aria-label={format(date, 'MMMM yyyy')}
-                    variant="secondary"
-                    aria-pressed={selected(
-                      periodRange('month', date, weekStartsOn),
-                    )}
-                    className={
-                      selected(periodRange('month', date, weekStartsOn))
-                        ? 'bg-accent-muted'
-                        : undefined
-                    }
-                    endContent={
+                  <Stack key={month} className="relative">
+                    <Button
+                      width="100%"
+                      size={isMobile ? 'lg' : 'md'}
+                      label={format(date, 'MMM')}
+                      aria-label={format(date, 'MMMM yyyy')}
+                      variant="secondary"
+                      aria-pressed={selected(
+                        periodRange('month', date, weekStartsOn),
+                      )}
+                      className={
+                        selected(periodRange('month', date, weekStartsOn))
+                          ? 'bg-accent-muted'
+                          : undefined
+                      }
+                      isDisabled={pending || dateKey(date) > dateKey(today)}
+                      onClick={() => select('month', date)}
+                    />
+                    {selected(periodRange('month', date, weekStartsOn)) && (
                       <Icon
                         icon={Check}
-                        className={
-                          selected(periodRange('month', date, weekStartsOn))
-                            ? undefined
-                            : 'invisible'
-                        }
+                        size="xsm"
+                        className="pointer-events-none absolute end-1 top-1"
                       />
-                    }
-                    isDisabled={pending || dateKey(date) > dateKey(today)}
-                    onClick={() => select('month', date)}
-                  />
+                    )}
+                  </Stack>
                 )
               })}
             </Grid>
