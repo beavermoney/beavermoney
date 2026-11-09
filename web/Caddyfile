@@ -17,6 +17,14 @@
 		Cloudflare-CDN-Cache-Control "no-store"
 		-Server
 	}
+	handle_errors {
+		header {
+			Cache-Control "no-store"
+			CDN-Cache-Control "no-store"
+			Cloudflare-CDN-Cache-Control "no-store"
+		}
+		respond "{err.status_code} {err.status_text}" {err.status_code}
+	}
 	respond /health 200
 
 	# Missing bundles must return 404 rather than HTML with a JavaScript URL.
