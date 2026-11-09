@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Heading } from '@astryxdesign/core/Heading'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
@@ -143,27 +145,36 @@ type SeriesKey =
   | 'liability'
   | 'asset'
 
-const SERIES: { key: SeriesKey; label: string; color: string }[] = [
-  { key: 'netWorth', label: 'Net Worth', color: 'var(--chart-net-worth)' },
-  { key: 'asset', label: 'Asset', color: 'var(--chart-asset)' },
-  { key: 'liquidity', label: 'Liquidity', color: 'var(--chart-liquidity)' },
-  { key: 'investment', label: 'Investment', color: 'var(--chart-investment)' },
-  // { key: 'property', label: 'Property', color: 'var(--chart-property)' },
-  { key: 'receivable', label: 'Receivable', color: 'var(--chart-receivable)' },
-  { key: 'liability', label: 'Liability', color: 'var(--chart-liability)' },
-]
-
-const chartConfig = {
-  netWorth: { label: 'Net Worth', color: 'var(--chart-net-worth)' },
-  asset: { label: 'Asset', color: 'var(--chart-asset)' },
-  liquidity: { label: 'Liquidity', color: 'var(--chart-liquidity)' },
-  investment: { label: 'Investment', color: 'var(--chart-investment)' },
-  property: { label: 'Property', color: 'var(--chart-property)' },
-  receivable: { label: 'Receivable', color: 'var(--chart-receivable)' },
-  liability: { label: 'Liability', color: 'var(--chart-liability)' },
-}
-
 export function NetWorthChart() {
+  const { t } = useLingui()
+  const chartConfig = {
+    netWorth: { label: t`Net Worth`, color: 'var(--chart-net-worth)' },
+    asset: { label: t`Asset`, color: 'var(--chart-asset)' },
+    liquidity: { label: t`Liquidity`, color: 'var(--chart-liquidity)' },
+    investment: { label: t`Investment`, color: 'var(--chart-investment)' },
+    property: { label: t`Property`, color: 'var(--chart-property)' },
+    receivable: { label: t`Receivable`, color: 'var(--chart-receivable)' },
+    liability: { label: t`Liability`, color: 'var(--chart-liability)' },
+  }
+
+  const SERIES: { key: SeriesKey; label: string; color: string }[] = [
+    { key: 'netWorth', label: t`Net Worth`, color: 'var(--chart-net-worth)' },
+    { key: 'asset', label: t`Asset`, color: 'var(--chart-asset)' },
+    { key: 'liquidity', label: t`Liquidity`, color: 'var(--chart-liquidity)' },
+    {
+      key: 'investment',
+      label: t`Investment`,
+      color: 'var(--chart-investment)',
+    },
+    // { key: 'property', label: 'Property', color: 'var(--chart-property)' },
+    {
+      key: 'receivable',
+      label: t`Receivable`,
+      color: 'var(--chart-receivable)',
+    },
+    { key: 'liability', label: t`Liability`, color: 'var(--chart-liability)' },
+  ]
+
   const { household } = useHousehold()
   const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
@@ -343,9 +354,11 @@ export function NetWorthChart() {
 
   return (
     <Stack direction="vertical" gap={4}>
-      <Heading level={2}>Account history</Heading>
+      <Heading level={2}>
+        <Trans>Account history</Trans>
+      </Heading>
       {chartData.length > 0 && (
-        <ScrollableArea axis="inline" label="Account history series">
+        <ScrollableArea axis="inline" label={t`Account history series`}>
           <Stack direction="horizontal" gap={1}>
             {SERIES.map((s) => {
               const active = activeSeries.has(s.key)
@@ -365,8 +378,10 @@ export function NetWorthChart() {
       )}
       {chartData.length === 0 ? (
         <Text color="secondary">
-          No snapshots in this period. Choose a wider date range, or create a
-          snapshot from the toolbar to start tracking balances.
+          <Trans>
+            No snapshots in this period. Choose a wider date range, or create a
+            snapshot from the toolbar to start tracking balances.
+          </Trans>
         </Text>
       ) : hasActiveSeries ? (
         <ResponsiveContainer
@@ -459,7 +474,7 @@ export function NetWorthChart() {
         </ResponsiveContainer>
       ) : (
         <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-          Select at least one series to view chart
+          <Trans>Select at least one series to view chart</Trans>
         </Stack>
       )}
       <Stack direction="horizontal" gap={2} align="center">
@@ -481,7 +496,15 @@ export function NetWorthChart() {
               key={d}
 
               onClick={() => startTransition(() => setDuration(d))}
-              label={String(d)}
+              label={
+                {
+                  '1M': t`1 month`,
+                  '3M': t`3 months`,
+                  '6M': t`6 months`,
+                  '1Y': t`1 year`,
+                  All: t`All`,
+                }[d]
+              }
               variant={duration === d ? 'primary' : 'ghost'}
             >
               {d}

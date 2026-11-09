@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useState } from 'react'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useComposer } from '@/components/transaction-composer/context'
@@ -41,6 +43,7 @@ export function TransactionCategoryPicker({
   onBlur,
   invalid,
 }: TransactionCategoryPickerProps) {
+  const { t } = useLingui()
   const composer = useComposer()
   const [query, setQuery] = useState('')
   const matches = categories.filter((category) =>
@@ -52,11 +55,11 @@ export function TransactionCategoryPicker({
     return (
       <Stack gap={3} className="composer-category-picker">
         <Text type="label">
-          {composer.compactCategories ? 'Transfer type' : 'Choose a category'}
+          {composer.compactCategories ? t`Transfer type` : t`Choose a category`}
         </Text>
         <TextInput
-          label="Search categories"
-          placeholder="Search categories"
+          label={t`Search categories`}
+          placeholder={t`Search categories`}
           isLabelHidden
           value={query}
           onChange={setQuery}
@@ -95,12 +98,16 @@ export function TransactionCategoryPicker({
           {matches.length === 0 && (
             <Text type="supporting">
               {categories.length
-                ? 'No matching categories.'
-                : 'No categories available.'}
+                ? t`No matching categories.`
+                : t`No categories available.`}
             </Text>
           )}
         </Stack>
-        {invalid && <Text role="alert">Choose a category.</Text>}
+        {invalid && (
+          <Text role="alert">
+            <Trans>Choose a category.</Trans>
+          </Text>
+        )}
       </Stack>
     )
   return (
@@ -108,9 +115,9 @@ export function TransactionCategoryPicker({
       items={categories}
       name={name}
       value={value}
-      label="Category"
-      placeholder="Select a category"
-      emptyMessage="No categories available."
+      label={t`Category`}
+      placeholder={t`Select a category`}
+      emptyMessage={t`No categories available.`}
       getValue={(category) => category.id}
       getLabel={(category) => categoryData(category).name}
       renderItem={(category) => <CategoryDetails category={category} />}

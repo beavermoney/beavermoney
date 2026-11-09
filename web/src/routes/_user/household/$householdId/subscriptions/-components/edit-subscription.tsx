@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
@@ -17,7 +20,6 @@ import { graphql } from 'relay-runtime'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { capitalize } from 'lodash-es'
 import { useFragment, useMutation } from 'react-relay'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
@@ -36,30 +38,6 @@ import { commitMutationResult, NodeType, useDeleteNode } from '@/lib/relay'
 import { useState } from 'react'
 
 const SUBSCRIPTION_INTERVALS = ['week', 'month', 'year'] as const
-
-const INTERVAL_DESCRIPTION: Record<string, string> = {
-  week: 'Charged weekly',
-  month: 'Charged monthly',
-  year: 'Charged yearly',
-}
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Subscription name must be at least 1 character.')
-    .max(64, 'Subscription name must be at most 64 characters.'),
-  icon: z.string(),
-  interval: z.enum(['week', 'month', 'year']),
-  intervalCount: z
-    .number()
-    .int()
-    .min(1, 'Interval count must be at least 1.')
-    .max(100, 'Interval count must be at most 100.'),
-  startDate: z.date(),
-  cost: z.string(),
-  currencyCode: z.string(),
-  active: z.boolean(),
-})
 
 const editSubscriptionFragment = graphql`
   fragment editSubscriptionFragment on RecurringSubscription {
@@ -115,6 +93,32 @@ type EditSubscriptionProps = {
 }
 
 export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
+  const INTERVAL_DESCRIPTION: Record<string, string> = {
+    week: t`Charged weekly`,
+    month: t`Charged monthly`,
+    year: t`Charged yearly`,
+  }
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Subscription name must be at least 1 character.`)
+      .max(64, t`Subscription name must be at most 64 characters.`),
+    icon: z.string(),
+    interval: z.enum(['week', 'month', 'year']),
+    intervalCount: z
+      .number()
+      .int()
+      .min(1, t`Interval count must be at least 1.`)
+      .max(100, t`Interval count must be at most 100.`),
+    startDate: z.date(),
+    cost: z.string(),
+    currencyCode: z.string(),
+    active: z.boolean(),
+  })
+
   const showToast = useToast()
 
   const data = useFragment(editSubscriptionFragment, fragmentRef)
@@ -154,7 +158,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
       const currencyID = household.householdCurrencies?.find(
         (hc) => hc.code === formData.currencyCode,
       )?.id
-      invariant(currencyID, 'Currency not found')
+      invariant(currencyID, t`Currency not found`)
 
       const result = await commitMutationResult<editSubscriptionMutation>(
         commitUpdateMutation,
@@ -185,7 +189,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
 
           showToast({
             type: 'info',
-            body: `${resultData.updateRecurringSubscription.node.name} updated!`,
+            body: t`${resultData.updateRecurringSubscription.node.name} updated!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -215,7 +219,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
           to: '/household/$householdId/subscriptions',
           search: (prev) => ({ ...prev }),
         })
-        showToast({ type: 'info', body: 'Subscription deleted!' })
+        showToast({ type: 'info', body: t`Subscription deleted!` })
       })
       .with({ status: 'error' }, ({ error }) => {
         showToast({ type: 'error', body: error.toString() })
@@ -231,7 +235,9 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
     <Card>
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>Edit Subscription</Heading>
+          <Heading level={2}>
+            <Trans>Edit Subscription</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Stack
@@ -263,7 +269,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                         aria-invalid={isInvalid}
                         placeholder="Netflix"
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -295,9 +301,9 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                           id={field.name}
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
-                          placeholder="e.g., netflix.com"
+                          placeholder={t`e.g., netflix.com`}
                           autoComplete="off"
-                          label={'Logo domain (optional)'}
+                          label={t`Logo domain (optional)`}
 
                           value={String(field.state.value ?? '')}
                           onChange={(_value, event) =>
@@ -343,16 +349,20 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                         value={field.state.value}
                         onChange={(value) => field.handleChange(value || '')}
                         id={field.name}
-                        placeholder="Select an interval"
+                        placeholder={t`Select an interval`}
                         onBlur={field.handleBlur}
-                        label={'Interval'}
+                        label={t`Interval`}
                         renderOption={(item: string) => (
                           <span>
-                            <Text type="label">{capitalize(item)}</Text>
+                            <Text type="label">{financeLabel(item)}</Text>
                             <span>{INTERVAL_DESCRIPTION[item]}</span>
                           </span>
                         )}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -373,7 +383,9 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                       data-invalid={isInvalid}
                     >
                       <Text type="supporting" color="secondary">
-                        For example, 2 with Month means every two months.
+                        <Trans>
+                          For example, 2 with Month means every two months.
+                        </Trans>
                       </Text>
                       <NumberInput
                         data-1p-ignore
@@ -382,7 +394,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                         aria-invalid={isInvalid}
                         placeholder="1"
                         autoComplete="off"
-                        label={'Repeat every'}
+                        label={t`Repeat every`}
 
                         htmlName={field.name}
                         value={
@@ -416,7 +428,7 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                     >
                       <FinanceDateInput
                         id={field.name}
-                        label="Start date"
+                        label={t`Start date`}
                         value={field.state.value}
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}
@@ -447,11 +459,15 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                           field.handleChange(value || '')
                         }}
                         id={field.name}
-                        placeholder="Select a currency"
+                        placeholder={t`Select a currency`}
                         onBlur={field.handleBlur}
-                        label={'Currency'}
+                        label={t`Currency`}
                         renderOption={(item: string) => <span>{item}</span>}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -472,10 +488,10 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
-                        aria-label="Cost per payment"
+                        aria-label={t`Cost per payment`}
                         id={field.name}
                         name={field.name}
-                        placeholder="Please enter a number"
+                        placeholder={t`Please enter a number`}
                         onValueChange={(e) => {
                           field.handleChange(e.value)
                         }}
@@ -509,14 +525,14 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
               <Button
                 onClick={() => setDeleteAlertOpen(true)}
                 type="button"
-                label={'Delete'}
+                label={t`Delete`}
                 variant={'destructive'}
 
                 isDisabled={
                   isDeleteMutationInFlight || isUpdateMutationInFlight
                 }
               >
-                Delete
+                <Trans>Delete</Trans>
               </Button>
               <Dialog
                 isOpen={deleteAlertOpen}
@@ -529,7 +545,11 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                   padding={6}
                   header={
                     <DialogHeader
-                      title={<>Delete Recurring Subscription</>}
+                      title={
+                        <>
+                          <Trans>Delete Recurring Subscription</Trans>
+                        </>
+                      }
                       onOpenChange={setDeleteAlertOpen}
                     />
                   }
@@ -537,8 +557,10 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                   <LayoutContent>
                     <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                       <Text as="div" display="block" type="supporting">
-                        This action cannot be undone. This will permanently
-                        delete the recurring subscription.
+                        <Trans>
+                          This action cannot be undone. This will permanently
+                          delete the recurring subscription.
+                        </Trans>
                       </Text>
                       <Stack
                         direction="horizontal"
@@ -548,16 +570,18 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
                         justify="end"
                       >
                         <Button
-                          label="Cancel"
+                          label={t`Cancel`}
                           onClick={() => setDeleteAlertOpen(false)}
                         />
                         <Button
                           variant="destructive"
                           onClick={handleDelete}
                           isDisabled={isDeleteMutationInFlight}
-                          label="Delete"
+                          label={t`Delete`}
                         >
-                          {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+                          {isDeleteMutationInFlight
+                            ? t`Deleting...`
+                            : t`Delete`}
                         </Button>
                       </Stack>
                     </Stack>
@@ -568,12 +592,12 @@ export function EditSubscription({ fragmentRef }: EditSubscriptionProps) {
             <Button
               type="submit"
               form="edit-subscription-form"
-              label={String(isUpdateMutationInFlight ? 'Saving...' : 'Save')}
+              label={String(isUpdateMutationInFlight ? t`Saving...` : t`Save`)}
               variant={'primary'}
 
               isDisabled={isUpdateMutationInFlight}
             >
-              {isUpdateMutationInFlight ? 'Saving...' : 'Save'}
+              {isUpdateMutationInFlight ? t`Saving...` : t`Save`}
             </Button>
           </Stack>
         </Stack>

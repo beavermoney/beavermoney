@@ -1,3 +1,4 @@
+import { activateLocale } from '@/lib/i18n'
 // @vitest-environment jsdom
 import '@/test/browser-setup'
 import {
@@ -289,7 +290,7 @@ it('defaults to the most recent account and preserves an explicit choice', async
     await screen.findByRole('button', { name: 'Account: Recent account' }),
   )
   expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
-  fireEvent.click(screen.getByRole('button', { name: /Checking.*liquidity/ }))
+  fireEvent.click(screen.getByRole('button', { name: /Checking.*Liquidity/ }))
   expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy()
   expect(screen.queryByRole('button', { name: /Edit Amount/ })).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -327,7 +328,7 @@ it('shows search for a small account list and replaces the entire composer', asy
   fireEvent.change(search, { target: { value: 'missing' } })
   expect(screen.getByText('No matching options.')).toBeTruthy()
   fireEvent.change(search, { target: { value: 'checking' } })
-  fireEvent.click(screen.getByRole('button', { name: /Checking.*liquidity/ }))
+  fireEvent.click(screen.getByRole('button', { name: /Checking.*Liquidity/ }))
   expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy()
   expect(screen.queryByRole('button', { name: /Edit Amount/ })).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -385,42 +386,67 @@ const investmentFixture = {
 }
 
 it.each([
-  ['Buy', NewBuy],
-  ['Sell', NewSell],
-  ['Move', NewMove],
+  ['Buy', NewBuy, 'en'],
+  ['Buy', NewBuy, 'zh-CN'],
+  ['Sell', NewSell, 'en'],
+  ['Sell', NewSell, 'zh-CN'],
+  ['Move', NewMove, 'en'],
+  ['Move', NewMove, 'zh-CN'],
 ] as const)(
-  '%s starts with accounts, filters investments, and only then opens the drawer',
-  async (kind, Component) => {
+  '%s completes investment selection in both languages',
+  async (kind, Component, locale) => {
+    activateLocale(locale, false)
+    const chinese = locale === 'zh-CN'
+    const save = chinese ? '保存' : 'Save'
     render(<Component fragmentRef={investmentFixture as never} />)
-    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
-    fireEvent.change(screen.getByRole('textbox', { name: 'Search accounts' }), {
-      target: { value: 'Broker' },
-    })
+    expect(screen.queryByRole('button', { name: save })).toBeNull()
+    fireEvent.change(
+      screen.getByRole('textbox', {
+        name: chinese ? '搜索账户' : 'Search accounts',
+      }),
+      {
+        target: { value: 'Broker' },
+      },
+    )
     expect(screen.queryByText('Retirement')).toBeNull()
     fireEvent.click(
-      screen.getByRole('button', { name: /Brokerage.*investment/ }),
+      screen.getByRole('button', {
+        name: chinese ? /Brokerage.*投资/ : /Brokerage.*Investment/,
+      }),
     )
-    expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+    expect(screen.queryByRole('button', { name: save })).toBeNull()
     expect(screen.queryByText('Index fund')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: /Apple.*AAPL/ }))
     if (kind === 'Move') {
-      expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+      expect(screen.queryByRole('button', { name: save })).toBeNull()
       expect(
-        screen.queryByRole('button', { name: /Brokerage.*investment/ }),
+        screen.queryByRole('button', {
+          name: chinese ? /Brokerage.*投资/ : /Brokerage.*Investment/,
+        }),
       ).toBeNull()
       fireEvent.click(
-        screen.getByRole('button', { name: /Retirement.*investment/ }),
+        screen.getByRole('button', {
+          name: chinese ? /Retirement.*投资/ : /Retirement.*Investment/,
+        }),
       )
-      expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
+      expect(screen.queryByRole('button', { name: save })).toBeNull()
       expect(screen.queryByText('Index fund')).toBeNull()
       fireEvent.click(
         screen.getByRole('button', { name: /Apple retirement.*AAPL/ }),
       )
     }
-    await screen.findByRole('button', { name: 'Save' })
-    expect(screen.getByText(kind)).toBeTruthy()
-    const shares = screen.getByRole('button', { name: /Edit Shares:/ })
-    const price = screen.getByRole('button', { name: /Edit Price per share:/i })
+    await screen.findByRole('button', { name: save })
+    expect(
+      screen.getByText(
+        chinese ? { Buy: '买入', Sell: '卖出', Move: '转移' }[kind] : kind,
+      ),
+    ).toBeTruthy()
+    const shares = screen.getByRole('button', {
+      name: chinese ? /编辑股数：/ : /Edit Shares:/,
+    })
+    const price = screen.getByRole('button', {
+      name: chinese ? /编辑每股价格：/ : /Edit Price per share:/i,
+    })
     fireEvent.click(price)
     expect(
       shares.compareDocumentPosition(price) & Node.DOCUMENT_POSITION_FOLLOWING,
@@ -428,7 +454,9 @@ it.each([
     expect(price.getAttribute('aria-pressed')).toBe('true')
     fireEvent.click(screen.getByRole('button', { name: '2' }))
     expect(
-      screen.getByRole('button', { name: /Edit Price per share:.*2/i }),
+      screen.getByRole('button', {
+        name: chinese ? /编辑每股价格：.*2/ : /Edit Price per share:.*2/i,
+      }),
     ).toBeTruthy()
   },
 )

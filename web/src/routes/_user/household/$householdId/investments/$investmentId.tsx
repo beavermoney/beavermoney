@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
@@ -75,6 +77,7 @@ const investmentIdDetailFragment = graphql`
 `
 
 function RouteComponent() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
@@ -98,7 +101,7 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  invariant(data.node, 'Investment not found')
+  invariant(data.node, t`Investment not found`)
 
   const navigate = useNavigate()
 
@@ -107,11 +110,11 @@ function RouteComponent() {
       <Stack direction="vertical" gap={4}>
         <Button
           onClick={() => navigate({ to: '..' })}
-          label={'Back'}
+          label={t`Back`}
           width="fit-content"
           variant={'secondary'}
         >
-          Back
+          <Trans>Back</Trans>
         </Button>
       </Stack>
       <Stack direction="vertical" gap={4}>
@@ -153,12 +156,16 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
     <Card>
       <Stack direction="vertical" gap={4}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>Performance</Heading>
+          <Heading level={2}>
+            <Trans>Performance</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Grid columns={{ minWidth: 140, max: 4, repeat: 'fit' }} gap={4}>
             <Stack direction="vertical" gap={1}>
-              <Text type="supporting">Cost Basis</Text>
+              <Text type="supporting">
+                <Trans>Cost Basis</Trans>
+              </Text>
               <Text type="label" hasTabularNumbers>
                 {formatCurrencyWithPrivacyMode({
                   value: data.costBasis,
@@ -167,7 +174,9 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
               </Text>
             </Stack>
             <Stack direction="vertical" gap={1}>
-              <Text type="supporting">Avg Cost / Share</Text>
+              <Text type="supporting">
+                <Trans>Avg Cost / Share</Trans>
+              </Text>
               <Text type="label" hasTabularNumbers>
                 {formatCurrency({
                   value: data.averageCost,
@@ -176,13 +185,17 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
               </Text>
             </Stack>
             <Stack direction="vertical" gap={1}>
-              <Text type="supporting">Unrealized Return</Text>
+              <Text type="supporting">
+                <Trans>Unrealized Return</Trans>
+              </Text>
               <Text type="label" hasTabularNumbers>
                 {signedReturn}
               </Text>
             </Stack>
             <Stack direction="vertical" gap={1}>
-              <Text type="supporting">Return %</Text>
+              <Text type="supporting">
+                <Trans>Return %</Trans>
+              </Text>
               <Text type="label" hasTabularNumbers>
                 {signedPercent}
               </Text>

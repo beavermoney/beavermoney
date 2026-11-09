@@ -1,3 +1,5 @@
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { useLingui } from '@lingui/react/macro'
 import { useComposer } from '@/components/transaction-composer/context'
 import { SearchSelect } from '@/components/search-select'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
@@ -56,6 +58,8 @@ export function TransactionAccountPicker({
   disabled = false,
   preferredTypes,
 }: TransactionAccountPickerProps) {
+  const financeLabel = useFinanceLabel()
+  const { t } = useLingui()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const selected = accounts.find((account) => account.id === value)
   const isComposer = !!useComposer()
@@ -95,17 +99,17 @@ export function TransactionAccountPicker({
       label={label}
       id={name}
       name={name}
-      placeholder="Search accounts"
+      placeholder={t`Search accounts`}
       getLabel={(account) => accountData(account).name}
       getSearchText={(account) =>
-        `${account.type} ${accountData(account).householdCurrency.code}`
+        `${financeLabel(account.type)} ${accountData(account).householdCurrency.code}`
       }
       isDisabled={disabled}
-      disabledMessage="Select a source account first"
+      disabledMessage={t`Select a source account first`}
       invalid={invalid}
       onBlur={onBlur}
       onChange={(account) => onValueChange(account?.id ?? '')}
-      emptyText="No matching accounts."
+      emptyText={t`No matching accounts.`}
       renderOption={(account) => {
         const data = accountData(account)
         return (
@@ -117,7 +121,7 @@ export function TransactionAccountPicker({
             <VStack gap={0.5}>
               <Text maxLines={2}>{data.name}</Text>
               <Text type="supporting" color="secondary">
-                {account.type} ·{' '}
+                {financeLabel(account.type)} ·{' '}
                 {formatCurrencyWithPrivacyMode({
                   value: data.balance,
                   currencyCode: data.householdCurrency.code,

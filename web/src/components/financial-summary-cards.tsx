@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
@@ -31,6 +32,7 @@ interface FinancialSummaryCardsProps {
 export function FinancialSummaryCards({
   fragmentRef,
 }: FinancialSummaryCardsProps) {
+  const { t } = useLingui()
   const isMobile = useIsMobile()
   const data = useFragment(FinancialSummaryCardsFragment, fragmentRef)
   const { household } = useHousehold()
@@ -63,11 +65,11 @@ export function FinancialSummaryCards({
     formatCurrencyWithPrivacyMode({ value, currencyCode: displayCurrencyCode })
 
   const metrics = [
-    { label: 'Expenses', value: formatAmount(totalExpenses) },
-    { label: 'Income', value: formatAmount(totalIncome) },
-    { label: 'Cash flow', value: formatAmount(net) },
+    { label: t`Expenses`, value: formatAmount(totalExpenses) },
+    { label: t`Income`, value: formatAmount(totalIncome) },
+    { label: t`Cash flow`, value: formatAmount(net) },
     {
-      label: 'Savings rate',
+      label: t`Savings rate`,
       value: isPrivacyModeEnabled ? '•••••••' : savingsRate,
     },
   ]

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { RouteContentBoundary } from '@/components/route-content-boundary'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { PendingComponent } from '@/components/pending-component'
@@ -92,6 +94,7 @@ const RouteAccountIdArchiveMutation = graphql`
 `
 
 function RouteComponent() {
+  const { t } = useLingui()
   const showToast = useToast()
 
   const params = Route.useParams()
@@ -126,7 +129,7 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  invariant(data.node, 'Account not found')
+  invariant(data.node, t`Account not found`)
 
   const accountData = useFragment<routeAccountIdFragment$key>(
     RouteAccountIdFragment,
@@ -157,7 +160,7 @@ function RouteComponent() {
               'type' | 'category' | undefined,
           }),
         })
-        showToast({ type: 'info', body: 'Account deleted!' })
+        showToast({ type: 'info', body: t`Account deleted!` })
       })
       .with({ status: 'error' }, ({ error }) => {
         showToast({ type: 'error', body: error.toString() })
@@ -183,7 +186,7 @@ function RouteComponent() {
               'type' | 'category' | undefined,
           }),
         })
-        showToast({ type: 'info', body: 'Account archived!' })
+        showToast({ type: 'info', body: t`Account archived!` })
       })
       .with({ status: 'error' }, ({ error }) => {
         showToast({ type: 'error', body: error.toString() })
@@ -199,20 +202,22 @@ function RouteComponent() {
           <Stack direction="horizontal" gap={2} align="center">
             <Button
               onClick={() => navigate({ to: '..', search: identity })}
-              label={'Back'}
+              label={t`Back`}
               width="fit-content"
               variant={'secondary'}
             >
-              Back
+              <Trans>Back</Trans>
             </Button>
-            <Heading level={2}>Account Detail</Heading>
+            <Heading level={2}>
+              <Trans>Account Detail</Trans>
+            </Heading>
 
             <DropdownMenu
               alignment={'end'}
               renderTrigger={(triggerProps) => (
                 <Button
                   {...triggerProps}
-                  label={'Actions'}
+                  label={t`Actions`}
                   variant={'ghost'}
 
                   isIconOnly
@@ -229,7 +234,7 @@ function RouteComponent() {
                 label={
                   <>
                     <AstryxIcon icon={EditIcon} />
-                    Edit
+                    <Trans>Edit</Trans>
                   </>
                 }
               />
@@ -239,7 +244,7 @@ function RouteComponent() {
                   label={
                     <>
                       <AstryxIcon icon={ArchiveIcon} />
-                      Archive
+                      <Trans>Archive</Trans>
                     </>
                   }
                 />
@@ -250,7 +255,7 @@ function RouteComponent() {
                 label={
                   <>
                     <AstryxIcon icon={Trash2Icon} />
-                    Delete
+                    <Trans>Delete</Trans>
                   </>
                 }
               />
@@ -283,7 +288,11 @@ function RouteComponent() {
               padding={6}
               header={
                 <DialogHeader
-                  title={<>Delete Account</>}
+                  title={
+                    <>
+                      <Trans>Delete Account</Trans>
+                    </>
+                  }
                   onOpenChange={setDeleteAlertOpen}
                 />
               }
@@ -291,9 +300,11 @@ function RouteComponent() {
               <LayoutContent>
                 <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                   <Text as="div" display="block" type="supporting">
-                    This action cannot be undone. This will permanently delete
-                    the account. Delete is only allowed if there are no
-                    transactions or investments attached.
+                    <Trans>
+                      This action cannot be undone. This will permanently delete
+                      the account. Delete is only allowed if there are no
+                      transactions or investments attached.
+                    </Trans>
                   </Text>
                   <Stack
                     direction="horizontal"
@@ -303,16 +314,16 @@ function RouteComponent() {
                     justify="end"
                   >
                     <Button
-                      label="Cancel"
+                      label={t`Cancel`}
                       onClick={() => setDeleteAlertOpen(false)}
                     />
                     <Button
                       variant="destructive"
                       onClick={handleDelete}
                       isDisabled={isDeleteMutationInFlight}
-                      label="Delete account"
+                      label={t`Delete account`}
                     >
-                      {isDeleteMutationInFlight ? 'Deleting...' : 'Delete'}
+                      {isDeleteMutationInFlight ? t`Deleting...` : t`Delete`}
                     </Button>
                   </Stack>
                 </Stack>
@@ -334,7 +345,11 @@ function RouteComponent() {
               padding={6}
               header={
                 <DialogHeader
-                  title={<>Archive Account</>}
+                  title={
+                    <>
+                      <Trans>Archive Account</Trans>
+                    </>
+                  }
                   onOpenChange={setArchiveAlertOpen}
                 />
               }
@@ -342,9 +357,11 @@ function RouteComponent() {
               <LayoutContent>
                 <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                   <Text as="div" display="block" type="supporting">
-                    This will archive the account and hide it from the main
-                    list. Archive is only allowed when the account value is
-                    zero. You can unarchive it later in Settings → Accounts.
+                    <Trans>
+                      This will archive the account and hide it from the main
+                      list. Archive is only allowed when the account value is
+                      zero. You can unarchive it later in Settings → Accounts.
+                    </Trans>
                   </Text>
                   <Stack
                     direction="horizontal"
@@ -354,16 +371,16 @@ function RouteComponent() {
                     justify="end"
                   >
                     <Button
-                      label="Cancel"
+                      label={t`Cancel`}
                       onClick={() => setArchiveAlertOpen(false)}
                     />
                     <Button
                       onClick={handleArchive}
                       isDisabled={isArchiveMutationInFlight}
-                      label="Archive account"
+                      label={t`Archive account`}
                       variant="destructive"
                     >
-                      {isArchiveMutationInFlight ? 'Archiving...' : 'Archive'}
+                      {isArchiveMutationInFlight ? t`Archiving...` : t`Archive`}
                     </Button>
                   </Stack>
                 </Stack>

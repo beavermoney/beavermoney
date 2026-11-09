@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { RouteContentBoundary } from '@/components/route-content-boundary'
 import { GenericError } from '@/components/generic-error'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
@@ -11,19 +12,19 @@ export const Route = createFileRoute('/_user/household/$householdId/settings')({
   errorComponent: GenericError,
 })
 
-const SETTINGS_HEADERS = {
-  general: {
-    title: 'General settings',
-  },
-  accounts: {
-    title: 'Account settings',
-  },
-  members: {
-    title: 'Members',
-  },
-}
-
 function RouteComponent() {
+  const SETTINGS_HEADERS = {
+    general: {
+      title: t`General settings`,
+    },
+    accounts: {
+      title: t`Account settings`,
+    },
+    members: {
+      title: t`Members`,
+    },
+  }
+
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })

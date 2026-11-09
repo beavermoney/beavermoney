@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,6 +15,7 @@ import {
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 
 export function ViewScopeSwitcher() {
+  const { t } = useLingui()
   const members = useHouseholdMembers()
   const { viewUserIds, isCombinedAll, setViewUserIds } = useHouseholdViewScope()
 
@@ -51,7 +54,7 @@ export function ViewScopeSwitcher() {
       alignment="end"
     >
       <DropdownMenuCheckboxItem
-        label="All"
+        label={t`All`}
         value={isCombinedAll}
         onChange={() => setViewUserIds(null)}
         hasCloseOnSelect={false}
@@ -74,11 +77,11 @@ function scopeLabel(
   showsAll: boolean,
   selectedMembers: ReadonlyArray<HouseholdMember>,
 ): string {
-  if (showsAll) return 'All'
-  if (selectedMembers.length === 0) return 'All'
+  if (showsAll) return t`All`
+  if (selectedMembers.length === 0) return t`All`
   if (selectedMembers.length === 1) return selectedMembers[0].name
   if (selectedMembers.length === 2) {
     return `${selectedMembers[0].name} + ${selectedMembers[1].name}`
   }
-  return `${selectedMembers.length} selected`
+  return t`${selectedMembers.length} selected`
 }

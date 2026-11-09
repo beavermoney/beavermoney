@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
@@ -8,7 +11,6 @@ import { Text } from '@astryxdesign/core/Text'
 import { TextArea } from '@astryxdesign/core/TextArea'
 import { useToast } from '@astryxdesign/core/Toast'
 import currency from 'currency.js'
-import { capitalize } from 'lodash-es'
 import { FlagIcon } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useFragment, useMutation } from 'react-relay'
@@ -68,6 +70,8 @@ export function SnapshotDialog({
   fragmentRef,
   renderTrigger,
 }: SnapshotDialogProps) {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
   const showToast = useToast()
 
   const data = useFragment(SnapshotDialogFragment, fragmentRef)
@@ -113,12 +117,12 @@ export function SnapshotDialog({
 
     match(result)
       .with({ status: 'success' }, () => {
-        showToast({ type: 'info', body: 'Snapshot saved!' })
+        showToast({ type: 'info', body: t`Snapshot saved!` })
         setNote('')
         setOpen(false)
       })
       .with({ status: 'error' }, ({ error }) => {
-        showToast({ type: 'error', body: `Failed to save snapshot: ${error}` })
+        showToast({ type: 'error', body: t`Failed to save snapshot: ${error}` })
       })
       .exhaustive()
   }
@@ -131,7 +135,7 @@ export function SnapshotDialog({
         <Button
           onClick={() => setOpen(true)}
 
-          label={'Create snapshot'}
+          label={t`Create snapshot`}
           isIconOnly
           variant={'ghost'}
 
@@ -141,13 +145,22 @@ export function SnapshotDialog({
       <Dialog isOpen={open} onOpenChange={setOpen} purpose="info" padding={0}>
         <Layout
           padding={6}
-          header={<DialogHeader title={<>Snapshot</>} onOpenChange={setOpen} />}
+          header={
+            <DialogHeader
+              title={
+                <>
+                  <Trans>Snapshot</Trans>
+                </>
+              }
+              onOpenChange={setOpen}
+            />
+          }
         >
           <LayoutContent>
             <Stack direction="vertical" gap={6} paddingBlockStart={4}>
               <Stack direction="vertical" gap={1}>
                 <Text as="p" display="block" color="secondary">
-                  Net Worth
+                  <Trans>Net Worth</Trans>
                 </Text>
                 <Heading level={2}>
                   {formatCurrencyWithPrivacyMode({
@@ -166,7 +179,7 @@ export function SnapshotDialog({
                     justify="between"
                     key={type}
                   >
-                    <Text color="secondary">{capitalize(type)}</Text>
+                    <Text color="secondary">{financeLabel(type)}</Text>
                     <Text hasTabularNumbers>
                       {formatCurrencyWithPrivacyMode({
                         value: breakdown[type],
@@ -178,8 +191,8 @@ export function SnapshotDialog({
                 ))}
               </Stack>
               <TextArea
-                placeholder="What changed since your last snapshot?"
-                label="Note (optional)"
+                placeholder={t`What changed since your last snapshot?`}
+                label={t`Note (optional)`}
 
                 value={String(note ?? '')}
                 onChange={(_value, event) =>
@@ -195,14 +208,14 @@ export function SnapshotDialog({
               >
                 <Button
                   onClick={handleSnapshot}
-                  label={String(isMutationInFlight ? 'Saving...' : 'Save')}
+                  label={String(isMutationInFlight ? t`Saving...` : t`Save`)}
                   variant={'primary'}
 
                   isDisabled={isMutationInFlight}
                 >
-                  {isMutationInFlight ? 'Saving...' : 'Save'}
+                  {isMutationInFlight ? t`Saving...` : t`Save`}
                 </Button>
-                <Button label="Cancel" onClick={() => setOpen(false)} />
+                <Button label={t`Cancel`} onClick={() => setOpen(false)} />
               </Stack>
             </Stack>
           </LayoutContent>

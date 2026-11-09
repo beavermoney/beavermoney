@@ -1,3 +1,4 @@
+import { Trans } from '@lingui/react/macro'
 import { RouterListItem } from '@/components/router-list-item'
 import { useCurrency } from '@/hooks/use-currency'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -87,12 +88,12 @@ export function InvestmentCard({
               .join(' · ')}
           </Text>
           <Text type="supporting" hasTabularNumbers>
-            {isPrivacyModeEnabled ? '•••' : data.amount} shares ·{' '}
+            {isPrivacyModeEnabled ? '•••' : data.amount} <Trans>shares ·</Trans>{' '}
             {formatCurrency({
               value: data.quote,
               currencyCode: data.householdCurrency.code,
             })}{' '}
-            per share
+            <Trans>per share</Trans>
           </Text>
         </VStack>
       }

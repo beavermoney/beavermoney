@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { SearchSelect } from '@/components/search-select'
 import { InvestmentIcon } from '@/components/investment-icon'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
@@ -46,8 +47,9 @@ export function TransactionInvestmentPicker({
   onBlur,
   invalid,
   disabled = false,
-  disabledMessage = 'Select an account first',
+  disabledMessage,
 }: Props) {
+  const { t } = useLingui()
   const selected = investments.find((investment) => investment.id === value)
   useEffect(() => {
     if (value && !selected) onValueChange('')
@@ -71,15 +73,15 @@ export function TransactionInvestmentPicker({
       label={label}
       id={name}
       name={name}
-      placeholder="Search investments"
+      placeholder={t`Search investments`}
       isDisabled={disabled}
-      disabledMessage={disabledMessage}
+      disabledMessage={disabledMessage ?? t`Select an account first`}
       getLabel={title}
       getSearchText={(investment) => investmentData(investment).symbol}
       invalid={invalid}
       onBlur={onBlur}
       onChange={(investment) => onValueChange(investment?.id ?? '')}
-      emptyText="No matching investments available."
+      emptyText={t`No matching investments available.`}
       renderOption={(investment) => (
         <HStack gap={2} vAlign="center">
           <InvestmentIcon {...investmentData(investment)} />

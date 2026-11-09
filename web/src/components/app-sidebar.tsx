@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { MobileNav } from '@astryxdesign/core/MobileNav'
 import { HStack, Layout } from '@astryxdesign/core/Layout'
 import { Icon } from '@astryxdesign/core/Icon'
@@ -25,32 +26,42 @@ const appSidebarFragment = graphql`
   }
 `
 
-const MAIN_NAV = NAV.filter((item) => item.name !== 'Settings')
-const SETTINGS_NAV: React.ComponentProps<typeof NavProjects>['projects'] = [
-  {
-    name: 'General',
-    icon: Settings,
-    link: { to: '/household/$householdId/settings/general' },
-    shortcut: ['G', ','],
-  },
-  {
-    name: 'Accounts',
-    icon: CreditCard,
-    link: { to: '/household/$householdId/settings/accounts' },
-  },
-  {
-    name: 'Members',
-    icon: Users,
-    link: { to: '/household/$householdId/settings/members' },
-  },
-]
+const MAIN_NAV = NAV.filter(
+  (item) => item.link.to !== '/household/$householdId/settings',
+)
 
 function SidebarSections() {
+  const { t, i18n } = useLingui()
+  const SETTINGS_NAV: React.ComponentProps<typeof NavProjects>['projects'] = [
+    {
+      name: t`General`,
+      icon: Settings,
+      link: { to: '/household/$householdId/settings/general' },
+      shortcut: ['G', ','],
+    },
+    {
+      name: t`Accounts`,
+      icon: CreditCard,
+      link: { to: '/household/$householdId/settings/accounts' },
+    },
+    {
+      name: t`Members`,
+      icon: Users,
+      link: { to: '/household/$householdId/settings/members' },
+    },
+  ]
+
   const { household } = useHousehold()
   return (
     <>
-      <NavProjects title={household.name} projects={MAIN_NAV} />
-      <NavProjects title="Settings" projects={SETTINGS_NAV} />
+      <NavProjects
+        title={household.name}
+        projects={MAIN_NAV.map((item) => ({
+          ...item,
+          name: i18n._(item.name),
+        }))}
+      />
+      <NavProjects title={t`Settings`} projects={SETTINGS_NAV} />
     </>
   )
 }

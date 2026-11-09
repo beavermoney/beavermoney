@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useDateFormatter } from '@/hooks/use-date-formatter'
+import { Trans } from '@lingui/react/macro'
 import { ProgressBar } from '@astryxdesign/core/ProgressBar'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Popover } from '@astryxdesign/core/Popover'
@@ -24,7 +27,6 @@ import {
   addMonths,
   addWeeks,
   addYears,
-  format,
   parseISO,
   startOfWeek,
 } from 'date-fns'
@@ -37,13 +39,6 @@ import {
 } from 'lucide-react'
 import { useRef, useState, useTransition } from 'react'
 
-const titles: Record<DatePeriod, string> = {
-  week: 'View by week',
-  month: 'View by month',
-  year: 'View by year',
-  calendar: 'Calendar view',
-  custom: 'Custom range',
-}
 type Props = {
   startDate: string
   endDate: string
@@ -54,6 +49,16 @@ export function DatePeriodFilter({
   endDate: endValue,
   onDateRangeChange,
 }: Props) {
+  const format = useDateFormatter()
+  const { t } = useLingui()
+  const titles: Record<DatePeriod, string> = {
+    week: t`View by week`,
+    month: t`View by month`,
+    year: t`View by year`,
+    calendar: t`Calendar view`,
+    custom: t`Custom range`,
+  }
+
   const isMobile = useIsMobile()
   const triggerRef = useRef<HTMLButtonElement>(null!)
   const startDate = dateKey(parseISO(startValue))
@@ -103,7 +108,7 @@ export function DatePeriodFilter({
         await onDateRangeChange(...range)
         setChosen({ mode: nextMode, start: range[0], end: range[1] })
       } catch {
-        setError('Could not update dates. Please try again.')
+        setError(t`Could not update dates. Please try again.`)
       }
     })
   }
@@ -138,7 +143,7 @@ export function DatePeriodFilter({
   const viewsContent = (
     <Stack direction="vertical" gap={3}>
       <Text type="large" weight="semibold">
-        Date view
+        <Trans>Date view</Trans>
       </Text>
       {(Object.keys(titles) as DatePeriod[]).map((option) => (
         <Button
@@ -174,7 +179,7 @@ export function DatePeriodFilter({
             </Text>
             <Button
               size={isMobile ? 'lg' : 'md'}
-              label="Switch view"
+              label={t`Switch view`}
               variant="ghost"
               isDisabled={pending}
               onClick={() => setStep('views')}
@@ -185,7 +190,7 @@ export function DatePeriodFilter({
             gap={4}
             className="min-h-0 flex-1 [scrollbar-gutter:stable] overflow-y-auto pe-2"
             role="region"
-            aria-label={`${titles[view]} options`}
+            aria-label={t`${titles[view]} options`}
             tabIndex={0}
           >
             {error && <Text role="alert">{error}</Text>}
@@ -235,7 +240,7 @@ export function DatePeriodFilter({
             {(view === 'year' || view === 'month') && (
               <Button
                 size={isMobile ? 'lg' : 'md'}
-                label="Show earlier years"
+                label={t`Show earlier years`}
                 variant="ghost"
                 onClick={() => setYearCount(years.length + 10)}
               />
@@ -260,7 +265,7 @@ export function DatePeriodFilter({
                 })}
                 <Button
                   size={isMobile ? 'lg' : 'md'}
-                  label="Show earlier weeks"
+                  label={t`Show earlier weeks`}
                   variant="ghost"
                   onClick={() => setWeekCount((count) => count + 52)}
                 />
@@ -276,7 +281,7 @@ export function DatePeriodFilter({
                 <Stack direction="horizontal" gap={2} justify="end">
                   <Button
                     size={isMobile ? 'lg' : 'md'}
-                    label="Cancel"
+                    label={t`Cancel`}
                     variant="secondary"
                     isDisabled={pending}
                     onClick={() => setStep(null)}
@@ -284,7 +289,7 @@ export function DatePeriodFilter({
                   <Button
                     size={isMobile ? 'lg' : 'md'}
                     variant="primary"
-                    label="Apply range"
+                    label={t`Apply range`}
                     isLoading={pending}
                     isDisabled={!draft?.from || !draft.to}
                     onClick={() => {
@@ -308,7 +313,7 @@ export function DatePeriodFilter({
       {pending && (
         <Stack className="pointer-events-none fixed inset-x-0 top-0 z-50 [&_.astryx-progress-bar-track]:h-0.5">
           <ProgressBar
-            label="Updating date range"
+            label={t`Updating date range`}
             isLabelHidden
             isIndeterminate
           />
@@ -317,7 +322,7 @@ export function DatePeriodFilter({
       <Stack direction="horizontal" gap={2} align="center">
         <Button
           size={isMobile ? 'lg' : 'md'}
-          label="Previous period"
+          label={t`Previous period`}
           isIconOnly
           icon={<Icon icon={ChevronLeft} />}
           variant="secondary"
@@ -338,7 +343,7 @@ export function DatePeriodFilter({
         />
         <Button
           size={isMobile ? 'lg' : 'md'}
-          label="Next period"
+          label={t`Next period`}
           isIconOnly
           icon={<Icon icon={ChevronRight} />}
           variant="secondary"
@@ -349,7 +354,7 @@ export function DatePeriodFilter({
           !selected(periodRange('month', today, weekStartsOn))) && (
           <Button
             size={isMobile ? 'lg' : 'md'}
-            label="Reset to this month"
+            label={t`Reset to this month`}
             isIconOnly
             icon={<Icon icon={Undo2} />}
             variant="secondary"
@@ -371,7 +376,7 @@ export function DatePeriodFilter({
       {isMobile ? (
         <>
           <BottomSheet
-            label="Choose date view"
+            label={t`Choose date view`}
             isOpen={step === 'views'}
             onOpenChange={onOpenChange}
             height="hug"
@@ -393,7 +398,7 @@ export function DatePeriodFilter({
       ) : (
         <Popover
           anchorRef={triggerRef}
-          label={step && step !== 'views' ? titles[step] : 'Choose date view'}
+          label={step && step !== 'views' ? titles[step] : t`Choose date view`}
           isOpen={step !== null}
           onOpenChange={onOpenChange}
           width="max-content"

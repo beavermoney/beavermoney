@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { ComposerTransferRows } from '@/components/transaction-composer/transfer-rows'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
@@ -33,20 +35,6 @@ import { commitMutationResult } from '@/lib/relay'
 import { OwnerSelect } from '../../-components/owner-select'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-
-const formSchema = z.object({
-  description: z
-    .string()
-    .max(256, 'Description must be at most 256 characters.'),
-  amount: z.number().optional(),
-  debitAmount: z.number().optional(),
-  creditAmount: z.number().optional(),
-  datetime: z.date(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-  fromAccountId: z.string().min(1, 'Please select a from account'),
-  toAccountId: z.string().min(1, 'Please select a to account'),
-  categoryId: z.string().min(1, 'Please select a category'),
-})
 
 const newTransferFragment = graphql`
   fragment newTransferFragment on Household
@@ -96,6 +84,21 @@ type NewTransferProps = {
 }
 
 export function NewTransfer({ fragmentRef }: NewTransferProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    description: z
+      .string()
+      .max(256, t`Description must be at most 256 characters.`),
+    amount: z.number().optional(),
+    debitAmount: z.number().optional(),
+    creditAmount: z.number().optional(),
+    datetime: z.date(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+    fromAccountId: z.string().min(1, t`Please select a from account`),
+    toAccountId: z.string().min(1, t`Please select a to account`),
+    categoryId: z.string().min(1, t`Please select a category`),
+  })
+
   const showToast = useToast()
   const isMobile = useIsMobile()
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
@@ -152,8 +155,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
         (acc) => acc.id === value.toAccountId,
       )
 
-      invariant(fromAccount, 'From account not found')
-      invariant(toAccount, 'To account not found')
+      invariant(fromAccount, t`From account not found`)
+      invariant(toAccount, t`To account not found`)
 
       const isDifferentCurrency =
         fromAccount.householdCurrency.code !== toAccount.householdCurrency.code
@@ -206,7 +209,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             'No data returned from mutation',
           )
 
-          showToast({ type: 'info', body: 'Transfer created successfully!' })
+          showToast({ type: 'info', body: t`Transfer created successfully!` })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
             form.reset({
@@ -304,7 +307,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
               <TransactionAccountPicker
                 accounts={availableAccounts}
                 name={field.name}
-                label="From Account"
+                label={t`From Account`}
                 value={field.state.value}
                 onValueChange={(value) => {
                   field.handleChange(value)
@@ -329,7 +332,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
         validators={{
           onChange: ({ value }) => {
             if (!value || value <= 0) {
-              return { message: 'Amount must be positive' }
+              return { message: t`Amount must be positive` }
             }
             return undefined
           },
@@ -340,9 +343,10 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Amount`}
                 id={field.name}
                 name={field.name}
-                placeholder="Please enter an amount"
+                placeholder={t`Please enter an amount`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -366,7 +370,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
         validators={{
           onChange: ({ value }) => {
             if (!value || value <= 0) {
-              return { message: 'Debit amount must be positive' }
+              return { message: t`Debit amount must be positive` }
             }
             return undefined
           },
@@ -377,9 +381,10 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Debit Amount`}
                 id={field.name}
                 name={field.name}
-                placeholder="Amount to debit"
+                placeholder={t`Amount to debit`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -408,7 +413,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             const fromAccountId = fieldApi.form.getFieldValue('fromAccountId')
             if (fromAccountId && value === fromAccountId) {
               return {
-                message: 'Cannot transfer to the same account',
+                message: t`Cannot transfer to the same account`,
               }
             }
             return undefined
@@ -424,7 +429,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                   (account) => account.id !== fromAccountId,
                 )}
                 name={field.name}
-                label="To Account"
+                label={t`To Account`}
                 value={field.state.value}
                 onValueChange={(value) => {
                   field.handleChange(value)
@@ -448,7 +453,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
         validators={{
           onChange: ({ value }) => {
             if (!value || value <= 0) {
-              return { message: 'Credit amount must be positive' }
+              return { message: t`Credit amount must be positive` }
             }
             return undefined
           },
@@ -459,9 +464,10 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Credit Amount`}
                 id={field.name}
                 name={field.name}
-                placeholder="Amount to credit"
+                placeholder={t`Amount to credit`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -492,9 +498,9 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
                 id={field.name}
                 onBlur={field.handleBlur}
                 aria-invalid={isInvalid}
-                placeholder="Transfer to savings"
+                placeholder={t`Transfer to savings`}
                 autoComplete="off"
-                label={'Description'}
+                label={t`Description`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -546,7 +552,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             >
               <FinanceDateInput
                 id={field.name}
-                label="Date"
+                label={t`Date`}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -652,20 +658,20 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           <Button
             type="button"
             onClick={() => form.reset()}
-            label={'Reset'}
+            label={t`Reset`}
             variant={'secondary'}
           >
-            Reset
+            <Trans>Reset</Trans>
           </Button>
           <Button
             type="submit"
             form="new-transfer-form"
-            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
             variant={'primary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
+            {isMutationInFlight ? t`Creating...` : t`Create`}
           </Button>
         </Stack>
       </Stack>

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { PendingComponent } from '@/components/pending-component'
 import { Heading } from '@astryxdesign/core/Heading'
@@ -45,6 +47,7 @@ const newTransactionQuery = graphql`
 `
 
 function RouteComponent() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const queryRef = Route.useLoaderData()
 
@@ -85,8 +88,10 @@ function RouteComponent() {
   return (
     <Stack direction="vertical" gap={6} className="max-w-2xl" width="100%">
       <Stack direction="horizontal" hAlign="between" vAlign="center">
-        <Heading level={2}>New transaction</Heading>
-        <Button label="Close" onClick={close} variant="ghost" />
+        <Heading level={2}>
+          <Trans>New transaction</Trans>
+        </Heading>
+        <Button label={t`Close`} onClick={close} variant="ghost" />
       </Stack>
       <Stack direction="vertical" gap={4}>
         <LogTransaction fragmentRef={data.household} />

@@ -1,8 +1,9 @@
+import { useLingui } from '@lingui/react/macro'
+import { plural } from '@lingui/core/macro'
 import { RouterListItem } from '@/components/router-list-item'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
-import { useMemo } from 'react'
 import { graphql, useFragment } from 'react-relay'
 
 import { useCurrency } from '@/hooks/use-currency'
@@ -10,7 +11,6 @@ import {
   calculateNextPaymentDate,
   formatNextPaymentDate,
 } from '@/lib/date-range'
-import currency from 'currency.js'
 
 import { getLogoDomainURL } from '@/lib/logo'
 import type { subscriptionCardFragment$key } from './__generated__/subscriptionCardFragment.graphql'
@@ -41,34 +41,36 @@ export function SubscriptionCard({
   isActive = true,
   className: _className,
 }: SubscriptionCardProps) {
+  const { t, i18n } = useLingui()
+
   const data = useFragment(SubscriptionCardFragment, fragmentRef)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
-  const { intervalText, nextPaymentDate } = useMemo(() => {
-    // Convert cost to household currency
-    const cost = currency(data.cost)
-
-    // Format interval text
-    const count = data.intervalCount
-    const interval = data.interval
-    const intervalText =
-      count === 1
-        ? `Every ${interval}`
-        : `Every ${count} ${interval}${count > 1 ? 's' : ''}`
-
-    // Calculate next payment date
-    const nextDate = calculateNextPaymentDate({
-      startDate: data.startDate,
-      interval: data.interval,
-      intervalCount: data.intervalCount,
-    })
-
-    return {
-      costInHouseholdCurrency: cost,
-      intervalText,
-      nextPaymentDate: nextDate,
+  const count = data.intervalCount
+  const intervalText = (() => {
+    switch (data.interval) {
+      case 'week':
+        return t({
+          message: plural(count, { one: 'Every week', other: 'Every # weeks' }),
+        })
+      case 'month':
+        return t({
+          message: plural(count, {
+            one: 'Every month',
+            other: 'Every # months',
+          }),
+        })
+      case 'year':
+        return t({
+          message: plural(count, { one: 'Every year', other: 'Every # years' }),
+        })
     }
-  }, [data.cost, data.interval, data.intervalCount, data.startDate])
+  })()
+  const nextPaymentDate = calculateNextPaymentDate({
+    startDate: data.startDate,
+    interval: data.interval,
+    intervalCount: count,
+  })
 
   return (
     <RouterListItem
@@ -79,7 +81,7 @@ export function SubscriptionCard({
       startContent={
         <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
       }
-      description={isActive ? intervalText : `Inactive · ${intervalText}`}
+      description={isActive ? intervalText : t`Inactive · ${intervalText}`}
       endContent={
         <VStack gap={1} hAlign="end">
           <Text type="label" hasTabularNumbers>
@@ -90,7 +92,7 @@ export function SubscriptionCard({
           </Text>
           {isActive && (
             <Text type="supporting" color="secondary">
-              {formatNextPaymentDate(nextPaymentDate)}
+              {formatNextPaymentDate(nextPaymentDate, i18n.locale)}
             </Text>
           )}
         </VStack>

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { Stack } from '@astryxdesign/core/Stack'
 import { useNavigate } from '@tanstack/react-router'
@@ -8,6 +9,7 @@ export function LoginForm({
   className: _className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   return (
     <Stack direction="vertical" gap={4} {...props}>
@@ -20,7 +22,7 @@ export function LoginForm({
               reloadDocument: true,
             })
           }}
-          label={'Sandbox'}
+          label={t`Sandbox`}
           variant={'secondary'}
         />
       )}
@@ -32,7 +34,7 @@ export function LoginForm({
             reloadDocument: true,
           })
         }}
-        label={'Login with Google'}
+        label={t`Login with Google`}
         variant={'secondary'}
         icon={
           <svg

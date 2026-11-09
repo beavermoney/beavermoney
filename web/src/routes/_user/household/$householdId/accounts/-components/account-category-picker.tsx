@@ -1,11 +1,8 @@
+import { useLingui } from '@lingui/react/macro'
 import { ResponsiveSelectionPicker } from '@/components/responsive-selection-picker'
 import { ACCOUNT_CATEGORY_OPTIONS } from '@/constant'
 
 const NONE_VALUE = '__none__'
-const categoryOptions = [
-  { value: NONE_VALUE, label: 'None (Taxable)' },
-  ...ACCOUNT_CATEGORY_OPTIONS,
-]
 
 type AccountCategoryPickerProps = {
   name: string
@@ -22,14 +19,20 @@ export function AccountCategoryPicker({
   onBlur,
   invalid,
 }: AccountCategoryPickerProps) {
+  const { t } = useLingui()
+  const categoryOptions = [
+    { value: NONE_VALUE, label: t`None (Taxable)` },
+    ...ACCOUNT_CATEGORY_OPTIONS,
+  ]
+
   return (
     <ResponsiveSelectionPicker
       items={categoryOptions}
       name={name}
       value={value || NONE_VALUE}
-      label="Account category"
-      placeholder="None (Taxable)"
-      emptyMessage="No account categories available."
+      label={t`Account category`}
+      placeholder={t`None (Taxable)`}
+      emptyMessage={t`No account categories available.`}
       getValue={(option) => option.value}
       getLabel={(option) => option.label}
       renderItem={(option) => <span>{option.label}</span>}

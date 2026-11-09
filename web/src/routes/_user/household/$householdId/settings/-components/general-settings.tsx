@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
+import { LanguageSelector } from '@/components/language-selector'
 import { useWeekStart, type WeekStart } from '@/hooks/use-week-start'
 import { Selector } from '@astryxdesign/core/Selector'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
@@ -27,14 +30,6 @@ import { useUser } from '@/hooks/use-user'
 
 import { commitMutationResult } from '@/lib/relay'
 import { useNavigate } from '@tanstack/react-router'
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Household name is required.')
-    .max(64, 'Household name must be at most 64 characters.'),
-  locale: z.string().min(1, 'Locale is required.'),
-})
 
 const generalSettingsHouseholdFragment = graphql`
   fragment generalSettingsHouseholdFragment on Household {
@@ -85,6 +80,15 @@ export function GeneralSettings({
   householdRef,
   currenciesRef,
 }: GeneralSettingsProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Household name is required.`)
+      .max(64, t`Household name must be at most 64 characters.`),
+    locale: z.string().min(1, t`Locale is required.`),
+  })
+
   const { weekStartsOn, setWeekStartsOn } = useWeekStart()
   const showToast = useToast()
 
@@ -139,7 +143,7 @@ export function GeneralSettings({
             resultData.updateHousehold,
             'No data returned from mutation',
           )
-          showToast({ type: 'info', body: 'Household updated.' })
+          showToast({ type: 'info', body: t`Household updated.` })
         })
         .with({ status: 'error' }, ({ error }) => {
           showToast({ type: 'error', body: error.toString() })
@@ -161,7 +165,7 @@ export function GeneralSettings({
 
     match(result)
       .with({ status: 'success' }, () => {
-        showToast({ type: 'info', body: 'Household deleted.' })
+        showToast({ type: 'info', body: t`Household deleted.` })
         setDeleteDialogOpen(false)
         navigate({
           to: '/household',
@@ -199,9 +203,9 @@ export function GeneralSettings({
                     id={field.name}
                     onBlur={field.handleBlur}
                     aria-invalid={isInvalid}
-                    placeholder="My Household"
+                    placeholder={t`My Household`}
                     autoComplete="off"
-                    label={'Name'}
+                    label={t`Name`}
 
                     value={String(field.state.value ?? '')}
                     onChange={(_value, event) =>
@@ -228,7 +232,7 @@ export function GeneralSettings({
                     aria-invalid={isInvalid}
                     placeholder="en-CA"
                     autoComplete="off"
-                    label={'Locale'}
+                    label={t`Locale`}
 
                     value={String(field.state.value ?? '')}
                     onChange={(_value, event) =>
@@ -246,36 +250,39 @@ export function GeneralSettings({
           <Button
             type="submit"
             form="general-settings-form"
-            label={String(isUpdateInFlight ? 'Saving...' : 'Save')}
+            label={String(isUpdateInFlight ? t`Saving...` : t`Save`)}
             variant={'primary'}
 
             isDisabled={isUpdateInFlight}
           >
-            {isUpdateInFlight ? 'Saving...' : 'Save'}
+            {isUpdateInFlight ? t`Saving...` : t`Save`}
           </Button>
         </Stack>
       </Stack>
 
       <Divider />
+      <LanguageSelector />
       <Stack direction="vertical" gap={2}>
         <Selector
-          label="First day of week"
+          label={t`First day of week`}
           presentation="adaptive"
           value={String(weekStartsOn)}
           onChange={(value) => {
             if (value !== null) setWeekStartsOn(Number(value) as WeekStart)
           }}
           options={[
-            'Sunday',
-            'Monday',
-            'Tuesday',
-            'Wednesday',
-            'Thursday',
-            'Friday',
-            'Saturday',
+            t`Sunday`,
+            t`Monday`,
+            t`Tuesday`,
+            t`Wednesday`,
+            t`Thursday`,
+            t`Friday`,
+            t`Saturday`,
           ].map((label, value) => ({ label, value: String(value) }))}
         />
-        <Text color="secondary">Saved automatically on this device.</Text>
+        <Text color="secondary">
+          <Trans>Saved automatically on this device.</Trans>
+        </Text>
       </Stack>
       {isAdmin && (
         <>
@@ -289,10 +296,12 @@ export function GeneralSettings({
           >
             <Stack direction="vertical" gap={1}>
               <Text as="p" display="block">
-                Delete household
+                <Trans>Delete household</Trans>
               </Text>
               <Text as="p" display="block" color="secondary">
-                Permanently remove this household and all its data.
+                <Trans>
+                  Permanently remove this household and all its data.
+                </Trans>
               </Text>
             </Stack>
             <>
@@ -303,10 +312,10 @@ export function GeneralSettings({
                     if (!open) setDeleteConfirmText('')
                   })(true)
                 }
-                label={'Delete'}
+                label={t`Delete`}
                 variant={'destructive'}
               >
-                Delete
+                <Trans>Delete</Trans>
               </Button>
               <Dialog
                 isOpen={deleteDialogOpen}
@@ -322,7 +331,11 @@ export function GeneralSettings({
                   padding={6}
                   header={
                     <DialogHeader
-                      title={<>Delete household?</>}
+                      title={
+                        <>
+                          <Trans>Delete household?</Trans>
+                        </>
+                      }
                       onOpenChange={(open) => {
                         setDeleteDialogOpen(open)
                         if (!open) setDeleteConfirmText('')
@@ -333,19 +346,23 @@ export function GeneralSettings({
                   <LayoutContent>
                     <Stack direction="vertical" gap={6} paddingBlockStart={4}>
                       <Stack direction="vertical" gap={4}>
-                        This will permanently delete{' '}
-                        <Text type="label">{household.name}</Text> and all
-                        associated data including accounts, transactions, and
-                        categories. This action cannot be undone.
+                        <Trans>
+                          This will permanently delete{' '}
+                          <Text type="label">{household.name}</Text> and all
+                          associated data including accounts, transactions, and
+                          categories. This action cannot be undone.
+                        </Trans>
                         <br />
-                        Type <Text type="label">{household.name}</Text> to
-                        confirm
+                        <Trans>
+                          Type <Text type="label">{household.name}</Text> to
+                          confirm
+                        </Trans>
                         <TextInput
                           data-1p-ignore
                           id="delete-confirm"
-                          placeholder={'Enter household name to confirm'}
+                          placeholder={t`Enter household name to confirm`}
                           autoComplete="off"
-                          label={'Enter household name to confirm'}
+                          label={t`Enter household name to confirm`}
 
                           value={String(deleteConfirmText ?? '')}
                           onChange={(_value, event) =>
@@ -361,7 +378,7 @@ export function GeneralSettings({
                         justify="end"
                       >
                         <Button
-                          label="Cancel"
+                          label={t`Cancel`}
                           onClick={() =>
                             ((open) => {
                               setDeleteDialogOpen(open)
@@ -376,9 +393,9 @@ export function GeneralSettings({
                             isDeleteInFlight
                           }
                           onClick={handleDelete}
-                          label="Delete"
+                          label={t`Delete`}
                         >
-                          {isDeleteInFlight ? 'Deleting...' : 'Delete'}
+                          {isDeleteInFlight ? t`Deleting...` : t`Delete`}
                         </Button>
                       </Stack>
                     </Stack>

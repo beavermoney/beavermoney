@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Logo } from '@/components/logo'
 import { Button } from '@astryxdesign/core/Button'
 import { Grid } from '@astryxdesign/core/Grid'
@@ -41,6 +43,7 @@ function FeatureCard({
 }
 
 function App() {
+  const { t } = useLingui()
   return (
     <Stack direction="vertical" className="app-safe-area app-scroll-content">
       <Stack direction="vertical" gap={10} padding={6}>
@@ -56,7 +59,7 @@ function App() {
             >
               <Heading level={1}>Beaver Money</Heading>
               <Text as="p" display="block" color="secondary">
-                Log your transactions. Build your dam.
+                <Trans>Log your transactions. Build your dam.</Trans>
               </Text>
             </Stack>
           </Stack>
@@ -64,8 +67,8 @@ function App() {
           {/* Call to Action */}
           <Stack direction="horizontal" justify="center">
             <Link to="/login">
-              <Button label={'Get Started'} variant={'primary'}>
-                Get Started
+              <Button label={t`Get Started`} variant={'primary'}>
+                <Trans>Get Started</Trans>
               </Button>
             </Link>
           </Stack>
@@ -74,33 +77,33 @@ function App() {
           <Grid columns={{ minWidth: 240, max: 3, repeat: 'fit' }} gap={4}>
             <FeatureCard
               icon={<AstryxIcon icon={UsersIcon} />}
-              title="Household Management"
-              description="Track finances together with multiple people in one household"
+              title={t`Household Management`}
+              description={t`Track finances together with multiple people in one household`}
             />
             <FeatureCard
               icon={<AstryxIcon icon={ReceiptTextIcon} />}
-              title="Transaction Logging"
-              description="Log income, expenses, transfers, and investments effortlessly"
+              title={t`Transaction Logging`}
+              description={t`Log income, expenses, transfers, and investments effortlessly`}
             />
             <FeatureCard
               icon={<AstryxIcon icon={TrendingUpIcon} />}
-              title="Investment Tracking"
-              description="Monitor your portfolio with stocks and crypto support"
+              title={t`Investment Tracking`}
+              description={t`Monitor your portfolio with stocks and crypto support`}
             />
             <FeatureCard
               icon={<AstryxIcon icon={CoinsIcon} />}
-              title="Multi-Currency"
-              description="Track finances in multiple currencies with automatic conversion"
+              title={t`Multi-Currency`}
+              description={t`Track finances in multiple currencies with automatic conversion`}
             />
             <FeatureCard
               icon={<AstryxIcon icon={BarChartIcon} />}
-              title="Financial Insights"
-              description="Get clear reports and visualizations of your money flow"
+              title={t`Financial Insights`}
+              description={t`Get clear reports and visualizations of your money flow`}
             />
             <FeatureCard
               icon={<AstryxIcon icon={CodeIcon} />}
-              title="Open Source"
-              description="Fully open source and self-hostable for complete control"
+              title={t`Open Source`}
+              description={t`Fully open source and self-hostable for complete control`}
             />
           </Grid>
         </Stack>
@@ -156,7 +159,8 @@ function App() {
 
           {/* Copyright */}
           <Text as="p" display="block" color="secondary">
-            &copy; {new Date().getFullYear()} Beaver Money. All rights reserved.
+            &copy; {new Date().getFullYear()}{' '}
+            <Trans>Beaver Money. All rights reserved.</Trans>
           </Text>
         </Stack>
       </Stack>

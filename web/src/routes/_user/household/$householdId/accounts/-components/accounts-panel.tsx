@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Card } from '@astryxdesign/core/Card'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
@@ -12,7 +15,7 @@ import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import currency from 'currency.js'
-import { capitalize, groupBy } from 'lodash-es'
+import { groupBy } from 'lodash-es'
 import { Suspense, useMemo, useState } from 'react'
 import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
@@ -71,25 +74,26 @@ const AccountsPanelFragment = graphql`
   }
 `
 
-const GROUP_BY_OPTIONS = {
-  type: 'By type',
-  category: 'By category',
-} as const
-
-const SORT_OPTIONS = {
-  value_desc: 'Largest first',
-  updated_desc: 'Recently active',
-  name_asc: 'Name A–Z',
-} as const
-
 type AccountsListPageProps = {
   fragmentRef: accountsPanelFragment$key
 }
 
-type GroupByOption = keyof typeof GROUP_BY_OPTIONS
-type SortOption = keyof typeof SORT_OPTIONS
-
 export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
+  const { t } = useLingui()
+  type SortOption = keyof typeof SORT_OPTIONS
+  type GroupByOption = keyof typeof GROUP_BY_OPTIONS
+  const financeLabel = useFinanceLabel()
+  const SORT_OPTIONS = {
+    value_desc: t`Largest first`,
+    updated_desc: t`Recently active`,
+    name_asc: t`Name A–Z`,
+  } as const
+
+  const GROUP_BY_OPTIONS = {
+    type: 'By type',
+    category: t`By category`,
+  } as const
+
   const isMobile = useIsMobile()
   const data = useFragment(AccountsPanelFragment, fragmentRef)
   const { household } = useHousehold()
@@ -230,20 +234,22 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     }
 
     return [
-      { label: 'Net Worth', value: assets.add(liabilities) },
-      { label: 'Assets', value: assets },
-      { label: 'Liabilities', value: liabilities },
+      { label: t`Net Worth`, value: assets.add(liabilities) },
+      { label: t`Assets`, value: assets },
+      { label: t`Liabilities`, value: liabilities },
     ]
-  }, [accountItems])
+  }, [t, accountItems])
 
   return (
     <VStack gap={6}>
       <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
         <VStack gap={1}>
-          <Heading level={1}>Accounts</Heading>
+          <Heading level={1}>
+            <Trans>Accounts</Trans>
+          </Heading>
         </VStack>
         <PageAddButton
-          label="Add account"
+          label={t`Add account`}
           to="/household/$householdId/accounts/new"
           params={{ householdId }}
         />
@@ -300,13 +306,13 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <VStack gap={4}>
           <HStack gap={3} vAlign="end" wrap="wrap">
             <TextInput
-              label="Search accounts"
-              placeholder="Search by name"
+              label={t`Search accounts`}
+              placeholder={t`Search by name`}
               value={searchFilter}
               onChange={setSearchFilter}
             />
             <Selector
-              label="Sort by"
+              label={t`Sort by`}
               value={sortOption}
               onChange={handleSortChange}
               options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
@@ -315,7 +321,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
               }))}
             />
             <Selector
-              label="Group by"
+              label={t`Group by`}
               value={groupByOption}
               onChange={handleGroupByChange}
               options={Object.entries(GROUP_BY_OPTIONS).map(
@@ -331,8 +337,8 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
               )
               const label =
                 groupByOption === 'category'
-                  ? (ACCOUNT_CATEGORY_LABEL[key] ?? capitalize(key))
-                  : capitalize(key)
+                  ? (ACCOUNT_CATEGORY_LABEL[key] ?? financeLabel(key))
+                  : financeLabel(key)
               return (
                 <List
                   edge="outset"
@@ -373,11 +379,11 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
             })
           ) : (
             <EmptyState
-              title="No accounts found"
+              title={t`No accounts found`}
               description={
                 searchFilter
-                  ? 'Try another account name.'
-                  : 'Add your first account to start tracking your balances.'
+                  ? t`Try another account name.`
+                  : t`Add your first account to start tracking your balances.`
               }
             />
           )}

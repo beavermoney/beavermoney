@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { ProgressBar } from '@astryxdesign/core/ProgressBar'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -38,6 +40,7 @@ type AccountCardProps = {
 }
 
 export function AccountCard({ fragmentRef }: AccountCardProps) {
+  const { t, i18n } = useLingui()
   const data = useFragment(accountCardFragment, fragmentRef)
 
   const balance = currency(data.balance)
@@ -86,8 +89,11 @@ export function AccountCard({ fragmentRef }: AccountCardProps) {
         <Text type="supporting">·</Text>
         <Text color="secondary">
           {data.latestTransaction
-            ? getRelativeDate(new Date(data.latestTransaction.datetime))
-            : 'No activity yet'}
+            ? getRelativeDate(
+                new Date(data.latestTransaction.datetime),
+                i18n.locale,
+              )
+            : t`No activity yet`}
         </Text>
       </Stack>
       {showProgress && (
@@ -95,16 +101,19 @@ export function AccountCard({ fragmentRef }: AccountCardProps) {
           <ProgressBar
             value={investmentPercentage}
 
-            label="Invested"
+            label={t`Invested`}
           />
           <Stack direction="horizontal" justify="between">
-            <span>Invested {investmentPercentage}%</span>
+            <span>
+              <Trans>Invested </Trans>
+              {investmentPercentage}%
+            </span>
             <Text hasTabularNumbers>
               {formatCurrencyWithPrivacyMode({
                 value: data.balance,
                 currencyCode: data.householdCurrency.code,
               })}{' '}
-              cash
+              <Trans>cash</Trans>
             </Text>
           </Stack>
         </Stack>

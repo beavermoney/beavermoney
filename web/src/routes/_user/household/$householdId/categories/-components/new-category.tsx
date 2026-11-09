@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Button } from '@astryxdesign/core/Button'
@@ -10,7 +13,6 @@ import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { capitalize } from 'lodash-es'
 import { useMutation } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -23,22 +25,6 @@ import { useHousehold } from '@/hooks/use-household'
 import { commitMutationResult } from '@/lib/relay'
 
 const CATEGORY_TYPES = ['expense', 'income'] as const
-
-const CATEGORY_TYPE_DESCRIPTION: Record<string, string> = {
-  expense: 'Money going out',
-  income: 'Money coming in',
-}
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Category name must be at least 1 character.')
-    .max(32, 'Category name must be at most 32 characters.'),
-  icon: z.string(),
-  type: z.enum(['expense', 'income'], {
-    error: 'Please select a category type.',
-  }),
-})
 
 const newCategoryMutation = graphql`
   mutation newCategoryMutation($input: CreateTransactionCategoryInput!) {
@@ -53,6 +39,24 @@ const newCategoryMutation = graphql`
 `
 
 export function NewCategory() {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
+  const CATEGORY_TYPE_DESCRIPTION: Record<string, string> = {
+    expense: t`Money going out`,
+    income: t`Money coming in`,
+  }
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Category name must be at least 1 character.`)
+      .max(32, t`Category name must be at most 32 characters.`),
+    icon: z.string(),
+    type: z.enum(['expense', 'income'], {
+      error: t`Please select a category type.`,
+    }),
+  })
+
   const showToast = useToast()
 
   const navigate = useNavigate()
@@ -106,7 +110,7 @@ export function NewCategory() {
           })
           showToast({
             type: 'info',
-            body: `${resultData.createTransactionCategory.node.name} is ready to go!`,
+            body: t`${resultData.createTransactionCategory.node.name} is ready to go!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -120,7 +124,9 @@ export function NewCategory() {
     <Card>
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>New Category</Heading>
+          <Heading level={2}>
+            <Trans>New Category</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Stack
@@ -150,9 +156,9 @@ export function NewCategory() {
                         id={field.name}
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        placeholder="Groceries"
+                        placeholder={t`Groceries`}
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -208,16 +214,20 @@ export function NewCategory() {
                         value={field.state.value}
                         onChange={(value) => field.handleChange(value || '')}
                         id={field.name}
-                        placeholder="Select a type"
+                        placeholder={t`Select a type`}
                         onBlur={field.handleBlur}
-                        label={'Type'}
+                        label={t`Type`}
                         renderOption={(item: string) => (
                           <span>
-                            <Text type="label">{capitalize(item)}</Text>
+                            <Text type="label">{financeLabel(item)}</Text>
                             <span>{CATEGORY_TYPE_DESCRIPTION[item]}</span>
                           </span>
                         )}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -241,20 +251,20 @@ export function NewCategory() {
             <Button
               type="button"
               onClick={() => form.reset()}
-              label={'Reset'}
+              label={t`Reset`}
               variant={'secondary'}
             >
-              Reset
+              <Trans>Reset</Trans>
             </Button>
             <Button
               type="submit"
               form="new-category-form"
-              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
               variant={'primary'}
 
               isDisabled={isMutationInFlight}
             >
-              {isMutationInFlight ? 'Creating...' : 'Create'}
+              {isMutationInFlight ? t`Creating...` : t`Create`}
             </Button>
           </Stack>
         </Stack>

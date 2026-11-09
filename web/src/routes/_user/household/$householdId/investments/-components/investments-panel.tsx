@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { Heading } from '@astryxdesign/core/Heading'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
@@ -21,13 +23,6 @@ import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
-
-const GROUP_BY_OPTIONS = {
-  account: 'By Account',
-  symbol: 'By Symbol',
-} as const
-
-type GroupByOption = keyof typeof GROUP_BY_OPTIONS
 
 const InvestmentsPanelFragment = graphql`
   fragment investmentsPanelFragment on Household
@@ -68,6 +63,13 @@ type InvestmentsPanelProps = {
 }
 
 export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
+  const { t } = useLingui()
+  type GroupByOption = keyof typeof GROUP_BY_OPTIONS
+  const GROUP_BY_OPTIONS = {
+    account: t`By Account`,
+    symbol: t`By Symbol`,
+  } as const
+
   const data = useFragment(InvestmentsPanelFragment, fragmentRef)
   const { household: _household } = useHousehold()
   const { displayCurrencyCode, convert } = useDisplayCurrency()
@@ -126,10 +128,12 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     <Fragment>
       <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
         <VStack gap={1}>
-          <Heading level={1}>Investments</Heading>
+          <Heading level={1}>
+            <Trans>Investments</Trans>
+          </Heading>
         </VStack>
         <PageAddButton
-          label="Add investment"
+          label={t`Add investment`}
           to="/household/$householdId/investments/new"
           params={{ householdId }}
         />
@@ -142,7 +146,9 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         wrap="wrap"
       >
         <Stack direction="vertical" gap={1}>
-          <Text color="secondary">Portfolio value</Text>
+          <Text color="secondary">
+            <Trans>Portfolio value</Trans>
+          </Text>
           <Text as="div" display="block" type="display-3" hasTabularNumbers>
             {formatCurrencyWithPrivacyMode({
               value: totalInvestment,
@@ -153,7 +159,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
         <Selector
           value={groupByOption}
           onChange={handleGroupByChange}
-          label="Group by"
+          label={t`Group by`}
           isLabelHidden
           options={[
             ...[
@@ -213,7 +219,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                   <Text type="label">{groupLabel}</Text>
                   {totalShares !== null && totalShares > 0 && (
                     <Text type="supporting" hasTabularNumbers>
-                      {totalShares} shares
+                      {totalShares} <Trans>shares</Trans>
                     </Text>
                   )}
                   <StackItem size="fill" />

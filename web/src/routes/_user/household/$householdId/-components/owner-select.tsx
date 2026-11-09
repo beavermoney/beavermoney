@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useComposer } from '@/components/transaction-composer/context'
 import { ComposerChoice } from '@/components/transaction-composer/controls'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -34,12 +36,13 @@ export function OwnerSelect({
   onBlur,
   ariaInvalid,
 }: OwnerSelectProps) {
+  const { t } = useLingui()
   const composer = useComposer()
   if (composer)
     return (
       <ComposerChoice
         name={name ?? 'owner'}
-        label="Owner"
+        label={t`Owner`}
         hideChipLabel
         value={options.find((option) => option.id === value)}
         items={options}
@@ -55,11 +58,13 @@ export function OwnerSelect({
     )
   return (
     <Stack direction="vertical" gap={1}>
-      <Text type="label">Owner</Text>
+      <Text type="label">
+        <Trans>Owner</Trans>
+      </Text>
       {name && <input type="hidden" name={name} value={value} />}
       <SegmentedControl
         id={id}
-        label="Owner"
+        label={t`Owner`}
         value={value}
         onChange={onValueChange}
         onBlur={onBlur}

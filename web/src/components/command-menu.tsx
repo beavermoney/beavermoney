@@ -1,9 +1,11 @@
+import { useLingui } from '@lingui/react/macro'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { CommandPalette } from '@astryxdesign/core/CommandPalette'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { useCallback, useEffect, useRef } from 'react'
 
 export function CommandMenu() {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const selecting = useRef(false)
   const { householdId } = useParams({ from: '/_user/household/$householdId' })
@@ -31,16 +33,16 @@ export function CommandMenu() {
     return () => document.removeEventListener('keydown', down)
   }, [isOpen, setOpen])
   const destinations = [
-    { label: 'Transactions', to: '/household/$householdId/transactions' },
-    { label: 'Accounts', to: '/household/$householdId/accounts' },
-    { label: 'Investments', to: '/household/$householdId/investments' },
-    { label: 'Categories', to: '/household/$householdId/categories' },
-    { label: 'Subscriptions', to: '/household/$householdId/subscriptions' },
-    { label: 'New Account', to: '/household/$householdId/accounts/new' },
-    { label: 'New Investment', to: '/household/$householdId/investments/new' },
-    { label: 'New Category', to: '/household/$householdId/categories/new' },
+    { label: t`Transactions`, to: '/household/$householdId/transactions' },
+    { label: t`Accounts`, to: '/household/$householdId/accounts' },
+    { label: t`Investments`, to: '/household/$householdId/investments' },
+    { label: t`Categories`, to: '/household/$householdId/categories' },
+    { label: t`Subscriptions`, to: '/household/$householdId/subscriptions' },
+    { label: t`New Account`, to: '/household/$householdId/accounts/new' },
+    { label: t`New Investment`, to: '/household/$householdId/investments/new' },
+    { label: t`New Category`, to: '/household/$householdId/categories/new' },
     {
-      label: 'New Subscription',
+      label: t`New Subscription`,
       to: '/household/$householdId/subscriptions/new',
     },
   ] as const
@@ -57,7 +59,7 @@ export function CommandMenu() {
     })),
     {
       id: 'New Transaction',
-      label: 'New Transaction',
+      label: t`New Transaction`,
       run: () => {
         setOpen(false)
         openTransaction('expense')
@@ -74,7 +76,7 @@ export function CommandMenu() {
         }
         setOpen(open)
       }}
-      label="Search commands"
+      label={t`Search commands`}
       searchSource={{
         bootstrap: () => items,
         search: (query) =>

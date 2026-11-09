@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { CategoryIcon } from '@/components/category-icon'
 import { useCurrency } from '@/hooks/use-currency'
 import { Badge } from '@astryxdesign/core/Badge'
@@ -7,7 +9,6 @@ import { Text } from '@astryxdesign/core/Text'
 import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
 
-import { format } from 'date-fns'
 import { transactionEntryCardFragment$key } from './__generated__/transactionEntryCardFragment.graphql'
 
 const transactionEntryCardFragment = graphql`
@@ -46,6 +47,8 @@ export function TransactionEntryCard({
   showDate?: boolean
   onClick?: () => void
 }) {
+  const format = useDateFormatter()
+  const { t } = useLingui()
   const { formatCurrency } = useCurrency()
 
   const data = useFragment<transactionEntryCardFragment$key>(
@@ -78,7 +81,7 @@ export function TransactionEntryCard({
               {format(new Date(data.transaction.datetime), 'LLL d')}
             </Text>
           )}
-          {data.transaction.excludeFromReports && <Badge label="Excluded" />}
+          {data.transaction.excludeFromReports && <Badge label={t`Excluded`} />}
         </VStack>
       }
     />

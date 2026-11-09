@@ -1,4 +1,6 @@
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig } from 'vitest/config'
+import type { Plugin } from 'vite'
+import { lingui } from '@lingui/vite-plugin'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import viteReact from '@vitejs/plugin-react'
@@ -49,6 +51,7 @@ const collectAppShellIconChunks = (): Plugin => ({
 })
 
 const config = defineConfig({
+  test: { setupFiles: ['./src/test/i18n-setup.tsx'] },
   resolve: {
     tsconfigPaths: true,
   },
@@ -71,6 +74,7 @@ const config = defineConfig({
   },
   plugins: [
     relay,
+    lingui(),
     devtools({
       eventBusConfig: {
         port: Number(process.env.VITE_DEVTOOLS_PORT ?? 42069),
@@ -84,7 +88,10 @@ const config = defineConfig({
     }),
     viteReact({
       babel: {
-        plugins: ['babel-plugin-react-compiler'],
+        plugins: [
+          '@lingui/babel-plugin-lingui-macro',
+          'babel-plugin-react-compiler',
+        ],
       },
     }),
     collectAppShellIconChunks(),

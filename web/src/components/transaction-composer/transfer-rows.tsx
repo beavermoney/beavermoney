@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
@@ -14,10 +15,11 @@ export function ComposerTransferRows({
   toAccount: ReactNode
   toAmount?: ReactNode
 }) {
+  const { t } = useLingui()
   return (
     <Stack gap={3}>
-      <TransferRow label="From" account={fromAccount} amount={fromAmount} />
-      <TransferRow label="To" account={toAccount} amount={toAmount} />
+      <TransferRow label={t`From`} account={fromAccount} amount={fromAmount} />
+      <TransferRow label={t`To`} account={toAccount} amount={toAmount} />
     </Stack>
   )
 }

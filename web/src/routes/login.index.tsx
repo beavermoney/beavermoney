@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { LanguageSelector } from '@/components/language-selector'
 import { LoginForm } from '@/components/login-form'
 import { Logo } from '@/components/logo'
 import { Heading } from '@astryxdesign/core/Heading'
@@ -25,17 +27,18 @@ function RouteComponent() {
             <Logo size={96} />
             <Stack direction="vertical" gap={1} align="center">
               <Heading level={1}>
-                Log your transactions.
+                <Trans>Log your transactions.</Trans>
                 <br />
-                Build your dam.
+                <Trans>Build your dam.</Trans>
               </Heading>
               <Text as="p" display="block" color="secondary">
-                Login with your Google account
+                <Trans>Login with your Google account</Trans>
               </Text>
             </Stack>
           </Stack>
         </Link>
         <LoginForm />
+        <LanguageSelector />
       </Stack>
     </Stack>
   )

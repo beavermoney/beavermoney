@@ -1,3 +1,6 @@
+import { useLingui } from '@lingui/react/macro'
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -13,7 +16,6 @@ import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { capitalize } from 'lodash-es'
 import { useFragment, useMutation, useRefetchableFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -38,21 +40,6 @@ import { useEffect, useState, useTransition } from 'react'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
 import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Investment name must be at least 1 character.')
-    .max(32, 'Investment name must be at most 32 characters.'),
-  symbol: z
-    .string()
-    .min(1, 'Investment symbol must be at least 1 character.')
-    .max(32, 'Investment symbol must be at most 32 characters.'),
-  type: z.literal(['stock', 'crypto']),
-  amount: z.number(),
-  costBasis: z.number(),
-  accountId: z.string(),
-})
 
 const newInvestmentFragment = graphql`
   fragment newInvestmentFragment on Household
@@ -132,6 +119,23 @@ export function NewInvestment({
   newInvestmentStockQuoteFragmentRef,
   newInvestmentCryptoQuoteFragmentRef,
 }: NewInvestmentProps) {
+  const { t } = useLingui()
+  const financeLabel = useFinanceLabel()
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, t`Investment name must be at least 1 character.`)
+      .max(32, t`Investment name must be at most 32 characters.`),
+    symbol: z
+      .string()
+      .min(1, t`Investment symbol must be at least 1 character.`)
+      .max(32, t`Investment symbol must be at most 32 characters.`),
+    type: z.literal(['stock', 'crypto']),
+    amount: z.number(),
+    costBasis: z.number(),
+    accountId: z.string(),
+  })
+
   const showToast = useToast()
 
   const [isPending, startTransition] = useTransition()
@@ -222,7 +226,7 @@ export function NewInvestment({
           })
           showToast({
             type: 'info',
-            body: `${resultData.createInvestment.node.name} is ready to go!`,
+            body: t`${resultData.createInvestment.node.name} is ready to go!`,
           })
         })
         .with({ status: 'error' }, ({ error }) => {
@@ -261,7 +265,9 @@ export function NewInvestment({
     <Card>
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
-          <Heading level={2}>New Investment</Heading>
+          <Heading level={2}>
+            <Trans>New Investment</Trans>
+          </Heading>
         </Stack>
         <Stack direction="vertical" gap={4}>
           <Stack
@@ -298,9 +304,9 @@ export function NewInvestment({
                         }}
                         data-1p-ignore
                         id={field.name}
-                        placeholder="Select an account"
+                        placeholder={t`Select an account`}
                         onBlur={field.handleBlur}
-                        label={'Account'}
+                        label={t`Account`}
                         renderOption={(item: string) => {
                           const account = investmentAccounts.find(
                             (acc) => acc.id === item,
@@ -342,7 +348,11 @@ export function NewInvestment({
                             </span>
                           )
                         }}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -375,15 +385,19 @@ export function NewInvestment({
                         value={field.state.value}
                         onChange={(value) => field.handleChange(value || '')}
                         id={field.name}
-                        placeholder="Select a type"
+                        placeholder={t`Select a type`}
                         onBlur={field.handleBlur}
-                        label={'Type'}
+                        label={t`Type`}
                         renderOption={(item: string) => (
                           <span>
-                            <Text>{capitalize(item)}</Text>
+                            <Text>{financeLabel(item)}</Text>
                           </span>
                         )}
-                        emptyText={<>No items found.</>}
+                        emptyText={
+                          <>
+                            <Trans>No items found.</Trans>
+                          </>
+                        }
                       />
                       {isInvalid && (
                         <FormError errors={field.state.meta.errors} />
@@ -421,7 +435,7 @@ export function NewInvestment({
 
                     if (!quote) {
                       return {
-                        message: 'Unable to find a quote for this symbol.',
+                        message: t`Unable to find a quote for this symbol.`,
                       }
                     }
 
@@ -461,11 +475,11 @@ export function NewInvestment({
                         aria-invalid={isInvalid}
                         placeholder={
                           investmentType === 'crypto'
-                            ? 'e.g. BTC-CAD'
-                            : 'e.g. XEQT.TO'
+                            ? t`e.g. BTC-CAD`
+                            : t`e.g. XEQT.TO`
                         }
                         autoComplete="off"
-                        label={'Symbol'}
+                        label={t`Symbol`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -541,8 +555,8 @@ export function NewInvestment({
                   >
                     <Text type="supporting" color="secondary">
                       {investmentType === 'crypto'
-                        ? 'Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price.'
-                        : 'Enter a Yahoo Finance symbol to look up its price.'}
+                        ? t`Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price.`
+                        : t`Enter a Yahoo Finance symbol to look up its price.`}
                     </Text>
                     <Stack direction="vertical" gap={4}>
                       {isPending && <Spinner />}
@@ -566,9 +580,9 @@ export function NewInvestment({
                         id={field.name}
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        placeholder="e.g. iShares Core Equity ETF Portfolio"
+                        placeholder={t`e.g. iShares Core Equity ETF Portfolio`}
                         autoComplete="off"
-                        label={'Name'}
+                        label={t`Name`}
 
                         value={String(field.state.value ?? '')}
                         onChange={(_value, event) =>
@@ -599,9 +613,9 @@ export function NewInvestment({
                         id={field.name}
                         onBlur={field.handleBlur}
                         aria-invalid={isInvalid}
-                        placeholder="How many shares do you own?"
+                        placeholder={t`How many shares do you own?`}
                         autoComplete="off"
-                        label={'Amount'}
+                        label={t`Amount`}
 
                         htmlName={field.name}
                         value={
@@ -640,9 +654,10 @@ export function NewInvestment({
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
+                        aria-label={t`Cost Basis`}
                         id={field.name}
                         name={field.name}
-                        placeholder="Please enter a number"
+                        placeholder={t`Please enter a number`}
                         onValueChange={(e) => {
                           field.handleChange(e.floatValue!)
                         }}
@@ -675,20 +690,20 @@ export function NewInvestment({
             <Button
               type="button"
               onClick={() => form.reset()}
-              label={'Reset'}
+              label={t`Reset`}
               variant={'secondary'}
             >
-              Reset
+              <Trans>Reset</Trans>
             </Button>
             <Button
               type="submit"
               form="new-investment-form"
-              label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
               variant={'primary'}
 
               isDisabled={isMutationInFlight}
             >
-              {isMutationInFlight ? 'Creating...' : 'Create'}
+              {isMutationInFlight ? t`Creating...` : t`Create`}
             </Button>
           </Stack>
         </Stack>

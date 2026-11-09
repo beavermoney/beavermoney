@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
@@ -6,6 +8,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { SearchXIcon } from 'lucide-react'
 
 export function NotFoundError() {
+  const { t } = useLingui()
   const navigate = useNavigate()
 
   return (
@@ -14,26 +17,30 @@ export function NotFoundError() {
         <Stack direction="vertical" gap={4}>
           <AstryxIcon icon={SearchXIcon} />
         </Stack>
-        <Heading level={2}>Page not found</Heading>
+        <Heading level={2}>
+          <Trans>Page not found</Trans>
+        </Heading>
         <Stack direction="vertical" gap={4}>
-          We could not find what you were looking for. It may have been moved or
-          deleted.
+          <Trans>
+            We could not find what you were looking for. It may have been moved
+            or deleted.
+          </Trans>
         </Stack>
       </Stack>
       <Stack direction="vertical" gap={4}>
         <Button
           onClick={() => navigate({ to: '..' })}
-          label={'Go back'}
+          label={t`Go back`}
           variant={'secondary'}
         >
-          Go back
+          <Trans>Go back</Trans>
         </Button>
         <Button
           onClick={() => navigate({ to: '/' })}
-          label={'Go home'}
+          label={t`Go home`}
           variant={'primary'}
         >
-          Go home
+          <Trans>Go home</Trans>
         </Button>
       </Stack>
     </Stack>

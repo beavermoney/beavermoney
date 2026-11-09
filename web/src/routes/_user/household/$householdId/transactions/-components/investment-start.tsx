@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { useState, type ComponentProps } from 'react'
 import { Button } from '@astryxdesign/core/Button'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -33,6 +34,7 @@ export function InvestmentStart({
     onInvestment: (id: string) => void
   }
 }) {
+  const { t } = useLingui()
   const composer = useComposer()
   const [step, setStep] = useState<
     'account' | 'investment' | 'to-account' | 'to-investment'
@@ -51,16 +53,16 @@ export function InvestmentStart({
         {showAccounts
           ? destination
             ? choosingDestination
-              ? 'Choose the destination account'
-              : 'Choose the source account'
-            : 'Choose an account'
+              ? t`Choose the destination account`
+              : t`Choose the source account`
+            : t`Choose an account`
           : choosingDestination
-            ? 'Choose the destination investment'
-            : 'Choose an investment'}
+            ? t`Choose the destination investment`
+            : t`Choose an investment`}
       </Text>
       {choosingDestination && (
         <Button
-          label="Change source"
+          label={t`Change source`}
           variant="ghost"
           onClick={() => setStep('account')}
         />
@@ -71,7 +73,7 @@ export function InvestmentStart({
           inline
           accounts={choices}
           name="start-account"
-          label="Accounts"
+          label={t`Accounts`}
           value={selectedAccountId}
           onValueChange={(id) => {
             if (choosingDestination) {
@@ -88,7 +90,7 @@ export function InvestmentStart({
       ) : (
         <>
           <Button
-            label="Change account"
+            label={t`Change account`}
             variant="ghost"
             onClick={() =>
               setStep(choosingDestination ? 'to-account' : 'account')
@@ -99,7 +101,7 @@ export function InvestmentStart({
             inline
             investments={account.investments ?? []}
             name="start-investment"
-            label="Investments"
+            label={t`Investments`}
             value={
               choosingDestination ? destination.investmentId : investmentId
             }

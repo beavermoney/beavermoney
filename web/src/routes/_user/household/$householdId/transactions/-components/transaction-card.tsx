@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { CategoryIcon } from '@/components/category-icon'
 import { InvestmentIcon } from '@/components/investment-icon'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
@@ -56,6 +58,7 @@ export function TransactionCard({
   fragmentRef: transactionCardFragment$key
   onPreload: (transactionId: string) => void
 }) {
+  const { t } = useLingui()
   const { isPrivacyModeEnabled } = usePrivacyMode()
   const data = useFragment(transactionCardFragment, fragmentRef)
   const { formatCurrencyWithPrivacyMode: formatAmount } = useCurrency()
@@ -144,14 +147,14 @@ export function TransactionCard({
                     color={isTransfer ? 'blue' : incoming ? 'green' : 'red'}
                     description={
                       isTransfer
-                        ? 'Transfer'
+                        ? t`Transfer`
                         : incoming
-                          ? 'Money in'
-                          : 'Money out'
+                          ? t`Money in`
+                          : t`Money out`
                     }
                     label={
                       amount.quantity
-                        ? `${isPrivacyModeEnabled ? '••••' : amount.value} shares`
+                        ? t`${isPrivacyModeEnabled ? '••••' : amount.value} shares`
                         : formatAmount({
                             value: amount.value,
                             currencyCode: amount.code,
@@ -173,7 +176,7 @@ export function TransactionCard({
                     undefined,
                     { maximumFractionDigits: 8 },
                   )}{' '}
-              shares @{' '}
+              <Trans>shares @</Trans>{' '}
               {formatAmount({
                 value: lot.price,
                 currencyCode: lot.investment.householdCurrency.code,
@@ -182,7 +185,7 @@ export function TransactionCard({
           )}
           {data.excludeFromReports && (
             <Text type="supporting" color="secondary">
-              Excluded from reports
+              <Trans>Excluded from reports</Trans>
             </Text>
           )}
         </Stack>

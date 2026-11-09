@@ -1,3 +1,6 @@
+import { t, plural } from '@lingui/core/macro'
+import { i18n } from '@lingui/core'
+import { formatLocalizedDate } from './localized-date'
 import { RecurringSubscriptionInterval } from '@/routes/_user/household/$householdId/subscriptions/-components/__generated__/subscriptionCardFragment.graphql'
 import {
   addMonths,
@@ -206,7 +209,10 @@ export function calculateNextPaymentDate(params: {
  * Format payment date for display
  * Returns "today", "tomorrow", or "in X days" if within 7 days, otherwise formatted date
  */
-export function formatNextPaymentDate(date: Date): string {
+export function formatNextPaymentDate(
+  date: Date,
+  locale = i18n.locale,
+): string {
   const paymentDate = startOfDay(date)
   const today = startOfToday()
   const daysUntil = differenceInDays(paymentDate, today)
@@ -214,14 +220,14 @@ export function formatNextPaymentDate(date: Date): string {
   // Handle dates within the next 7 days with day-level precision only
   if (daysUntil >= 0 && daysUntil <= 7) {
     if (daysUntil === 0) {
-      return 'today'
+      return t`today`
     }
     if (daysUntil === 1) {
-      return 'tomorrow'
+      return t`tomorrow`
     }
     // Format as "in X days" (day-level precision only, no hours)
-    return `in ${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`
+    return plural(daysUntil, { one: 'in # day', other: 'in # days' })
   }
 
-  return format(paymentDate, 'MMM d, yyyy')
+  return formatLocalizedDate(paymentDate, 'MMM d, yyyy', locale)
 }

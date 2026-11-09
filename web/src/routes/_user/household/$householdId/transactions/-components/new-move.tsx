@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { TransactionAccountPicker } from './transaction-account-picker'
 import { InvestmentStart } from './investment-start'
@@ -35,18 +37,6 @@ import { useHouseholdMembers } from '@/hooks/use-household-members'
 import { useUser } from '@/hooks/use-user'
 import { commitMutationResult } from '@/lib/relay'
 import { OwnerSelect } from '../../-components/owner-select'
-
-const formSchema = z.object({
-  description: z
-    .string()
-    .max(256, 'Description must be at most 256 characters.'),
-  shares: z.number().positive('Shares must be positive'),
-  pricePerShare: z.number().positive('Price per share must be positive'),
-  datetime: z.date(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-  fromInvestmentId: z.string().min(1, 'Please select a from investment'),
-  toInvestmentId: z.string().min(1, 'Please select a to investment'),
-})
 
 const newMoveFragment = graphql`
   fragment newMoveFragment on Household
@@ -103,6 +93,19 @@ type NewMoveProps = {
 }
 
 export function NewMove({ fragmentRef }: NewMoveProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    description: z
+      .string()
+      .max(256, t`Description must be at most 256 characters.`),
+    shares: z.number().positive(t`Shares must be positive`),
+    pricePerShare: z.number().positive(t`Price per share must be positive`),
+    datetime: z.date(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+    fromInvestmentId: z.string().min(1, t`Please select a from investment`),
+    toInvestmentId: z.string().min(1, t`Please select a to investment`),
+  })
+
   const showToast = useToast()
   const isMobile = useIsMobile()
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
@@ -170,14 +173,14 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         (inv) => inv.id === value.toInvestmentId,
       )
 
-      invariant(fromInvestment, 'From investment not found')
-      invariant(toInvestment, 'To investment not found')
+      invariant(fromInvestment, t`From investment not found`)
+      invariant(toInvestment, t`To investment not found`)
 
       // Validate same symbol
       if (fromInvestment.symbol !== toInvestment.symbol) {
         showToast({
           type: 'error',
-          body: 'Investments must have the same symbol',
+          body: t`Investments must have the same symbol`,
         })
         return
       }
@@ -222,7 +225,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             'No data returned from mutation',
           )
 
-          showToast({ type: 'info', body: 'Investment moved successfully!' })
+          showToast({ type: 'info', body: t`Investment moved successfully!` })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
             form.reset({
@@ -308,7 +311,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                     : allInvestments
                 }
                 name={field.name}
-                label="From Investment"
+                label={t`From Investment`}
                 value={field.state.value}
                 onValueChange={(value) => {
                   field.handleChange(value)
@@ -335,7 +338,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               fieldApi.form.getFieldValue('fromInvestmentId')
             if (fromInvestmentId && value === fromInvestmentId) {
               return {
-                message: 'Cannot move to the same investment',
+                message: t`Cannot move to the same investment`,
               }
             }
             return undefined
@@ -348,19 +351,22 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               {fromInvestment && (
                 <Text type="supporting" color="secondary">
-                  Matching {fromInvestment.symbol} holdings in another account.
+                  <Trans>
+                    Matching {fromInvestment.symbol} holdings in another
+                    account.
+                  </Trans>
                 </Text>
               )}
               <TransactionInvestmentPicker
                 investments={toInvestments}
                 name={field.name}
-                label="To Investment"
+                label={t`To Investment`}
                 value={field.state.value}
                 onValueChange={field.handleChange}
                 onBlur={field.handleBlur}
                 invalid={isInvalid}
                 disabled={!fromInvestment}
-                disabledMessage="Select from investment first"
+                disabledMessage={t`Select from investment first`}
               />
               {isInvalid && <FormError errors={field.state.meta.errors} />}
             </Stack>
@@ -380,7 +386,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 <CurrencyInput
                   id={field.name}
                   name={field.name}
-                  aria-label="Shares"
+                  aria-label={t`Shares`}
                   value={field.state.value}
                   locale={household.locale}
                   currency={displayCurrencyCode}
@@ -399,7 +405,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                   placeholder="0"
                   onBlur={field.handleBlur}
                   aria-invalid={isInvalid}
-                  label={'Shares to move'}
+                  label={t`Shares to move`}
 
                   htmlName={field.name}
                   value={
@@ -424,9 +430,10 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Price per share`}
                 id={field.name}
                 name={field.name}
-                placeholder="Please enter a price"
+                placeholder={t`Please enter a price`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -456,9 +463,9 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 id={field.name}
                 onBlur={field.handleBlur}
                 aria-invalid={isInvalid}
-                placeholder="Move AAPL shares"
+                placeholder={t`Move AAPL shares`}
                 autoComplete="off"
-                label={'Description'}
+                label={t`Description`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -510,7 +517,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             >
               <FinanceDateInput
                 id={field.name}
-                label="Date"
+                label={t`Date`}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -532,13 +539,17 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         kind="move"
         header={
           <>
-            <Text type="label">Move</Text>
+            <Text type="label">
+              <Trans>Move</Trans>
+            </Text>
             {fields.fromInvestmentId}
-            <Text type="supporting">from</Text>
+            <Text type="supporting">
+              <Trans>from</Trans>
+            </Text>
             <TransactionAccountPicker
               accounts={investmentAccounts}
               name="sourceAccount"
-              label="From account"
+              label={t`From account`}
               value={sourceAccountId}
               onValueChange={(id) => {
                 setSourceAccountId(id)
@@ -548,7 +559,9 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               onBlur={() => {}}
               invalid={false}
             />
-            <Text type="supporting">to</Text>
+            <Text type="supporting">
+              <Trans>to</Trans>
+            </Text>
             <TransactionAccountPicker
               accounts={investmentAccounts.filter(
                 (a) =>
@@ -558,7 +571,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                   ),
               )}
               name="destinationAccount"
-              label="To account"
+              label={t`To account`}
               value={
                 investmentAccounts.find((a) =>
                   a.investments?.some(
@@ -683,20 +696,20 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           <Button
             type="button"
             onClick={() => form.reset()}
-            label={'Reset'}
+            label={t`Reset`}
             variant={'secondary'}
           >
-            Reset
+            <Trans>Reset</Trans>
           </Button>
           <Button
             type="submit"
             form="new-move-form"
-            label={String(isMutationInFlight ? 'Moving...' : 'Move')}
+            label={String(isMutationInFlight ? t`Moving...` : t`Move`)}
             variant={'primary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Moving...' : 'Move'}
+            {isMutationInFlight ? t`Moving...` : t`Move`}
           </Button>
         </Stack>
       </Stack>

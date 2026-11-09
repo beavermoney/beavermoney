@@ -1,3 +1,7 @@
+import { useLingui } from '@lingui/react/macro'
+import { useDateFormatter } from '@/hooks/use-date-formatter'
+import { Trans } from '@lingui/react/macro'
+import { plural } from '@lingui/core/macro'
 import { CategoryIcon } from '@/components/category-icon'
 import { getLogoDomainURL } from '@/lib/logo'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -19,7 +23,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { graphql, useFragment } from 'react-relay'
 
-import { format, isToday, isYesterday } from 'date-fns'
+import { isToday, isYesterday } from 'date-fns'
 
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
@@ -87,15 +91,6 @@ type Props = {
   onPreloadTransaction: (transactionId: string) => void
 }
 
-const LABELS = {
-  date: 'Date',
-  description: 'Transaction',
-  movement: 'Account / Movement',
-  amount: 'Amount',
-  owner: 'Member',
-} as const
-type ColumnId = keyof typeof LABELS
-
 export function TransactionsTable({
   fragmentRef,
   direction,
@@ -108,6 +103,17 @@ export function TransactionsTable({
   onOpenTransaction,
   onPreloadTransaction,
 }: Props) {
+  const format = useDateFormatter()
+  const { t } = useLingui()
+  type ColumnId = keyof typeof LABELS
+  const LABELS = {
+    date: t`Date`,
+    description: t`Transaction`,
+    movement: t`Account / Movement`,
+    amount: t`Amount`,
+    owner: t`Member`,
+  } as const
+
   const transactions = useFragment(fragment, fragmentRef)
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { isPrivacyModeEnabled } = usePrivacyMode()
@@ -158,7 +164,11 @@ export function TransactionsTable({
         <Button
           type="button"
           variant="ghost"
-          label={`Date, ${direction === 'DESC' ? 'newest' : 'oldest'} first. Sort ${direction === 'DESC' ? 'oldest' : 'newest'} first`}
+          label={
+            direction === 'DESC'
+              ? t`Date, newest first. Sort oldest first`
+              : t`Date, oldest first. Sort newest first`
+          }
           onClick={() => {
             scrollContainer?.scrollTo({ top: 0 })
             onToggleSort()
@@ -172,15 +182,15 @@ export function TransactionsTable({
             )
           }
         >
-          Date
+          <Trans>Date</Trans>
         </Button>
       ),
       cell: (transaction) => (
         <time dateTime={transaction.datetime}>
           {isToday(new Date(transaction.datetime))
-            ? 'Today'
+            ? t`Today`
             : isYesterday(new Date(transaction.datetime))
-              ? 'Yesterday'
+              ? t`Yesterday`
               : format(new Date(transaction.datetime), 'MMM d, yyyy')}
         </time>
       ),
@@ -188,7 +198,7 @@ export function TransactionsTable({
     {
       id: 'description',
       enableHiding: false,
-      header: 'Transaction',
+      header: t`Transaction`,
       cell: (transaction) => {
         const { category } = transaction
         return (
@@ -211,7 +221,13 @@ export function TransactionsTable({
                   {category.name}
                 </Link>
                 {transaction.excludeFromReports && (
-                  <Badge label={<>Excluded</>} />
+                  <Badge
+                    label={
+                      <>
+                        <Trans>Excluded</Trans>
+                      </>
+                    }
+                  />
                 )}
               </Stack>
               {transaction.description && (
@@ -226,7 +242,7 @@ export function TransactionsTable({
     },
     {
       id: 'movement',
-      header: 'Account / Movement',
+      header: t`Account / Movement`,
       cell: (transaction) => (
         <Stack direction="vertical" gap={1}>
           {transaction.transactionEntries?.map((entry) => (
@@ -244,7 +260,7 @@ export function TransactionsTable({
     },
     {
       id: 'amount',
-      header: 'Amount',
+      header: t`Amount`,
       enableHiding: false,
       cell: (transaction) => (
         <Stack direction="vertical" gap={1}>
@@ -279,7 +295,7 @@ export function TransactionsTable({
     },
     {
       id: 'owner',
-      header: 'Member',
+      header: t`Member`,
       cell: (transaction) => (
         <Stack
           direction="horizontal"
@@ -305,7 +321,7 @@ export function TransactionsTable({
       direction="vertical"
       gap={2}
       as="section"
-      aria-label="Transactions"
+      aria-label={t`Transactions`}
       aria-busy={isSorting || isLoadingNext}
     >
       <Stack direction="horizontal" gap={2} align="center" justify="between">
@@ -317,8 +333,20 @@ export function TransactionsTable({
           role="status"
         >
           {isSorting
-            ? 'Sorting transactions…'
-            : `${transactions.length} transaction${transactions.length === 1 ? '' : 's'}${hasNext ? ' loaded' : ''}`}
+            ? t`Sorting transactions…`
+            : hasNext
+              ? t({
+                  message: plural(transactions.length, {
+                    one: '# transaction loaded',
+                    other: '# transactions loaded',
+                  }),
+                })
+              : t({
+                  message: plural(transactions.length, {
+                    one: '# transaction',
+                    other: '# transactions',
+                  }),
+                })}
         </Text>
         <DropdownMenu
           alignment={'end'}
@@ -326,7 +354,7 @@ export function TransactionsTable({
             <Button
               {...triggerProps}
               type="button"
-              label={'Columns'}
+              label={t`Columns`}
               variant={'secondary'}
 
               icon={<AstryxIcon icon={Columns3Icon} />}
@@ -353,12 +381,12 @@ export function TransactionsTable({
         </DropdownMenu>
       </Stack>
       <ScrollableArea
-        label="Scrollable content"
+        label={t`Scrollable content`}
         ref={setScrollContainer}
         axis="block"
       >
         <Table
-          aria-label="Transactions"
+          aria-label={t`Transactions`}
           data={[...transactions]}
           idKey="id"
           hasHover
@@ -416,16 +444,16 @@ export function TransactionsTable({
                 {loadError}
                 <Button
                   onClick={onLoadMore}
-                  label={'Retry'}
+                  label={t`Retry`}
                   variant={'secondary'}
 
                   isDisabled={isLoadingNext}
                 >
-                  Retry
+                  <Trans>Retry</Trans>
                 </Button>
               </Stack>
             ) : isLoadingNext ? (
-              'Loading more transactions…'
+              t`Loading more transactions…`
             ) : null}
           </div>
         )}

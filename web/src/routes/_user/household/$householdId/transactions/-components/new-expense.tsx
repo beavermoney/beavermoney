@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useRef } from 'react'
@@ -34,18 +36,6 @@ import { commitMutationResult } from '@/lib/relay'
 import { OwnerSelect } from '../../-components/owner-select'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-
-const formSchema = z.object({
-  description: z
-    .string()
-    .max(256, 'Description must be at most 256 characters.'),
-  amount: z.number().positive('Amount must be positive'),
-  datetime: z.date(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-  accountId: z.string().min(1, 'Please select an account'),
-  categoryId: z.string().min(1, 'Please select a category'),
-  excludeFromReports: z.boolean(),
-})
 
 const newExpenseFragment = graphql`
   fragment newExpenseFragment on Household
@@ -95,6 +85,19 @@ type NewExpenseProps = {
 }
 
 export function NewExpense({ fragmentRef }: NewExpenseProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    description: z
+      .string()
+      .max(256, t`Description must be at most 256 characters.`),
+    amount: z.number().positive(t`Amount must be positive`),
+    datetime: z.date(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+    accountId: z.string().min(1, t`Please select an account`),
+    categoryId: z.string().min(1, t`Please select a category`),
+    excludeFromReports: z.boolean(),
+  })
+
   const showToast = useToast()
   const isMobile = useIsMobile()
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
@@ -179,7 +182,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
             'No data returned from mutation',
           )
 
-          showToast({ type: 'info', body: 'Expense created successfully!' })
+          showToast({ type: 'info', body: t`Expense created successfully!` })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
             form.reset({
@@ -254,7 +257,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                 preferredTypes={['liquidity', 'liability']}
                 accounts={availableAccounts}
                 name={field.name}
-                label="Account"
+                label={t`Account`}
                 value={field.state.value}
                 onValueChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -275,9 +278,10 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Amount`}
                 id={field.name}
                 name={field.name}
-                placeholder="Please enter an amount"
+                placeholder={t`Please enter an amount`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -308,9 +312,9 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                 id={field.name}
                 onBlur={field.handleBlur}
                 aria-invalid={isInvalid}
-                placeholder="Coffee at Starbucks"
+                placeholder={t`Coffee at Starbucks`}
                 autoComplete="off"
-                label={'Description'}
+                label={t`Description`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -362,7 +366,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
             >
               <FinanceDateInput
                 id={field.name}
-                label="Date"
+                label={t`Date`}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -388,7 +392,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
-                label={'Exclude from reports'}
+                label={t`Exclude from reports`}
               />
             </Stack>
           )
@@ -466,7 +470,9 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
             </Grid>
             <fieldset>
               <legend className="mb-2">
-                <Text type="label">Options</Text>
+                <Text type="label">
+                  <Trans>Options</Trans>
+                </Text>
               </legend>
               <Stack direction="vertical" gap={4} data-slot="checkbox-group">
                 {fields.excludeFromReports}
@@ -487,20 +493,20 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           <Button
             type="button"
             onClick={() => form.reset()}
-            label={'Reset'}
+            label={t`Reset`}
             variant={'secondary'}
           >
-            Reset
+            <Trans>Reset</Trans>
           </Button>
           <Button
             type="submit"
             form="new-expense-form"
-            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
             variant={'primary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
+            {isMutationInFlight ? t`Creating...` : t`Create`}
           </Button>
         </Stack>
       </Stack>

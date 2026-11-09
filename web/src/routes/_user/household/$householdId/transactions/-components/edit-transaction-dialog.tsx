@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileEditTransaction } from './mobile-edit-transaction'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
@@ -171,15 +173,6 @@ export const EditTransactionDialogQuery = graphql`
   }
 `
 
-const formSchema = z.object({
-  description: z
-    .string()
-    .max(256, 'Description must be at most 256 characters.'),
-  datetime: z.date(),
-  categoryId: z.string().min(1, 'Please select a category'),
-  excludeFromReports: z.boolean(),
-})
-
 type EditTransactionDialogProps = {
   queryRef: PreloadedQuery<editTransactionDialogQuery>
   onClose?: () => void
@@ -191,6 +184,16 @@ export function EditTransactionDialog({
   onClose,
   onPendingChange,
 }: EditTransactionDialogProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    description: z
+      .string()
+      .max(256, t`Description must be at most 256 characters.`),
+    datetime: z.date(),
+    categoryId: z.string().min(1, t`Please select a category`),
+    excludeFromReports: z.boolean(),
+  })
+
   const isMobile = useIsMobile()
   const showToast = useToast()
 
@@ -329,7 +332,10 @@ export function EditTransactionDialog({
 
       match(result)
         .with({ status: 'success' }, () => {
-          showToast({ type: 'info', body: 'Transaction updated successfully!' })
+          showToast({
+            type: 'info',
+            body: t`Transaction updated successfully!`,
+          })
         })
         .with({ status: 'error' }, ({ error }) => {
           showToast({ type: 'error', body: error.toString() })
@@ -353,7 +359,7 @@ export function EditTransactionDialog({
 
     match(result)
       .with({ status: 'success' }, () => {
-        showToast({ type: 'info', body: 'Transaction deleted successfully!' })
+        showToast({ type: 'info', body: t`Transaction deleted successfully!` })
         navigate({
           to: '.',
           search: (old) => ({ ...old, edit_transaction_id: null }),
@@ -446,7 +452,11 @@ export function EditTransactionDialog({
         padding={6}
         header={
           <DialogHeader
-            title={<>Delete Transaction</>}
+            title={
+              <>
+                <Trans>Delete Transaction</Trans>
+              </>
+            }
             onOpenChange={setDeleteAlertOpen}
           />
         }
@@ -454,8 +464,10 @@ export function EditTransactionDialog({
         <LayoutContent>
           <Stack direction="vertical" gap={6} paddingBlockStart={4}>
             <Text as="div" display="block" type="supporting">
-              This action cannot be undone. This will permanently delete the
-              transaction and all associated entries and investment lots.
+              <Trans>
+                This action cannot be undone. This will permanently delete the
+                transaction and all associated entries and investment lots.
+              </Trans>
             </Text>
             <Stack
               direction="horizontal"
@@ -465,16 +477,16 @@ export function EditTransactionDialog({
               justify="end"
             >
               <Button
-                label="Cancel"
+                label={t`Cancel`}
                 onClick={() => setDeleteAlertOpen(false)}
               />
               <Button
                 variant="destructive"
                 onClick={handleDelete}
                 isDisabled={isDeleteInFlight}
-                label="Delete"
+                label={t`Delete`}
               >
-                {isDeleteInFlight ? 'Deleting...' : 'Delete'}
+                {isDeleteInFlight ? t`Deleting...` : t`Delete`}
               </Button>
             </Stack>
           </Stack>
@@ -513,7 +525,7 @@ export function EditTransactionDialog({
       padding={6}
       header={
         <DialogHeader
-          title="Edit Transaction"
+          title={t`Edit Transaction`}
           onOpenChange={() => onClose?.()}
         />
       }
@@ -521,8 +533,10 @@ export function EditTransactionDialog({
       <LayoutContent>
         <Stack direction="vertical" gap={6} paddingBlockStart={4}>
           <Text as="div" display="block" type="supporting">
-            Update transaction details. Click on entries or lots below to edit
-            them individually.
+            <Trans>
+              Update transaction details. Click on entries or lots below to edit
+              them individually.
+            </Trans>
           </Text>
 
           <Stack direction="vertical" gap={2}>
@@ -594,9 +608,9 @@ export function EditTransactionDialog({
                           id={field.name}
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
-                          placeholder="Transaction description"
+                          placeholder={t`Transaction description`}
                           autoComplete="off"
-                          label={'Description'}
+                          label={t`Description`}
 
                           value={String(field.state.value ?? '')}
                           onChange={(_value, event) =>
@@ -624,7 +638,7 @@ export function EditTransactionDialog({
                       >
                         <FinanceDateInput
                           id={field.name}
-                          label="Date"
+                          label={t`Date`}
                           value={field.state.value}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
@@ -650,7 +664,9 @@ export function EditTransactionDialog({
                         gap={2}
                         data-invalid={isInvalid}
                       >
-                        <label htmlFor={field.name}>Category</label>
+                        <label htmlFor={field.name}>
+                          <Trans>Category</Trans>
+                        </label>
                         <TransactionCategoryPicker
                           categories={allCategories}
                           name={field.name}
@@ -668,7 +684,9 @@ export function EditTransactionDialog({
                 />
                 <fieldset>
                   <legend className="mb-2">
-                    <Text type="label">Options</Text>
+                    <Text type="label">
+                      <Trans>Options</Trans>
+                    </Text>
                   </legend>
                   <Stack
                     direction="vertical"
@@ -686,7 +704,7 @@ export function EditTransactionDialog({
                               value={field.state.value}
                               onChange={field.handleChange}
                               onBlur={field.handleBlur}
-                              label={'Exclude from reports'}
+                              label={t`Exclude from reports`}
                             />
                           </Stack>
                         )
@@ -709,23 +727,23 @@ export function EditTransactionDialog({
               <Button
                 onClick={() => setDeleteAlertOpen(true)}
                 type="button"
-                label={'Delete'}
+                label={t`Delete`}
                 variant={'destructive'}
 
                 isDisabled={isDeleteInFlight || isUpdateInFlight}
               >
-                Delete
+                <Trans>Delete</Trans>
               </Button>
             </>
             <Button
               type="submit"
               form="edit-transaction-form"
-              label={String(isUpdateInFlight ? 'Saving...' : 'Save Changes')}
+              label={String(isUpdateInFlight ? t`Saving...` : t`Save Changes`)}
               variant={'primary'}
 
               isDisabled={isUpdateInFlight || isDeleteInFlight}
             >
-              {isUpdateInFlight ? 'Saving...' : 'Save Changes'}
+              {isUpdateInFlight ? t`Saving...` : t`Save Changes`}
             </Button>
           </Stack>
         </Stack>

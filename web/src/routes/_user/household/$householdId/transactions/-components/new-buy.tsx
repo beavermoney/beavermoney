@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Text } from '@astryxdesign/core/Text'
 import { InvestmentStart } from './investment-start'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
@@ -34,19 +36,6 @@ import { commitMutationResult } from '@/lib/relay'
 import { OwnerSelect } from '../../-components/owner-select'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
-
-const formSchema = z.object({
-  description: z
-    .string()
-    .max(256, 'Description must be at most 256 characters.'),
-  shares: z.number().positive('Shares must be positive'),
-  pricePerShare: z.number().positive('Price per share must be positive'),
-  totalPaid: z.number().positive('Total paid must be positive'),
-  datetime: z.date(),
-  ownerUserID: z.string().min(1, 'Please select an owner'),
-  accountId: z.string().min(1, 'Please select an account'),
-  investmentId: z.string().min(1, 'Please select an investment'),
-})
 
 const newBuyFragment = graphql`
   fragment newBuyFragment on Household
@@ -100,6 +89,20 @@ type NewBuyProps = {
 }
 
 export function NewBuy({ fragmentRef }: NewBuyProps) {
+  const { t } = useLingui()
+  const formSchema = z.object({
+    description: z
+      .string()
+      .max(256, t`Description must be at most 256 characters.`),
+    shares: z.number().positive(t`Shares must be positive`),
+    pricePerShare: z.number().positive(t`Price per share must be positive`),
+    totalPaid: z.number().positive(t`Total paid must be positive`),
+    datetime: z.date(),
+    ownerUserID: z.string().min(1, t`Please select an owner`),
+    accountId: z.string().min(1, t`Please select an account`),
+    investmentId: z.string().min(1, t`Please select an investment`),
+  })
+
   const showToast = useToast()
   const isMobile = useIsMobile()
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
@@ -194,7 +197,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
 
           showToast({
             type: 'info',
-            body: 'Buy transaction created successfully!',
+            body: t`Buy transaction created successfully!`,
           })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
@@ -277,7 +280,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
               <TransactionAccountPicker
                 accounts={investmentAccounts}
                 name={field.name}
-                label="Account"
+                label={t`Account`}
                 value={field.state.value}
                 onValueChange={(value) => {
                   field.handleChange(value)
@@ -303,7 +306,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
               <TransactionInvestmentPicker
                 investments={availableInvestments}
                 name={field.name}
-                label="Investment"
+                label={t`Investment`}
                 value={field.state.value}
                 onValueChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -327,7 +330,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
               <CurrencyInput
                 id={field.name}
                 name={field.name}
-                aria-label="Shares"
+                aria-label={t`Shares`}
                 value={field.state.value}
                 locale={household.locale}
                 currency={
@@ -357,9 +360,10 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Price per share`}
                 id={field.name}
                 name={field.name}
-                placeholder="Please enter a price"
+                placeholder={t`Please enter a price`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -387,9 +391,10 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <CurrencyInput
+                aria-label={t`Total paid`}
                 id={field.name}
                 name={field.name}
-                placeholder="Total amount paid"
+                placeholder={t`Total amount paid`}
                 onValueChange={(e) => {
                   field.handleChange(e.floatValue!)
                 }}
@@ -421,9 +426,9 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
                 id={field.name}
                 onBlur={field.handleBlur}
                 aria-invalid={isInvalid}
-                placeholder="Buy AAPL shares"
+                placeholder={t`Buy AAPL shares`}
                 autoComplete="off"
-                label={'Description'}
+                label={t`Description`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -475,7 +480,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
             >
               <FinanceDateInput
                 id={field.name}
-                label="Date"
+                label={t`Date`}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
@@ -498,7 +503,9 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
         header={
           <>
             {fields.accountId}
-            <Text type="label">Buy</Text>
+            <Text type="label">
+              <Trans>Buy</Trans>
+            </Text>
             {fields.investmentId}
           </>
         }
@@ -591,20 +598,20 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
           <Button
             type="button"
             onClick={() => form.reset()}
-            label={'Reset'}
+            label={t`Reset`}
             variant={'secondary'}
           >
-            Reset
+            <Trans>Reset</Trans>
           </Button>
           <Button
             type="submit"
             form="new-buy-form"
-            label={String(isMutationInFlight ? 'Creating...' : 'Create')}
+            label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
             variant={'primary'}
 
             isDisabled={isMutationInFlight}
           >
-            {isMutationInFlight ? 'Creating...' : 'Create'}
+            {isMutationInFlight ? t`Creating...` : t`Create`}
           </Button>
         </Stack>
       </Stack>

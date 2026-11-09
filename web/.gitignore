@@ -11,3 +11,5 @@ count.txt
 .output
 .vinxi
 todos.json
+# Vite compiles PO catalogs; these are only produced by the strict CLI check.
+src/locales/*/messages.js

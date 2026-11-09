@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import type { MouseEvent } from 'react'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import {
@@ -42,6 +43,7 @@ export function HouseholdSwitcher({
 }: {
   fragmentRef: householdSwitcherFragment$key
 }) {
+  const { t } = useLingui()
   const data = useFragment(HouseholdSwitcherFragment, fragmentRef)
   const { household: activeHousehold } = useHousehold()
   const navigate = useNavigate()
@@ -60,7 +62,7 @@ export function HouseholdSwitcher({
         iconOnly ? (
           <Button
             {...triggerProps}
-            label={`${data.user.name}, user menu`}
+            label={t`${data.user.name}, user menu`}
             variant="ghost"
             isIconOnly
             icon={<Avatar aria-hidden="true" name={data.user.name} size="sm" />}
@@ -74,7 +76,7 @@ export function HouseholdSwitcher({
             as="button"
             role="button"
             label={data.user.name}
-            aria-label={`${data.user.name}, user menu`}
+            aria-label={t`${data.user.name}, user menu`}
             density="compact"
             className="w-full text-left"
             startContent={
@@ -125,7 +127,7 @@ export function HouseholdSwitcher({
           />
         ))}
         <DropdownMenuItem
-          label="Add household"
+          label={t`Add household`}
           icon={Plus}
           onClick={() => {
             closeMobileNav()
@@ -135,7 +137,7 @@ export function HouseholdSwitcher({
       </DropdownMenuGroup>
       <DropdownMenuDivider />
       <DropdownMenuItem
-        label="Log out"
+        label={t`Log out`}
         icon={LogOut}
         onClick={() => {
           closeMobileNav()

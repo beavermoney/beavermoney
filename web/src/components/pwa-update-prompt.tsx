@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useEffect, useRef } from 'react'
 import { Button } from '@astryxdesign/core/Button'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -7,6 +9,7 @@ const MIN_UPDATE_CHECK_INTERVAL_MS = 60_000
 const UPDATE_TOAST_ID = 'pwa-update-available'
 
 export function PwaUpdatePrompt() {
+  const { t } = useLingui()
   const showToast = useToast()
   const registrationRef = useRef<ServiceWorkerRegistration>(null)
   const lastUpdateCheckRef = useRef(0)
@@ -56,20 +59,20 @@ export function PwaUpdatePrompt() {
     if (!needRefresh) return
     const hide = showToast({
       uniqueID: UPDATE_TOAST_ID,
-      body: 'Update available. Reload to use the latest version of Beaver Money.',
+      body: t`Update available. Reload to use the latest version of Beaver Money.`,
       isAutoHide: false,
       onHide: () => setNeedRefresh(false),
       endContent: (
         <Button
-          label="Update"
+          label={t`Update`}
           size="sm"
           onClick={() => void updateServiceWorker(true)}
         >
-          Update
+          <Trans>Update</Trans>
         </Button>
       ),
     })
     return hide
-  }, [needRefresh, setNeedRefresh, updateServiceWorker, showToast])
+  }, [t, needRefresh, setNeedRefresh, updateServiceWorker, showToast])
   return null
 }

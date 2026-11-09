@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { useComposer } from './transaction-composer/context'
 import { ComposerAmount } from './transaction-composer/controls'
 import { useCurrencyConfig } from '@/hooks/use-currency-config'
@@ -50,6 +51,7 @@ export function CurrencyInput({
   value,
   ...props
 }: CurrencyInputProps) {
+  const { t } = useLingui()
   const composer = useComposer()
   const { prefix, suffix, decimalSeparator } = useCurrencyConfig(
     locale,
@@ -120,15 +122,7 @@ export function CurrencyInput({
     return (
       <ComposerAmount
         name={name ?? props.id ?? 'amount'}
-        label={
-          props['aria-label'] ??
-          (name
-            ? (name[0].toUpperCase() + name.slice(1)).replace(
-                /([a-z])([A-Z])/g,
-                '$1 $2',
-              )
-            : 'Amount')
-        }
+        label={props['aria-label'] ?? t`Amount`}
         currencyCode={showCurrencySymbol ? currency : undefined}
         raw={rawValue}
         prefix={showCurrencySymbol ? prefix : ''}
@@ -152,15 +146,7 @@ export function CurrencyInput({
   }
   return (
     <InputGroup
-      label={
-        props['aria-label'] ??
-        (name
-          ? (name[0].toUpperCase() + name.slice(1)).replace(
-              /([a-z])([A-Z])/g,
-              '$1 $2',
-            )
-          : 'Amount')
-      }
+      label={props['aria-label'] ?? t`Amount`}
 
       isDisabled={disabled}
       status={props['aria-invalid'] === true ? { type: 'error' } : undefined}
@@ -178,7 +164,7 @@ export function CurrencyInput({
         aria-describedby={props['aria-describedby']}
         autoComplete={props.autoComplete}
         placeholder={props.placeholder}
-        label={props['aria-label'] ?? name ?? 'Amount'}
+        label={props['aria-label'] ?? t`Amount`}
 
         isLabelHidden
         htmlName={name}

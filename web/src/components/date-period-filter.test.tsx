@@ -62,7 +62,9 @@ it('keeps existing dates and shows a retryable error if loading fails', async ()
   fireEvent.click(screen.getByRole('button', { name: 'Next period' }))
   await screen.findByRole('alert')
   expect(screen.getByRole('button', { name: 'August 2026' })).toBeTruthy()
-  expect(
-    screen.queryByRole('progressbar', { name: 'Updating date range' }),
-  ).toBeNull()
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('progressbar', { name: 'Updating date range' }),
+    ).toBeNull(),
+  )
 })

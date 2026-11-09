@@ -1,3 +1,6 @@
+import { useFinanceLabel } from '@/hooks/use-finance-label'
+import { useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { TransactionDeleteConfirmation } from '@/components/transaction-composer/delete-confirmation'
 import { InvestmentIcon } from '@/components/investment-icon'
 import { ComposerTransferRows } from '@/components/transaction-composer/transfer-rows'
@@ -234,6 +237,7 @@ export function MobileEditTransaction({
   deleting: boolean
   onPendingChange?: (pending: boolean) => void
 }) {
+  const { t } = useLingui()
   const transaction = useFragment(transactionFragment, transactionRef)
   const household = useFragment(accountsFragment, householdRef)
   const originalEntries = transaction.transactionEntries ?? []
@@ -392,13 +396,13 @@ export function MobileEditTransaction({
         label={
           lots.length
             ? originalEntries[i].amount.startsWith('-')
-              ? 'Total paid'
-              : 'Total received'
+              ? t`Total paid`
+              : t`Total received`
             : transfer && !sharedAmount
               ? originalEntries[i].amount.startsWith('-')
-                ? 'From amount'
-                : 'To amount'
-              : 'Amount'
+                ? t`From amount`
+                : t`To amount`
+              : t`Amount`
         }
         value={entry.amount}
         currencyCode={accountMap.get(entry.accountId)!.householdCurrency.code}
@@ -419,9 +423,9 @@ export function MobileEditTransaction({
         label={
           transfer
             ? originalEntries[i].amount.startsWith('-')
-              ? 'From account'
-              : 'To account'
-            : 'Account'
+              ? t`From account`
+              : t`To account`
+            : t`Account`
         }
         value={accountMap.get(entry.accountId)!}
         accounts={available.filter(
@@ -449,7 +453,7 @@ export function MobileEditTransaction({
       disabled
       amountName={`lot-${i}-shares`}
       name={`investment-account-${i}`}
-      label="Investment account"
+      label={t`Investment account`}
       value={accountMap.get(lots[i].accountId)!}
       accounts={[]}
       onChange={() => {}}
@@ -460,7 +464,7 @@ export function MobileEditTransaction({
       isDisabled
       hideChipLabel
       name={`investment-${i}`}
-      label="Investment"
+      label={t`Investment`}
       items={[originalLots[i].investment]}
       value={originalLots[i].investment}
       getLabel={(inv) => inv.symbol || inv.name}
@@ -476,11 +480,17 @@ export function MobileEditTransaction({
           lots.length ? (
             lots.length === 2 ? (
               <>
-                <Text type="label">Move</Text>
+                <Text type="label">
+                  <Trans>Move</Trans>
+                </Text>
                 {investmentSymbol(sourceLot)}
-                <Text type="supporting">from</Text>
+                <Text type="supporting">
+                  <Trans>from</Trans>
+                </Text>
                 {investmentAccount(sourceLot)}
-                <Text type="supporting">to</Text>
+                <Text type="supporting">
+                  <Trans>to</Trans>
+                </Text>
                 {investmentAccount(1 - sourceLot)}
               </>
             ) : (
@@ -529,8 +539,8 @@ export function MobileEditTransaction({
                   name={`lot-${i}-shares`}
                   label={
                     lots.length > 1
-                      ? `${i === 0 ? 'From' : 'To'} shares`
-                      : 'Shares'
+                      ? t`${i === 0 ? t`From` : t`To`} shares`
+                      : t`Shares`
                   }
                   value={lot.amount}
                   currencyCode={
@@ -553,7 +563,7 @@ export function MobileEditTransaction({
               <Fragment key={lot.id}>
                 <EditAmount
                   name={`lot-${i}-price`}
-                  label="Price per share"
+                  label={t`Price per share`}
                   value={lot.price}
                   currencyCode={
                     accountMap.get(lot.accountId)!.householdCurrency.code
@@ -579,10 +589,10 @@ export function MobileEditTransaction({
               !lots.length &&
               entries.map((_, i) => entryAccount(i))}
             <Button
-              label={`Owner: ${transaction.user.name}`}
+              label={t`Owner: ${transaction.user.name}`}
               isDisabled
               variant="secondary"
-              tooltip="The transaction owner cannot be changed."
+              tooltip={t`The transaction owner cannot be changed.`}
             >
               {transaction.user.name}
             </Button>
@@ -591,7 +601,7 @@ export function MobileEditTransaction({
         date={
           <FinanceDateInput
             id="date"
-            label="Date"
+            label={t`Date`}
             value={date}
             onChange={setDate}
             onBlur={() => {}}
@@ -601,12 +611,12 @@ export function MobileEditTransaction({
         details={
           <>
             <TextInput
-              label="Description"
+              label={t`Description`}
               value={description}
               onChange={setDescription}
             />
             <CheckboxInput
-              label="Exclude from reports"
+              label={t`Exclude from reports`}
               value={excluded}
               onChange={setExcluded}
             />
@@ -640,6 +650,7 @@ function EditAccount({
   accounts: readonly Account[]
   onChange: (account: Account) => void
 }) {
+  const financeLabel = useFinanceLabel()
   const composer = useComposer()
   const choices = accounts.some((a) => a.id === value.id)
     ? accounts
@@ -659,7 +670,9 @@ function EditAccount({
       items={choices}
       value={value}
       getLabel={(a) => a.name}
-      getSearchText={(a) => `${a.type} ${a.householdCurrency.code}`}
+      getSearchText={(a) =>
+        `${financeLabel(a.type)} ${a.householdCurrency.code}`
+      }
       hideChipLabel
       confirmSelection
       renderChipIcon={icon}
@@ -669,7 +682,7 @@ function EditAccount({
           <Stack gap={1}>
             <Text>{a.name}</Text>
             <Text type="supporting">
-              {a.type} · {a.householdCurrency.code}
+              {financeLabel(a.type)} · {a.householdCurrency.code}
               {a.archived ? ' · Archived' : ''}
             </Text>
           </Stack>

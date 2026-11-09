@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@astryxdesign/core/Button'
 import {
@@ -48,20 +49,6 @@ const CASH_TYPES: readonly LogTransactionType[] = [
 ]
 const INVESTMENT_TYPES: readonly LogTransactionType[] = ['buy', 'sell', 'move']
 
-const TYPE_LABELS: Record<LogTransactionType, string> = {
-  expense: 'Expense',
-  income: 'Income',
-  transfer: 'Transfer',
-  buy: 'Buy',
-  sell: 'Sell',
-  move: 'Move',
-}
-
-const MODES: { value: Mode; label: string }[] = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'investment', label: 'Investment' },
-]
-
 function modeForType(type: LogTransactionType): Mode {
   return CASH_TYPES.includes(type) ? 'cash' : 'investment'
 }
@@ -71,6 +58,21 @@ function firstTypeForMode(mode: Mode): LogTransactionType {
 }
 
 export function LogTransaction({ fragmentRef }: NewTransactionProps) {
+  const { t } = useLingui()
+  const MODES: { value: Mode; label: string }[] = [
+    { value: 'cash', label: t`Cash` },
+    { value: 'investment', label: t`Investment` },
+  ]
+
+  const TYPE_LABELS: Record<LogTransactionType, string> = {
+    expense: t`Expense`,
+    income: t`Income`,
+    transfer: t`Transfer`,
+    buy: t`Buy`,
+    sell: t`Sell`,
+    move: t`Move`,
+  }
+
   const data = useFragment(logTransactionFragment, fragmentRef)
   const isMobile = useIsMobile()
   const panelRef = useRef<HTMLDivElement>(null)
@@ -116,7 +118,7 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
     <Stack ref={panelRef} direction="vertical" gap={6}>
       <Stack direction="horizontal" gap={4} vAlign="center" wrap="wrap">
         <SegmentedControl
-          label="Transaction kind"
+          label={t`Transaction kind`}
           value={mode}
           onChange={(next) => handleModeChange(next as Mode)}
         >
@@ -134,7 +136,7 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
           gap={2}
           wrap="wrap"
           role="group"
-          aria-label="Transaction types"
+          aria-label={t`Transaction types`}
         >
           {visibleTypes.map((t) => (
             <Button
