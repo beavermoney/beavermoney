@@ -417,10 +417,6 @@ msgid "By Symbol"
 msgstr "按代码"
 
 #: src/components/date-period-filter.tsx
-msgid "Calendar"
-msgstr "日历"
-
-#: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx

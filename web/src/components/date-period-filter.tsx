@@ -49,11 +49,10 @@ export function DatePeriodFilter({
 }: Props) {
   const format = useDateFormatter()
   const { t } = useLingui()
-  const titles: Record<DatePeriod, string> = {
+  const titles: Record<Exclude<DatePeriod, 'calendar'>, string> = {
     week: t`Week`,
     month: t`Month`,
     year: t`Year`,
-    calendar: t`Calendar`,
     custom: t`Custom range`,
   }
 
@@ -124,12 +123,8 @@ export function DatePeriodFilter({
             : addDays(start, direction)
     select(mode, next)
   }
-  function chooseMode(next: DatePeriod) {
+  function chooseMode(next: keyof typeof titles) {
     setPage(0)
-    if (next === 'calendar') {
-      select('calendar', start)
-      return
-    }
     if (next === 'custom') setDraft({ from: start, to: end })
     setStep(next)
   }
@@ -148,16 +143,16 @@ export function DatePeriodFilter({
           </Text>
         }
       >
-        {(Object.keys(titles) as DatePeriod[]).map((option) => (
+        {(Object.keys(titles) as (keyof typeof titles)[]).map((option) => (
           <ListItem
             key={option}
             label={titles[option]}
-            aria-haspopup={option === 'calendar' ? undefined : 'dialog'}
+            aria-haspopup="dialog"
             isSelected={mode === option}
             endContent={
               <Stack direction="horizontal" gap={2} align="center">
                 {mode === option && <Icon icon={Check} />}
-                {option !== 'calendar' && <Icon icon={ChevronRight} />}
+                <Icon icon={ChevronRight} />
               </Stack>
             }
             isDisabled={pending}
@@ -401,18 +396,8 @@ export function DatePeriodFilter({
             )}
           >
             <DropdownMenuGroup title={t`Date view`}>
-              {(Object.keys(titles) as DatePeriod[]).map((option) =>
-                option === 'calendar' ? (
-                  <DropdownMenuItem
-                    key={option}
-                    label={titles[option]}
-                    endContent={
-                      mode === option ? <Icon icon={Check} /> : undefined
-                    }
-                    isDisabled={pending}
-                    onClick={() => chooseMode(option)}
-                  />
-                ) : (
+              {(Object.keys(titles) as (keyof typeof titles)[]).map(
+                (option) => (
                   <DropdownMenuSubMenu
                     key={option}
                     label={titles[option]}
@@ -490,15 +475,6 @@ export function DatePeriodFilter({
         )}
       </Stack>
       {error && <Text role="alert">{error}</Text>}
-      {mode === 'calendar' && (
-        <FinanceCalendar
-          className="w-full"
-          selected={start}
-          onSelect={(date) => {
-            if (date && !pending) select('calendar', date)
-          }}
-        />
-      )}
       {isMobile && (
         <>
           <BottomSheet
