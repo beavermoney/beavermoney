@@ -27,11 +27,6 @@ msgstr "{0, plural, one {# transaction} other {# transactions}}"
 msgid "{0} is ready to go!"
 msgstr "{0} is ready to go!"
 
-#. placeholder {0}: titles[view]
-#: src/components/date-period-filter.tsx
-msgid "{0} options"
-msgstr "{0} options"
-
 #. placeholder {0}: selectedMembers.length
 #: src/routes/_user/household/$householdId/-components/view-scope-switcher.tsx
 msgid "{0} selected"
@@ -362,6 +357,7 @@ msgstr "At least one admin must remain."
 msgid "Avg Cost / Share"
 msgstr "Avg Cost / Share"
 
+#: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/$categoryId.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
@@ -421,8 +417,8 @@ msgid "By Symbol"
 msgstr "By Symbol"
 
 #: src/components/date-period-filter.tsx
-msgid "Calendar view"
-msgstr "Calendar view"
+msgid "Calendar"
+msgstr "Calendar"
 
 #: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
@@ -1300,6 +1296,10 @@ msgstr "Language"
 msgid "Largest first"
 msgstr "Largest first"
 
+#: src/components/date-period-filter.tsx
+msgid "Last week"
+msgstr "Last week"
+
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
 msgstr "Less scattered.<0/>More understood."
@@ -1445,6 +1445,7 @@ msgstr "Money out"
 msgid "Money owed to you, such as pending reimbursements or money lent"
 msgstr "Money owed to you, such as pending reimbursements or money lent"
 
+#: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
 msgid "Month"
 msgstr "Month"
@@ -1578,6 +1579,10 @@ msgstr "Next Payment"
 #: src/components/date-period-filter.tsx
 msgid "Next period"
 msgstr "Next period"
+
+#: src/components/date-period-filter.tsx
+msgid "Next year"
+msgstr "Next year"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
 msgid "No account categories available."
@@ -1837,6 +1842,10 @@ msgstr "Preferences"
 #: src/components/date-period-filter.tsx
 msgid "Previous period"
 msgstr "Previous period"
+
+#: src/components/date-period-filter.tsx
+msgid "Previous year"
+msgstr "Previous year"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -2144,14 +2153,6 @@ msgstr "Shares to move"
 msgid "Show balances"
 msgstr "Show balances"
 
-#: src/components/date-period-filter.tsx
-msgid "Show earlier weeks"
-msgstr "Show earlier weeks"
-
-#: src/components/date-period-filter.tsx
-msgid "Show earlier years"
-msgstr "Show earlier years"
-
 #: src/routes/index.tsx
 msgid "SMALL HABITS. A BIGGER PICTURE."
 msgstr "SMALL HABITS. A BIGGER PICTURE."
@@ -2226,10 +2227,6 @@ msgstr "Subtract"
 msgid "Sunday"
 msgstr "Sunday"
 
-#: src/components/date-period-filter.tsx
-msgid "Switch view"
-msgstr "Switch view"
-
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Symbol"
 msgstr "Symbol"
@@ -2295,6 +2292,10 @@ msgstr "This household is in an unexpected state. Refresh and try again."
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
 msgstr "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
+
+#: src/components/date-period-filter.tsx
+msgid "This week"
+msgstr "This week"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
@@ -2539,18 +2540,6 @@ msgstr "Updating date range"
 msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
 msgstr "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
 
-#: src/components/date-period-filter.tsx
-msgid "View by month"
-msgstr "View by month"
-
-#: src/components/date-period-filter.tsx
-msgid "View by week"
-msgstr "View by week"
-
-#: src/components/date-period-filter.tsx
-msgid "View by year"
-msgstr "View by year"
-
 #: src/components/not-found-error.tsx
 msgid "We could not find what you were looking for. It may have been moved or deleted."
 msgstr "We could not find what you were looking for. It may have been moved or deleted."
@@ -2563,6 +2552,7 @@ msgstr "We couldn't find a user with that email. Ask them to sign in with Google
 msgid "Wednesday"
 msgstr "Wednesday"
 
+#: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
 msgid "Week"
 msgstr "Week"
@@ -2579,6 +2569,7 @@ msgstr "Welcome to {name}! Your household is ready."
 msgid "What changed since your last snapshot?"
 msgstr "What changed since your last snapshot?"
 
+#: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
 msgid "Year"
 msgstr "Year"

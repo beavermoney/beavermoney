@@ -27,11 +27,6 @@ msgstr "{0, plural, other {# 笔交易}}"
 msgid "{0} is ready to go!"
 msgstr "{0} 已创建！"
 
-#. placeholder {0}: titles[view]
-#: src/components/date-period-filter.tsx
-msgid "{0} options"
-msgstr "{0}选项"
-
 #. placeholder {0}: selectedMembers.length
 #: src/routes/_user/household/$householdId/-components/view-scope-switcher.tsx
 msgid "{0} selected"
@@ -362,6 +357,7 @@ msgstr "必须保留至少一位管理员。"
 msgid "Avg Cost / Share"
 msgstr "每股平均成本"
 
+#: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/$categoryId.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
@@ -421,8 +417,8 @@ msgid "By Symbol"
 msgstr "按代码"
 
 #: src/components/date-period-filter.tsx
-msgid "Calendar view"
-msgstr "日历视图"
+msgid "Calendar"
+msgstr "日历"
 
 #: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
@@ -1300,6 +1296,10 @@ msgstr "语言"
 msgid "Largest first"
 msgstr "金额从大到小"
 
+#: src/components/date-period-filter.tsx
+msgid "Last week"
+msgstr "上周"
+
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
 msgstr "少一点零散，<0/>多一份明白。"
@@ -1445,6 +1445,7 @@ msgstr "流出"
 msgid "Money owed to you, such as pending reimbursements or money lent"
 msgstr "他人欠你的款项，例如待报销费用或借出款项"
 
+#: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
 msgid "Month"
 msgstr "月"
@@ -1578,6 +1579,10 @@ msgstr "下次付款"
 #: src/components/date-period-filter.tsx
 msgid "Next period"
 msgstr "下一时段"
+
+#: src/components/date-period-filter.tsx
+msgid "Next year"
+msgstr "下一年"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-category-picker.tsx
 msgid "No account categories available."
@@ -1837,6 +1842,10 @@ msgstr "偏好设置"
 #: src/components/date-period-filter.tsx
 msgid "Previous period"
 msgstr "上一时段"
+
+#: src/components/date-period-filter.tsx
+msgid "Previous year"
+msgstr "上一年"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -2144,14 +2153,6 @@ msgstr "转移股数"
 msgid "Show balances"
 msgstr "显示余额"
 
-#: src/components/date-period-filter.tsx
-msgid "Show earlier weeks"
-msgstr "显示更早的周"
-
-#: src/components/date-period-filter.tsx
-msgid "Show earlier years"
-msgstr "显示更早的年份"
-
 #: src/routes/index.tsx
 msgid "SMALL HABITS. A BIGGER PICTURE."
 msgstr "小小习惯，看清全貌。"
@@ -2226,10 +2227,6 @@ msgstr "减去"
 msgid "Sunday"
 msgstr "星期日"
 
-#: src/components/date-period-filter.tsx
-msgid "Switch view"
-msgstr "切换视图"
-
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Symbol"
 msgstr "代码"
@@ -2295,6 +2292,10 @@ msgstr "此家庭的状态异常，请刷新后重试。"
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
 msgstr "此成员或共同持有人名下仍有账户、投资或订阅。请先删除或归档这些项目。"
+
+#: src/components/date-period-filter.tsx
+msgid "This week"
+msgstr "本周"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
@@ -2539,18 +2540,6 @@ msgstr "正在更新日期范围"
 msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
 msgstr "用 Beaver Money 管理日常财务，也可以自行部署。代码开放，选择由你。"
 
-#: src/components/date-period-filter.tsx
-msgid "View by month"
-msgstr "按月查看"
-
-#: src/components/date-period-filter.tsx
-msgid "View by week"
-msgstr "按周查看"
-
-#: src/components/date-period-filter.tsx
-msgid "View by year"
-msgstr "按年查看"
-
 #: src/components/not-found-error.tsx
 msgid "We could not find what you were looking for. It may have been moved or deleted."
 msgstr "未找到你要查看的内容，可能已被移动或删除。"
@@ -2563,6 +2552,7 @@ msgstr "未找到使用此邮箱的用户。请对方先使用 Google 登录一�
 msgid "Wednesday"
 msgstr "星期三"
 
+#: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
 msgid "Week"
 msgstr "周"
@@ -2579,6 +2569,7 @@ msgstr "欢迎加入 {name}！你的家庭已创建。"
 msgid "What changed since your last snapshot?"
 msgstr "与上次快照相比有哪些变化？"
 
+#: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
 msgid "Year"
 msgstr "年"
