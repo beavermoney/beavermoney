@@ -101,6 +101,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
 
   const showToast = useToast()
   const isMobile = useIsMobile()
+  // Keep defaults stable when Relay refreshes after Save again.
+  const [initialDatetime] = useState(() => new Date())
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
@@ -135,7 +137,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     amount: undefined,
     debitAmount: undefined,
     creditAmount: undefined,
-    datetime: new Date(),
+    datetime: initialDatetime,
     ownerUserID: defaultOwnerUserID,
     fromAccountId: '',
     toAccountId: '',
@@ -212,13 +214,20 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
           showToast({ type: 'info', body: t`Transfer created successfully!` })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
-            form.reset({
-              ...value,
-              description: '',
-              amount: undefined as unknown as number,
-              debitAmount: undefined as unknown as number,
-              creditAmount: undefined as unknown as number,
-            })
+            form.reset(
+              {
+                description: '',
+                amount: undefined,
+                debitAmount: undefined,
+                creditAmount: undefined,
+                datetime: value.datetime,
+                ownerUserID: value.ownerUserID,
+                fromAccountId: value.fromAccountId,
+                toAccountId: value.toAccountId,
+                categoryId: value.categoryId,
+              },
+              { keepDefaultValues: true },
+            )
           }
         })
         .with({ status: 'error' }, ({ error }) => {

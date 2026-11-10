@@ -108,6 +108,8 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
 
   const showToast = useToast()
   const isMobile = useIsMobile()
+  // Keep defaults stable when Relay refreshes after Save again.
+  const [initialDatetime] = useState(() => new Date())
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
@@ -157,7 +159,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
       description: '',
       shares: undefined as unknown as number,
       pricePerShare: undefined as unknown as number,
-      datetime: new Date(),
+      datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
       fromInvestmentId: '',
       toInvestmentId: '',
@@ -228,12 +230,19 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           showToast({ type: 'info', body: t`Investment moved successfully!` })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
-            form.reset({
-              ...value,
-              description: '',
-              shares: undefined as unknown as number,
-              pricePerShare: undefined as unknown as number,
-            })
+            form.reset(
+              {
+                description: '',
+                shares: undefined as unknown as number,
+                pricePerShare: undefined as unknown as number,
+                datetime: value.datetime,
+                ownerUserID: value.ownerUserID,
+                // Move accounts are identified by their investment positions.
+                fromInvestmentId: value.fromInvestmentId,
+                toInvestmentId: value.toInvestmentId,
+              },
+              { keepDefaultValues: true },
+            )
           }
         })
         .with({ status: 'error' }, ({ error }) => {

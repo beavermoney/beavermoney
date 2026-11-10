@@ -104,12 +104,13 @@ beforeEach(() => {
 afterEach(cleanup)
 
 async function enter() {
-  render(<NewExpense fragmentRef={fixture as never} />)
+  const view = render(<NewExpense fragmentRef={fixture as never} />)
   fireEvent.click(screen.getByRole('button', { name: 'Food' }))
   await screen.findByRole('button', { name: 'Account: Checking' })
   fireEvent.click(await screen.findByRole('button', { name: '2' }))
   fireEvent.click(screen.getByRole('button', { name: 'Add amount' }))
   fireEvent.click(screen.getByRole('button', { name: '3' }))
+  return view
 }
 
 it('saves the live calculation once and closes only after confirmed success', async () => {
@@ -135,15 +136,59 @@ it('saves the live calculation once and closes only after confirmed success', as
   await waitFor(() => expect(mocks.close).toHaveBeenCalledTimes(1))
 })
 
-it('Save again clears the amount, keeps the composer open, and retains the account', async () => {
-  await enter()
+it('Save again retains account, category, owner and date while resetting other fields for the next save', async () => {
+  const view = await enter()
+  fireEvent.click(screen.getByRole('button', { name: 'Owner: Joey' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Partner' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  const today = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date())
+  fireEvent.click(screen.getByRole('button', { name: today }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Yesterday' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.change(
+    await screen.findByRole('textbox', { name: 'Description' }),
+    {
+      target: { value: 'Previous entry' },
+    },
+  )
+  fireEvent.click(
+    screen.getByRole('checkbox', { name: 'Exclude from reports' }),
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
   fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
   await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
   await screen.findByRole('button', { name: 'Edit Amount: $0' })
   expect(mocks.close).not.toHaveBeenCalled()
+  // Relay refreshes household data after saving.
+  view.rerender(<NewExpense fragmentRef={{ ...fixture } as never} />)
   expect(screen.getByRole('button', { name: 'Account: Checking' })).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: '4' }))
   expect(screen.getByRole('button', { name: 'Edit Amount: $4' })).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(2))
+  expect(
+    mocks.commit.mock.calls[1][1].variables.input.transaction.datetime,
+  ).toBe(mocks.commit.mock.calls[0][1].variables.input.transaction.datetime)
+  expect(
+    mocks.commit.mock.calls[0][1].variables.input.transaction,
+  ).toMatchObject({
+    description: 'Previous entry',
+    excludeFromReports: true,
+    userID: 'partner',
+  })
+  expect(mocks.commit.mock.calls[1][1].variables.input).toMatchObject({
+    transaction: {
+      description: '',
+      categoryID: 'food',
+      userID: 'partner',
+      excludeFromReports: false,
+    },
+    transactionEntry: { amount: '-4.00', accountID: 'account' },
+  })
+  await screen.findByRole('button', { name: 'Edit Amount: $0' })
 })
 
 it('keeps values and the composer open when saving fails', async () => {

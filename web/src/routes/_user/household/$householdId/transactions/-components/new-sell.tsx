@@ -5,7 +5,7 @@ import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { InvestmentStart } from './investment-start'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
@@ -106,6 +106,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
 
   const showToast = useToast()
   const isMobile = useIsMobile()
+  // Keep defaults stable when Relay refreshes after Save again.
+  const [initialDatetime] = useState(() => new Date())
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
@@ -146,7 +148,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
       shares: undefined as unknown as number,
       pricePerShare: undefined as unknown as number,
       totalReceived: undefined as unknown as number,
-      datetime: new Date(),
+      datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
       accountId: '',
       investmentId: '',
@@ -205,13 +207,19 @@ export function NewSell({ fragmentRef }: NewSellProps) {
           })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
-            form.reset({
-              ...value,
-              description: '',
-              shares: undefined as unknown as number,
-              pricePerShare: undefined as unknown as number,
-              totalReceived: undefined as unknown as number,
-            })
+            form.reset(
+              {
+                description: '',
+                shares: undefined as unknown as number,
+                pricePerShare: undefined as unknown as number,
+                totalReceived: undefined as unknown as number,
+                datetime: value.datetime,
+                ownerUserID: value.ownerUserID,
+                accountId: value.accountId,
+                investmentId: '',
+              },
+              { keepDefaultValues: true },
+            )
           }
         })
         .with({ status: 'error' }, ({ error }) => {

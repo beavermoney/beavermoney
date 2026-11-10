@@ -2,7 +2,7 @@ import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Text } from '@astryxdesign/core/Text'
 import { FinanceDateInput } from '@/components/finance-date-input'
@@ -100,6 +100,8 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
 
   const showToast = useToast()
   const isMobile = useIsMobile()
+  // Keep defaults stable when Relay refreshes after Save again.
+  const [initialDatetime] = useState(() => new Date())
   const mobileSubmission = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
@@ -135,7 +137,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
     defaultValues: {
       description: '',
       amount: undefined as unknown as number,
-      datetime: new Date(),
+      datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
       accountId: '',
       categoryId: '',
@@ -185,11 +187,18 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           showToast({ type: 'info', body: t`Expense created successfully!` })
           if (mobileSubmission.current === 'close') closeComposer()
           if (mobileSubmission.current === 'again') {
-            form.reset({
-              ...value,
-              description: '',
-              amount: undefined as unknown as number,
-            })
+            form.reset(
+              {
+                description: '',
+                amount: undefined as unknown as number,
+                datetime: value.datetime,
+                ownerUserID: value.ownerUserID,
+                accountId: value.accountId,
+                categoryId: value.categoryId,
+                excludeFromReports: false,
+              },
+              { keepDefaultValues: true },
+            )
           }
         })
         .with({ status: 'error' }, ({ error }) => {
