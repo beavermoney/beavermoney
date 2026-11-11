@@ -1,7 +1,6 @@
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { useCallback } from 'react'
-import { useIsMobile } from './use-mobile'
 import {
   logTransactionStore,
   setLogTransactionDefaults,
@@ -12,7 +11,9 @@ import {
 
 export function useLogTransaction() {
   const navigate = useNavigate()
-  const isMobile = useIsMobile()
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
 
   const type = useStore(logTransactionStore, (s) => s.type)
   const defaults = useStore(logTransactionStore, (s) => s.defaults)
@@ -26,22 +27,16 @@ export function useLogTransaction() {
         type: nextType,
         defaults: nextDefaults,
       }))
-      if (isMobile) {
-        navigate({
-          from: '/household/$householdId',
-          to: '/household/$householdId/transactions/new',
-        })
-      }
     },
-    [isMobile, navigate],
+    [],
   )
 
   const close = useCallback(() => {
     logTransactionStore.setState(() => ({ type: null }))
-    if (isMobile) {
-      navigate({ to: '..' })
+    if (pathname.endsWith('/transactions/new')) {
+      navigate({ to: '..', search: (prev) => prev, resetScroll: false })
     }
-  }, [isMobile, navigate])
+  }, [pathname, navigate])
 
   return {
     type,

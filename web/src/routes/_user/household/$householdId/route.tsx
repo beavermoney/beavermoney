@@ -9,6 +9,7 @@ import { LayoutContent } from '@astryxdesign/core/Layout'
 import { MobileNavToggle } from '@astryxdesign/core/MobileNav'
 import { notifyError } from '@/lib/notifications'
 import { Button } from '@astryxdesign/core/Button'
+import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { DropdownMenu } from '@astryxdesign/core/DropdownMenu'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
@@ -70,6 +71,7 @@ import { LogTransaction } from './transactions/-components/log-transaction'
 
 import { identity } from 'lodash-es'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
+import { HouseholdActionsMenu } from './-components/household-actions-menu'
 
 const routeHouseholdIdQuery = graphql`
   query routeHouseholdIdQuery($viewUserIds: [ID!]) {
@@ -283,18 +285,14 @@ function RouteComponent() {
                             <SnapshotDialog
                               fragmentRef={data.household}
                               renderTrigger={(openSnapshot) => (
-                                <DropdownMenu
+                                <HouseholdActionsMenu
                                   button={{
                                     label: t`More actions`,
                                     icon: <AstryxIcon icon={EllipsisIcon} />,
                                     isIconOnly: true,
                                     variant: 'ghost',
                                   }}
-                                  footer={
-                                    !isOnSettingsPage ? (
-                                      <ViewScopeSwitcher />
-                                    ) : undefined
-                                  }
+                                  showViewScope={!isOnSettingsPage}
                                   items={[
                                     {
                                       label: t`Create snapshot`,
@@ -336,7 +334,7 @@ function RouteComponent() {
                   }
                 />
 
-                {!isMobile && (
+                {!pathname.endsWith('/transactions/new') && (
                   <FloatingLogTransactionWindow fragmentRef={data.household} />
                 )}
               </AppShell>
@@ -358,6 +356,32 @@ function FloatingLogTransactionWindow({
   const { t } = useLingui()
   const { type: logTransactionType, close: closeLogTransaction } =
     useLogTransaction()
+
+  const isMobile = useIsMobile()
+
+  if (isMobile) {
+    return (
+      <BottomSheet
+        isOpen={logTransactionType !== null}
+        onOpenChange={(open) => {
+          if (!open) closeLogTransaction()
+        }}
+        label={t`New transaction`}
+        height="tall"
+        padding={4}
+      >
+        <Stack gap={4}>
+          <DialogHeader
+            title={t`New transaction`}
+            onOpenChange={(open) => {
+              if (!open) closeLogTransaction()
+            }}
+          />
+          {logTransactionType && <LogTransaction fragmentRef={fragmentRef} />}
+        </Stack>
+      </BottomSheet>
+    )
+  }
 
   return (
     <Dialog
