@@ -373,7 +373,7 @@ it('leaves the account unselected when none are eligible', async () => {
   expect(mocks.commit).not.toHaveBeenCalled()
 })
 
-it('opens account search in a sub-drawer and returns to the composer', async () => {
+it('opens account search within the composer and returns to the numpad', async () => {
   render(<NewExpense fragmentRef={fixture as never} />)
   fireEvent.click(screen.getByRole('button', { name: 'Food' }))
   fireEvent.click(

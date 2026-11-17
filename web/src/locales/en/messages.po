@@ -1686,10 +1686,6 @@ msgstr "None (Taxable)"
 msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 msgstr "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 
-#: src/components/transaction-composer/composer.tsx
-msgid "Note"
-msgstr "Note"
-
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Note (optional)"
 msgstr "Note (optional)"

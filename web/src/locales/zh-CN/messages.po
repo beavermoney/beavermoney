@@ -1686,10 +1686,6 @@ msgstr "无（应税账户）"
 msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择更大的日期范围或添加收入交易。"
 
-#: src/components/transaction-composer/composer.tsx
-msgid "Note"
-msgstr "备注"
-
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Note (optional)"
 msgstr "备注（可选）"

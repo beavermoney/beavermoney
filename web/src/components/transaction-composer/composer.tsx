@@ -146,9 +146,10 @@ export function MobileTransactionComposer({
           aria-label={t`Transaction details`}
           className="min-w-0"
         >
-          <Stack>
+          <Stack className="relative">
             <Stack
               gap={4}
+              className={editor ? 'invisible' : undefined}
               aria-hidden={editor ? true : undefined}
               inert={!!editor}
             >
@@ -271,31 +272,28 @@ export function MobileTransactionComposer({
                 </Grid>
               </Stack>
             </Stack>
-            <BottomSheet
-              isOpen={editor !== null}
-              onOpenChange={(open) => {
-                if (!open) setEditor(null)
-              }}
-              label={
-                editor === 'options'
-                  ? t`Options`
-                  : editor === 'note'
-                    ? t`Note`
-                    : t`Transaction details`
+            <Stack
+              gap={3}
+              className={
+                editor ? 'absolute inset-0 min-h-0 overflow-hidden' : 'hidden'
               }
-              height={editor === 'options' ? 'hug' : 'tall'}
-              purpose="info"
             >
-              <Stack gap={4}>
-                <Stack ref={setTarget} gap={3} />
-                <Button
-                  label={t`Done`}
-                  size="lg"
-                  width="100%"
-                  onClick={() => setEditor(null)}
-                />
-              </Stack>
-            </BottomSheet>
+              <Stack
+                ref={setTarget}
+                gap={3}
+                className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+              />
+              <Button
+                label={t`Done`}
+                size="lg"
+                width="100%"
+                onClick={() => {
+                  if (document.activeElement instanceof HTMLElement)
+                    document.activeElement.blur()
+                  setEditor(null)
+                }}
+              />
+            </Stack>
           </Stack>
         </fieldset>
       </ComposerSurface>
