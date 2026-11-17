@@ -448,8 +448,7 @@
 .sticky-group-header {
   background: var(--color-background-surface);
 }
-.sticky-group-header::before,
-.account-sticky-group > .astryx-collapsible-trigger::before {
+.sticky-group-header::before {
   content: '';
   position: absolute;
   inset-inline: 0;
@@ -465,11 +464,31 @@
   /* HouseholdContentLayout gives the scrollport spacing-6 padding. */
   top: calc(-1 * var(--spacing-6));
   padding: calc(var(--spacing-3) - var(--border-width));
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-container);
+  background: transparent;
+}
+/* A square opaque backing masks the scrolling content's straight borders;
+   the foreground paints the same rounded outline as transaction headers. */
+.account-sticky-group > .astryx-collapsible-trigger::before,
+.account-sticky-group > .astryx-collapsible-trigger::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--border-width));
+  pointer-events: none;
+}
+.account-sticky-group > .astryx-collapsible-trigger::before {
+  z-index: -2;
+  background: var(--color-background-surface);
+}
+.account-sticky-group > .astryx-collapsible-trigger::after {
+  z-index: -1;
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-container);
   background: var(--color-background-card);
 }
-.account-sticky-group > .astryx-collapsible-trigger[aria-expanded='true'] {
+.account-sticky-group
+  > .astryx-collapsible-trigger[aria-expanded='true']::after {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -478,4 +497,11 @@
   border: var(--border-width) solid var(--color-border);
   border-top: 0;
   border-radius: 0 0 var(--radius-container) var(--radius-container);
+}
+
+/* Keep WebKit's independently composited sticky layers inside the same
+   explicit paint boundary as the scrolling rows, including fractional edges. */
+.sticky-list-scrollport {
+  clip-path: inset(0);
+  isolation: isolate;
 }

@@ -53,7 +53,7 @@ function RouteComponent() {
   })
 
   return (
-    <HouseholdContentLayout>
+    <HouseholdContentLayout className="sticky-list-scrollport">
       <AccountsPanel fragmentRef={data.household} />
     </HouseholdContentLayout>
   )

@@ -89,7 +89,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         </LayoutHeader>
       }
       content={
-        <LayoutContent>
+        <LayoutContent className="sticky-list-scrollport">
           <Stack direction="vertical" gap={6}>
             <FinancialSummaryCards fragmentRef={data.financialReport} />
             <TransactionsList
