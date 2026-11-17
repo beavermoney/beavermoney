@@ -10,6 +10,10 @@ import {
 } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { DatePeriodFilter } from './date-period-filter'
+
+// Real Astryx menus and bottom sheets can exceed 5s on shared CI runners.
+vi.setConfig({ testTimeout: 15_000 })
+
 const preferences = vi.hoisted(() => ({ isMobile: false, weekStartsOn: 0 }))
 vi.mock('@/hooks/use-mobile', () => ({
   useIsMobile: () => preferences.isMobile,
