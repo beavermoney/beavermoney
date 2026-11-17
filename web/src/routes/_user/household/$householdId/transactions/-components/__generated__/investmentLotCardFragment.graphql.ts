@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ef745f5fca6d284190c1cac74351cb28>>
+ * @generated SignedSource<<2b19124d1272dae73a3583b13a32326d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,6 +27,7 @@ export type investmentLotCardFragment$data = {
     };
     readonly datetime: any;
     readonly id: string;
+    readonly pending: boolean;
   };
   readonly " $fragmentType": "investmentLotCardFragment";
 };
@@ -120,6 +121,13 @@ return {
         {
           "alias": null,
           "args": null,
+          "kind": "ScalarField",
+          "name": "pending",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
           "concreteType": "TransactionCategory",
           "kind": "LinkedField",
           "name": "category",
@@ -145,6 +153,6 @@ return {
 };
 })();
 
-(node as any).hash = "7eba68caa5ca988dfc34db0128a2372a";
+(node as any).hash = "da29183557329da4085cc0be4801380d";
 
 export default node;

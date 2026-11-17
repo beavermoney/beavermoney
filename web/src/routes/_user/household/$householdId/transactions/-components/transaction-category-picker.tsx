@@ -120,6 +120,13 @@ export function TransactionCategoryPicker({
       emptyMessage={t`No categories available.`}
       getValue={(category) => category.id}
       getLabel={(category) => categoryData(category).name}
+      renderIcon={(category) => (
+        <CategoryIcon
+          type={category.type}
+          icon={categoryData(category).icon}
+          size="inline"
+        />
+      )}
       renderItem={(category) => <CategoryDetails category={category} />}
       onValueChange={onValueChange}
       onBlur={onBlur}

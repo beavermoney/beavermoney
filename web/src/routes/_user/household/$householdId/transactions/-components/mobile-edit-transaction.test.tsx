@@ -16,6 +16,10 @@ const mocks = vi.hoisted(() => ({
   close: vi.fn(),
   remove: vi.fn(),
   pending: vi.fn(),
+  privacy: false,
+}))
+vi.mock('@/hooks/use-privacy-mode', () => ({
+  usePrivacyMode: () => ({ isPrivacyModeEnabled: mocks.privacy }),
 }))
 vi.mock('@/hooks/use-household', () => ({
   useHousehold: () => ({ household: { locale: 'en-US' } }),
@@ -64,9 +68,11 @@ const fixture = {
 function open(
   transaction: unknown = fixture,
   accounts: unknown[] = [account, savings],
+  desktop = false,
 ) {
   return render(
     <MobileEditTransaction
+      desktop={desktop}
       transactionRef={transaction as never}
       householdRef={
         { accounts: { edges: accounts.map((node) => ({ node })) } } as never
@@ -82,6 +88,7 @@ function open(
 const variables = () => mocks.commit.mock.calls[0][1].variables
 beforeEach(() => {
   vi.clearAllMocks()
+  mocks.privacy = false
   mocks.commit.mockResolvedValue({ status: 'success', data: {} })
 })
 afterEach(cleanup)
@@ -243,8 +250,10 @@ it('requires Done after account selection and can clear an existing note', async
   fireEvent.click(screen.getByRole('button', { name: /Savings.*Liquidity/ }))
   expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
-  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
-  fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
+  fireEvent.click(
+    screen.getByRole('button', { name: /^(Lunch|Changed note)$/ }),
+  )
+  fireEvent.change(screen.getByRole('textbox', { name: 'Note' }), {
     target: { value: '' },
   })
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -258,8 +267,10 @@ it('requires Done after account selection and can clear an existing note', async
 
 it('requires explicit deletion confirmation and keeps drafts when cancelled', () => {
   open()
-  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
-  fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
+  fireEvent.click(
+    screen.getByRole('button', { name: /^(Lunch|Changed note)$/ }),
+  )
+  fireEvent.change(screen.getByRole('textbox', { name: 'Note' }), {
     target: { value: 'Changed note' },
   })
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -273,10 +284,11 @@ it('requires explicit deletion confirmation and keeps drafts when cancelled', ()
     within(confirmation).queryByRole('button', { name: 'Done' }),
   ).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
+  fireEvent.click(
+    screen.getByRole('button', { name: /^(Lunch|Changed note)$/ }),
+  )
   expect(
-    (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
-      .value,
+    (screen.getByRole('textbox', { name: 'Note' }) as HTMLInputElement).value,
   ).toBe('Changed note')
 })
 
@@ -376,11 +388,11 @@ it('prevents repeat deletion while pending and lets a failed deletion be retried
 
 it('keeps note and options separate, shows all selections, and clears pending on save', async () => {
   open({ ...fixture, pending: true })
-  expect(screen.getByRole('button', { name: 'Edit note' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Lunch' })).toBeTruthy()
   fireEvent.click(
     screen.getByRole('button', { name: 'Pending · Exclude from reports' }),
   )
-  expect(screen.queryByRole('textbox', { name: 'Description' })).toBeNull()
+  expect(screen.queryByRole('textbox', { name: 'Note' })).toBeNull()
   const pending = screen.getByRole('checkbox', {
     name: 'Pending',
   }) as HTMLInputElement
@@ -391,10 +403,9 @@ it('keeps note and options separate, shows all selections, and clears pending on
   )
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
   expect(screen.getByRole('button', { name: 'Options' })).toBeTruthy()
-  fireEvent.click(screen.getByRole('button', { name: 'Edit note' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Lunch' }))
   expect(
-    (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
-      .value,
+    (screen.getByRole('textbox', { name: 'Note' }) as HTMLInputElement).value,
   ).toBe('Lunch')
   expect(screen.queryByRole('checkbox', { name: 'Pending' })).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -420,4 +431,136 @@ it('sets pending without changing the report option or amount', async () => {
     excludeFromReports: false,
   })
   expect(variables().entry0Input.amount).toBe('-20.63')
+})
+
+it('prefills the shared desktop form and updates the existing transaction atomically', async () => {
+  open(fixture, [account, savings], true)
+  expect(
+    (screen.getByRole('textbox', { name: /^Amount/ }) as HTMLInputElement)
+      .value,
+  ).toBe('20.63')
+  expect(
+    (screen.getByRole('textbox', { name: 'Note' }) as HTMLInputElement).value,
+  ).toBe('Lunch')
+  fireEvent.change(screen.getByRole('textbox', { name: /^Amount/ }), {
+    target: { value: '21.75' },
+  })
+  fireEvent.change(screen.getByRole('textbox', { name: 'Note' }), {
+    target: { value: '' },
+  })
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Pending' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables()).toMatchObject({
+    id: 'transaction',
+    entry0: 'entry',
+    editEntry0: true,
+    entry0Input: { amount: '-21.75' },
+    input: {
+      pending: true,
+      clearDescription: true,
+      description: null,
+      excludeFromReports: true,
+    },
+  })
+  expect(mocks.close).toHaveBeenCalledTimes(1)
+})
+
+it('preserves exact investment values when saving only desktop metadata', async () => {
+  const investmentAccount = { ...account, type: 'investment', archived: true }
+  open(
+    {
+      ...fixture,
+      transactionEntries: [],
+      investmentLots: [
+        {
+          id: 'lot',
+          amount: '-0.123456789123456789',
+          price: '1.23456789123456789',
+          investment: {
+            id: 'stock',
+            name: 'Stock',
+            symbol: 'STK',
+            type: 'stock',
+            account: investmentAccount,
+          },
+        },
+      ],
+    },
+    [],
+    true,
+  )
+  fireEvent.change(screen.getByRole('textbox', { name: 'Note' }), {
+    target: { value: 'Review later' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables()).toMatchObject({
+    editEntry0: false,
+    editLot0: false,
+    lot0Input: {
+      amount: '-0.123456789123456789',
+      price: '1.23456789123456789',
+    },
+    input: { description: 'Review later' },
+  })
+})
+
+it('keeps desktop edits open after a failed update and cancels without writing', async () => {
+  mocks.commit.mockResolvedValue({
+    status: 'error',
+    error: new Error('offline'),
+  })
+  open(fixture, [account], true)
+  fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+  await screen.findByText('offline')
+  expect(mocks.close).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+  expect(mocks.close).toHaveBeenCalledTimes(1)
+  expect(mocks.commit).toHaveBeenCalledTimes(1)
+})
+
+it('shows each selected account balance on mobile transfer cards', () => {
+  const from = { ...account, balance: '1000.00' }
+  const to = { ...savings, balance: '250.00' }
+  open(
+    {
+      ...fixture,
+      category: { ...category, type: 'transfer' },
+      transactionEntries: [
+        { id: 'debit', amount: '-25', account: from },
+        { id: 'credit', amount: '25', account: to },
+      ],
+    },
+    [from, to],
+  )
+  expect(
+    within(screen.getByRole('group', { name: 'From' })).getByText(
+      'Balance: $1,000.00',
+    ),
+  ).toBeTruthy()
+  expect(
+    within(screen.getByRole('group', { name: 'To' })).getByText(
+      'Balance: $250.00',
+    ),
+  ).toBeTruthy()
+})
+
+it('masks transfer account balances when privacy mode is enabled', () => {
+  mocks.privacy = true
+  const from = { ...account, balance: '1000.00' }
+  const to = { ...savings, balance: '250.00' }
+  open(
+    {
+      ...fixture,
+      category: { ...category, type: 'transfer' },
+      transactionEntries: [
+        { id: 'debit', amount: '-25', account: from },
+        { id: 'credit', amount: '25', account: to },
+      ],
+    },
+    [from, to],
+  )
+  expect(screen.getAllByText('Balance: •••••••')).toHaveLength(2)
+  expect(screen.queryByText('Balance: $1,000.00')).toBeNull()
 })

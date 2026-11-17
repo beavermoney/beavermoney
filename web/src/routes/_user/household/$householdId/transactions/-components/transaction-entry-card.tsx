@@ -1,3 +1,4 @@
+import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { CategoryIcon } from '@/components/category-icon'
@@ -22,6 +23,7 @@ const transactionEntryCardFragment = graphql`
     }
     transaction {
       id
+      pending
       excludeFromReports
       category {
         name
@@ -69,6 +71,7 @@ export function TransactionEntryCard({
       endContent={
         <VStack gap={1} hAlign="end">
           <HStack gap={1} vAlign="center">
+            {data.transaction.pending && <PendingTransactionIcon />}
             {data.transaction.excludeFromReports && <ExcludedFromReportsIcon />}
             <Text type="label" hasTabularNumbers>
               {formatCurrency({

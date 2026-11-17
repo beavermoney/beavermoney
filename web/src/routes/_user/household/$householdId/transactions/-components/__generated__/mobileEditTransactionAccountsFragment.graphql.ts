@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7c01ab3aa6dd203ab488d837714e5e77>>
+ * @generated SignedSource<<02b480692a17f34060705c1a93fa4f92>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,7 @@ export type mobileEditTransactionAccountsFragment$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly archived: boolean;
+        readonly balance: string;
         readonly householdCurrency: {
           readonly code: string;
         };
@@ -135,6 +136,13 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "kind": "ScalarField",
+                  "name": "balance",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "concreteType": "HouseholdCurrency",
                   "kind": "LinkedField",
                   "name": "householdCurrency",
@@ -186,6 +194,6 @@ return {
 };
 })();
 
-(node as any).hash = "0f570e9d8ed86c584f929554e0b92a97";
+(node as any).hash = "251c1220f2446e5a1903403768c51571";
 
 export default node;

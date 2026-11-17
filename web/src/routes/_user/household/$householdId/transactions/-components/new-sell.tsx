@@ -1,4 +1,5 @@
-import { TransactionOptionCard } from '@/components/transaction-option-card'
+import { TransactionFormActions } from '@/components/transaction-form-actions'
+import { TransactionOption } from '@/components/transaction-options'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -12,7 +13,7 @@ import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
-import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { TransactionFormFields } from '@/components/transaction-form-fields'
 import { NumberInput } from '@astryxdesign/core/NumberInput'
 import { Stack } from '@astryxdesign/core/Stack'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -258,7 +259,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
     pending: (
       <form.Field name="pending">
         {(field) => (
-          <TransactionOptionCard
+          <TransactionOption
             option="pending"
             value={field.state.value}
             onChange={field.handleChange}
@@ -508,7 +509,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
                 aria-invalid={isInvalid}
                 placeholder={t`Sell AAPL shares`}
                 autoComplete="off"
-                label={t`Description`}
+                label={t`Note`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -614,7 +615,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
         chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
         note={fields.description}
-        hasNote={!!optionValues.description}
+        noteText={optionValues.description}
         selectedOptions={selectedOptions}
         options={fields.pending}
         pending={isMutationInFlight}
@@ -643,9 +644,16 @@ export function NewSell({ fragmentRef }: NewSellProps) {
             form.handleSubmit()
           }}
         >
-          <FormLayout>
-            {fields.accountId}
-            {fields.investmentId}
+          <TransactionFormFields
+            note={fields.description}
+            date={fields.datetime}
+            owner={ownerOptions.length > 1 && fields.ownerUserID}
+            options={fields.pending}
+          >
+            <Grid columns={2} gap={4} align="start">
+              {fields.accountId}
+              {fields.investmentId}
+            </Grid>
             <Grid
               columns={{ minWidth: 160, max: 3 }}
               gap={4}
@@ -656,49 +664,39 @@ export function NewSell({ fragmentRef }: NewSellProps) {
               {fields.pricePerShare}
               {fields.totalReceived}
             </Grid>
-            {fields.description}
-            {fields.pending}
-            <Grid
-              columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
-              gap={4}
-              align="start"
-              justify="stretch"
+          </TransactionFormFields>
+        </Stack>
+      </Stack>
+      <TransactionFormActions>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={t`Reset`}
+              variant={'secondary'}
             >
-              {ownerOptions.length > 1 && fields.ownerUserID}
-              {fields.datetime}
-            </Grid>
-          </FormLayout>
-        </Stack>
-      </Stack>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        as="footer"
-      >
-        <Stack direction="horizontal" gap={2} wrap="wrap">
-          <Button
-            type="button"
-            onClick={() => form.reset()}
-            label={t`Reset`}
-            variant={'secondary'}
-          >
-            <Trans>Reset</Trans>
-          </Button>
-          <Button
-            type="submit"
-            form="new-sell-form"
-            label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
-            variant={'primary'}
+              <Trans>Reset</Trans>
+            </Button>
+            <Button
+              type="submit"
+              form="new-sell-form"
+              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
+              variant={'primary'}
 
-            isDisabled={isMutationInFlight}
-          >
-            {isMutationInFlight ? t`Creating...` : t`Create`}
-          </Button>
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? t`Creating...` : t`Create`}
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </TransactionFormActions>
     </Stack>
   )
 }

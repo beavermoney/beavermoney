@@ -261,10 +261,6 @@ msgstr "添加投资"
 msgid "Add member"
 msgstr "添加成员"
 
-#: src/components/transaction-composer/composer.tsx
-msgid "Add note"
-msgstr "添加备注"
-
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add subscription"
 msgstr "添加订阅"
@@ -377,6 +373,13 @@ msgstr "返回"
 msgid "Balance"
 msgstr "余额"
 
+#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: a.balance, currencyCode: a.householdCurrency.code })
+#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: data.balance, currencyCode: data.householdCurrency.code })
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "Balance: {0}"
+msgstr "余额：{0}"
+
 #: src/routes/index.tsx
 msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
 msgstr "将账户、投资和不同币种汇于一处。掌握余额变化，看清资金流向。"
@@ -439,6 +442,7 @@ msgstr "计算器式"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 msgid "Cancel"
 msgstr "取消"
 
@@ -799,6 +803,7 @@ msgstr "赤字"
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Delete"
 msgstr "删除"
@@ -851,18 +856,6 @@ msgstr "删除交易？"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 msgid "Deleting..."
 msgstr "正在删除…"
-
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-msgid "Description"
-msgstr "描述"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
@@ -937,10 +930,6 @@ msgstr "编辑分录"
 msgid "Edit Lot"
 msgstr "编辑投资批次"
 
-#: src/components/transaction-composer/composer.tsx
-msgid "Edit note"
-msgstr "编辑备注"
-
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Edit Subscription"
 msgstr "编辑订阅"
@@ -950,6 +939,7 @@ msgid "Edit transaction"
 msgstr "编辑交易"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Edit Transaction"
 msgstr "编辑交易"
@@ -995,7 +985,7 @@ msgstr "示例"
 msgid "Example transaction ledger"
 msgstr "交易账本示例"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/transaction-options.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
@@ -1032,7 +1022,7 @@ msgstr "无法保存快照：{error}"
 msgid "First day of week"
 msgstr "每周起始日"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/transaction-options.tsx
 msgid "Flag for later review. Included in balances and reports."
 msgstr "标记为稍后复核。仍计入余额和报表。"
 
@@ -1133,7 +1123,7 @@ msgstr "分组方式"
 msgid "Hide balances"
 msgstr "隐藏余额"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/transaction-options.tsx
 msgid "Hide from reports. Still included in account balances."
 msgstr "不计入报表，但仍计入账户余额。"
 
@@ -1686,6 +1676,19 @@ msgstr "无（应税账户）"
 msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择更大的日期范围或添加收入交易。"
 
+#: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Note"
+msgstr "备注"
+
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Note (optional)"
 msgstr "备注（可选）"
@@ -1723,9 +1726,7 @@ msgid "OPEN SOURCE. OPEN POSSIBILITIES."
 msgstr "开放源代码，更多可能。"
 
 #: src/components/transaction-composer/composer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/components/transaction-options.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Options"
 msgstr "选项"
@@ -1755,7 +1756,8 @@ msgstr "页面不存在"
 msgid "Payday"
 msgstr "工资到账"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/pending-transaction-icon.tsx
+#: src/components/transaction-options.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -1763,10 +1765,12 @@ msgstr "工资到账"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Pending"
 msgstr "待确认"
+
+#: src/components/pending-transaction-icon.tsx
+msgid "Pending — review later"
+msgstr "待确认 — 稍后复核"
 
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "per share"
@@ -1787,6 +1791,10 @@ msgstr "个人财务，家人共览。"
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Phone"
 msgstr "电话式"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "Please check the transaction details."
+msgstr "请检查交易详情。"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -2007,6 +2015,7 @@ msgstr "再次保存"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Save Changes"
 msgstr "保存更改"
@@ -2023,6 +2032,7 @@ msgstr "已自动保存在此设备上。"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 msgid "Saving..."
 msgstr "正在保存…"
 
@@ -2449,10 +2459,6 @@ msgstr "交易"
 msgid "Transaction deleted successfully!"
 msgstr "交易已删除！"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-msgid "Transaction description"
-msgstr "交易描述"
-
 #: src/components/transaction-composer/composer.tsx
 msgid "Transaction details"
 msgstr "交易详情"
@@ -2468,6 +2474,10 @@ msgstr "交易种类"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
 msgid "Transaction not found"
 msgstr "未找到交易"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction note"
+msgstr "交易备注"
 
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 msgid "Transaction types"

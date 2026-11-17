@@ -301,7 +301,12 @@ function TransactionDetailDialog({
       <Surface
         className={mobile ? 'transaction-composer-sheet' : undefined}
         label={t`Edit transaction`}
-        {...(mobile ? { height: 'hug' as const } : {})}
+        {...(mobile
+          ? { height: 'hug' as const }
+          : {
+              width: 640,
+              maxHeight: 'calc(100dvh - var(--spacing-4) - var(--spacing-4))',
+            })}
         isOpen={transactionId !== null}
         onOpenChange={(open) => {
           if (!open && !editingPending) {

@@ -4,11 +4,14 @@ import { Trans } from '@lingui/react/macro'
 import { useLazyLoadQuery } from 'react-relay'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileEditTransaction } from './mobile-edit-transaction'
-import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
+import { Layout, LayoutContent, LayoutFooter } from '@astryxdesign/core/Layout'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
-import { TransactionOptionCard } from '@/components/transaction-option-card'
+import {
+  TransactionOption,
+  TransactionOptions,
+} from '@/components/transaction-options'
 import { DialogHeader } from '@astryxdesign/core/Dialog'
 import { Divider } from '@astryxdesign/core/Divider'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
@@ -473,7 +476,6 @@ function EditTransactionContent({
   // Standard create flows have at most two entries and two lots. Preserve the
   // existing per-entry editor for imported/custom transactions with more splits.
   if (
-    isMobile &&
     (transaction.transactionEntries?.length ?? 0) <= 2 &&
     (transaction.investmentLots?.length ?? 0) <= 2 &&
     (transaction.transactionEntries?.length ?? 0) +
@@ -482,6 +484,7 @@ function EditTransactionContent({
   ) {
     return (
       <MobileEditTransaction
+        desktop={!isMobile}
         transactionRef={transaction}
         householdRef={householdData}
         categories={allCategories}
@@ -570,16 +573,53 @@ function EditTransactionContent({
 
   return (
     <Layout
-      padding={6}
+      padding={4}
       header={
         <DialogHeader
           title={t`Edit Transaction`}
           onOpenChange={() => onClose?.()}
         />
       }
+      footer={
+        <LayoutFooter hasDivider padding={4}>
+          <Stack
+            direction="horizontal"
+            hAlign="between"
+            vAlign="center"
+            gap={3}
+            wrap="wrap"
+          >
+            <Button
+              label={t`Delete`}
+              variant="destructive"
+              onClick={() => setDeleteAlertOpen(true)}
+              isDisabled={isDeleteInFlight || isUpdateInFlight}
+            />
+            <Stack direction="horizontal" gap={2}>
+              <Button
+                label={t`Cancel`}
+                onClick={() => onClose?.()}
+                isDisabled={isUpdateInFlight || isDeleteInFlight}
+              />
+              <Button
+                type="submit"
+                form="edit-transaction-form"
+                label={isUpdateInFlight ? t`Saving...` : t`Save Changes`}
+                variant="primary"
+                isDisabled={isUpdateInFlight || isDeleteInFlight}
+              />
+            </Stack>
+          </Stack>
+        </LayoutFooter>
+      }
     >
       <LayoutContent>
-        <Stack direction="vertical" gap={6} paddingBlockStart={4}>
+        <Stack
+          direction="vertical"
+          gap={6}
+          paddingBlockStart={4}
+          paddingBlockEnd={4}
+        >
           <Text as="div" display="block" type="supporting">
             <Trans>
               Update transaction details. Click on entries or lots below to edit
@@ -658,9 +698,9 @@ function EditTransactionContent({
                           id={field.name}
                           onBlur={field.handleBlur}
                           aria-invalid={isInvalid}
-                          placeholder={t`Transaction description`}
+                          placeholder={t`Transaction note`}
                           autoComplete="off"
-                          label={t`Description`}
+                          label={t`Note`}
 
                           value={String(field.state.value ?? '')}
                           onChange={(_value, event) =>
@@ -729,78 +769,34 @@ function EditTransactionContent({
                     )
                   }}
                 />
-                <fieldset>
-                  <legend className="mb-2">
-                    <Text type="label">
-                      <Trans>Options</Trans>
-                    </Text>
-                  </legend>
-                  <Stack
-                    direction="vertical"
-                    gap={4}
-                    data-slot="checkbox-group"
-                  >
-                    <form.Field name="pending">
-                      {(field) => (
-                        <TransactionOptionCard
-                          option="pending"
+                <TransactionOptions>
+                  <form.Field name="pending">
+                    {(field) => (
+                      <TransactionOption
+                        option="pending"
+                        value={field.state.value}
+                        onChange={field.handleChange}
+                        onBlur={field.handleBlur}
+                      />
+                    )}
+                  </form.Field>
+                  <form.Field
+                    name="excludeFromReports"
+                    children={(field) => {
+                      return (
+                        <TransactionOption
+                          id={field.name}
                           value={field.state.value}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
+                          option="exclude"
                         />
-                      )}
-                    </form.Field>
-                    <form.Field
-                      name="excludeFromReports"
-                      children={(field) => {
-                        return (
-                          <Stack direction="vertical" gap={2}>
-                            <TransactionOptionCard
-                              id={field.name}
-                              value={field.state.value}
-                              onChange={field.handleChange}
-                              onBlur={field.handleBlur}
-                              option="exclude"
-                            />
-                          </Stack>
-                        )
-                      }}
-                    />
-                  </Stack>
-                </fieldset>
+                      )
+                    }}
+                  />
+                </TransactionOptions>
               </FormLayout>
             </Stack>
-          </Stack>
-
-          <Stack
-            direction="horizontal"
-            gap={3}
-            align="center"
-            wrap="wrap"
-            justify="end"
-          >
-            <>
-              <Button
-                onClick={() => setDeleteAlertOpen(true)}
-                type="button"
-                label={t`Delete`}
-                variant={'destructive'}
-
-                isDisabled={isDeleteInFlight || isUpdateInFlight}
-              >
-                <Trans>Delete</Trans>
-              </Button>
-            </>
-            <Button
-              type="submit"
-              form="edit-transaction-form"
-              label={String(isUpdateInFlight ? t`Saving...` : t`Save Changes`)}
-              variant={'primary'}
-
-              isDisabled={isUpdateInFlight || isDeleteInFlight}
-            >
-              {isUpdateInFlight ? t`Saving...` : t`Save Changes`}
-            </Button>
           </Stack>
         </Stack>
       </LayoutContent>

@@ -241,12 +241,12 @@ export function TransactionDialogPreview({
           <Stack direction="vertical" gap={4}>
             <Stack direction="vertical" gap={4} aria-hidden="true">
               <Stack direction="vertical" gap={4}>
-                <PreviewField label={t`Description`} />
+                <PreviewField label={t`Note`} />
                 <PreviewField label={t`Date`} />
                 <PreviewField label={t`Category`} />
                 <fieldset data-slot="transaction-dialog-preview-field">
                   <legend className="mb-2">
-                    <Text type="label">
+                    <Text type="label" color="secondary">
                       <Trans>Options</Trans>
                     </Text>
                   </legend>

@@ -154,16 +154,15 @@ it('Save again retains account, category, owner and date while resetting other f
   }).format(new Date())
   fireEvent.click(screen.getByRole('button', { name: today }))
   fireEvent.click(await screen.findByRole('button', { name: 'Yesterday' }))
-  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
-  fireEvent.change(
-    await screen.findByRole('textbox', { name: 'Description' }),
-    {
-      target: { value: 'Previous entry' },
-    },
+  fireEvent.click(
+    screen.getByRole('button', { name: /^(Note|Keep this draft)$/ }),
   )
+  fireEvent.change(await screen.findByRole('textbox', { name: 'Note' }), {
+    target: { value: 'Previous entry' },
+  })
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
   fireEvent.click(screen.getByRole('button', { name: 'Options' }))
-  expect(screen.queryByRole('textbox', { name: 'Description' })).toBeNull()
+  expect(screen.queryByRole('textbox', { name: 'Note' })).toBeNull()
   fireEvent.click(screen.getByRole('checkbox', { name: 'Pending' }))
   fireEvent.click(
     screen.getByRole('checkbox', { name: 'Exclude from reports' }),
@@ -522,8 +521,10 @@ it('keeps the draft but clears a removed account before submission', async () =>
   const view = render(<NewExpense fragmentRef={fixture as never} />)
   fireEvent.click(screen.getByRole('button', { name: 'Food' }))
   fireEvent.click(await screen.findByRole('button', { name: '2' }))
-  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
-  fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
+  fireEvent.click(
+    screen.getByRole('button', { name: /^(Note|Keep this draft)$/ }),
+  )
+  fireEvent.change(screen.getByRole('textbox', { name: 'Note' }), {
     target: { value: 'Keep this draft' },
   })
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -536,10 +537,11 @@ it('keeps the draft but clears a removed account before submission', async () =>
   fireEvent.click(screen.getByRole('button', { name: 'Save' }))
   await screen.findByRole('alert')
   expect(mocks.commit).not.toHaveBeenCalled()
-  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
+  fireEvent.click(
+    screen.getByRole('button', { name: /^(Note|Keep this draft)$/ }),
+  )
   expect(
-    (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
-      .value,
+    (screen.getByRole('textbox', { name: 'Note' }) as HTMLInputElement).value,
   ).toBe('Keep this draft')
 })
 

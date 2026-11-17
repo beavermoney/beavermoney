@@ -1,3 +1,4 @@
+import { TransactionFormActions } from '@/components/transaction-form-actions'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -6,12 +7,11 @@ import { MobileTransactionComposer } from '@/components/transaction-composer/com
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useRef, useState } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
-import { Text } from '@astryxdesign/core/Text'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
-import { TransactionOptionCard } from '@/components/transaction-option-card'
-import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { TransactionOption } from '@/components/transaction-options'
+import { TransactionFormFields } from '@/components/transaction-form-fields'
 import { Stack } from '@astryxdesign/core/Stack'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -231,7 +231,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
     pending: (
       <form.Field name="pending">
         {(field) => (
-          <TransactionOptionCard
+          <TransactionOption
             option="pending"
             value={field.state.value}
             onChange={field.handleChange}
@@ -356,7 +356,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                 aria-invalid={isInvalid}
                 placeholder={t`Monthly salary`}
                 autoComplete="off"
-                label={t`Description`}
+                label={t`Note`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -427,15 +427,13 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
         name="excludeFromReports"
         children={(field) => {
           return (
-            <Stack direction="vertical" gap={2}>
-              <TransactionOptionCard
-                id={field.name}
-                value={field.state.value}
-                onChange={field.handleChange}
-                onBlur={field.handleBlur}
-                option="exclude"
-              />
-            </Stack>
+            <TransactionOption
+              id={field.name}
+              value={field.state.value}
+              onChange={field.handleChange}
+              onBlur={field.handleBlur}
+              option="exclude"
+            />
           )
         }}
       />
@@ -457,7 +455,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
         }
         date={fields.datetime}
         note={fields.description}
-        hasNote={!!optionValues.description}
+        noteText={optionValues.description}
         selectedOptions={selectedOptions}
         options={
           <>
@@ -491,7 +489,17 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
             form.handleSubmit()
           }}
         >
-          <FormLayout>
+          <TransactionFormFields
+            note={fields.description}
+            date={fields.datetime}
+            owner={ownerOptions.length > 1 && fields.ownerUserID}
+            options={
+              <>
+                {fields.pending}
+                {fields.excludeFromReports}
+              </>
+            }
+          >
             {fields.categoryId}
             <Grid
               columns={{ minWidth: 240, max: 2 }}
@@ -502,59 +510,39 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
               {fields.accountId}
               {fields.amount}
             </Grid>
-            {fields.description}
-            <Grid
-              columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
-              gap={4}
-              align="start"
-              justify="stretch"
+          </TransactionFormFields>
+        </Stack>
+      </Stack>
+      <TransactionFormActions>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={t`Reset`}
+              variant={'secondary'}
             >
-              {ownerOptions.length > 1 && fields.ownerUserID}
-              {fields.datetime}
-            </Grid>
-            <fieldset>
-              <legend className="mb-2">
-                <Text type="label">
-                  <Trans>Options</Trans>
-                </Text>
-              </legend>
-              <Stack direction="vertical" gap={4} data-slot="checkbox-group">
-                {fields.pending}
-                {fields.excludeFromReports}
-              </Stack>
-            </fieldset>
-          </FormLayout>
-        </Stack>
-      </Stack>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        as="footer"
-      >
-        <Stack direction="horizontal" gap={2} wrap="wrap">
-          <Button
-            type="button"
-            onClick={() => form.reset()}
-            label={t`Reset`}
-            variant={'secondary'}
-          >
-            <Trans>Reset</Trans>
-          </Button>
-          <Button
-            type="submit"
-            form="new-income-form"
-            label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
-            variant={'primary'}
+              <Trans>Reset</Trans>
+            </Button>
+            <Button
+              type="submit"
+              form="new-income-form"
+              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
+              variant={'primary'}
 
-            isDisabled={isMutationInFlight}
-          >
-            {isMutationInFlight ? t`Creating...` : t`Create`}
-          </Button>
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? t`Creating...` : t`Create`}
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </TransactionFormActions>
     </Stack>
   )
 }

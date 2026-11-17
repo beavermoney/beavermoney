@@ -11,6 +11,7 @@ type ResponsiveSelectionPickerProps<T> = {
   getValue: (item: T) => string
   getLabel: (item: T) => string
   renderItem: (item: T) => ReactNode
+  renderIcon?: (item: T) => ReactNode
   onValueChange: (value: string) => void
   onBlur: () => void
   invalid: boolean
@@ -26,6 +27,7 @@ export function ResponsiveSelectionPicker<T>({
   getValue,
   getLabel,
   renderItem,
+  renderIcon,
   onValueChange,
   onBlur,
   invalid,
@@ -54,6 +56,9 @@ export function ResponsiveSelectionPicker<T>({
       invalid={invalid}
       onBlur={onBlur}
       onChange={(option) => onValueChange(option?.value ?? '')}
+      renderChipIcon={
+        renderIcon ? (option) => renderIcon(option.item) : undefined
+      }
       renderOption={(option) => renderItem(option.item)}
     />
   )

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c0d21097817866949cf555f3d05c12ba>>
+ * @generated SignedSource<<0b09e42c3a1a3cc6a064d3938fe2c53a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -29,6 +29,7 @@ export type transactionEntryCardFragment$data = {
     readonly datetime: any;
     readonly excludeFromReports: boolean;
     readonly id: string;
+    readonly pending: boolean;
   };
   readonly " $fragmentType": "transactionEntryCardFragment";
 };
@@ -109,6 +110,13 @@ return {
           "alias": null,
           "args": null,
           "kind": "ScalarField",
+          "name": "pending",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "excludeFromReports",
           "storageKey": null
         },
@@ -154,6 +162,6 @@ return {
 };
 })();
 
-(node as any).hash = "76248a770a4d7c2f42e9e1717d3199f0";
+(node as any).hash = "61c77dd3cd87e587368490a9e6089832";
 
 export default node;

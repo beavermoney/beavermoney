@@ -31,6 +31,7 @@ type SearchSelectProps<T> = {
   confirmSelection?: boolean
   hideChipLabel?: boolean
   renderChipIcon?: (item: T) => ReactNode
+  getChipDescription?: (item: T) => string | undefined
 }
 
 // Keep domain objects intact while Astryx owns the searchable selector surface.
@@ -50,6 +51,7 @@ export function SearchSelect<T>({
   confirmSelection = false,
   hideChipLabel,
   renderChipIcon,
+  getChipDescription,
   disabledMessage,
   ...props
 }: SearchSelectProps<T>) {
@@ -132,6 +134,7 @@ export function SearchSelect<T>({
         closeOnSelect={!confirmSelection}
         hideChipLabel={hideChipLabel}
         renderChipIcon={renderChipIcon}
+        getChipDescription={getChipDescription}
       />
     )
   return (

@@ -1,3 +1,4 @@
+import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -142,6 +143,7 @@ export function TransactionCard({
               {lot ? ` ${lot.investment.symbol || lot.investment.name}` : ''}
             </Text>
             <Stack direction="horizontal" gap={1} wrap="wrap" vAlign="center">
+              {data.pending && <PendingTransactionIcon />}
               {data.excludeFromReports && <ExcludedFromReportsIcon />}
               {amounts.map((amount) => {
                 const incoming =
@@ -199,11 +201,6 @@ export function TransactionCard({
                 value: lot.price,
                 currencyCode: lot.investment.householdCurrency.code,
               })}
-            </Text>
-          )}
-          {data.pending && (
-            <Text type="supporting">
-              <Trans>Pending</Trans>
             </Text>
           )}
         </Stack>

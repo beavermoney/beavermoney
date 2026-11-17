@@ -1,4 +1,5 @@
-import { TransactionOptionCard } from '@/components/transaction-option-card'
+import { TransactionFormActions } from '@/components/transaction-form-actions'
+import { TransactionOption } from '@/components/transaction-options'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -13,7 +14,7 @@ import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
-import { FormLayout } from '@astryxdesign/core/FormLayout'
+import { TransactionFormFields } from '@/components/transaction-form-fields'
 import { NumberInput } from '@astryxdesign/core/NumberInput'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
@@ -303,7 +304,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     pending: (
       <form.Field name="pending">
         {(field) => (
-          <TransactionOptionCard
+          <TransactionOption
             option="pending"
             value={field.state.value}
             onChange={field.handleChange}
@@ -316,7 +317,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
       <form.Field
         name="fromInvestmentId"
         key={JSON.stringify([
-          (isMobile
+          (isMobile || !!sourceAccountId
             ? (investmentAccounts.find((a) => a.id === sourceAccountId)
                 ?.investments ?? [])
             : allInvestments
@@ -326,10 +327,11 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         ])}
         listeners={{
           onMount: ({ fieldApi: field }) => {
-            const options = isMobile
-              ? (investmentAccounts.find((a) => a.id === sourceAccountId)
-                  ?.investments ?? [])
-              : allInvestments
+            const options =
+              isMobile || !!sourceAccountId
+                ? (investmentAccounts.find((a) => a.id === sourceAccountId)
+                    ?.investments ?? [])
+                : allInvestments
             const current = field.state.value
             if (options.some((item) => item.id === current)) return
             const next = ''
@@ -368,7 +370,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             >
               <TransactionInvestmentPicker
                 investments={
-                  isMobile
+                  isMobile || !!sourceAccountId
                     ? (investmentAccounts.find((a) => a.id === sourceAccountId)
                         ?.investments ?? [])
                     : allInvestments
@@ -442,7 +444,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             field.state.meta.isTouched && !field.state.meta.isValid
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-              {fromInvestment && (
+              {isMobile && fromInvestment && (
                 <Text type="supporting" color="secondary">
                   <Trans>
                     Matching {fromInvestment.symbol} holdings in another
@@ -558,7 +560,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 aria-invalid={isInvalid}
                 placeholder={t`Move AAPL shares`}
                 autoComplete="off"
-                label={t`Description`}
+                label={t`Note`}
 
                 value={String(field.state.value ?? '')}
                 onChange={(_value, event) =>
@@ -726,7 +728,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
         note={fields.description}
-        hasNote={!!optionValues.description}
+        noteText={optionValues.description}
         selectedOptions={selectedOptions}
         options={fields.pending}
         pending={isMutationInFlight}
@@ -755,9 +757,71 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             form.handleSubmit()
           }}
         >
-          <FormLayout>
-            {fields.fromInvestmentId}
-            {fields.toInvestmentId}
+          <TransactionFormFields
+            note={fields.description}
+            date={fields.datetime}
+            owner={ownerOptions.length > 1 && fields.ownerUserID}
+            options={fields.pending}
+          >
+            <Grid columns={2} gap={4} align="start">
+              <TransactionAccountPicker
+                accounts={investmentAccounts}
+                name="sourceAccount"
+                label={t`From account`}
+                value={
+                  sourceAccountId ||
+                  investmentAccounts.find((a) =>
+                    a.investments?.some((inv) => inv.id === fromInvestmentId),
+                  )?.id ||
+                  ''
+                }
+                onValueChange={(id) => {
+                  setSourceAccountId(id)
+                  form.setFieldValue(
+                    'fromInvestmentId',
+                    investmentAccounts.find((a) => a.id === id)
+                      ?.investments?.[0]?.id ?? '',
+                  )
+                  form.setFieldValue('toInvestmentId', '')
+                }}
+                onBlur={() => {}}
+                invalid={false}
+              />
+              {fields.fromInvestmentId}
+            </Grid>
+            <Grid columns={2} gap={4} align="start">
+              <TransactionAccountPicker
+                accounts={investmentAccounts.filter((a) =>
+                  a.investments?.some((inv) =>
+                    toInvestments.some((candidate) => candidate.id === inv.id),
+                  ),
+                )}
+                name="destinationAccount"
+                label={t`To account`}
+                value={
+                  investmentAccounts.find((a) =>
+                    a.investments?.some(
+                      (inv) => inv.id === destinationInvestmentId,
+                    ),
+                  )?.id ?? ''
+                }
+                onValueChange={(id) =>
+                  form.setFieldValue(
+                    'toInvestmentId',
+                    investmentAccounts
+                      .find((a) => a.id === id)
+                      ?.investments?.find((inv) =>
+                        toInvestments.some(
+                          (candidate) => candidate.id === inv.id,
+                        ),
+                      )?.id ?? '',
+                  )
+                }
+                onBlur={() => {}}
+                invalid={false}
+              />
+              {fields.toInvestmentId}
+            </Grid>
             <Grid
               columns={{ minWidth: 240, max: 2 }}
               gap={4}
@@ -767,49 +831,39 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               {fields.shares}
               {fields.pricePerShare}
             </Grid>
-            {fields.description}
-            {fields.pending}
-            <Grid
-              columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
-              gap={4}
-              align="start"
-              justify="stretch"
+          </TransactionFormFields>
+        </Stack>
+      </Stack>
+      <TransactionFormActions>
+        <Stack
+          direction="horizontal"
+          gap={3}
+          align="center"
+          wrap="wrap"
+          justify="end"
+        >
+          <Stack direction="horizontal" gap={2} wrap="wrap">
+            <Button
+              type="button"
+              onClick={() => form.reset()}
+              label={t`Reset`}
+              variant={'secondary'}
             >
-              {ownerOptions.length > 1 && fields.ownerUserID}
-              {fields.datetime}
-            </Grid>
-          </FormLayout>
-        </Stack>
-      </Stack>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        align="center"
-        wrap="wrap"
-        justify="end"
-        as="footer"
-      >
-        <Stack direction="horizontal" gap={2} wrap="wrap">
-          <Button
-            type="button"
-            onClick={() => form.reset()}
-            label={t`Reset`}
-            variant={'secondary'}
-          >
-            <Trans>Reset</Trans>
-          </Button>
-          <Button
-            type="submit"
-            form="new-move-form"
-            label={String(isMutationInFlight ? t`Moving...` : t`Move`)}
-            variant={'primary'}
+              <Trans>Reset</Trans>
+            </Button>
+            <Button
+              type="submit"
+              form="new-move-form"
+              label={String(isMutationInFlight ? t`Moving...` : t`Move`)}
+              variant={'primary'}
 
-            isDisabled={isMutationInFlight}
-          >
-            {isMutationInFlight ? t`Moving...` : t`Move`}
-          </Button>
+              isDisabled={isMutationInFlight}
+            >
+              {isMutationInFlight ? t`Moving...` : t`Move`}
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </TransactionFormActions>
     </Stack>
   )
 }

@@ -1,3 +1,4 @@
+import { TransactionOptions } from '@/components/transaction-options'
 import { useLingui } from '@lingui/react/macro'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
@@ -23,7 +24,7 @@ export function MobileTransactionComposer({
   note,
   options,
   selectedOptions,
-  hasNote,
+  noteText,
   date,
   firstAmount,
   pending,
@@ -49,7 +50,7 @@ export function MobileTransactionComposer({
   note: ReactNode
   options: ReactNode
   selectedOptions: readonly string[]
-  hasNote: boolean
+  noteText: string
   date: ReactNode
   firstAmount: string
   pending: boolean
@@ -170,7 +171,7 @@ export function MobileTransactionComposer({
                   gap={2}
                 >
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     label={
                       selectedCategory?.name || t`New ${financeLabel(kind)}`
                     }
@@ -206,9 +207,13 @@ export function MobileTransactionComposer({
                 {chips}
                 <Button
                   type="button"
-                  label={hasNote ? t`Edit note` : t`Add note`}
+                  label={noteText.trim() || t`Note`}
                   onClick={() => setEditor('note')}
-                />
+                >
+                  <Text maxLines={1} className="max-w-40">
+                    {noteText.trim() || t`Note`}
+                  </Text>
+                </Button>
                 <Button
                   type="button"
                   label={
@@ -228,10 +233,7 @@ export function MobileTransactionComposer({
                 <Stack gap={4}>{note}</Stack>
               </ComposerEditor>
               <ComposerEditor name="options">
-                <Stack gap={3}>
-                  <Text type="label">{t`Options`}</Text>
-                  {options}
-                </Stack>
+                <TransactionOptions>{options}</TransactionOptions>
               </ComposerEditor>
               <Stack gap={4}>
                 <Stack ref={setKeypadTarget} />

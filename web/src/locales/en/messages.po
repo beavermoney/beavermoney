@@ -261,10 +261,6 @@ msgstr "Add investment"
 msgid "Add member"
 msgstr "Add member"
 
-#: src/components/transaction-composer/composer.tsx
-msgid "Add note"
-msgstr "Add note"
-
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add subscription"
 msgstr "Add subscription"
@@ -377,6 +373,13 @@ msgstr "Back"
 msgid "Balance"
 msgstr "Balance"
 
+#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: a.balance, currencyCode: a.householdCurrency.code })
+#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: data.balance, currencyCode: data.householdCurrency.code })
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
+msgid "Balance: {0}"
+msgstr "Balance: {0}"
+
 #: src/routes/index.tsx
 msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
 msgstr "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
@@ -439,6 +442,7 @@ msgstr "Calculator"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -799,6 +803,7 @@ msgstr "Deficit"
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Delete"
 msgstr "Delete"
@@ -851,18 +856,6 @@ msgstr "Delete transaction?"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 msgid "Deleting..."
 msgstr "Deleting..."
-
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-msgid "Description"
-msgstr "Description"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
@@ -937,10 +930,6 @@ msgstr "Edit Entry"
 msgid "Edit Lot"
 msgstr "Edit Lot"
 
-#: src/components/transaction-composer/composer.tsx
-msgid "Edit note"
-msgstr "Edit note"
-
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Edit Subscription"
 msgstr "Edit Subscription"
@@ -950,6 +939,7 @@ msgid "Edit transaction"
 msgstr "Edit transaction"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Edit Transaction"
 msgstr "Edit Transaction"
@@ -995,7 +985,7 @@ msgstr "EXAMPLE"
 msgid "Example transaction ledger"
 msgstr "Example transaction ledger"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/transaction-options.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
@@ -1032,7 +1022,7 @@ msgstr "Failed to save snapshot: {error}"
 msgid "First day of week"
 msgstr "First day of week"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/transaction-options.tsx
 msgid "Flag for later review. Included in balances and reports."
 msgstr "Flag for later review. Included in balances and reports."
 
@@ -1133,7 +1123,7 @@ msgstr "Group by"
 msgid "Hide balances"
 msgstr "Hide balances"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/transaction-options.tsx
 msgid "Hide from reports. Still included in account balances."
 msgstr "Hide from reports. Still included in account balances."
 
@@ -1686,6 +1676,19 @@ msgstr "None (Taxable)"
 msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 msgstr "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 
+#: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
+msgid "Note"
+msgstr "Note"
+
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Note (optional)"
 msgstr "Note (optional)"
@@ -1723,9 +1726,7 @@ msgid "OPEN SOURCE. OPEN POSSIBILITIES."
 msgstr "OPEN SOURCE. OPEN POSSIBILITIES."
 
 #: src/components/transaction-composer/composer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/components/transaction-options.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Options"
 msgstr "Options"
@@ -1755,7 +1756,8 @@ msgstr "Page not found"
 msgid "Payday"
 msgstr "Payday"
 
-#: src/components/transaction-option-card.tsx
+#: src/components/pending-transaction-icon.tsx
+#: src/components/transaction-options.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
@@ -1763,10 +1765,12 @@ msgstr "Payday"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Pending"
 msgstr "Pending"
+
+#: src/components/pending-transaction-icon.tsx
+msgid "Pending — review later"
+msgstr "Pending — review later"
 
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "per share"
@@ -1787,6 +1791,10 @@ msgstr "Personal finances. Shared perspective."
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Phone"
 msgstr "Phone"
+
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+msgid "Please check the transaction details."
+msgstr "Please check the transaction details."
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -2007,6 +2015,7 @@ msgstr "Save again"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Save Changes"
 msgstr "Save Changes"
@@ -2023,6 +2032,7 @@ msgstr "Saved automatically on this device."
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -2449,10 +2459,6 @@ msgstr "Transaction"
 msgid "Transaction deleted successfully!"
 msgstr "Transaction deleted successfully!"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-msgid "Transaction description"
-msgstr "Transaction description"
-
 #: src/components/transaction-composer/composer.tsx
 msgid "Transaction details"
 msgstr "Transaction details"
@@ -2468,6 +2474,10 @@ msgstr "Transaction kind"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-detail.tsx
 msgid "Transaction not found"
 msgstr "Transaction not found"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+msgid "Transaction note"
+msgstr "Transaction note"
 
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 msgid "Transaction types"

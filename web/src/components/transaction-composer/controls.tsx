@@ -41,6 +41,7 @@ export function ComposerChoice<T>({
   closeOnSelect = true,
   hideChipLabel = false,
   renderChipIcon,
+  getChipDescription,
 }: {
   name: string
   label: string
@@ -57,6 +58,7 @@ export function ComposerChoice<T>({
   closeOnSelect?: boolean
   hideChipLabel?: boolean
   renderChipIcon?: (item: T) => ReactNode
+  getChipDescription?: (item: T) => string | undefined
 }) {
   const { t } = useLingui()
   const composer = useComposer()
@@ -75,6 +77,9 @@ export function ComposerChoice<T>({
         icon={value == null ? undefined : renderChipIcon?.(value)}
         isDisabled={disabled}
         aria-invalid={invalid}
+        aria-description={
+          value == null ? undefined : getChipDescription?.(value)
+        }
         aria-expanded={composer.editor === name}
         onClick={() => {
           setQuery('')
@@ -82,7 +87,14 @@ export function ComposerChoice<T>({
         }}
         variant={invalid ? 'primary' : 'secondary'}
       >
-        {composer.compactAmounts && renderChipIcon && value != null ? (
+        {value != null && getChipDescription?.(value) ? (
+          <Stack gap={0.5} hAlign="start">
+            <Text maxLines={2}>{getLabel(value)}</Text>
+            <Text type="supporting" color="secondary" maxLines={1}>
+              {getChipDescription(value)}
+            </Text>
+          </Stack>
+        ) : composer.compactAmounts && renderChipIcon && value != null ? (
           <Text maxLines={2}>{getLabel(value)}</Text>
         ) : hideChipLabel && value != null ? (
           getLabel(value)

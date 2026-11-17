@@ -1,3 +1,4 @@
+import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useLingui } from '@lingui/react/macro'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
@@ -209,11 +210,6 @@ export function TransactionsTable({
                 >
                   {category.name}
                 </Link>
-                {transaction.pending && (
-                  <Text type="supporting">
-                    <Trans>Pending</Trans>
-                  </Text>
-                )}
               </Stack>
               {transaction.description && (
                 <span title={transaction.description}>
@@ -249,6 +245,7 @@ export function TransactionsTable({
       enableHiding: false,
       cell: (transaction) => (
         <Stack direction="horizontal" gap={1} vAlign="start">
+          {transaction.pending && <PendingTransactionIcon />}
           {transaction.excludeFromReports && <ExcludedFromReportsIcon />}
           <Stack direction="vertical" gap={1}>
             {transaction.transactionEntries?.map((entry) => (

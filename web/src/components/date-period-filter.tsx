@@ -148,7 +148,7 @@ export function DatePeriodFilter({
             key={option}
             label={titles[option]}
             aria-haspopup="dialog"
-            isSelected={mode === option}
+            aria-current={mode === option || undefined}
             endContent={
               <Stack direction="horizontal" gap={2} align="center">
                 {mode === option && <Icon icon={Check} />}
@@ -238,7 +238,7 @@ export function DatePeriodFilter({
                       )}
                       className={
                         selected(periodRange('month', date, weekStartsOn))
-                          ? 'bg-accent-muted'
+                          ? 'bg-muted'
                           : undefined
                       }
                       isDisabled={pending || dateKey(date) > dateKey(today)}
@@ -278,6 +278,7 @@ export function DatePeriodFilter({
                             : `${format(parseISO(range[0]), 'MMM d')} – ${format(parseISO(range[1]), 'MMM d, yyyy')}`
                       }
                       isSelected={selected(range)}
+                      className={selected(range) ? 'bg-muted' : undefined}
                       endContent={
                         selected(range) ? <Icon icon={Check} /> : undefined
                       }
@@ -310,7 +311,7 @@ export function DatePeriodFilter({
                       )}
                       className={
                         selected(periodRange('year', date, weekStartsOn))
-                          ? 'bg-accent-muted'
+                          ? 'bg-muted'
                           : undefined
                       }
                       endContent={
@@ -468,7 +469,7 @@ export function DatePeriodFilter({
                             }
                             className={
                               selected(periodRange('year', date, weekStartsOn))
-                                ? 'bg-accent-muted'
+                                ? 'bg-muted'
                                 : undefined
                             }
                             endContent={

@@ -1,3 +1,9 @@
+import { useCurrency } from '@/hooks/use-currency'
+import { TransactionFormFields } from '@/components/transaction-form-fields'
+import { CurrencyInput } from '@/components/currency-input'
+import { Grid } from '@astryxdesign/core/Grid'
+import { Layout, LayoutContent, LayoutFooter } from '@astryxdesign/core/Layout'
+import { DialogHeader } from '@astryxdesign/core/Dialog'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -15,7 +21,7 @@ import { getLogoDomainURL } from '@/lib/logo'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { Button } from '@astryxdesign/core/Button'
-import { TransactionOptionCard } from '@/components/transaction-option-card'
+import { TransactionOption } from '@/components/transaction-options'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -52,6 +58,7 @@ const transactionFragment = graphql`
         icon
         type
         archived
+        balance
         householdCurrency {
           code
         }
@@ -72,6 +79,7 @@ const transactionFragment = graphql`
           icon
           type
           archived
+          balance
           householdCurrency {
             code
           }
@@ -91,6 +99,7 @@ const accountsFragment = graphql`
           icon
           type
           archived
+          balance
           householdCurrency {
             code
           }
@@ -203,6 +212,7 @@ type Account = {
   icon?: string | null
   type: string
   archived: boolean
+  balance?: string
   householdCurrency: { code: string }
   investments?: ReadonlyArray<{
     id: string
@@ -220,6 +230,7 @@ const scaleFor = (value: string, minimum: number) =>
   Math.max(minimum, value.split('.')[1]?.length ?? 0)
 
 export function MobileEditTransaction({
+  desktop = false,
   transactionRef,
   householdRef,
   categories,
@@ -228,6 +239,7 @@ export function MobileEditTransaction({
   deleting,
   onPendingChange,
 }: {
+  desktop?: boolean
   transactionRef: mobileEditTransactionFragment$key
   householdRef: mobileEditTransactionAccountsFragment$key
   categories: ReadonlyArray<
@@ -268,6 +280,7 @@ export function MobileEditTransaction({
   const [excluded, setExcluded] = useState(transaction.excludeFromReports)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [attempted, setAttempted] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [commit, pending] =
     useMutation<mobileEditTransactionMutation>(updateMutation)
   // Retain existing archived/out-of-scope accounts; never silently substitute one.
@@ -422,6 +435,7 @@ export function MobileEditTransaction({
     return (
       <EditAccount
         key={entry.id}
+        showBalance={transfer && !desktop}
         disabled={lots.length > 0}
         amountName={firstAmount}
         name={`account-${i}`}
@@ -476,6 +490,274 @@ export function MobileEditTransaction({
       renderChipIcon={(inv) => <InvestmentIcon {...inv} />}
     />
   )
+
+  if (desktop) {
+    const editLotAccount = (i: number) => {
+      const lot = lots[i]
+      const choices = [...accountMap.values()].filter(
+        (a) => a.type === 'investment',
+      )
+      return (
+        <EditAccount
+          name={`investment-account-${i}`}
+          amountName={`lot-${i}-shares`}
+          label={
+            lots.length > 1
+              ? i === sourceLot
+                ? t`From account`
+                : t`To account`
+              : t`Account`
+          }
+          value={accountMap.get(lot.accountId)!}
+          accounts={choices}
+          onChange={(account) => {
+            setLots((current) =>
+              current.map((l, index) =>
+                index === i
+                  ? { ...l, accountId: account.id, investmentId: '' }
+                  : l,
+              ),
+            )
+            if (lots.length === 1)
+              setEntries((current) =>
+                current.map((e) => ({ ...e, accountId: account.id })),
+              )
+          }}
+        />
+      )
+    }
+    const editLotInvestment = (i: number) => {
+      const lot = lots[i]
+      const original = originalLots[i].investment
+      const account = available.find((a) => a.id === lot.accountId)
+      const choices = account?.investments ?? []
+      const investments =
+        original.account.id === lot.accountId &&
+        !choices.some((inv) => inv.id === original.id)
+          ? [original, ...choices]
+          : choices
+      return (
+        <SearchSelect
+          name={`investment-${i}`}
+          label={t`Investment`}
+          items={investments}
+          value={investments.find((inv) => inv.id === lot.investmentId) ?? null}
+          getLabel={(inv) => inv.symbol || inv.name}
+          renderChipIcon={(inv) => <InvestmentIcon {...inv} />}
+          renderOption={(inv) => (
+            <Stack direction="horizontal" gap={2} vAlign="center">
+              <InvestmentIcon {...inv} />
+              <Text>{inv.symbol || inv.name}</Text>
+            </Stack>
+          )}
+          onChange={(inv) =>
+            setLots((current) =>
+              current.map((l, index) =>
+                index === i ? { ...l, investmentId: inv?.id ?? '' } : l,
+              ),
+            )
+          }
+        />
+      )
+    }
+    const submit = async () => {
+      setSaveError(null)
+      onPendingChange?.(true)
+      try {
+        if (!(await save()))
+          setSaveError(t`Please check the transaction details.`)
+      } catch (error) {
+        setSaveError(error instanceof Error ? error.message : String(error))
+      } finally {
+        onPendingChange?.(false)
+      }
+    }
+    return (
+      <>
+        <Stack height="min(620px, calc(100dvh - var(--spacing-8)))">
+          <Layout
+            padding={4}
+            header={
+              <DialogHeader
+                title={t`Edit Transaction`}
+                onOpenChange={() => onClose?.()}
+              />
+            }
+            footer={
+              <LayoutFooter hasDivider padding={4}>
+                <Stack
+                  direction="horizontal"
+                  hAlign="between"
+                  vAlign="center"
+                  gap={3}
+                >
+                  <Button
+                    label={t`Delete`}
+                    variant="destructive"
+                    isDisabled={pending || deleting}
+                    onClick={() => setConfirmDelete(true)}
+                  />
+                  <Stack direction="horizontal" gap={2}>
+                    <Button
+                      label={t`Cancel`}
+                      isDisabled={pending || deleting}
+                      onClick={() => onClose?.()}
+                    />
+                    <Button
+                      label={pending ? t`Saving...` : t`Save Changes`}
+                      variant="primary"
+                      type="submit"
+                      form="edit-shared-transaction-form"
+                      isDisabled={pending || deleting}
+                    />
+                  </Stack>
+                </Stack>
+              </LayoutFooter>
+            }
+          >
+            <LayoutContent>
+              <Stack
+                as="form"
+                id="edit-shared-transaction-form"
+                paddingBlock={4}
+                gap={4}
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  if (!pending && !deleting) void submit()
+                }}
+              >
+                <TransactionFormFields
+                  note={
+                    <TextInput
+                      label={t`Note`}
+                      value={description}
+                      onChange={setDescription}
+                    />
+                  }
+                  date={
+                    <FinanceDateInput
+                      id="edit-date"
+                      label={t`Date`}
+                      value={date}
+                      onChange={setDate}
+                      onBlur={() => {}}
+                      disabledDate={(d) =>
+                        d > new Date() || d < new Date('1900-01-01')
+                      }
+                    />
+                  }
+                  options={
+                    <>
+                      <TransactionOption
+                        option="pending"
+                        value={transactionPending}
+                        onChange={setTransactionPending}
+                      />
+                      <TransactionOption
+                        option="exclude"
+                        value={excluded}
+                        onChange={setExcluded}
+                      />
+                    </>
+                  }
+                >
+                  {!lots.length && (
+                    <TransactionCategoryPicker
+                      categories={categories}
+                      name="category"
+                      value={categoryId}
+                      onValueChange={setCategoryId}
+                      onBlur={() => {}}
+                      invalid={attempted && !categoryId}
+                    />
+                  )}
+                  {lots.map((lot, i) => (
+                    <Fragment key={lot.id}>
+                      <Grid columns={2} gap={4} align="start">
+                        {editLotAccount(i)}
+                        {editLotInvestment(i)}
+                      </Grid>
+                      <Grid columns={{ minWidth: 160, max: 3 }} gap={4}>
+                        <EditAmount
+                          name={`lot-${i}-shares`}
+                          label={t`Shares`}
+                          value={lot.amount}
+                          currencyCode={
+                            accountMap.get(lot.accountId)!.householdCurrency
+                              .code
+                          }
+                          shares
+                          scale={scaleFor(originalLots[i].amount, 8)}
+                          invalid={attempted && !isPositive(lot.amount)}
+                          onChange={(amount) =>
+                            setLots((current) =>
+                              current.map((l, index) =>
+                                index === i ? { ...l, amount } : l,
+                              ),
+                            )
+                          }
+                        />
+                        <EditAmount
+                          name={`lot-${i}-price`}
+                          label={t`Price per share`}
+                          value={lot.price}
+                          currencyCode={
+                            accountMap.get(lot.accountId)!.householdCurrency
+                              .code
+                          }
+                          scale={scaleFor(originalLots[i].price, 8)}
+                          invalid={
+                            attempted && !/^\d+(\.\d+)?$/.test(lot.price)
+                          }
+                          onChange={(price) =>
+                            setLots((current) =>
+                              current.map((l, index) =>
+                                index === i ? { ...l, price } : l,
+                              ),
+                            )
+                          }
+                        />
+                        {lots.length === 1 &&
+                          entries.length === 1 &&
+                          entryAmount(0)}
+                      </Grid>
+                    </Fragment>
+                  ))}
+                  {!(lots.length === 1 && entries.length === 1) &&
+                    entries
+                      .map((_, index) =>
+                        transfer
+                          ? index === 0
+                            ? firstEntry
+                            : 1 - firstEntry
+                          : index,
+                      )
+                      .map((i) => (
+                        <Grid
+                          key={entries[i].id}
+                          columns={{ minWidth: 240, max: 2 }}
+                          gap={4}
+                        >
+                          {entryAccount(i)}
+                          {(!sharedAmount || i === firstEntry) &&
+                            entryAmount(i)}
+                        </Grid>
+                      ))}
+                </TransactionFormFields>
+                {saveError && <Text role="alert">{saveError}</Text>}
+              </Stack>
+            </LayoutContent>
+          </Layout>
+        </Stack>
+        <TransactionDeleteConfirmation
+          isOpen={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          pending={pending || deleting}
+          onDelete={onDelete}
+        />
+      </>
+    )
+  }
 
   return (
     <>
@@ -613,26 +895,26 @@ export function MobileEditTransaction({
             disabledDate={(d) => d > new Date() || d < new Date('1900-01-01')}
           />
         }
-        hasNote={!!description}
+        noteText={description}
         selectedOptions={[
           ...(transactionPending ? [t`Pending`] : []),
           ...(excluded ? [t`Exclude from reports`] : []),
         ]}
         note={
           <TextInput
-            label={t`Description`}
+            label={t`Note`}
             value={description}
             onChange={setDescription}
           />
         }
         options={
           <>
-            <TransactionOptionCard
+            <TransactionOption
               option="pending"
               value={transactionPending}
               onChange={setTransactionPending}
             />
-            <TransactionOptionCard
+            <TransactionOption
               option="exclude"
               value={excluded}
               onChange={setExcluded}
@@ -651,6 +933,7 @@ export function MobileEditTransaction({
 }
 
 function EditAccount({
+  showBalance = false,
   disabled = false,
   amountName,
   name,
@@ -659,6 +942,7 @@ function EditAccount({
   accounts,
   onChange,
 }: {
+  showBalance?: boolean
   disabled?: boolean
   amountName: string
   name: string
@@ -668,6 +952,8 @@ function EditAccount({
   onChange: (account: Account) => void
 }) {
   const financeLabel = useFinanceLabel()
+  const { t } = useLingui()
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
   const composer = useComposer()
   const choices = accounts.some((a) => a.id === value.id)
     ? accounts
@@ -693,6 +979,14 @@ function EditAccount({
       hideChipLabel
       confirmSelection
       renderChipIcon={icon}
+      getChipDescription={
+        showBalance
+          ? (a) =>
+              a.balance == null
+                ? undefined
+                : t`Balance: ${formatCurrencyWithPrivacyMode({ value: a.balance, currencyCode: a.householdCurrency.code })}`
+          : undefined
+      }
       renderOption={(a) => (
         <Stack direction="horizontal" gap={2} vAlign="center">
           {icon(a)}
@@ -736,6 +1030,21 @@ function EditAmount({
   const { household } = useHousehold()
   const config = useCurrencyConfig(household.locale, currencyCode)
   const decimal = config.decimalSeparator || '.'
+  const composer = useComposer()
+  if (!composer)
+    return (
+      <CurrencyInput
+        id={name}
+        aria-label={label}
+        locale={household.locale}
+        currency={currencyCode}
+        value={value.replace('.', decimal)}
+        decimalScale={scale}
+        showCurrencySymbol={!shares}
+        aria-invalid={invalid}
+        onValueChange={({ value: raw }) => onChange(raw.replace(decimal, '.'))}
+      />
+    )
   return (
     <ComposerAmount
       name={name}

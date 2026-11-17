@@ -62,7 +62,7 @@ it('renders normalized transaction data while editing controls load', () => {
   expect(
     document.querySelectorAll('[data-slot="transaction-dialog-preview-field"]'),
   ).toHaveLength(4)
-  expect(screen.getByText('Description')).toBeTruthy()
+  expect(screen.getByText('Note')).toBeTruthy()
   expect(screen.getByText('Date')).toBeTruthy()
   expect(screen.getByText('Category')).toBeTruthy()
   expect(screen.getByText('Options')).toBeTruthy()

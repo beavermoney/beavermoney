@@ -1,7 +1,8 @@
+import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { useCurrency } from '@/hooks/use-currency'
 import { Avatar } from '@astryxdesign/core/Avatar'
-import { VStack } from '@astryxdesign/core/Layout'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { ListItem } from '@astryxdesign/core/List'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
@@ -25,6 +26,7 @@ const investmentLotCardFragment = graphql`
     }
     transaction {
       id
+      pending
       category {
         name
       }
@@ -68,14 +70,17 @@ export function InvestmentLotCard({
       onClick={onClick}
       endContent={
         <VStack gap={1} hAlign="end">
-          <Text type="label" hasTabularNumbers>
-            {formatCurrency({
-              value: currency(data.price, { precision: 8 }).multiply(
-                currency(data.amount, { precision: 8 }),
-              ),
-              currencyCode: data.investment.householdCurrency.code,
-            })}
-          </Text>
+          <HStack gap={1} vAlign="center">
+            {data.transaction.pending && <PendingTransactionIcon />}
+            <Text type="label" hasTabularNumbers>
+              {formatCurrency({
+                value: currency(data.price, { precision: 8 }).multiply(
+                  currency(data.amount, { precision: 8 }),
+                ),
+                currencyCode: data.investment.householdCurrency.code,
+              })}
+            </Text>
+          </HStack>
           {showDate && (
             <Text type="supporting">
               {format(new Date(data.transaction.datetime), 'LLL d')}

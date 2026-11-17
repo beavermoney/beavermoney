@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6181485d32dbd9f54f7b3773cadcded6>>
+ * @generated SignedSource<<fd0240162269acae97e8b7587f9ff8a4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,6 +30,7 @@ export type mobileEditTransactionFragment$data = {
     readonly investment: {
       readonly account: {
         readonly archived: boolean;
+        readonly balance: string;
         readonly householdCurrency: {
           readonly code: string;
         };
@@ -49,6 +50,7 @@ export type mobileEditTransactionFragment$data = {
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
       readonly archived: boolean;
+      readonly balance: string;
       readonly householdCurrency: {
         readonly code: string;
       };
@@ -123,6 +125,13 @@ v5 = {
       "args": null,
       "kind": "ScalarField",
       "name": "archived",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "balance",
       "storageKey": null
     },
     {
@@ -270,6 +279,6 @@ return {
 };
 })();
 
-(node as any).hash = "917d9eccb9362509555f72778f31d385";
+(node as any).hash = "cb17a4f5c1b5fa229d2b5c2065c7862c";
 
 export default node;

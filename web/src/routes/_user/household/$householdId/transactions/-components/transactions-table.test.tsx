@@ -69,6 +69,7 @@ const transactions = [
     datetime: '2026-09-07T12:00:00Z',
     description: 'Currency transfer',
     excludeFromReports: true,
+    pending: true,
     category: { name: 'Transfer', type: 'transfer', icon: null },
     user: { name: 'Joey' },
     transactionEntries: [
@@ -138,6 +139,7 @@ it('keeps transfer legs and investment quantities separate with their currencies
   const cells = within(transfer).getAllByRole('cell')
   expect(cells[2].textContent).toBe('CheckingSavings')
   expect(cells[3].textContent).toBe('-100 CAD72 USD')
+  expect(within(cells[3]).getByRole('img', { name: 'Pending' })).toBeTruthy()
   expect(
     within(transfer).getByRole('img', { name: 'Excluded from reports' }),
   ).toBeTruthy()

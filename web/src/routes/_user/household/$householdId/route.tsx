@@ -1,3 +1,5 @@
+import { TransactionActionsTarget } from '@/components/transaction-actions-context'
+import { LayoutFooter } from '@astryxdesign/core/Layout'
 import { useLingui } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { handleHouseholdError } from '@/lib/auth'
@@ -28,7 +30,7 @@ import {
   useRouterState,
 } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import {
   loadQuery,
   useMutation,
@@ -359,6 +361,7 @@ function FloatingLogTransactionWindow({
   const { type: logTransactionType, close: closeLogTransaction } =
     useLogTransaction()
 
+  const [actionsTarget, setActionsTarget] = useState<HTMLElement | null>(null)
   const isMobile = useIsMobile()
 
   if (isMobile) {
@@ -396,23 +399,34 @@ function FloatingLogTransactionWindow({
       maxHeight="calc(100dvh - var(--spacing-4) - var(--spacing-4))"
       padding={0}
     >
-      <Layout
-        padding={6}
-        header={
-          <DialogHeader
-            title={t`New transaction`}
-            onOpenChange={(open) => {
-              if (!open) closeLogTransaction()
-            }}
-          />
-        }
-      >
-        <LayoutContent>
-          <Stack direction="vertical" paddingBlockStart={4}>
-            {logTransactionType && <LogTransaction fragmentRef={fragmentRef} />}
-          </Stack>
-        </LayoutContent>
-      </Layout>
+      <TransactionActionsTarget value={actionsTarget}>
+        <Stack height="min(620px, calc(100dvh - var(--spacing-8)))">
+          <Layout
+            padding={4}
+            footer={
+              <LayoutFooter hasDivider padding={4}>
+                <Stack ref={setActionsTarget} />
+              </LayoutFooter>
+            }
+            header={
+              <DialogHeader
+                title={t`New transaction`}
+                onOpenChange={(open) => {
+                  if (!open) closeLogTransaction()
+                }}
+              />
+            }
+          >
+            <LayoutContent>
+              <Stack direction="vertical" paddingBlockStart={4}>
+                {logTransactionType && (
+                  <LogTransaction fragmentRef={fragmentRef} />
+                )}
+              </Stack>
+            </LayoutContent>
+          </Layout>
+        </Stack>
+      </TransactionActionsTarget>
     </Dialog>
   )
 }
