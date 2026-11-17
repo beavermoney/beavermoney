@@ -3,7 +3,13 @@ import { Text } from '@astryxdesign/core/Text'
 import { useCallback } from 'react'
 
 // Reveal overflowing names without changing the size of the picker button.
-export function ScrollingName({ children }: { children: string }) {
+export function ScrollingName({
+  children,
+  centered = false,
+}: {
+  children: string
+  centered?: boolean
+}) {
   const attach = useCallback((viewport: HTMLElement | null) => {
     if (!viewport) return
     const text = viewport.firstElementChild as HTMLElement | null
@@ -67,7 +73,11 @@ export function ScrollingName({ children }: { children: string }) {
       ref={attach}
       className="w-full min-w-0 overflow-hidden"
     >
-      <Text className="block w-max max-w-none whitespace-nowrap motion-reduce:w-full motion-reduce:truncate">
+      <Text
+        type={centered ? 'label' : undefined}
+        color="inherit"
+        className={`block w-max max-w-none whitespace-nowrap motion-reduce:w-full motion-reduce:truncate ${centered ? 'min-w-full text-center' : ''}`}
+      >
         {children}
       </Text>
     </Stack>

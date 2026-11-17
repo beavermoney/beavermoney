@@ -1,3 +1,4 @@
+import { ScrollingName } from '@/components/scrolling-name'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { useState } from 'react'
@@ -85,11 +86,14 @@ export function TransactionCategoryPicker({
                   variant={value === category.id ? 'primary' : 'secondary'}
                   onClick={choose}
                 >
-                  <Stack gap={2} hAlign="center">
+                  <Stack
+                    gap={2}
+                    hAlign="center"
+                    width="100%"
+                    className="min-w-0"
+                  >
                     <CategoryIcon type={category.type} icon={data.icon} />
-                    <Text type="label" color="inherit" maxLines={2}>
-                      {data.name}
-                    </Text>
+                    <ScrollingName centered>{data.name}</ScrollingName>
                   </Stack>
                 </Button>
               )
