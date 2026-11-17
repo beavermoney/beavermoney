@@ -20,7 +20,10 @@ export function MobileTransactionComposer({
   amounts,
   entryRows,
   chips,
-  details,
+  note,
+  options,
+  selectedOptions,
+  hasNote,
   date,
   firstAmount,
   pending,
@@ -43,7 +46,10 @@ export function MobileTransactionComposer({
   entryRows?: ReactNode
   amounts?: ReactNode
   chips: ReactNode
-  details: ReactNode
+  note: ReactNode
+  options: ReactNode
+  selectedOptions: readonly string[]
+  hasNote: boolean
   date: ReactNode
   firstAmount: string
   pending: boolean
@@ -196,19 +202,33 @@ export function MobileTransactionComposer({
                   {amounts}
                 </Stack>
               )}
-              <ComposerChipRail>
-                {chips}
+              <ComposerChipRail>{chips}</ComposerChipRail>
+              <Stack direction="horizontal" gap={2} wrap="wrap">
                 <Button
                   type="button"
-                  label={t`Add note / options`}
-                  onClick={() => setEditor('details')}
+                  label={hasNote ? t`Edit note` : t`Add note`}
+                  onClick={() => setEditor('note')}
                 />
-              </ComposerChipRail>
+                <Button
+                  type="button"
+                  label={
+                    selectedOptions.length
+                      ? selectedOptions.join(' · ')
+                      : t`Options`
+                  }
+                  variant={selectedOptions.length ? 'secondary' : 'ghost'}
+                  aria-expanded={editor === 'options'}
+                  onClick={() => setEditor('options')}
+                />
+              </Stack>
               {mode === 'edit' && (
                 <ComposerEditor name="category">{category}</ComposerEditor>
               )}
-              <ComposerEditor name="details">
-                <Stack gap={4}>{details}</Stack>
+              <ComposerEditor name="note">
+                <Stack gap={4}>{note}</Stack>
+              </ComposerEditor>
+              <ComposerEditor name="options">
+                <Stack gap={4}>{options}</Stack>
               </ComposerEditor>
               <Stack gap={4}>
                 <Stack ref={setKeypadTarget} />

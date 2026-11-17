@@ -443,6 +443,10 @@ func init() {
 	transactionDescExcludeFromReports := transactionFields[4].Descriptor()
 	// transaction.DefaultExcludeFromReports holds the default value on creation for the exclude_from_reports field.
 	transaction.DefaultExcludeFromReports = transactionDescExcludeFromReports.Default.(bool)
+	// transactionDescPending is the schema descriptor for pending field.
+	transactionDescPending := transactionFields[5].Descriptor()
+	// transaction.DefaultPending holds the default value on creation for the pending field.
+	transaction.DefaultPending = transactionDescPending.Default.(bool)
 	transactioncategoryMixin := schema.TransactionCategory{}.Mixin()
 	transactioncategory.Policy = privacy.NewPolicies(transactioncategoryMixin[1], schema.TransactionCategory{})
 	transactioncategory.Hooks[0] = func(next ent.Mutator) ent.Mutator {

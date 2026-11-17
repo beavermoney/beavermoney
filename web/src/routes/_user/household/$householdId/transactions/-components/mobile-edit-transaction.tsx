@@ -33,6 +33,7 @@ const transactionFragment = graphql`
     description
     datetime
     excludeFromReports
+    pending
     user {
       name
     }
@@ -261,6 +262,9 @@ export function MobileEditTransaction({
   const [description, setDescription] = useState(transaction.description ?? '')
   const [date, setDate] = useState(new Date(transaction.datetime))
   const [categoryId, setCategoryId] = useState(transaction.category.id)
+  const [transactionPending, setTransactionPending] = useState(
+    transaction.pending,
+  )
   const [excluded, setExcluded] = useState(transaction.excludeFromReports)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [attempted, setAttempted] = useState(false)
@@ -347,6 +351,7 @@ export function MobileEditTransaction({
             datetime: date.toISOString(),
             categoryID: categoryId,
             excludeFromReports: excluded,
+            pending: transactionPending,
           },
           entry0: entries[0]?.id ?? transaction.id,
           entry0Input: entryInput(0),
@@ -608,12 +613,24 @@ export function MobileEditTransaction({
             disabledDate={(d) => d > new Date() || d < new Date('1900-01-01')}
           />
         }
-        details={
+        hasNote={!!description}
+        selectedOptions={[
+          ...(transactionPending ? [t`Pending`] : []),
+          ...(excluded ? [t`Exclude from reports`] : []),
+        ]}
+        note={
+          <TextInput
+            label={t`Description`}
+            value={description}
+            onChange={setDescription}
+          />
+        }
+        options={
           <>
-            <TextInput
-              label={t`Description`}
-              value={description}
-              onChange={setDescription}
+            <CheckboxInput
+              label={t`Pending`}
+              value={transactionPending}
+              onChange={setTransactionPending}
             />
             <CheckboxInput
               label={t`Exclude from reports`}

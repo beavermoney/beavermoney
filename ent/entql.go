@@ -260,6 +260,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transaction.FieldUserID:             {Type: field.TypeInt, Column: transaction.FieldUserID},
 			transaction.FieldCategoryID:         {Type: field.TypeInt, Column: transaction.FieldCategoryID},
 			transaction.FieldExcludeFromReports: {Type: field.TypeBool, Column: transaction.FieldExcludeFromReports},
+			transaction.FieldPending:            {Type: field.TypeBool, Column: transaction.FieldPending},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -2890,6 +2891,11 @@ func (f *TransactionFilter) WhereCategoryID(p entql.IntP) {
 // WhereExcludeFromReports applies the entql bool predicate on the exclude_from_reports field.
 func (f *TransactionFilter) WhereExcludeFromReports(p entql.BoolP) {
 	f.Where(p.Field(transaction.FieldExcludeFromReports))
+}
+
+// WherePending applies the entql bool predicate on the pending field.
+func (f *TransactionFilter) WherePending(p entql.BoolP) {
+	f.Where(p.Field(transaction.FieldPending))
 }
 
 // WhereHasUser applies a predicate to check if query has an edge user.

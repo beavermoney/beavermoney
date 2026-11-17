@@ -31,6 +31,8 @@ const (
 	FieldCategoryID = "category_id"
 	// FieldExcludeFromReports holds the string denoting the exclude_from_reports field in the database.
 	FieldExcludeFromReports = "exclude_from_reports"
+	// FieldPending holds the string denoting the pending field in the database.
+	FieldPending = "pending"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
@@ -91,6 +93,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldCategoryID,
 	FieldExcludeFromReports,
+	FieldPending,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -123,6 +126,8 @@ var (
 	CategoryIDValidator func(int) error
 	// DefaultExcludeFromReports holds the default value on creation for the "exclude_from_reports" field.
 	DefaultExcludeFromReports bool
+	// DefaultPending holds the default value on creation for the "pending" field.
+	DefaultPending bool
 )
 
 // OrderOption defines the ordering options for the Transaction queries.
@@ -171,6 +176,11 @@ func ByCategoryID(opts ...sql.OrderTermOption) OrderOption {
 // ByExcludeFromReports orders the results by the exclude_from_reports field.
 func ByExcludeFromReports(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExcludeFromReports, opts...).ToFunc()
+}
+
+// ByPending orders the results by the pending field.
+func ByPending(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPending, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

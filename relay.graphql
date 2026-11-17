@@ -394,6 +394,7 @@ input CreateTransactionInput {
   description: String
   datetime: Time!
   excludeFromReports: Boolean
+  pending: Boolean
   userID: ID!
   categoryID: ID!
 }
@@ -2526,6 +2527,7 @@ type Transaction implements Node {
   userID: ID!
   categoryID: ID!
   excludeFromReports: Boolean!
+  pending: Boolean!
   user: User!
   household: Household!
   category: TransactionCategory!
@@ -2984,6 +2986,11 @@ input TransactionWhereInput {
   excludeFromReports: Boolean
   excludeFromReportsNEQ: Boolean
   """
+  pending field predicates
+  """
+  pending: Boolean
+  pendingNEQ: Boolean
+  """
   user edge predicates
   """
   hasUser: Boolean
@@ -3142,6 +3149,7 @@ input UpdateTransactionInput {
   clearDescription: Boolean
   datetime: Time
   excludeFromReports: Boolean
+  pending: Boolean
   categoryID: ID
 }
 

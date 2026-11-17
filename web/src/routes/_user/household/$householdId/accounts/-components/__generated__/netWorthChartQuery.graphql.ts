@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c625bb97bca6142827ca929bed99a463>>
+ * @generated SignedSource<<f734cc1c56fe4fe42c1ca98ebf37ed72>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -638,6 +638,8 @@ export type TransactionWhereInput = {
   idNotIn?: ReadonlyArray<string> | null | undefined;
   not?: TransactionWhereInput | null | undefined;
   or?: ReadonlyArray<TransactionWhereInput> | null | undefined;
+  pending?: boolean | null | undefined;
+  pendingNEQ?: boolean | null | undefined;
   updateTime?: any | null | undefined;
   updateTimeGT?: any | null | undefined;
   updateTimeGTE?: any | null | undefined;

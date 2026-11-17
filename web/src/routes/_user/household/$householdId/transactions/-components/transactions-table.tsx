@@ -40,6 +40,7 @@ const fragment = graphql`
     datetime
     description
     excludeFromReports
+    pending
     category {
       icon
       type
@@ -208,6 +209,11 @@ export function TransactionsTable({
                 >
                   {category.name}
                 </Link>
+                {transaction.pending && (
+                  <Text type="supporting">
+                    <Trans>Pending</Trans>
+                  </Text>
+                )}
                 {transaction.excludeFromReports && (
                   <Badge
                     label={

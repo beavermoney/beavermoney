@@ -565,6 +565,7 @@ type CreateTransactionInput struct {
 	Description        *string
 	Datetime           time.Time
 	ExcludeFromReports *bool
+	Pending            *bool
 	UserID             int
 	CategoryID         int
 }
@@ -577,6 +578,9 @@ func (i *CreateTransactionInput) Mutate(m *TransactionMutation) {
 	m.SetDatetime(i.Datetime)
 	if v := i.ExcludeFromReports; v != nil {
 		m.SetExcludeFromReports(*v)
+	}
+	if v := i.Pending; v != nil {
+		m.SetPending(*v)
 	}
 	m.SetUserID(i.UserID)
 	m.SetCategoryID(i.CategoryID)
@@ -594,6 +598,7 @@ type UpdateTransactionInput struct {
 	Description        *string
 	Datetime           *time.Time
 	ExcludeFromReports *bool
+	Pending            *bool
 	CategoryID         *int
 }
 
@@ -610,6 +615,9 @@ func (i *UpdateTransactionInput) Mutate(m *TransactionMutation) {
 	}
 	if v := i.ExcludeFromReports; v != nil {
 		m.SetExcludeFromReports(*v)
+	}
+	if v := i.Pending; v != nil {
+		m.SetPending(*v)
 	}
 	if v := i.CategoryID; v != nil {
 		m.SetCategoryID(*v)

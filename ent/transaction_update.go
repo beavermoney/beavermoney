@@ -115,6 +115,20 @@ func (_u *TransactionUpdate) SetNillableExcludeFromReports(v *bool) *Transaction
 	return _u
 }
 
+// SetPending sets the "pending" field.
+func (_u *TransactionUpdate) SetPending(v bool) *TransactionUpdate {
+	_u.mutation.SetPending(v)
+	return _u
+}
+
+// SetNillablePending sets the "pending" field if the given value is not nil.
+func (_u *TransactionUpdate) SetNillablePending(v *bool) *TransactionUpdate {
+	if v != nil {
+		_u.SetPending(*v)
+	}
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *TransactionUpdate) SetUser(v *User) *TransactionUpdate {
 	return _u.SetUserID(v.ID)
@@ -312,6 +326,9 @@ func (_u *TransactionUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if value, ok := _u.mutation.ExcludeFromReports(); ok {
 		_spec.SetField(transaction.FieldExcludeFromReports, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Pending(); ok {
+		_spec.SetField(transaction.FieldPending, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -565,6 +582,20 @@ func (_u *TransactionUpdateOne) SetNillableExcludeFromReports(v *bool) *Transact
 	return _u
 }
 
+// SetPending sets the "pending" field.
+func (_u *TransactionUpdateOne) SetPending(v bool) *TransactionUpdateOne {
+	_u.mutation.SetPending(v)
+	return _u
+}
+
+// SetNillablePending sets the "pending" field if the given value is not nil.
+func (_u *TransactionUpdateOne) SetNillablePending(v *bool) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetPending(*v)
+	}
+	return _u
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *TransactionUpdateOne) SetUser(v *User) *TransactionUpdateOne {
 	return _u.SetUserID(v.ID)
@@ -792,6 +823,9 @@ func (_u *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transaction
 	}
 	if value, ok := _u.mutation.ExcludeFromReports(); ok {
 		_spec.SetField(transaction.FieldExcludeFromReports, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Pending(); ok {
+		_spec.SetField(transaction.FieldPending, field.TypeBool, value)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

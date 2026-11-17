@@ -1,3 +1,4 @@
+import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -96,6 +97,7 @@ type NewMoveProps = {
 export function NewMove({ fragmentRef }: NewMoveProps) {
   const { t } = useLingui()
   const formSchema = z.object({
+    pending: z.boolean(),
     description: z
       .string()
       .max(256, t`Description must be at most 256 characters.`),
@@ -158,6 +160,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
   const form = useForm({
     defaultValues: {
       description: '',
+      pending: false,
       shares: undefined as unknown as number,
       pricePerShare: undefined as unknown as number,
       datetime: initialDatetime,
@@ -195,6 +198,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             input: {
               transaction: {
                 description: value.description,
+                pending: value.pending,
                 datetime: value.datetime.toISOString(),
                 categoryID: moveCategory.id,
                 userID: value.ownerUserID,
@@ -234,6 +238,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
             form.reset(
               {
                 description: '',
+                pending: false,
                 shares: undefined as unknown as number,
                 pricePerShare: undefined as unknown as number,
                 datetime: value.datetime,
@@ -291,7 +296,22 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     )
   }, [allInvestments, fromInvestment])
 
+  const optionValues = useStore(form.store, (state) => state.values)
+  const selectedOptions = [...(optionValues.pending ? [t`Pending`] : [])]
+
   const fields = {
+    pending: (
+      <form.Field name="pending">
+        {(field) => (
+          <CheckboxInput
+            label={t`Pending`}
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+          />
+        )}
+      </form.Field>
+    ),
     fromInvestmentId: (
       <form.Field
         name="fromInvestmentId"
@@ -705,7 +725,10 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         }
         chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
-        details={<>{fields.description}</>}
+        note={fields.description}
+        hasNote={!!optionValues.description}
+        selectedOptions={selectedOptions}
+        options={fields.pending}
         pending={isMutationInFlight}
         onSave={async (again) => {
           mobileSubmission.current = again ? 'again' : 'close'
@@ -745,6 +768,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               {fields.pricePerShare}
             </Grid>
             {fields.description}
+            {fields.pending}
             <Grid
               columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
               gap={4}

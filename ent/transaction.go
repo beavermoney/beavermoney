@@ -36,6 +36,8 @@ type Transaction struct {
 	CategoryID int `json:"category_id,omitempty"`
 	// ExcludeFromReports holds the value of the "exclude_from_reports" field.
 	ExcludeFromReports bool `json:"exclude_from_reports,omitempty"`
+	// Pending holds the value of the "pending" field.
+	Pending bool `json:"pending,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
 	Edges        TransactionEdges `json:"edges"`
@@ -120,7 +122,7 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case transaction.FieldExcludeFromReports:
+		case transaction.FieldExcludeFromReports, transaction.FieldPending:
 			values[i] = new(sql.NullBool)
 		case transaction.FieldID, transaction.FieldHouseholdID, transaction.FieldUserID, transaction.FieldCategoryID:
 			values[i] = new(sql.NullInt64)
@@ -196,6 +198,12 @@ func (_m *Transaction) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field exclude_from_reports", values[i])
 			} else if value.Valid {
 				_m.ExcludeFromReports = value.Bool
+			}
+		case transaction.FieldPending:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field pending", values[i])
+			} else if value.Valid {
+				_m.Pending = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -281,6 +289,9 @@ func (_m *Transaction) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("exclude_from_reports=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ExcludeFromReports))
+	builder.WriteString(", ")
+	builder.WriteString("pending=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Pending))
 	builder.WriteByte(')')
 	return builder.String()
 }

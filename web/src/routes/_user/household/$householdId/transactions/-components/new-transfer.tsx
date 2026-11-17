@@ -1,3 +1,4 @@
+import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -87,6 +88,7 @@ type NewTransferProps = {
 export function NewTransfer({ fragmentRef }: NewTransferProps) {
   const { t } = useLingui()
   const formSchema = z.object({
+    pending: z.boolean(),
     description: z
       .string()
       .max(256, t`Description must be at most 256 characters.`),
@@ -135,6 +137,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
 
   const defaultValues: z.infer<typeof formSchema> = {
     description: '',
+    pending: false,
     amount: undefined,
     debitAmount: undefined,
     creditAmount: undefined,
@@ -181,6 +184,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             input: {
               transaction: {
                 description: value.description,
+                pending: value.pending,
                 datetime: value.datetime.toISOString(),
                 categoryID: value.categoryId,
                 userID: value.ownerUserID,
@@ -218,6 +222,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
             form.reset(
               {
                 description: '',
+                pending: false,
                 amount: undefined,
                 debitAmount: undefined,
                 creditAmount: undefined,
@@ -262,7 +267,22 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     toAccount &&
     fromAccount.householdCurrency.code !== toAccount.householdCurrency.code
 
+  const optionValues = useStore(form.store, (state) => state.values)
+  const selectedOptions = [...(optionValues.pending ? [t`Pending`] : [])]
+
   const fields = {
+    pending: (
+      <form.Field name="pending">
+        {(field) => (
+          <CheckboxInput
+            label={t`Pending`}
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+          />
+        )}
+      </form.Field>
+    ),
     categoryId: (
       <form.Field
         name="categoryId"
@@ -648,7 +668,10 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
         }
         chips={ownerOptions.length > 1 && fields.ownerUserID}
         date={fields.datetime}
-        details={<>{fields.description}</>}
+        note={fields.description}
+        hasNote={!!optionValues.description}
+        selectedOptions={selectedOptions}
+        options={fields.pending}
         pending={isMutationInFlight}
         onSave={async (again) => {
           mobileSubmission.current = again ? 'again' : 'close'
@@ -696,6 +719,7 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
               {isDifferentCurrency && fields.creditAmount}
             </Grid>
             {fields.description}
+            {fields.pending}
             <Grid
               columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
               gap={4}

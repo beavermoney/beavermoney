@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<df6cd39c57fab7d62c49a7317c2055bd>>
+ * @generated SignedSource<<1a2621d732b033b9698a56efbb172013>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,6 +34,7 @@ export type editTransactionDialogTransactionFragment$data = {
     readonly price: string;
     readonly " $fragmentSpreads": FragmentRefs<"investmentLotCardFragment">;
   }> | null | undefined;
+  readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
       readonly id: string;
@@ -115,6 +116,13 @@ return {
       "args": null,
       "kind": "ScalarField",
       "name": "excludeFromReports",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "pending",
       "storageKey": null
     },
     {
@@ -206,6 +214,6 @@ return {
 };
 })();
 
-(node as any).hash = "18a7b096d10afbc594b220151a8c589d";
+(node as any).hash = "b1c27e620a72beaf2a6794bb39811ff8";
 
 export default node;

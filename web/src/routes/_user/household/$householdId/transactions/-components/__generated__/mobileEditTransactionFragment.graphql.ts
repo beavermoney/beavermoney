@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6bd217f1b97342db0e7746138d97090e>>
+ * @generated SignedSource<<6181485d32dbd9f54f7b3773cadcded6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -45,6 +45,7 @@ export type mobileEditTransactionFragment$data = {
     };
     readonly price: string;
   }> | null | undefined;
+  readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
       readonly archived: boolean;
@@ -176,6 +177,13 @@ return {
     {
       "alias": null,
       "args": null,
+      "kind": "ScalarField",
+      "name": "pending",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": "User",
       "kind": "LinkedField",
       "name": "user",
@@ -262,6 +270,6 @@ return {
 };
 })();
 
-(node as any).hash = "e1496548a9ab9db5a6b11edc0b317b68";
+(node as any).hash = "917d9eccb9362509555f72778f31d385";
 
 export default node;

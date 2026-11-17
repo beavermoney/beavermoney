@@ -262,8 +262,8 @@ msgid "Add member"
 msgstr "Add member"
 
 #: src/components/transaction-composer/composer.tsx
-msgid "Add note / options"
-msgstr "Add note / options"
+msgid "Add note"
+msgstr "Add note"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add subscription"
@@ -937,6 +937,10 @@ msgstr "Edit Entry"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 msgid "Edit Lot"
 msgstr "Edit Lot"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Edit note"
+msgstr "Edit note"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Edit Subscription"
@@ -1713,6 +1717,7 @@ msgstr "Open source on GitHub"
 msgid "OPEN SOURCE. OPEN POSSIBILITIES."
 msgstr "OPEN SOURCE. OPEN POSSIBILITIES."
 
+#: src/components/transaction-composer/composer.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
@@ -1744,6 +1749,19 @@ msgstr "Page not found"
 #: src/routes/index.tsx
 msgid "Payday"
 msgstr "Payday"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Pending"
+msgstr "Pending"
 
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "per share"

@@ -262,8 +262,8 @@ msgid "Add member"
 msgstr "添加成员"
 
 #: src/components/transaction-composer/composer.tsx
-msgid "Add note / options"
-msgstr "添加备注 / 选项"
+msgid "Add note"
+msgstr "添加备注"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add subscription"
@@ -937,6 +937,10 @@ msgstr "编辑分录"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 msgid "Edit Lot"
 msgstr "编辑投资批次"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Edit note"
+msgstr "编辑备注"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Edit Subscription"
@@ -1713,6 +1717,7 @@ msgstr "在 GitHub 查看开源代码"
 msgid "OPEN SOURCE. OPEN POSSIBILITIES."
 msgstr "开放源代码，更多可能。"
 
+#: src/components/transaction-composer/composer.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
@@ -1744,6 +1749,19 @@ msgstr "页面不存在"
 #: src/routes/index.tsx
 msgid "Payday"
 msgstr "工资到账"
+
+#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
+msgid "Pending"
+msgstr "待确认"
 
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "per share"

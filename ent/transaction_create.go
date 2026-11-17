@@ -107,6 +107,20 @@ func (_c *TransactionCreate) SetNillableExcludeFromReports(v *bool) *Transaction
 	return _c
 }
 
+// SetPending sets the "pending" field.
+func (_c *TransactionCreate) SetPending(v bool) *TransactionCreate {
+	_c.mutation.SetPending(v)
+	return _c
+}
+
+// SetNillablePending sets the "pending" field if the given value is not nil.
+func (_c *TransactionCreate) SetNillablePending(v *bool) *TransactionCreate {
+	if v != nil {
+		_c.SetPending(*v)
+	}
+	return _c
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_c *TransactionCreate) SetUser(v *User) *TransactionCreate {
 	return _c.SetUserID(v.ID)
@@ -207,6 +221,10 @@ func (_c *TransactionCreate) defaults() error {
 		v := transaction.DefaultExcludeFromReports
 		_c.mutation.SetExcludeFromReports(v)
 	}
+	if _, ok := _c.mutation.Pending(); !ok {
+		v := transaction.DefaultPending
+		_c.mutation.SetPending(v)
+	}
 	return nil
 }
 
@@ -242,6 +260,9 @@ func (_c *TransactionCreate) check() error {
 	}
 	if _, ok := _c.mutation.ExcludeFromReports(); !ok {
 		return &ValidationError{Name: "exclude_from_reports", err: errors.New(`ent: missing required field "Transaction.exclude_from_reports"`)}
+	}
+	if _, ok := _c.mutation.Pending(); !ok {
+		return &ValidationError{Name: "pending", err: errors.New(`ent: missing required field "Transaction.pending"`)}
 	}
 	if len(_c.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Transaction.user"`)}
@@ -298,6 +319,10 @@ func (_c *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ExcludeFromReports(); ok {
 		_spec.SetField(transaction.FieldExcludeFromReports, field.TypeBool, value)
 		_node.ExcludeFromReports = value
+	}
+	if value, ok := _c.mutation.Pending(); ok {
+		_spec.SetField(transaction.FieldPending, field.TypeBool, value)
+		_node.Pending = value
 	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -512,6 +537,18 @@ func (u *TransactionUpsert) UpdateExcludeFromReports() *TransactionUpsert {
 	return u
 }
 
+// SetPending sets the "pending" field.
+func (u *TransactionUpsert) SetPending(v bool) *TransactionUpsert {
+	u.Set(transaction.FieldPending, v)
+	return u
+}
+
+// UpdatePending sets the "pending" field to the value that was provided on create.
+func (u *TransactionUpsert) UpdatePending() *TransactionUpsert {
+	u.SetExcluded(transaction.FieldPending)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -648,6 +685,20 @@ func (u *TransactionUpsertOne) SetExcludeFromReports(v bool) *TransactionUpsertO
 func (u *TransactionUpsertOne) UpdateExcludeFromReports() *TransactionUpsertOne {
 	return u.Update(func(s *TransactionUpsert) {
 		s.UpdateExcludeFromReports()
+	})
+}
+
+// SetPending sets the "pending" field.
+func (u *TransactionUpsertOne) SetPending(v bool) *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.SetPending(v)
+	})
+}
+
+// UpdatePending sets the "pending" field to the value that was provided on create.
+func (u *TransactionUpsertOne) UpdatePending() *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.UpdatePending()
 	})
 }
 
@@ -953,6 +1004,20 @@ func (u *TransactionUpsertBulk) SetExcludeFromReports(v bool) *TransactionUpsert
 func (u *TransactionUpsertBulk) UpdateExcludeFromReports() *TransactionUpsertBulk {
 	return u.Update(func(s *TransactionUpsert) {
 		s.UpdateExcludeFromReports()
+	})
+}
+
+// SetPending sets the "pending" field.
+func (u *TransactionUpsertBulk) SetPending(v bool) *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.SetPending(v)
+	})
+}
+
+// UpdatePending sets the "pending" field to the value that was provided on create.
+func (u *TransactionUpsertBulk) UpdatePending() *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.UpdatePending()
 	})
 }
 

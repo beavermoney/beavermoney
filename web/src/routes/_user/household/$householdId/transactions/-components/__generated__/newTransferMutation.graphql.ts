@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<18ec5f1b5f268358f9148c65b09bee8c>>
+ * @generated SignedSource<<19457ec3191bbcdd89ab6356a0017787>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,7 @@ export type CreateTransactionInput = {
   datetime: any;
   description?: string | null | undefined;
   excludeFromReports?: boolean | null | undefined;
+  pending?: boolean | null | undefined;
   userID: string;
 };
 export type CreateTransactionEntryInput = {
@@ -209,6 +210,13 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "kind": "ScalarField",
+                "name": "pending",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "TransactionEntry",
                 "kind": "LinkedField",
                 "name": "transactionEntries",
@@ -320,12 +328,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5b33c9cf384b6b32cc49a96f9ea3baed",
+    "cacheID": "3cb770b3696825ddfc6e51aab390d34d",
     "id": null,
     "metadata": {},
     "name": "newTransferMutation",
     "operationKind": "mutation",
-    "text": "mutation newTransferMutation(\n  $input: CreateTransferInputCustom!\n) {\n  createTransfer(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
+    "text": "mutation newTransferMutation(\n  $input: CreateTransferInputCustom!\n) {\n  createTransfer(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
   }
 };
 })();

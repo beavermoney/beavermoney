@@ -16,15 +16,17 @@ import { NewBuy } from './new-buy'
 import { NewSell } from './new-sell'
 import { NewMove } from './new-move'
 import { NewExpense } from './new-expense'
+import { NewIncome } from './new-income'
 import { NewTransfer } from './new-transfer'
 
 const mocks = vi.hoisted(() => ({
+  mobile: true,
   close: vi.fn(),
   defaults: undefined as { accountId: string } | undefined,
   commit: vi.fn(),
   toast: vi.fn(),
 }))
-vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => true }))
+vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => mocks.mobile }))
 vi.mock('@/hooks/use-log-transaction', () => ({
   useLogTransaction: () => ({
     close: mocks.close,
@@ -101,6 +103,7 @@ const success = {
 }
 
 beforeEach(() => {
+  mocks.mobile = true
   mocks.defaults = undefined
   vi.clearAllMocks()
   mocks.commit.mockResolvedValue(success)
@@ -151,13 +154,17 @@ it('Save again retains account, category, owner and date while resetting other f
   }).format(new Date())
   fireEvent.click(screen.getByRole('button', { name: today }))
   fireEvent.click(await screen.findByRole('button', { name: 'Yesterday' }))
-  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
   fireEvent.change(
     await screen.findByRole('textbox', { name: 'Description' }),
     {
       target: { value: 'Previous entry' },
     },
   )
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Options' }))
+  expect(screen.queryByRole('textbox', { name: 'Description' })).toBeNull()
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Pending' }))
   fireEvent.click(
     screen.getByRole('checkbox', { name: 'Exclude from reports' }),
   )
@@ -180,6 +187,7 @@ it('Save again retains account, category, owner and date while resetting other f
     mocks.commit.mock.calls[0][1].variables.input.transaction,
   ).toMatchObject({
     description: 'Previous entry',
+    pending: true,
     excludeFromReports: true,
     userID: 'partner',
   })
@@ -514,7 +522,7 @@ it('keeps the draft but clears a removed account before submission', async () =>
   const view = render(<NewExpense fragmentRef={fixture as never} />)
   fireEvent.click(screen.getByRole('button', { name: 'Food' }))
   fireEvent.click(await screen.findByRole('button', { name: '2' }))
-  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
   fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
     target: { value: 'Keep this draft' },
   })
@@ -528,7 +536,7 @@ it('keeps the draft but clears a removed account before submission', async () =>
   fireEvent.click(screen.getByRole('button', { name: 'Save' }))
   await screen.findByRole('alert')
   expect(mocks.commit).not.toHaveBeenCalled()
-  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
   expect(
     (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
       .value,
@@ -588,3 +596,26 @@ it('retains an explicit initial account after consuming defaults, and applies la
   // A closed form must not consume future defaults.
   act(() => deliverTransactionDefaults('expense', { accountId: 'other' }))
 })
+
+it.each([
+  ['Expense', NewExpense],
+  ['Income', NewIncome],
+  ['Transfer', NewTransfer],
+  ['Buy', NewBuy],
+  ['Sell', NewSell],
+  ['Move', NewMove],
+] as const)(
+  '%s desktop form starts with Pending off and allows toggling it',
+  (_kind, Component) => {
+    mocks.mobile = false
+    render(<Component fragmentRef={investmentFixture as never} />)
+    const pending = screen.getByRole('checkbox', {
+      name: 'Pending',
+    }) as HTMLInputElement
+    expect(pending.checked).toBe(false)
+    fireEvent.click(pending)
+    expect(pending.checked).toBe(true)
+    fireEvent.click(pending)
+    expect(pending.checked).toBe(false)
+  },
+)

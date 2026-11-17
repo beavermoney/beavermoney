@@ -55,6 +55,7 @@ const fixture = {
   description: 'Lunch',
   datetime: '2026-11-01T12:00:00Z',
   excludeFromReports: true,
+  pending: false,
   user: { name: 'Joey' },
   category,
   transactionEntries: [{ id: 'entry', amount: '-20.63', account }],
@@ -242,7 +243,7 @@ it('requires Done after account selection and can clear an existing note', async
   fireEvent.click(screen.getByRole('button', { name: /Savings.*Liquidity/ }))
   expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Done' }))
-  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
   fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
     target: { value: '' },
   })
@@ -257,7 +258,7 @@ it('requires Done after account selection and can clear an existing note', async
 
 it('requires explicit deletion confirmation and keeps drafts when cancelled', () => {
   open()
-  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
   fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
     target: { value: 'Changed note' },
   })
@@ -272,7 +273,7 @@ it('requires explicit deletion confirmation and keeps drafts when cancelled', ()
     within(confirmation).queryByRole('button', { name: 'Done' }),
   ).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.click(screen.getByRole('button', { name: /^(Add|Edit) note$/ }))
   expect(
     (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
       .value,
@@ -371,4 +372,52 @@ it('prevents repeat deletion while pending and lets a failed deletion be retried
     }),
   )
   await waitFor(() => expect(mocks.remove).toHaveBeenCalledTimes(2))
+})
+
+it('keeps note and options separate, shows all selections, and clears pending on save', async () => {
+  open({ ...fixture, pending: true })
+  expect(screen.getByRole('button', { name: 'Edit note' })).toBeTruthy()
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Pending · Exclude from reports' }),
+  )
+  expect(screen.queryByRole('textbox', { name: 'Description' })).toBeNull()
+  const pending = screen.getByRole('checkbox', {
+    name: 'Pending',
+  }) as HTMLInputElement
+  expect(pending.checked).toBe(true)
+  fireEvent.click(pending)
+  fireEvent.click(
+    screen.getByRole('checkbox', { name: 'Exclude from reports' }),
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  expect(screen.getByRole('button', { name: 'Options' })).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Edit note' }))
+  expect(
+    (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
+      .value,
+  ).toBe('Lunch')
+  expect(screen.queryByRole('checkbox', { name: 'Pending' })).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables().input).toMatchObject({
+    pending: false,
+    excludeFromReports: false,
+    description: 'Lunch',
+  })
+})
+
+it('sets pending without changing the report option or amount', async () => {
+  open({ ...fixture, excludeFromReports: false })
+  fireEvent.click(screen.getByRole('button', { name: 'Options' }))
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Pending' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  expect(screen.getByRole('button', { name: 'Pending' })).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables().input).toMatchObject({
+    pending: true,
+    excludeFromReports: false,
+  })
+  expect(variables().entry0Input.amount).toBe('-20.63')
 })

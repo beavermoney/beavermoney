@@ -95,6 +95,11 @@ func ExcludeFromReports(v bool) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldExcludeFromReports, v))
 }
 
+// Pending applies equality check predicate on the "pending" field. It's identical to PendingEQ.
+func Pending(v bool) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldPending, v))
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldCreateTime, v))
@@ -358,6 +363,16 @@ func ExcludeFromReportsEQ(v bool) predicate.Transaction {
 // ExcludeFromReportsNEQ applies the NEQ predicate on the "exclude_from_reports" field.
 func ExcludeFromReportsNEQ(v bool) predicate.Transaction {
 	return predicate.Transaction(sql.FieldNEQ(FieldExcludeFromReports, v))
+}
+
+// PendingEQ applies the EQ predicate on the "pending" field.
+func PendingEQ(v bool) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldPending, v))
+}
+
+// PendingNEQ applies the NEQ predicate on the "pending" field.
+func PendingNEQ(v bool) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNEQ(FieldPending, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

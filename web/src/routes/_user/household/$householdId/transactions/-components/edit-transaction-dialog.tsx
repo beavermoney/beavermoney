@@ -86,6 +86,7 @@ const editTransactionDialogTransactionFragment = graphql`
     datetime
     categoryID
     excludeFromReports
+    pending
     category {
       id
       name
@@ -229,6 +230,7 @@ function EditTransactionContent({
     datetime: z.date(),
     categoryId: z.string().min(1, t`Please select a category`),
     excludeFromReports: z.boolean(),
+    pending: z.boolean(),
   })
 
   const isMobile = useIsMobile()
@@ -338,6 +340,7 @@ function EditTransactionContent({
       datetime: new Date(transaction.datetime),
       categoryId: transaction.categoryID,
       excludeFromReports: transaction.excludeFromReports,
+      pending: transaction.pending,
     },
     validators: {
       onSubmit: formSchema,
@@ -356,6 +359,7 @@ function EditTransactionContent({
                 datetime: formData.datetime.toISOString(),
                 categoryID: formData.categoryId,
                 excludeFromReports: formData.excludeFromReports,
+                pending: formData.pending,
               },
             },
             updater: identity,
@@ -736,6 +740,16 @@ function EditTransactionContent({
                     gap={4}
                     data-slot="checkbox-group"
                   >
+                    <form.Field name="pending">
+                      {(field) => (
+                        <CheckboxInput
+                          label={t`Pending`}
+                          value={field.state.value}
+                          onChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                        />
+                      )}
+                    </form.Field>
                     <form.Field
                       name="excludeFromReports"
                       children={(field) => {

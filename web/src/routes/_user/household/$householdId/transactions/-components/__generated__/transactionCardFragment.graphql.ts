@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<af438e05ae095be1e4ee0e806438ce9b>>
+ * @generated SignedSource<<d40de5fff252be778287cabeeef34264>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -36,6 +36,7 @@ export type transactionCardFragment$data = {
     };
     readonly price: string;
   }> | null | undefined;
+  readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
       readonly householdCurrency: {
@@ -112,6 +113,13 @@ return {
       "args": null,
       "kind": "ScalarField",
       "name": "excludeFromReports",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "pending",
       "storageKey": null
     },
     {
@@ -219,6 +227,6 @@ return {
 };
 })();
 
-(node as any).hash = "9850aa259a7a7b68f2e81a2596a9e253";
+(node as any).hash = "264cfb3bdc323caf19c4a56d70c65724";
 
 export default node;

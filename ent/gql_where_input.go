@@ -4929,6 +4929,10 @@ type TransactionWhereInput struct {
 	ExcludeFromReports    *bool `json:"excludeFromReports,omitempty"`
 	ExcludeFromReportsNEQ *bool `json:"excludeFromReportsNEQ,omitempty"`
 
+	// "pending" field predicates.
+	Pending    *bool `json:"pending,omitempty"`
+	PendingNEQ *bool `json:"pendingNEQ,omitempty"`
+
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
 	HasUserWith []*UserWhereInput `json:"hasUserWith,omitempty"`
@@ -5203,6 +5207,12 @@ func (i *TransactionWhereInput) P() (predicate.Transaction, error) {
 	}
 	if i.ExcludeFromReportsNEQ != nil {
 		predicates = append(predicates, transaction.ExcludeFromReportsNEQ(*i.ExcludeFromReportsNEQ))
+	}
+	if i.Pending != nil {
+		predicates = append(predicates, transaction.PendingEQ(*i.Pending))
+	}
+	if i.PendingNEQ != nil {
+		predicates = append(predicates, transaction.PendingNEQ(*i.PendingNEQ))
 	}
 
 	if i.HasUser != nil {

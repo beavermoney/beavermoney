@@ -17,6 +17,7 @@ const transactionCardFragment = graphql`
   fragment transactionCardFragment on Transaction {
     id
     excludeFromReports
+    pending
     transactionEntries {
       id
       amount
@@ -196,6 +197,11 @@ export function TransactionCard({
                 value: lot.price,
                 currencyCode: lot.investment.householdCurrency.code,
               })}
+            </Text>
+          )}
+          {data.pending && (
+            <Text type="supporting">
+              <Trans>Pending</Trans>
             </Text>
           )}
           {data.excludeFromReports && (

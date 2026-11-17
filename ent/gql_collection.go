@@ -2686,6 +2686,11 @@ func (_q *TransactionQuery) collectField(ctx context.Context, oneNode bool, opCt
 				selectedFields = append(selectedFields, transaction.FieldExcludeFromReports)
 				fieldSeen[transaction.FieldExcludeFromReports] = struct{}{}
 			}
+		case "pending":
+			if _, ok := fieldSeen[transaction.FieldPending]; !ok {
+				selectedFields = append(selectedFields, transaction.FieldPending)
+				fieldSeen[transaction.FieldPending] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:

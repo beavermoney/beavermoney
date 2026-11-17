@@ -450,6 +450,7 @@ var (
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "datetime", Type: field.TypeTime},
 		{Name: "exclude_from_reports", Type: field.TypeBool, Default: false},
+		{Name: "pending", Type: field.TypeBool, Default: false},
 		{Name: "household_id", Type: field.TypeInt},
 		{Name: "category_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
@@ -462,19 +463,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "transactions_households_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[6]},
+				Columns:    []*schema.Column{TransactionsColumns[7]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transactions_transaction_categories_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[7]},
+				Columns:    []*schema.Column{TransactionsColumns[8]},
 				RefColumns: []*schema.Column{TransactionCategoriesColumns[0]},
 				OnDelete:   schema.Restrict,
 			},
 			{
 				Symbol:     "transactions_users_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[8]},
+				Columns:    []*schema.Column{TransactionsColumns[9]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -488,12 +489,12 @@ var (
 			{
 				Name:    "transaction_category_id_datetime",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[4]},
+				Columns: []*schema.Column{TransactionsColumns[8], TransactionsColumns[4]},
 			},
 			{
 				Name:    "transaction_household_id_user_id_datetime",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[6], TransactionsColumns[8], TransactionsColumns[4]},
+				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[9], TransactionsColumns[4]},
 			},
 		},
 	}

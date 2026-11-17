@@ -87,6 +87,7 @@ type NewIncomeProps = {
 export function NewIncome({ fragmentRef }: NewIncomeProps) {
   const { t } = useLingui()
   const formSchema = z.object({
+    pending: z.boolean(),
     description: z
       .string()
       .max(256, t`Description must be at most 256 characters.`),
@@ -135,6 +136,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
   const form = useForm({
     defaultValues: {
       description: '',
+      pending: false,
       amount: undefined as unknown as number,
       datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
@@ -158,6 +160,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
             input: {
               transaction: {
                 description: formData.description,
+                pending: formData.pending,
                 datetime: formData.datetime.toISOString(),
                 categoryID: formData.categoryId,
                 excludeFromReports: formData.excludeFromReports,
@@ -190,6 +193,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
             form.reset(
               {
                 description: '',
+                pending: false,
                 amount: undefined as unknown as number,
                 datetime: value.datetime,
                 ownerUserID: value.ownerUserID,
@@ -217,7 +221,25 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
     (acc) => acc.id === selectedAccountId,
   )
 
+  const optionValues = useStore(form.store, (state) => state.values)
+  const selectedOptions = [
+    ...(optionValues.pending ? [t`Pending`] : []),
+    ...(optionValues.excludeFromReports ? [t`Exclude from reports`] : []),
+  ]
+
   const fields = {
+    pending: (
+      <form.Field name="pending">
+        {(field) => (
+          <CheckboxInput
+            label={t`Pending`}
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+          />
+        )}
+      </form.Field>
+    ),
     categoryId: (
       <form.Field
         name="categoryId"
@@ -435,9 +457,12 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
           </>
         }
         date={fields.datetime}
-        details={
+        note={fields.description}
+        hasNote={!!optionValues.description}
+        selectedOptions={selectedOptions}
+        options={
           <>
-            {fields.description}
+            {fields.pending}
             {fields.excludeFromReports}
           </>
         }
@@ -495,6 +520,7 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
                 </Text>
               </legend>
               <Stack direction="vertical" gap={4} data-slot="checkbox-group">
+                {fields.pending}
                 {fields.excludeFromReports}
               </Stack>
             </fieldset>

@@ -1,3 +1,4 @@
+import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -92,6 +93,7 @@ type NewSellProps = {
 export function NewSell({ fragmentRef }: NewSellProps) {
   const { t } = useLingui()
   const formSchema = z.object({
+    pending: z.boolean(),
     description: z
       .string()
       .max(256, t`Description must be at most 256 characters.`),
@@ -145,6 +147,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
   const form = useForm({
     defaultValues: {
       description: '',
+      pending: false,
       shares: undefined as unknown as number,
       pricePerShare: undefined as unknown as number,
       totalReceived: undefined as unknown as number,
@@ -169,6 +172,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
             input: {
               transaction: {
                 description: formData.description,
+                pending: formData.pending,
                 datetime: formData.datetime.toISOString(),
                 categoryID: sellCategory.id,
                 userID: formData.ownerUserID,
@@ -210,6 +214,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
             form.reset(
               {
                 description: '',
+                pending: false,
                 shares: undefined as unknown as number,
                 pricePerShare: undefined as unknown as number,
                 totalReceived: undefined as unknown as number,
@@ -246,7 +251,22 @@ export function NewSell({ fragmentRef }: NewSellProps) {
   // Get available investments for selected account
   const availableInvestments = selectedAccount?.investments ?? []
 
+  const optionValues = useStore(form.store, (state) => state.values)
+  const selectedOptions = [...(optionValues.pending ? [t`Pending`] : [])]
+
   const fields = {
+    pending: (
+      <form.Field name="pending">
+        {(field) => (
+          <CheckboxInput
+            label={t`Pending`}
+            value={field.state.value}
+            onChange={field.handleChange}
+            onBlur={field.handleBlur}
+          />
+        )}
+      </form.Field>
+    ),
     accountId: (
       <form.Field
         name="accountId"
@@ -593,7 +613,10 @@ export function NewSell({ fragmentRef }: NewSellProps) {
         }
         chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
-        details={<>{fields.description}</>}
+        note={fields.description}
+        hasNote={!!optionValues.description}
+        selectedOptions={selectedOptions}
+        options={fields.pending}
         pending={isMutationInFlight}
         onSave={async (again) => {
           mobileSubmission.current = again ? 'again' : 'close'
@@ -634,6 +657,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
               {fields.totalReceived}
             </Grid>
             {fields.description}
+            {fields.pending}
             <Grid
               columns={{ minWidth: 240, max: 2, repeat: 'fit' }}
               gap={4}
