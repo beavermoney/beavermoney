@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { defaultAccountId } from './transaction-account-options'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { TransactionAccountPicker } from './transaction-account-picker'
 import { InvestmentStart } from './investment-start'
@@ -256,11 +257,19 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     form.store,
     (state) => state.values.toInvestmentId,
   )
-  const [sourceAccountId, setSourceAccountId] = useState('')
+  const [chosenSourceAccountId, setSourceAccountId] = useState('')
   const investmentAccounts =
     data.accounts.edges?.flatMap((edge) =>
       edge?.node?.type === 'investment' ? [edge.node] : [],
     ) ?? []
+
+  const sourceAccountId = investmentAccounts.some(
+    (a) => a.id === chosenSourceAccountId,
+  )
+    ? chosenSourceAccountId
+    : isMobile
+      ? defaultAccountId(investmentAccounts)
+      : ''
 
   const fromInvestmentId = useStore(
     form.store,
@@ -286,6 +295,31 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     fromInvestmentId: (
       <form.Field
         name="fromInvestmentId"
+        key={JSON.stringify([
+          (isMobile
+            ? (investmentAccounts.find((a) => a.id === sourceAccountId)
+                ?.investments ?? [])
+            : allInvestments
+          ).map((item) => item.id),
+          isMobile,
+          false,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = isMobile
+              ? (investmentAccounts.find((a) => a.id === sourceAccountId)
+                  ?.investments ?? [])
+              : allInvestments
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next = ''
+            if (next !== current)
+              ((value) => {
+                field.handleChange(value)
+                form.setFieldValue('toInvestmentId', '')
+              })(next)
+          },
+        }}
         validators={{
           onChange: ({ value, fieldApi }) => {
             if (!value) {
@@ -338,6 +372,36 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
     toInvestmentId: (
       <form.Field
         name="toInvestmentId"
+        key={JSON.stringify([
+          toInvestments.map((item) => item.id),
+          isMobile,
+          !fromInvestment,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = toInvestments
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const defaultAccount = isMobile
+              ? defaultAccountId(
+                  investmentAccounts.filter(
+                    (account) =>
+                      account.id !== sourceAccountId &&
+                      account.investments?.some((investment) =>
+                        options.some((option) => option.id === investment.id),
+                      ),
+                  ),
+                )
+              : ''
+            const next =
+              investmentAccounts
+                .find((account) => account.id === defaultAccount)
+                ?.investments?.find((investment) =>
+                  options.some((option) => option.id === investment.id),
+                )?.id ?? ''
+            if (next !== current) field.handleChange(next)
+          },
+        }}
         validators={{
           onChange: ({ value, fieldApi }) => {
             if (!value) {

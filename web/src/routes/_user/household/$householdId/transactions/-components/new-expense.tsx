@@ -1,8 +1,10 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { useCallback, useRef, useState } from 'react'
+import { registerTransactionDefaults } from '@/hooks/log-transaction-store'
+import { defaultAccountId } from './transaction-account-options'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { useRef, useState } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Text } from '@astryxdesign/core/Text'
 import { FinanceDateInput } from '@/components/finance-date-input'
@@ -16,7 +18,6 @@ import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
 import currency from 'currency.js'
-import { useEffect } from 'react'
 import { useFragment, useMutation } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -133,13 +134,17 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
       })
       .filter((category) => category.type === 'expense') ?? []
 
+  const { defaults, setDefaults } = useLogTransaction()
+  const [initialAccountId] = useState(defaults?.accountId ?? '')
+
   const form = useForm({
+    listeners: { onMount: () => setDefaults(undefined) },
     defaultValues: {
       description: '',
       amount: undefined as unknown as number,
       datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
-      accountId: '',
+      accountId: initialAccountId,
       categoryId: '',
       excludeFromReports: false,
     },
@@ -208,6 +213,18 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
     },
   })
 
+  const attachDefaults = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return
+      return registerTransactionDefaults('expense', (next) => {
+        if (next.accountId !== undefined)
+          form.setFieldValue('accountId', next.accountId)
+        setDefaults(undefined)
+      })
+    },
+    [form, setDefaults],
+  )
+
   const selectedAccountId = useStore(
     form.store,
     (state) => state.values.accountId,
@@ -216,15 +233,6 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
   const selectedAccount = availableAccounts.find(
     (acc) => acc.id === selectedAccountId,
   )
-
-  const { defaults, setDefaults } = useLogTransaction()
-  useEffect(() => {
-    if (!defaults) return
-    if (defaults.accountId !== undefined) {
-      form.setFieldValue('accountId', defaults.accountId)
-    }
-    setDefaults(undefined)
-  }, [defaults, form, setDefaults])
 
   const fields = {
     categoryId: (
@@ -257,6 +265,26 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
     accountId: (
       <form.Field
         name="accountId"
+        key={JSON.stringify([
+          availableAccounts.map((item) => item.id),
+          isMobile,
+          false,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = availableAccounts
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next =
+              isMobile && !false && !false
+                ? defaultAccountId(availableAccounts, [
+                    'liquidity',
+                    'liability',
+                  ])
+                : ''
+            if (next !== current) field.handleChange(next)
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -412,39 +440,41 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
 
   if (isMobile)
     return (
-      <MobileTransactionComposer
-        kind="expense"
-        category={fields.categoryId}
-        firstAmount={'amount'}
-        amounts={<>{fields.amount}</>}
-        chips={
-          <>
-            {fields.accountId}
-            {ownerOptions.length > 1 && fields.ownerUserID}
-          </>
-        }
-        date={fields.datetime}
-        details={
-          <>
-            {fields.description}
-            {fields.excludeFromReports}
-          </>
-        }
-        pending={isMutationInFlight}
-        onSave={async (again) => {
-          mobileSubmission.current = again ? 'again' : 'close'
-          try {
-            await form.handleSubmit()
-            return form.state.isValid
-          } finally {
-            mobileSubmission.current = null
+      <section className="contents" ref={attachDefaults}>
+        <MobileTransactionComposer
+          kind="expense"
+          category={fields.categoryId}
+          firstAmount={'amount'}
+          amounts={<>{fields.amount}</>}
+          chips={
+            <>
+              {fields.accountId}
+              {ownerOptions.length > 1 && fields.ownerUserID}
+            </>
           }
-        }}
-      />
+          date={fields.datetime}
+          details={
+            <>
+              {fields.description}
+              {fields.excludeFromReports}
+            </>
+          }
+          pending={isMutationInFlight}
+          onSave={async (again) => {
+            mobileSubmission.current = again ? 'again' : 'close'
+            try {
+              await form.handleSubmit()
+              return form.state.isValid
+            } finally {
+              mobileSubmission.current = null
+            }
+          }}
+        />
+      </section>
     )
 
   return (
-    <Stack direction="vertical" gap={6}>
+    <Stack ref={attachDefaults} direction="vertical" gap={6}>
       <Stack direction="vertical" gap={4}>
         <Stack
           as="form"

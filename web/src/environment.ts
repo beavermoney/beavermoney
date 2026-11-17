@@ -1,3 +1,4 @@
+import { handleHouseholdError } from './lib/auth'
 import { Environment, Network } from 'relay-runtime'
 import { env } from './env'
 import {
@@ -28,8 +29,16 @@ export const fetchGraphQL: FetchFunction = async (request, variables) => {
       ? { 'X-Display-Currency-ID': displayCurrencyId }
       : {}),
   }
-  const send = (json: object) =>
-    ky.post(HTTP_ENDPOINT + '/query', { headers, json }).json<GraphQLResponse>()
+  const send = async (json: object) => {
+    const response = await ky
+      .post(HTTP_ENDPOINT + '/query', { headers, json })
+      .json<GraphQLResponse>()
+    if (request.operationKind === 'query' && 'errors' in response)
+      response.errors?.forEach((error) =>
+        handleHouseholdError(new Error(error.message)),
+      )
+    return response
+  }
   const operation = { operationName: request.name, variables }
 
   // Web Crypto is unavailable on insecure origins (for example, LAN dev URLs).

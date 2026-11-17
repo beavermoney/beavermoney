@@ -19,8 +19,8 @@ import { proportional, Table } from '@astryxdesign/core/Table'
 import { Text } from '@astryxdesign/core/Text'
 import { Link } from '@tanstack/react-router'
 import { ArrowDownIcon, ArrowUpIcon, Columns3Icon } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
-import { useInView } from 'react-intersection-observer'
+import { useState, type ReactNode } from 'react'
+import { usePaginationSentinel } from '@/hooks/use-pagination-sentinel'
 import { graphql, useFragment } from 'react-relay'
 
 import { isToday, isYesterday } from 'date-fns'
@@ -124,29 +124,17 @@ export function TransactionsTable({
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
     null,
   )
-  const { ref: loadMoreRef, inView } = useInView({
+  const loadMoreRef = usePaginationSentinel({
     root: scrollContainer,
     rootMargin: '0px 0px 160px 0px',
-  })
-  useEffect(() => {
-    if (
-      scrollContainer &&
-      inView &&
+    enabled:
+      !!scrollContainer &&
       hasNext &&
       !isLoadingNext &&
       !isSorting &&
-      !loadError
-    )
-      onLoadMore()
-  }, [
-    scrollContainer,
-    inView,
-    hasNext,
-    isLoadingNext,
-    isSorting,
-    loadError,
+      !loadError,
     onLoadMore,
-  ])
+  })
   const quantityFormatter = new Intl.NumberFormat(household.locale, {
     maximumFractionDigits: 8,
     signDisplay: 'exceptZero',
@@ -438,7 +426,7 @@ export function TransactionsTable({
           }}
         />
         {hasNext && (
-          <div ref={loadMoreRef} role="status">
+          <div key={transactions.length} ref={loadMoreRef} role="status">
             {loadError ? (
               <Stack direction="horizontal" gap={2} align="center" role="alert">
                 {loadError}

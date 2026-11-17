@@ -7,7 +7,7 @@ import { Button } from '@astryxdesign/core/Button'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ComposerContext } from './context'
 import { ComposerEditor } from './controls'
 import { ComposerChipRail } from './chip-rail'
@@ -64,10 +64,6 @@ export function MobileTransactionComposer({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const busy = saving || pending
-  useEffect(() => {
-    onPendingChange?.(busy)
-    return () => onPendingChange?.(false)
-  }, [busy, onPendingChange])
   // A currency change can swap the single amount for debit/credit inputs.
   const [lastFirstAmount, setLastFirstAmount] = useState(firstAmount)
   if (lastFirstAmount !== firstAmount) {
@@ -76,6 +72,7 @@ export function MobileTransactionComposer({
   }
   async function save(again: boolean) {
     if (busy) return
+    onPendingChange?.(true)
     setSaving(true)
     setError('')
     try {
@@ -85,6 +82,7 @@ export function MobileTransactionComposer({
       setError(t`Could not save. Your entry is still here—please try again.`)
     } finally {
       setSaving(false)
+      onPendingChange?.(false)
     }
   }
   return (

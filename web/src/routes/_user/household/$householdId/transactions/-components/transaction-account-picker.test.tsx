@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, waitFor } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { TransactionAccountPicker } from './transaction-account-picker'
 
@@ -33,7 +33,7 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-it('clears an account selection that falls outside the current view scope', async () => {
+it('displays no selection when the controlled value falls outside the current view scope', async () => {
   const onValueChange = vi.fn()
   const commonProps = {
     name: 'accountId',
@@ -51,5 +51,6 @@ it('clears an account selection that falls outside the current view scope', asyn
 
   rerender(<TransactionAccountPicker accounts={[]} {...commonProps} />)
 
-  await waitFor(() => expect(onValueChange).toHaveBeenCalledWith(''))
+  expect(screen.queryByRole('button', { name: /Checking/ })).toBeNull()
+  expect(onValueChange).not.toHaveBeenCalled()
 })

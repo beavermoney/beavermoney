@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 // Define the possible screen sizes as a const array for better type inference
 export const SCREEN_SIZES = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
@@ -49,34 +49,28 @@ class ComparableScreenSize {
   }
 }
 
+function readScreenSize(): ScreenSize {
+  const width = window.innerWidth
+  if (width >= 1536) return '2xl'
+  if (width >= 1280) return 'xl'
+  if (width >= 1024) return 'lg'
+  if (width >= 768) return 'md'
+  if (width >= 640) return 'sm'
+  return 'xs'
+}
+
+function subscribe(onChange: () => void) {
+  window.addEventListener('resize', onChange)
+  return () => window.removeEventListener('resize', onChange)
+}
+
 const useScreenSize = (): ComparableScreenSize => {
-  const [screenSize, setScreenSize] = useState<ScreenSize>('xs')
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth
-
-      if (width >= 1536) {
-        setScreenSize('2xl')
-      } else if (width >= 1280) {
-        setScreenSize('xl')
-      } else if (width >= 1024) {
-        setScreenSize('lg')
-      } else if (width >= 768) {
-        setScreenSize('md')
-      } else if (width >= 640) {
-        setScreenSize('sm')
-      } else {
-        setScreenSize('xs')
-      }
-    }
-
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  return new ComparableScreenSize(screenSize)
+  const size = useSyncExternalStore(
+    subscribe,
+    readScreenSize,
+    () => 'xs' as const,
+  )
+  return new ComparableScreenSize(size)
 }
 
 export { useScreenSize }

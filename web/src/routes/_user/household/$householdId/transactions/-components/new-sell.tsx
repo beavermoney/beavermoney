@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { defaultAccountId } from './transaction-account-options'
 import { Text } from '@astryxdesign/core/Text'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { InvestmentStart } from './investment-start'
@@ -17,7 +18,6 @@ import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
 import currency from 'currency.js'
-import { useEffect, useMemo } from 'react'
 import { useFragment, useMutation } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -244,32 +244,33 @@ export function NewSell({ fragmentRef }: NewSellProps) {
   )
 
   // Get available investments for selected account
-  const availableInvestments = useMemo(() => {
-    if (!selectedAccount) return []
-    return selectedAccount.investments ?? []
-  }, [selectedAccount])
-
-  // Auto-calculate total received when shares or price changes
-  const shares = useStore(form.store, (state) => state.values.shares)
-  const pricePerShare = useStore(
-    form.store,
-    (state) => state.values.pricePerShare,
-  )
-
-  // Update totalReceived when shares or pricePerShare changes
-  useEffect(() => {
-    if (shares && pricePerShare) {
-      const computed = currency(shares, { precision: 8 }).multiply(
-        currency(pricePerShare, { precision: 8 }),
-      )
-      form.setFieldValue('totalReceived', computed.value)
-    }
-  }, [shares, pricePerShare, form])
+  const availableInvestments = selectedAccount?.investments ?? []
 
   const fields = {
     accountId: (
       <form.Field
         name="accountId"
+        key={JSON.stringify([
+          investmentAccounts.map((item) => item.id),
+          isMobile,
+          false,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = investmentAccounts
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next =
+              isMobile && !false && !false
+                ? defaultAccountId(investmentAccounts, undefined)
+                : ''
+            if (next !== current)
+              ((value) => {
+                field.handleChange(value)
+                form.setFieldValue('investmentId', '')
+              })(next)
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -301,6 +302,20 @@ export function NewSell({ fragmentRef }: NewSellProps) {
     investmentId: (
       <form.Field
         name="investmentId"
+        key={JSON.stringify([
+          availableInvestments.map((item) => item.id),
+          isMobile,
+          !selectedAccount,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = availableInvestments
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next = ''
+            if (next !== current) field.handleChange(next)
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -325,6 +340,19 @@ export function NewSell({ fragmentRef }: NewSellProps) {
     shares: (
       <form.Field
         name="shares"
+        listeners={{
+          onChange: ({ fieldApi }) => {
+            const { shares, pricePerShare } = fieldApi.form.state.values
+            if (shares && pricePerShare) {
+              fieldApi.form.setFieldValue(
+                'totalReceived',
+                currency(shares, { precision: 8 }).multiply(
+                  currency(pricePerShare, { precision: 8 }),
+                ).value,
+              )
+            }
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -373,6 +401,19 @@ export function NewSell({ fragmentRef }: NewSellProps) {
     pricePerShare: (
       <form.Field
         name="pricePerShare"
+        listeners={{
+          onChange: ({ fieldApi }) => {
+            const { shares, pricePerShare } = fieldApi.form.state.values
+            if (shares && pricePerShare) {
+              fieldApi.form.setFieldValue(
+                'totalReceived',
+                currency(shares, { precision: 8 }).multiply(
+                  currency(pricePerShare, { precision: 8 }),
+                ).value,
+              )
+            }
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid

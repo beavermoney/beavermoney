@@ -1,3 +1,5 @@
+import { t } from '@lingui/core/macro'
+import { notifyError } from './notifications'
 import {
   LOCAL_STORAGE_HOUSEHOLD_ID_KEY,
   LOCAL_STORAGE_TOKEN_KEY,
@@ -33,4 +35,12 @@ export function isMembershipRevokedError(error: unknown): boolean {
 
 export function clearHouseholdScopedStorage() {
   localStorage.removeItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
+}
+
+export function handleHouseholdError(error: unknown) {
+  if (!isMembershipRevokedError(error)) return
+  // Multiple failing queries can describe the same revoked membership.
+  if (!localStorage.getItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)) return
+  clearHouseholdScopedStorage()
+  notifyError(t`You no longer have access to this household.`)
 }

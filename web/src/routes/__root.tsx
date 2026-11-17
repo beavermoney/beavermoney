@@ -23,8 +23,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <RelayEnvironmentProvider environment={environment}>
       <PrivacyModeProvider>
         <ToastViewport position={isMobile ? 'topEnd' : 'bottomEnd'}>
-          <NotificationListener />
-          <AstryxRouterProvider>{children}</AstryxRouterProvider>
+          <NotificationListener>
+            <AstryxRouterProvider>{children}</AstryxRouterProvider>
+          </NotificationListener>
           {import.meta.env.VITE_SHOW_DEVTOOLS === 'true' && (
             <TanStackDevtools
               eventBusConfig={{ port: env.VITE_DEVTOOLS_PORT }}

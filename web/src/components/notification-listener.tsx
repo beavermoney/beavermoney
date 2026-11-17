@@ -1,14 +1,22 @@
+import { subscribeToErrors } from '@/lib/notifications'
 import { useToast } from '@astryxdesign/core/Toast'
-import { useEffect } from 'react'
-export function NotificationListener() {
+import { useCallback, type ReactNode } from 'react'
+
+// Bind the notification service to the mounted application/toast surface.
+export function NotificationListener({ children }: { children: ReactNode }) {
   const showToast = useToast()
-  useEffect(() => {
-    const listener = (event: Event) => {
-      if (event instanceof CustomEvent && typeof event.detail === 'string')
-        showToast({ type: 'error', body: event.detail })
-    }
-    window.addEventListener('finance-notification', listener)
-    return () => window.removeEventListener('finance-notification', listener)
-  }, [showToast])
-  return null
+  const attach = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return
+      return subscribeToErrors((message) =>
+        showToast({ type: 'error', body: message }),
+      )
+    },
+    [showToast],
+  )
+  return (
+    <section className="contents" ref={attach}>
+      {children}
+    </section>
+  )
 }

@@ -109,7 +109,10 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   const groupByOption = search.accounts_group_by as GroupByOption
   const sortOption = search.accounts_sort_by as SortOption
 
-  useRegisterConnection(data.accounts.__id, NodeType.Account)
+  const connectionRef = useRegisterConnection(
+    data.accounts.__id,
+    NodeType.Account,
+  )
 
   const [searchFilter, setSearchFilter] = useState('')
 
@@ -241,154 +244,156 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   }, [t, accountItems])
 
   return (
-    <VStack gap={6}>
-      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
-        <VStack gap={1}>
-          <Heading level={1}>
-            <Trans>Accounts</Trans>
-          </Heading>
-        </VStack>
-        <PageAddButton
-          label={t`Add account`}
-          to="/household/$householdId/accounts/new"
-          params={{ householdId }}
-        />
-      </HStack>
-      {isMobile ? (
-        <Card>
-          <VStack gap={3}>
-            {displayOptions.map((option, index) => (
-              <HStack
-                key={option.label}
-                hAlign="between"
-                vAlign="center"
-                gap={3}
-                wrap="wrap"
-              >
-                <Text color="secondary">{option.label}</Text>
-                <Text type="label" hasTabularNumbers>
-                  {formatCurrencyWithPrivacyMode({
-                    value: option.value,
-                    currencyCode: displayCurrencyCode,
-                    liability: index === 2,
-                  })}
-                </Text>
-              </HStack>
-            ))}
-            <Text type="supporting" color="secondary">
-              {displayCurrencyCode}
-            </Text>
+    <section className="contents" ref={connectionRef}>
+      <VStack gap={6}>
+        <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+          <VStack gap={1}>
+            <Heading level={1}>
+              <Trans>Accounts</Trans>
+            </Heading>
           </VStack>
-        </Card>
-      ) : (
-        <Grid columns={{ minWidth: 240, max: 3, repeat: 'fit' }} gap={4}>
-          {displayOptions.map((option, index) => (
-            <Card key={option.label}>
-              <VStack gap={3}>
-                <Text color="secondary">{option.label}</Text>
-                <Heading level={2}>
-                  {formatCurrencyWithPrivacyMode({
-                    value: option.value,
-                    currencyCode: displayCurrencyCode,
-                    liability: index === 2,
-                  })}
-                </Heading>
-                <Text type="supporting">{displayCurrencyCode}</Text>
-              </VStack>
-            </Card>
-          ))}
-        </Grid>
-      )}
-      <Suspense fallback={<Skeleton height={200} />}>
-        <NetWorthChart />
-      </Suspense>
-      <Section padding={6}>
-        <VStack gap={4}>
-          <HStack gap={3} vAlign="end" wrap="wrap">
-            <TextInput
-              label={t`Search accounts`}
-              placeholder={t`Search by name`}
-              value={searchFilter}
-              onChange={setSearchFilter}
-            />
-            <Selector
-              label={t`Sort by`}
-              value={sortOption}
-              onChange={handleSortChange}
-              options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
-                value,
-                label,
-              }))}
-            />
-            <Selector
-              label={t`Group by`}
-              value={groupByOption}
-              onChange={handleGroupByChange}
-              options={Object.entries(GROUP_BY_OPTIONS).map(
-                ([value, label]) => ({ value, label }),
-              )}
-            />
-          </HStack>
-          {visibleGroups.length ? (
-            visibleGroups.map(({ key, accounts }) => {
-              const total = accounts.reduce(
-                (sum, item) => sum.add(item.displayValue),
-                currency(0),
-              )
-              const label =
-                groupByOption === 'category'
-                  ? (ACCOUNT_CATEGORY_LABEL[key] ?? financeLabel(key))
-                  : financeLabel(key)
-              return (
-                <List
-                  edge="outset"
-                  key={key}
-                  hasDividers
-                  header={
-                    <HStack hAlign="between" vAlign="center" gap={3}>
-                      <Heading level={3}>{label}</Heading>
-                      <Text color="secondary" hasTabularNumbers>
-                        {formatCurrencyWithPrivacyMode({
-                          value: total,
-                          currencyCode: displayCurrencyCode,
-                          liability: accounts.every(
-                            ({ node }) => node.type === 'liability',
-                          ),
-                        })}
-                      </Text>
-                    </HStack>
-                  }
+          <PageAddButton
+            label={t`Add account`}
+            to="/household/$householdId/accounts/new"
+            params={{ householdId }}
+          />
+        </HStack>
+        {isMobile ? (
+          <Card>
+            <VStack gap={3}>
+              {displayOptions.map((option, index) => (
+                <HStack
+                  key={option.label}
+                  hAlign="between"
+                  vAlign="center"
+                  gap={3}
+                  wrap="wrap"
                 >
-                  {accounts.map((account) => (
-                    <AccountLedgerRow
-                      key={account.node.id}
-                      fragmentRef={account.node}
-                      displayValue={account.displayValue}
-                      displayCurrencyCode={displayCurrencyCode}
-                      share={calculateAllocationPercentage(
-                        getAccountDisplayValue(
-                          account.displayValue.value,
-                          account.node.type,
-                        ),
-                        total.value,
-                      )}
-                    />
-                  ))}
-                </List>
-              )
-            })
-          ) : (
-            <EmptyState
-              title={t`No accounts found`}
-              description={
-                searchFilter
-                  ? t`Try another account name.`
-                  : t`Add your first account to start tracking your balances.`
-              }
-            />
-          )}
-        </VStack>
-      </Section>
-    </VStack>
+                  <Text color="secondary">{option.label}</Text>
+                  <Text type="label" hasTabularNumbers>
+                    {formatCurrencyWithPrivacyMode({
+                      value: option.value,
+                      currencyCode: displayCurrencyCode,
+                      liability: index === 2,
+                    })}
+                  </Text>
+                </HStack>
+              ))}
+              <Text type="supporting" color="secondary">
+                {displayCurrencyCode}
+              </Text>
+            </VStack>
+          </Card>
+        ) : (
+          <Grid columns={{ minWidth: 240, max: 3, repeat: 'fit' }} gap={4}>
+            {displayOptions.map((option, index) => (
+              <Card key={option.label}>
+                <VStack gap={3}>
+                  <Text color="secondary">{option.label}</Text>
+                  <Heading level={2}>
+                    {formatCurrencyWithPrivacyMode({
+                      value: option.value,
+                      currencyCode: displayCurrencyCode,
+                      liability: index === 2,
+                    })}
+                  </Heading>
+                  <Text type="supporting">{displayCurrencyCode}</Text>
+                </VStack>
+              </Card>
+            ))}
+          </Grid>
+        )}
+        <Suspense fallback={<Skeleton height={200} />}>
+          <NetWorthChart />
+        </Suspense>
+        <Section padding={6}>
+          <VStack gap={4}>
+            <HStack gap={3} vAlign="end" wrap="wrap">
+              <TextInput
+                label={t`Search accounts`}
+                placeholder={t`Search by name`}
+                value={searchFilter}
+                onChange={setSearchFilter}
+              />
+              <Selector
+                label={t`Sort by`}
+                value={sortOption}
+                onChange={handleSortChange}
+                options={Object.entries(SORT_OPTIONS).map(([value, label]) => ({
+                  value,
+                  label,
+                }))}
+              />
+              <Selector
+                label={t`Group by`}
+                value={groupByOption}
+                onChange={handleGroupByChange}
+                options={Object.entries(GROUP_BY_OPTIONS).map(
+                  ([value, label]) => ({ value, label }),
+                )}
+              />
+            </HStack>
+            {visibleGroups.length ? (
+              visibleGroups.map(({ key, accounts }) => {
+                const total = accounts.reduce(
+                  (sum, item) => sum.add(item.displayValue),
+                  currency(0),
+                )
+                const label =
+                  groupByOption === 'category'
+                    ? (ACCOUNT_CATEGORY_LABEL[key] ?? financeLabel(key))
+                    : financeLabel(key)
+                return (
+                  <List
+                    edge="outset"
+                    key={key}
+                    hasDividers
+                    header={
+                      <HStack hAlign="between" vAlign="center" gap={3}>
+                        <Heading level={3}>{label}</Heading>
+                        <Text color="secondary" hasTabularNumbers>
+                          {formatCurrencyWithPrivacyMode({
+                            value: total,
+                            currencyCode: displayCurrencyCode,
+                            liability: accounts.every(
+                              ({ node }) => node.type === 'liability',
+                            ),
+                          })}
+                        </Text>
+                      </HStack>
+                    }
+                  >
+                    {accounts.map((account) => (
+                      <AccountLedgerRow
+                        key={account.node.id}
+                        fragmentRef={account.node}
+                        displayValue={account.displayValue}
+                        displayCurrencyCode={displayCurrencyCode}
+                        share={calculateAllocationPercentage(
+                          getAccountDisplayValue(
+                            account.displayValue.value,
+                            account.node.type,
+                          ),
+                          total.value,
+                        )}
+                      />
+                    ))}
+                  </List>
+                )
+              })
+            ) : (
+              <EmptyState
+                title={t`No accounts found`}
+                description={
+                  searchFilter
+                    ? t`Try another account name.`
+                    : t`Add your first account to start tracking your balances.`
+                }
+              />
+            )}
+          </VStack>
+        </Section>
+      </VStack>
+    </section>
   )
 }

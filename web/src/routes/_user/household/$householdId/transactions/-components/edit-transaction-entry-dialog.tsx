@@ -24,7 +24,6 @@ import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { getLogoDomainURL } from '@/lib/logo'
 import { commitMutationResult } from '@/lib/relay'
-import { useEffect } from 'react'
 
 const editTransactionEntryDialogUpdateMutation = graphql`
   mutation editTransactionEntryDialogUpdateMutation(
@@ -132,15 +131,6 @@ export function EditTransactionEntryDialog({
     },
   })
 
-  const selectedAccountId = form.state.values.accountId
-  const accountSelectionAvailable =
-    !selectedAccountId ||
-    accounts.some((account) => account.id === selectedAccountId)
-
-  useEffect(() => {
-    if (!accountSelectionAvailable) form.setFieldValue('accountId', '')
-  }, [accountSelectionAvailable, form])
-
   const accountById = new Map(accounts.map((a) => [a.id, a]))
 
   return (
@@ -172,6 +162,19 @@ export function EditTransactionEntryDialog({
             <FormLayout>
               <form.Field
                 name="accountId"
+                key={JSON.stringify(accounts.map((account) => account.id))}
+                listeners={{
+                  onMount: ({ fieldApi: field }) => {
+                    if (
+                      field.state.value &&
+                      !accounts.some(
+                        (account) => account.id === field.state.value,
+                      )
+                    ) {
+                      field.handleChange('')
+                    }
+                  },
+                }}
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid

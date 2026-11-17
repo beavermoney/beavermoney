@@ -1,3 +1,4 @@
+import { handleHouseholdError } from '@/lib/auth'
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
@@ -17,6 +18,7 @@ export const Route = createFileRoute(
   component: RouteComponent,
   validateSearch: SearchSchema,
   errorComponent: GenericError,
+  onError: handleHouseholdError,
 })
 
 function RouteComponent() {

@@ -1,13 +1,12 @@
 import { Icon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
 import { ChevronRightIcon } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 
 export function ComposerChipRail({ children }: { children: ReactNode }) {
-  const [rail, setRail] = useState<HTMLElement | null>(null)
   const [hasMore, setHasMore] = useState(false)
 
-  useEffect(() => {
+  const attachRail = useCallback((rail: HTMLElement | null) => {
     if (!rail) return
     const update = () => {
       setHasMore(rail.scrollWidth - rail.clientWidth - rail.scrollLeft > 1)
@@ -15,19 +14,27 @@ export function ComposerChipRail({ children }: { children: ReactNode }) {
     update()
     const observer =
       typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update)
-    observer?.observe(rail)
-    for (const child of rail.children) observer?.observe(child)
+    const observeChildren = () => {
+      observer?.disconnect()
+      observer?.observe(rail)
+      for (const child of rail.children) observer?.observe(child)
+      update()
+    }
+    observeChildren()
+    const mutations = new MutationObserver(observeChildren)
+    mutations.observe(rail, { childList: true })
     rail.addEventListener('scroll', update, { passive: true })
     return () => {
       observer?.disconnect()
+      mutations.disconnect()
       rail.removeEventListener('scroll', update)
     }
-  }, [rail, children])
+  }, [])
 
   return (
     <Stack className="composer-chip-rail" data-has-more={hasMore}>
       <Stack
-        ref={setRail}
+        ref={attachRail}
         direction="horizontal"
         gap={2}
         className="composer-chips"

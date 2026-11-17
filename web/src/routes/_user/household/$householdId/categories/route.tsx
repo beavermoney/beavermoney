@@ -1,3 +1,4 @@
+import { handleHouseholdError } from '@/lib/auth'
 import { GenericError } from '@/components/generic-error'
 import { DATE_RANGE_PRESETS, getDateRangeForPreset } from '@/lib/date-range'
 import { Outlet, createFileRoute } from '@tanstack/react-router'
@@ -25,6 +26,7 @@ export const Route = createFileRoute(
   component: RouteComponent,
   validateSearch: SearchSchema,
   errorComponent: GenericError,
+  onError: handleHouseholdError,
 })
 
 function RouteComponent() {

@@ -3,6 +3,7 @@ import { useStore } from '@tanstack/react-store'
 import { useCallback } from 'react'
 import {
   logTransactionStore,
+  deliverTransactionDefaults,
   setLogTransactionDefaults,
   setLogTransactionType,
   type LogTransactionDefaults,
@@ -27,6 +28,7 @@ export function useLogTransaction() {
         type: nextType,
         defaults: nextDefaults,
       }))
+      deliverTransactionDefaults(nextType, nextDefaults)
     },
     [],
   )

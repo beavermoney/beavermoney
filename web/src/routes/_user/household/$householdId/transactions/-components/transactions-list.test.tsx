@@ -9,7 +9,9 @@ import type { transactionsListFragment$key } from './__generated__/transactionsL
 
 const relay = vi.hoisted(() => ({
   loadNext: vi.fn(),
-  inView: false,
+  renderEdit: vi.fn(),
+  loadMore: () => {},
+  refetch: vi.fn(),
   loadEditQuery: vi.fn(),
   disposeEditQuery: vi.fn(),
   invalidate: () => {},
@@ -55,20 +57,33 @@ vi.mock('@tanstack/react-router', () => ({
 vi.mock('relay-runtime', () => ({ graphql: () => ({}) }))
 vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => false }))
 vi.mock('@/hooks/use-household-view-scope', () => ({
-  useHouseholdViewScope: () => viewScope,
+  useHouseholdViewScope: () => ({ ...viewScope }),
 }))
 vi.mock('@/lib/relay', () => ({
   NodeType: { Transaction: 'Transaction' },
   useRegisterConnection: () => {},
 }))
-vi.mock('react-intersection-observer', () => ({
-  useInView: () => [() => {}, relay.inView],
+vi.mock('@/hooks/use-pagination-sentinel', () => ({
+  usePaginationSentinel: ({ onLoadMore }: { onLoadMore: () => void }) => {
+    relay.loadMore = onLoadMore
+    return () => {}
+  },
 }))
 vi.mock('./transaction-day-summary', () => ({
   TransactionDaySummary: () => null,
 }))
 vi.mock('./transaction-card', () => ({ TransactionCard: () => null }))
 vi.mock('./edit-transaction-dialog', () => ({
+  LazyEditTransactionDialog: (props: {
+    transactionId: string
+    viewUserIds: readonly string[] | null
+  }) => {
+    relay.renderEdit({
+      transactionId: props.transactionId,
+      viewUserIds: props.viewUserIds,
+    })
+    return null
+  },
   EditTransactionDialog: () => {
     const [editingEntry, setEditingEntry] = useState(false)
     return (
@@ -89,7 +104,6 @@ afterEach(() => {
   vi.clearAllMocks()
   router.search.edit_transaction_id = null
   relay.queryRef = null
-  relay.inView = false
   router.searchFrom = undefined
   viewScope.viewUserIds = null
 })
@@ -109,10 +123,8 @@ it('updates daily group headings when the language changes', () => {
 })
 
 it('reports pagination failures and clears the error when retrying', () => {
-  relay.inView = true
-  const { rerender } = render(<TransactionsList fragmentRef={fragmentRef} />)
-  relay.inView = false
-  rerender(<TransactionsList fragmentRef={fragmentRef} />)
+  render(<TransactionsList fragmentRef={fragmentRef} />)
+  act(() => relay.loadMore())
   expect(relay.loadNext).toHaveBeenCalledWith(50, expect.any(Object))
   act(() => relay.loadNext.mock.calls[0][1].onComplete(new Error('Offline')))
   expect(screen.getByRole('alert').textContent).toContain(
@@ -128,10 +140,10 @@ it('loads a deep-linked transaction without reloading the page query', () => {
   router.search.edit_transaction_id = 'transaction-1'
   render(<TransactionsList fragmentRef={fragmentRef} />)
 
-  expect(relay.loadEditQuery).toHaveBeenCalledWith(
-    { transactionId: 'transaction-1', viewUserIds: null },
-    { fetchPolicy: 'store-or-network' },
-  )
+  expect(relay.renderEdit).toHaveBeenCalledWith({
+    transactionId: 'transaction-1',
+    viewUserIds: null,
+  })
 })
 
 it('scopes edit-dialog account choices to the selected household members', () => {
@@ -140,13 +152,10 @@ it('scopes edit-dialog account choices to the selected household members', () =>
 
   render(<TransactionsList fragmentRef={fragmentRef} />)
 
-  expect(relay.loadEditQuery).toHaveBeenCalledWith(
-    {
-      transactionId: 'transaction-1',
-      viewUserIds: ['user-1', 'user-2'],
-    },
-    { fetchPolicy: 'store-or-network' },
-  )
+  expect(relay.renderEdit).toHaveBeenCalledWith({
+    transactionId: 'transaction-1',
+    viewUserIds: ['user-1', 'user-2'],
+  })
 })
 
 it('reloads an open edit dialog when the household view scope changes', () => {
@@ -157,11 +166,11 @@ it('reloads an open edit dialog when the household view scope changes', () => {
   viewScope.viewUserIds = ['user-2']
   rerender(<TransactionsList fragmentRef={fragmentRef} />)
 
-  expect(relay.loadEditQuery).toHaveBeenLastCalledWith(
-    { transactionId: 'transaction-1', viewUserIds: ['user-2'] },
-    { fetchPolicy: 'store-or-network' },
-  )
-  expect(relay.loadEditQuery).toHaveBeenCalledTimes(2)
+  expect(relay.renderEdit).toHaveBeenLastCalledWith({
+    transactionId: 'transaction-1',
+    viewUserIds: ['user-2'],
+  })
+  expect(relay.renderEdit).toHaveBeenCalledTimes(2)
 })
 
 it('starts at transaction details when the same transaction is reopened', () => {

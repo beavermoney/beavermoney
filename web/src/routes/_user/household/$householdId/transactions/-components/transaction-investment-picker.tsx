@@ -3,7 +3,6 @@ import { SearchSelect } from '@/components/search-select'
 import { InvestmentIcon } from '@/components/investment-icon'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
-import { useEffect } from 'react'
 import { graphql } from 'react-relay'
 import { readInlineData } from 'relay-runtime'
 import type { transactionInvestmentPickerFragment$key } from './__generated__/transactionInvestmentPickerFragment.graphql'
@@ -51,9 +50,6 @@ export function TransactionInvestmentPicker({
 }: Props) {
   const { t } = useLingui()
   const selected = investments.find((investment) => investment.id === value)
-  useEffect(() => {
-    if (value && !selected) onValueChange('')
-  }, [value, selected, onValueChange])
   const ordered = [...investments].sort((a, b) =>
     (investmentData(b).latestTransaction?.datetime ?? '').localeCompare(
       investmentData(a).latestTransaction?.datetime ?? '',

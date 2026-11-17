@@ -201,6 +201,10 @@ Provider hierarchy in `$householdId/route.tsx`: UserProvider → HouseholdProvid
 
 ## ANTI-PATTERNS
 
+- React effect hooks are banned in application source: no `useEffect`, `useLayoutEffect`, or `useInsertionEffect`, including aliases, namespace calls, or renamed wrappers. ESLint enforces this.
+- Keep render pure. Derive values, handle writes in user/form/router events, use `useSyncExternalStore` for external state, and attach DOM observers with callback-ref cleanup. Dependencies may own their internal lifecycle hooks.
+- Account/investment availability is owned by keyed form fields: retain valid selections, clear unavailable IDs, and preserve the rest of the draft. Picker components are controlled display/input components.
+
 - Do NOT use `fetch`/`axios`/`ky` directly for data - Relay only
 - Do NOT create barrel files (except `lib/relay/index.ts`)
 - Do NOT use Hugeicons - Lucide (`lucide-react`) only

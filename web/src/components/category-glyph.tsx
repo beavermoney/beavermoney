@@ -1,12 +1,7 @@
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Icon, type IconNode } from 'lucide-react'
 import { dynamicIconImports, type IconName } from 'lucide-react/dynamic'
-import {
-  useEffect,
-  useSyncExternalStore,
-  type ReactNode,
-  type SVGProps,
-} from 'react'
+import { useSyncExternalStore, type ReactNode, type SVGProps } from 'react'
 
 const icons = new Map<IconName, IconNode>()
 const pending = new Map<IconName, Promise<void>>()
@@ -29,6 +24,7 @@ export function CategoryGlyph({
         listeners.set(name, subscribers)
       }
       subscribers.add(listener)
+      loadIcon(name)
       return () => {
         subscribers.delete(listener)
         if (!subscribers.size) listeners.delete(name)
@@ -36,20 +32,6 @@ export function CategoryGlyph({
     },
     () => icons.get(name),
   )
-
-  useEffect(() => {
-    if (icons.has(name) || pending.has(name)) return
-    const request = dynamicIconImports[name]()
-      .then((module) => {
-        icons.set(name, module.__iconNode)
-        listeners.get(name)?.forEach((listener) => listener())
-      })
-      .catch(() => {
-        /* Keep the transaction-type fallback if the icon cannot load. */
-      })
-      .finally(() => pending.delete(name))
-    pending.set(name, request)
-  }, [name])
 
   const ResolvedIcon = (props: SVGProps<SVGSVGElement>) =>
     iconNode ? <Icon iconNode={iconNode} {...props} /> : null
@@ -59,4 +41,18 @@ export function CategoryGlyph({
       {iconNode ? <AstryxIcon icon={ResolvedIcon} /> : fallback}
     </span>
   )
+}
+
+function loadIcon(name: IconName) {
+  if (icons.has(name) || pending.has(name)) return
+  const request = dynamicIconImports[name]()
+    .then((module) => {
+      icons.set(name, module.__iconNode)
+      listeners.get(name)?.forEach((listener) => listener())
+    })
+    .catch(() => {
+      /* Retain the category fallback if loading fails. */
+    })
+    .finally(() => pending.delete(name))
+  pending.set(name, request)
 }

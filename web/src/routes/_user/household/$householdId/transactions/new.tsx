@@ -12,7 +12,6 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { identity } from 'lodash-es'
-import { useEffect } from 'react'
 import {
   fetchQuery,
   loadQuery,
@@ -27,6 +26,11 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/new',
 )({
   component: RouteComponent,
+  onEnter: () => {
+    if (logTransactionStore.state.type === null)
+      logTransactionStore.setState(() => ({ type: 'expense' }))
+  },
+  onLeave: () => logTransactionStore.setState(() => ({ type: null })),
   loader: ({ params }) => {
     return loadQuery<newTransactionQuery>(
       environment,
@@ -66,15 +70,6 @@ function RouteComponent() {
   })
 
   const { type: logType, close } = useLogTransaction()
-
-  useEffect(() => {
-    if (logTransactionStore.state.type === null) {
-      logTransactionStore.setState(() => ({ type: 'expense' }))
-    }
-    return () => {
-      logTransactionStore.setState(() => ({ type: null }))
-    }
-  }, [])
 
   const isMobile = useIsMobile()
   if (!isMobile) {

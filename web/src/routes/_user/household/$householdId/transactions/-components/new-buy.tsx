@@ -1,10 +1,12 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { useCallback, useRef, useState } from 'react'
+import { registerTransactionDefaults } from '@/hooks/log-transaction-store'
+import { defaultAccountId } from './transaction-account-options'
 import { Text } from '@astryxdesign/core/Text'
 import { InvestmentStart } from './investment-start'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { useRef, useState } from 'react'
 import { Grid } from '@astryxdesign/core/Grid'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
@@ -16,7 +18,6 @@ import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm, useStore } from '@tanstack/react-form'
 import currency from 'currency.js'
-import { useEffect, useMemo } from 'react'
 import { useFragment, useMutation } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -141,7 +142,11 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
 
   invariant(buyCategory, 'Buy category not found')
 
+  const { defaults, setDefaults } = useLogTransaction()
+  const [initialAccountId] = useState(defaults?.accountId ?? '')
+
   const form = useForm({
+    listeners: { onMount: () => setDefaults(undefined) },
     defaultValues: {
       description: '',
       shares: undefined as unknown as number,
@@ -149,7 +154,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
       totalPaid: undefined as unknown as number,
       datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
-      accountId: '',
+      accountId: initialAccountId,
       investmentId: '',
     },
     validators: {
@@ -225,6 +230,18 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
     },
   })
 
+  const attachDefaults = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return
+      return registerTransactionDefaults('buy', (next) => {
+        if (next.accountId !== undefined)
+          form.setFieldValue('accountId', next.accountId)
+        setDefaults(undefined)
+      })
+    },
+    [form, setDefaults],
+  )
+
   const selectedInvestmentId = useStore(
     form.store,
     (state) => state.values.investmentId,
@@ -240,41 +257,33 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
   )
 
   // Get available investments for selected account
-  const availableInvestments = useMemo(() => {
-    if (!selectedAccount) return []
-    return selectedAccount.investments ?? []
-  }, [selectedAccount])
-
-  // Auto-calculate total paid when shares or price changes
-  const shares = useStore(form.store, (state) => state.values.shares)
-  const pricePerShare = useStore(
-    form.store,
-    (state) => state.values.pricePerShare,
-  )
-
-  // Update totalPaid when shares or pricePerShare changes
-  useEffect(() => {
-    if (shares && pricePerShare) {
-      const computed = currency(shares, { precision: 8 }).multiply(
-        currency(pricePerShare, { precision: 8 }),
-      )
-      form.setFieldValue('totalPaid', computed.value)
-    }
-  }, [shares, pricePerShare, form])
-
-  const { defaults, setDefaults } = useLogTransaction()
-  useEffect(() => {
-    if (!defaults) return
-    if (defaults.accountId !== undefined) {
-      form.setFieldValue('accountId', defaults.accountId)
-    }
-    setDefaults(undefined)
-  }, [defaults, form, setDefaults])
+  const availableInvestments = selectedAccount?.investments ?? []
 
   const fields = {
     accountId: (
       <form.Field
         name="accountId"
+        key={JSON.stringify([
+          investmentAccounts.map((item) => item.id),
+          isMobile,
+          false,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = investmentAccounts
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next =
+              isMobile && !false && !false
+                ? defaultAccountId(investmentAccounts, undefined)
+                : ''
+            if (next !== current)
+              ((value) => {
+                field.handleChange(value)
+                form.setFieldValue('investmentId', '')
+              })(next)
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -306,6 +315,20 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
     investmentId: (
       <form.Field
         name="investmentId"
+        key={JSON.stringify([
+          availableInvestments.map((item) => item.id),
+          isMobile,
+          !selectedAccount,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = availableInvestments
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next = ''
+            if (next !== current) field.handleChange(next)
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -330,6 +353,19 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
     shares: (
       <form.Field
         name="shares"
+        listeners={{
+          onChange: ({ fieldApi }) => {
+            const { shares, pricePerShare } = fieldApi.form.state.values
+            if (shares && pricePerShare) {
+              fieldApi.form.setFieldValue(
+                'totalPaid',
+                currency(shares, { precision: 8 }).multiply(
+                  currency(pricePerShare, { precision: 8 }),
+                ).value,
+              )
+            }
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -362,6 +398,19 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
     pricePerShare: (
       <form.Field
         name="pricePerShare"
+        listeners={{
+          onChange: ({ fieldApi }) => {
+            const { shares, pricePerShare } = fieldApi.form.state.values
+            if (shares && pricePerShare) {
+              fieldApi.form.setFieldValue(
+                'totalPaid',
+                currency(shares, { precision: 8 }).multiply(
+                  currency(pricePerShare, { precision: 8 }),
+                ).value,
+              )
+            }
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid
@@ -506,57 +555,59 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
 
   if (isMobile)
     return (
-      <MobileTransactionComposer
-        kind="buy"
-        header={
-          <>
-            {fields.accountId}
-            <Text type="label">
-              <Trans>Buy</Trans>
-            </Text>
-            {fields.investmentId}
-          </>
-        }
-        stableAmounts
-        category={
-          <InvestmentStart
-            kind="Buy"
-            accounts={investmentAccounts}
-            accountId={selectedAccountId}
-            investmentId={selectedInvestmentId}
-            onAccount={(id) => {
-              form.setFieldValue('accountId', id)
-              form.setFieldValue('investmentId', '')
-            }}
-            onInvestment={(id) => form.setFieldValue('investmentId', id)}
-          />
-        }
-        firstAmount={'shares'}
-        amounts={
-          <>
-            {fields.shares}
-            {fields.pricePerShare}
-            {fields.totalPaid}
-          </>
-        }
-        chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
-        date={fields.datetime}
-        details={<>{fields.description}</>}
-        pending={isMutationInFlight}
-        onSave={async (again) => {
-          mobileSubmission.current = again ? 'again' : 'close'
-          try {
-            await form.handleSubmit()
-            return form.state.isValid
-          } finally {
-            mobileSubmission.current = null
+      <section className="contents" ref={attachDefaults}>
+        <MobileTransactionComposer
+          kind="buy"
+          header={
+            <>
+              {fields.accountId}
+              <Text type="label">
+                <Trans>Buy</Trans>
+              </Text>
+              {fields.investmentId}
+            </>
           }
-        }}
-      />
+          stableAmounts
+          category={
+            <InvestmentStart
+              kind="Buy"
+              accounts={investmentAccounts}
+              accountId={selectedAccountId}
+              investmentId={selectedInvestmentId}
+              onAccount={(id) => {
+                form.setFieldValue('accountId', id)
+                form.setFieldValue('investmentId', '')
+              }}
+              onInvestment={(id) => form.setFieldValue('investmentId', id)}
+            />
+          }
+          firstAmount={'shares'}
+          amounts={
+            <>
+              {fields.shares}
+              {fields.pricePerShare}
+              {fields.totalPaid}
+            </>
+          }
+          chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
+          date={fields.datetime}
+          details={<>{fields.description}</>}
+          pending={isMutationInFlight}
+          onSave={async (again) => {
+            mobileSubmission.current = again ? 'again' : 'close'
+            try {
+              await form.handleSubmit()
+              return form.state.isValid
+            } finally {
+              mobileSubmission.current = null
+            }
+          }}
+        />
+      </section>
     )
 
   return (
-    <Stack direction="vertical" gap={6}>
+    <Stack ref={attachDefaults} direction="vertical" gap={6}>
       <Stack direction="vertical" gap={4}>
         <Stack
           as="form"

@@ -2,8 +2,8 @@ import { LOCAL_STORAGE_PRIVACY_MODE_KEY } from '@/constant'
 import React, {
   createContext,
   useContext,
-  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -29,17 +29,12 @@ export function PrivacyModeProvider({
     return false
   })
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        LOCAL_STORAGE_PRIVACY_MODE_KEY,
-        JSON.stringify(isPrivacyModeEnabled),
-      )
-    }
-  }, [isPrivacyModeEnabled])
-
+  const currentPreference = useRef(isPrivacyModeEnabled)
   const togglePrivacyMode = () => {
-    setIsPrivacyModeEnabled((prev: boolean) => !prev)
+    const next = !currentPreference.current
+    currentPreference.current = next
+    localStorage.setItem(LOCAL_STORAGE_PRIVACY_MODE_KEY, JSON.stringify(next))
+    setIsPrivacyModeEnabled(next)
   }
 
   const value = useMemo(

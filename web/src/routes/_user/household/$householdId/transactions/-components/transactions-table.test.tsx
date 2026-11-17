@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { ReactNode } from 'react'
+import { useCallback, type ReactNode } from 'react'
 import {
   cleanup,
   fireEvent,
@@ -21,8 +21,22 @@ const state = vi.hoisted(() => ({
 vi.mock('@/env', () => ({
   env: { VITE_SERVER_URL: 'https://api.example.test' },
 }))
-vi.mock('react-intersection-observer', () => ({
-  useInView: () => ({ ref: () => {}, inView: state.inView }),
+vi.mock('@/hooks/use-pagination-sentinel', () => ({
+  usePaginationSentinel: ({
+    enabled,
+    onLoadMore,
+  }: {
+    enabled: boolean
+    onLoadMore: () => void
+  }) => {
+    const inView = state.inView
+    return useCallback(
+      (node: HTMLElement | null) => {
+        if (node && enabled && inView) onLoadMore()
+      },
+      [enabled, onLoadMore, inView],
+    )
+  },
 }))
 vi.mock('react-relay', () => ({
   graphql: () => ({}),

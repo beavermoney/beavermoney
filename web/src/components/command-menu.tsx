@@ -1,8 +1,9 @@
 import { useLingui } from '@lingui/react/macro'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
+import { useHotkey } from '@tanstack/react-hotkeys'
 import { CommandPalette } from '@astryxdesign/core/CommandPalette'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 
 export function CommandMenu() {
   const { t } = useLingui()
@@ -22,16 +23,8 @@ export function CommandMenu() {
     },
     [navigate],
   )
-  useEffect(() => {
-    const down = (event: KeyboardEvent) => {
-      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        setOpen(!isOpen)
-      }
-    }
-    document.addEventListener('keydown', down)
-    return () => document.removeEventListener('keydown', down)
-  }, [isOpen, setOpen])
+  useHotkey('Meta+K', () => setOpen(!isOpen), { ignoreInputs: false })
+  useHotkey('Control+K', () => setOpen(!isOpen), { ignoreInputs: false })
   const destinations = [
     { label: t`Transactions`, to: '/household/$householdId/transactions' },
     { label: t`Accounts`, to: '/household/$householdId/accounts' },

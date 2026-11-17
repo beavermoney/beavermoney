@@ -1,12 +1,6 @@
 // @vitest-environment jsdom
 import '@/test/browser-setup'
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { TransactionInvestmentPicker } from './transaction-investment-picker'
@@ -97,7 +91,7 @@ it('keeps dependent investment choices disabled until an account is selected', (
   ).toBe('true')
 })
 
-it('clears an investment selection that falls outside the current view scope', async () => {
+it('displays no selection when the controlled value falls outside the current view scope', async () => {
   const onValueChange = vi.fn()
   const commonProps = {
     name: 'investment',
@@ -118,5 +112,6 @@ it('clears an investment selection that falls outside the current view scope', a
 
   rerender(<TransactionInvestmentPicker investments={[]} {...commonProps} />)
 
-  await waitFor(() => expect(onValueChange).toHaveBeenCalledWith(''))
+  expect(screen.queryByRole('button', { name: /Index Fund/ })).toBeNull()
+  expect(onValueChange).not.toHaveBeenCalled()
 })

@@ -1,13 +1,11 @@
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { useLingui } from '@lingui/react/macro'
-import { useComposer } from '@/components/transaction-composer/context'
 import { SearchSelect } from '@/components/search-select'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { useCurrency } from '@/hooks/use-currency'
 import { getLogoDomainURL } from '@/lib/logo'
-import { useEffect } from 'react'
 import { graphql } from 'react-relay'
 import { readInlineData } from 'relay-runtime'
 import type { transactionAccountPickerFragment$key } from './__generated__/transactionAccountPickerFragment.graphql'
@@ -62,7 +60,6 @@ export function TransactionAccountPicker({
   const { t } = useLingui()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const selected = accounts.find((account) => account.id === value)
-  const isComposer = !!useComposer()
   const ordered = [...accounts].sort((a, b) => {
     const preference =
       Number(!preferredTypes?.includes(a.type)) -
@@ -74,11 +71,6 @@ export function TransactionAccountPicker({
       )
     )
   })
-  const defaultID =
-    isComposer && !inline && !disabled ? ordered[0]?.id : undefined
-  useEffect(() => {
-    if (!selected && (value || defaultID)) onValueChange(defaultID ?? '')
-  }, [value, selected, defaultID, onValueChange])
   return (
     <SearchSelect
       inline={inline}

@@ -4,36 +4,21 @@ import { Button } from '@astryxdesign/core/Button'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
-import { useToast } from '@astryxdesign/core/Toast'
-import { ErrorComponentProps, useNavigate } from '@tanstack/react-router'
-import { SearchXIcon } from 'lucide-react'
-import { useEffect } from 'react'
-
 import {
-  clearHouseholdScopedStorage,
-  isMembershipRevokedError,
-} from '@/lib/auth'
+  ErrorComponentProps,
+  Navigate,
+  useNavigate,
+} from '@tanstack/react-router'
+import { SearchXIcon } from 'lucide-react'
+
+import { isMembershipRevokedError } from '@/lib/auth'
 
 export function GenericError(error: ErrorComponentProps) {
   const { t } = useLingui()
-  const showToast = useToast()
-
   const navigate = useNavigate()
   const isRevoked = isMembershipRevokedError(error.error)
 
-  useEffect(() => {
-    if (!isRevoked) return
-    clearHouseholdScopedStorage()
-    showToast({
-      type: 'error',
-      body: t`You no longer have access to this household.`,
-    })
-    navigate({ to: '/household' })
-  }, [t, isRevoked, navigate, showToast])
-
-  if (isRevoked) {
-    return null
-  }
+  if (isRevoked) return <Navigate to="/household" />
 
   return (
     <Stack direction="vertical" gap={4}>

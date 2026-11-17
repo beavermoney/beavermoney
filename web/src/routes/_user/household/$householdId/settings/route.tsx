@@ -1,4 +1,5 @@
 import { t } from '@lingui/core/macro'
+import { handleHouseholdError } from '@/lib/auth'
 import { RouteContentBoundary } from '@/components/route-content-boundary'
 import { GenericError } from '@/components/generic-error'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
@@ -10,6 +11,7 @@ import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
 export const Route = createFileRoute('/_user/household/$householdId/settings')({
   component: RouteComponent,
   errorComponent: GenericError,
+  onError: handleHouseholdError,
 })
 
 function RouteComponent() {

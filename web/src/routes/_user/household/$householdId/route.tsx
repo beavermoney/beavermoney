@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
+import { handleHouseholdError } from '@/lib/auth'
 import { Stack } from '@astryxdesign/core/Stack'
 import {
   RouteContentBoundary,
@@ -120,6 +121,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   staleTime: Infinity,
   notFoundComponent: NotFoundError,
   errorComponent: GenericError,
+  onError: handleHouseholdError,
   search: {
     middlewares: [stripSearchParams(defaultValues)],
   },

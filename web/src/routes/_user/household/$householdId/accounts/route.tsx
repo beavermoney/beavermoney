@@ -1,3 +1,4 @@
+import { handleHouseholdError } from '@/lib/auth'
 import {
   Outlet,
   createFileRoute,
@@ -24,6 +25,7 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts')({
   component: RouteComponent,
   validateSearch: SearchSchema,
   errorComponent: GenericError,
+  onError: handleHouseholdError,
   search: {
     middlewares: [stripSearchParams(defaultValues)],
   },

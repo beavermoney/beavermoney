@@ -1,6 +1,8 @@
 import { useLingui } from '@lingui/react/macro'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
+import { environment } from '@/environment'
+import type { newInvestmentQuoteLookupQuery } from './__generated__/newInvestmentQuoteLookupQuery.graphql'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
 import { Avatar } from '@astryxdesign/core/Avatar'
@@ -14,9 +16,9 @@ import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
 import { useToast } from '@astryxdesign/core/Toast'
-import { useForm } from '@tanstack/react-form'
+import { useForm, useStore } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { useFragment, useMutation, useRefetchableFragment } from 'react-relay'
+import { fetchQuery, useFragment, useMutation } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
 import { match } from 'ts-pattern'
@@ -35,11 +37,30 @@ import {
   getLogoDomainURL,
   getLogoTickerURL,
 } from '@/lib/logo'
-import { useEffect, useState, useTransition } from 'react'
+import { useRef, useState } from 'react'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { newInvestmentCryptoQuoteFragment$key } from './__generated__/newInvestmentCryptoQuoteFragment.graphql'
 import { newInvestmentStockQuoteFragment$key } from './__generated__/newInvestmentStockQuoteFragment.graphql'
+
+const quoteLookupQuery = graphql`
+  query newInvestmentQuoteLookupQuery($symbol: String!, $crypto: Boolean!) {
+    stockQuote(symbol: $symbol) @skip(if: $crypto) {
+      currentPrice
+      symbol
+      exchange
+      name
+      currency
+    }
+    cryptoQuote(symbol: $symbol) @include(if: $crypto) {
+      currentPrice
+      symbol
+      exchange
+      name
+      currency
+    }
+  }
+`
 
 const newInvestmentFragment = graphql`
   fragment newInvestmentFragment on Household
@@ -138,20 +159,27 @@ export function NewInvestment({
 
   const showToast = useToast()
 
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setPending] = useState(false)
+  const [lookupError, setLookupError] = useState<unknown>(null)
+  const requestVersion = useRef(0)
   const data = useFragment(newInvestmentFragment, newInvestmentFragmentRef)
 
-  const [stockQuoteData, refetchStockQuote] = useRefetchableFragment(
+  const initialStockQuoteData = useFragment(
     newInvestmentStockQuoteFragment,
     newInvestmentStockQuoteFragmentRef,
   )
 
-  const [cryptoQuoteData, refetchCryptoQuote] = useRefetchableFragment(
+  const initialCryptoQuoteData = useFragment(
     newInvestmentCryptoQuoteFragment,
     newInvestmentCryptoQuoteFragmentRef,
   )
 
-  const [queriedSymbol, setQueriedSymbol] = useState('')
+  const [stockQuote, setStockQuote] = useState(initialStockQuoteData.stockQuote)
+  const [cryptoQuote, setCryptoQuote] = useState(
+    initialCryptoQuoteData.cryptoQuote,
+  )
+  const stockQuoteData = { stockQuote }
+  const cryptoQuoteData = { cryptoQuote }
 
   const navigate = useNavigate()
 
@@ -236,30 +264,52 @@ export function NewInvestment({
     },
   })
 
-  const selectedAccountId = form.state.values.accountId
-  const accountSelectionAvailable =
-    !selectedAccountId ||
-    investmentAccounts.some((account) => account.id === selectedAccountId)
+  const investmentType = useStore(form.store, (state) => state.values.type)
 
-  useEffect(() => {
-    if (!accountSelectionAvailable) form.setFieldValue('accountId', '')
-  }, [accountSelectionAvailable, form])
-
-  useEffect(() => {
-    form.validateField('symbol', 'change')
-  }, [stockQuoteData, cryptoQuoteData, isPending, queriedSymbol, form])
-
-  useEffect(() => {
-    const investmentType = form.getFieldValue('type')
-    const quote =
-      investmentType === 'crypto'
-        ? cryptoQuoteData.cryptoQuote
-        : stockQuoteData.stockQuote
-
-    if (quote) {
-      form.setFieldValue('name', quote.name)
+  async function lookupQuote(symbol: string) {
+    const version = ++requestVersion.current
+    const type = form.getFieldValue('type')
+    setPending(true)
+    try {
+      const result = await fetchQuery<newInvestmentQuoteLookupQuery>(
+        environment,
+        quoteLookupQuery,
+        { symbol, crypto: type === 'crypto' },
+        { fetchPolicy: 'store-or-network' },
+      ).toPromise()
+      if (
+        version !== requestVersion.current ||
+        form.getFieldValue('symbol') !== symbol ||
+        form.getFieldValue('type') !== type
+      )
+        return
+      const quote = type === 'crypto' ? result?.cryptoQuote : result?.stockQuote
+      if (type === 'crypto') setCryptoQuote(result?.cryptoQuote ?? null)
+      else setStockQuote(result?.stockQuote ?? null)
+      if (quote) form.setFieldValue('name', quote.name)
+      form.setFieldMeta('symbol', (meta) => ({
+        ...meta,
+        errorMap: {
+          ...meta.errorMap,
+          onChange:
+            quote || !symbol
+              ? undefined
+              : { message: t`Unable to find a quote for this symbol.` },
+        },
+      }))
+    } catch (error) {
+      if (
+        version === requestVersion.current &&
+        form.getFieldValue('symbol') === symbol &&
+        form.getFieldValue('type') === type
+      )
+        setLookupError(error)
+    } finally {
+      if (version === requestVersion.current) setPending(false)
     }
-  }, [stockQuoteData, cryptoQuoteData, form])
+  }
+
+  if (lookupError) throw lookupError
 
   return (
     <Card>
@@ -283,6 +333,21 @@ export function NewInvestment({
             <FormLayout>
               <form.Field
                 name="accountId"
+                key={JSON.stringify(
+                  investmentAccounts.map((account) => account.id),
+                )}
+                listeners={{
+                  onMount: ({ fieldApi: field }) => {
+                    if (
+                      field.state.value &&
+                      !investmentAccounts.some(
+                        (account) => account.id === field.state.value,
+                      )
+                    ) {
+                      field.handleChange('')
+                    }
+                  },
+                }}
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -368,7 +433,8 @@ export function NewInvestment({
                     // Clear symbol and name when type changes
                     fieldApi.form.setFieldValue('symbol', '')
                     fieldApi.form.setFieldValue('name', '')
-                    setQueriedSymbol('')
+                    requestVersion.current++
+                    setPending(false)
                   },
                 }}
                 children={(field) => {
@@ -409,59 +475,21 @@ export function NewInvestment({
               <form.Field
                 name="symbol"
                 validators={{
-                  onChangeAsync: ({ value, fieldApi }) => {
-                    if (!value) return undefined // skip for empty value
-
-                    // zod stuff
-                    const parseResult = formSchema.shape.symbol.safeParse(value)
-                    if (!parseResult.success) {
-                      return parseResult.error.issues[0]
-                    }
-
-                    // value is different than queriedSymbol, meaning user is still typing
-                    if (value !== queriedSymbol) return undefined
-
-                    // is currently fetching
-                    if (isPending) return undefined
-
-                    // Check which type of investment this is
-                    const investmentType = fieldApi.form.getFieldValue('type')
-
-                    // after fetch, no quote found
-                    const quote =
-                      investmentType === 'crypto'
-                        ? cryptoQuoteData.cryptoQuote
-                        : stockQuoteData.stockQuote
-
-                    if (!quote) {
-                      return {
-                        message: t`Unable to find a quote for this symbol.`,
-                      }
-                    }
-
-                    return undefined
+                  onChange: ({ value }) => {
+                    if (!value) return undefined
+                    const result = formSchema.shape.symbol.safeParse(value)
+                    return result.success ? undefined : result.error.issues[0]
                   },
-                  onChangeAsyncDebounceMs: 500,
                 }}
                 listeners={{
-                  onChange: ({ value, fieldApi }) => {
-                    startTransition(() => {
-                      setQueriedSymbol(value)
-                      const investmentType = fieldApi.form.getFieldValue('type')
-
-                      if (investmentType === 'crypto') {
-                        refetchCryptoQuote({ symbol: value })
-                      } else {
-                        refetchStockQuote({ symbol: value })
-                      }
-                    })
+                  onChange: ({ value }) => {
+                    void lookupQuote(value)
                   },
                   onChangeDebounceMs: 500,
                 }}
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
-                  const investmentType = form.getFieldValue('type')
                   return (
                     <Stack
                       direction="vertical"
@@ -495,7 +523,6 @@ export function NewInvestment({
                 }}
               />
               {(() => {
-                const investmentType = form.getFieldValue('type')
                 const quote =
                   investmentType === 'crypto'
                     ? cryptoQuoteData.cryptoQuote
@@ -640,7 +667,6 @@ export function NewInvestment({
                     field.state.meta.isTouched && !field.state.meta.isValid
 
                   // Get currency from quote data, fallback to household currency
-                  const investmentType = form.getFieldValue('type')
                   const quote =
                     investmentType === 'crypto'
                       ? cryptoQuoteData.cryptoQuote

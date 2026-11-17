@@ -93,7 +93,10 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
     })
   }
 
-  useRegisterConnection(data.investments.__id, NodeType.Investment)
+  const connectionRef = useRegisterConnection(
+    data.investments.__id,
+    NodeType.Investment,
+  )
 
   const { formatCurrencyWithPrivacyMode } = useCurrency()
 
@@ -125,132 +128,136 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
   }, [data.investments, convert])
 
   return (
-    <Fragment>
-      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
-        <VStack gap={1}>
-          <Heading level={1}>
-            <Trans>Investments</Trans>
-          </Heading>
-        </VStack>
-        <PageAddButton
-          label={t`Add investment`}
-          to="/household/$householdId/investments/new"
-          params={{ householdId }}
-        />
-      </HStack>
-      <Stack
-        direction="horizontal"
-        gap={4}
-        align="end"
-        justify="between"
-        wrap="wrap"
-      >
-        <Stack direction="vertical" gap={1}>
-          <Text color="secondary">
-            <Trans>Portfolio value</Trans>
-          </Text>
-          <Text as="div" display="block" type="display-3" hasTabularNumbers>
-            {formatCurrencyWithPrivacyMode({
-              value: totalInvestment,
-              currencyCode: displayCurrencyCode,
-            })}
-          </Text>
+    <section className="contents" ref={connectionRef}>
+      <Fragment>
+        <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+          <VStack gap={1}>
+            <Heading level={1}>
+              <Trans>Investments</Trans>
+            </Heading>
+          </VStack>
+          <PageAddButton
+            label={t`Add investment`}
+            to="/household/$householdId/investments/new"
+            params={{ householdId }}
+          />
+        </HStack>
+        <Stack
+          direction="horizontal"
+          gap={4}
+          align="end"
+          justify="between"
+          wrap="wrap"
+        >
+          <Stack direction="vertical" gap={1}>
+            <Text color="secondary">
+              <Trans>Portfolio value</Trans>
+            </Text>
+            <Text as="div" display="block" type="display-3" hasTabularNumbers>
+              {formatCurrencyWithPrivacyMode({
+                value: totalInvestment,
+                currencyCode: displayCurrencyCode,
+              })}
+            </Text>
+          </Stack>
+          <Selector
+            value={groupByOption}
+            onChange={handleGroupByChange}
+            label={t`Group by`}
+            isLabelHidden
+            options={[
+              ...[
+                ...(
+                  Object.entries(GROUP_BY_OPTIONS) as [GroupByOption, string][]
+                ).map(([value, label]) => ({
+                  value: value,
+                  label: String(label),
+                })),
+              ],
+            ]}
+          />
         </Stack>
-        <Selector
-          value={groupByOption}
-          onChange={handleGroupByChange}
-          label={t`Group by`}
-          isLabelHidden
-          options={[
-            ...[
-              ...(
-                Object.entries(GROUP_BY_OPTIONS) as [GroupByOption, string][]
-              ).map(([value, label]) => ({
-                value: value,
-                label: String(label),
-              })),
-            ],
-          ]}
-        />
-      </Stack>
 
-      <Stack direction="vertical" gap={4} key={groupByOption}>
-        {map(groupedInvestments, (investments, groupKey) => {
-          invariant(investments[0]?.node, 'Investment node is null')
-          const groupLabel =
-            groupByOption === 'symbol'
-              ? investments[0].node.name
-              : investments[0].node.account.name
-          const value = investments
-            .map((investment) => {
-              invariant(investment?.node, 'Investment node is null')
-              return convert(
-                investment.node.value,
-                investment.node.account.householdCurrency.code,
-              )
-            })
-            .reduce((a, b) => a.add(b), currency(0))
+        <Stack direction="vertical" gap={4} key={groupByOption}>
+          {map(groupedInvestments, (investments, groupKey) => {
+            invariant(investments[0]?.node, 'Investment node is null')
+            const groupLabel =
+              groupByOption === 'symbol'
+                ? investments[0].node.name
+                : investments[0].node.account.name
+            const value = investments
+              .map((investment) => {
+                invariant(investment?.node, 'Investment node is null')
+                return convert(
+                  investment.node.value,
+                  investment.node.account.householdCurrency.code,
+                )
+              })
+              .reduce((a, b) => a.add(b), currency(0))
 
-          const percentage = (value.value / totalInvestment.value) * 100
+            const percentage = (value.value / totalInvestment.value) * 100
 
-          const totalShares =
-            groupByOption === 'symbol'
-              ? investments.reduce(
-                  (sum, inv) => {
-                    invariant(inv?.node, 'Investment node is null')
-                    return sum.add(currency(inv.node.amount, { precision: 8 }))
-                  },
-                  currency(0, { precision: 8 }),
-                ).value
-              : null
+            const totalShares =
+              groupByOption === 'symbol'
+                ? investments.reduce(
+                    (sum, inv) => {
+                      invariant(inv?.node, 'Investment node is null')
+                      return sum.add(
+                        currency(inv.node.amount, { precision: 8 }),
+                      )
+                    },
+                    currency(0, { precision: 8 }),
+                  ).value
+                : null
 
-          return (
-            <Collapsible
-              value={groupKey}
-              key={groupKey}
-              trigger={
-                <Stack
-                  direction="horizontal"
-                  gap={3}
-                  align="center"
-                  width="100%"
-                  wrap="wrap"
-                >
-                  <Text type="label">{groupLabel}</Text>
-                  {totalShares !== null && totalShares > 0 && (
+            return (
+              <Collapsible
+                value={groupKey}
+                key={groupKey}
+                trigger={
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    width="100%"
+                    wrap="wrap"
+                  >
+                    <Text type="label">{groupLabel}</Text>
+                    {totalShares !== null && totalShares > 0 && (
+                      <Text type="supporting" hasTabularNumbers>
+                        {totalShares} <Trans>shares</Trans>
+                      </Text>
+                    )}
+                    <StackItem size="fill" />
                     <Text type="supporting" hasTabularNumbers>
-                      {totalShares} <Trans>shares</Trans>
+                      {percentage.toFixed(2)}%
                     </Text>
-                  )}
-                  <StackItem size="fill" />
-                  <Text type="supporting" hasTabularNumbers>
-                    {percentage.toFixed(2)}%
-                  </Text>
-                  <Text type="label" hasTabularNumbers>
-                    {formatCurrencyWithPrivacyMode({
-                      value,
-                      currencyCode: displayCurrencyCode,
-                    })}
-                  </Text>
-                </Stack>
-              }
-              defaultIsOpen
-            >
-              <List hasDividers edge="outset">
-                {investments.map((investment) => {
-                  invariant(investment?.node, 'Investment node is null')
-                  return (
-                    <InvestmentCard
-                      key={investment.node.id}
-                      fragmentRef={investment.node}
-                    />
-                  )
-                })}
-              </List>
-            </Collapsible>
-          )
-        })}
-      </Stack>
-    </Fragment>
+                    <Text type="label" hasTabularNumbers>
+                      {formatCurrencyWithPrivacyMode({
+                        value,
+                        currencyCode: displayCurrencyCode,
+                      })}
+                    </Text>
+                  </Stack>
+                }
+                defaultIsOpen
+              >
+                <List hasDividers edge="outset">
+                  {investments.map((investment) => {
+                    invariant(investment?.node, 'Investment node is null')
+                    return (
+                      <InvestmentCard
+                        key={investment.node.id}
+                        fragmentRef={investment.node}
+                      />
+                    )
+                  })}
+                </List>
+              </Collapsible>
+            )
+          })}
+        </Stack>
+      </Fragment>
+    </section>
   )
 }

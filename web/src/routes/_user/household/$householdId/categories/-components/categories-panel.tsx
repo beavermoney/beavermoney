@@ -96,7 +96,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   })
   const { viewUserIds } = useHouseholdViewScope()
 
-  useRegisterConnection(
+  const connectionRef = useRegisterConnection(
     data.transactionCategories.__id,
     NodeType.TransactionCategory,
   )
@@ -162,77 +162,79 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
   }
 
   return (
-    <Fragment>
-      <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
-        <VStack gap={1}>
-          <Heading level={1}>
-            <Trans>Categories</Trans>
-          </Heading>
-        </VStack>
-        <PageAddButton
-          label={t`Add category`}
-          to="/household/$householdId/categories/new"
-          params={{ householdId }}
+    <section className="contents" ref={connectionRef}>
+      <Fragment>
+        <HStack hAlign="between" vAlign="center" wrap="wrap" gap={4}>
+          <VStack gap={1}>
+            <Heading level={1}>
+              <Trans>Categories</Trans>
+            </Heading>
+          </VStack>
+          <PageAddButton
+            label={t`Add category`}
+            to="/household/$householdId/categories/new"
+            params={{ householdId }}
+          />
+        </HStack>
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onDateRangeChange={onDateRangeChange}
         />
-      </HStack>
-      <DateRangeFilter
-        startDate={startDate}
-        endDate={endDate}
-        onDateRangeChange={onDateRangeChange}
-      />
-      <FinancialSummaryCards fragmentRef={financialReport} />
+        <FinancialSummaryCards fragmentRef={financialReport} />
 
-      <CategoriesSankey fragmentRef={financialReport} />
+        <CategoriesSankey fragmentRef={financialReport} />
 
-      <Stack direction="vertical" gap={4}>
-        {map(CATEGORY_TYPE_LIST, (type) => {
-          if (type in groupedCategories === false) {
-            return null
-          }
-          const categories = groupedCategories[type]
-          const typeAggregate = categoryTypeMap.get(type)
-          return (
-            <Collapsible
-              value={type}
-              key={type}
-              trigger={
-                <Stack
-                  direction="horizontal"
-                  gap={3}
-                  align="center"
-                  width="100%"
-                  wrap="wrap"
-                >
-                  <Text type="label">{financeLabel(type)}</Text>
-                  <StackItem size="fill" />
-                  {typeAggregate && (
-                    <Text type="label" hasTabularNumbers>
-                      {formatCurrencyWithPrivacyMode({
-                        value: currency(typeAggregate.total),
-                        currencyCode: displayCurrencyCode,
-                      })}
-                    </Text>
-                  )}
-                </Stack>
-              }
-              defaultIsOpen
-            >
-              <List hasDividers edge="outset">
-                {categories.map((category) => {
-                  invariant(category?.node, 'Category node is null')
-                  return (
-                    <CategoryCard
-                      key={category.node.id}
-                      categoryRef={category.node}
-                      financialReportRef={financialReport}
-                    />
-                  )
-                })}
-              </List>
-            </Collapsible>
-          )
-        })}
-      </Stack>
-    </Fragment>
+        <Stack direction="vertical" gap={4}>
+          {map(CATEGORY_TYPE_LIST, (type) => {
+            if (type in groupedCategories === false) {
+              return null
+            }
+            const categories = groupedCategories[type]
+            const typeAggregate = categoryTypeMap.get(type)
+            return (
+              <Collapsible
+                value={type}
+                key={type}
+                trigger={
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    align="center"
+                    width="100%"
+                    wrap="wrap"
+                  >
+                    <Text type="label">{financeLabel(type)}</Text>
+                    <StackItem size="fill" />
+                    {typeAggregate && (
+                      <Text type="label" hasTabularNumbers>
+                        {formatCurrencyWithPrivacyMode({
+                          value: currency(typeAggregate.total),
+                          currencyCode: displayCurrencyCode,
+                        })}
+                      </Text>
+                    )}
+                  </Stack>
+                }
+                defaultIsOpen
+              >
+                <List hasDividers edge="outset">
+                  {categories.map((category) => {
+                    invariant(category?.node, 'Category node is null')
+                    return (
+                      <CategoryCard
+                        key={category.node.id}
+                        categoryRef={category.node}
+                        financialReportRef={financialReport}
+                      />
+                    )
+                  })}
+                </List>
+              </Collapsible>
+            )
+          })}
+        </Stack>
+      </Fragment>
+    </section>
   )
 }

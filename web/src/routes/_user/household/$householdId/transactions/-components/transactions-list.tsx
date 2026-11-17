@@ -16,12 +16,12 @@ import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useRef, useState } from 'react'
 import { graphql } from 'relay-runtime'
 
 import { ErrorBoundary } from '@sentry/react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { useInView } from 'react-intersection-observer'
+import { usePaginationSentinel } from '@/hooks/use-pagination-sentinel'
 import type { PreloadedQuery } from 'react-relay'
 import { usePaginationFragment, useQueryLoader } from 'react-relay'
 import { Fragment } from 'react/jsx-runtime'
@@ -41,6 +41,7 @@ import {
 } from 'date-fns'
 import {
   EditTransactionDialog,
+  LazyEditTransactionDialog,
   EditTransactionDialogQuery,
 } from './edit-transaction-dialog'
 
@@ -126,12 +127,6 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     },
     [loadEditQuery, viewUserIds],
   )
-  useEffect(() => {
-    if (editTransactionId) {
-      preloadTransaction(editTransactionId)
-    }
-  }, [editTransactionId, preloadTransaction])
-
   const finishClosingTransaction = useCallback(() => {
     if (editTransactionId) return
     loadedEditKeyRef.current = null
@@ -147,15 +142,15 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
     })
   }, [t, loadNext, isMobile, isLoadingNext, hasNext])
 
-  useRegisterConnection(data.transactions.__id, NodeType.Transaction)
+  const connectionRef = useRegisterConnection(
+    data.transactions.__id,
+    NodeType.Transaction,
+  )
 
-  const [ref, inView] = useInView()
-
-  useEffect(() => {
-    if (inView && !loadError) {
-      loadMore()
-    }
-  }, [inView, loadError, loadMore])
+  const ref = usePaginationSentinel({
+    enabled: hasNext && !isLoadingNext && !loadError,
+    onLoadMore: loadMore,
+  })
 
   const transactions =
     data.transactions.edges?.flatMap((edge) =>
@@ -234,41 +229,45 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
               </Button>
             </Stack>
           )}
-          <div ref={ref}></div>
+          <div key={transactions.length} ref={ref}></div>
         </Stack>
       </ScrollableArea>
     )
 
   return (
-    <>
-      {list}
-      <TransactionDetailDialog
-        transactionId={editTransactionId}
-        retainedTransactionId={editTransactionId ?? retainedTransactionId}
-        queryRef={editQueryRef}
-        previewRef={
-          transactions.find(
-            (transaction) =>
-              transaction.id === (editTransactionId ?? retainedTransactionId),
-          ) ?? null
-        }
-        onClose={() => {
-          navigate({
-            to: '.',
-            resetScroll: false,
-            search: (previous) => ({
-              ...previous,
-              edit_transaction_id: null,
-            }),
-          })
-        }}
-        onCloseComplete={finishClosingTransaction}
-      />
-    </>
+    <section className="contents" ref={connectionRef}>
+      <>
+        {list}
+        <TransactionDetailDialog
+          transactionId={editTransactionId}
+          viewUserIds={viewUserIds}
+          retainedTransactionId={editTransactionId ?? retainedTransactionId}
+          queryRef={editQueryRef}
+          previewRef={
+            transactions.find(
+              (transaction) =>
+                transaction.id === (editTransactionId ?? retainedTransactionId),
+            ) ?? null
+          }
+          onClose={() => {
+            navigate({
+              to: '.',
+              resetScroll: false,
+              search: (previous) => ({
+                ...previous,
+                edit_transaction_id: null,
+              }),
+            })
+          }}
+          onCloseComplete={finishClosingTransaction}
+        />
+      </>
+    </section>
   )
 }
 
 type TransactionDetailDialogProps = {
+  viewUserIds: readonly string[] | null
   transactionId: string | null
   retainedTransactionId: string | null
   queryRef: PreloadedQuery<editTransactionDialogQuery> | null | undefined
@@ -278,6 +277,7 @@ type TransactionDetailDialogProps = {
 }
 
 function TransactionDetailDialog({
+  viewUserIds,
   transactionId,
   retainedTransactionId,
   queryRef,
@@ -290,7 +290,9 @@ function TransactionDetailDialog({
   const [editingPending, setEditingPending] = useState(false)
   const Surface = mobile ? BottomSheet : Dialog
   const matchingQueryRef =
-    retainedTransactionId === queryRef?.variables.transactionId
+    retainedTransactionId === queryRef?.variables.transactionId &&
+    JSON.stringify(viewUserIds) ===
+      JSON.stringify(queryRef.variables.viewUserIds ?? null)
       ? queryRef
       : null
 
@@ -343,7 +345,7 @@ function TransactionDetailDialog({
             </Layout>
           }
         >
-          {matchingQueryRef && transactionId !== null ? (
+          {transactionId !== null ? (
             <Suspense
               fallback={
                 <TransactionDialogPreview
@@ -352,12 +354,22 @@ function TransactionDetailDialog({
                 />
               }
             >
-              <EditTransactionDialog
-                key={retainedTransactionId}
-                queryRef={matchingQueryRef}
-                onClose={onClose}
-                onPendingChange={setEditingPending}
-              />
+              {matchingQueryRef ? (
+                <EditTransactionDialog
+                  key={retainedTransactionId}
+                  queryRef={matchingQueryRef}
+                  onClose={onClose}
+                  onPendingChange={setEditingPending}
+                />
+              ) : (
+                <LazyEditTransactionDialog
+                  key={`${transactionId}:${viewUserIds?.join(',') ?? 'all'}`}
+                  transactionId={transactionId}
+                  viewUserIds={viewUserIds}
+                  onClose={onClose}
+                  onPendingChange={setEditingPending}
+                />
+              )}
             </Suspense>
           ) : (
             <TransactionDialogPreview

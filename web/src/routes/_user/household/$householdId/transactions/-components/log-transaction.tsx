@@ -6,7 +6,7 @@ import {
   SegmentedControlItem,
 } from '@astryxdesign/core/SegmentedControl'
 import { Stack } from '@astryxdesign/core/Stack'
-import { useEffect, useRef } from 'react'
+import { useCallback } from 'react'
 import { graphql, useFragment } from 'react-relay'
 import { NewBuy } from './new-buy'
 import { NewExpense } from './new-expense'
@@ -75,7 +75,6 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
 
   const data = useFragment(logTransactionFragment, fragmentRef)
   const isMobile = useIsMobile()
-  const panelRef = useRef<HTMLDivElement>(null)
   const { type: selectedType, setType, close } = useLogTransaction()
   invariant(
     selectedType,
@@ -103,19 +102,20 @@ export function LogTransaction({ fragmentRef }: NewTransactionProps) {
     close()
   })
 
-  useEffect(() => {
-    if (isMobile) return
-    const frame = requestAnimationFrame(() => {
-      if (panelRef.current) {
-        focusInitialTransactionControl(panelRef.current)
-      }
-    })
+  const focusPanel = useCallback(
+    (panel: HTMLDivElement | null) => {
+      if (!panel || isMobile) return
+      const frame = requestAnimationFrame(() => {
+        focusInitialTransactionControl(panel)
+      })
 
-    return () => cancelAnimationFrame(frame)
-  }, [selectedType, isMobile])
+      return () => cancelAnimationFrame(frame)
+    },
+    [isMobile],
+  )
 
   return (
-    <Stack ref={panelRef} direction="vertical" gap={6}>
+    <Stack key={selectedType} ref={focusPanel} direction="vertical" gap={6}>
       <Stack direction="horizontal" gap={4} vAlign="center" wrap="wrap">
         <SegmentedControl
           label={t`Transaction kind`}

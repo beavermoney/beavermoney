@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { useLazyLoadQuery } from 'react-relay'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileEditTransaction } from './mobile-edit-transaction'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
@@ -184,6 +185,42 @@ export function EditTransactionDialog({
   onClose,
   onPendingChange,
 }: EditTransactionDialogProps) {
+  const queryData = usePreloadedQuery<editTransactionDialogQuery>(
+    EditTransactionDialogQuery,
+    queryRef,
+  )
+  return (
+    <EditTransactionContent
+      queryData={queryData}
+      onClose={onClose}
+      onPendingChange={onPendingChange}
+    />
+  )
+}
+
+export function LazyEditTransactionDialog({
+  transactionId,
+  viewUserIds,
+  ...props
+}: Omit<EditTransactionDialogProps, 'queryRef'> & {
+  transactionId: string
+  viewUserIds: readonly string[] | null
+}) {
+  const queryData = useLazyLoadQuery<editTransactionDialogQuery>(
+    EditTransactionDialogQuery,
+    { transactionId, viewUserIds },
+    { fetchPolicy: 'store-or-network' },
+  )
+  return <EditTransactionContent queryData={queryData} {...props} />
+}
+
+function EditTransactionContent({
+  queryData,
+  onClose,
+  onPendingChange,
+}: Omit<EditTransactionDialogProps, 'queryRef'> & {
+  queryData: editTransactionDialogQuery['response']
+}) {
   const { t } = useLingui()
   const formSchema = z.object({
     description: z
@@ -196,11 +233,6 @@ export function EditTransactionDialog({
 
   const isMobile = useIsMobile()
   const showToast = useToast()
-
-  const queryData = usePreloadedQuery<editTransactionDialogQuery>(
-    EditTransactionDialogQuery,
-    queryRef,
-  )
 
   invariant(queryData.node?.__typename === 'Transaction')
   const transaction = useFragment<editTransactionDialogTransactionFragment$key>(
@@ -345,33 +377,44 @@ export function EditTransactionDialog({
   })
 
   const handleDelete = async () => {
-    const result = await deleteNode((connections) =>
-      commitMutationResult<editTransactionDialogDeleteMutation>(commitDelete, {
-        variables: {
-          id: transaction.id,
-          connections,
-        },
-        // updater: (store) => {
-        //   store.invalidateStore()
-        // },
-      }),
-    )
+    onPendingChange?.(true)
+    try {
+      const result = await deleteNode((connections) =>
+        commitMutationResult<editTransactionDialogDeleteMutation>(
+          commitDelete,
+          {
+            variables: {
+              id: transaction.id,
+              connections,
+            },
+            // updater: (store) => {
+            //   store.invalidateStore()
+            // },
+          },
+        ),
+      )
 
-    match(result)
-      .with({ status: 'success' }, () => {
-        showToast({ type: 'info', body: t`Transaction deleted successfully!` })
-        navigate({
-          to: '.',
-          search: (old) => ({ ...old, edit_transaction_id: null }),
-          resetScroll: false,
+      match(result)
+        .with({ status: 'success' }, () => {
+          showToast({
+            type: 'info',
+            body: t`Transaction deleted successfully!`,
+          })
+          navigate({
+            to: '.',
+            search: (old) => ({ ...old, edit_transaction_id: null }),
+            resetScroll: false,
+          })
+          setDeleteAlertOpen(false)
         })
-        setDeleteAlertOpen(false)
-      })
-      .with({ status: 'error' }, ({ error }) => {
-        showToast({ type: 'error', body: error.toString() })
-        setDeleteAlertOpen(false)
-      })
-      .exhaustive()
+        .with({ status: 'error' }, ({ error }) => {
+          showToast({ type: 'error', body: error.toString() })
+          setDeleteAlertOpen(false)
+        })
+        .exhaustive()
+    } finally {
+      onPendingChange?.(false)
+    }
   }
 
   const sortedItems = useMemo(() => {

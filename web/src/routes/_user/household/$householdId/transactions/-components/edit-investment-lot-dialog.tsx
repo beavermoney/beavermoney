@@ -13,7 +13,6 @@ import { Text } from '@astryxdesign/core/Text'
 import { useToast } from '@astryxdesign/core/Toast'
 import { useForm } from '@tanstack/react-form'
 import currency from 'currency.js'
-import { useEffect, useMemo } from 'react'
 import { graphql, useMutation } from 'react-relay'
 import { match } from 'ts-pattern'
 import * as z from 'zod'
@@ -157,24 +156,12 @@ export function EditInvestmentLotDialog({
   })
 
   const selectedAccountId = form.state.values.accountId
-  const accountSelectionAvailable =
-    !selectedAccountId ||
-    investmentAccounts.some((account) => account.id === selectedAccountId)
-
-  useEffect(() => {
-    if (accountSelectionAvailable) return
-    form.setFieldValue('accountId', '')
-    form.setFieldValue('investmentId', '')
-  }, [accountSelectionAvailable, form])
 
   const selectedAccount = investmentAccounts.find(
     (acc) => acc.id === selectedAccountId,
   )
 
-  const availableInvestments = useMemo(() => {
-    if (!selectedAccount) return []
-    return selectedAccount.investments
-  }, [selectedAccount])
+  const availableInvestments = selectedAccount?.investments ?? []
 
   return (
     <Layout
@@ -205,6 +192,22 @@ export function EditInvestmentLotDialog({
             <FormLayout>
               <form.Field
                 name="accountId"
+                key={JSON.stringify(
+                  investmentAccounts.map((account) => account.id),
+                )}
+                listeners={{
+                  onMount: ({ fieldApi: field }) => {
+                    if (
+                      field.state.value &&
+                      !investmentAccounts.some(
+                        (account) => account.id === field.state.value,
+                      )
+                    ) {
+                      field.handleChange('')
+                      field.form.setFieldValue('investmentId', '')
+                    }
+                  },
+                }}
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid

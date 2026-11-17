@@ -2605,7 +2605,7 @@ msgstr "You are not logged in"
 msgid "You can't remove yourself from the household."
 msgstr "You can't remove yourself from the household."
 
-#: src/components/generic-error.tsx
+#: src/lib/auth.ts
 #: src/routes/_user/household/$householdId/route.tsx
 msgid "You no longer have access to this household."
 msgstr "You no longer have access to this household."

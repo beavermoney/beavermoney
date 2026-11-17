@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { defaultAccountId } from './transaction-account-options'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -247,6 +248,26 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
     accountId: (
       <form.Field
         name="accountId"
+        key={JSON.stringify([
+          availableAccounts.map((item) => item.id),
+          isMobile,
+          false,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = availableAccounts
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next =
+              isMobile && !false && !false
+                ? defaultAccountId(availableAccounts, [
+                    'liquidity',
+                    'investment',
+                  ])
+                : ''
+            if (next !== current) field.handleChange(next)
+          },
+        }}
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid

@@ -1,3 +1,4 @@
+import { handleHouseholdError } from '@/lib/auth'
 import { LayoutContent } from '@astryxdesign/core/Layout'
 import { GenericError } from '@/components/generic-error'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
@@ -22,6 +23,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   errorComponent: GenericError,
+  onError: handleHouseholdError,
   validateSearch: SearchSchema,
   search: {
     middlewares: [stripSearchParams(defaults)],

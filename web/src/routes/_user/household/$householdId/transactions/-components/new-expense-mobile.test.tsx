@@ -2,6 +2,7 @@ import { activateLocale } from '@/lib/i18n'
 // @vitest-environment jsdom
 import '@/test/browser-setup'
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -10,6 +11,7 @@ import {
   within,
 } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import { deliverTransactionDefaults } from '@/hooks/log-transaction-store'
 import { NewBuy } from './new-buy'
 import { NewSell } from './new-sell'
 import { NewMove } from './new-move'
@@ -18,6 +20,7 @@ import { NewTransfer } from './new-transfer'
 
 const mocks = vi.hoisted(() => ({
   close: vi.fn(),
+  defaults: undefined as { accountId: string } | undefined,
   commit: vi.fn(),
   toast: vi.fn(),
 }))
@@ -25,7 +28,7 @@ vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => true }))
 vi.mock('@/hooks/use-log-transaction', () => ({
   useLogTransaction: () => ({
     close: mocks.close,
-    defaults: undefined,
+    defaults: mocks.defaults,
     setDefaults: vi.fn(),
   }),
 }))
@@ -98,6 +101,7 @@ const success = {
 }
 
 beforeEach(() => {
+  mocks.defaults = undefined
   vi.clearAllMocks()
   mocks.commit.mockResolvedValue(success)
 })
@@ -505,3 +509,82 @@ it.each([
     ).toBeTruthy()
   },
 )
+
+it('keeps the draft but clears a removed account before submission', async () => {
+  const view = render(<NewExpense fragmentRef={fixture as never} />)
+  fireEvent.click(screen.getByRole('button', { name: 'Food' }))
+  fireEvent.click(await screen.findByRole('button', { name: '2' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  fireEvent.change(screen.getByRole('textbox', { name: 'Description' }), {
+    target: { value: 'Keep this draft' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  view.rerender(
+    <NewExpense
+      fragmentRef={{ ...fixture, accounts: { edges: [] } } as never}
+    />,
+  )
+  expect(screen.queryByRole('button', { name: 'Account: Checking' })).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await screen.findByRole('alert')
+  expect(mocks.commit).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: 'Add note / options' }))
+  expect(
+    (screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement)
+      .value,
+  ).toBe('Keep this draft')
+})
+
+it.each([
+  ['Buy', NewBuy, 'Total paid'],
+  ['Sell', NewSell, 'Total received'],
+] as const)(
+  '%s calculates the editable total when either quantity input changes',
+  async (_kind, Component, total) => {
+    render(<Component fragmentRef={investmentFixture as never} />)
+    fireEvent.click(
+      screen.getByRole('button', { name: /Brokerage.*Investment/ }),
+    )
+    fireEvent.click(screen.getByRole('button', { name: /Apple.*AAPL/ }))
+    fireEvent.click(await screen.findByRole('button', { name: /Edit Shares:/ }))
+    fireEvent.click(screen.getByRole('button', { name: '2' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: /Edit Price per share:/i }),
+    )
+    fireEvent.click(screen.getByRole('button', { name: '3' }))
+    await screen.findByRole('button', {
+      name: new RegExp(`Edit ${total}:.*6`, 'i'),
+    })
+    fireEvent.click(screen.getByRole('button', { name: '4' }))
+    await screen.findByRole('button', {
+      name: new RegExp(`Edit ${total}:.*68`, 'i'),
+    })
+  },
+)
+
+it('retains an explicit initial account after consuming defaults, and applies later account actions without erasing the draft', async () => {
+  const accounts = [
+    fixture.accounts.edges[0],
+    {
+      node: {
+        ...fixture.accounts.edges[0].node,
+        id: 'other',
+        name: 'Other account',
+      },
+    },
+  ]
+  const data = { ...fixture, accounts: { edges: accounts } }
+  mocks.defaults = { accountId: 'other' }
+  const view = render(<NewExpense fragmentRef={data as never} />)
+  mocks.defaults = undefined
+  view.rerender(<NewExpense fragmentRef={data as never} />)
+  fireEvent.click(screen.getByRole('button', { name: 'Food' }))
+  await screen.findByRole('button', { name: 'Account: Other account' })
+  fireEvent.click(screen.getByRole('button', { name: '2' }))
+  act(() => deliverTransactionDefaults('expense', { accountId: 'account' }))
+  await screen.findByRole('button', { name: 'Account: Checking' })
+  expect(screen.getByRole('button', { name: 'Edit Amount: $2' })).toBeTruthy()
+  view.unmount()
+  // A closed form must not consume future defaults.
+  act(() => deliverTransactionDefaults('expense', { accountId: 'other' }))
+})

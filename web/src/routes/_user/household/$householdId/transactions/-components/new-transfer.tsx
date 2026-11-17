@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
+import { defaultAccountId } from './transaction-account-options'
 import { ComposerTransferRows } from '@/components/transaction-composer/transfer-rows'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { MobileTransactionComposer } from '@/components/transaction-composer/composer'
@@ -292,6 +293,28 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     fromAccountId: (
       <form.Field
         name="fromAccountId"
+        key={JSON.stringify([
+          availableAccounts.map((item) => item.id),
+          isMobile,
+          false,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = availableAccounts
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next =
+              isMobile && !false && !false
+                ? defaultAccountId(availableAccounts, undefined)
+                : ''
+            if (next !== current)
+              ((value) => {
+                field.handleChange(value)
+                setEditingAccount(null)
+                if (value === toAccountId) form.setFieldValue('toAccountId', '')
+              })(next)
+          },
+        }}
         validators={{
           onChange: ({ value, fieldApi }) => {
             if (!value) {
@@ -414,6 +437,36 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     toAccountId: (
       <form.Field
         name="toAccountId"
+        key={JSON.stringify([
+          availableAccounts
+            .filter((account) => account.id !== fromAccountId)
+            .map((item) => item.id),
+          isMobile,
+          !fromAccountId,
+        ])}
+        listeners={{
+          onMount: ({ fieldApi: field }) => {
+            const options = availableAccounts.filter(
+              (account) => account.id !== fromAccountId,
+            )
+            const current = field.state.value
+            if (options.some((item) => item.id === current)) return
+            const next =
+              isMobile && !false && !!fromAccountId
+                ? defaultAccountId(
+                    availableAccounts.filter(
+                      (account) => account.id !== fromAccountId,
+                    ),
+                    undefined,
+                  )
+                : ''
+            if (next !== current)
+              ((value) => {
+                field.handleChange(value)
+                setEditingAccount(null)
+              })(next)
+          },
+        }}
         validators={{
           onChange: ({ value, fieldApi }) => {
             if (!value) {
