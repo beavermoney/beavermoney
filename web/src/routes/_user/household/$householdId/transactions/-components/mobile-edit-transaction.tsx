@@ -952,7 +952,6 @@ function EditAccount({
   onChange: (account: Account) => void
 }) {
   const financeLabel = useFinanceLabel()
-  const { t } = useLingui()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const composer = useComposer()
   const choices = accounts.some((a) => a.id === value.id)
@@ -984,7 +983,10 @@ function EditAccount({
           ? (a) =>
               a.balance == null
                 ? undefined
-                : t`Balance: ${formatCurrencyWithPrivacyMode({ value: a.balance, currencyCode: a.householdCurrency.code })}`
+                : formatCurrencyWithPrivacyMode({
+                    value: a.balance,
+                    currencyCode: a.householdCurrency.code,
+                  })
           : undefined
       }
       renderOption={(a) => (

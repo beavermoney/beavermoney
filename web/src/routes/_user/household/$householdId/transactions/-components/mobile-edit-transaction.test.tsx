@@ -535,14 +535,10 @@ it('shows each selected account balance on mobile transfer cards', () => {
     [from, to],
   )
   expect(
-    within(screen.getByRole('group', { name: 'From' })).getByText(
-      'Balance: $1,000.00',
-    ),
+    within(screen.getByRole('group', { name: 'From' })).getByText('$1,000.00'),
   ).toBeTruthy()
   expect(
-    within(screen.getByRole('group', { name: 'To' })).getByText(
-      'Balance: $250.00',
-    ),
+    within(screen.getByRole('group', { name: 'To' })).getByText('$250.00'),
   ).toBeTruthy()
 })
 
@@ -561,6 +557,6 @@ it('masks transfer account balances when privacy mode is enabled', () => {
     },
     [from, to],
   )
-  expect(screen.getAllByText('Balance: •••••••')).toHaveLength(2)
-  expect(screen.queryByText('Balance: $1,000.00')).toBeNull()
+  expect(screen.getAllByText('•••••••')).toHaveLength(2)
+  expect(screen.queryByText('$1,000.00')).toBeNull()
 })

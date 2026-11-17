@@ -1,3 +1,4 @@
+import { ScrollingName } from '@/components/scrolling-name'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import type { PendingCalculation } from './amount-entry'
@@ -88,16 +89,16 @@ export function ComposerChoice<T>({
         variant={invalid ? 'primary' : 'secondary'}
       >
         {value != null && getChipDescription?.(value) ? (
-          <Stack gap={0.5} hAlign="start">
-            <Text maxLines={2}>{getLabel(value)}</Text>
+          <Stack gap={0.5} hAlign="start" className="min-w-0 flex-1">
+            <ScrollingName>{getLabel(value)}</ScrollingName>
             <Text type="supporting" color="secondary" maxLines={1}>
               {getChipDescription(value)}
             </Text>
           </Stack>
         ) : composer.compactAmounts && renderChipIcon && value != null ? (
-          <Text maxLines={2}>{getLabel(value)}</Text>
+          <ScrollingName>{getLabel(value)}</ScrollingName>
         ) : hideChipLabel && value != null ? (
-          getLabel(value)
+          <ScrollingName>{getLabel(value)}</ScrollingName>
         ) : (
           `${label}: ${value == null ? t`Choose` : getLabel(value)}`
         )}

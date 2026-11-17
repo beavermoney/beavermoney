@@ -84,7 +84,10 @@ export function TransactionAccountPicker({
               const data = accountData(account)
               return data.balance == null
                 ? undefined
-                : t`Balance: ${formatCurrencyWithPrivacyMode({ value: data.balance, currencyCode: data.householdCurrency.code })}`
+                : formatCurrencyWithPrivacyMode({
+                    value: data.balance,
+                    currencyCode: data.householdCurrency.code,
+                  })
             }
           : undefined
       }

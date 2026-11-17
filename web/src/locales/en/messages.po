@@ -373,13 +373,6 @@ msgstr "Back"
 msgid "Balance"
 msgstr "Balance"
 
-#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: a.balance, currencyCode: a.householdCurrency.code })
-#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: data.balance, currencyCode: data.householdCurrency.code })
-#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
-msgid "Balance: {0}"
-msgstr "Balance: {0}"
-
 #: src/routes/index.tsx
 msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
 msgstr "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."

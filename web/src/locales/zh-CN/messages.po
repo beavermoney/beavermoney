@@ -373,13 +373,6 @@ msgstr "返回"
 msgid "Balance"
 msgstr "余额"
 
-#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: a.balance, currencyCode: a.householdCurrency.code })
-#. placeholder {0}: formatCurrencyWithPrivacyMode({ value: data.balance, currencyCode: data.householdCurrency.code })
-#: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
-msgid "Balance: {0}"
-msgstr "余额：{0}"
-
 #: src/routes/index.tsx
 msgid "Bring accounts, investments, and currencies into the same view. Follow your balances and understand how your money moves."
 msgstr "将账户、投资和不同币种汇于一处。掌握余额变化，看清资金流向。"
