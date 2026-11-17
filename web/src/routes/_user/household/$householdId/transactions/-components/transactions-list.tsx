@@ -179,24 +179,35 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
       <ScrollableArea label={t`Scrollable content`}>
         <Stack direction="vertical" gap={4}>
           {groups.map((group, groupIndex) => (
-            <Card key={group.date.toISOString()} padding={0}>
-              <Stack
-                direction="horizontal"
-                gap={3}
-                align="center"
-                justify="between"
-                padding={3}
-              >
-                <Text weight="semibold" textWrap="nowrap">
-                  {formatDateHeader(group.date, i18n.locale)}
-                </Text>
-                <TransactionDaySummary
-                  fragmentRef={group.transactions}
-                  isPartial={hasNext && groupIndex === groups.length - 1}
-                />
+            <Card
+              key={group.date.toISOString()}
+              padding={0}
+              className="overflow-clip! border-0!"
+            >
+              <Stack className="sticky top-0 z-20 bg-(--color-background-surface)">
+                <Stack
+                  direction="horizontal"
+                  gap={3}
+                  align="center"
+                  justify="between"
+                  padding={3}
+                  className="rounded-t-(--_card-radius) border border-b-0 border-(--color-border) bg-(--color-background-card)"
+                >
+                  <Text weight="semibold" textWrap="nowrap">
+                    {formatDateHeader(group.date, i18n.locale)}
+                  </Text>
+                  <TransactionDaySummary
+                    fragmentRef={group.transactions}
+                    isPartial={hasNext && groupIndex === groups.length - 1}
+                  />
+                </Stack>
+                <Divider />
               </Stack>
-              <Divider />
-              <Stack direction="vertical" gap={0}>
+              <Stack
+                direction="vertical"
+                gap={0}
+                className="rounded-b-(--_card-radius) border border-t-0 border-(--color-border)"
+              >
                 {group.transactions.map((transaction, index) => (
                   <Fragment key={transaction.id}>
                     {index > 0 && <Divider />}
