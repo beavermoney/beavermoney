@@ -1,9 +1,8 @@
-import { useLingui } from '@lingui/react/macro'
+import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { CategoryIcon } from '@/components/category-icon'
 import { useCurrency } from '@/hooks/use-currency'
-import { Badge } from '@astryxdesign/core/Badge'
-import { VStack } from '@astryxdesign/core/Layout'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { ListItem } from '@astryxdesign/core/List'
 import { Text } from '@astryxdesign/core/Text'
 import { useFragment } from 'react-relay'
@@ -48,7 +47,6 @@ export function TransactionEntryCard({
   onClick?: () => void
 }) {
   const format = useDateFormatter()
-  const { t } = useLingui()
   const { formatCurrency } = useCurrency()
 
   const data = useFragment<transactionEntryCardFragment$key>(
@@ -70,18 +68,20 @@ export function TransactionEntryCard({
       onClick={onClick}
       endContent={
         <VStack gap={1} hAlign="end">
-          <Text type="label" hasTabularNumbers>
-            {formatCurrency({
-              value: data.amount,
-              currencyCode: data.account.householdCurrency.code,
-            })}
-          </Text>
+          <HStack gap={1} vAlign="center">
+            {data.transaction.excludeFromReports && <ExcludedFromReportsIcon />}
+            <Text type="label" hasTabularNumbers>
+              {formatCurrency({
+                value: data.amount,
+                currencyCode: data.account.householdCurrency.code,
+              })}
+            </Text>
+          </HStack>
           {showDate && (
             <Text type="supporting">
               {format(new Date(data.transaction.datetime), 'LLL d')}
             </Text>
           )}
-          {data.transaction.excludeFromReports && <Badge label={t`Excluded`} />}
         </VStack>
       }
     />

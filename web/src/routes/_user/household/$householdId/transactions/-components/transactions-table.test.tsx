@@ -138,7 +138,9 @@ it('keeps transfer legs and investment quantities separate with their currencies
   const cells = within(transfer).getAllByRole('cell')
   expect(cells[2].textContent).toBe('CheckingSavings')
   expect(cells[3].textContent).toBe('-100 CAD72 USD')
-  expect(within(transfer).getByText('Excluded')).toBeTruthy()
+  expect(
+    within(transfer).getByRole('img', { name: 'Excluded from reports' }),
+  ).toBeTruthy()
   const buy = screen.getByText('Buy stock').closest('tr')!
   expect(within(buy).getAllByRole('cell')[3].textContent).toBe(
     '-1500 USD+10 AAPL @ 150 USD',

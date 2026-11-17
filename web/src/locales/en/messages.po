@@ -1004,12 +1004,10 @@ msgid "Exclude from reports"
 msgstr "Exclude from reports"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-entry-card.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Excluded"
 msgstr "Excluded"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+#: src/components/excluded-from-reports-icon.tsx
 msgid "Excluded from reports"
 msgstr "Excluded from reports"
 
@@ -1033,6 +1031,10 @@ msgstr "Failed to save snapshot: {error}"
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "First day of week"
 msgstr "First day of week"
+
+#: src/components/transaction-option-card.tsx
+msgid "Flag for later review. Included in balances and reports."
+msgstr "Flag for later review. Included in balances and reports."
 
 #: src/routes/index.tsx
 msgid "Food & drink"
@@ -1130,6 +1132,10 @@ msgstr "Group by"
 #: src/routes/_user/household/$householdId/route.tsx
 msgid "Hide balances"
 msgstr "Hide balances"
+
+#: src/components/transaction-option-card.tsx
+msgid "Hide from reports. Still included in account balances."
+msgstr "Hide from reports. Still included in account balances."
 
 #: src/components/nav-projects.tsx
 #: src/routes/index.tsx
@@ -1307,10 +1313,6 @@ msgstr "Largest first"
 msgid "Last week"
 msgstr "Last week"
 
-#: src/components/transaction-option-card.tsx
-msgid "Leave this transaction out of reports. Account balances still include it."
-msgstr "Leave this transaction out of reports. Account balances still include it."
-
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
 msgstr "Less scattered.<0/>More understood."
@@ -1402,10 +1404,6 @@ msgstr "Make yourself<0/>at home."
 #: src/routes/index.tsx
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
-
-#: src/components/transaction-option-card.tsx
-msgid "Mark this transaction to review later. Balances and reports stay unchanged."
-msgstr "Mark this transaction to review later. Balances and reports stay unchanged."
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1687,6 +1685,10 @@ msgstr "None (Taxable)"
 #: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
 msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 msgstr "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Note"
+msgstr "Note"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Note (optional)"

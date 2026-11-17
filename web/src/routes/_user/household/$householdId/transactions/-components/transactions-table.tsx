@@ -1,3 +1,4 @@
+import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useLingui } from '@lingui/react/macro'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { Trans } from '@lingui/react/macro'
@@ -5,7 +6,6 @@ import { plural } from '@lingui/core/macro'
 import { CategoryIcon } from '@/components/category-icon'
 import { getLogoDomainURL } from '@/lib/logo'
 import { Avatar } from '@astryxdesign/core/Avatar'
-import { Badge } from '@astryxdesign/core/Badge'
 import { Button } from '@astryxdesign/core/Button'
 import {
   DropdownMenu,
@@ -214,15 +214,6 @@ export function TransactionsTable({
                     <Trans>Pending</Trans>
                   </Text>
                 )}
-                {transaction.excludeFromReports && (
-                  <Badge
-                    label={
-                      <>
-                        <Trans>Excluded</Trans>
-                      </>
-                    }
-                  />
-                )}
               </Stack>
               {transaction.description && (
                 <span title={transaction.description}>
@@ -257,33 +248,36 @@ export function TransactionsTable({
       header: t`Amount`,
       enableHiding: false,
       cell: (transaction) => (
-        <Stack direction="vertical" gap={1}>
-          {transaction.transactionEntries?.map((entry) => (
-            <span key={entry.id}>
-              {formatCurrencyWithPrivacyMode({
-                value: entry.amount,
-                currencyCode: entry.account.householdCurrency.code,
-              })}{' '}
-              <Text type="supporting">
-                {entry.account.householdCurrency.code}
-              </Text>
-            </span>
-          ))}
-          {transaction.investmentLots?.map((lot) => (
-            <span key={lot.id}>
-              {isPrivacyModeEnabled
-                ? '•••••••'
-                : quantityFormatter.format(Number(lot.amount))}{' '}
-              <Text type="supporting">{lot.investment.symbol} @ </Text>
-              {formatCurrencyWithPrivacyMode({
-                value: lot.price,
-                currencyCode: lot.investment.householdCurrency.code,
-              })}{' '}
-              <Text type="supporting">
-                {lot.investment.householdCurrency.code}
-              </Text>
-            </span>
-          ))}
+        <Stack direction="horizontal" gap={1} vAlign="start">
+          {transaction.excludeFromReports && <ExcludedFromReportsIcon />}
+          <Stack direction="vertical" gap={1}>
+            {transaction.transactionEntries?.map((entry) => (
+              <span key={entry.id}>
+                {formatCurrencyWithPrivacyMode({
+                  value: entry.amount,
+                  currencyCode: entry.account.householdCurrency.code,
+                })}{' '}
+                <Text type="supporting">
+                  {entry.account.householdCurrency.code}
+                </Text>
+              </span>
+            ))}
+            {transaction.investmentLots?.map((lot) => (
+              <span key={lot.id}>
+                {isPrivacyModeEnabled
+                  ? '•••••••'
+                  : quantityFormatter.format(Number(lot.amount))}{' '}
+                <Text type="supporting">{lot.investment.symbol} @ </Text>
+                {formatCurrencyWithPrivacyMode({
+                  value: lot.price,
+                  currencyCode: lot.investment.householdCurrency.code,
+                })}{' '}
+                <Text type="supporting">
+                  {lot.investment.householdCurrency.code}
+                </Text>
+              </span>
+            ))}
+          </Stack>
         </Stack>
       ),
     },

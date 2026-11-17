@@ -147,7 +147,7 @@ it('Save again retains account, category, owner and date while resetting other f
   const view = await enter()
   fireEvent.click(screen.getByRole('button', { name: 'Owner: Joey' }))
   fireEvent.click(await screen.findByRole('button', { name: 'Partner' }))
-  fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+  expect(screen.getByRole('button', { name: 'Owner: Partner' })).toBeTruthy()
   const today = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -373,7 +373,7 @@ it('leaves the account unselected when none are eligible', async () => {
   expect(mocks.commit).not.toHaveBeenCalled()
 })
 
-it('shows search for a small account list and replaces the entire composer', async () => {
+it('opens account search in a sub-drawer and returns to the composer', async () => {
   render(<NewExpense fragmentRef={fixture as never} />)
   fireEvent.click(screen.getByRole('button', { name: 'Food' }))
   fireEvent.click(

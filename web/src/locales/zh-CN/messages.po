@@ -1004,12 +1004,10 @@ msgid "Exclude from reports"
 msgstr "不计入报表"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-entry-card.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Excluded"
 msgstr "已排除"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
+#: src/components/excluded-from-reports-icon.tsx
 msgid "Excluded from reports"
 msgstr "不计入报表"
 
@@ -1033,6 +1031,10 @@ msgstr "无法保存快照：{error}"
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "First day of week"
 msgstr "每周起始日"
+
+#: src/components/transaction-option-card.tsx
+msgid "Flag for later review. Included in balances and reports."
+msgstr "标记为稍后复核。仍计入余额和报表。"
 
 #: src/routes/index.tsx
 msgid "Food & drink"
@@ -1130,6 +1132,10 @@ msgstr "分组方式"
 #: src/routes/_user/household/$householdId/route.tsx
 msgid "Hide balances"
 msgstr "隐藏余额"
+
+#: src/components/transaction-option-card.tsx
+msgid "Hide from reports. Still included in account balances."
+msgstr "不计入报表，但仍计入账户余额。"
 
 #: src/components/nav-projects.tsx
 #: src/routes/index.tsx
@@ -1307,10 +1313,6 @@ msgstr "金额从大到小"
 msgid "Last week"
 msgstr "上周"
 
-#: src/components/transaction-option-card.tsx
-msgid "Leave this transaction out of reports. Account balances still include it."
-msgstr "不将此交易计入报表，但账户余额仍包含此交易。"
-
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
 msgstr "少一点零散，<0/>多一份明白。"
@@ -1402,10 +1404,6 @@ msgstr "你的账本，<0/>从这里开始。"
 #: src/routes/index.tsx
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "一起管理家庭财务，兼顾每个人的账户。将点滴收支汇集起来，共同掌握全貌。"
-
-#: src/components/transaction-option-card.tsx
-msgid "Mark this transaction to review later. Balances and reports stay unchanged."
-msgstr "将此交易标记为稍后复核。余额和报表保持不变。"
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1687,6 +1685,10 @@ msgstr "无（应税账户）"
 #: src/routes/_user/household/$householdId/categories/-components/categories-sankey.tsx
 msgid "Not enough income data to draw the category Sankey chart for this period. Choose a wider date range or add income transactions."
 msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择更大的日期范围或添加收入交易。"
+
+#: src/components/transaction-composer/composer.tsx
+msgid "Note"
+msgstr "备注"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Note (optional)"

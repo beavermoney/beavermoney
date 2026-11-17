@@ -1,3 +1,4 @@
+import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { CategoryIcon } from '@/components/category-icon'
@@ -140,7 +141,8 @@ export function TransactionCard({
               {data.category.name}
               {lot ? ` ${lot.investment.symbol || lot.investment.name}` : ''}
             </Text>
-            <Stack direction="horizontal" gap={1} wrap="wrap">
+            <Stack direction="horizontal" gap={1} wrap="wrap" vAlign="center">
+              {data.excludeFromReports && <ExcludedFromReportsIcon />}
               {amounts.map((amount) => {
                 const incoming =
                   currency(amount.value, { precision: 8 }).value >= 0
@@ -202,11 +204,6 @@ export function TransactionCard({
           {data.pending && (
             <Text type="supporting">
               <Trans>Pending</Trans>
-            </Text>
-          )}
-          {data.excludeFromReports && (
-            <Text type="supporting" color="secondary">
-              <Trans>Excluded from reports</Trans>
             </Text>
           )}
         </Stack>

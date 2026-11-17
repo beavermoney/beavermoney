@@ -114,22 +114,6 @@
   touch-action: manipulation;
   user-select: none;
 }
-.composer-workspace {
-  position: relative;
-}
-.composer-editor-pane {
-  position: absolute;
-  inset: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-.composer-editor {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
 .composer-date-key {
   font-size: var(--font-size-sm);
 }
@@ -177,10 +161,6 @@
   opacity: 0.6;
 }
 
-.composer-editor > .composer-category-picker {
-  height: 100%;
-  min-height: 0;
-}
 .composer-category-results {
   min-height: 0;
   overflow-y: auto;

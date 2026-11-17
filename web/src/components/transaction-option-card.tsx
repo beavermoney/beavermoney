@@ -1,10 +1,9 @@
 import { useLingui } from '@lingui/react/macro'
-import { SelectableCard } from '@astryxdesign/core/SelectableCard'
-import { Stack } from '@astryxdesign/core/Stack'
+import { Card } from '@astryxdesign/core/Card'
+import { Item } from '@astryxdesign/core/Item'
+import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
 import { Text } from '@astryxdesign/core/Text'
-import { Icon } from '@astryxdesign/core/Icon'
-import { CheckCircle2, Circle } from 'lucide-react'
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 
 export function TransactionOptionCard({
   option,
@@ -21,31 +20,38 @@ export function TransactionOptionCard({
 }) {
   const { t } = useLingui()
   const descriptionId = useId()
+  const checkboxRef = useRef<HTMLInputElement>(null)
   const label = option === 'pending' ? t`Pending` : t`Exclude from reports`
   const description =
     option === 'pending'
-      ? t`Mark this transaction to review later. Balances and reports stay unchanged.`
-      : t`Leave this transaction out of reports. Account balances still include it.`
+      ? t`Flag for later review. Included in balances and reports.`
+      : t`Hide from reports. Still included in account balances.`
 
   return (
-    <SelectableCard
-      id={id}
-      label={label}
-      isSelected={value}
-      onChange={onChange}
-      onBlur={onBlur}
-      aria-describedby={descriptionId}
-      width="100%"
-    >
-      <Stack direction="horizontal" gap={3} vAlign="start">
-        <Icon icon={value ? CheckCircle2 : Circle} aria-hidden="true" />
-        <Stack gap={1}>
-          <Text type="label">{label}</Text>
+    <Card padding={0}>
+      <Item
+        label={label}
+        description={
           <Text id={descriptionId} type="supporting">
             {description}
           </Text>
-        </Stack>
-      </Stack>
-    </SelectableCard>
+        }
+        density="spacious"
+        align="first-line"
+        interactiveRef={checkboxRef}
+        endContent={
+          <CheckboxInput
+            ref={checkboxRef}
+            id={id}
+            label={label}
+            isLabelHidden
+            value={value}
+            onChange={onChange}
+            onBlur={onBlur}
+            aria-describedby={descriptionId}
+          />
+        }
+      />
+    </Card>
   )
 }
