@@ -202,8 +202,8 @@ export function MobileTransactionComposer({
                   {amounts}
                 </Stack>
               )}
-              <ComposerChipRail>{chips}</ComposerChipRail>
-              <Stack direction="horizontal" gap={2} wrap="wrap">
+              <ComposerChipRail>
+                {chips}
                 <Button
                   type="button"
                   label={hasNote ? t`Edit note` : t`Add note`}
@@ -220,7 +220,7 @@ export function MobileTransactionComposer({
                   aria-expanded={editor === 'options'}
                   onClick={() => setEditor('options')}
                 />
-              </Stack>
+              </ComposerChipRail>
               {mode === 'edit' && (
                 <ComposerEditor name="category">{category}</ComposerEditor>
               )}
