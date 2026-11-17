@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { RouteContentBoundary } from '@/components/route-content-boundary'
@@ -7,7 +8,7 @@ import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { Divider } from '@astryxdesign/core/Divider'
-import { DropdownMenu, DropdownMenuItem } from '@astryxdesign/core/DropdownMenu'
+import { DropdownMenu } from '@astryxdesign/core/DropdownMenu'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -110,6 +111,7 @@ function RouteComponent() {
   )
 
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
+  const isMobile = useIsMobile()
   const [archiveAlertOpen, setArchiveAlertOpen] = useState(false)
 
   const [commitDeleteMutation, isDeleteMutationInFlight] =
@@ -213,53 +215,37 @@ function RouteComponent() {
             </Heading>
 
             <DropdownMenu
-              alignment={'end'}
+              alignment="end"
+              presentation={isMobile ? 'bottom-sheet' : 'popover'}
+              menuWidth="max-content"
+              items={[
+                { label: t`Edit`, icon: EditIcon, onClick: handleEdit },
+                ...(!accountData.archived
+                  ? [
+                      {
+                        label: t`Archive`,
+                        icon: ArchiveIcon,
+                        onClick: () => setArchiveAlertOpen(true),
+                      },
+                    ]
+                  : []),
+                {
+                  label: t`Delete`,
+                  icon: Trash2Icon,
+                  variant: 'destructive',
+                  onClick: () => setDeleteAlertOpen(true),
+                },
+              ]}
               renderTrigger={(triggerProps) => (
                 <Button
                   {...triggerProps}
-                  label={t`Actions`}
-                  variant={'ghost'}
-
+                  label={t`Account actions`}
+                  variant="ghost"
                   isIconOnly
-                  icon={
-                    <>
-                      <AstryxIcon icon={MoreHorizontalIcon} />
-                    </>
-                  }
-                ></Button>
-              )}
-            >
-              <DropdownMenuItem
-                onClick={handleEdit}
-                label={
-                  <>
-                    <AstryxIcon icon={EditIcon} />
-                    <Trans>Edit</Trans>
-                  </>
-                }
-              />
-              {!accountData.archived && (
-                <DropdownMenuItem
-                  onClick={() => setArchiveAlertOpen(true)}
-                  label={
-                    <>
-                      <AstryxIcon icon={ArchiveIcon} />
-                      <Trans>Archive</Trans>
-                    </>
-                  }
+                  icon={<AstryxIcon icon={MoreHorizontalIcon} />}
                 />
               )}
-              <DropdownMenuItem
-                onClick={() => setDeleteAlertOpen(true)}
-
-                label={
-                  <>
-                    <AstryxIcon icon={Trash2Icon} />
-                    <Trans>Delete</Trans>
-                  </>
-                }
-              />
-            </DropdownMenu>
+            />
           </Stack>
           {!isEditing && (
             <>

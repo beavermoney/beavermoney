@@ -81,6 +81,10 @@ msgstr "{name} 已取消归档。"
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, other {# 笔交易}}"
 
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "1 2 3 on the top row of the transaction number pad. Saved automatically on this device."
+msgstr "交易数字键盘的首行为 1 2 3。设置会自动保存在此设备上。"
+
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "1 month"
 msgstr "1 个月"
@@ -96,6 +100,10 @@ msgstr "3 个月"
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "6 months"
 msgstr "6 个月"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "7 8 9 on the top row of the transaction number pad. Saved automatically on this device."
+msgstr "交易数字键盘的首行为 7 8 9。设置会自动保存在此设备上。"
 
 #: src/routes/login.index.tsx
 msgid "A clearer view of your money starts here."
@@ -140,6 +148,10 @@ msgstr "账户"
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Account / Movement"
 msgstr "账户 / 变动"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account actions"
+msgstr "账户操作"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "Account archived!"
@@ -211,10 +223,6 @@ msgstr "账户 · 投资 · 多币种"
 #: src/constant.ts
 msgid "Accounts that hold investments, such as brokerage accounts"
 msgstr "用于持有投资的账户，例如证券账户"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Actions"
-msgstr "操作"
 
 #. placeholder {0}: uh.user.name
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
@@ -415,6 +423,10 @@ msgstr "按类别"
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
 msgid "By Symbol"
 msgstr "按代码"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Calculator"
+msgstr "计算器式"
 
 #: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
@@ -1669,6 +1681,10 @@ msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择
 msgid "Note (optional)"
 msgstr "备注（可选）"
 
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Number pad order"
+msgstr "数字键盘排列"
+
 #: src/routes/index.tsx
 msgid "One entry at a time."
 msgstr "从每一笔记录开始。"
@@ -1744,6 +1760,10 @@ msgstr "永久删除此家庭及其所有数据。"
 #: src/routes/login.index.tsx
 msgid "Personal finances. Shared perspective."
 msgstr "个人财务，家人共览。"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Phone"
+msgstr "电话式"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx

@@ -1,3 +1,4 @@
+import { useKeypadOrder } from '@/hooks/use-keypad-order'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { LanguageSelector } from '@/components/language-selector'
@@ -94,6 +95,7 @@ export function GeneralSettings({
     locale: z.string().min(1, t`Locale is required.`),
   })
 
+  const { keypadOrder, setKeypadOrder } = useKeypadOrder()
   const { weekStartsOn, setWeekStartsOn } = useWeekStart()
   const { theme, setTheme } = useTheme()
   const showToast = useToast()
@@ -312,6 +314,28 @@ export function GeneralSettings({
         />
         <Text color="secondary">
           <Trans>Saved automatically on this device.</Trans>
+        </Text>
+      </Stack>
+      <Stack direction="vertical" gap={2}>
+        <Text type="label">
+          <Trans>Number pad order</Trans>
+        </Text>
+        <SegmentedControl
+          label={t`Number pad order`}
+          value={keypadOrder}
+          layout="fill"
+          onChange={(value) => {
+            if (value === 'phone' || value === 'calculator')
+              setKeypadOrder(value)
+          }}
+        >
+          <SegmentedControlItem value="phone" label={t`Phone`} />
+          <SegmentedControlItem value="calculator" label={t`Calculator`} />
+        </SegmentedControl>
+        <Text color="secondary">
+          {keypadOrder === 'phone'
+            ? t`1 2 3 on the top row of the transaction number pad. Saved automatically on this device.`
+            : t`7 8 9 on the top row of the transaction number pad. Saved automatically on this device.`}
         </Text>
       </Stack>
       {isAdmin && (

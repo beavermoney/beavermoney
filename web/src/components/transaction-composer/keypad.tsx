@@ -1,3 +1,4 @@
+import { useKeypadOrder } from '@/hooks/use-keypad-order'
 import { useLingui } from '@lingui/react/macro'
 import {
   editAmount,
@@ -27,6 +28,12 @@ export function ComposerKeypad({
   setPending: (next: PendingCalculation | null) => void
 }) {
   const { t } = useLingui()
+  const { keypadOrder } = useKeypadOrder()
+  const topRow =
+    keypadOrder === 'calculator' ? ['7', '8', '9'] : ['1', '2', '3']
+  const bottomRow =
+    keypadOrder === 'calculator' ? ['1', '2', '3'] : ['7', '8', '9']
+
   function press(key: string) {
     if (key === '+' || key === '-') {
       setPending({ left: value || '0', operator: key, right: '' })
@@ -52,17 +59,13 @@ export function ComposerKeypad({
     <Stack gap={2}>
       <Grid columns={4} gap={2}>
         {[
-          '1',
-          '2',
-          '3',
+          ...topRow,
           'date',
           '4',
           '5',
           '6',
           '-',
-          '7',
-          '8',
-          '9',
+          ...bottomRow,
           '+',
           decimal,
           '0',

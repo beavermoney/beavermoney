@@ -81,6 +81,10 @@ msgstr "{name} unarchived."
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, one {# transaction} other {# transactions}}"
 
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "1 2 3 on the top row of the transaction number pad. Saved automatically on this device."
+msgstr "1 2 3 on the top row of the transaction number pad. Saved automatically on this device."
+
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "1 month"
 msgstr "1 month"
@@ -96,6 +100,10 @@ msgstr "3 months"
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "6 months"
 msgstr "6 months"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "7 8 9 on the top row of the transaction number pad. Saved automatically on this device."
+msgstr "7 8 9 on the top row of the transaction number pad. Saved automatically on this device."
 
 #: src/routes/login.index.tsx
 msgid "A clearer view of your money starts here."
@@ -140,6 +148,10 @@ msgstr "Account"
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Account / Movement"
 msgstr "Account / Movement"
+
+#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
+msgid "Account actions"
+msgstr "Account actions"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "Account archived!"
@@ -211,10 +223,6 @@ msgstr "Accounts · Investments · Multiple currencies"
 #: src/constant.ts
 msgid "Accounts that hold investments, such as brokerage accounts"
 msgstr "Accounts that hold investments, such as brokerage accounts"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Actions"
-msgstr "Actions"
 
 #. placeholder {0}: uh.user.name
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
@@ -415,6 +423,10 @@ msgstr "By category"
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
 msgid "By Symbol"
 msgstr "By Symbol"
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Calculator"
+msgstr "Calculator"
 
 #: src/components/date-period-filter.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
@@ -1669,6 +1681,10 @@ msgstr "Not enough income data to draw the category Sankey chart for this period
 msgid "Note (optional)"
 msgstr "Note (optional)"
 
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Number pad order"
+msgstr "Number pad order"
+
 #: src/routes/index.tsx
 msgid "One entry at a time."
 msgstr "One entry at a time."
@@ -1744,6 +1760,10 @@ msgstr "Permanently remove this household and all its data."
 #: src/routes/login.index.tsx
 msgid "Personal finances. Shared perspective."
 msgstr "Personal finances. Shared perspective."
+
+#: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
+msgid "Phone"
+msgstr "Phone"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
