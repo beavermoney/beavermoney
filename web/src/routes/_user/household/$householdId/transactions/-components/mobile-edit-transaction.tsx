@@ -15,7 +15,7 @@ import { getLogoDomainURL } from '@/lib/logo'
 import { commitMutationResult } from '@/lib/relay'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { Button } from '@astryxdesign/core/Button'
-import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { TransactionOptionCard } from '@/components/transaction-option-card'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -627,13 +627,13 @@ export function MobileEditTransaction({
         }
         options={
           <>
-            <CheckboxInput
-              label={t`Pending`}
+            <TransactionOptionCard
+              option="pending"
               value={transactionPending}
               onChange={setTransactionPending}
             />
-            <CheckboxInput
-              label={t`Exclude from reports`}
+            <TransactionOptionCard
+              option="exclude"
               value={excluded}
               onChange={setExcluded}
             />

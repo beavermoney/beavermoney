@@ -482,7 +482,6 @@ msgstr "Cash or cash-equivalent accounts, such as checking or savings"
 msgid "Categories"
 msgstr "Categories"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Category"
@@ -996,7 +995,7 @@ msgstr "EXAMPLE"
 msgid "Example transaction ledger"
 msgstr "Example transaction ledger"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/components/transaction-option-card.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
@@ -1308,6 +1307,10 @@ msgstr "Largest first"
 msgid "Last week"
 msgstr "Last week"
 
+#: src/components/transaction-option-card.tsx
+msgid "Leave this transaction out of reports. Account balances still include it."
+msgstr "Leave this transaction out of reports. Account balances still include it."
+
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
 msgstr "Less scattered.<0/>More understood."
@@ -1399,6 +1402,10 @@ msgstr "Make yourself<0/>at home."
 #: src/routes/index.tsx
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+
+#: src/components/transaction-option-card.tsx
+msgid "Mark this transaction to review later. Balances and reports stay unchanged."
+msgstr "Mark this transaction to review later. Balances and reports stay unchanged."
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1750,7 +1757,7 @@ msgstr "Page not found"
 msgid "Payday"
 msgstr "Payday"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/components/transaction-option-card.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx

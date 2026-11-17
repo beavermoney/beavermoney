@@ -1,4 +1,4 @@
-import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { TransactionOptionCard } from '@/components/transaction-option-card'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { defaultAccountId } from './transaction-account-options'
@@ -274,8 +274,8 @@ export function NewTransfer({ fragmentRef }: NewTransferProps) {
     pending: (
       <form.Field name="pending">
         {(field) => (
-          <CheckboxInput
-            label={t`Pending`}
+          <TransactionOptionCard
+            option="pending"
             value={field.state.value}
             onChange={field.handleChange}
             onBlur={field.handleBlur}

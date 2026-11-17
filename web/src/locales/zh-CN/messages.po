@@ -482,7 +482,6 @@ msgstr "现金或现金等价物账户，例如支票账户或储蓄账户"
 msgid "Categories"
 msgstr "分类"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Category"
@@ -996,7 +995,7 @@ msgstr "示例"
 msgid "Example transaction ledger"
 msgstr "交易账本示例"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/components/transaction-option-card.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
@@ -1308,6 +1307,10 @@ msgstr "金额从大到小"
 msgid "Last week"
 msgstr "上周"
 
+#: src/components/transaction-option-card.tsx
+msgid "Leave this transaction out of reports. Account balances still include it."
+msgstr "不将此交易计入报表，但账户余额仍包含此交易。"
+
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
 msgstr "少一点零散，<0/>多一份明白。"
@@ -1399,6 +1402,10 @@ msgstr "你的账本，<0/>从这里开始。"
 #: src/routes/index.tsx
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "一起管理家庭财务，兼顾每个人的账户。将点滴收支汇集起来，共同掌握全貌。"
+
+#: src/components/transaction-option-card.tsx
+msgid "Mark this transaction to review later. Balances and reports stay unchanged."
+msgstr "将此交易标记为稍后复核。余额和报表保持不变。"
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1750,7 +1757,7 @@ msgstr "页面不存在"
 msgid "Payday"
 msgstr "工资到账"
 
-#: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
+#: src/components/transaction-option-card.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx

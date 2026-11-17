@@ -1,3 +1,4 @@
+import { Card } from '@astryxdesign/core/Card'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { useLazyLoadQuery } from 'react-relay'
@@ -7,7 +8,7 @@ import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
-import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { TransactionOptionCard } from '@/components/transaction-option-card'
 import { DialogHeader } from '@astryxdesign/core/Dialog'
 import { Divider } from '@astryxdesign/core/Divider'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
@@ -586,45 +587,47 @@ function EditTransactionContent({
             </Trans>
           </Text>
 
-          <Stack direction="vertical" gap={2}>
-            {sortedItems.map((item, index) =>
-              item.type === 'lot' ? (
-                <Fragment key={item.lot.id}>
-                  {index !== 0 && <Divider />}
-                  <InvestmentLotCard
-                    fragmentRef={item.lot}
-                    isFirst={index === 0}
-                    isLast={index === sortedItems.length - 1}
-                    onClick={() =>
-                      openLotEdit({
-                        id: item.lot.id,
-                        amount: item.lot.amount,
-                        price: item.lot.price,
-                        investmentId: item.lot.investment.id,
-                        accountId: item.lot.investment.account.id,
-                      })
-                    }
-                  />
-                </Fragment>
-              ) : (
-                <Fragment key={item.entry.id}>
-                  {index !== 0 && <Divider />}
-                  <TransactionEntryCard
-                    fragmentRef={item.entry}
-                    isFirst={index === 0}
-                    isLast={index === sortedItems.length - 1}
-                    onClick={() =>
-                      openEntryEdit({
-                        id: item.entry.id,
-                        amount: item.entry.amount,
-                        accountId: item.entry.account.id,
-                      })
-                    }
-                  />
-                </Fragment>
-              ),
-            )}
-          </Stack>
+          <Card padding={0}>
+            <Stack direction="vertical" gap={2}>
+              {sortedItems.map((item, index) =>
+                item.type === 'lot' ? (
+                  <Fragment key={item.lot.id}>
+                    {index !== 0 && <Divider />}
+                    <InvestmentLotCard
+                      fragmentRef={item.lot}
+                      isFirst={index === 0}
+                      isLast={index === sortedItems.length - 1}
+                      onClick={() =>
+                        openLotEdit({
+                          id: item.lot.id,
+                          amount: item.lot.amount,
+                          price: item.lot.price,
+                          investmentId: item.lot.investment.id,
+                          accountId: item.lot.investment.account.id,
+                        })
+                      }
+                    />
+                  </Fragment>
+                ) : (
+                  <Fragment key={item.entry.id}>
+                    {index !== 0 && <Divider />}
+                    <TransactionEntryCard
+                      fragmentRef={item.entry}
+                      isFirst={index === 0}
+                      isLast={index === sortedItems.length - 1}
+                      onClick={() =>
+                        openEntryEdit({
+                          id: item.entry.id,
+                          amount: item.entry.amount,
+                          accountId: item.entry.account.id,
+                        })
+                      }
+                    />
+                  </Fragment>
+                ),
+              )}
+            </Stack>
+          </Card>
 
           <Stack direction="vertical" gap={4}>
             {/* Edit form */}
@@ -711,9 +714,6 @@ function EditTransactionContent({
                         gap={2}
                         data-invalid={isInvalid}
                       >
-                        <label htmlFor={field.name}>
-                          <Trans>Category</Trans>
-                        </label>
                         <TransactionCategoryPicker
                           categories={allCategories}
                           name={field.name}
@@ -742,8 +742,8 @@ function EditTransactionContent({
                   >
                     <form.Field name="pending">
                       {(field) => (
-                        <CheckboxInput
-                          label={t`Pending`}
+                        <TransactionOptionCard
+                          option="pending"
                           value={field.state.value}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
@@ -755,13 +755,12 @@ function EditTransactionContent({
                       children={(field) => {
                         return (
                           <Stack direction="vertical" gap={2}>
-                            <CheckboxInput
+                            <TransactionOptionCard
                               id={field.name}
-                              htmlName={field.name}
                               value={field.state.value}
                               onChange={field.handleChange}
                               onBlur={field.handleBlur}
-                              label={t`Exclude from reports`}
+                              option="exclude"
                             />
                           </Stack>
                         )

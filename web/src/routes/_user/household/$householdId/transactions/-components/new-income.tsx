@@ -10,7 +10,7 @@ import { Text } from '@astryxdesign/core/Text'
 import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { Button } from '@astryxdesign/core/Button'
-import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { TransactionOptionCard } from '@/components/transaction-option-card'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
 import { Stack } from '@astryxdesign/core/Stack'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -231,8 +231,8 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
     pending: (
       <form.Field name="pending">
         {(field) => (
-          <CheckboxInput
-            label={t`Pending`}
+          <TransactionOptionCard
+            option="pending"
             value={field.state.value}
             onChange={field.handleChange}
             onBlur={field.handleBlur}
@@ -428,13 +428,12 @@ export function NewIncome({ fragmentRef }: NewIncomeProps) {
         children={(field) => {
           return (
             <Stack direction="vertical" gap={2}>
-              <CheckboxInput
+              <TransactionOptionCard
                 id={field.name}
-                htmlName={field.name}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
-                label={t`Exclude from reports`}
+                option="exclude"
               />
             </Stack>
           )

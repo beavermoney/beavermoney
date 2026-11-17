@@ -11,7 +11,7 @@ import { FinanceDateInput } from '@/components/finance-date-input'
 import { FormError } from '@/components/form-error'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { Button } from '@astryxdesign/core/Button'
-import { CheckboxInput } from '@astryxdesign/core/CheckboxInput'
+import { TransactionOptionCard } from '@/components/transaction-option-card'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
 import { Stack } from '@astryxdesign/core/Stack'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -248,8 +248,8 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
     pending: (
       <form.Field name="pending">
         {(field) => (
-          <CheckboxInput
-            label={t`Pending`}
+          <TransactionOptionCard
+            option="pending"
             value={field.state.value}
             onChange={field.handleChange}
             onBlur={field.handleBlur}
@@ -445,13 +445,12 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
         children={(field) => {
           return (
             <Stack direction="vertical" gap={2}>
-              <CheckboxInput
+              <TransactionOptionCard
                 id={field.name}
-                htmlName={field.name}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
-                label={t`Exclude from reports`}
+                option="exclude"
               />
             </Stack>
           )
