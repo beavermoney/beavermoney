@@ -3,6 +3,7 @@ import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Card } from '@astryxdesign/core/Card'
+import { Collapsible } from '@astryxdesign/core/Collapsible'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Heading } from '@astryxdesign/core/Heading'
@@ -344,41 +345,49 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                     ? (ACCOUNT_CATEGORY_LABEL[key] ?? financeLabel(key))
                     : financeLabel(key)
                 return (
-                  <List
-                    edge="outset"
-                    key={key}
-                    hasDividers
-                    header={
-                      <HStack hAlign="between" vAlign="center" gap={3}>
-                        <Heading level={3}>{label}</Heading>
-                        <Text color="secondary" hasTabularNumbers>
-                          {formatCurrencyWithPrivacyMode({
-                            value: total,
-                            currencyCode: displayCurrencyCode,
-                            liability: accounts.every(
-                              ({ node }) => node.type === 'liability',
-                            ),
-                          })}
-                        </Text>
-                      </HStack>
-                    }
-                  >
-                    {accounts.map((account) => (
-                      <AccountLedgerRow
-                        key={account.node.id}
-                        fragmentRef={account.node}
-                        displayValue={account.displayValue}
-                        displayCurrencyCode={displayCurrencyCode}
-                        share={calculateAllocationPercentage(
-                          getAccountDisplayValue(
-                            account.displayValue.value,
-                            account.node.type,
-                          ),
-                          total.value,
-                        )}
-                      />
-                    ))}
-                  </List>
+                  <Card key={`${groupByOption}:${key}`}>
+                    <Collapsible
+                      defaultIsOpen
+                      chevronPosition="start"
+                      trigger={
+                        <HStack
+                          width="100%"
+                          hAlign="between"
+                          vAlign="center"
+                          gap={3}
+                        >
+                          <Text type="label">{label}</Text>
+                          <Text color="secondary" hasTabularNumbers>
+                            {formatCurrencyWithPrivacyMode({
+                              value: total,
+                              currencyCode: displayCurrencyCode,
+                              liability: accounts.every(
+                                ({ node }) => node.type === 'liability',
+                              ),
+                            })}
+                          </Text>
+                        </HStack>
+                      }
+                    >
+                      <List edge="outset" hasDividers>
+                        {accounts.map((account) => (
+                          <AccountLedgerRow
+                            key={account.node.id}
+                            fragmentRef={account.node}
+                            displayValue={account.displayValue}
+                            displayCurrencyCode={displayCurrencyCode}
+                            share={calculateAllocationPercentage(
+                              getAccountDisplayValue(
+                                account.displayValue.value,
+                                account.node.type,
+                              ),
+                              total.value,
+                            )}
+                          />
+                        ))}
+                      </List>
+                    </Collapsible>
+                  </Card>
                 )
               })
             ) : (
