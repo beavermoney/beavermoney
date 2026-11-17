@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Avatar } from '@astryxdesign/core/Avatar'
-import { VStack } from '@astryxdesign/core/Layout'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { ListItem } from '@astryxdesign/core/List'
 import { Text } from '@astryxdesign/core/Text'
 import { useRouter } from '@tanstack/react-router'
@@ -75,14 +75,19 @@ export function AccountLedgerRow({
   return (
     <ListItem
       label={data.name}
-      description={`${data.user.name} · ${data.householdCurrency.code} · ${data.latestTransaction ? getRelativeDate(new Date(data.latestTransaction.datetime), i18n.locale) : t`No activity yet`}`}
+      description={`${data.householdCurrency.code} · ${data.latestTransaction ? getRelativeDate(new Date(data.latestTransaction.datetime), i18n.locale) : t`No activity yet`}`}
       startContent={
-        <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
+        <HStack className="relative">
+          <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
+          <HStack className="absolute -right-1 -bottom-1 z-10 rounded-full bg-(--color-background-card) ring-2 ring-(--color-background-card)">
+            <Avatar name={data.user.name} size="xsm" />
+          </HStack>
+        </HStack>
       }
       endContent={
         <VStack gap={1} hAlign="end">
           <Text type="label" hasTabularNumbers>
-            {displayed}
+            {original}
           </Text>
           {data.type === 'investment' && (
             <Text type="supporting">
@@ -95,7 +100,7 @@ export function AccountLedgerRow({
           )}
           <Text type="supporting" hasTabularNumbers>
             {data.householdCurrency.code !== displayCurrencyCode
-              ? `${original} · `
+              ? `${displayed} · `
               : ''}
             {formatPercentageWithPrivacyMode(
               share,
