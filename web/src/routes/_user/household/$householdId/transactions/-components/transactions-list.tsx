@@ -184,7 +184,7 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
               padding={0}
               className="overflow-clip! border-0!"
             >
-              <Stack className="sticky top-0 z-20 bg-(--color-background-surface)">
+              <Stack className="sticky-group-header">
                 <Stack
                   direction="horizontal"
                   gap={3}

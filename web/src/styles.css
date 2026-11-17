@@ -436,3 +436,46 @@
   overflow-x: hidden;
   overscroll-behavior: contain;
 }
+
+/* Cover fractional scrollport seams in WebKit without changing header geometry. */
+.sticky-group-header,
+.account-sticky-group > .astryx-collapsible-trigger {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  isolation: isolate;
+}
+.sticky-group-header {
+  background: var(--color-background-surface);
+}
+.sticky-group-header::before,
+.account-sticky-group > .astryx-collapsible-trigger::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: calc(-1 * var(--border-width));
+  height: var(--border-width);
+  background: var(--color-background-surface);
+  pointer-events: none;
+}
+.account-sticky-group {
+  background: var(--color-background-surface);
+}
+.account-sticky-group > .astryx-collapsible-trigger {
+  /* HouseholdContentLayout gives the scrollport spacing-6 padding. */
+  top: calc(-1 * var(--spacing-6));
+  padding: calc(var(--spacing-3) - var(--border-width));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-card);
+}
+.account-sticky-group > .astryx-collapsible-trigger[aria-expanded='true'] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.account-sticky-group > .astryx-collapsible-content {
+  background: var(--color-background-card);
+  border: var(--border-width) solid var(--color-border);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-container) var(--radius-container);
+}

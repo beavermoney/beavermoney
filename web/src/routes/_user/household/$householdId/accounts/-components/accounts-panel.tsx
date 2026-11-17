@@ -347,12 +347,12 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                 return (
                   <Card
                     key={`${groupByOption}:${key}`}
-                    className="overflow-clip!"
+                    padding={0}
+                    className="overflow-clip! border-0!"
                   >
                     <Collapsible
                       defaultIsOpen
-                      // Offset the scrollport's spacing-6 padding in HouseholdContentLayout.
-                      className="[&>.astryx-collapsible-trigger]:sticky [&>.astryx-collapsible-trigger]:-top-6 [&>.astryx-collapsible-trigger]:z-20 [&>.astryx-collapsible-trigger]:bg-(--color-background-card)"
+                      className="account-sticky-group"
                       chevronPosition="start"
                       trigger={
                         <HStack
