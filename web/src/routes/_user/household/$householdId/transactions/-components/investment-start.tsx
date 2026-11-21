@@ -97,6 +97,7 @@ export function InvestmentStart({
             }
           />
           <TransactionInvestmentPicker
+            showAvailableShares={kind === 'Sell'}
             key={`${step}-${account.id}`}
             inline
             investments={account.investments ?? []}

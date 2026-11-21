@@ -23,10 +23,11 @@ export function AverageCostPrompt() {
     >
       <Stack direction="vertical" gap={4}>
         <DialogHeader
-          title={t`Trade saved. Update average cost?`}
+          title={t`Update average cost`}
+          subtitle={t`Trade saved. Enter your updated average cost per share.`}
           onOpenChange={close}
         />
-        <Text color="secondary">{t`Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review.`}</Text>
+        <Text color="secondary">{t`You can also do this later from the holding or your next review.`}</Text>
         {ids.map((id) => (
           <Suspense key={id} fallback={<Text>{t`Loading holding…`}</Text>}>
             <AverageCostEditor

@@ -377,6 +377,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
           return (
             <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
               <TransactionInvestmentPicker
+                showAvailableShares
                 investments={availableInvestments}
                 name={field.name}
                 label={t`Investment`}

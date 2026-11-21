@@ -1,6 +1,7 @@
 import { useLingui } from '@lingui/react/macro'
 import { SearchSelect } from '@/components/search-select'
 import { InvestmentIcon } from '@/components/investment-icon'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
 import { graphql } from 'react-relay'
@@ -12,6 +13,7 @@ const investmentFragment = graphql`
     name
     symbol
     type
+    amount
     latestTransaction {
       datetime
     }
@@ -24,6 +26,7 @@ type Investment = transactionInvestmentPickerFragment$key & {
 }
 
 type Props = {
+  showAvailableShares?: boolean
   inline?: boolean
   investments: ReadonlyArray<Investment>
   name: string
@@ -37,6 +40,7 @@ type Props = {
 }
 
 export function TransactionInvestmentPicker({
+  showAvailableShares = false,
   investments,
   inline = false,
   name,
@@ -49,6 +53,13 @@ export function TransactionInvestmentPicker({
   disabledMessage,
 }: Props) {
   const { t } = useLingui()
+  const { isPrivacyModeEnabled } = usePrivacyMode()
+  const shareQuantity = (investment: Investment) =>
+    isPrivacyModeEnabled ? '•••' : investmentData(investment).amount
+  const availableShares = (investment: Investment) => {
+    const shares = shareQuantity(investment)
+    return t`Shares available: ${shares}`
+  }
   const selected = investments.find((investment) => investment.id === value)
   const ordered = [...investments].sort((a, b) =>
     (investmentData(b).latestTransaction?.datetime ?? '').localeCompare(
@@ -63,6 +74,15 @@ export function TransactionInvestmentPicker({
         <InvestmentIcon {...investmentData(investment)} />
       )}
       hideChipLabel
+      chipDescriptionLayout="inline"
+      getChipDescription={
+        showAvailableShares
+          ? (investment) => {
+              const shares = shareQuantity(investment)
+              return t`${shares} shares`
+            }
+          : undefined
+      }
       inline={inline}
       items={ordered}
       value={selected ?? null}
@@ -83,6 +103,11 @@ export function TransactionInvestmentPicker({
           <InvestmentIcon {...investmentData(investment)} />
           <VStack gap={0.5}>
             <Text maxLines={2}>{title(investment)}</Text>
+            {showAvailableShares && (
+              <Text type="supporting" color="secondary">
+                {availableShares(investment)}
+              </Text>
+            )}
             {investmentData(investment).name !==
               investmentData(investment).symbol && (
               <Text type="supporting" color="secondary">

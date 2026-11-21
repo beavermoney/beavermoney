@@ -33,6 +33,7 @@ type Account = transactionAccountPickerFragment$key & {
 
 type TransactionAccountPickerProps = {
   showBalance?: boolean
+  showCashAvailable?: boolean
   inline?: boolean
   accounts: ReadonlyArray<Account>
   name: string
@@ -49,6 +50,7 @@ type TransactionAccountPickerProps = {
 
 export function TransactionAccountPicker({
   showBalance = false,
+  showCashAvailable = false,
   accounts,
   inline = false,
   name,
@@ -80,16 +82,18 @@ export function TransactionAccountPicker({
       inline={inline}
       confirmSelection
       hideChipLabel
+      chipDescriptionLayout={showCashAvailable ? 'inline' : 'stacked'}
       getChipDescription={
-        showBalance
+        showBalance || showCashAvailable
           ? (account) => {
               const data = accountData(account)
-              return data.balance == null
-                ? undefined
-                : formatCurrencyWithPrivacyMode({
-                    value: data.balance,
-                    currencyCode: data.householdCurrency.code,
-                  })
+              if (data.balance == null) return undefined
+              const balance = formatCurrencyWithPrivacyMode({
+                value: data.balance,
+                currencyCode: data.householdCurrency.code,
+              })
+              const code = data.householdCurrency.code
+              return showCashAvailable ? `${balance} ${code}` : balance
             }
           : undefined
       }

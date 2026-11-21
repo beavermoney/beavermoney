@@ -1,6 +1,6 @@
 # Manual review and investment average cost
 
-Implemented locally on `prototype/manual-investment-basis`. This document describes the current implementation, not earlier prototypes. Nothing from this branch has been pushed, migrated in production, or deployed. Local checks and preview verification do not imply that remote CI or deployment has run.
+This document describes the implementation and its local release verification, not earlier prototypes. Live release status is tracked by the main-branch CI run and deployment; the checks below do not substitute for those results.
 
 Preview: http://localhost:3833
 
@@ -42,7 +42,9 @@ The complete table definitions, indexes, relationships, migration sequence and r
 - Chart filter rails reuse the transaction composer's native horizontal scrolling, fading edge and chevron hint. The account-group padding seam is removed.
 - Investment-account cards use three rows. Their final row has compact icon-and-symbol shortcuts for the largest holdings, expandable remaining shortcuts, and the cash amount/percentage on the right. Each shortcut opens that holding directly.
 - Account icons remain paired with owner avatars: bottom-right on large icons, overlapping alongside small icons with space reserved before the name. Mobile transfers use large account icons without clipping.
-- Desktop transaction entry has Save and Save again; mobile and desktop retain a secondary Reset action. Daily summary loading and loaded values reserve consistent height.
+- Desktop transaction entry has Save and Save again; mobile and desktop retain a secondary Reset action. Daily summary loading and loaded values reserve consistent height. Chart date-range loading reserves a spinner slot after the range buttons.
+- Buy account selections show native-currency cash in parentheses; sell investment selections show available shares in parentheses. Both mobile and desktop retain compact, single-line labels and privacy masking. Sell picker choices also show available shares.
+- The post-trade dialog uses Astryx's title/subtitle structure and asks for the updated average cost per share; quantity is labelled “Current shares.”
 - Subscriptions has a separate Tools navigation section.
 - The Astryx command palette searches accounts, holdings, symbols and owner names. Results include the account/owner icons and, for holdings, the investment icon. Sidebar Search and Cmd/Ctrl+K open it; keyboard selection navigates directly.
 
@@ -72,7 +74,7 @@ Completed review evidence includes:
 
 Latest frontend release checks (2026-11-21):
 
-- **242 tests across 44 files passed**, including real-router palette open/close and result/Back restoration, chart state restoration, privacy masking, missing-FX handling and category delta arithmetic.
+- **249 tests across 44 files passed**, including real-router palette open/close and result/Back restoration, chart state restoration, privacy masking, missing-FX handling, category delta arithmetic and selected trade availability across desktop/mobile, currencies and fractional/zero quantities.
 - TypeScript, Prettier, production build and diff-whitespace checks passed. ESLint reported no errors and 91 warnings (including projection fields consumed by the shared review parser). Astryx doctor reported 11 passes, no warnings and no failures.
 - Mobile chart tooltips were verified at 320px and 390px: long labels wrap, amounts remain readable and no horizontal page overflow occurs. Desktop drawer and mobile sheet were also checked in dark appearance; the preview's appearance was restored to System.
 - Local logs: `/tmp/ui-release-tests-final.log`, `/tmp/ui-release-tsc-final.log`, `/tmp/ui-release-format-final.log`, `/tmp/ui-release-eslint-final.log`, `/tmp/ui-release-build-final.log`, `/tmp/ui-release-astryx.log`. Mobile tooltip proof: `/tmp/beaver-preview/release-tooltip-mobile.jpg`.
@@ -85,6 +87,6 @@ Final backend and browser verification (2026-11-21):
 - After a full browser reload, search open/close and search-result → investment → Back retained the Accounts scroll position, collapsed Liquidity group and selected 3M range. Journal and holding history loaded without new console errors or Relay normalization warnings. Desktop review remained correctly laid out; the preview was left on the review drawer with temporary viewport overrides removed.
 - Final logs: `/tmp/review-ci-bootstrap-final.log`, `/tmp/review-ci-fixture-final.log`, `/tmp/release-go-tests-final.log`, `/tmp/release-go-lint-final.log`, `/tmp/release-go-build.log`. Browser evidence: `/tmp/beaver-preview/release-restoration-desktop.jpg` and `/tmp/beaver-preview/release-review-desktop.jpg`.
 
-Schema, backend and UI release reviews have no remaining blocking findings. CI is configured to start PostgreSQL, prepare the deterministic compatibility fixture and run the database-backed tests with the Go suite. Remote CI and production deployment remain unrun until the branch is published. Mobile layout checks used browser viewport emulation, not a physical phone.
+Schema, backend and UI release reviews have no remaining blocking findings. CI is configured to start PostgreSQL, prepare the deterministic compatibility fixture and run the database-backed tests with the Go suite. Mobile layout checks used browser viewport emulation, not a physical phone.
 
 Go tooling: `env -u GOROOT GOTOOLCHAIN=go1.26.8` for generation and checks. The local app uses the isolated `beaver_review_preview` database; labeled sample journal entries are preview-only data.

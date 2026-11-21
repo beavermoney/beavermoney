@@ -21,10 +21,14 @@ import { NewTransfer } from './new-transfer'
 
 const mocks = vi.hoisted(() => ({
   mobile: true,
+  privacy: false,
   close: vi.fn(),
   defaults: undefined as { accountId: string } | undefined,
   commit: vi.fn(),
   toast: vi.fn(),
+}))
+vi.mock('@/hooks/use-privacy-mode', () => ({
+  usePrivacyMode: () => ({ isPrivacyModeEnabled: mocks.privacy }),
 }))
 vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => mocks.mobile }))
 vi.mock('@/hooks/use-log-transaction', () => ({
@@ -104,6 +108,7 @@ const success = {
 
 beforeEach(() => {
   mocks.mobile = true
+  mocks.privacy = false
   mocks.defaults = undefined
   vi.clearAllMocks()
   mocks.commit.mockResolvedValue(success)
@@ -403,6 +408,7 @@ const investmentFixture = {
           investments: [
             {
               id: 'apple',
+              amount: '12.3456789',
               name: 'Apple',
               symbol: 'AAPL',
               latestTransaction: null,
@@ -419,12 +425,14 @@ const investmentFixture = {
           investments: [
             {
               id: 'fund',
+              amount: '0',
               name: 'Index fund',
               symbol: 'VTI',
               latestTransaction: null,
             },
             {
               id: 'apple-retirement',
+              amount: '7.25',
               name: 'Apple retirement',
               symbol: 'AAPL',
               latestTransaction: null,
@@ -700,3 +708,55 @@ it('mobile Reset clears the draft and returns to category selection without savi
   fireEvent.click(await screen.findByRole('button', { name: 'Food' }))
   await screen.findByRole('button', { name: 'Edit Amount: $0' })
 })
+
+it.each([
+  ['Buy', NewBuy, true],
+  ['Buy', NewBuy, false],
+  ['Sell', NewSell, true],
+  ['Sell', NewSell, false],
+] as const)(
+  '%s keeps availability visible in the selected summary across responsive layouts',
+  async (kind, Component, mobile) => {
+    const view = render(<Component fragmentRef={investmentFixture as never} />)
+    fireEvent.click(
+      screen.getByRole('button', { name: /Brokerage.*Investment/ }),
+    )
+    const holding = screen.getByRole('button', { name: /Apple.*AAPL/ })
+    if (kind === 'Sell') {
+      expect(holding.textContent).toContain('Shares available: 12.3456789')
+    }
+    fireEvent.click(holding)
+    await screen.findByRole('button', { name: 'Save' })
+    mocks.mobile = mobile
+    view.rerender(<Component fragmentRef={investmentFixture as never} />)
+    expect(
+      screen.getByRole('button', {
+        name: mobile
+          ? kind === 'Buy'
+            ? 'Account: Brokerage'
+            : 'Investment: Apple'
+          : kind === 'Buy'
+            ? /Brokerage/
+            : /Apple/,
+      }).textContent,
+    ).toContain(kind === 'Buy' ? '($100 USD)' : '(12.3456789 shares)')
+    if (mobile) {
+      const selected = screen.getByRole('button', {
+        name: kind === 'Buy' ? 'Account: Brokerage' : 'Investment: Apple',
+      })
+      expect(selected.getAttribute('aria-description')).toBe(
+        kind === 'Buy' ? '$100 USD' : '12.3456789 shares',
+      )
+    }
+    if (kind === 'Sell') {
+      mocks.privacy = true
+      view.rerender(<Component fragmentRef={investmentFixture as never} />)
+      expect(
+        screen.getByRole('button', {
+          name: mobile ? 'Investment: Apple' : /Apple/,
+        }).textContent,
+      ).toContain('(••• shares)')
+      expect(screen.queryByText(/12\.3456789/)).toBeNull()
+    }
+  },
+)

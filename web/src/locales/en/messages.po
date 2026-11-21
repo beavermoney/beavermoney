@@ -81,6 +81,10 @@ msgstr "{name} is active again. You can find it in Accounts."
 msgid "{name} unarchived."
 msgstr "{name} unarchived."
 
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "{shares} shares"
+msgstr "{shares} shares"
+
 #: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, one {# transaction} other {# transactions}}"
@@ -661,14 +665,6 @@ msgstr "Columns"
 msgid "Confirm average cost"
 msgstr "Confirm average cost"
 
-#: src/components/average-cost-prompt.tsx
-msgid "Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review."
-msgstr "Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review."
-
-#: src/components/average-cost-editor.tsx
-msgid "Confirm the average for all remaining shares"
-msgstr "Confirm the average for all remaining shares"
-
 #: src/components/login-form.tsx
 msgid "Continue with Google"
 msgstr "Continue with Google"
@@ -778,6 +774,10 @@ msgstr "Currency is required."
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "Currency not found"
 msgstr "Currency not found"
+
+#: src/components/average-cost-editor.tsx
+msgid "Current shares"
+msgstr "Current shares"
 
 #: src/components/date-period-filter.tsx
 msgid "Custom range"
@@ -2373,6 +2373,10 @@ msgstr "Shares"
 msgid "shares ·"
 msgstr "shares ·"
 
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "Shares available: {shares}"
+msgstr "Shares available: {shares}"
+
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -2650,8 +2654,8 @@ msgid "Total received must be positive"
 msgstr "Total received must be positive"
 
 #: src/components/average-cost-prompt.tsx
-msgid "Trade saved. Update average cost?"
-msgstr "Trade saved. Update average cost?"
+msgid "Trade saved. Enter your updated average cost per share."
+msgstr "Trade saved. Enter your updated average cost per share."
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
@@ -2785,6 +2789,10 @@ msgstr "Unrealized return was unavailable when this snapshot was saved."
 msgid "Update average"
 msgstr "Update average"
 
+#: src/components/average-cost-prompt.tsx
+msgid "Update average cost"
+msgstr "Update average cost"
+
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 msgid "Update entry details. Switching the account also switches the entry's currency."
 msgstr "Update entry details. Switching the account also switches the entry's currency."
@@ -2858,6 +2866,10 @@ msgstr "Yesterday"
 #: src/components/not-logged-in-error.tsx
 msgid "You are not logged in"
 msgstr "You are not logged in"
+
+#: src/components/average-cost-prompt.tsx
+msgid "You can also do this later from the holding or your next review."
+msgstr "You can also do this later from the holding or your next review."
 
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "You can't remove yourself from the household."

@@ -32,6 +32,7 @@ type SearchSelectProps<T> = {
   hideChipLabel?: boolean
   renderChipIcon?: (item: T) => ReactNode
   getChipDescription?: (item: T) => string | undefined
+  chipDescriptionLayout?: 'stacked' | 'inline'
 }
 
 // Keep domain objects intact while Astryx owns the searchable selector surface.
@@ -52,6 +53,7 @@ export function SearchSelect<T>({
   hideChipLabel,
   renderChipIcon,
   getChipDescription,
+  chipDescriptionLayout = 'stacked',
   disabledMessage,
   ...props
 }: SearchSelectProps<T>) {
@@ -135,6 +137,7 @@ export function SearchSelect<T>({
         hideChipLabel={hideChipLabel}
         renderChipIcon={renderChipIcon}
         getChipDescription={getChipDescription}
+        chipDescriptionLayout={chipDescriptionLayout}
       />
     )
   return (
@@ -160,7 +163,28 @@ export function SearchSelect<T>({
         return entry && renderChipIcon ? (
           <Stack direction="horizontal" gap={2} vAlign="center">
             {renderChipIcon(entry.item)}
-            <Text>{entry.label}</Text>
+            <Stack
+              direction={
+                chipDescriptionLayout === 'inline' ? 'horizontal' : 'vertical'
+              }
+              gap={chipDescriptionLayout === 'inline' ? 1 : 0.5}
+              align={chipDescriptionLayout === 'inline' ? 'center' : 'start'}
+              className="min-w-0"
+            >
+              <Text maxLines={1}>{entry.label}</Text>
+              {getChipDescription?.(entry.item) && (
+                <Text
+                  type="supporting"
+                  color="secondary"
+                  maxLines={1}
+                  className="shrink-0"
+                >
+                  {chipDescriptionLayout === 'inline'
+                    ? `(${getChipDescription(entry.item)})`
+                    : getChipDescription(entry.item)}
+                </Text>
+              )}
+            </Stack>
           </Stack>
         ) : (
           (entry?.label ?? option.label)

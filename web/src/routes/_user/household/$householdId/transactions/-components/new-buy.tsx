@@ -347,6 +347,7 @@ export function NewBuy({ fragmentRef }: NewBuyProps) {
               data-transaction-initial-focus
             >
               <TransactionAccountPicker
+                showCashAvailable
                 accounts={investmentAccounts}
                 name={field.name}
                 label={t`Account`}

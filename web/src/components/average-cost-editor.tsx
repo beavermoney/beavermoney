@@ -125,8 +125,7 @@ function AverageCostEditorContent({
           {inv.name} · {inv.account.name}
         </Text>
         <Text color="secondary">
-          {t`Confirm the average for all remaining shares`}:{' '}
-          {isPrivacyModeEnabled ? '•••' : inv.amount}
+          {t`Current shares`}: {isPrivacyModeEnabled ? '•••' : inv.amount}
         </Text>
       </Stack>
       {inv.averageNeedsReview && (

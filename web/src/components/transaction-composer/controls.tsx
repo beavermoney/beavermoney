@@ -43,6 +43,7 @@ export function ComposerChoice<T>({
   hideChipLabel = false,
   renderChipIcon,
   getChipDescription,
+  chipDescriptionLayout = 'stacked',
 }: {
   name: string
   label: string
@@ -60,6 +61,7 @@ export function ComposerChoice<T>({
   hideChipLabel?: boolean
   renderChipIcon?: (item: T) => ReactNode
   getChipDescription?: (item: T) => string | undefined
+  chipDescriptionLayout?: 'stacked' | 'inline'
 }) {
   const { t } = useLingui()
   const composer = useComposer()
@@ -94,7 +96,25 @@ export function ComposerChoice<T>({
           className="min-w-0"
         >
           {value != null && renderChipIcon?.(value)}
-          {value != null && getChipDescription?.(value) ? (
+          {value != null &&
+          getChipDescription?.(value) &&
+          chipDescriptionLayout === 'inline' ? (
+            <Stack
+              direction="horizontal"
+              gap={1}
+              align="center"
+              className="min-w-0"
+            >
+              <Text maxLines={1}>{getLabel(value)}</Text>
+              <Text
+                type="supporting"
+                color="secondary"
+                className="shrink-0 whitespace-nowrap"
+              >
+                ({getChipDescription(value)})
+              </Text>
+            </Stack>
+          ) : value != null && getChipDescription?.(value) ? (
             <Stack gap={0.5} hAlign="start" className="min-w-0 flex-1">
               <ScrollingName>{getLabel(value)}</ScrollingName>
               <Text type="supporting" color="secondary" maxLines={1}>

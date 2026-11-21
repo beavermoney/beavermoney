@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d3042d38ec9bd40f920dc8b0f9194a45>>
+ * @generated SignedSource<<2f4244ea1ec5a61c9d32516adbfa3338>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -239,6 +239,13 @@ return {
                         (v1/*: any*/),
                         (v5/*: any*/),
                         (v2/*: any*/),
+                        {
+                          "alias": null,
+                          "args": null,
+                          "kind": "ScalarField",
+                          "name": "amount",
+                          "storageKey": null
+                        },
                         (v4/*: any*/)
                       ],
                       "args": null,

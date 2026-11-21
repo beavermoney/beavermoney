@@ -1,6 +1,6 @@
 # Manual snapshot data model
 
-Implemented locally on `prototype/manual-investment-basis`. Production has not been migrated or deployed. The schema below is the final shape after all four forward migrations, including the November 21 simplification.
+The schema below is the final shape after all four forward migrations, including the November 21 simplification. Release verification is recorded in [manual-review-status.md](manual-review-status.md); live migration status is reported by the deployment.
 
 ## New tables
 

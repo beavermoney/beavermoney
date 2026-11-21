@@ -657,7 +657,6 @@ export function NetWorthChart({
         wrap="wrap"
       >
         <Stack direction="horizontal" gap={0.5} align="center" justify="start">
-          {isPending && <Spinner />}
           {DURATIONS.map((d) => (
             <Button
               key={d}
@@ -677,6 +676,9 @@ export function NetWorthChart({
               {d}
             </Button>
           ))}
+          <Stack align="center" justify="center" className="size-6 shrink-0">
+            {isPending && <Spinner />}
+          </Stack>
         </Stack>
         {singleSeriesStats && (
           <Stack

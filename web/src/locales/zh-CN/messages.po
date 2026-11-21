@@ -81,6 +81,10 @@ msgstr "{name} 已恢复使用，可在“账户”中找到。"
 msgid "{name} unarchived."
 msgstr "{name} 已取消归档。"
 
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "{shares} shares"
+msgstr "{shares} 股"
+
 #: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, other {# 笔交易}}"
@@ -661,14 +665,6 @@ msgstr "显示列"
 msgid "Confirm average cost"
 msgstr "确认平均成本"
 
-#: src/components/average-cost-prompt.tsx
-msgid "Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review."
-msgstr "请确认剩余持仓的平均成本。你也可以稍后在持仓详情或下次回顾时更新。"
-
-#: src/components/average-cost-editor.tsx
-msgid "Confirm the average for all remaining shares"
-msgstr "确认全部剩余股份的平均成本"
-
 #: src/components/login-form.tsx
 msgid "Continue with Google"
 msgstr "使用 Google 继续"
@@ -778,6 +774,10 @@ msgstr "请选择货币。"
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "Currency not found"
 msgstr "未找到货币"
+
+#: src/components/average-cost-editor.tsx
+msgid "Current shares"
+msgstr "当前持仓数量"
 
 #: src/components/date-period-filter.tsx
 msgid "Custom range"
@@ -2373,6 +2373,10 @@ msgstr "股数"
 msgid "shares ·"
 msgstr "股 ·"
 
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
+msgid "Shares available: {shares}"
+msgstr "可用股数：{shares}"
+
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -2650,8 +2654,8 @@ msgid "Total received must be positive"
 msgstr "收取总额必须大于零"
 
 #: src/components/average-cost-prompt.tsx
-msgid "Trade saved. Update average cost?"
-msgstr "交易已保存。更新平均成本？"
+msgid "Trade saved. Enter your updated average cost per share."
+msgstr "交易已保存。请输入更新后的每股平均成本。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
@@ -2785,6 +2789,10 @@ msgstr "保存此快照时，未实现收益暂不可用。"
 msgid "Update average"
 msgstr "更新平均成本"
 
+#: src/components/average-cost-prompt.tsx
+msgid "Update average cost"
+msgstr "更新平均成本"
+
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 msgid "Update entry details. Switching the account also switches the entry's currency."
 msgstr "更新分录详情。更换账户时，分录货币也会随之更改。"
@@ -2858,6 +2866,10 @@ msgstr "昨天"
 #: src/components/not-logged-in-error.tsx
 msgid "You are not logged in"
 msgstr "你尚未登录"
+
+#: src/components/average-cost-prompt.tsx
+msgid "You can also do this later from the holding or your next review."
+msgstr "你也可以稍后在持仓详情或下次回顾时更新。"
 
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "You can't remove yourself from the household."
