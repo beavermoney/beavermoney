@@ -4,6 +4,8 @@ import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
 import { CategoryIcon } from '@/components/category-icon'
 import { BottomSheet } from '@astryxdesign/core/BottomSheet'
+import { IconButton } from '@astryxdesign/core/IconButton'
+import { RotateCcw } from 'lucide-react'
 import { Button } from '@astryxdesign/core/Button'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -29,6 +31,7 @@ export function MobileTransactionComposer({
   firstAmount,
   pending,
   onSave,
+  onReset,
   mode = 'create',
   initialCategory,
   embedded = false,
@@ -54,6 +57,7 @@ export function MobileTransactionComposer({
   date: ReactNode
   firstAmount: string
   pending: boolean
+  onReset?: () => void
   onSave: (again: boolean) => Promise<boolean>
 }) {
   const { t } = useLingui()
@@ -238,40 +242,61 @@ export function MobileTransactionComposer({
               <Stack gap={4}>
                 <Stack ref={setKeypadTarget} />
                 {error && <Text role="alert">{error}</Text>}
-                <Grid
-                  columns={mode === 'edit' && !onDeleteRequest ? 1 : 2}
-                  gap={3}
-                >
-                  {mode === 'edit' && onDeleteRequest && (
-                    <Button
-                      label={t`Delete transaction`}
-                      variant="destructive"
+                <Stack direction="horizontal" gap={3} align="center">
+                  {mode === 'create' && onReset && (
+                    <IconButton
+                      label={t`Reset`}
+                      tooltip={t`Reset`}
+                      icon={<RotateCcw size={18} />}
+                      variant="ghost"
                       size="lg"
-                      width="100%"
                       isDisabled={busy}
                       onClick={() => {
-                        onDeleteRequest()
+                        onReset()
+                        setError('')
+                        setEditor(null)
+                        setActiveAmount(firstAmount)
+                        setSelectedCategory(null)
+                        if (category) setOpen(false)
                       }}
                     />
                   )}
-                  {mode === 'create' && (
+                  <Grid
+                    width="100%"
+                    columns={mode === 'edit' && !onDeleteRequest ? 1 : 2}
+                    gap={3}
+                  >
+                    {mode === 'edit' && onDeleteRequest && (
+                      <Button
+                        label={t`Delete transaction`}
+                        variant="destructive"
+                        size="lg"
+                        width="100%"
+                        isDisabled={busy}
+                        onClick={() => {
+                          onDeleteRequest()
+                        }}
+                      />
+                    )}
+                    {mode === 'create' && (
+                      <Button
+                        label={t`Save again`}
+                        size="lg"
+                        width="100%"
+                        isDisabled={busy}
+                        onClick={() => void save(true)}
+                      />
+                    )}
                     <Button
-                      label={t`Save again`}
+                      label={busy ? t`Saving…` : t`Save`}
                       size="lg"
                       width="100%"
+                      variant="primary"
                       isDisabled={busy}
-                      onClick={() => void save(true)}
+                      onClick={() => void save(false)}
                     />
-                  )}
-                  <Button
-                    label={busy ? t`Saving…` : t`Save`}
-                    size="lg"
-                    width="100%"
-                    variant="primary"
-                    isDisabled={busy}
-                    onClick={() => void save(false)}
-                  />
-                </Grid>
+                  </Grid>
+                </Stack>
               </Stack>
             </Stack>
             <Stack

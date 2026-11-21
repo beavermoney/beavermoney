@@ -1,9 +1,9 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
-import { Avatar } from '@astryxdesign/core/Avatar'
 import { Button } from '@astryxdesign/core/Button'
 import { DialogHeader } from '@astryxdesign/core/Dialog'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
@@ -22,7 +22,6 @@ import { CurrencyInput } from '@/components/currency-input'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
-import { getLogoDomainURL } from '@/lib/logo'
 import { commitMutationResult } from '@/lib/relay'
 
 const editTransactionEntryDialogUpdateMutation = graphql`
@@ -205,14 +204,7 @@ export function EditTransactionEntryDialog({
                               gap={3}
                               align="center"
                             >
-                              <Avatar
-                                src={
-                                  account.icon
-                                    ? getLogoDomainURL(account.icon)
-                                    : undefined
-                                }
-                                name={account.name}
-                              />
+                              <AccountAvatar account={account} />
                               <Stack
                                 direction="vertical"
                                 gap={0.5}

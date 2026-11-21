@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1c93c6490ed0513b1ae33ed26e375302>>
+ * @generated SignedSource<<caa4093a43e2279e07494299e9ec12db>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -175,6 +175,18 @@ return {
                       "args": null,
                       "kind": "ScalarField",
                       "name": "balance",
+                      "storageKey": null
+                    },
+                    {
+                      "alias": null,
+                      "args": null,
+                      "concreteType": "User",
+                      "kind": "LinkedField",
+                      "name": "user",
+                      "plural": false,
+                      "selections": [
+                        (v2/*: any*/)
+                      ],
                       "storageKey": null
                     },
                     (v3/*: any*/),

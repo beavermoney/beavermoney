@@ -104,7 +104,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
   const isMobile = useIsMobile()
   // Keep defaults stable when Relay refreshes after Save again.
   const [initialDatetime] = useState(() => new Date())
-  const mobileSubmission = useRef<'close' | 'again' | null>(null)
+  const submissionIntent = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
   const data = useFragment(newExpenseFragment, fragmentRef)
@@ -193,8 +193,8 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           )
 
           showToast({ type: 'info', body: t`Expense created successfully!` })
-          if (mobileSubmission.current === 'close') closeComposer()
-          if (mobileSubmission.current === 'again') {
+          if (submissionIntent.current === 'close') closeComposer()
+          if (submissionIntent.current === 'again') {
             form.reset(
               {
                 description: '',
@@ -216,6 +216,17 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
         .exhaustive()
     },
   })
+
+  async function submit(again: boolean) {
+    if (submissionIntent.current !== null) return false
+    submissionIntent.current = again ? 'again' : 'close'
+    try {
+      await form.handleSubmit()
+      return form.state.isValid
+    } finally {
+      submissionIntent.current = null
+    }
+  }
 
   const attachDefaults = useCallback(
     (node: HTMLElement | null) => {
@@ -482,15 +493,8 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
             </>
           }
           pending={isMutationInFlight}
-          onSave={async (again) => {
-            mobileSubmission.current = again ? 'again' : 'close'
-            try {
-              await form.handleSubmit()
-              return form.state.isValid
-            } finally {
-              mobileSubmission.current = null
-            }
-          }}
+          onSave={submit}
+          onReset={() => form.reset()}
         />
       </section>
     )
@@ -505,7 +509,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           id="new-expense-form"
           onSubmit={(e) => {
             e.preventDefault()
-            form.handleSubmit()
+            void submit(false)
           }}
         >
           <TransactionFormFields
@@ -538,26 +542,35 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           gap={3}
           align="center"
           wrap="wrap"
-          justify="end"
+          justify="between"
+          className="w-full"
         >
+          <Button
+            type="button"
+            onClick={() => form.reset()}
+            isDisabled={isMutationInFlight}
+            label={t`Reset`}
+            variant="ghost"
+          >
+            <Trans>Reset</Trans>
+          </Button>
           <Stack direction="horizontal" gap={2} wrap="wrap">
             <Button
               type="button"
-              onClick={() => form.reset()}
-              label={t`Reset`}
-              variant={'secondary'}
-            >
-              <Trans>Reset</Trans>
-            </Button>
+              onClick={() => void submit(true)}
+              label={t`Save again`}
+              variant="secondary"
+              isDisabled={isMutationInFlight}
+            />
             <Button
               type="submit"
               form="new-expense-form"
-              label={String(isMutationInFlight ? t`Creating...` : t`Create`)}
+              label={String(isMutationInFlight ? t`Saving…` : t`Save`)}
               variant={'primary'}
 
               isDisabled={isMutationInFlight}
             >
-              {isMutationInFlight ? t`Creating...` : t`Create`}
+              {isMutationInFlight ? t`Saving…` : t`Save`}
             </Button>
           </Stack>
         </Stack>

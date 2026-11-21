@@ -645,11 +645,6 @@ msgstr "Could not update dates. Please try again."
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Create"
 msgstr "Create"
 
@@ -674,11 +669,6 @@ msgstr "Create Your Household"
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 #: src/routes/_user/household/new.tsx
 msgid "Creating..."
 msgstr "Creating..."
@@ -1477,10 +1467,6 @@ msgstr "Move"
 msgid "Move AAPL shares"
 msgstr "Move AAPL shares"
 
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
-msgid "Moving..."
-msgstr "Moving..."
-
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "My Account"
 msgstr "My Account"
@@ -1954,6 +1940,7 @@ msgstr "Removing..."
 msgid "Repeat every"
 msgstr "Repeat every"
 
+#: src/components/transaction-composer/composer.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -1998,10 +1985,22 @@ msgstr "Saturday"
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Save"
 msgstr "Save"
 
 #: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Save again"
 msgstr "Save again"
 
@@ -2030,6 +2029,12 @@ msgid "Saving..."
 msgstr "Saving..."
 
 #: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Saving…"
 msgstr "Saving…"
 

@@ -2,7 +2,7 @@ import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
 import { SearchSelect } from '@/components/search-select'
-import { Avatar } from '@astryxdesign/core/Avatar'
+import { AccountAvatar } from '@/components/account-avatar'
 import { Button } from '@astryxdesign/core/Button'
 import { Card } from '@astryxdesign/core/Card'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
@@ -37,7 +37,6 @@ import { OwnerSelect } from '../../-components/owner-select'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { SUPPORTED_CURRENCIES } from '@/lib/currencies'
-import { getLogoDomainURL } from '@/lib/logo'
 import { AccountTypePicker } from './account-type-picker'
 
 const newAccountMutation = graphql`
@@ -168,6 +167,11 @@ export function NewAccount() {
     return state.values.currencyCode ?? displayCurrencyCode
   })
 
+  const ownerUserID = useStore(form.store, (state) => state.values.ownerUserID)
+  const accountName = useStore(form.store, (state) => state.values.name)
+  const accountOwner =
+    ownerOptions.find((owner) => owner.id === ownerUserID) ?? user
+
   const accountType = useStore(form.store, (state) => state.values.type)
   const showCategory = ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(accountType)
 
@@ -284,12 +288,12 @@ export function NewAccount() {
                         />
                         {field.state.value && (
                           <Stack direction="horizontal" gap={2} align="center">
-                            <Avatar
-                              src={getLogoDomainURL(field.state.value)}
-                              alt={field.state.value}
-                              name={String(
-                                field.state.value.slice(0, 2).toUpperCase(),
-                              )}
+                            <AccountAvatar
+                              account={{
+                                name: accountName,
+                                icon: field.state.value,
+                                user: accountOwner,
+                              }}
                             />
                           </Stack>
                         )}

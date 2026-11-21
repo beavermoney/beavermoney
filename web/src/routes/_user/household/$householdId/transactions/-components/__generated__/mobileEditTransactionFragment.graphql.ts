@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fd0240162269acae97e8b7587f9ff8a4>>
+ * @generated SignedSource<<4970478f1452d04b5fdb75620bfafb87>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -38,6 +38,9 @@ export type mobileEditTransactionFragment$data = {
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
       };
       readonly id: string;
       readonly name: string;
@@ -58,6 +61,9 @@ export type mobileEditTransactionFragment$data = {
       readonly id: string;
       readonly name: string;
       readonly type: AccountType;
+      readonly user: {
+        readonly name: string;
+      };
     };
     readonly amount: string;
     readonly id: string;
@@ -90,25 +96,37 @@ v1 = {
 v2 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "type",
+  "concreteType": "User",
+  "kind": "LinkedField",
+  "name": "user",
+  "plural": false,
+  "selections": [
+    (v1/*: any*/)
+  ],
   "storageKey": null
 },
 v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "icon",
+  "name": "type",
   "storageKey": null
 },
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "amount",
+  "name": "icon",
   "storageKey": null
 },
 v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v6 = {
   "alias": null,
   "args": null,
   "concreteType": "Account",
@@ -118,8 +136,8 @@ v5 = {
   "selections": [
     (v0/*: any*/),
     (v1/*: any*/),
+    (v4/*: any*/),
     (v3/*: any*/),
-    (v2/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -134,6 +152,7 @@ v5 = {
       "name": "balance",
       "storageKey": null
     },
+    (v2/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -190,18 +209,7 @@ return {
       "name": "pending",
       "storageKey": null
     },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "User",
-      "kind": "LinkedField",
-      "name": "user",
-      "plural": false,
-      "selections": [
-        (v1/*: any*/)
-      ],
-      "storageKey": null
-    },
+    (v2/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -212,8 +220,8 @@ return {
       "selections": [
         (v0/*: any*/),
         (v1/*: any*/),
-        (v2/*: any*/),
-        (v3/*: any*/)
+        (v3/*: any*/),
+        (v4/*: any*/)
       ],
       "storageKey": null
     },
@@ -226,8 +234,8 @@ return {
       "plural": true,
       "selections": [
         (v0/*: any*/),
-        (v4/*: any*/),
-        (v5/*: any*/)
+        (v5/*: any*/),
+        (v6/*: any*/)
       ],
       "storageKey": null
     },
@@ -240,7 +248,7 @@ return {
       "plural": true,
       "selections": [
         (v0/*: any*/),
-        (v4/*: any*/),
+        (v5/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -265,8 +273,8 @@ return {
               "name": "symbol",
               "storageKey": null
             },
-            (v2/*: any*/),
-            (v5/*: any*/)
+            (v3/*: any*/),
+            (v6/*: any*/)
           ],
           "storageKey": null
         }
@@ -279,6 +287,6 @@ return {
 };
 })();
 
-(node as any).hash = "cb17a4f5c1b5fa229d2b5c2065c7862c";
+(node as any).hash = "46dafae5d091e361e33758c5faf04425";
 
 export default node;

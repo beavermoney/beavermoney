@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<05179534b3f9488dd4f9dc343ced2787>>
+ * @generated SignedSource<<0cd31a4a4be55f7c6c04ae040d8339f1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -49,6 +49,9 @@ export type mobileEditTransactionMutation$data = {
       readonly account: {
         readonly balance: string;
         readonly id: string;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       };
       readonly accountID: string;
@@ -61,6 +64,9 @@ export type mobileEditTransactionMutation$data = {
       readonly account: {
         readonly balance: string;
         readonly id: string;
+        readonly user: {
+          readonly name: string;
+        };
         readonly value: string;
       };
       readonly accountID: string;
@@ -185,35 +191,61 @@ v13 = {
   "kind": "LocalArgument",
   "name": "lot1Input"
 },
-v14 = {
+v14 = [
+  {
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "entry0"
+  },
+  {
+    "kind": "Variable",
+    "name": "input",
+    "variableName": "entry0Input"
+  }
+],
+v15 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v15 = {
+v16 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
 },
-v16 = {
+v17 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "accountID",
+  "storageKey": null
+},
+v18 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "balance",
   "storageKey": null
 },
-v17 = {
+v19 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v20 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "value",
   "storageKey": null
 },
-v18 = [
+v21 = [
   {
     "alias": null,
     "args": null,
@@ -222,15 +254,9 @@ v18 = [
     "name": "node",
     "plural": false,
     "selections": [
-      (v14/*: any*/),
       (v15/*: any*/),
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "accountID",
-        "storageKey": null
-      },
+      (v16/*: any*/),
+      (v17/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -239,9 +265,21 @@ v18 = [
         "name": "account",
         "plural": false,
         "selections": [
-          (v14/*: any*/),
-          (v16/*: any*/),
-          (v17/*: any*/)
+          (v15/*: any*/),
+          (v18/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "User",
+            "kind": "LinkedField",
+            "name": "user",
+            "plural": false,
+            "selections": [
+              (v19/*: any*/)
+            ],
+            "storageKey": null
+          },
+          (v20/*: any*/)
         ],
         "storageKey": null
       }
@@ -249,70 +287,26 @@ v18 = [
     "storageKey": null
   }
 ],
-v19 = {
-  "condition": "editEntry0",
-  "kind": "Condition",
-  "passingValue": true,
-  "selections": [
-    {
-      "alias": "entry0",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "id",
-          "variableName": "entry0"
-        },
-        {
-          "kind": "Variable",
-          "name": "input",
-          "variableName": "entry0Input"
-        }
-      ],
-      "concreteType": "TransactionEntryEdge",
-      "kind": "LinkedField",
-      "name": "updateTransactionEntry",
-      "plural": false,
-      "selections": (v18/*: any*/),
-      "storageKey": null
-    }
-  ]
-},
-v20 = {
-  "condition": "editEntry1",
-  "kind": "Condition",
-  "passingValue": true,
-  "selections": [
-    {
-      "alias": "entry1",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "id",
-          "variableName": "entry1"
-        },
-        {
-          "kind": "Variable",
-          "name": "input",
-          "variableName": "entry1Input"
-        }
-      ],
-      "concreteType": "TransactionEntryEdge",
-      "kind": "LinkedField",
-      "name": "updateTransactionEntry",
-      "plural": false,
-      "selections": (v18/*: any*/),
-      "storageKey": null
-    }
-  ]
-},
-v21 = {
+v22 = [
+  {
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "entry1"
+  },
+  {
+    "kind": "Variable",
+    "name": "input",
+    "variableName": "entry1Input"
+  }
+],
+v23 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "price",
   "storageKey": null
 },
-v22 = [
+v24 = [
   {
     "alias": null,
     "args": null,
@@ -321,9 +315,9 @@ v22 = [
     "name": "node",
     "plural": false,
     "selections": [
-      (v14/*: any*/),
       (v15/*: any*/),
-      (v21/*: any*/),
+      (v16/*: any*/),
+      (v23/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -339,9 +333,9 @@ v22 = [
         "name": "investment",
         "plural": false,
         "selections": [
-          (v14/*: any*/),
           (v15/*: any*/),
-          (v17/*: any*/),
+          (v16/*: any*/),
+          (v20/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -350,8 +344,8 @@ v22 = [
             "name": "account",
             "plural": false,
             "selections": [
-              (v14/*: any*/),
-              (v17/*: any*/)
+              (v15/*: any*/),
+              (v20/*: any*/)
             ],
             "storageKey": null
           }
@@ -362,7 +356,7 @@ v22 = [
     "storageKey": null
   }
 ],
-v23 = {
+v25 = {
   "condition": "editLot0",
   "kind": "Condition",
   "passingValue": true,
@@ -385,12 +379,12 @@ v23 = {
       "kind": "LinkedField",
       "name": "updateInvestmentLot",
       "plural": false,
-      "selections": (v22/*: any*/),
+      "selections": (v24/*: any*/),
       "storageKey": null
     }
   ]
 },
-v24 = {
+v26 = {
   "condition": "editLot1",
   "kind": "Condition",
   "passingValue": true,
@@ -413,12 +407,12 @@ v24 = {
       "kind": "LinkedField",
       "name": "updateInvestmentLot",
       "plural": false,
-      "selections": (v22/*: any*/),
+      "selections": (v24/*: any*/),
       "storageKey": null
     }
   ]
 },
-v25 = [
+v27 = [
   {
     "kind": "Variable",
     "name": "id",
@@ -430,53 +424,87 @@ v25 = [
     "variableName": "input"
   }
 ],
-v26 = {
+v28 = [
+  (v19/*: any*/),
+  (v15/*: any*/)
+],
+v29 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "User",
+  "kind": "LinkedField",
+  "name": "user",
+  "plural": false,
+  "selections": (v28/*: any*/),
+  "storageKey": null
+},
+v30 = [
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "TransactionEntry",
+    "kind": "LinkedField",
+    "name": "node",
+    "plural": false,
+    "selections": [
+      (v15/*: any*/),
+      (v16/*: any*/),
+      (v17/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "Account",
+        "kind": "LinkedField",
+        "name": "account",
+        "plural": false,
+        "selections": [
+          (v15/*: any*/),
+          (v18/*: any*/),
+          (v29/*: any*/),
+          (v20/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  }
+],
+v31 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "datetime",
   "storageKey": null
 },
-v27 = {
+v32 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "excludeFromReports",
   "storageKey": null
 },
-v28 = {
+v33 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "pending",
   "storageKey": null
 },
-v29 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "name",
-  "storageKey": null
-},
-v30 = [
-  (v29/*: any*/),
-  (v14/*: any*/)
-],
-v31 = {
+v34 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "type",
   "storageKey": null
 },
-v32 = {
+v35 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "icon",
   "storageKey": null
 },
-v33 = {
+v36 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -491,11 +519,11 @@ v33 = {
       "name": "code",
       "storageKey": null
     },
-    (v14/*: any*/)
+    (v15/*: any*/)
   ],
   "storageKey": null
 },
-v34 = {
+v37 = {
   "alias": null,
   "args": null,
   "concreteType": "Account",
@@ -503,10 +531,10 @@ v34 = {
   "name": "account",
   "plural": false,
   "selections": [
-    (v14/*: any*/),
-    (v29/*: any*/),
-    (v32/*: any*/),
-    (v31/*: any*/),
+    (v15/*: any*/),
+    (v19/*: any*/),
+    (v35/*: any*/),
+    (v34/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -514,8 +542,9 @@ v34 = {
       "name": "archived",
       "storageKey": null
     },
-    (v16/*: any*/),
-    (v33/*: any*/)
+    (v18/*: any*/),
+    (v29/*: any*/),
+    (v36/*: any*/)
   ],
   "storageKey": null
 };
@@ -541,13 +570,45 @@ return {
     "metadata": null,
     "name": "mobileEditTransactionMutation",
     "selections": [
-      (v19/*: any*/),
-      (v20/*: any*/),
-      (v23/*: any*/),
-      (v24/*: any*/),
+      {
+        "condition": "editEntry0",
+        "kind": "Condition",
+        "passingValue": true,
+        "selections": [
+          {
+            "alias": "entry0",
+            "args": (v14/*: any*/),
+            "concreteType": "TransactionEntryEdge",
+            "kind": "LinkedField",
+            "name": "updateTransactionEntry",
+            "plural": false,
+            "selections": (v21/*: any*/),
+            "storageKey": null
+          }
+        ]
+      },
+      {
+        "condition": "editEntry1",
+        "kind": "Condition",
+        "passingValue": true,
+        "selections": [
+          {
+            "alias": "entry1",
+            "args": (v22/*: any*/),
+            "concreteType": "TransactionEntryEdge",
+            "kind": "LinkedField",
+            "name": "updateTransactionEntry",
+            "plural": false,
+            "selections": (v21/*: any*/),
+            "storageKey": null
+          }
+        ]
+      },
+      (v25/*: any*/),
+      (v26/*: any*/),
       {
         "alias": null,
-        "args": (v25/*: any*/),
+        "args": (v27/*: any*/),
         "concreteType": "TransactionEdge",
         "kind": "LinkedField",
         "name": "updateTransaction",
@@ -561,7 +622,7 @@ return {
             "name": "node",
             "plural": false,
             "selections": [
-              (v14/*: any*/),
+              (v15/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -608,13 +669,45 @@ return {
     "kind": "Operation",
     "name": "mobileEditTransactionMutation",
     "selections": [
-      (v19/*: any*/),
-      (v20/*: any*/),
-      (v23/*: any*/),
-      (v24/*: any*/),
+      {
+        "condition": "editEntry0",
+        "kind": "Condition",
+        "passingValue": true,
+        "selections": [
+          {
+            "alias": "entry0",
+            "args": (v14/*: any*/),
+            "concreteType": "TransactionEntryEdge",
+            "kind": "LinkedField",
+            "name": "updateTransactionEntry",
+            "plural": false,
+            "selections": (v30/*: any*/),
+            "storageKey": null
+          }
+        ]
+      },
+      {
+        "condition": "editEntry1",
+        "kind": "Condition",
+        "passingValue": true,
+        "selections": [
+          {
+            "alias": "entry1",
+            "args": (v22/*: any*/),
+            "concreteType": "TransactionEntryEdge",
+            "kind": "LinkedField",
+            "name": "updateTransactionEntry",
+            "plural": false,
+            "selections": (v30/*: any*/),
+            "storageKey": null
+          }
+        ]
+      },
+      (v25/*: any*/),
+      (v26/*: any*/),
       {
         "alias": null,
-        "args": (v25/*: any*/),
+        "args": (v27/*: any*/),
         "concreteType": "TransactionEdge",
         "kind": "LinkedField",
         "name": "updateTransaction",
@@ -628,7 +721,7 @@ return {
             "name": "node",
             "plural": false,
             "selections": [
-              (v14/*: any*/),
+              (v15/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -636,19 +729,10 @@ return {
                 "name": "description",
                 "storageKey": null
               },
-              (v26/*: any*/),
-              (v27/*: any*/),
-              (v28/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "User",
-                "kind": "LinkedField",
-                "name": "user",
-                "plural": false,
-                "selections": (v30/*: any*/),
-                "storageKey": null
-              },
+              (v31/*: any*/),
+              (v32/*: any*/),
+              (v33/*: any*/),
+              (v29/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -657,10 +741,10 @@ return {
                 "name": "category",
                 "plural": false,
                 "selections": [
-                  (v14/*: any*/),
-                  (v29/*: any*/),
-                  (v31/*: any*/),
-                  (v32/*: any*/)
+                  (v15/*: any*/),
+                  (v19/*: any*/),
+                  (v34/*: any*/),
+                  (v35/*: any*/)
                 ],
                 "storageKey": null
               },
@@ -672,9 +756,9 @@ return {
                 "name": "transactionEntries",
                 "plural": true,
                 "selections": [
-                  (v14/*: any*/),
                   (v15/*: any*/),
-                  (v34/*: any*/),
+                  (v16/*: any*/),
+                  (v37/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -683,9 +767,9 @@ return {
                     "name": "transaction",
                     "plural": false,
                     "selections": [
-                      (v14/*: any*/),
-                      (v28/*: any*/),
-                      (v27/*: any*/),
+                      (v15/*: any*/),
+                      (v33/*: any*/),
+                      (v32/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -694,14 +778,14 @@ return {
                         "name": "category",
                         "plural": false,
                         "selections": [
-                          (v29/*: any*/),
-                          (v31/*: any*/),
-                          (v32/*: any*/),
-                          (v14/*: any*/)
+                          (v19/*: any*/),
+                          (v34/*: any*/),
+                          (v35/*: any*/),
+                          (v15/*: any*/)
                         ],
                         "storageKey": null
                       },
-                      (v26/*: any*/)
+                      (v31/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -716,9 +800,9 @@ return {
                 "name": "investmentLots",
                 "plural": true,
                 "selections": [
-                  (v14/*: any*/),
                   (v15/*: any*/),
-                  (v21/*: any*/),
+                  (v16/*: any*/),
+                  (v23/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -727,8 +811,8 @@ return {
                     "name": "investment",
                     "plural": false,
                     "selections": [
-                      (v14/*: any*/),
-                      (v29/*: any*/),
+                      (v15/*: any*/),
+                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -736,9 +820,9 @@ return {
                         "name": "symbol",
                         "storageKey": null
                       },
-                      (v31/*: any*/),
                       (v34/*: any*/),
-                      (v33/*: any*/)
+                      (v37/*: any*/),
+                      (v36/*: any*/)
                     ],
                     "storageKey": null
                   },
@@ -750,8 +834,8 @@ return {
                     "name": "transaction",
                     "plural": false,
                     "selections": [
-                      (v14/*: any*/),
-                      (v28/*: any*/),
+                      (v15/*: any*/),
+                      (v33/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -759,10 +843,10 @@ return {
                         "kind": "LinkedField",
                         "name": "category",
                         "plural": false,
-                        "selections": (v30/*: any*/),
+                        "selections": (v28/*: any*/),
                         "storageKey": null
                       },
-                      (v26/*: any*/)
+                      (v31/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -785,16 +869,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "9a2daff9575e6f7563207ce60ef523f5",
+    "cacheID": "e5e90b1cd7363516a00cf62408f9d847",
     "id": null,
     "metadata": {},
     "name": "mobileEditTransactionMutation",
     "operationKind": "mutation",
-    "text": "mutation mobileEditTransactionMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n  $entry0: ID!\n  $entry0Input: UpdateTransactionEntryInput!\n  $editEntry0: Boolean!\n  $entry1: ID!\n  $entry1Input: UpdateTransactionEntryInput!\n  $editEntry1: Boolean!\n  $lot0: ID!\n  $lot0Input: UpdateInvestmentLotInput!\n  $editLot0: Boolean!\n  $lot1: ID!\n  $lot1Input: UpdateInvestmentLotInput!\n  $editLot1: Boolean!\n) {\n  entry0: updateTransactionEntry(id: $entry0, input: $entry0Input) @include(if: $editEntry0) {\n    node {\n      id\n      amount\n      accountID\n      account {\n        id\n        balance\n        value\n      }\n    }\n  }\n  entry1: updateTransactionEntry(id: $entry1, input: $entry1Input) @include(if: $editEntry1) {\n    node {\n      id\n      amount\n      accountID\n      account {\n        id\n        balance\n        value\n      }\n    }\n  }\n  lot0: updateInvestmentLot(id: $lot0, input: $lot0Input) @include(if: $editLot0) {\n    node {\n      id\n      amount\n      price\n      investmentID\n      investment {\n        id\n        amount\n        value\n        account {\n          id\n          value\n        }\n      }\n    }\n  }\n  lot1: updateInvestmentLot(id: $lot1, input: $lot1Input) @include(if: $editLot1) {\n    node {\n      id\n      amount\n      price\n      investmentID\n      investment {\n        id\n        amount\n        value\n        account {\n          id\n          value\n        }\n      }\n    }\n  }\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      ...mobileEditTransactionFragment\n      ...transactionCardFragment\n      ...editTransactionDialogTransactionFragment\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  ...mobileEditTransactionFragment\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  pending\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    pending\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment mobileEditTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  excludeFromReports\n  pending\n  user {\n    name\n    id\n  }\n  category {\n    id\n    name\n    type\n    icon\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      id\n      name\n      icon\n      type\n      archived\n      balance\n      householdCurrency {\n        code\n        id\n      }\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      id\n      name\n      symbol\n      type\n      account {\n        id\n        name\n        icon\n        type\n        archived\n        balance\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    pending\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
+    "text": "mutation mobileEditTransactionMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n  $entry0: ID!\n  $entry0Input: UpdateTransactionEntryInput!\n  $editEntry0: Boolean!\n  $entry1: ID!\n  $entry1Input: UpdateTransactionEntryInput!\n  $editEntry1: Boolean!\n  $lot0: ID!\n  $lot0Input: UpdateInvestmentLotInput!\n  $editLot0: Boolean!\n  $lot1: ID!\n  $lot1Input: UpdateInvestmentLotInput!\n  $editLot1: Boolean!\n) {\n  entry0: updateTransactionEntry(id: $entry0, input: $entry0Input) @include(if: $editEntry0) {\n    node {\n      id\n      amount\n      accountID\n      account {\n        id\n        balance\n        user {\n          name\n          id\n        }\n        value\n      }\n    }\n  }\n  entry1: updateTransactionEntry(id: $entry1, input: $entry1Input) @include(if: $editEntry1) {\n    node {\n      id\n      amount\n      accountID\n      account {\n        id\n        balance\n        user {\n          name\n          id\n        }\n        value\n      }\n    }\n  }\n  lot0: updateInvestmentLot(id: $lot0, input: $lot0Input) @include(if: $editLot0) {\n    node {\n      id\n      amount\n      price\n      investmentID\n      investment {\n        id\n        amount\n        value\n        account {\n          id\n          value\n        }\n      }\n    }\n  }\n  lot1: updateInvestmentLot(id: $lot1, input: $lot1Input) @include(if: $editLot1) {\n    node {\n      id\n      amount\n      price\n      investmentID\n      investment {\n        id\n        amount\n        value\n        account {\n          id\n          value\n        }\n      }\n    }\n  }\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      ...mobileEditTransactionFragment\n      ...transactionCardFragment\n      ...editTransactionDialogTransactionFragment\n    }\n  }\n}\n\nfragment editTransactionDialogTransactionFragment on Transaction {\n  ...mobileEditTransactionFragment\n  id\n  description\n  datetime\n  categoryID\n  excludeFromReports\n  pending\n  category {\n    id\n    name\n    type\n  }\n  investmentLots {\n    ...investmentLotCardFragment\n    id\n    amount\n    price\n    investment {\n      id\n      account {\n        id\n      }\n    }\n  }\n  transactionEntries {\n    ...transactionEntryCardFragment\n    id\n    amount\n    account {\n      id\n    }\n  }\n}\n\nfragment investmentLotCardFragment on InvestmentLot {\n  id\n  amount\n  price\n  investment {\n    name\n    symbol\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    pending\n    category {\n      name\n      id\n    }\n    datetime\n  }\n}\n\nfragment mobileEditTransactionFragment on Transaction {\n  id\n  description\n  datetime\n  excludeFromReports\n  pending\n  user {\n    name\n    id\n  }\n  category {\n    id\n    name\n    type\n    icon\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      id\n      name\n      icon\n      type\n      archived\n      balance\n      user {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      id\n      name\n      symbol\n      type\n      account {\n        id\n        name\n        icon\n        type\n        archived\n        balance\n        user {\n          name\n          id\n        }\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n\nfragment transactionEntryCardFragment on TransactionEntry {\n  id\n  amount\n  account {\n    name\n    householdCurrency {\n      code\n      id\n    }\n    id\n  }\n  transaction {\n    id\n    pending\n    excludeFromReports\n    category {\n      name\n      type\n      icon\n      id\n    }\n    datetime\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d943197ff74d39873972794e1de8b69b";
+(node as any).hash = "7e4b33714c2c86e476e2b49f1c29ec2f";
 
 export default node;

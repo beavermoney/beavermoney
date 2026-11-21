@@ -1,3 +1,4 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useLingui } from '@lingui/react/macro'
@@ -5,7 +6,6 @@ import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { Trans } from '@lingui/react/macro'
 import { plural } from '@lingui/core/macro'
 import { CategoryIcon } from '@/components/category-icon'
-import { getLogoDomainURL } from '@/lib/logo'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { Button } from '@astryxdesign/core/Button'
 import {
@@ -56,6 +56,9 @@ const fragment = graphql`
       account {
         icon
         name
+        user {
+          name
+        }
         householdCurrency {
           code
         }
@@ -70,6 +73,9 @@ const fragment = graphql`
         account {
           icon
           name
+          user {
+            name
+          }
         }
         householdCurrency {
           code
@@ -451,7 +457,7 @@ function AccountMovement({
   account,
   symbol,
 }: {
-  account: { name: string; icon?: string | null }
+  account: { name: string; icon?: string | null; user: { name: string } }
   symbol?: string
 }) {
   return (
@@ -462,7 +468,7 @@ function AccountMovement({
 
       aria-label={`${account.name}${symbol ? ` · ${symbol}` : ''}`}
     >
-      <Avatar src={getLogoDomainURL(account.icon || '')} name={String('')} />
+      <AccountAvatar account={account} size="small" />
       <span>
         {account.name}
         {symbol && <Text type="supporting"> · {symbol}</Text>}

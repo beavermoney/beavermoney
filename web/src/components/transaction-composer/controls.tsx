@@ -75,7 +75,6 @@ export function ComposerChoice<T>({
       <Button
         type="button"
         label={`${label}: ${value == null ? t`Choose` : getLabel(value)}`}
-        icon={value == null ? undefined : renderChipIcon?.(value)}
         isDisabled={disabled}
         aria-invalid={invalid}
         aria-description={
@@ -88,20 +87,28 @@ export function ComposerChoice<T>({
         }}
         variant={invalid ? 'primary' : 'secondary'}
       >
-        {value != null && getChipDescription?.(value) ? (
-          <Stack gap={0.5} hAlign="start" className="min-w-0 flex-1">
+        <Stack
+          direction="horizontal"
+          gap={2}
+          vAlign="center"
+          className="min-w-0"
+        >
+          {value != null && renderChipIcon?.(value)}
+          {value != null && getChipDescription?.(value) ? (
+            <Stack gap={0.5} hAlign="start" className="min-w-0 flex-1">
+              <ScrollingName>{getLabel(value)}</ScrollingName>
+              <Text type="supporting" color="secondary" maxLines={1}>
+                {getChipDescription(value)}
+              </Text>
+            </Stack>
+          ) : composer.compactAmounts && renderChipIcon && value != null ? (
             <ScrollingName>{getLabel(value)}</ScrollingName>
-            <Text type="supporting" color="secondary" maxLines={1}>
-              {getChipDescription(value)}
-            </Text>
-          </Stack>
-        ) : composer.compactAmounts && renderChipIcon && value != null ? (
-          <ScrollingName>{getLabel(value)}</ScrollingName>
-        ) : hideChipLabel && value != null ? (
-          <ScrollingName>{getLabel(value)}</ScrollingName>
-        ) : (
-          `${label}: ${value == null ? t`Choose` : getLabel(value)}`
-        )}
+          ) : hideChipLabel && value != null ? (
+            <ScrollingName>{getLabel(value)}</ScrollingName>
+          ) : (
+            `${label}: ${value == null ? t`Choose` : getLabel(value)}`
+          )}
+        </Stack>
       </Button>
       <ComposerEditor name={name}>
         <Stack gap={3} className="composer-choice">

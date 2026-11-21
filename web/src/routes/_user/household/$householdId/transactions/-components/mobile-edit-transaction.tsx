@@ -1,3 +1,4 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useCurrency } from '@/hooks/use-currency'
 import { TransactionFormFields } from '@/components/transaction-form-fields'
 import { CurrencyInput } from '@/components/currency-input'
@@ -17,9 +18,7 @@ import { useComposer } from '@/components/transaction-composer/context'
 import { ComposerAmount } from '@/components/transaction-composer/controls'
 import { useCurrencyConfig } from '@/hooks/use-currency-config'
 import { useHousehold } from '@/hooks/use-household'
-import { getLogoDomainURL } from '@/lib/logo'
 import { commitMutationResult } from '@/lib/relay'
-import { Avatar } from '@astryxdesign/core/Avatar'
 import { Button } from '@astryxdesign/core/Button'
 import { TransactionOption } from '@/components/transaction-options'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -59,6 +58,9 @@ const transactionFragment = graphql`
         type
         archived
         balance
+        user {
+          name
+        }
         householdCurrency {
           code
         }
@@ -80,6 +82,9 @@ const transactionFragment = graphql`
           type
           archived
           balance
+          user {
+            name
+          }
           householdCurrency {
             code
           }
@@ -100,6 +105,9 @@ const accountsFragment = graphql`
           type
           archived
           balance
+          user {
+            name
+          }
           householdCurrency {
             code
           }
@@ -142,6 +150,9 @@ const updateMutation = graphql`
         account {
           id
           balance
+          user {
+            name
+          }
           value
         }
       }
@@ -155,6 +166,9 @@ const updateMutation = graphql`
         account {
           id
           balance
+          user {
+            name
+          }
           value
         }
       }
@@ -207,6 +221,7 @@ const updateMutation = graphql`
 `
 
 type Account = {
+  user: { name: string }
   id: string
   name: string
   icon?: string | null
@@ -958,11 +973,7 @@ function EditAccount({
     ? accounts
     : [value, ...accounts]
   const icon = (a: Account) => (
-    <Avatar
-      size="xsm"
-      name={a.name}
-      src={a.icon ? getLogoDomainURL(a.icon) : undefined}
-    />
+    <AccountAvatar account={a} size={showBalance ? 'large' : 'small'} />
   )
   return (
     <SearchSelect

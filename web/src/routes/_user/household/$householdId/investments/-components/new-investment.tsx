@@ -1,3 +1,4 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useLingui } from '@lingui/react/macro'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
@@ -32,11 +33,7 @@ import { newInvestmentFragment$key } from './__generated__/newInvestmentFragment
 import { type newInvestmentMutation } from './__generated__/newInvestmentMutation.graphql'
 
 import { useCurrency } from '@/hooks/use-currency'
-import {
-  getLogoCryptoURL,
-  getLogoDomainURL,
-  getLogoTickerURL,
-} from '@/lib/logo'
+import { getLogoCryptoURL, getLogoTickerURL } from '@/lib/logo'
 import { useRef, useState } from 'react'
 
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
@@ -386,11 +383,7 @@ export function NewInvestment({
                                 wrap="wrap"
                               >
                                 <Stack direction="vertical" gap={4}>
-                                  <Avatar
-                                    src={getLogoDomainURL(account.icon || '')}
-                                    alt={account.icon || 'unknown logo'}
-                                    name={String(account.name)}
-                                  />
+                                  <AccountAvatar account={account} />
                                 </Stack>
                                 <Stack direction="vertical" gap={4}>
                                   <Stack direction="vertical" gap={4}>

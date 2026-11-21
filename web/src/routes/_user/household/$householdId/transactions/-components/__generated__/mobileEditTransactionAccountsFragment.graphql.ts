@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<02b480692a17f34060705c1a93fa4f92>>
+ * @generated SignedSource<<ee0f110379d3d71e34aa010a11778073>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,6 +31,9 @@ export type mobileEditTransactionAccountsFragment$data = {
         }> | null | undefined;
         readonly name: string;
         readonly type: AccountType;
+        readonly user: {
+          readonly name: string;
+        };
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -143,6 +146,18 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "concreteType": "User",
+                  "kind": "LinkedField",
+                  "name": "user",
+                  "plural": false,
+                  "selections": [
+                    (v1/*: any*/)
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "concreteType": "HouseholdCurrency",
                   "kind": "LinkedField",
                   "name": "householdCurrency",
@@ -194,6 +209,6 @@ return {
 };
 })();
 
-(node as any).hash = "251c1220f2446e5a1903403768c51571";
+(node as any).hash = "a420305f5cb2826109a0846704dd54aa";
 
 export default node;

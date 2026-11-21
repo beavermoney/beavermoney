@@ -1,6 +1,6 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
-import { Avatar } from '@astryxdesign/core/Avatar'
 import { ProgressBar } from '@astryxdesign/core/ProgressBar'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Heading } from '@astryxdesign/core/Heading'
@@ -12,7 +12,6 @@ import type { accountCardFragment$key } from './__generated__/accountCardFragmen
 import { useCurrency } from '@/hooks/use-currency'
 import { getRelativeDate } from '@/lib/time'
 
-import { getLogoDomainURL } from '@/lib/logo'
 import currency from 'currency.js'
 
 const accountCardFragment = graphql`
@@ -66,11 +65,7 @@ export function AccountCard({ fragmentRef }: AccountCardProps) {
       aria-labelledby={`account-${data.id}-name`}
     >
       <Stack direction="horizontal" gap={2} align="center">
-        <Avatar
-          src={getLogoDomainURL(data.icon || '')}
-          alt={data.icon || 'unknown logo'}
-          name={String(data.name.slice(0, 2))}
-        />
+        <AccountAvatar account={data} />
         <Heading level={2} id={`account-${data.id}-name`}>
           {data.name}
         </Heading>

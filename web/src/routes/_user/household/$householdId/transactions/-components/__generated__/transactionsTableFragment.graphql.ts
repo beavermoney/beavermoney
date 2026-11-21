@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b011ca0205e6545145f929aa226b1a74>>
+ * @generated SignedSource<<276da0f2a1e2353ec1aa0d183f1c74b5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,6 +28,9 @@ export type transactionsTableFragment$data = ReadonlyArray<{
       readonly account: {
         readonly icon: string | null | undefined;
         readonly name: string;
+        readonly user: {
+          readonly name: string;
+        };
       };
       readonly householdCurrency: {
         readonly code: string;
@@ -44,6 +47,9 @@ export type transactionsTableFragment$data = ReadonlyArray<{
       };
       readonly icon: string | null | undefined;
       readonly name: string;
+      readonly user: {
+        readonly name: string;
+      };
     };
     readonly amount: string;
     readonly id: string;
@@ -83,11 +89,23 @@ v2 = {
 v3 = {
   "alias": null,
   "args": null,
+  "concreteType": "User",
+  "kind": "LinkedField",
+  "name": "user",
+  "plural": false,
+  "selections": [
+    (v2/*: any*/)
+  ],
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
 },
-v4 = {
+v5 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -162,18 +180,7 @@ return {
       ],
       "storageKey": null
     },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "User",
-      "kind": "LinkedField",
-      "name": "user",
-      "plural": false,
-      "selections": [
-        (v2/*: any*/)
-      ],
-      "storageKey": null
-    },
+    (v3/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -183,7 +190,7 @@ return {
       "plural": true,
       "selections": [
         (v0/*: any*/),
-        (v3/*: any*/),
+        (v4/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -194,7 +201,8 @@ return {
           "selections": [
             (v1/*: any*/),
             (v2/*: any*/),
-            (v4/*: any*/)
+            (v3/*: any*/),
+            (v5/*: any*/)
           ],
           "storageKey": null
         }
@@ -210,7 +218,7 @@ return {
       "plural": true,
       "selections": [
         (v0/*: any*/),
-        (v3/*: any*/),
+        (v4/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -242,11 +250,12 @@ return {
               "plural": false,
               "selections": [
                 (v1/*: any*/),
-                (v2/*: any*/)
+                (v2/*: any*/),
+                (v3/*: any*/)
               ],
               "storageKey": null
             },
-            (v4/*: any*/)
+            (v5/*: any*/)
           ],
           "storageKey": null
         }
@@ -259,6 +268,6 @@ return {
 };
 })();
 
-(node as any).hash = "ef62c0672b0b914d01a33ba6467a2851";
+(node as any).hash = "9aff61ef01467705ca6f44e634ca3cc7";
 
 export default node;

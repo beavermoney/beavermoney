@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<93e88ae0ffacb76796dafdfaec11e8ed>>
+ * @generated SignedSource<<4d90a3f612be4c97dc5e93415f8edc94>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,9 @@ export type transactionAccountPickerFragment$data = {
     readonly datetime: any;
   } | null | undefined;
   readonly name: string;
+  readonly user: {
+    readonly name: string;
+  };
   readonly " $fragmentType": "transactionAccountPickerFragment";
 };
 export type transactionAccountPickerFragment$key = {
@@ -32,6 +35,6 @@ const node: ReaderInlineDataFragment = {
   "name": "transactionAccountPickerFragment"
 };
 
-(node as any).hash = "ac54cef0c4a7a4851900b2c7dc7853c1";
+(node as any).hash = "4c24fcd73398f4f734844a8ba536e7e3";
 
 export default node;

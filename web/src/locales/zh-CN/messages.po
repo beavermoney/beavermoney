@@ -645,11 +645,6 @@ msgstr "无法更新日期，请重试。"
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Create"
 msgstr "创建"
 
@@ -674,11 +669,6 @@ msgstr "创建你的家庭"
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 #: src/routes/_user/household/new.tsx
 msgid "Creating..."
 msgstr "正在创建…"
@@ -1477,10 +1467,6 @@ msgstr "转移"
 msgid "Move AAPL shares"
 msgstr "转移 AAPL 股票"
 
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
-msgid "Moving..."
-msgstr "正在转移…"
-
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "My Account"
 msgstr "我的账户"
@@ -1954,6 +1940,7 @@ msgstr "正在移除…"
 msgid "Repeat every"
 msgstr "重复间隔"
 
+#: src/components/transaction-composer/composer.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -1998,10 +1985,22 @@ msgstr "星期六"
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Save"
 msgstr "保存"
 
 #: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Save again"
 msgstr "再次保存"
 
@@ -2030,6 +2029,12 @@ msgid "Saving..."
 msgstr "正在保存…"
 
 #: src/components/transaction-composer/composer.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
 msgid "Saving…"
 msgstr "正在保存…"
 

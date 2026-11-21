@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<050ac4c614e47a4c9943c11e1a2bc87a>>
+ * @generated SignedSource<<2b32878f878228d4ea8a4a1fedc45550>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -44,6 +44,13 @@ v2 = {
   "args": null,
   "kind": "ScalarField",
   "name": "id",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
   "storageKey": null
 };
 return {
@@ -106,13 +113,7 @@ return {
           {
             "kind": "InlineFragment",
             "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "name",
-                "storageKey": null
-              },
+              (v3/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -133,6 +134,19 @@ return {
                 "kind": "ScalarField",
                 "name": "category",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "User",
+                "kind": "LinkedField",
+                "name": "user",
+                "plural": false,
+                "selections": [
+                  (v3/*: any*/),
+                  (v2/*: any*/)
+                ],
+                "storageKey": null
               }
             ],
             "type": "Account",
@@ -144,12 +158,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "daae36856d7dcdbdf39befcad0d2ad26",
+    "cacheID": "8ddc8f7c6c99ddaaaf500d1674076ae7",
     "id": null,
     "metadata": {},
     "name": "editAccountQuery",
     "operationKind": "query",
-    "text": "query editAccountQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      id\n      ...editAccountFragment\n    }\n    id\n  }\n}\n\nfragment editAccountFragment on Account {\n  id\n  name\n  icon\n  type\n  category\n}\n"
+    "text": "query editAccountQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      id\n      ...editAccountFragment\n    }\n    id\n  }\n}\n\nfragment editAccountFragment on Account {\n  id\n  name\n  icon\n  type\n  category\n  user {\n    name\n    id\n  }\n}\n"
   }
 };
 })();

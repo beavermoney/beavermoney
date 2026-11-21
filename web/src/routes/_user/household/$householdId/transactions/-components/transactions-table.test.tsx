@@ -137,7 +137,8 @@ it('keeps transfer legs and investment quantities separate with their currencies
   render(<TransactionsTable {...defaults} />)
   const transfer = screen.getByText('Currency transfer').closest('tr')!
   const cells = within(transfer).getAllByRole('cell')
-  expect(cells[2].textContent).toBe('CheckingSavings')
+  expect(within(cells[2]).getByText('Checking', { exact: true })).toBeTruthy()
+  expect(within(cells[2]).getByText('Savings', { exact: true })).toBeTruthy()
   expect(cells[3].textContent).toBe('-100 CAD72 USD')
   expect(within(cells[3]).getByRole('img', { name: 'Pending' })).toBeTruthy()
   expect(

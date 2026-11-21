@@ -1,7 +1,7 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
-import { Avatar } from '@astryxdesign/core/Avatar'
-import { HStack, VStack } from '@astryxdesign/core/Layout'
+import { VStack } from '@astryxdesign/core/Layout'
 import { ListItem } from '@astryxdesign/core/List'
 import { Text } from '@astryxdesign/core/Text'
 import { useRouter } from '@tanstack/react-router'
@@ -15,7 +15,6 @@ import { formatPercentageWithPrivacyMode } from './account-ledger-utils'
 import { useCurrency } from '@/hooks/use-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
-import { getLogoDomainURL } from '@/lib/logo'
 import { getRelativeDate } from '@/lib/time'
 
 const AccountLedgerRowFragment = graphql`
@@ -76,14 +75,7 @@ export function AccountLedgerRow({
     <ListItem
       label={data.name}
       description={`${data.householdCurrency.code} · ${data.latestTransaction ? getRelativeDate(new Date(data.latestTransaction.datetime), i18n.locale) : t`No activity yet`}`}
-      startContent={
-        <HStack className="relative">
-          <Avatar src={getLogoDomainURL(data.icon || '')} name={data.name} />
-          <HStack className="absolute -right-1 -bottom-1 z-10 rounded-full bg-(--color-background-card) ring-2 ring-(--color-background-card)">
-            <Avatar name={data.user.name} size="xsm" />
-          </HStack>
-        </HStack>
-      }
+      startContent={<AccountAvatar account={data} />}
       endContent={
         <VStack gap={1} hAlign="end">
           <Text type="label" hasTabularNumbers>

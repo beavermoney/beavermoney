@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<563b4f398d407751cce7458b32adab1c>>
+ * @generated SignedSource<<deefdb5fb0277d9a10e5a5c79804792c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -1319,7 +1319,20 @@ v16 = {
   ],
   "storageKey": null
 },
-v17 = [
+v17 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "User",
+  "kind": "LinkedField",
+  "name": "user",
+  "plural": false,
+  "selections": [
+    (v13/*: any*/),
+    (v10/*: any*/)
+  ],
+  "storageKey": null
+},
+v18 = [
   {
     "alias": null,
     "args": null,
@@ -1474,7 +1487,8 @@ return {
                                     "name": "user",
                                     "plural": false,
                                     "selections": [
-                                      (v10/*: any*/)
+                                      (v10/*: any*/),
+                                      (v13/*: any*/)
                                     ],
                                     "storageKey": null
                                   },
@@ -1540,7 +1554,8 @@ return {
                                     "selections": [
                                       (v13/*: any*/),
                                       (v10/*: any*/),
-                                      (v14/*: any*/)
+                                      (v14/*: any*/),
+                                      (v17/*: any*/)
                                     ],
                                     "storageKey": null
                                   },
@@ -1559,19 +1574,7 @@ return {
                             "name": "description",
                             "storageKey": null
                           },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "concreteType": "User",
-                            "kind": "LinkedField",
-                            "name": "user",
-                            "plural": false,
-                            "selections": [
-                              (v13/*: any*/),
-                              (v10/*: any*/)
-                            ],
-                            "storageKey": null
-                          },
+                          (v17/*: any*/),
                           (v9/*: any*/)
                         ],
                         "storageKey": null
@@ -1667,7 +1670,7 @@ return {
                     "kind": "LinkedField",
                     "name": "incomeBreakdown",
                     "plural": false,
-                    "selections": (v17/*: any*/),
+                    "selections": (v18/*: any*/),
                     "storageKey": null
                   },
                   {
@@ -1677,7 +1680,7 @@ return {
                     "kind": "LinkedField",
                     "name": "expensesBreakdown",
                     "plural": false,
-                    "selections": (v17/*: any*/),
+                    "selections": (v18/*: any*/),
                     "storageKey": null
                   }
                 ],
@@ -1693,12 +1696,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "146d3adbaa9d57640b1d21ffd9597cc7",
+    "cacheID": "c63952d25ee22df0114258604c7ef98b",
     "id": null,
     "metadata": {},
     "name": "transactionsPanelRefetchQuery",
     "operationKind": "query",
-    "text": "query transactionsPanelRefetchQuery(\n  $endDate: Time!\n  $startDate: Time!\n  $viewUserIds: [ID!]\n  $where: TransactionWhereInput\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...transactionsPanelFragment_3NMAg4\n    id\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n\nfragment transactionDaySummaryFragment on Transaction {\n  excludeFromReports\n  category {\n    type\n    id\n  }\n  transactionEntries {\n    amount\n    account {\n      user {\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment transactionDialogPreviewFragment on Transaction {\n  datetime\n  excludeFromReports\n  category {\n    icon\n    name\n    type\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  id\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        datetime\n        ...transactionDaySummaryFragment\n        ...transactionCardFragment\n        ...transactionDialogPreviewFragment\n        ...transactionsTableFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsPanelFragment_3NMAg4 on Household {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}, viewUserIDs: $viewUserIds) {\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n\nfragment transactionsTableFragment on Transaction {\n  id\n  datetime\n  description\n  excludeFromReports\n  pending\n  category {\n    icon\n    type\n    name\n    id\n  }\n  user {\n    name\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      icon\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      symbol\n      account {\n        icon\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query transactionsPanelRefetchQuery(\n  $endDate: Time!\n  $startDate: Time!\n  $viewUserIds: [ID!]\n  $where: TransactionWhereInput\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...transactionsPanelFragment_3NMAg4\n    id\n  }\n}\n\nfragment financialSummaryCardsFragment on FinancialReport {\n  incomeBreakdown {\n    total\n  }\n  expensesBreakdown {\n    total\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n\nfragment transactionDaySummaryFragment on Transaction {\n  excludeFromReports\n  category {\n    type\n    id\n  }\n  transactionEntries {\n    amount\n    account {\n      user {\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment transactionDialogPreviewFragment on Transaction {\n  datetime\n  excludeFromReports\n  category {\n    icon\n    name\n    type\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  id\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        datetime\n        ...transactionDaySummaryFragment\n        ...transactionCardFragment\n        ...transactionDialogPreviewFragment\n        ...transactionsTableFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsPanelFragment_3NMAg4 on Household {\n  ...transactionsListFragment_3FC4Qo\n  financialReport(period: {startDate: $startDate, endDate: $endDate}, viewUserIDs: $viewUserIds) {\n    ...financialSummaryCardsFragment\n  }\n  id\n}\n\nfragment transactionsTableFragment on Transaction {\n  id\n  datetime\n  description\n  excludeFromReports\n  pending\n  category {\n    icon\n    type\n    name\n    id\n  }\n  user {\n    name\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      icon\n      name\n      user {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      symbol\n      account {\n        icon\n        name\n        user {\n          name\n          id\n        }\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n"
   }
 };
 })();

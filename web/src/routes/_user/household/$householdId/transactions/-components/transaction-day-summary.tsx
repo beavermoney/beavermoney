@@ -53,7 +53,7 @@ export function TransactionDaySummary({
         direction="horizontal"
         align="center"
         justify="end"
-        className="h-6"
+        className="h-6 min-w-0"
       >
         <Spinner
           size="sm"
@@ -63,7 +63,6 @@ export function TransactionDaySummary({
       </Stack>
     )
   }
-  if (income.intValue === 0 && expense.intValue === 0) return null
 
   const format = (value: currency) =>
     formatCurrencyWithPrivacyMode({ value, currencyCode: displayCurrencyCode })
@@ -71,9 +70,9 @@ export function TransactionDaySummary({
     <Stack
       direction="horizontal"
       gap={2}
-      wrap="wrap"
+      align="center"
       justify="end"
-      className="min-w-0"
+      className="h-6 min-w-0"
       aria-label={t`Daily totals`}
     >
       {income.intValue !== 0 && (

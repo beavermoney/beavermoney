@@ -621,3 +621,67 @@ it.each([
     expect(pending.checked).toBe(false)
   },
 )
+
+it('desktop Save again preserves selections for another entry, then Save closes', async () => {
+  const view = await enter()
+  mocks.mobile = false
+  view.rerender(<NewExpense fragmentRef={fixture as never} />)
+  fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(mocks.close).not.toHaveBeenCalled()
+  const amount = screen.getByRole('textbox', { name: /^Amount/ })
+  await waitFor(() => expect((amount as HTMLInputElement).value).toBe(''))
+  view.rerender(<NewExpense fragmentRef={{ ...fixture } as never} />)
+  fireEvent.change(amount, { target: { value: '4' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.close).toHaveBeenCalledTimes(1))
+  expect(mocks.commit.mock.calls[1][1].variables.input).toMatchObject({
+    transaction: {
+      categoryID: 'food',
+      userID: 'joey',
+      datetime:
+        mocks.commit.mock.calls[0][1].variables.input.transaction.datetime,
+    },
+    transactionEntry: { amount: '-4.00', accountID: 'account' },
+  })
+})
+
+it.each(['Save', 'Save again'])(
+  'desktop %s keeps the draft on failure and prevents duplicate submissions',
+  async (action) => {
+    let finish!: (value: unknown) => void
+    mocks.commit.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve
+        }),
+    )
+    const view = await enter()
+    mocks.mobile = false
+    view.rerender(<NewExpense fragmentRef={fixture as never} />)
+    fireEvent.click(screen.getByRole('button', { name: action }))
+    await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
+    finish({ status: 'error', error: new Error('Offline') })
+    await waitFor(() =>
+      expect(mocks.toast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error' }),
+      ),
+    )
+    expect(mocks.commit).toHaveBeenCalledTimes(1)
+    expect(mocks.close).not.toHaveBeenCalled()
+    expect(
+      (screen.getByRole('textbox', { name: /^Amount/ }) as HTMLInputElement)
+        .value,
+    ).toContain('5')
+  },
+)
+
+it('mobile Reset clears the draft and returns to category selection without saving', async () => {
+  await enter()
+  fireEvent.click(screen.getByRole('button', { name: 'Reset' }))
+  expect(mocks.commit).not.toHaveBeenCalled()
+  fireEvent.click(await screen.findByRole('button', { name: 'Food' }))
+  await screen.findByRole('button', { name: 'Edit Amount: $0' })
+})

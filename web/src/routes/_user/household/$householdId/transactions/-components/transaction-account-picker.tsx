@@ -1,11 +1,10 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { useLingui } from '@lingui/react/macro'
 import { SearchSelect } from '@/components/search-select'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
-import { Avatar } from '@astryxdesign/core/Avatar'
 import { useCurrency } from '@/hooks/use-currency'
-import { getLogoDomainURL } from '@/lib/logo'
 import { graphql } from 'react-relay'
 import { readInlineData } from 'relay-runtime'
 import type { transactionAccountPickerFragment$key } from './__generated__/transactionAccountPickerFragment.graphql'
@@ -15,6 +14,9 @@ const accountFragment = graphql`
     name
     icon
     balance
+    user {
+      name
+    }
     householdCurrency {
       code
     }
@@ -94,10 +96,9 @@ export function TransactionAccountPicker({
       renderChipIcon={(account) => {
         const data = accountData(account)
         return (
-          <Avatar
-            size="xsm"
-            name={data.name}
-            src={data.icon ? getLogoDomainURL(data.icon) : undefined}
+          <AccountAvatar
+            account={data}
+            size={showBalance ? 'large' : 'small'}
           />
         )
       }}
@@ -121,10 +122,7 @@ export function TransactionAccountPicker({
         const data = accountData(account)
         return (
           <HStack gap={2} vAlign="center">
-            <Avatar
-              name={data.name}
-              src={data.icon ? getLogoDomainURL(data.icon) : undefined}
-            />
+            <AccountAvatar account={data} />
             <VStack gap={0.5}>
               <Text maxLines={2}>{data.name}</Text>
               <Text type="supporting" color="secondary">

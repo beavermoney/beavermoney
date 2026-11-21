@@ -1,8 +1,7 @@
+import { AccountAvatar } from '@/components/account-avatar'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
-import { getLogoDomainURL } from '@/lib/logo'
-import { Avatar } from '@astryxdesign/core/Avatar'
 import { Button } from '@astryxdesign/core/Button'
 import { Card } from '@astryxdesign/core/Card'
 import { FormLayout } from '@astryxdesign/core/FormLayout'
@@ -36,6 +35,9 @@ export const editAccountFragment = graphql`
     icon
     type
     category
+    user {
+      name
+    }
   }
 `
 
@@ -126,10 +128,7 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
           <Stack direction="horizontal" gap={3} align="center">
-            <Avatar
-              src={getLogoDomainURL(data.icon || '')}
-              name={String(data.name)}
-            />
+            <AccountAvatar account={data} />
             <Stack direction="vertical" gap={4}>
               <Heading level={2}>
                 <Trans>Edit Account</Trans>
