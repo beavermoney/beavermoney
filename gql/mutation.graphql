@@ -31,6 +31,10 @@ type Mutation {
   ): RecurringSubscriptionEdge!
   deleteRecurringSubscription(id: ID!): DeleteRecurringSubscriptionPayload!
 
+  createMerchant(name: String!, icon: String): Merchant!
+  updateMerchant(id: ID!, name: String, icon: String, clearIcon: Boolean = false): Merchant!
+  mergeMerchant(sourceID: ID!, targetID: ID!): MergeMerchantPayload!
+
   # Transaction mutations
   createExpense(input: CreateExpenseInputCustom!): TransactionEdge!
   createIncome(input: CreateIncomeInputCustom!): TransactionEdge!
@@ -38,7 +42,7 @@ type Mutation {
   buyInvestment(input: BuyInvestmentInputCustom!): TransactionEdge!
   sellInvestment(input: SellInvestmentInputCustom!): TransactionEdge!
   moveInvestment(input: MoveInvestmentInputCustom!): TransactionEdge!
-  updateTransaction(id: ID!, input: UpdateTransactionInput!): TransactionEdge!
+  updateTransaction(id: ID!, input: UpdateTransactionInput!, merchantName: String): TransactionEdge!
   updateTransactionEntry(id: ID!, input: UpdateTransactionEntryInput!): TransactionEntryEdge!
   updateInvestmentLot(id: ID!, input: UpdateInvestmentLotInput!): InvestmentLotEdge!
   deleteTransaction(id: ID!): DeleteTransactionPayload!
@@ -109,6 +113,8 @@ input CreateInvestmentInputCustom {
 
 # Expense: Money out from account
 input CreateExpenseInputCustom {
+  merchantID: ID
+  merchantName: String
   transaction: CreateTransactionInput!
   transactionEntry: CreateTransactionEntryInput!
   fees: [CreateTransactionEntryInput!]! = []
@@ -160,4 +166,11 @@ input CreateHouseholdInputCustom {
 input ReviewAccountVersion {
  id: ID!
  revision: String!
+}
+
+# Source is permanently deleted after reassignment; no merchant aliases remain.
+type MergeMerchantPayload {
+  deletedMerchantID: ID!
+  targetMerchant: Merchant!
+  reassignedCount: Int!
 }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<143bbc89972292d8d0605cc37e880c1b>>
+ * @generated SignedSource<<d62509a31b298b1deb5cabce03805e8b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -101,10 +101,17 @@ v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "amount",
+  "name": "icon",
   "storageKey": null
 },
 v7 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v8 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -123,7 +130,7 @@ v7 = {
   ],
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -223,13 +230,27 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "concreteType": "Merchant",
+                "kind": "LinkedField",
+                "name": "merchant",
+                "plural": false,
+                "selections": [
+                  (v2/*: any*/),
+                  (v5/*: any*/),
+                  (v6/*: any*/)
+                ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "TransactionEntry",
                 "kind": "LinkedField",
                 "name": "transactionEntries",
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v6/*: any*/),
+                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -239,7 +260,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v5/*: any*/),
-                      (v7/*: any*/),
+                      (v8/*: any*/),
                       (v2/*: any*/)
                     ],
                     "storageKey": null
@@ -256,7 +277,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v6/*: any*/),
+                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -280,7 +301,7 @@ return {
                         "name": "symbol",
                         "storageKey": null
                       },
-                      (v8/*: any*/),
+                      (v9/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -294,7 +315,7 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v7/*: any*/),
+                      (v8/*: any*/),
                       (v2/*: any*/)
                     ],
                     "storageKey": null
@@ -311,14 +332,8 @@ return {
                 "plural": false,
                 "selections": [
                   (v5/*: any*/),
-                  (v8/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "icon",
-                    "storageKey": null
-                  },
+                  (v9/*: any*/),
+                  (v6/*: any*/),
                   (v2/*: any*/)
                 ],
                 "storageKey": null
@@ -334,12 +349,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bef277a50023aa17853bcd0346590058",
+    "cacheID": "5a875bc649e1664aafd31a173dd75429",
     "id": null,
     "metadata": {},
     "name": "newBuyMutation",
     "operationKind": "mutation",
-    "text": "mutation newBuyMutation(\n  $input: BuyInvestmentInputCustom!\n) {\n  buyInvestment(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
+    "text": "mutation newBuyMutation(\n  $input: BuyInvestmentInputCustom!\n) {\n  buyInvestment(input: $input) {\n    node {\n      ...transactionCardFragment\n      id\n      description\n      datetime\n      category {\n        name\n        id\n      }\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  merchant {\n    id\n    name\n    icon\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
   }
 };
 })();

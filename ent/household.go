@@ -35,6 +35,8 @@ type Household struct {
 
 // HouseholdEdges holds the relations/edges for other nodes in the graph.
 type HouseholdEdges struct {
+	// Merchants holds the value of the merchants edge.
+	Merchants []*Merchant `json:"merchants,omitempty"`
 	// SnapshotAccounts holds the value of the snapshot_accounts edge.
 	SnapshotAccounts []*SnapshotAccount `json:"snapshot_accounts,omitempty"`
 	// SnapshotInvestments holds the value of the snapshot_investments edge.
@@ -69,10 +71,11 @@ type HouseholdEdges struct {
 	UserHouseholds []*UserHousehold `json:"user_households,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [16]bool
+	loadedTypes [17]bool
 	// totalCount holds the count of the edges above.
-	totalCount [14]map[string]int
+	totalCount [15]map[string]int
 
+	namedMerchants              map[string][]*Merchant
 	namedSnapshotAccounts       map[string][]*SnapshotAccount
 	namedSnapshotInvestments    map[string][]*SnapshotInvestment
 	namedUsers                  map[string][]*User
@@ -91,10 +94,19 @@ type HouseholdEdges struct {
 	namedUserHouseholds         map[string][]*UserHousehold
 }
 
+// MerchantsOrErr returns the Merchants value or an error if the edge
+// was not loaded in eager-loading.
+func (e HouseholdEdges) MerchantsOrErr() ([]*Merchant, error) {
+	if e.loadedTypes[0] {
+		return e.Merchants, nil
+	}
+	return nil, &NotLoadedError{edge: "merchants"}
+}
+
 // SnapshotAccountsOrErr returns the SnapshotAccounts value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotAccountsOrErr() ([]*SnapshotAccount, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.SnapshotAccounts, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_accounts"}
@@ -103,7 +115,7 @@ func (e HouseholdEdges) SnapshotAccountsOrErr() ([]*SnapshotAccount, error) {
 // SnapshotInvestmentsOrErr returns the SnapshotInvestments value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotInvestmentsOrErr() ([]*SnapshotInvestment, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.SnapshotInvestments, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_investments"}
@@ -112,7 +124,7 @@ func (e HouseholdEdges) SnapshotInvestmentsOrErr() ([]*SnapshotInvestment, error
 // UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UsersOrErr() ([]*User, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Users, nil
 	}
 	return nil, &NotLoadedError{edge: "users"}
@@ -121,7 +133,7 @@ func (e HouseholdEdges) UsersOrErr() ([]*User, error) {
 // AccountsOrErr returns the Accounts value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) AccountsOrErr() ([]*Account, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Accounts, nil
 	}
 	return nil, &NotLoadedError{edge: "accounts"}
@@ -130,7 +142,7 @@ func (e HouseholdEdges) AccountsOrErr() ([]*Account, error) {
 // TransactionsOrErr returns the Transactions value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) TransactionsOrErr() ([]*Transaction, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Transactions, nil
 	}
 	return nil, &NotLoadedError{edge: "transactions"}
@@ -139,7 +151,7 @@ func (e HouseholdEdges) TransactionsOrErr() ([]*Transaction, error) {
 // InvestmentsOrErr returns the Investments value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) InvestmentsOrErr() ([]*Investment, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.Investments, nil
 	}
 	return nil, &NotLoadedError{edge: "investments"}
@@ -148,7 +160,7 @@ func (e HouseholdEdges) InvestmentsOrErr() ([]*Investment, error) {
 // InvestmentLotsOrErr returns the InvestmentLots value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.InvestmentLots, nil
 	}
 	return nil, &NotLoadedError{edge: "investment_lots"}
@@ -157,7 +169,7 @@ func (e HouseholdEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
 // TransactionCategoriesOrErr returns the TransactionCategories value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) TransactionCategoriesOrErr() ([]*TransactionCategory, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.TransactionCategories, nil
 	}
 	return nil, &NotLoadedError{edge: "transaction_categories"}
@@ -166,7 +178,7 @@ func (e HouseholdEdges) TransactionCategoriesOrErr() ([]*TransactionCategory, er
 // TransactionEntriesOrErr returns the TransactionEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.TransactionEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "transaction_entries"}
@@ -175,7 +187,7 @@ func (e HouseholdEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error) {
 // RecurringSubscriptionsOrErr returns the RecurringSubscriptions value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.RecurringSubscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "recurring_subscriptions"}
@@ -184,7 +196,7 @@ func (e HouseholdEdges) RecurringSubscriptionsOrErr() ([]*RecurringSubscription,
 // SnapshotsOrErr returns the Snapshots value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotsOrErr() ([]*Snapshot, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[11] {
 		return e.Snapshots, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshots"}
@@ -193,7 +205,7 @@ func (e HouseholdEdges) SnapshotsOrErr() ([]*Snapshot, error) {
 // SnapshotEntriesOrErr returns the SnapshotEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[12] {
 		return e.SnapshotEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_entries"}
@@ -202,7 +214,7 @@ func (e HouseholdEdges) SnapshotEntriesOrErr() ([]*SnapshotEntry, error) {
 // SnapshotRatesOrErr returns the SnapshotRates value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) SnapshotRatesOrErr() ([]*SnapshotRate, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[13] {
 		return e.SnapshotRates, nil
 	}
 	return nil, &NotLoadedError{edge: "snapshot_rates"}
@@ -211,7 +223,7 @@ func (e HouseholdEdges) SnapshotRatesOrErr() ([]*SnapshotRate, error) {
 // HouseholdCurrenciesOrErr returns the HouseholdCurrencies value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) HouseholdCurrenciesOrErr() ([]*HouseholdCurrency, error) {
-	if e.loadedTypes[13] {
+	if e.loadedTypes[14] {
 		return e.HouseholdCurrencies, nil
 	}
 	return nil, &NotLoadedError{edge: "household_currencies"}
@@ -220,7 +232,7 @@ func (e HouseholdEdges) HouseholdCurrenciesOrErr() ([]*HouseholdCurrency, error)
 // HouseholdRatesOrErr returns the HouseholdRates value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) HouseholdRatesOrErr() ([]*HouseholdRate, error) {
-	if e.loadedTypes[14] {
+	if e.loadedTypes[15] {
 		return e.HouseholdRates, nil
 	}
 	return nil, &NotLoadedError{edge: "household_rates"}
@@ -229,7 +241,7 @@ func (e HouseholdEdges) HouseholdRatesOrErr() ([]*HouseholdRate, error) {
 // UserHouseholdsOrErr returns the UserHouseholds value or an error if the edge
 // was not loaded in eager-loading.
 func (e HouseholdEdges) UserHouseholdsOrErr() ([]*UserHousehold, error) {
-	if e.loadedTypes[15] {
+	if e.loadedTypes[16] {
 		return e.UserHouseholds, nil
 	}
 	return nil, &NotLoadedError{edge: "user_households"}
@@ -310,6 +322,11 @@ func (_m *Household) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Household) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryMerchants queries the "merchants" edge of the Household entity.
+func (_m *Household) QueryMerchants() *MerchantQuery {
+	return NewHouseholdClient(_m.config).QueryMerchants(_m)
 }
 
 // QuerySnapshotAccounts queries the "snapshot_accounts" edge of the Household entity.
@@ -431,6 +448,30 @@ func (_m *Household) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.IsDemo))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedMerchants returns the Merchants named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Household) NamedMerchants(name string) ([]*Merchant, error) {
+	if _m.Edges.namedMerchants == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedMerchants[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Household) appendNamedMerchants(name string, edges ...*Merchant) {
+	if _m.Edges.namedMerchants == nil {
+		_m.Edges.namedMerchants = make(map[string][]*Merchant)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedMerchants[name] = []*Merchant{}
+	} else {
+		_m.Edges.namedMerchants[name] = append(_m.Edges.namedMerchants[name], edges...)
+	}
 }
 
 // NamedSnapshotAccounts returns the SnapshotAccounts named value or an error if the edge was not

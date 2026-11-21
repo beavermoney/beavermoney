@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
@@ -692,6 +693,10 @@ type HouseholdWhereInput struct {
 	IsDemo    *bool `json:"isDemo,omitempty"`
 	IsDemoNEQ *bool `json:"isDemoNEQ,omitempty"`
 
+	// "merchants" edge predicates.
+	HasMerchants     *bool                 `json:"hasMerchants,omitempty"`
+	HasMerchantsWith []*MerchantWhereInput `json:"hasMerchantsWith,omitempty"`
+
 	// "users" edge predicates.
 	HasUsers     *bool             `json:"hasUsers,omitempty"`
 	HasUsersWith []*UserWhereInput `json:"hasUsersWith,omitempty"`
@@ -977,6 +982,24 @@ func (i *HouseholdWhereInput) P() (predicate.Household, error) {
 		predicates = append(predicates, household.IsDemoNEQ(*i.IsDemoNEQ))
 	}
 
+	if i.HasMerchants != nil {
+		p := household.HasMerchants()
+		if !*i.HasMerchants {
+			p = household.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasMerchantsWith) > 0 {
+		with := make([]predicate.Merchant, 0, len(i.HasMerchantsWith))
+		for _, w := range i.HasMerchantsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasMerchantsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, household.HasMerchantsWith(with...))
+	}
 	if i.HasUsers != nil {
 		p := household.HasUsers()
 		if !*i.HasUsers {
@@ -3195,6 +3218,376 @@ func (i *InvestmentLotWhereInput) P() (predicate.InvestmentLot, error) {
 	}
 }
 
+// MerchantWhereInput represents a where input for filtering Merchant queries.
+type MerchantWhereInput struct {
+	Predicates []predicate.Merchant  `json:"-"`
+	Not        *MerchantWhereInput   `json:"not,omitempty"`
+	Or         []*MerchantWhereInput `json:"or,omitempty"`
+	And        []*MerchantWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "create_time" field predicates.
+	CreateTime      *time.Time  `json:"createTime,omitempty"`
+	CreateTimeNEQ   *time.Time  `json:"createTimeNEQ,omitempty"`
+	CreateTimeIn    []time.Time `json:"createTimeIn,omitempty"`
+	CreateTimeNotIn []time.Time `json:"createTimeNotIn,omitempty"`
+	CreateTimeGT    *time.Time  `json:"createTimeGT,omitempty"`
+	CreateTimeGTE   *time.Time  `json:"createTimeGTE,omitempty"`
+	CreateTimeLT    *time.Time  `json:"createTimeLT,omitempty"`
+	CreateTimeLTE   *time.Time  `json:"createTimeLTE,omitempty"`
+
+	// "update_time" field predicates.
+	UpdateTime      *time.Time  `json:"updateTime,omitempty"`
+	UpdateTimeNEQ   *time.Time  `json:"updateTimeNEQ,omitempty"`
+	UpdateTimeIn    []time.Time `json:"updateTimeIn,omitempty"`
+	UpdateTimeNotIn []time.Time `json:"updateTimeNotIn,omitempty"`
+	UpdateTimeGT    *time.Time  `json:"updateTimeGT,omitempty"`
+	UpdateTimeGTE   *time.Time  `json:"updateTimeGTE,omitempty"`
+	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
+	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
+
+	// "household_id" field predicates.
+	HouseholdID      *int  `json:"householdID,omitempty"`
+	HouseholdIDNEQ   *int  `json:"householdIDNEQ,omitempty"`
+	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
+	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "icon" field predicates.
+	Icon             *string  `json:"icon,omitempty"`
+	IconNEQ          *string  `json:"iconNEQ,omitempty"`
+	IconIn           []string `json:"iconIn,omitempty"`
+	IconNotIn        []string `json:"iconNotIn,omitempty"`
+	IconGT           *string  `json:"iconGT,omitempty"`
+	IconGTE          *string  `json:"iconGTE,omitempty"`
+	IconLT           *string  `json:"iconLT,omitempty"`
+	IconLTE          *string  `json:"iconLTE,omitempty"`
+	IconContains     *string  `json:"iconContains,omitempty"`
+	IconHasPrefix    *string  `json:"iconHasPrefix,omitempty"`
+	IconHasSuffix    *string  `json:"iconHasSuffix,omitempty"`
+	IconIsNil        bool     `json:"iconIsNil,omitempty"`
+	IconNotNil       bool     `json:"iconNotNil,omitempty"`
+	IconEqualFold    *string  `json:"iconEqualFold,omitempty"`
+	IconContainsFold *string  `json:"iconContainsFold,omitempty"`
+
+	// "household" edge predicates.
+	HasHousehold     *bool                  `json:"hasHousehold,omitempty"`
+	HasHouseholdWith []*HouseholdWhereInput `json:"hasHouseholdWith,omitempty"`
+
+	// "transactions" edge predicates.
+	HasTransactions     *bool                    `json:"hasTransactions,omitempty"`
+	HasTransactionsWith []*TransactionWhereInput `json:"hasTransactionsWith,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *MerchantWhereInput) AddPredicates(predicates ...predicate.Merchant) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the MerchantWhereInput filter on the MerchantQuery builder.
+func (i *MerchantWhereInput) Filter(q *MerchantQuery) (*MerchantQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyMerchantWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyMerchantWhereInput is returned in case the MerchantWhereInput is empty.
+var ErrEmptyMerchantWhereInput = errors.New("ent: empty predicate MerchantWhereInput")
+
+// P returns a predicate for filtering merchants.
+// An error is returned if the input is empty or invalid.
+func (i *MerchantWhereInput) P() (predicate.Merchant, error) {
+	var predicates []predicate.Merchant
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, merchant.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Merchant, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, merchant.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Merchant, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, merchant.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, merchant.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, merchant.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, merchant.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, merchant.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, merchant.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, merchant.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, merchant.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, merchant.IDLTE(*i.IDLTE))
+	}
+	if i.CreateTime != nil {
+		predicates = append(predicates, merchant.CreateTimeEQ(*i.CreateTime))
+	}
+	if i.CreateTimeNEQ != nil {
+		predicates = append(predicates, merchant.CreateTimeNEQ(*i.CreateTimeNEQ))
+	}
+	if len(i.CreateTimeIn) > 0 {
+		predicates = append(predicates, merchant.CreateTimeIn(i.CreateTimeIn...))
+	}
+	if len(i.CreateTimeNotIn) > 0 {
+		predicates = append(predicates, merchant.CreateTimeNotIn(i.CreateTimeNotIn...))
+	}
+	if i.CreateTimeGT != nil {
+		predicates = append(predicates, merchant.CreateTimeGT(*i.CreateTimeGT))
+	}
+	if i.CreateTimeGTE != nil {
+		predicates = append(predicates, merchant.CreateTimeGTE(*i.CreateTimeGTE))
+	}
+	if i.CreateTimeLT != nil {
+		predicates = append(predicates, merchant.CreateTimeLT(*i.CreateTimeLT))
+	}
+	if i.CreateTimeLTE != nil {
+		predicates = append(predicates, merchant.CreateTimeLTE(*i.CreateTimeLTE))
+	}
+	if i.UpdateTime != nil {
+		predicates = append(predicates, merchant.UpdateTimeEQ(*i.UpdateTime))
+	}
+	if i.UpdateTimeNEQ != nil {
+		predicates = append(predicates, merchant.UpdateTimeNEQ(*i.UpdateTimeNEQ))
+	}
+	if len(i.UpdateTimeIn) > 0 {
+		predicates = append(predicates, merchant.UpdateTimeIn(i.UpdateTimeIn...))
+	}
+	if len(i.UpdateTimeNotIn) > 0 {
+		predicates = append(predicates, merchant.UpdateTimeNotIn(i.UpdateTimeNotIn...))
+	}
+	if i.UpdateTimeGT != nil {
+		predicates = append(predicates, merchant.UpdateTimeGT(*i.UpdateTimeGT))
+	}
+	if i.UpdateTimeGTE != nil {
+		predicates = append(predicates, merchant.UpdateTimeGTE(*i.UpdateTimeGTE))
+	}
+	if i.UpdateTimeLT != nil {
+		predicates = append(predicates, merchant.UpdateTimeLT(*i.UpdateTimeLT))
+	}
+	if i.UpdateTimeLTE != nil {
+		predicates = append(predicates, merchant.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.HouseholdID != nil {
+		predicates = append(predicates, merchant.HouseholdIDEQ(*i.HouseholdID))
+	}
+	if i.HouseholdIDNEQ != nil {
+		predicates = append(predicates, merchant.HouseholdIDNEQ(*i.HouseholdIDNEQ))
+	}
+	if len(i.HouseholdIDIn) > 0 {
+		predicates = append(predicates, merchant.HouseholdIDIn(i.HouseholdIDIn...))
+	}
+	if len(i.HouseholdIDNotIn) > 0 {
+		predicates = append(predicates, merchant.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, merchant.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, merchant.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, merchant.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, merchant.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, merchant.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, merchant.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, merchant.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, merchant.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, merchant.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, merchant.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, merchant.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, merchant.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, merchant.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Icon != nil {
+		predicates = append(predicates, merchant.IconEQ(*i.Icon))
+	}
+	if i.IconNEQ != nil {
+		predicates = append(predicates, merchant.IconNEQ(*i.IconNEQ))
+	}
+	if len(i.IconIn) > 0 {
+		predicates = append(predicates, merchant.IconIn(i.IconIn...))
+	}
+	if len(i.IconNotIn) > 0 {
+		predicates = append(predicates, merchant.IconNotIn(i.IconNotIn...))
+	}
+	if i.IconGT != nil {
+		predicates = append(predicates, merchant.IconGT(*i.IconGT))
+	}
+	if i.IconGTE != nil {
+		predicates = append(predicates, merchant.IconGTE(*i.IconGTE))
+	}
+	if i.IconLT != nil {
+		predicates = append(predicates, merchant.IconLT(*i.IconLT))
+	}
+	if i.IconLTE != nil {
+		predicates = append(predicates, merchant.IconLTE(*i.IconLTE))
+	}
+	if i.IconContains != nil {
+		predicates = append(predicates, merchant.IconContains(*i.IconContains))
+	}
+	if i.IconHasPrefix != nil {
+		predicates = append(predicates, merchant.IconHasPrefix(*i.IconHasPrefix))
+	}
+	if i.IconHasSuffix != nil {
+		predicates = append(predicates, merchant.IconHasSuffix(*i.IconHasSuffix))
+	}
+	if i.IconIsNil {
+		predicates = append(predicates, merchant.IconIsNil())
+	}
+	if i.IconNotNil {
+		predicates = append(predicates, merchant.IconNotNil())
+	}
+	if i.IconEqualFold != nil {
+		predicates = append(predicates, merchant.IconEqualFold(*i.IconEqualFold))
+	}
+	if i.IconContainsFold != nil {
+		predicates = append(predicates, merchant.IconContainsFold(*i.IconContainsFold))
+	}
+
+	if i.HasHousehold != nil {
+		p := merchant.HasHousehold()
+		if !*i.HasHousehold {
+			p = merchant.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasHouseholdWith) > 0 {
+		with := make([]predicate.Household, 0, len(i.HasHouseholdWith))
+		for _, w := range i.HasHouseholdWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasHouseholdWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, merchant.HasHouseholdWith(with...))
+	}
+	if i.HasTransactions != nil {
+		p := merchant.HasTransactions()
+		if !*i.HasTransactions {
+			p = merchant.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTransactionsWith) > 0 {
+		with := make([]predicate.Transaction, 0, len(i.HasTransactionsWith))
+		for _, w := range i.HasTransactionsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasTransactionsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, merchant.HasTransactionsWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyMerchantWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return merchant.And(predicates...), nil
+	}
+}
+
 // RecurringSubscriptionWhereInput represents a where input for filtering RecurringSubscription queries.
 type RecurringSubscriptionWhereInput struct {
 	Predicates []predicate.RecurringSubscription  `json:"-"`
@@ -5076,6 +5469,14 @@ type TransactionWhereInput struct {
 	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
 	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
 
+	// "merchant_id" field predicates.
+	MerchantID       *int  `json:"merchantID,omitempty"`
+	MerchantIDNEQ    *int  `json:"merchantIDNEQ,omitempty"`
+	MerchantIDIn     []int `json:"merchantIDIn,omitempty"`
+	MerchantIDNotIn  []int `json:"merchantIDNotIn,omitempty"`
+	MerchantIDIsNil  bool  `json:"merchantIDIsNil,omitempty"`
+	MerchantIDNotNil bool  `json:"merchantIDNotNil,omitempty"`
+
 	// "description" field predicates.
 	Description             *string  `json:"description,omitempty"`
 	DescriptionNEQ          *string  `json:"descriptionNEQ,omitempty"`
@@ -5122,6 +5523,10 @@ type TransactionWhereInput struct {
 	// "pending" field predicates.
 	Pending    *bool `json:"pending,omitempty"`
 	PendingNEQ *bool `json:"pendingNEQ,omitempty"`
+
+	// "merchant" edge predicates.
+	HasMerchant     *bool                 `json:"hasMerchant,omitempty"`
+	HasMerchantWith []*MerchantWhereInput `json:"hasMerchantWith,omitempty"`
 
 	// "user" edge predicates.
 	HasUser     *bool             `json:"hasUser,omitempty"`
@@ -5299,6 +5704,24 @@ func (i *TransactionWhereInput) P() (predicate.Transaction, error) {
 	if len(i.HouseholdIDNotIn) > 0 {
 		predicates = append(predicates, transaction.HouseholdIDNotIn(i.HouseholdIDNotIn...))
 	}
+	if i.MerchantID != nil {
+		predicates = append(predicates, transaction.MerchantIDEQ(*i.MerchantID))
+	}
+	if i.MerchantIDNEQ != nil {
+		predicates = append(predicates, transaction.MerchantIDNEQ(*i.MerchantIDNEQ))
+	}
+	if len(i.MerchantIDIn) > 0 {
+		predicates = append(predicates, transaction.MerchantIDIn(i.MerchantIDIn...))
+	}
+	if len(i.MerchantIDNotIn) > 0 {
+		predicates = append(predicates, transaction.MerchantIDNotIn(i.MerchantIDNotIn...))
+	}
+	if i.MerchantIDIsNil {
+		predicates = append(predicates, transaction.MerchantIDIsNil())
+	}
+	if i.MerchantIDNotNil {
+		predicates = append(predicates, transaction.MerchantIDNotNil())
+	}
 	if i.Description != nil {
 		predicates = append(predicates, transaction.DescriptionEQ(*i.Description))
 	}
@@ -5405,6 +5828,24 @@ func (i *TransactionWhereInput) P() (predicate.Transaction, error) {
 		predicates = append(predicates, transaction.PendingNEQ(*i.PendingNEQ))
 	}
 
+	if i.HasMerchant != nil {
+		p := transaction.HasMerchant()
+		if !*i.HasMerchant {
+			p = transaction.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasMerchantWith) > 0 {
+		with := make([]predicate.Merchant, 0, len(i.HasMerchantWith))
+		for _, w := range i.HasMerchantWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasMerchantWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, transaction.HasMerchantWith(with...))
+	}
 	if i.HasUser != nil {
 		p := transaction.HasUser()
 		if !*i.HasUser {

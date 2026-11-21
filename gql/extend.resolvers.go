@@ -99,6 +99,16 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 	return report, nil
 }
 
+// MerchantSearch is the resolver for the merchantSearch field.
+func (r *householdResolver) MerchantSearch(ctx context.Context, obj *ent.Household, query string, first *int) ([]*ent.Merchant, error) {
+	return r.searchMerchants(ctx, obj.ID, query, first)
+}
+
+// MerchantInsights is the resolver for the merchantInsights field.
+func (r *householdResolver) MerchantInsights(ctx context.Context, obj *ent.Household, period model.TimePeriodInput, viewUserIDs []int) (*model.MerchantOverview, error) {
+	return r.merchantOverview(ctx, obj.ID, period, viewUserIDs)
+}
+
 // AverageNeedsReview is the resolver for the averageNeedsReview field.
 func (r *investmentResolver) AverageNeedsReview(ctx context.Context, obj *ent.Investment) (bool, error) {
 	return averageNeedsReview(obj), nil
@@ -160,6 +170,11 @@ func (r *investmentResolver) UnrealizedReturnPercent(ctx context.Context, obj *e
 	}
 	value := obj.Value.Sub(b).Div(b).String()
 	return &value, nil
+}
+
+// Insights is the resolver for the insights field.
+func (r *merchantResolver) Insights(ctx context.Context, obj *ent.Merchant, period model.TimePeriodInput, viewUserIDs []int) (*model.MerchantInsights, error) {
+	return r.merchantDetail(ctx, obj, period, viewUserIDs)
 }
 
 // Review is the resolver for the review field.

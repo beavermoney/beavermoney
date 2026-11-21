@@ -1,3 +1,7 @@
+import {
+  MerchantPicker,
+  type MerchantSelection,
+} from '@/components/merchant-picker'
 import { TransactionFormActions } from '@/components/transaction-form-actions'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -88,6 +92,13 @@ type NewExpenseProps = {
 export function NewExpense({ fragmentRef }: NewExpenseProps) {
   const { t } = useLingui()
   const formSchema = z.object({
+    merchant: z
+      .object({
+        id: z.string().optional(),
+        name: z.string(),
+        icon: z.string().nullable().optional(),
+      })
+      .nullable(),
     pending: z.boolean(),
     description: z
       .string()
@@ -141,6 +152,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
   const form = useForm({
     listeners: { onMount: () => setDefaults(undefined) },
     defaultValues: {
+      merchant: null as MerchantSelection | null,
       description: '',
       pending: false,
       amount: undefined as unknown as number,
@@ -164,6 +176,11 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
         {
           variables: {
             input: {
+              merchantID: formData.merchant?.id,
+              merchantName:
+                formData.merchant && !formData.merchant.id
+                  ? formData.merchant.name
+                  : undefined,
               transaction: {
                 description: formData.description,
                 pending: formData.pending,
@@ -197,6 +214,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           if (submissionIntent.current === 'again') {
             form.reset(
               {
+                merchant: null,
                 description: '',
                 pending: false,
                 amount: undefined as unknown as number,
@@ -256,6 +274,17 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
   ]
 
   const fields = {
+    merchant: (
+      <form.Field name="merchant">
+        {(field) => (
+          <MerchantPicker
+            value={field.state.value}
+            onChange={field.handleChange}
+            disabled={isMutationInFlight}
+          />
+        )}
+      </form.Field>
+    ),
     pending: (
       <form.Field name="pending">
         {(field) => (
@@ -475,7 +504,13 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           kind="expense"
           category={fields.categoryId}
           firstAmount={'amount'}
-          amounts={<>{fields.amount}</>}
+          amounts={null}
+          entryRows={
+            <Grid columns={2} gap={2} className="composer-expense-row">
+              {fields.amount}
+              {fields.merchant}
+            </Grid>
+          }
           chips={
             <>
               {fields.accountId}
@@ -523,15 +558,18 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
               </>
             }
           >
-            {fields.categoryId}
+            <Grid columns={{ minWidth: 240, max: 2 }} gap={4}>
+              {fields.categoryId}
+              {fields.accountId}
+            </Grid>
             <Grid
               columns={{ minWidth: 240, max: 2 }}
               gap={4}
               align="start"
               justify="stretch"
             >
-              {fields.accountId}
               {fields.amount}
+              {fields.merchant}
             </Grid>
           </TransactionFormFields>
         </Stack>

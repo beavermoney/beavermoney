@@ -12,6 +12,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/schema"
 	"beavermoney.app/ent/snapshot"
@@ -267,6 +268,70 @@ func init() {
 	investmentlotDescTransactionID := investmentlotFields[3].Descriptor()
 	// investmentlot.TransactionIDValidator is a validator for the "transaction_id" field. It is called by the builders before save.
 	investmentlot.TransactionIDValidator = investmentlotDescTransactionID.Validators[0].(func(int) error)
+	merchantMixin := schema.Merchant{}.Mixin()
+	merchant.Policy = privacy.NewPolicies(merchantMixin[1], schema.Merchant{})
+	merchant.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := merchant.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	merchantMixinFields0 := merchantMixin[0].Fields()
+	_ = merchantMixinFields0
+	merchantFields := schema.Merchant{}.Fields()
+	_ = merchantFields
+	// merchantDescCreateTime is the schema descriptor for create_time field.
+	merchantDescCreateTime := merchantMixinFields0[0].Descriptor()
+	// merchant.DefaultCreateTime holds the default value on creation for the create_time field.
+	merchant.DefaultCreateTime = merchantDescCreateTime.Default.(func() time.Time)
+	// merchantDescUpdateTime is the schema descriptor for update_time field.
+	merchantDescUpdateTime := merchantMixinFields0[1].Descriptor()
+	// merchant.DefaultUpdateTime holds the default value on creation for the update_time field.
+	merchant.DefaultUpdateTime = merchantDescUpdateTime.Default.(func() time.Time)
+	// merchant.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	merchant.UpdateDefaultUpdateTime = merchantDescUpdateTime.UpdateDefault.(func() time.Time)
+	// merchantDescName is the schema descriptor for name field.
+	merchantDescName := merchantFields[0].Descriptor()
+	// merchant.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	merchant.NameValidator = func() func(string) error {
+		validators := merchantDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// merchantDescNameKey is the schema descriptor for name_key field.
+	merchantDescNameKey := merchantFields[1].Descriptor()
+	// merchant.NameKeyValidator is a validator for the "name_key" field. It is called by the builders before save.
+	merchant.NameKeyValidator = func() func(string) error {
+		validators := merchantDescNameKey.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name_key string) error {
+			for _, fn := range fns {
+				if err := fn(name_key); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// merchantDescIcon is the schema descriptor for icon field.
+	merchantDescIcon := merchantFields[2].Descriptor()
+	// merchant.IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	merchant.IconValidator = merchantDescIcon.Validators[0].(func(string) error)
 	recurringsubscriptionMixin := schema.RecurringSubscription{}.Mixin()
 	recurringsubscription.Policy = privacy.NewPolicies(recurringsubscriptionMixin[1], schema.RecurringSubscription{})
 	recurringsubscription.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -478,19 +543,19 @@ func init() {
 	// transaction.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	transaction.UpdateDefaultUpdateTime = transactionDescUpdateTime.UpdateDefault.(func() time.Time)
 	// transactionDescUserID is the schema descriptor for user_id field.
-	transactionDescUserID := transactionFields[2].Descriptor()
+	transactionDescUserID := transactionFields[3].Descriptor()
 	// transaction.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	transaction.UserIDValidator = transactionDescUserID.Validators[0].(func(int) error)
 	// transactionDescCategoryID is the schema descriptor for category_id field.
-	transactionDescCategoryID := transactionFields[3].Descriptor()
+	transactionDescCategoryID := transactionFields[4].Descriptor()
 	// transaction.CategoryIDValidator is a validator for the "category_id" field. It is called by the builders before save.
 	transaction.CategoryIDValidator = transactionDescCategoryID.Validators[0].(func(int) error)
 	// transactionDescExcludeFromReports is the schema descriptor for exclude_from_reports field.
-	transactionDescExcludeFromReports := transactionFields[4].Descriptor()
+	transactionDescExcludeFromReports := transactionFields[5].Descriptor()
 	// transaction.DefaultExcludeFromReports holds the default value on creation for the exclude_from_reports field.
 	transaction.DefaultExcludeFromReports = transactionDescExcludeFromReports.Default.(bool)
 	// transactionDescPending is the schema descriptor for pending field.
-	transactionDescPending := transactionFields[5].Descriptor()
+	transactionDescPending := transactionFields[6].Descriptor()
 	// transaction.DefaultPending holds the default value on creation for the pending field.
 	transaction.DefaultPending = transactionDescPending.Default.(bool)
 	transactioncategoryMixin := schema.TransactionCategory{}.Mixin()

@@ -502,10 +502,10 @@ func TestSnapshotPostgresTradeEditsStayStaleAcrossClockSkew(t *testing.T) {
 				_, err = mr.UpdateInvestmentLot(ctx, lot.ID, ent.UpdateInvestmentLotInput{Price: &price})
 			case "transaction date":
 				date := txn.Datetime.Add(-24 * time.Hour)
-				_, err = mr.UpdateTransaction(ctx, txn.ID, ent.UpdateTransactionInput{Datetime: &date})
+				_, err = mr.UpdateTransaction(ctx, txn.ID, ent.UpdateTransactionInput{Datetime: &date}, nil)
 			case "transaction pending":
 				pending := !txn.Pending
-				_, err = mr.UpdateTransaction(ctx, txn.ID, ent.UpdateTransactionInput{Pending: &pending})
+				_, err = mr.UpdateTransaction(ctx, txn.ID, ent.UpdateTransactionInput{Pending: &pending}, nil)
 			}
 			if err != nil {
 				t.Fatal(err)

@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
@@ -243,6 +244,95 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
 
+		case "merchants":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&MerchantClient{config: _q.config}).Query()
+			)
+			args := newMerchantPaginateArgs(fieldArgs(ctx, new(MerchantWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newMerchantPager(args.opts, args.last != nil)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					_q.loadTotal = append(_q.loadTotal, func(ctx context.Context, nodes []*Household) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"household_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(s.C(household.MerchantsColumn), ids...))
+						})
+						if err := query.GroupBy(household.MerchantsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[0] == nil {
+								nodes[i].Edges.totalCount[0] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[0][alias] = n
+						}
+						return nil
+					})
+				} else {
+					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Merchants)
+							if nodes[i].Edges.totalCount[0] == nil {
+								nodes[i].Edges.totalCount[0] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[0][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
+				return err
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, false, opCtx, *field, path, mayAddCondition(satisfies, merchantImplementors)...); err != nil {
+					return err
+				}
+			}
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				if oneNode {
+					pager.applyOrder(query.Limit(limit))
+				} else {
+					modify := entgql.LimitPerRow(household.MerchantsColumn, limit, pager.orderExpr(query))
+					query.modifiers = append(query.modifiers, modify)
+				}
+			} else {
+				query = pager.applyOrder(query)
+			}
+			_q.WithNamedMerchants(alias, func(wq *MerchantQuery) {
+				*wq = *query
+			})
+
 		case "users":
 			var (
 				alias = field.Alias
@@ -299,10 +389,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[1][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -310,10 +400,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Accounts)
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[1][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -388,10 +478,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[2] == nil {
-								nodes[i].Edges.totalCount[2] = make(map[string]int)
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[2][alias] = n
+							nodes[i].Edges.totalCount[3][alias] = n
 						}
 						return nil
 					})
@@ -399,10 +489,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Transactions)
-							if nodes[i].Edges.totalCount[2] == nil {
-								nodes[i].Edges.totalCount[2] = make(map[string]int)
+							if nodes[i].Edges.totalCount[3] == nil {
+								nodes[i].Edges.totalCount[3] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[2][alias] = n
+							nodes[i].Edges.totalCount[3][alias] = n
 						}
 						return nil
 					})
@@ -477,10 +567,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							if nodes[i].Edges.totalCount[4] == nil {
+								nodes[i].Edges.totalCount[4] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[3][alias] = n
+							nodes[i].Edges.totalCount[4][alias] = n
 						}
 						return nil
 					})
@@ -488,10 +578,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Investments)
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
+							if nodes[i].Edges.totalCount[4] == nil {
+								nodes[i].Edges.totalCount[4] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[3][alias] = n
+							nodes[i].Edges.totalCount[4][alias] = n
 						}
 						return nil
 					})
@@ -566,10 +656,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[4] == nil {
-								nodes[i].Edges.totalCount[4] = make(map[string]int)
+							if nodes[i].Edges.totalCount[5] == nil {
+								nodes[i].Edges.totalCount[5] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[4][alias] = n
+							nodes[i].Edges.totalCount[5][alias] = n
 						}
 						return nil
 					})
@@ -577,10 +667,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.InvestmentLots)
-							if nodes[i].Edges.totalCount[4] == nil {
-								nodes[i].Edges.totalCount[4] = make(map[string]int)
+							if nodes[i].Edges.totalCount[5] == nil {
+								nodes[i].Edges.totalCount[5] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[4][alias] = n
+							nodes[i].Edges.totalCount[5][alias] = n
 						}
 						return nil
 					})
@@ -655,10 +745,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[5] == nil {
-								nodes[i].Edges.totalCount[5] = make(map[string]int)
+							if nodes[i].Edges.totalCount[6] == nil {
+								nodes[i].Edges.totalCount[6] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[5][alias] = n
+							nodes[i].Edges.totalCount[6][alias] = n
 						}
 						return nil
 					})
@@ -666,10 +756,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.TransactionCategories)
-							if nodes[i].Edges.totalCount[5] == nil {
-								nodes[i].Edges.totalCount[5] = make(map[string]int)
+							if nodes[i].Edges.totalCount[6] == nil {
+								nodes[i].Edges.totalCount[6] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[5][alias] = n
+							nodes[i].Edges.totalCount[6][alias] = n
 						}
 						return nil
 					})
@@ -744,10 +834,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[6] == nil {
-								nodes[i].Edges.totalCount[6] = make(map[string]int)
+							if nodes[i].Edges.totalCount[7] == nil {
+								nodes[i].Edges.totalCount[7] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[6][alias] = n
+							nodes[i].Edges.totalCount[7][alias] = n
 						}
 						return nil
 					})
@@ -755,10 +845,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.TransactionEntries)
-							if nodes[i].Edges.totalCount[6] == nil {
-								nodes[i].Edges.totalCount[6] = make(map[string]int)
+							if nodes[i].Edges.totalCount[7] == nil {
+								nodes[i].Edges.totalCount[7] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[6][alias] = n
+							nodes[i].Edges.totalCount[7][alias] = n
 						}
 						return nil
 					})
@@ -833,10 +923,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[7] == nil {
-								nodes[i].Edges.totalCount[7] = make(map[string]int)
+							if nodes[i].Edges.totalCount[8] == nil {
+								nodes[i].Edges.totalCount[8] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[7][alias] = n
+							nodes[i].Edges.totalCount[8][alias] = n
 						}
 						return nil
 					})
@@ -844,10 +934,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.RecurringSubscriptions)
-							if nodes[i].Edges.totalCount[7] == nil {
-								nodes[i].Edges.totalCount[7] = make(map[string]int)
+							if nodes[i].Edges.totalCount[8] == nil {
+								nodes[i].Edges.totalCount[8] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[7][alias] = n
+							nodes[i].Edges.totalCount[8][alias] = n
 						}
 						return nil
 					})
@@ -922,10 +1012,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[8] == nil {
-								nodes[i].Edges.totalCount[8] = make(map[string]int)
+							if nodes[i].Edges.totalCount[9] == nil {
+								nodes[i].Edges.totalCount[9] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[8][alias] = n
+							nodes[i].Edges.totalCount[9][alias] = n
 						}
 						return nil
 					})
@@ -933,10 +1023,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Snapshots)
-							if nodes[i].Edges.totalCount[8] == nil {
-								nodes[i].Edges.totalCount[8] = make(map[string]int)
+							if nodes[i].Edges.totalCount[9] == nil {
+								nodes[i].Edges.totalCount[9] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[8][alias] = n
+							nodes[i].Edges.totalCount[9][alias] = n
 						}
 						return nil
 					})
@@ -1011,10 +1101,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[9] == nil {
-								nodes[i].Edges.totalCount[9] = make(map[string]int)
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[9][alias] = n
+							nodes[i].Edges.totalCount[10][alias] = n
 						}
 						return nil
 					})
@@ -1022,10 +1112,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.SnapshotEntries)
-							if nodes[i].Edges.totalCount[9] == nil {
-								nodes[i].Edges.totalCount[9] = make(map[string]int)
+							if nodes[i].Edges.totalCount[10] == nil {
+								nodes[i].Edges.totalCount[10] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[9][alias] = n
+							nodes[i].Edges.totalCount[10][alias] = n
 						}
 						return nil
 					})
@@ -1100,10 +1190,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[10] == nil {
-								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							if nodes[i].Edges.totalCount[11] == nil {
+								nodes[i].Edges.totalCount[11] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[10][alias] = n
+							nodes[i].Edges.totalCount[11][alias] = n
 						}
 						return nil
 					})
@@ -1111,10 +1201,10 @@ func (_q *HouseholdQuery) collectField(ctx context.Context, oneNode bool, opCtx 
 					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Household) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.SnapshotRates)
-							if nodes[i].Edges.totalCount[10] == nil {
-								nodes[i].Edges.totalCount[10] = make(map[string]int)
+							if nodes[i].Edges.totalCount[11] == nil {
+								nodes[i].Edges.totalCount[11] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[10][alias] = n
+							nodes[i].Edges.totalCount[11][alias] = n
 						}
 						return nil
 					})
@@ -1951,6 +2041,197 @@ func newInvestmentLotPaginateArgs(rv map[string]any) *investmentlotPaginateArgs 
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (_q *MerchantQuery) CollectFields(ctx context.Context, satisfies ...string) (*MerchantQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return _q, nil
+	}
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return _q, nil
+}
+
+func (_q *MerchantQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(merchant.Columns))
+		selectedFields = []string{merchant.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "household":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&HouseholdClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, householdImplementors)...); err != nil {
+				return err
+			}
+			_q.withHousehold = query
+			if _, ok := fieldSeen[merchant.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, merchant.FieldHouseholdID)
+				fieldSeen[merchant.FieldHouseholdID] = struct{}{}
+			}
+
+		case "transactions":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&TransactionClient{config: _q.config}).Query()
+			)
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
+			if err := validateFirstLast(args.first, args.last); err != nil {
+				return fmt.Errorf("validate first and last in path %q: %w", path, err)
+			}
+			pager, err := newTransactionPager(args.opts, args.last != nil)
+			if err != nil {
+				return fmt.Errorf("create new pager in path %q: %w", path, err)
+			}
+			if query, err = pager.applyFilter(query); err != nil {
+				return err
+			}
+			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
+			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
+				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
+				if hasPagination || ignoredEdges {
+					query := query.Clone()
+					_q.loadTotal = append(_q.loadTotal, func(ctx context.Context, nodes []*Merchant) error {
+						ids := make([]driver.Value, len(nodes))
+						for i := range nodes {
+							ids[i] = nodes[i].ID
+						}
+						var v []struct {
+							NodeID int `sql:"merchant_id"`
+							Count  int `sql:"count"`
+						}
+						query.Where(func(s *sql.Selector) {
+							s.Where(sql.InValues(s.C(merchant.TransactionsColumn), ids...))
+						})
+						if err := query.GroupBy(merchant.TransactionsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
+							return err
+						}
+						m := make(map[int]int, len(v))
+						for i := range v {
+							m[v[i].NodeID] = v[i].Count
+						}
+						for i := range nodes {
+							n := m[nodes[i].ID]
+							if nodes[i].Edges.totalCount[1] == nil {
+								nodes[i].Edges.totalCount[1] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[1][alias] = n
+						}
+						return nil
+					})
+				} else {
+					_q.loadTotal = append(_q.loadTotal, func(_ context.Context, nodes []*Merchant) error {
+						for i := range nodes {
+							n := len(nodes[i].Edges.Transactions)
+							if nodes[i].Edges.totalCount[1] == nil {
+								nodes[i].Edges.totalCount[1] = make(map[string]int)
+							}
+							nodes[i].Edges.totalCount[1][alias] = n
+						}
+						return nil
+					})
+				}
+			}
+			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
+				continue
+			}
+			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
+				return err
+			}
+			path = append(path, edgesField, nodeField)
+			if field := collectedField(ctx, path...); field != nil {
+				if err := query.collectField(ctx, false, opCtx, *field, path, mayAddCondition(satisfies, transactionImplementors)...); err != nil {
+					return err
+				}
+			}
+			if limit := paginateLimit(args.first, args.last); limit > 0 {
+				if oneNode {
+					pager.applyOrder(query.Limit(limit))
+				} else {
+					modify := entgql.LimitPerRow(merchant.TransactionsColumn, limit, pager.orderExpr(query))
+					query.modifiers = append(query.modifiers, modify)
+				}
+			} else {
+				query = pager.applyOrder(query)
+			}
+			_q.WithNamedTransactions(alias, func(wq *TransactionQuery) {
+				*wq = *query
+			})
+		case "createTime":
+			if _, ok := fieldSeen[merchant.FieldCreateTime]; !ok {
+				selectedFields = append(selectedFields, merchant.FieldCreateTime)
+				fieldSeen[merchant.FieldCreateTime] = struct{}{}
+			}
+		case "updateTime":
+			if _, ok := fieldSeen[merchant.FieldUpdateTime]; !ok {
+				selectedFields = append(selectedFields, merchant.FieldUpdateTime)
+				fieldSeen[merchant.FieldUpdateTime] = struct{}{}
+			}
+		case "householdID":
+			if _, ok := fieldSeen[merchant.FieldHouseholdID]; !ok {
+				selectedFields = append(selectedFields, merchant.FieldHouseholdID)
+				fieldSeen[merchant.FieldHouseholdID] = struct{}{}
+			}
+		case "name":
+			if _, ok := fieldSeen[merchant.FieldName]; !ok {
+				selectedFields = append(selectedFields, merchant.FieldName)
+				fieldSeen[merchant.FieldName] = struct{}{}
+			}
+		case "icon":
+			if _, ok := fieldSeen[merchant.FieldIcon]; !ok {
+				selectedFields = append(selectedFields, merchant.FieldIcon)
+				fieldSeen[merchant.FieldIcon] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		_q.Select(selectedFields...)
+	}
+	return nil
+}
+
+type merchantPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []MerchantPaginateOption
+}
+
+func newMerchantPaginateArgs(rv map[string]any) *merchantPaginateArgs {
+	args := &merchantPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*MerchantWhereInput); ok {
+		args.opts = append(args.opts, WithMerchantFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (_q *RecurringSubscriptionQuery) CollectFields(ctx context.Context, satisfies ...string) (*RecurringSubscriptionQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
@@ -2601,6 +2882,21 @@ func (_q *TransactionQuery) collectField(ctx context.Context, oneNode bool, opCt
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
 
+		case "merchant":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&MerchantClient{config: _q.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, merchantImplementors)...); err != nil {
+				return err
+			}
+			_q.withMerchant = query
+			if _, ok := fieldSeen[transaction.FieldMerchantID]; !ok {
+				selectedFields = append(selectedFields, transaction.FieldMerchantID)
+				fieldSeen[transaction.FieldMerchantID] = struct{}{}
+			}
+
 		case "user":
 			var (
 				alias = field.Alias
@@ -2685,6 +2981,11 @@ func (_q *TransactionQuery) collectField(ctx context.Context, oneNode bool, opCt
 			if _, ok := fieldSeen[transaction.FieldHouseholdID]; !ok {
 				selectedFields = append(selectedFields, transaction.FieldHouseholdID)
 				fieldSeen[transaction.FieldHouseholdID] = struct{}{}
+			}
+		case "merchantID":
+			if _, ok := fieldSeen[transaction.FieldMerchantID]; !ok {
+				selectedFields = append(selectedFields, transaction.FieldMerchantID)
+				fieldSeen[transaction.FieldMerchantID] = struct{}{}
 			}
 		case "description":
 			if _, ok := fieldSeen[transaction.FieldDescription]; !ok {

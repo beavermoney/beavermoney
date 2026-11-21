@@ -255,6 +255,30 @@ func (f InvestmentLotMutationRuleFunc) EvalMutation(ctx context.Context, m ent.M
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.InvestmentLotMutation", m)
 }
 
+// The MerchantQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type MerchantQueryRuleFunc func(context.Context, *ent.MerchantQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f MerchantQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MerchantQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MerchantQuery", q)
+}
+
+// The MerchantMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type MerchantMutationRuleFunc func(context.Context, *ent.MerchantMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f MerchantMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.MerchantMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MerchantMutation", m)
+}
+
 // The RecurringSubscriptionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type RecurringSubscriptionQueryRuleFunc func(context.Context, *ent.RecurringSubscriptionQuery) error
@@ -590,6 +614,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.InvestmentLotQuery:
 		return q.Filter(), nil
+	case *ent.MerchantQuery:
+		return q.Filter(), nil
 	case *ent.RecurringSubscriptionQuery:
 		return q.Filter(), nil
 	case *ent.SnapshotQuery:
@@ -632,6 +658,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.InvestmentMutation:
 		return m.Filter(), nil
 	case *ent.InvestmentLotMutation:
+		return m.Filter(), nil
+	case *ent.MerchantMutation:
 		return m.Filter(), nil
 	case *ent.RecurringSubscriptionMutation:
 		return m.Filter(), nil

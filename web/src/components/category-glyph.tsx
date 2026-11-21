@@ -1,4 +1,4 @@
-import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
+import { Icon as AstryxIcon, type IconSize } from '@astryxdesign/core/Icon'
 import { Icon, type IconNode } from 'lucide-react'
 import { dynamicIconImports, type IconName } from 'lucide-react/dynamic'
 import { useSyncExternalStore, type ReactNode, type SVGProps } from 'react'
@@ -10,10 +10,12 @@ const listeners = new Map<IconName, Set<() => void>>()
 export function CategoryGlyph({
   name,
   fallback,
+  size,
   className: _className,
 }: {
   name: IconName
   fallback: ReactNode
+  size?: IconSize
   className?: string
 }) {
   const iconNode = useSyncExternalStore(
@@ -38,7 +40,7 @@ export function CategoryGlyph({
 
   return (
     <span aria-hidden="true">
-      {iconNode ? <AstryxIcon icon={ResolvedIcon} /> : fallback}
+      {iconNode ? <AstryxIcon icon={ResolvedIcon} size={size} /> : fallback}
     </span>
   )
 }

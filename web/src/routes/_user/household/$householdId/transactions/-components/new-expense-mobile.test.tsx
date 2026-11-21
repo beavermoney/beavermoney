@@ -24,9 +24,12 @@ const mocks = vi.hoisted(() => ({
   privacy: false,
   close: vi.fn(),
   defaults: undefined as { accountId: string } | undefined,
+  environment: {},
+  search: vi.fn(),
   commit: vi.fn(),
   toast: vi.fn(),
 }))
+vi.mock('@/env', () => ({ env: { VITE_SERVER_URL: 'http://localhost' } }))
 vi.mock('@/hooks/use-privacy-mode', () => ({
   usePrivacyMode: () => ({ isPrivacyModeEnabled: mocks.privacy }),
 }))
@@ -71,6 +74,12 @@ vi.mock('@/lib/relay', () => ({
 }))
 vi.mock('react-relay', async (original) => ({
   ...(await original<typeof import('react-relay')>()),
+  useRelayEnvironment: () => mocks.environment,
+  fetchQuery: (
+    _environment: unknown,
+    _query: unknown,
+    variables: { query: string },
+  ) => ({ toPromise: () => mocks.search(variables.query) }),
   useFragment: (_: unknown, data: unknown) => data,
   useMutation: () => [vi.fn(), false],
 }))
@@ -111,6 +120,13 @@ beforeEach(() => {
   mocks.privacy = false
   mocks.defaults = undefined
   vi.clearAllMocks()
+  mocks.search.mockImplementation(async (query: string) => ({
+    household: {
+      merchantSearch: [{ id: 'cafe', name: 'Corner Cafe', icon: null }].filter(
+        (item) => item.name.toLowerCase().includes(query.toLowerCase()),
+      ),
+    },
+  }))
   mocks.commit.mockResolvedValue(success)
 })
 afterEach(cleanup)
@@ -760,3 +776,78 @@ it.each([
     }
   },
 )
+
+it('selects an existing merchant and clears it after Save again', async () => {
+  await enter()
+  fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
+  fireEvent.click(await screen.findByRole('option', { name: /Corner Cafe/ }))
+  expect(
+    screen.getByRole('button', { name: 'Merchant: Corner Cafe' }),
+  ).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(mocks.commit.mock.calls[0][1].variables.input).toMatchObject({
+    merchantID: 'cafe',
+    merchantName: undefined,
+  })
+  await screen.findByRole('button', { name: 'Choose merchant' })
+})
+
+it('stages a new merchant until expense save and sends only the new name', async () => {
+  await enter()
+  fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
+  fireEvent.change(await screen.findByRole('combobox', { name: /Merchant/ }), {
+    target: { value: 'New Bakery' },
+  })
+  fireEvent.click(
+    await screen.findByRole('option', { name: /Add “New Bakery”/ }),
+  )
+  expect(mocks.commit).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(mocks.commit.mock.calls[0][1].variables.input).toMatchObject({
+    merchantID: undefined,
+    merchantName: 'New Bakery',
+  })
+})
+
+it('reset discards a staged merchant without creating it', async () => {
+  await enter()
+  fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
+  fireEvent.change(await screen.findByRole('combobox', { name: /Merchant/ }), {
+    target: { value: 'Unsaved Bakery' },
+  })
+  fireEvent.click(
+    await screen.findByRole('option', { name: /Add “Unsaved Bakery”/ }),
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Reset' }))
+  expect(mocks.commit).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: 'Food' }))
+  await screen.findByRole('button', { name: 'Choose merchant' })
+})
+
+it('desktop merchant autocomplete assigns the selected existing merchant', async () => {
+  const view = await enter()
+  mocks.mobile = false
+  view.rerender(<NewExpense fragmentRef={fixture as never} />)
+  fireEvent.focus(screen.getByRole('combobox', { name: /Merchant/ }))
+  fireEvent.change(screen.getByRole('combobox', { name: /Merchant/ }), {
+    target: { value: 'Corner' },
+  })
+  fireEvent.click(await screen.findByRole('option', { name: /Corner Cafe/ }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(mocks.commit.mock.calls[0][1].variables.input.merchantID).toBe('cafe')
+})
+
+it('a failed merchant search never offers to create an unknown duplicate', async () => {
+  mocks.search.mockRejectedValue(new Error('Offline'))
+  await enter()
+  fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
+  fireEvent.change(await screen.findByRole('combobox', { name: /Merchant/ }), {
+    target: { value: 'Corner Cafe' },
+  })
+  await screen.findByText('Could not load merchants. Type to retry.')
+  expect(screen.queryByRole('option', { name: /Add/ })).toBeNull()
+  expect(mocks.commit).not.toHaveBeenCalled()
+})

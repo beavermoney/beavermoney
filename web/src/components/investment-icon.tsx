@@ -6,15 +6,17 @@ export function InvestmentIcon({
   name,
   type,
   tooltip = true,
+  size = 'small',
 }: {
   symbol?: string | null
   name: string
   type?: string
   tooltip?: boolean
+  size?: 'small' | 'large'
 }) {
   return (
     <Avatar
-      size="xsm"
+      size={size === 'large' ? 'md' : 'xsm'}
       tooltip={tooltip}
       name={name}
       src={

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1a2621d732b033b9698a56efbb172013>>
+ * @generated SignedSource<<67f1aba37192f7c0447054dcdfe76851>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,6 +34,11 @@ export type editTransactionDialogTransactionFragment$data = {
     readonly price: string;
     readonly " $fragmentSpreads": FragmentRefs<"investmentLotCardFragment">;
   }> | null | undefined;
+  readonly merchant: {
+    readonly icon: string | null | undefined;
+    readonly id: string;
+    readonly name: string;
+  } | null | undefined;
   readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
@@ -63,10 +68,17 @@ v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "amount",
+  "name": "name",
   "storageKey": null
 },
 v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v3 = {
   "alias": null,
   "args": null,
   "concreteType": "Account",
@@ -88,6 +100,26 @@ return {
       "args": null,
       "kind": "FragmentSpread",
       "name": "mobileEditTransactionFragment"
+    },
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "Merchant",
+      "kind": "LinkedField",
+      "name": "merchant",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        (v1/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "icon",
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
     },
     (v0/*: any*/),
     {
@@ -134,13 +166,7 @@ return {
       "plural": false,
       "selections": [
         (v0/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "name",
-          "storageKey": null
-        },
+        (v1/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -165,7 +191,7 @@ return {
           "name": "investmentLotCardFragment"
         },
         (v0/*: any*/),
-        (v1/*: any*/),
+        (v2/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -182,7 +208,7 @@ return {
           "plural": false,
           "selections": [
             (v0/*: any*/),
-            (v2/*: any*/)
+            (v3/*: any*/)
           ],
           "storageKey": null
         }
@@ -203,8 +229,8 @@ return {
           "name": "transactionEntryCardFragment"
         },
         (v0/*: any*/),
-        (v1/*: any*/),
-        (v2/*: any*/)
+        (v2/*: any*/),
+        (v3/*: any*/)
       ],
       "storageKey": null
     }
@@ -214,6 +240,6 @@ return {
 };
 })();
 
-(node as any).hash = "b1c27e620a72beaf2a6794bb39811ff8";
+(node as any).hash = "8aab326b05444092accfe99b8dec7630";
 
 export default node;

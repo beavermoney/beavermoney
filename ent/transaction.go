@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"beavermoney.app/ent/household"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/user"
@@ -26,6 +27,8 @@ type Transaction struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// HouseholdID holds the value of the "household_id" field.
 	HouseholdID int `json:"household_id,omitempty"`
+	// MerchantID holds the value of the "merchant_id" field.
+	MerchantID *int `json:"merchant_id,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// Datetime holds the value of the "datetime" field.
@@ -46,6 +49,8 @@ type Transaction struct {
 
 // TransactionEdges holds the relations/edges for other nodes in the graph.
 type TransactionEdges struct {
+	// Merchant holds the value of the merchant edge.
+	Merchant *Merchant `json:"merchant,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// Household holds the value of the household edge.
@@ -58,12 +63,23 @@ type TransactionEdges struct {
 	InvestmentLots []*InvestmentLot `json:"investment_lots,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 	// totalCount holds the count of the edges above.
-	totalCount [5]map[string]int
+	totalCount [6]map[string]int
 
 	namedTransactionEntries map[string][]*TransactionEntry
 	namedInvestmentLots     map[string][]*InvestmentLot
+}
+
+// MerchantOrErr returns the Merchant value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TransactionEdges) MerchantOrErr() (*Merchant, error) {
+	if e.Merchant != nil {
+		return e.Merchant, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: merchant.Label}
+	}
+	return nil, &NotLoadedError{edge: "merchant"}
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -71,7 +87,7 @@ type TransactionEdges struct {
 func (e TransactionEdges) UserOrErr() (*User, error) {
 	if e.User != nil {
 		return e.User, nil
-	} else if e.loadedTypes[0] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: user.Label}
 	}
 	return nil, &NotLoadedError{edge: "user"}
@@ -82,7 +98,7 @@ func (e TransactionEdges) UserOrErr() (*User, error) {
 func (e TransactionEdges) HouseholdOrErr() (*Household, error) {
 	if e.Household != nil {
 		return e.Household, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: household.Label}
 	}
 	return nil, &NotLoadedError{edge: "household"}
@@ -93,7 +109,7 @@ func (e TransactionEdges) HouseholdOrErr() (*Household, error) {
 func (e TransactionEdges) CategoryOrErr() (*TransactionCategory, error) {
 	if e.Category != nil {
 		return e.Category, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: transactioncategory.Label}
 	}
 	return nil, &NotLoadedError{edge: "category"}
@@ -102,7 +118,7 @@ func (e TransactionEdges) CategoryOrErr() (*TransactionCategory, error) {
 // TransactionEntriesOrErr returns the TransactionEntries value or an error if the edge
 // was not loaded in eager-loading.
 func (e TransactionEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.TransactionEntries, nil
 	}
 	return nil, &NotLoadedError{edge: "transaction_entries"}
@@ -111,7 +127,7 @@ func (e TransactionEdges) TransactionEntriesOrErr() ([]*TransactionEntry, error)
 // InvestmentLotsOrErr returns the InvestmentLots value or an error if the edge
 // was not loaded in eager-loading.
 func (e TransactionEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.InvestmentLots, nil
 	}
 	return nil, &NotLoadedError{edge: "investment_lots"}
@@ -124,7 +140,7 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transaction.FieldExcludeFromReports, transaction.FieldPending:
 			values[i] = new(sql.NullBool)
-		case transaction.FieldID, transaction.FieldHouseholdID, transaction.FieldUserID, transaction.FieldCategoryID:
+		case transaction.FieldID, transaction.FieldHouseholdID, transaction.FieldMerchantID, transaction.FieldUserID, transaction.FieldCategoryID:
 			values[i] = new(sql.NullInt64)
 		case transaction.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -168,6 +184,13 @@ func (_m *Transaction) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field household_id", values[i])
 			} else if value.Valid {
 				_m.HouseholdID = int(value.Int64)
+			}
+		case transaction.FieldMerchantID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field merchant_id", values[i])
+			} else if value.Valid {
+				_m.MerchantID = new(int)
+				*_m.MerchantID = int(value.Int64)
 			}
 		case transaction.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -216,6 +239,11 @@ func (_m *Transaction) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Transaction) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryMerchant queries the "merchant" edge of the Transaction entity.
+func (_m *Transaction) QueryMerchant() *MerchantQuery {
+	return NewTransactionClient(_m.config).QueryMerchant(_m)
 }
 
 // QueryUser queries the "user" edge of the Transaction entity.
@@ -274,6 +302,11 @@ func (_m *Transaction) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("household_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdID))
+	builder.WriteString(", ")
+	if v := _m.MerchantID; v != nil {
+		builder.WriteString("merchant_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)

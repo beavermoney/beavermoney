@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d40de5fff252be778287cabeeef34264>>
+ * @generated SignedSource<<93ca2dc79f7331ac0f5b4374a60534b0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -36,6 +36,11 @@ export type transactionCardFragment$data = {
     };
     readonly price: string;
   }> | null | undefined;
+  readonly merchant: {
+    readonly icon: string | null | undefined;
+    readonly id: string;
+    readonly name: string;
+  } | null | undefined;
   readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
@@ -66,17 +71,24 @@ v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "amount",
+  "name": "name",
   "storageKey": null
 },
 v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "name",
+  "name": "icon",
   "storageKey": null
 },
 v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amount",
+  "storageKey": null
+},
+v4 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -94,7 +106,7 @@ v3 = {
   ],
   "storageKey": null
 },
-v4 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -125,13 +137,27 @@ return {
     {
       "alias": null,
       "args": null,
+      "concreteType": "Merchant",
+      "kind": "LinkedField",
+      "name": "merchant",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        (v1/*: any*/),
+        (v2/*: any*/)
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": "TransactionEntry",
       "kind": "LinkedField",
       "name": "transactionEntries",
       "plural": true,
       "selections": [
         (v0/*: any*/),
-        (v1/*: any*/),
+        (v3/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -140,8 +166,8 @@ return {
           "name": "account",
           "plural": false,
           "selections": [
-            (v2/*: any*/),
-            (v3/*: any*/)
+            (v1/*: any*/),
+            (v4/*: any*/)
           ],
           "storageKey": null
         }
@@ -157,7 +183,7 @@ return {
       "plural": true,
       "selections": [
         (v0/*: any*/),
-        (v1/*: any*/),
+        (v3/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -173,7 +199,7 @@ return {
           "name": "investment",
           "plural": false,
           "selections": [
-            (v2/*: any*/),
+            (v1/*: any*/),
             {
               "alias": null,
               "args": null,
@@ -181,7 +207,7 @@ return {
               "name": "symbol",
               "storageKey": null
             },
-            (v4/*: any*/),
+            (v5/*: any*/),
             {
               "alias": null,
               "args": null,
@@ -190,11 +216,11 @@ return {
               "name": "account",
               "plural": false,
               "selections": [
-                (v2/*: any*/)
+                (v1/*: any*/)
               ],
               "storageKey": null
             },
-            (v3/*: any*/)
+            (v4/*: any*/)
           ],
           "storageKey": null
         }
@@ -209,15 +235,9 @@ return {
       "name": "category",
       "plural": false,
       "selections": [
-        (v2/*: any*/),
-        (v4/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "icon",
-          "storageKey": null
-        }
+        (v1/*: any*/),
+        (v5/*: any*/),
+        (v2/*: any*/)
       ],
       "storageKey": null
     }
@@ -227,6 +247,6 @@ return {
 };
 })();
 
-(node as any).hash = "264cfb3bdc323caf19c4a56d70c65724";
+(node as any).hash = "a795ace514da569da22c0752ac29db3b";
 
 export default node;

@@ -583,6 +583,8 @@ type UpdateTransactionInput struct {
 	Datetime           *time.Time
 	ExcludeFromReports *bool
 	Pending            *bool
+	ClearMerchant      bool
+	MerchantID         *int
 	CategoryID         *int
 }
 
@@ -602,6 +604,12 @@ func (i *UpdateTransactionInput) Mutate(m *TransactionMutation) {
 	}
 	if v := i.Pending; v != nil {
 		m.SetPending(*v)
+	}
+	if i.ClearMerchant {
+		m.ClearMerchant()
+	}
+	if v := i.MerchantID; v != nil {
+		m.SetMerchantID(*v)
 	}
 	if v := i.CategoryID; v != nil {
 		m.SetCategoryID(*v)

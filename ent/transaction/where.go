@@ -70,6 +70,11 @@ func HouseholdID(v int) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldHouseholdID, v))
 }
 
+// MerchantID applies equality check predicate on the "merchant_id" field. It's identical to MerchantIDEQ.
+func MerchantID(v int) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldMerchantID, v))
+}
+
 // Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
 func Description(v string) predicate.Transaction {
 	return predicate.Transaction(sql.FieldEQ(FieldDescription, v))
@@ -198,6 +203,36 @@ func HouseholdIDIn(vs ...int) predicate.Transaction {
 // HouseholdIDNotIn applies the NotIn predicate on the "household_id" field.
 func HouseholdIDNotIn(vs ...int) predicate.Transaction {
 	return predicate.Transaction(sql.FieldNotIn(FieldHouseholdID, vs...))
+}
+
+// MerchantIDEQ applies the EQ predicate on the "merchant_id" field.
+func MerchantIDEQ(v int) predicate.Transaction {
+	return predicate.Transaction(sql.FieldEQ(FieldMerchantID, v))
+}
+
+// MerchantIDNEQ applies the NEQ predicate on the "merchant_id" field.
+func MerchantIDNEQ(v int) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNEQ(FieldMerchantID, v))
+}
+
+// MerchantIDIn applies the In predicate on the "merchant_id" field.
+func MerchantIDIn(vs ...int) predicate.Transaction {
+	return predicate.Transaction(sql.FieldIn(FieldMerchantID, vs...))
+}
+
+// MerchantIDNotIn applies the NotIn predicate on the "merchant_id" field.
+func MerchantIDNotIn(vs ...int) predicate.Transaction {
+	return predicate.Transaction(sql.FieldNotIn(FieldMerchantID, vs...))
+}
+
+// MerchantIDIsNil applies the IsNil predicate on the "merchant_id" field.
+func MerchantIDIsNil() predicate.Transaction {
+	return predicate.Transaction(sql.FieldIsNull(FieldMerchantID))
+}
+
+// MerchantIDNotNil applies the NotNil predicate on the "merchant_id" field.
+func MerchantIDNotNil() predicate.Transaction {
+	return predicate.Transaction(sql.FieldNotNull(FieldMerchantID))
 }
 
 // DescriptionEQ applies the EQ predicate on the "description" field.
@@ -373,6 +408,29 @@ func PendingEQ(v bool) predicate.Transaction {
 // PendingNEQ applies the NEQ predicate on the "pending" field.
 func PendingNEQ(v bool) predicate.Transaction {
 	return predicate.Transaction(sql.FieldNEQ(FieldPending, v))
+}
+
+// HasMerchant applies the HasEdge predicate on the "merchant" edge.
+func HasMerchant() predicate.Transaction {
+	return predicate.Transaction(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, MerchantTable, MerchantColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMerchantWith applies the HasEdge predicate on the "merchant" edge with a given conditions (other predicates).
+func HasMerchantWith(preds ...predicate.Merchant) predicate.Transaction {
+	return predicate.Transaction(func(s *sql.Selector) {
+		step := newMerchantStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

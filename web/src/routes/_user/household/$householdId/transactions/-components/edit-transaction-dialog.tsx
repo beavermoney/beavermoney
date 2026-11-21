@@ -1,3 +1,7 @@
+import {
+  MerchantPicker,
+  type MerchantSelection,
+} from '@/components/merchant-picker'
 import { Card } from '@astryxdesign/core/Card'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -48,15 +52,15 @@ import { InvestmentLotCard } from './investment-lot-card'
 import { TransactionEntryCard } from './transaction-entry-card'
 
 import { NodeType, useDeleteNode } from '@/lib/relay'
-import { identity } from 'lodash-es'
 import { TransactionCategoryPicker } from './transaction-category-picker'
 
 const editTransactionDialogUpdateMutation = graphql`
   mutation editTransactionDialogUpdateMutation(
     $id: ID!
     $input: UpdateTransactionInput!
+    $merchantName: String
   ) {
-    updateTransaction(id: $id, input: $input) {
+    updateTransaction(id: $id, input: $input, merchantName: $merchantName) {
       node {
         id
         description
@@ -85,6 +89,11 @@ const editTransactionDialogDeleteMutation = graphql`
 const editTransactionDialogTransactionFragment = graphql`
   fragment editTransactionDialogTransactionFragment on Transaction {
     ...mobileEditTransactionFragment
+    merchant {
+      id
+      name
+      icon
+    }
     id
     description
     datetime
@@ -228,6 +237,13 @@ function EditTransactionContent({
 }) {
   const { t } = useLingui()
   const formSchema = z.object({
+    merchant: z
+      .object({
+        id: z.string().optional(),
+        name: z.string(),
+        icon: z.string().nullable().optional(),
+      })
+      .nullable(),
     description: z
       .string()
       .max(256, t`Description must be at most 256 characters.`),
@@ -340,6 +356,7 @@ function EditTransactionContent({
 
   const form = useForm({
     defaultValues: {
+      merchant: (transaction.merchant ?? null) as MerchantSelection | null,
       description: transaction.description ?? '',
       datetime: new Date(transaction.datetime),
       categoryId: transaction.categoryID,
@@ -358,7 +375,19 @@ function EditTransactionContent({
           {
             variables: {
               id: transaction.id,
+              merchantName:
+                transaction.category.type === 'expense' &&
+                formData.merchant &&
+                !formData.merchant.id
+                  ? formData.merchant.name
+                  : undefined,
               input: {
+                ...(transaction.category.type === 'expense'
+                  ? {
+                      merchantID: formData.merchant?.id,
+                      clearMerchant: !formData.merchant,
+                    }
+                  : {}),
                 description: formData.description || null,
                 datetime: formData.datetime.toISOString(),
                 categoryID: formData.categoryId,
@@ -366,7 +395,7 @@ function EditTransactionContent({
                 pending: formData.pending,
               },
             },
-            updater: identity,
+            updater: (store) => store.invalidateStore(),
           },
         )
 
@@ -683,6 +712,17 @@ function EditTransactionContent({
               }}
             >
               <FormLayout>
+                {transaction.category.type === 'expense' && (
+                  <form.Field name="merchant">
+                    {(field) => (
+                      <MerchantPicker
+                        value={field.state.value}
+                        onChange={field.handleChange}
+                        disabled={isUpdateInFlight}
+                      />
+                    )}
+                  </form.Field>
+                )}
                 <form.Field
                   name="description"
                   children={(field) => {

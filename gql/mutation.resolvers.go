@@ -230,6 +230,10 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.
 		return nil, err
 	}
 
+	if _, err := client.Merchant.Delete().Exec(ctx); err != nil {
+		return nil, err
+	}
+
 	// 5. TransactionCategory — restricted by Transaction; transactions are now deleted
 	_, err = client.TransactionCategory.Delete().
 		Where(transactioncategory.HouseholdIDEQ(id)).
@@ -809,6 +813,21 @@ func (r *mutationResolver) DeleteRecurringSubscription(ctx context.Context, id i
 	return &model.DeleteRecurringSubscriptionPayload{DeletedRecurringSubscriptionID: id}, nil
 }
 
+// CreateMerchant is the resolver for the createMerchant field.
+func (r *mutationResolver) CreateMerchant(ctx context.Context, name string, icon *string) (*ent.Merchant, error) {
+	return r.createMerchant(ctx, name, icon)
+}
+
+// UpdateMerchant is the resolver for the updateMerchant field.
+func (r *mutationResolver) UpdateMerchant(ctx context.Context, id int, name *string, icon *string, clearIcon *bool) (*ent.Merchant, error) {
+	return r.updateMerchant(ctx, id, name, icon, clearIcon)
+}
+
+// MergeMerchant is the resolver for the mergeMerchant field.
+func (r *mutationResolver) MergeMerchant(ctx context.Context, sourceID int, targetID int) (*model.MergeMerchantPayload, error) {
+	return r.mergeMerchant(ctx, sourceID, targetID)
+}
+
 // CreateExpense is the resolver for the createExpense field.
 func (r *mutationResolver) CreateExpense(ctx context.Context, input model.CreateExpenseInputCustom) (*ent.TransactionEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
@@ -836,8 +855,13 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.Create
 		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
+	merchantID, err := r.expenseMerchant(ctx, client, input.Transaction.CategoryID, input.MerchantID, input.MerchantName)
+	if err != nil {
+		return nil, err
+	}
 	// Create transaction
 	txn, err := client.Transaction.Create().
+		SetNillableMerchantID(merchantID).
 		SetHouseholdID(householdID).
 		SetInput(*input.Transaction).
 		Save(ctx)
@@ -1511,7 +1535,7 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 }
 
 // UpdateTransaction is the resolver for the updateTransaction field.
-func (r *mutationResolver) UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput) (*ent.TransactionEdge, error) {
+func (r *mutationResolver) UpdateTransaction(ctx context.Context, id int, input ent.UpdateTransactionInput, merchantName *string) (*ent.TransactionEdge, error) {
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -1525,6 +1549,9 @@ func (r *mutationResolver) UpdateTransaction(ctx context.Context, id int, input 
 
 	client := ent.FromContext(ctx)
 
+	if err := r.prepareMerchantUpdate(ctx, client, id, &input, merchantName); err != nil {
+		return nil, err
+	}
 	data, err := client.Transaction.UpdateOneID(id).SetInput(input).Save(ctx)
 	if err != nil {
 		return nil, err

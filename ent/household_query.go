@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
@@ -40,6 +41,7 @@ type HouseholdQuery struct {
 	order                           []household.OrderOption
 	inters                          []Interceptor
 	predicates                      []predicate.Household
+	withMerchants                   *MerchantQuery
 	withSnapshotAccounts            *SnapshotAccountQuery
 	withSnapshotInvestments         *SnapshotInvestmentQuery
 	withUsers                       *UserQuery
@@ -58,6 +60,7 @@ type HouseholdQuery struct {
 	withUserHouseholds              *UserHouseholdQuery
 	loadTotal                       []func(context.Context, []*Household) error
 	modifiers                       []func(*sql.Selector)
+	withNamedMerchants              map[string]*MerchantQuery
 	withNamedSnapshotAccounts       map[string]*SnapshotAccountQuery
 	withNamedSnapshotInvestments    map[string]*SnapshotInvestmentQuery
 	withNamedUsers                  map[string]*UserQuery
@@ -108,6 +111,28 @@ func (_q *HouseholdQuery) Unique(unique bool) *HouseholdQuery {
 func (_q *HouseholdQuery) Order(o ...household.OrderOption) *HouseholdQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QueryMerchants chains the current query on the "merchants" edge.
+func (_q *HouseholdQuery) QueryMerchants() *MerchantQuery {
+	query := (&MerchantClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, selector),
+			sqlgraph.To(merchant.Table, merchant.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.MerchantsTable, household.MerchantsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QuerySnapshotAccounts chains the current query on the "snapshot_accounts" edge.
@@ -654,6 +679,7 @@ func (_q *HouseholdQuery) Clone() *HouseholdQuery {
 		order:                      append([]household.OrderOption{}, _q.order...),
 		inters:                     append([]Interceptor{}, _q.inters...),
 		predicates:                 append([]predicate.Household{}, _q.predicates...),
+		withMerchants:              _q.withMerchants.Clone(),
 		withSnapshotAccounts:       _q.withSnapshotAccounts.Clone(),
 		withSnapshotInvestments:    _q.withSnapshotInvestments.Clone(),
 		withUsers:                  _q.withUsers.Clone(),
@@ -675,6 +701,17 @@ func (_q *HouseholdQuery) Clone() *HouseholdQuery {
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithMerchants tells the query-builder to eager-load the nodes that are connected to
+// the "merchants" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithMerchants(opts ...func(*MerchantQuery)) *HouseholdQuery {
+	query := (&MerchantClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withMerchants = query
+	return _q
 }
 
 // WithSnapshotAccounts tells the query-builder to eager-load the nodes that are connected to
@@ -937,7 +974,8 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	var (
 		nodes       = []*Household{}
 		_spec       = _q.querySpec()
-		loadedTypes = [16]bool{
+		loadedTypes = [17]bool{
+			_q.withMerchants != nil,
 			_q.withSnapshotAccounts != nil,
 			_q.withSnapshotInvestments != nil,
 			_q.withUsers != nil,
@@ -976,6 +1014,13 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := _q.withMerchants; query != nil {
+		if err := _q.loadMerchants(ctx, query, nodes,
+			func(n *Household) { n.Edges.Merchants = []*Merchant{} },
+			func(n *Household, e *Merchant) { n.Edges.Merchants = append(n.Edges.Merchants, e) }); err != nil {
+			return nil, err
+		}
 	}
 	if query := _q.withSnapshotAccounts; query != nil {
 		if err := _q.loadSnapshotAccounts(ctx, query, nodes,
@@ -1099,6 +1144,13 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 			return nil, err
 		}
 	}
+	for name, query := range _q.withNamedMerchants {
+		if err := _q.loadMerchants(ctx, query, nodes,
+			func(n *Household) { n.appendNamedMerchants(name) },
+			func(n *Household, e *Merchant) { n.appendNamedMerchants(name, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedSnapshotAccounts {
 		if err := _q.loadSnapshotAccounts(ctx, query, nodes,
 			func(n *Household) { n.appendNamedSnapshotAccounts(name) },
@@ -1219,6 +1271,36 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	return nodes, nil
 }
 
+func (_q *HouseholdQuery) loadMerchants(ctx context.Context, query *MerchantQuery, nodes []*Household, init func(*Household), assign func(*Household, *Merchant)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Household)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(merchant.FieldHouseholdID)
+	}
+	query.Where(predicate.Merchant(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(household.MerchantsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (_q *HouseholdQuery) loadSnapshotAccounts(ctx context.Context, query *SnapshotAccountQuery, nodes []*Household, init func(*Household), assign func(*Household, *SnapshotAccount)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Household)
@@ -1822,6 +1904,20 @@ func (_q *HouseholdQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *HouseholdQuery) Modify(modifiers ...func(s *sql.Selector)) *HouseholdSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedMerchants tells the query-builder to eager-load the nodes that are connected to the "merchants"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithNamedMerchants(name string, opts ...func(*MerchantQuery)) *HouseholdQuery {
+	query := (&MerchantClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedMerchants == nil {
+		_q.withNamedMerchants = make(map[string]*MerchantQuery)
+	}
+	_q.withNamedMerchants[name] = query
+	return _q
 }
 
 // WithNamedSnapshotAccounts tells the query-builder to eager-load the nodes that are connected to the "snapshot_accounts"

@@ -37,6 +37,8 @@ type CategoryTypeAggregate struct {
 }
 
 type CreateExpenseInputCustom struct {
+	MerchantID       *int                               `json:"merchantID,omitempty"`
+	MerchantName     *string                            `json:"merchantName,omitempty"`
 	Transaction      *ent.CreateTransactionInput        `json:"transaction"`
 	TransactionEntry *ent.CreateTransactionEntryInput   `json:"transactionEntry"`
 	Fees             []*ent.CreateTransactionEntryInput `json:"fees"`
@@ -106,6 +108,50 @@ type FinancialReport struct {
 	TransactionCount  int                    `json:"transactionCount"`
 	StartDate         time.Time              `json:"startDate"`
 	EndDate           time.Time              `json:"endDate"`
+}
+
+type MerchantCategorySummary struct {
+	Category         *ent.TransactionCategory `json:"category"`
+	Total            string                   `json:"total"`
+	TransactionCount int                      `json:"transactionCount"`
+}
+
+type MerchantInsights struct {
+	CurrencyCode string                     `json:"currencyCode"`
+	Period       *MerchantSpendSummary      `json:"period"`
+	Lifetime     *MerchantSpendSummary      `json:"lifetime"`
+	Categories   []*MerchantCategorySummary `json:"categories"`
+	Monthly      []*MerchantMonthlySummary  `json:"monthly"`
+}
+
+type MerchantMonthlySummary struct {
+	Month            string `json:"month"`
+	Total            string `json:"total"`
+	TransactionCount int    `json:"transactionCount"`
+}
+
+type MerchantOverview struct {
+	CurrencyCode string                   `json:"currencyCode"`
+	Total        *MerchantSpendSummary    `json:"total"`
+	Merchants    []*MerchantPeriodSummary `json:"merchants"`
+	Unassigned   *MerchantSpendSummary    `json:"unassigned"`
+}
+
+type MerchantPeriodSummary struct {
+	Merchant *ent.Merchant         `json:"merchant"`
+	Summary  *MerchantSpendSummary `json:"summary"`
+}
+
+type MerchantSpendSummary struct {
+	Total            string `json:"total"`
+	TransactionCount int    `json:"transactionCount"`
+	Average          string `json:"average"`
+}
+
+type MergeMerchantPayload struct {
+	DeletedMerchantID int           `json:"deletedMerchantID"`
+	TargetMerchant    *ent.Merchant `json:"targetMerchant"`
+	ReassignedCount   int           `json:"reassignedCount"`
 }
 
 type MoveInvestmentInputCustom struct {

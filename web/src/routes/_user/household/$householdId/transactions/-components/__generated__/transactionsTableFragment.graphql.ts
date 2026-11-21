@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<276da0f2a1e2353ec1aa0d183f1c74b5>>
+ * @generated SignedSource<<9cec81f5df57cf34ff6df1032d482f36>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -39,6 +39,11 @@ export type transactionsTableFragment$data = ReadonlyArray<{
     };
     readonly price: string;
   }> | null | undefined;
+  readonly merchant: {
+    readonly icon: string | null | undefined;
+    readonly id: string;
+    readonly name: string;
+  } | null | undefined;
   readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
@@ -76,14 +81,14 @@ v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "icon",
+  "name": "name",
   "storageKey": null
 },
 v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "name",
+  "name": "icon",
   "storageKey": null
 },
 v3 = {
@@ -94,7 +99,7 @@ v3 = {
   "name": "user",
   "plural": false,
   "selections": [
-    (v2/*: any*/)
+    (v1/*: any*/)
   ],
   "storageKey": null
 },
@@ -149,6 +154,20 @@ return {
     {
       "alias": null,
       "args": null,
+      "concreteType": "Merchant",
+      "kind": "LinkedField",
+      "name": "merchant",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        (v1/*: any*/),
+        (v2/*: any*/)
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "kind": "ScalarField",
       "name": "excludeFromReports",
       "storageKey": null
@@ -168,7 +187,7 @@ return {
       "name": "category",
       "plural": false,
       "selections": [
-        (v1/*: any*/),
+        (v2/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -176,7 +195,7 @@ return {
           "name": "type",
           "storageKey": null
         },
-        (v2/*: any*/)
+        (v1/*: any*/)
       ],
       "storageKey": null
     },
@@ -199,8 +218,8 @@ return {
           "name": "account",
           "plural": false,
           "selections": [
-            (v1/*: any*/),
             (v2/*: any*/),
+            (v1/*: any*/),
             (v3/*: any*/),
             (v5/*: any*/)
           ],
@@ -249,8 +268,8 @@ return {
               "name": "account",
               "plural": false,
               "selections": [
-                (v1/*: any*/),
                 (v2/*: any*/),
+                (v1/*: any*/),
                 (v3/*: any*/)
               ],
               "storageKey": null
@@ -268,6 +287,6 @@ return {
 };
 })();
 
-(node as any).hash = "9aff61ef01467705ca6f44e634ca3cc7";
+(node as any).hash = "8bad2bb1d9f1f64a0c0fda100d084017";
 
 export default node;

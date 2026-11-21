@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
@@ -1602,6 +1603,255 @@ func (_m *InvestmentLot) ToEdge(order *InvestmentLotOrder) *InvestmentLotEdge {
 		order = DefaultInvestmentLotOrder
 	}
 	return &InvestmentLotEdge{
+		Node:   _m,
+		Cursor: order.Field.toCursor(_m),
+	}
+}
+
+// MerchantEdge is the edge representation of Merchant.
+type MerchantEdge struct {
+	Node   *Merchant `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// MerchantConnection is the connection containing edges to Merchant.
+type MerchantConnection struct {
+	Edges      []*MerchantEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+func (c *MerchantConnection) build(nodes []*Merchant, pager *merchantPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *Merchant
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Merchant {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Merchant {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*MerchantEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &MerchantEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// MerchantPaginateOption enables pagination customization.
+type MerchantPaginateOption func(*merchantPager) error
+
+// WithMerchantOrder configures pagination ordering.
+func WithMerchantOrder(order *MerchantOrder) MerchantPaginateOption {
+	if order == nil {
+		order = DefaultMerchantOrder
+	}
+	o := *order
+	return func(pager *merchantPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMerchantOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMerchantFilter configures pagination filter.
+func WithMerchantFilter(filter func(*MerchantQuery) (*MerchantQuery, error)) MerchantPaginateOption {
+	return func(pager *merchantPager) error {
+		if filter == nil {
+			return errors.New("MerchantQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type merchantPager struct {
+	reverse bool
+	order   *MerchantOrder
+	filter  func(*MerchantQuery) (*MerchantQuery, error)
+}
+
+func newMerchantPager(opts []MerchantPaginateOption, reverse bool) (*merchantPager, error) {
+	pager := &merchantPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMerchantOrder
+	}
+	return pager, nil
+}
+
+func (p *merchantPager) applyFilter(query *MerchantQuery) (*MerchantQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *merchantPager) toCursor(_m *Merchant) Cursor {
+	return p.order.Field.toCursor(_m)
+}
+
+func (p *merchantPager) applyCursors(query *MerchantQuery, after, before *Cursor) (*MerchantQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultMerchantOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *merchantPager) applyOrder(query *MerchantQuery) *MerchantQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultMerchantOrder.Field {
+		query = query.Order(DefaultMerchantOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *merchantPager) orderExpr(query *MerchantQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultMerchantOrder.Field {
+			b.Comma().Ident(DefaultMerchantOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Merchant.
+func (_m *MerchantQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MerchantPaginateOption,
+) (*MerchantConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMerchantPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if _m, err = pager.applyFilter(_m); err != nil {
+		return nil, err
+	}
+	conn := &MerchantConnection{Edges: []*MerchantEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := _m.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if _m, err = pager.applyCursors(_m, after, before); err != nil {
+		return nil, err
+	}
+	limit := paginateLimit(first, last)
+	if limit != 0 {
+		_m.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := _m.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	_m = pager.applyOrder(_m)
+	nodes, err := _m.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+// MerchantOrderField defines the ordering field of Merchant.
+type MerchantOrderField struct {
+	// Value extracts the ordering value from the given Merchant.
+	Value    func(*Merchant) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) merchant.OrderOption
+	toCursor func(*Merchant) Cursor
+}
+
+// MerchantOrder defines the ordering of Merchant.
+type MerchantOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *MerchantOrderField `json:"field"`
+}
+
+// DefaultMerchantOrder is the default ordering of Merchant.
+var DefaultMerchantOrder = &MerchantOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &MerchantOrderField{
+		Value: func(_m *Merchant) (ent.Value, error) {
+			return _m.ID, nil
+		},
+		column: merchant.FieldID,
+		toTerm: merchant.ByID,
+		toCursor: func(_m *Merchant) Cursor {
+			return Cursor{ID: _m.ID}
+		},
+	},
+}
+
+// ToEdge converts Merchant into MerchantEdge.
+func (_m *Merchant) ToEdge(order *MerchantOrder) *MerchantEdge {
+	if order == nil {
+		order = DefaultMerchantOrder
+	}
+	return &MerchantEdge{
 		Node:   _m,
 		Cursor: order.Field.toCursor(_m),
 	}

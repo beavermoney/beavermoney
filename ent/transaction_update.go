@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -36,6 +37,26 @@ func (_u *TransactionUpdate) Where(ps ...predicate.Transaction) *TransactionUpda
 // SetUpdateTime sets the "update_time" field.
 func (_u *TransactionUpdate) SetUpdateTime(v time.Time) *TransactionUpdate {
 	_u.mutation.SetUpdateTime(v)
+	return _u
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (_u *TransactionUpdate) SetMerchantID(v int) *TransactionUpdate {
+	_u.mutation.SetMerchantID(v)
+	return _u
+}
+
+// SetNillableMerchantID sets the "merchant_id" field if the given value is not nil.
+func (_u *TransactionUpdate) SetNillableMerchantID(v *int) *TransactionUpdate {
+	if v != nil {
+		_u.SetMerchantID(*v)
+	}
+	return _u
+}
+
+// ClearMerchantID clears the value of the "merchant_id" field.
+func (_u *TransactionUpdate) ClearMerchantID() *TransactionUpdate {
+	_u.mutation.ClearMerchantID()
 	return _u
 }
 
@@ -129,6 +150,11 @@ func (_u *TransactionUpdate) SetNillablePending(v *bool) *TransactionUpdate {
 	return _u
 }
 
+// SetMerchant sets the "merchant" edge to the Merchant entity.
+func (_u *TransactionUpdate) SetMerchant(v *Merchant) *TransactionUpdate {
+	return _u.SetMerchantID(v.ID)
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *TransactionUpdate) SetUser(v *User) *TransactionUpdate {
 	return _u.SetUserID(v.ID)
@@ -172,6 +198,12 @@ func (_u *TransactionUpdate) AddInvestmentLots(v ...*InvestmentLot) *Transaction
 // Mutation returns the TransactionMutation object of the builder.
 func (_u *TransactionUpdate) Mutation() *TransactionMutation {
 	return _u.mutation
+}
+
+// ClearMerchant clears the "merchant" edge to the Merchant entity.
+func (_u *TransactionUpdate) ClearMerchant() *TransactionUpdate {
+	_u.mutation.ClearMerchant()
+	return _u
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -329,6 +361,35 @@ func (_u *TransactionUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if value, ok := _u.mutation.Pending(); ok {
 		_spec.SetField(transaction.FieldPending, field.TypeBool, value)
+	}
+	if _u.mutation.MerchantCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transaction.MerchantTable,
+			Columns: []string{transaction.MerchantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.MerchantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transaction.MerchantTable,
+			Columns: []string{transaction.MerchantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -506,6 +567,26 @@ func (_u *TransactionUpdateOne) SetUpdateTime(v time.Time) *TransactionUpdateOne
 	return _u
 }
 
+// SetMerchantID sets the "merchant_id" field.
+func (_u *TransactionUpdateOne) SetMerchantID(v int) *TransactionUpdateOne {
+	_u.mutation.SetMerchantID(v)
+	return _u
+}
+
+// SetNillableMerchantID sets the "merchant_id" field if the given value is not nil.
+func (_u *TransactionUpdateOne) SetNillableMerchantID(v *int) *TransactionUpdateOne {
+	if v != nil {
+		_u.SetMerchantID(*v)
+	}
+	return _u
+}
+
+// ClearMerchantID clears the value of the "merchant_id" field.
+func (_u *TransactionUpdateOne) ClearMerchantID() *TransactionUpdateOne {
+	_u.mutation.ClearMerchantID()
+	return _u
+}
+
 // SetDescription sets the "description" field.
 func (_u *TransactionUpdateOne) SetDescription(v string) *TransactionUpdateOne {
 	_u.mutation.SetDescription(v)
@@ -596,6 +677,11 @@ func (_u *TransactionUpdateOne) SetNillablePending(v *bool) *TransactionUpdateOn
 	return _u
 }
 
+// SetMerchant sets the "merchant" edge to the Merchant entity.
+func (_u *TransactionUpdateOne) SetMerchant(v *Merchant) *TransactionUpdateOne {
+	return _u.SetMerchantID(v.ID)
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (_u *TransactionUpdateOne) SetUser(v *User) *TransactionUpdateOne {
 	return _u.SetUserID(v.ID)
@@ -639,6 +725,12 @@ func (_u *TransactionUpdateOne) AddInvestmentLots(v ...*InvestmentLot) *Transact
 // Mutation returns the TransactionMutation object of the builder.
 func (_u *TransactionUpdateOne) Mutation() *TransactionMutation {
 	return _u.mutation
+}
+
+// ClearMerchant clears the "merchant" edge to the Merchant entity.
+func (_u *TransactionUpdateOne) ClearMerchant() *TransactionUpdateOne {
+	_u.mutation.ClearMerchant()
+	return _u
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -826,6 +918,35 @@ func (_u *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transaction
 	}
 	if value, ok := _u.mutation.Pending(); ok {
 		_spec.SetField(transaction.FieldPending, field.TypeBool, value)
+	}
+	if _u.mutation.MerchantCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transaction.MerchantTable,
+			Columns: []string{transaction.MerchantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.MerchantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transaction.MerchantTable,
+			Columns: []string{transaction.MerchantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

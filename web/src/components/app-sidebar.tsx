@@ -34,7 +34,15 @@ const appSidebarFragment = graphql`
 const MAIN_NAV = NAV.filter(
   (item) =>
     item.link.to !== '/household/$householdId/settings' &&
-    item.link.to !== '/household/$householdId/subscriptions',
+    item.link.to !== '/household/$householdId/subscriptions' &&
+    item.link.to !== '/household/$householdId/categories' &&
+    item.link.to !== '/household/$householdId/merchants',
+)
+
+const INSIGHTS_NAV = NAV.filter(
+  (item) =>
+    item.link.to === '/household/$householdId/categories' ||
+    item.link.to === '/household/$householdId/merchants',
 )
 
 const TOOLS_NAV = NAV.filter(
@@ -86,6 +94,13 @@ function SidebarSections() {
       <NavProjects
         title={household.name}
         projects={MAIN_NAV.map((item) => ({
+          ...item,
+          name: i18n._(item.name),
+        }))}
+      />
+      <NavProjects
+        title={t`Insights`}
+        projects={INSIGHTS_NAV.map((item) => ({
           ...item,
           name: i18n._(item.name),
         }))}

@@ -1,3 +1,4 @@
+import { MerchantCategoryAvatar } from '@/components/merchant-category-avatar'
 import { AccountAvatar } from '@/components/account-avatar'
 import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
@@ -41,6 +42,11 @@ const fragment = graphql`
     id
     datetime
     description
+    merchant {
+      id
+      name
+      icon
+    }
     excludeFromReports
     pending
     category {
@@ -208,8 +214,15 @@ export function TransactionsTable({
         const { category } = transaction
         return (
           <Stack direction="horizontal" gap={2} align="center">
-            <CategoryIcon type={category.type} icon={category.icon} />
-            <Stack direction="vertical" gap={0.5}>
+            {transaction.merchant ? (
+              <MerchantCategoryAvatar
+                merchant={transaction.merchant}
+                category={category}
+              />
+            ) : (
+              <CategoryIcon type={category.type} icon={category.icon} />
+            )}
+            <Stack direction="vertical" gap={0.5} className="min-w-0">
               <Stack direction="horizontal" gap={2} align="center">
                 <Link
                   to="."
@@ -225,6 +238,11 @@ export function TransactionsTable({
                 >
                   {category.name}
                 </Link>
+                {transaction.merchant && (
+                  <Text color="secondary" maxLines={1}>
+                    {transaction.merchant.name}
+                  </Text>
+                )}
               </Stack>
               {transaction.description && (
                 <span title={transaction.description}>

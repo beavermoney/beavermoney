@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fe09a4c790543fdc35e19d5f46582113>>
+ * @generated SignedSource<<812bc1d8e4a127b294e87ab2a7463c01>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,14 +14,17 @@ export type TransactionCategoryType = "expense" | "income" | "investment" | "set
 export type UpdateTransactionInput = {
   categoryID?: string | null | undefined;
   clearDescription?: boolean | null | undefined;
+  clearMerchant?: boolean | null | undefined;
   datetime?: any | null | undefined;
   description?: string | null | undefined;
   excludeFromReports?: boolean | null | undefined;
+  merchantID?: string | null | undefined;
   pending?: boolean | null | undefined;
 };
 export type editTransactionDialogUpdateMutation$variables = {
   id: string;
   input: UpdateTransactionInput;
+  merchantName?: string | null | undefined;
 };
 export type editTransactionDialogUpdateMutation$data = {
   readonly updateTransaction: {
@@ -56,6 +59,11 @@ var v0 = [
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "merchantName"
   }
 ],
 v1 = [
@@ -68,6 +76,11 @@ v1 = [
     "kind": "Variable",
     "name": "input",
     "variableName": "input"
+  },
+  {
+    "kind": "Variable",
+    "name": "merchantName",
+    "variableName": "merchantName"
   }
 ],
 v2 = {
@@ -115,6 +128,13 @@ v7 = {
 v8 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
   "concreteType": "TransactionCategory",
   "kind": "LinkedField",
   "name": "category",
@@ -123,24 +143,18 @@ v8 = {
     (v2/*: any*/),
     (v6/*: any*/),
     (v7/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "icon",
-      "storageKey": null
-    }
+    (v8/*: any*/)
   ],
   "storageKey": null
 },
-v9 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "amount",
   "storageKey": null
 },
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -186,7 +200,7 @@ return {
               (v3/*: any*/),
               (v4/*: any*/),
               (v5/*: any*/),
-              (v8/*: any*/),
+              (v9/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -228,7 +242,7 @@ return {
               (v3/*: any*/),
               (v4/*: any*/),
               (v5/*: any*/),
-              (v8/*: any*/),
+              (v9/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -246,13 +260,27 @@ return {
               {
                 "alias": null,
                 "args": null,
+                "concreteType": "Merchant",
+                "kind": "LinkedField",
+                "name": "merchant",
+                "plural": false,
+                "selections": [
+                  (v2/*: any*/),
+                  (v6/*: any*/),
+                  (v8/*: any*/)
+                ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "TransactionEntry",
                 "kind": "LinkedField",
                 "name": "transactionEntries",
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v9/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -262,7 +290,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v6/*: any*/),
-                      (v10/*: any*/),
+                      (v11/*: any*/),
                       (v2/*: any*/)
                     ],
                     "storageKey": null
@@ -279,7 +307,7 @@ return {
                 "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v9/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -317,7 +345,7 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v10/*: any*/),
+                      (v11/*: any*/),
                       (v2/*: any*/)
                     ],
                     "storageKey": null
@@ -334,16 +362,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "668e3ea2f20e8e38e5e16ed0571113cc",
+    "cacheID": "ca1b040859ae6650ed7ebe91840019a1",
     "id": null,
     "metadata": {},
     "name": "editTransactionDialogUpdateMutation",
     "operationKind": "mutation",
-    "text": "mutation editTransactionDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n) {\n  updateTransaction(id: $id, input: $input) {\n    node {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n        icon\n      }\n      ...transactionCardFragment\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
+    "text": "mutation editTransactionDialogUpdateMutation(\n  $id: ID!\n  $input: UpdateTransactionInput!\n  $merchantName: String\n) {\n  updateTransaction(id: $id, input: $input, merchantName: $merchantName) {\n    node {\n      id\n      description\n      datetime\n      categoryID\n      category {\n        id\n        name\n        type\n        icon\n      }\n      ...transactionCardFragment\n    }\n  }\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  merchant {\n    id\n    name\n    icon\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b58b8c2b57d83947729498447610196a";
+(node as any).hash = "9e4a371a6b5e6166ef0fae0b8973ce39";
 
 export default node;

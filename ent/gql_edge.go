@@ -56,6 +56,26 @@ func (_m *Account) Investments(ctx context.Context) (result []*Investment, err e
 	return result, err
 }
 
+func (_m *Household) Merchants(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, where *MerchantWhereInput,
+) (*MerchantConnection, error) {
+	opts := []MerchantPaginateOption{
+		WithMerchantFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[0][alias]
+	if nodes, err := _m.NamedMerchants(alias); err == nil || hasTotalCount {
+		pager, err := newMerchantPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &MerchantConnection{Edges: []*MerchantEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return _m.QueryMerchants().Paginate(ctx, after, first, before, last, opts...)
+}
+
 func (_m *Household) Users(ctx context.Context) (result []*User, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = _m.NamedUsers(graphql.GetFieldContext(ctx).Field.Alias)
@@ -75,7 +95,7 @@ func (_m *Household) Accounts(
 		WithAccountFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[1][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[2][alias]
 	if nodes, err := _m.NamedAccounts(alias); err == nil || hasTotalCount {
 		pager, err := newAccountPager(opts, last != nil)
 		if err != nil {
@@ -96,7 +116,7 @@ func (_m *Household) Transactions(
 		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[2][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[3][alias]
 	if nodes, err := _m.NamedTransactions(alias); err == nil || hasTotalCount {
 		pager, err := newTransactionPager(opts, last != nil)
 		if err != nil {
@@ -116,7 +136,7 @@ func (_m *Household) Investments(
 		WithInvestmentFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[3][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[4][alias]
 	if nodes, err := _m.NamedInvestments(alias); err == nil || hasTotalCount {
 		pager, err := newInvestmentPager(opts, last != nil)
 		if err != nil {
@@ -136,7 +156,7 @@ func (_m *Household) InvestmentLots(
 		WithInvestmentLotFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[4][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[5][alias]
 	if nodes, err := _m.NamedInvestmentLots(alias); err == nil || hasTotalCount {
 		pager, err := newInvestmentLotPager(opts, last != nil)
 		if err != nil {
@@ -156,7 +176,7 @@ func (_m *Household) TransactionCategories(
 		WithTransactionCategoryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[5][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[6][alias]
 	if nodes, err := _m.NamedTransactionCategories(alias); err == nil || hasTotalCount {
 		pager, err := newTransactionCategoryPager(opts, last != nil)
 		if err != nil {
@@ -176,7 +196,7 @@ func (_m *Household) TransactionEntries(
 		WithTransactionEntryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[6][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[7][alias]
 	if nodes, err := _m.NamedTransactionEntries(alias); err == nil || hasTotalCount {
 		pager, err := newTransactionEntryPager(opts, last != nil)
 		if err != nil {
@@ -196,7 +216,7 @@ func (_m *Household) RecurringSubscriptions(
 		WithRecurringSubscriptionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[7][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[8][alias]
 	if nodes, err := _m.NamedRecurringSubscriptions(alias); err == nil || hasTotalCount {
 		pager, err := newRecurringSubscriptionPager(opts, last != nil)
 		if err != nil {
@@ -216,7 +236,7 @@ func (_m *Household) Snapshots(
 		WithSnapshotFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[8][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
 	if nodes, err := _m.NamedSnapshots(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotPager(opts, last != nil)
 		if err != nil {
@@ -236,7 +256,7 @@ func (_m *Household) SnapshotEntries(
 		WithSnapshotEntryFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[9][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
 	if nodes, err := _m.NamedSnapshotEntries(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotEntryPager(opts, last != nil)
 		if err != nil {
@@ -256,7 +276,7 @@ func (_m *Household) SnapshotRates(
 		WithSnapshotRateFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := _m.Edges.totalCount[10][alias]
+	totalCount, hasTotalCount := _m.Edges.totalCount[11][alias]
 	if nodes, err := _m.NamedSnapshotRates(alias); err == nil || hasTotalCount {
 		pager, err := newSnapshotRatePager(opts, last != nil)
 		if err != nil {
@@ -501,6 +521,35 @@ func (_m *InvestmentLot) Transaction(ctx context.Context) (*Transaction, error) 
 	return result, err
 }
 
+func (_m *Merchant) Household(ctx context.Context) (*Household, error) {
+	result, err := _m.Edges.HouseholdOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryHousehold().Only(ctx)
+	}
+	return result, err
+}
+
+func (_m *Merchant) Transactions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := _m.Edges.totalCount[1][alias]
+	if nodes, err := _m.NamedTransactions(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts, last != nil)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return _m.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
+}
+
 func (_m *RecurringSubscription) Household(ctx context.Context) (*Household, error) {
 	result, err := _m.Edges.HouseholdOrErr()
 	if IsNotLoaded(err) {
@@ -619,6 +668,14 @@ func (_m *SnapshotRate) ToCurrency(ctx context.Context) (*HouseholdCurrency, err
 		result, err = _m.QueryToCurrency().Only(ctx)
 	}
 	return result, err
+}
+
+func (_m *Transaction) Merchant(ctx context.Context) (*Merchant, error) {
+	result, err := _m.Edges.MerchantOrErr()
+	if IsNotLoaded(err) {
+		result, err = _m.QueryMerchant().Only(ctx)
+	}
+	return result, MaskNotFound(err)
 }
 
 func (_m *Transaction) User(ctx context.Context) (*User, error) {

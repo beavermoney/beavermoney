@@ -19,6 +19,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { useCallback, useRef, useState } from 'react'
 import { fetchQuery, graphql, useRelayEnvironment } from 'react-relay'
+import { MerchantAvatar } from './merchant-avatar'
 import { AccountAvatar } from './account-avatar'
 import { InvestmentIcon } from './investment-icon'
 import type { commandMenuQuery } from './__generated__/commandMenuQuery.graphql'
@@ -27,6 +28,15 @@ const query = graphql`
   query commandMenuQuery($householdId: ID!, $viewUserIds: [ID!]) {
     node(id: $householdId) {
       ... on Household {
+        merchants {
+          edges {
+            node {
+              id
+              name
+              icon
+            }
+          }
+        }
         accounts(where: { archived: false, userIDIn: $viewUserIds }) {
           edges {
             node {
@@ -81,6 +91,7 @@ type AccountIdentity = {
 }
 type PaletteItem = CommandSearchItem & {
   account?: AccountIdentity
+  merchant?: { name: string; icon?: string | null }
   investment?: { name: string; symbol: string; type: string }
 }
 
@@ -136,6 +147,7 @@ function CommandMenuDialog({
     { label: t`Accounts`, to: '/household/$householdId/accounts' },
     { label: t`Investments`, to: '/household/$householdId/investments' },
     { label: t`Categories`, to: '/household/$householdId/categories' },
+    { label: t`Merchants`, to: '/household/$householdId/merchants' },
     { label: t`Subscriptions`, to: '/household/$householdId/subscriptions' },
     { label: t`New Account`, to: '/household/$householdId/accounts/new' },
     { label: t`New Investment`, to: '/household/$householdId/investments/new' },
@@ -226,6 +238,25 @@ function CommandMenuDialog({
             },
           })
         }
+        for (const edge of household.merchants?.edges ?? []) {
+          const merchant = edge?.node
+          if (!merchant) continue
+          items.push({
+            id: `merchant:${merchant.id}`,
+            label: merchant.name,
+            merchant,
+            keywords: '',
+            auxiliaryData: { group: t`Merchants` },
+            run: async () => {
+              await setOpen(false)
+              void navigate({
+                to: '/household/$householdId/merchants/$merchantId',
+                params: { householdId, merchantId: merchant.id },
+                search: (previous) => ({ ...previous, command_open: false }),
+              })
+            },
+          })
+        }
         return items.sort(
           (a, b) =>
             Number(Boolean(a.investment)) - Number(Boolean(b.investment)) ||
@@ -244,13 +275,13 @@ function CommandMenuDialog({
         }
         setOpen(open)
       }}
-      label={t`Search accounts and investments`}
+      label={t`Search accounts, investments and merchants`}
       input={
         <CommandPaletteInput
-          placeholder={t`Search accounts, symbols, or owners…`}
+          placeholder={t`Search accounts, symbols, merchants, or owners…`}
         />
       }
-      emptySearchText={t`No matching accounts, investments, or commands.`}
+      emptySearchText={t`No matching accounts, investments, merchants, or commands.`}
       searchSource={source}
       footer={
         failed ? (
@@ -258,7 +289,7 @@ function CommandMenuDialog({
             <Text
               type="supporting"
               role="status"
-            >{t`Could not load accounts and investments. Type to retry.`}</Text>
+            >{t`Could not load search results. Type to retry.`}</Text>
           </CommandPaletteFooter>
         ) : undefined
       }
@@ -266,6 +297,8 @@ function CommandMenuDialog({
         <HStack gap={3} vAlign="center" width="100%" paddingBlock={1}>
           {item.investment ? (
             <InvestmentIcon {...item.investment} tooltip={false} />
+          ) : item.merchant ? (
+            <MerchantAvatar merchant={item.merchant} />
           ) : item.account ? (
             <AccountAvatar
               account={item.account}

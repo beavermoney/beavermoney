@@ -48,6 +48,12 @@ msgstr "{0} shares"
 msgid "{0} updated!"
 msgstr "{0} updated!"
 
+#. placeholder {0}: target.name
+#. placeholder {1}: merchant.name
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "{0} will keep its name and logo. {1} will be removed. This cannot be undone."
+msgstr "{0} will keep its name and logo. {1} will be removed. This cannot be undone."
+
 #. placeholder {0}: data.user.name
 #: src/components/household-switcher.tsx
 msgid "{0}, user menu"
@@ -88,6 +94,10 @@ msgstr "{shares} shares"
 #: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, one {# transaction} other {# transactions}}"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "{value, plural, one {# transaction} other {# transactions}}"
+msgstr "{value, plural, one {# transaction} other {# transactions}}"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
 msgid "+{otherCount} more"
@@ -249,6 +259,14 @@ msgstr "Accounts that hold investments, such as brokerage accounts"
 msgid "Actions for {0}"
 msgstr "Actions for {0}"
 
+#: src/components/merchant-picker.tsx
+msgid "Add “{name}”"
+msgstr "Add “{name}”"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Add a merchant when logging an expense to start your leaderboard."
+msgstr "Add a merchant when logging an expense to start your leaderboard."
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add a recurring payment to see your upcoming costs."
 msgstr "Add a recurring payment to see your upcoming costs."
@@ -280,6 +298,11 @@ msgstr "Add investment"
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "Add member"
 msgstr "Add member"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Add merchant"
+msgstr "Add merchant"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add subscription"
@@ -417,6 +440,10 @@ msgstr "Average cost per share · {0}"
 msgid "Average costs are up to date for all holdings."
 msgstr "Average costs are up to date for all holdings."
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
+msgid "Average transaction"
+msgstr "Average transaction"
+
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Avg Cost / Share"
 msgstr "Avg Cost / Share"
@@ -425,6 +452,7 @@ msgstr "Avg Cost / Share"
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/$categoryId.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
 #: src/routes/_user/household/$householdId/subscriptions/$subscriptionId.tsx
 msgid "Back"
 msgstr "Back"
@@ -488,6 +516,8 @@ msgstr "Calculator"
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
@@ -602,6 +632,7 @@ msgstr "Charged yearly"
 msgid "Check the highlighted fields before saving."
 msgstr "Check the highlighted fields before saving."
 
+#: src/components/merchant-picker.tsx
 #: src/components/transaction-composer/controls.tsx
 msgid "Choose"
 msgstr "Choose"
@@ -625,6 +656,10 @@ msgstr "Choose an investment"
 #: src/components/date-period-filter.tsx
 msgid "Choose date view"
 msgstr "Choose date view"
+
+#: src/components/merchant-picker.tsx
+msgid "Choose merchant"
+msgstr "Choose merchant"
 
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Choose the destination account"
@@ -691,17 +726,29 @@ msgstr "Cost per payment"
 msgid "Could not delete this transaction. Please try again."
 msgstr "Could not delete this transaction. Please try again."
 
-#: src/components/command-menu.tsx
-msgid "Could not load accounts and investments. Type to retry."
-msgstr "Could not load accounts and investments. Type to retry."
+#: src/components/merchant-picker.tsx
+msgid "Could not load merchants. Type to retry."
+msgstr "Could not load merchants. Type to retry."
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 msgid "Could not load more transactions."
 msgstr "Could not load more transactions."
 
+#: src/components/command-menu.tsx
+msgid "Could not load search results. Type to retry."
+msgstr "Could not load search results. Type to retry."
+
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 msgid "Could not load transaction"
 msgstr "Could not load transaction"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Could not merge these merchants. Please try again."
+msgstr "Could not merge these merchants. Please try again."
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Could not save this merchant. Check the name and website domain, then try again."
+msgstr "Could not save this merchant. Check the name and website domain, then try again."
 
 #: src/components/transaction-composer/composer.tsx
 msgid "Could not save. Your entry is still here—please try again."
@@ -714,6 +761,10 @@ msgstr "Could not unarchive {name}. Please try again."
 #: src/components/date-period-filter.tsx
 msgid "Could not update dates. Please try again."
 msgstr "Could not update dates. Please try again."
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Count"
+msgstr "Count"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
@@ -992,6 +1043,11 @@ msgstr "Edit Entry"
 msgid "Edit Lot"
 msgstr "Edit Lot"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Edit merchant"
+msgstr "Edit merchant"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Edit Subscription"
 msgstr "Edit Subscription"
@@ -1022,6 +1078,10 @@ msgstr "Enter {0}"
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price."
 msgstr "Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price."
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Enter a merchant name between 1 and 120 characters."
+msgstr "Enter a merchant name between 1 and 120 characters."
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Enter a Yahoo Finance symbol to look up its price."
@@ -1075,6 +1135,10 @@ msgstr "Expense created successfully!"
 #: src/components/financial-summary-cards.tsx
 msgid "Expenses"
 msgstr "Expenses"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+msgid "Expenses without a merchant. Open a transaction to assign one."
+msgstr "Expenses without a merchant. Open a transaction to assign one."
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Failed to save snapshot: {error}"
@@ -1272,6 +1336,10 @@ msgstr "Income"
 msgid "Income created successfully!"
 msgstr "Income created successfully!"
 
+#: src/components/app-sidebar.tsx
+msgid "Insights"
+msgstr "Insights"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "Interval"
@@ -1419,6 +1487,10 @@ msgstr "Last week"
 msgid "Later"
 msgstr "Later"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Leaderboard"
+msgstr "Leaderboard"
+
 #: src/components/review-journal.tsx
 msgid "Legacy category review"
 msgstr "Legacy category review"
@@ -1436,6 +1508,10 @@ msgstr "Liabilities"
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "Liability"
 msgstr "Liability"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
+msgid "Lifetime spending"
+msgstr "Lifetime spending"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Light"
@@ -1563,6 +1639,61 @@ msgstr "Member removed."
 msgid "Members"
 msgstr "Members"
 
+#: src/components/merchant-picker.tsx
+msgid "Merchant"
+msgstr "Merchant"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Merchant added"
+msgstr "Merchant added"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Merchant leaderboard"
+msgstr "Merchant leaderboard"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Merchant name"
+msgstr "Merchant name"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+msgid "Merchant not found"
+msgstr "Merchant not found"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Merchant updated"
+msgstr "Merchant updated"
+
+#. placeholder {0}: props.value.name
+#: src/components/merchant-picker.tsx
+msgid "Merchant: {0}"
+msgstr "Merchant: {0}"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Merchants"
+msgstr "Merchants"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+msgid "Merge"
+msgstr "Merge"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merge into"
+msgstr "Merge into"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merge merchant"
+msgstr "Merge merchant"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merge merchants"
+msgstr "Merge merchants"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merged {count} transactions"
+msgstr "Merged {count} transactions"
+
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Monday"
 msgstr "Monday"
@@ -1618,6 +1749,11 @@ msgstr "Move"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Move AAPL shares"
 msgstr "Move AAPL shares"
+
+#. placeholder {0}: merchant.name
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Move all {count} transactions from {0} to another merchant, including dates and members outside the current view."
+msgstr "Move all {count} transactions from {0} to another merchant, including dates and members outside the current view."
 
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "My Account"
@@ -1775,8 +1911,8 @@ msgid "No locale found."
 msgstr "No locale found."
 
 #: src/components/command-menu.tsx
-msgid "No matching accounts, investments, or commands."
-msgstr "No matching accounts, investments, or commands."
+msgid "No matching accounts, investments, merchants, or commands."
+msgstr "No matching accounts, investments, merchants, or commands."
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
 msgid "No matching accounts."
@@ -1790,10 +1926,18 @@ msgstr "No matching categories."
 msgid "No matching investments available."
 msgstr "No matching investments available."
 
+#: src/components/merchant-picker.tsx
+msgid "No matching merchants."
+msgstr "No matching merchants."
+
 #: src/components/search-select.tsx
 #: src/components/transaction-composer/controls.tsx
 msgid "No matching options."
 msgstr "No matching options."
+
+#: src/components/merchant-picker.tsx
+msgid "No merchant"
+msgstr "No merchant"
 
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "No snapshots in this period. Choose a wider date range, or visit Journal to review your net worth and save a snapshot."
@@ -2051,6 +2195,10 @@ msgstr "Price per share must be positive"
 msgid "Property"
 msgstr "Property"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Rank merchants by"
+msgstr "Rank merchants by"
+
 #: src/components/review-journal.tsx
 msgid "Read entry"
 msgstr "Read entry"
@@ -2164,6 +2312,7 @@ msgstr "Saturday"
 #: src/components/transaction-composer/composer.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
@@ -2254,12 +2403,12 @@ msgid "Search accounts"
 msgstr "Search accounts"
 
 #: src/components/command-menu.tsx
-msgid "Search accounts and investments"
-msgstr "Search accounts and investments"
+msgid "Search accounts, investments and merchants"
+msgstr "Search accounts, investments and merchants"
 
 #: src/components/command-menu.tsx
-msgid "Search accounts, symbols, or owners…"
-msgstr "Search accounts, symbols, or owners…"
+msgid "Search accounts, symbols, merchants, or owners…"
+msgstr "Search accounts, symbols, merchants, or owners…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 msgid "Search categories"
@@ -2272,6 +2421,14 @@ msgstr "Search icons"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
 msgid "Search investments"
 msgstr "Search investments"
+
+#: src/components/merchant-picker.tsx
+msgid "Search merchants"
+msgstr "Search merchants"
+
+#: src/components/merchant-picker.tsx
+msgid "Search or add a merchant"
+msgstr "Search or add a merchant"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 msgid "Select a category"
@@ -2429,6 +2586,14 @@ msgstr "Sort subscriptions"
 msgid "Sorting transactions…"
 msgstr "Sorting transactions…"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Spend"
+msgstr "Spend"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
+msgid "Spent this period"
+msgstr "Spent this period"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "Start date"
@@ -2539,6 +2704,10 @@ msgstr "This household is in an unexpected state. Refresh and try again."
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "This member or the joint owner has household records or history and cannot be removed."
 msgstr "This member or the joint owner has household records or history and cannot be removed."
+
+#: src/components/merchant-picker.tsx
+msgid "This merchant will be created when you save the expense."
+msgstr "This merchant will be created when you save the expense."
 
 #: src/components/date-period-filter.tsx
 msgid "This week"
@@ -2695,6 +2864,8 @@ msgstr "Transaction updated successfully!"
 
 #: src/components/command-menu.tsx
 #: src/constant.ts
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-panel.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transactions"
@@ -2762,6 +2933,15 @@ msgstr "Unarchiving makes an account available for new transactions again. Its h
 msgid "Unarchiving…"
 msgstr "Unarchiving…"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Unassigned"
+msgstr "Unassigned"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Unassigned expenses"
+msgstr "Unassigned expenses"
+
 #: src/components/review-journal.tsx
 msgid "Unconfirmed averages: {attentionCount}"
 msgstr "Unconfirmed averages: {attentionCount}"
@@ -2825,6 +3005,10 @@ msgstr "We could not find what you were looking for. It may have been moved or d
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
 msgstr "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Website domain"
+msgstr "Website domain"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Wednesday"

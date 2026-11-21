@@ -300,6 +300,29 @@ func IsDemoNEQ(v bool) predicate.Household {
 	return predicate.Household(sql.FieldNEQ(FieldIsDemo, v))
 }
 
+// HasMerchants applies the HasEdge predicate on the "merchants" edge.
+func HasMerchants() predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MerchantsTable, MerchantsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMerchantsWith applies the HasEdge predicate on the "merchants" edge with a given conditions (other predicates).
+func HasMerchantsWith(preds ...predicate.Merchant) predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := newMerchantsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasSnapshotAccounts applies the HasEdge predicate on the "snapshot_accounts" edge.
 func HasSnapshotAccounts() predicate.Household {
 	return predicate.Household(func(s *sql.Selector) {

@@ -40,14 +40,14 @@ func TestTransactionPendingLifecycle(t *testing.T) {
 		}
 		// An omitted field must retain the existing value.
 		description := "Updated note"
-		if _, err := mr.UpdateTransaction(ctx, id, ent.UpdateTransactionInput{Description: &description}); err != nil {
+		if _, err := mr.UpdateTransaction(ctx, id, ent.UpdateTransactionInput{Description: &description}, nil); err != nil {
 			t.Fatal(err)
 		}
 		if f.client.Transaction.GetX(ctx, id).Pending != want {
 			t.Fatal("note edit changed pending")
 		}
 		for _, pending := range []bool{true, false} {
-			if _, err := mr.UpdateTransaction(ctx, id, ent.UpdateTransactionInput{Pending: &pending}); err != nil {
+			if _, err := mr.UpdateTransaction(ctx, id, ent.UpdateTransactionInput{Pending: &pending}, nil); err != nil {
 				t.Fatal(err)
 			}
 			stored = f.client.Transaction.GetX(ctx, id)
@@ -60,7 +60,7 @@ func TestTransactionPendingLifecycle(t *testing.T) {
 			}
 		}
 		otherCtx := memberCallCtx(f.client, f.adminUser.ID, f.otherHousehold.ID)
-		if _, err := mr.UpdateTransaction(otherCtx, id, ent.UpdateTransactionInput{Pending: new(true)}); err == nil {
+		if _, err := mr.UpdateTransaction(otherCtx, id, ent.UpdateTransactionInput{Pending: new(true)}, nil); err == nil {
 			t.Fatal("pending update allowed access across households")
 		}
 	}

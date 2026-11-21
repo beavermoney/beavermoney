@@ -1,3 +1,4 @@
+import { MerchantCategoryAvatar } from '@/components/merchant-category-avatar'
 import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { ExcludedFromReportsIcon } from '@/components/excluded-from-reports-icon'
 import { useLingui } from '@lingui/react/macro'
@@ -20,6 +21,11 @@ const transactionCardFragment = graphql`
     id
     excludeFromReports
     pending
+    merchant {
+      id
+      name
+      icon
+    }
     transactionEntries {
       id
       amount
@@ -119,12 +125,18 @@ export function TransactionCard({
       className="block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
     >
       <Stack direction="horizontal" gap={3} align="center" padding={3}>
-        <Stack align="center" justify="center" className="size-8 shrink-0">
+        <Stack align="center" justify="center" className="size-10 shrink-0">
           {lot ? (
             <InvestmentIcon
+              size="large"
               symbol={lot.investment.symbol}
               name={lot.investment.name}
               type={lot.investment.type}
+            />
+          ) : data.merchant ? (
+            <MerchantCategoryAvatar
+              merchant={data.merchant}
+              category={data.category}
             />
           ) : (
             <CategoryIcon type={data.category.type} icon={data.category.icon} />
@@ -138,10 +150,22 @@ export function TransactionCard({
             justify="between"
             wrap="wrap"
           >
-            <Text weight="semibold">
-              {data.category.name}
-              {lot ? ` ${lot.investment.symbol || lot.investment.name}` : ''}
-            </Text>
+            <Stack
+              direction="horizontal"
+              gap={2}
+              align="center"
+              className="min-w-0 flex-1"
+            >
+              <Text weight="semibold" maxLines={1}>
+                {data.category.name}
+                {lot ? ` ${lot.investment.symbol || lot.investment.name}` : ''}
+              </Text>
+              {data.merchant && (
+                <Text color="secondary" maxLines={1}>
+                  {data.merchant.name}
+                </Text>
+              )}
+            </Stack>
             <Stack direction="horizontal" gap={1} wrap="wrap" vAlign="center">
               {data.pending && <PendingTransactionIcon />}
               {data.excludeFromReports && <ExcludedFromReportsIcon />}

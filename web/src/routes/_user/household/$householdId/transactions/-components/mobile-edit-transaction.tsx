@@ -1,3 +1,7 @@
+import {
+  MerchantPicker,
+  type MerchantSelection,
+} from '@/components/merchant-picker'
 import { AccountAvatar } from '@/components/account-avatar'
 import { useCurrency } from '@/hooks/use-currency'
 import { TransactionFormFields } from '@/components/transaction-form-fields'
@@ -36,6 +40,11 @@ const transactionFragment = graphql`
   fragment mobileEditTransactionFragment on Transaction {
     id
     description
+    merchant {
+      id
+      name
+      icon
+    }
     datetime
     excludeFromReports
     pending
@@ -128,6 +137,7 @@ const updateMutation = graphql`
   mutation mobileEditTransactionMutation(
     $id: ID!
     $input: UpdateTransactionInput!
+    $merchantName: String
     $entry0: ID!
     $entry0Input: UpdateTransactionEntryInput!
     $editEntry0: Boolean!
@@ -209,7 +219,7 @@ const updateMutation = graphql`
         }
       }
     }
-    updateTransaction(id: $id, input: $input) {
+    updateTransaction(id: $id, input: $input, merchantName: $merchantName) {
       node {
         id
         ...mobileEditTransactionFragment
@@ -285,6 +295,10 @@ export function MobileEditTransaction({
       investmentId: l.investment.id,
       accountId: l.investment.account.id,
     })),
+  )
+  const isExpense = transaction.category.type === 'expense'
+  const [merchant, setMerchant] = useState<MerchantSelection | null>(
+    transaction.merchant ?? null,
   )
   const [description, setDescription] = useState(transaction.description ?? '')
   const [date, setDate] = useState(new Date(transaction.datetime))
@@ -373,7 +387,12 @@ export function MobileEditTransaction({
       {
         variables: {
           id: transaction.id,
+          merchantName:
+            isExpense && merchant && !merchant.id ? merchant.name : undefined,
           input: {
+            ...(isExpense
+              ? { merchantID: merchant?.id, clearMerchant: !merchant }
+              : {}),
             description: description || null,
             clearDescription: !description,
             datetime: date.toISOString(),
@@ -419,6 +438,14 @@ export function MobileEditTransaction({
     onClose?.()
     return true
   }
+
+  const merchantField = (
+    <MerchantPicker
+      value={merchant}
+      onChange={setMerchant}
+      disabled={pending || deleting}
+    />
+  )
 
   const entryAmount = (i: number) => {
     const entry = entries[i]
@@ -738,7 +765,22 @@ export function MobileEditTransaction({
                       </Grid>
                     </Fragment>
                   ))}
-                  {!(lots.length === 1 && entries.length === 1) &&
+                  {isExpense && !lots.length && (
+                    <>
+                      {entries.map((entry, i) => (
+                        <Fragment key={entry.id}>{entryAccount(i)}</Fragment>
+                      ))}
+                      <Grid columns={2} gap={4}>
+                        {entries[0] && entryAmount(0)}
+                        {merchantField}
+                      </Grid>
+                      {entries.slice(1).map((entry, i) => (
+                        <Fragment key={entry.id}>{entryAmount(i + 1)}</Fragment>
+                      ))}
+                    </>
+                  )}
+                  {!isExpense &&
+                    !(lots.length === 1 && entries.length === 1) &&
                     entries
                       .map((_, index) =>
                         transfer
@@ -831,6 +873,16 @@ export function MobileEditTransaction({
               toAccount={entryAccount(1 - firstEntry)}
               toAmount={sharedAmount ? undefined : entryAmount(1 - firstEntry)}
             />
+          ) : isExpense && entries.length > 0 ? (
+            <Stack gap={2}>
+              <Grid columns={2} gap={2} className="composer-expense-row">
+                {entryAmount(0)}
+                {merchantField}
+              </Grid>
+              {entries.slice(1).map((entry, i) => (
+                <Fragment key={entry.id}>{entryAmount(i + 1)}</Fragment>
+              ))}
+            </Stack>
           ) : undefined
         }
         amounts={

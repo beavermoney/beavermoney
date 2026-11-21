@@ -10,6 +10,7 @@ import (
 
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
 	"beavermoney.app/ent/transactionentry"
@@ -58,6 +59,20 @@ func (_c *TransactionCreate) SetNillableUpdateTime(v *time.Time) *TransactionCre
 // SetHouseholdID sets the "household_id" field.
 func (_c *TransactionCreate) SetHouseholdID(v int) *TransactionCreate {
 	_c.mutation.SetHouseholdID(v)
+	return _c
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (_c *TransactionCreate) SetMerchantID(v int) *TransactionCreate {
+	_c.mutation.SetMerchantID(v)
+	return _c
+}
+
+// SetNillableMerchantID sets the "merchant_id" field if the given value is not nil.
+func (_c *TransactionCreate) SetNillableMerchantID(v *int) *TransactionCreate {
+	if v != nil {
+		_c.SetMerchantID(*v)
+	}
 	return _c
 }
 
@@ -119,6 +134,11 @@ func (_c *TransactionCreate) SetNillablePending(v *bool) *TransactionCreate {
 		_c.SetPending(*v)
 	}
 	return _c
+}
+
+// SetMerchant sets the "merchant" edge to the Merchant entity.
+func (_c *TransactionCreate) SetMerchant(v *Merchant) *TransactionCreate {
+	return _c.SetMerchantID(v.ID)
 }
 
 // SetUser sets the "user" edge to the User entity.
@@ -324,6 +344,23 @@ func (_c *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		_spec.SetField(transaction.FieldPending, field.TypeBool, value)
 		_node.Pending = value
 	}
+	if nodes := _c.mutation.MerchantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   transaction.MerchantTable,
+			Columns: []string{transaction.MerchantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.MerchantID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -471,6 +508,24 @@ func (u *TransactionUpsert) UpdateUpdateTime() *TransactionUpsert {
 	return u
 }
 
+// SetMerchantID sets the "merchant_id" field.
+func (u *TransactionUpsert) SetMerchantID(v int) *TransactionUpsert {
+	u.Set(transaction.FieldMerchantID, v)
+	return u
+}
+
+// UpdateMerchantID sets the "merchant_id" field to the value that was provided on create.
+func (u *TransactionUpsert) UpdateMerchantID() *TransactionUpsert {
+	u.SetExcluded(transaction.FieldMerchantID)
+	return u
+}
+
+// ClearMerchantID clears the value of the "merchant_id" field.
+func (u *TransactionUpsert) ClearMerchantID() *TransactionUpsert {
+	u.SetNull(transaction.FieldMerchantID)
+	return u
+}
+
 // SetDescription sets the "description" field.
 func (u *TransactionUpsert) SetDescription(v string) *TransactionUpsert {
 	u.Set(transaction.FieldDescription, v)
@@ -608,6 +663,27 @@ func (u *TransactionUpsertOne) SetUpdateTime(v time.Time) *TransactionUpsertOne 
 func (u *TransactionUpsertOne) UpdateUpdateTime() *TransactionUpsertOne {
 	return u.Update(func(s *TransactionUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (u *TransactionUpsertOne) SetMerchantID(v int) *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.SetMerchantID(v)
+	})
+}
+
+// UpdateMerchantID sets the "merchant_id" field to the value that was provided on create.
+func (u *TransactionUpsertOne) UpdateMerchantID() *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.UpdateMerchantID()
+	})
+}
+
+// ClearMerchantID clears the value of the "merchant_id" field.
+func (u *TransactionUpsertOne) ClearMerchantID() *TransactionUpsertOne {
+	return u.Update(func(s *TransactionUpsert) {
+		s.ClearMerchantID()
 	})
 }
 
@@ -927,6 +1003,27 @@ func (u *TransactionUpsertBulk) SetUpdateTime(v time.Time) *TransactionUpsertBul
 func (u *TransactionUpsertBulk) UpdateUpdateTime() *TransactionUpsertBulk {
 	return u.Update(func(s *TransactionUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetMerchantID sets the "merchant_id" field.
+func (u *TransactionUpsertBulk) SetMerchantID(v int) *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.SetMerchantID(v)
+	})
+}
+
+// UpdateMerchantID sets the "merchant_id" field to the value that was provided on create.
+func (u *TransactionUpsertBulk) UpdateMerchantID() *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.UpdateMerchantID()
+	})
+}
+
+// ClearMerchantID clears the value of the "merchant_id" field.
+func (u *TransactionUpsertBulk) ClearMerchantID() *TransactionUpsertBulk {
+	return u.Update(func(s *TransactionUpsert) {
+		s.ClearMerchantID()
 	})
 }
 

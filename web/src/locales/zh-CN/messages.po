@@ -48,6 +48,12 @@ msgstr "{0} 股"
 msgid "{0} updated!"
 msgstr "{0} 已更新！"
 
+#. placeholder {0}: target.name
+#. placeholder {1}: merchant.name
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "{0} will keep its name and logo. {1} will be removed. This cannot be undone."
+msgstr "将保留 {0} 的名称和标志，并删除 {1}。此操作无法撤销。"
+
 #. placeholder {0}: data.user.name
 #: src/components/household-switcher.tsx
 msgid "{0}, user menu"
@@ -88,6 +94,10 @@ msgstr "{shares} 股"
 #: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, other {# 笔交易}}"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "{value, plural, one {# transaction} other {# transactions}}"
+msgstr "{value, plural, other {# 笔交易}}"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
 msgid "+{otherCount} more"
@@ -249,6 +259,14 @@ msgstr "用于持有投资的账户，例如证券账户"
 msgid "Actions for {0}"
 msgstr "{0}的操作"
 
+#: src/components/merchant-picker.tsx
+msgid "Add “{name}”"
+msgstr "添加“{name}”"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Add a merchant when logging an expense to start your leaderboard."
+msgstr "记录支出时添加商家，即可开始查看排行榜。"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add a recurring payment to see your upcoming costs."
 msgstr "添加一项定期付款，即可查看即将发生的支出。"
@@ -280,6 +298,11 @@ msgstr "添加投资"
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "Add member"
 msgstr "添加成员"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Add merchant"
+msgstr "添加商户"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Add subscription"
@@ -417,6 +440,10 @@ msgstr "每股平均成本 · {0}"
 msgid "Average costs are up to date for all holdings."
 msgstr "所有持仓的平均成本均已确认。"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
+msgid "Average transaction"
+msgstr "平均每笔金额"
+
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Avg Cost / Share"
 msgstr "每股平均成本"
@@ -425,6 +452,7 @@ msgstr "每股平均成本"
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/$categoryId.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
 #: src/routes/_user/household/$householdId/subscriptions/$subscriptionId.tsx
 msgid "Back"
 msgstr "返回"
@@ -488,6 +516,8 @@ msgstr "计算器式"
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
@@ -602,6 +632,7 @@ msgstr "按年扣费"
 msgid "Check the highlighted fields before saving."
 msgstr "保存前请检查标出的字段。"
 
+#: src/components/merchant-picker.tsx
 #: src/components/transaction-composer/controls.tsx
 msgid "Choose"
 msgstr "选择"
@@ -625,6 +656,10 @@ msgstr "选择投资"
 #: src/components/date-period-filter.tsx
 msgid "Choose date view"
 msgstr "选择日期视图"
+
+#: src/components/merchant-picker.tsx
+msgid "Choose merchant"
+msgstr "选择商户"
 
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Choose the destination account"
@@ -691,17 +726,29 @@ msgstr "每次付款金额"
 msgid "Could not delete this transaction. Please try again."
 msgstr "无法删除这笔交易，请重试。"
 
-#: src/components/command-menu.tsx
-msgid "Could not load accounts and investments. Type to retry."
-msgstr "无法加载账户和投资。输入内容以重试。"
+#: src/components/merchant-picker.tsx
+msgid "Could not load merchants. Type to retry."
+msgstr "无法加载商户，请重新输入以重试。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 msgid "Could not load more transactions."
 msgstr "无法加载更多交易。"
 
+#: src/components/command-menu.tsx
+msgid "Could not load search results. Type to retry."
+msgstr "无法加载搜索结果，请重新输入以重试。"
+
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 msgid "Could not load transaction"
 msgstr "无法加载交易"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Could not merge these merchants. Please try again."
+msgstr "无法合并商户，请重试。"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Could not save this merchant. Check the name and website domain, then try again."
+msgstr "无法保存商户，请检查名称和网站域名后重试。"
 
 #: src/components/transaction-composer/composer.tsx
 msgid "Could not save. Your entry is still here—please try again."
@@ -714,6 +761,10 @@ msgstr "无法取消归档 {name}，请重试。"
 #: src/components/date-period-filter.tsx
 msgid "Could not update dates. Please try again."
 msgstr "无法更新日期，请重试。"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Count"
+msgstr "笔数"
 
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
@@ -992,6 +1043,11 @@ msgstr "编辑分录"
 msgid "Edit Lot"
 msgstr "编辑投资批次"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Edit merchant"
+msgstr "编辑商户"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Edit Subscription"
 msgstr "编辑订阅"
@@ -1022,6 +1078,10 @@ msgstr "输入{0}"
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Enter a currency pair, such as BTC-CAD or ETH-USD, to look up its price."
 msgstr "输入货币对（如 BTC-CAD 或 ETH-USD）以查询价格。"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Enter a merchant name between 1 and 120 characters."
+msgstr "请输入 1 至 120 个字符的商户名称。"
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Enter a Yahoo Finance symbol to look up its price."
@@ -1075,6 +1135,10 @@ msgstr "支出已创建！"
 #: src/components/financial-summary-cards.tsx
 msgid "Expenses"
 msgstr "支出"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+msgid "Expenses without a merchant. Open a transaction to assign one."
+msgstr "尚未关联商户的支出。打开交易即可选择商户。"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Failed to save snapshot: {error}"
@@ -1272,6 +1336,10 @@ msgstr "收入"
 msgid "Income created successfully!"
 msgstr "收入已创建！"
 
+#: src/components/app-sidebar.tsx
+msgid "Insights"
+msgstr "洞察"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "Interval"
@@ -1419,6 +1487,10 @@ msgstr "上周"
 msgid "Later"
 msgstr "稍后"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Leaderboard"
+msgstr "排行榜"
+
 #: src/components/review-journal.tsx
 msgid "Legacy category review"
 msgstr "早期分类回顾"
@@ -1436,6 +1508,10 @@ msgstr "负债"
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "Liability"
 msgstr "负债"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
+msgid "Lifetime spending"
+msgstr "累计消费"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Light"
@@ -1563,6 +1639,61 @@ msgstr "成员已移除。"
 msgid "Members"
 msgstr "成员"
 
+#: src/components/merchant-picker.tsx
+msgid "Merchant"
+msgstr "商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Merchant added"
+msgstr "已添加商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Merchant leaderboard"
+msgstr "商家排行榜"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Merchant name"
+msgstr "商户名称"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+msgid "Merchant not found"
+msgstr "未找到商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Merchant updated"
+msgstr "已更新商户"
+
+#. placeholder {0}: props.value.name
+#: src/components/merchant-picker.tsx
+msgid "Merchant: {0}"
+msgstr "商户：{0}"
+
+#: src/components/command-menu.tsx
+#: src/constant.ts
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Merchants"
+msgstr "商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+msgid "Merge"
+msgstr "合并"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merge into"
+msgstr "合并到"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merge merchant"
+msgstr "合并商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merge merchants"
+msgstr "合并商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Merged {count} transactions"
+msgstr "已合并 {count} 笔交易"
+
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Monday"
 msgstr "星期一"
@@ -1618,6 +1749,11 @@ msgstr "转移"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Move AAPL shares"
 msgstr "转移 AAPL 股票"
+
+#. placeholder {0}: merchant.name
+#: src/routes/_user/household/$householdId/merchants/-components/merge-merchant.tsx
+msgid "Move all {count} transactions from {0} to another merchant, including dates and members outside the current view."
+msgstr "将 {0} 的全部 {count} 笔交易转移至另一商户，包括当前视图之外的日期和成员。"
 
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 msgid "My Account"
@@ -1775,8 +1911,8 @@ msgid "No locale found."
 msgstr "未找到地区格式。"
 
 #: src/components/command-menu.tsx
-msgid "No matching accounts, investments, or commands."
-msgstr "未找到匹配的账户、投资或命令。"
+msgid "No matching accounts, investments, merchants, or commands."
+msgstr "没有匹配的账户、投资、商户或命令。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
 msgid "No matching accounts."
@@ -1790,10 +1926,18 @@ msgstr "没有匹配的分类。"
 msgid "No matching investments available."
 msgstr "没有匹配的投资。"
 
+#: src/components/merchant-picker.tsx
+msgid "No matching merchants."
+msgstr "没有匹配的商户。"
+
 #: src/components/search-select.tsx
 #: src/components/transaction-composer/controls.tsx
 msgid "No matching options."
 msgstr "没有匹配的选项。"
+
+#: src/components/merchant-picker.tsx
+msgid "No merchant"
+msgstr "不选择商户"
 
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "No snapshots in this period. Choose a wider date range, or visit Journal to review your net worth and save a snapshot."
@@ -2051,6 +2195,10 @@ msgstr "每股价格必须大于零"
 msgid "Property"
 msgstr "不动产"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Rank merchants by"
+msgstr "商家排名依据"
+
 #: src/components/review-journal.tsx
 msgid "Read entry"
 msgstr "阅读记录"
@@ -2164,6 +2312,7 @@ msgstr "星期六"
 #: src/components/transaction-composer/composer.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
@@ -2254,12 +2403,12 @@ msgid "Search accounts"
 msgstr "搜索账户"
 
 #: src/components/command-menu.tsx
-msgid "Search accounts and investments"
-msgstr "搜索账户和投资"
+msgid "Search accounts, investments and merchants"
+msgstr "搜索账户、投资和商户"
 
 #: src/components/command-menu.tsx
-msgid "Search accounts, symbols, or owners…"
-msgstr "搜索账户、代码或所有者…"
+msgid "Search accounts, symbols, merchants, or owners…"
+msgstr "搜索账户、代码、商户或所有者…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 msgid "Search categories"
@@ -2272,6 +2421,14 @@ msgstr "搜索图标"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-investment-picker.tsx
 msgid "Search investments"
 msgstr "搜索投资"
+
+#: src/components/merchant-picker.tsx
+msgid "Search merchants"
+msgstr "搜索商户"
+
+#: src/components/merchant-picker.tsx
+msgid "Search or add a merchant"
+msgstr "搜索或添加商户"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 msgid "Select a category"
@@ -2429,6 +2586,14 @@ msgstr "订阅排序"
 msgid "Sorting transactions…"
 msgstr "正在排序交易…"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Spend"
+msgstr "支出"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
+msgid "Spent this period"
+msgstr "本期消费"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "Start date"
@@ -2539,6 +2704,10 @@ msgstr "此家庭的状态异常，请刷新后重试。"
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "This member or the joint owner has household records or history and cannot be removed."
 msgstr "此成员或共同持有人已有家庭记录或历史数据，无法移除。"
+
+#: src/components/merchant-picker.tsx
+msgid "This merchant will be created when you save the expense."
+msgstr "保存支出时将创建此商户。"
 
 #: src/components/date-period-filter.tsx
 msgid "This week"
@@ -2695,6 +2864,8 @@ msgstr "交易已更新！"
 
 #: src/components/command-menu.tsx
 #: src/constant.ts
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-panel.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transactions"
@@ -2762,6 +2933,15 @@ msgstr "取消归档后，可再次为此账户添加交易。历史记录将完
 msgid "Unarchiving…"
 msgstr "正在取消归档…"
 
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Unassigned"
+msgstr "未分配商户"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
+msgid "Unassigned expenses"
+msgstr "未指定商家的支出"
+
 #: src/components/review-journal.tsx
 msgid "Unconfirmed averages: {attentionCount}"
 msgstr "未确认的平均成本：{attentionCount}"
@@ -2825,6 +3005,10 @@ msgstr "未找到你要查看的内容，可能已被移动或删除。"
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "We couldn't find a user with that email. Ask them to sign in with Google at least once, then try again."
 msgstr "未找到使用此邮箱的用户。请对方先使用 Google 登录一次，然后重试。"
+
+#: src/routes/_user/household/$householdId/merchants/-components/merchant-editor.tsx
+msgid "Website domain"
+msgstr "网站域名"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Wednesday"

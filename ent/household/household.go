@@ -25,6 +25,8 @@ const (
 	FieldLocale = "locale"
 	// FieldIsDemo holds the string denoting the is_demo field in the database.
 	FieldIsDemo = "is_demo"
+	// EdgeMerchants holds the string denoting the merchants edge name in mutations.
+	EdgeMerchants = "merchants"
 	// EdgeSnapshotAccounts holds the string denoting the snapshot_accounts edge name in mutations.
 	EdgeSnapshotAccounts = "snapshot_accounts"
 	// EdgeSnapshotInvestments holds the string denoting the snapshot_investments edge name in mutations.
@@ -59,6 +61,13 @@ const (
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the household in the database.
 	Table = "households"
+	// MerchantsTable is the table that holds the merchants relation/edge.
+	MerchantsTable = "merchants"
+	// MerchantsInverseTable is the table name for the Merchant entity.
+	// It exists in this package in order to avoid circular dependency with the "merchant" package.
+	MerchantsInverseTable = "merchants"
+	// MerchantsColumn is the table column denoting the merchants relation/edge.
+	MerchantsColumn = "household_id"
 	// SnapshotAccountsTable is the table that holds the snapshot_accounts relation/edge.
 	SnapshotAccountsTable = "snapshot_accounts"
 	// SnapshotAccountsInverseTable is the table name for the SnapshotAccount entity.
@@ -250,6 +259,20 @@ func ByLocale(opts ...sql.OrderTermOption) OrderOption {
 // ByIsDemo orders the results by the is_demo field.
 func ByIsDemo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsDemo, opts...).ToFunc()
+}
+
+// ByMerchantsCount orders the results by merchants count.
+func ByMerchantsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMerchantsStep(), opts...)
+	}
+}
+
+// ByMerchants orders the results by merchants terms.
+func ByMerchants(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMerchantsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
 }
 
 // BySnapshotAccountsCount orders the results by snapshot_accounts count.
@@ -474,6 +497,13 @@ func ByUserHouseholds(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUserHouseholdsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newMerchantsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MerchantsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MerchantsTable, MerchantsColumn),
+	)
 }
 func newSnapshotAccountsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

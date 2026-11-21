@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotaccount"
@@ -90,6 +91,21 @@ func (_c *HouseholdCreate) SetNillableIsDemo(v *bool) *HouseholdCreate {
 		_c.SetIsDemo(*v)
 	}
 	return _c
+}
+
+// AddMerchantIDs adds the "merchants" edge to the Merchant entity by IDs.
+func (_c *HouseholdCreate) AddMerchantIDs(ids ...int) *HouseholdCreate {
+	_c.mutation.AddMerchantIDs(ids...)
+	return _c
+}
+
+// AddMerchants adds the "merchants" edges to the Merchant entity.
+func (_c *HouseholdCreate) AddMerchants(v ...*Merchant) *HouseholdCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddMerchantIDs(ids...)
 }
 
 // AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
@@ -463,6 +479,22 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsDemo(); ok {
 		_spec.SetField(household.FieldIsDemo, field.TypeBool, value)
 		_node.IsDemo = value
+	}
+	if nodes := _c.mutation.MerchantsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

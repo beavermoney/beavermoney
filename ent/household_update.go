@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/householdrate"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
@@ -77,6 +78,21 @@ func (_u *HouseholdUpdate) SetNillableLocale(v *string) *HouseholdUpdate {
 		_u.SetLocale(*v)
 	}
 	return _u
+}
+
+// AddMerchantIDs adds the "merchants" edge to the Merchant entity by IDs.
+func (_u *HouseholdUpdate) AddMerchantIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.AddMerchantIDs(ids...)
+	return _u
+}
+
+// AddMerchants adds the "merchants" edges to the Merchant entity.
+func (_u *HouseholdUpdate) AddMerchants(v ...*Merchant) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddMerchantIDs(ids...)
 }
 
 // AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
@@ -322,6 +338,27 @@ func (_u *HouseholdUpdate) AddUserHouseholds(v ...*UserHousehold) *HouseholdUpda
 // Mutation returns the HouseholdMutation object of the builder.
 func (_u *HouseholdUpdate) Mutation() *HouseholdMutation {
 	return _u.mutation
+}
+
+// ClearMerchants clears all "merchants" edges to the Merchant entity.
+func (_u *HouseholdUpdate) ClearMerchants() *HouseholdUpdate {
+	_u.mutation.ClearMerchants()
+	return _u
+}
+
+// RemoveMerchantIDs removes the "merchants" edge to Merchant entities by IDs.
+func (_u *HouseholdUpdate) RemoveMerchantIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.RemoveMerchantIDs(ids...)
+	return _u
+}
+
+// RemoveMerchants removes "merchants" edges to Merchant entities.
+func (_u *HouseholdUpdate) RemoveMerchants(v ...*Merchant) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveMerchantIDs(ids...)
 }
 
 // ClearSnapshotAccounts clears all "snapshot_accounts" edges to the SnapshotAccount entity.
@@ -743,6 +780,51 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
+	}
+	if _u.mutation.MerchantsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedMerchantsIDs(); len(nodes) > 0 && !_u.mutation.MerchantsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.MerchantsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.SnapshotAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1532,6 +1614,21 @@ func (_u *HouseholdUpdateOne) SetNillableLocale(v *string) *HouseholdUpdateOne {
 	return _u
 }
 
+// AddMerchantIDs adds the "merchants" edge to the Merchant entity by IDs.
+func (_u *HouseholdUpdateOne) AddMerchantIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.AddMerchantIDs(ids...)
+	return _u
+}
+
+// AddMerchants adds the "merchants" edges to the Merchant entity.
+func (_u *HouseholdUpdateOne) AddMerchants(v ...*Merchant) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddMerchantIDs(ids...)
+}
+
 // AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
 func (_u *HouseholdUpdateOne) AddSnapshotAccountIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddSnapshotAccountIDs(ids...)
@@ -1775,6 +1872,27 @@ func (_u *HouseholdUpdateOne) AddUserHouseholds(v ...*UserHousehold) *HouseholdU
 // Mutation returns the HouseholdMutation object of the builder.
 func (_u *HouseholdUpdateOne) Mutation() *HouseholdMutation {
 	return _u.mutation
+}
+
+// ClearMerchants clears all "merchants" edges to the Merchant entity.
+func (_u *HouseholdUpdateOne) ClearMerchants() *HouseholdUpdateOne {
+	_u.mutation.ClearMerchants()
+	return _u
+}
+
+// RemoveMerchantIDs removes the "merchants" edge to Merchant entities by IDs.
+func (_u *HouseholdUpdateOne) RemoveMerchantIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.RemoveMerchantIDs(ids...)
+	return _u
+}
+
+// RemoveMerchants removes "merchants" edges to Merchant entities.
+func (_u *HouseholdUpdateOne) RemoveMerchants(v ...*Merchant) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveMerchantIDs(ids...)
 }
 
 // ClearSnapshotAccounts clears all "snapshot_accounts" edges to the SnapshotAccount entity.
@@ -2226,6 +2344,51 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 	}
 	if value, ok := _u.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
+	}
+	if _u.mutation.MerchantsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedMerchantsIDs(); len(nodes) > 0 && !_u.mutation.MerchantsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.MerchantsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.MerchantsTable,
+			Columns: []string{household.MerchantsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(merchant.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.SnapshotAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{

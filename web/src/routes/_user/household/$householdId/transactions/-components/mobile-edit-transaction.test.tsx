@@ -12,12 +12,15 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { MobileEditTransaction } from './mobile-edit-transaction'
 
 const mocks = vi.hoisted(() => ({
+  environment: {},
+  search: vi.fn(),
   commit: vi.fn(),
   close: vi.fn(),
   remove: vi.fn(),
   pending: vi.fn(),
   privacy: false,
 }))
+vi.mock('@/env', () => ({ env: { VITE_SERVER_URL: 'http://localhost' } }))
 vi.mock('@/hooks/use-privacy-mode', () => ({
   usePrivacyMode: () => ({ isPrivacyModeEnabled: mocks.privacy }),
 }))
@@ -36,6 +39,12 @@ vi.mock('@/lib/relay', () => ({
 }))
 vi.mock('react-relay', async (original) => ({
   ...(await original<typeof import('react-relay')>()),
+  useRelayEnvironment: () => mocks.environment,
+  fetchQuery: (
+    _environment: unknown,
+    _query: unknown,
+    variables: { query: string },
+  ) => ({ toPromise: () => mocks.search(variables.query) }),
   useFragment: (_: unknown, data: unknown) => data,
   useMutation: () => [vi.fn(), false],
 }))
@@ -88,6 +97,13 @@ function open(
 const variables = () => mocks.commit.mock.calls[0][1].variables
 beforeEach(() => {
   vi.clearAllMocks()
+  mocks.search.mockImplementation(async (query: string) => ({
+    household: {
+      merchantSearch: [{ id: 'cafe', name: 'Corner Cafe', icon: null }].filter(
+        (item) => item.name.toLowerCase().includes(query.toLowerCase()),
+      ),
+    },
+  }))
   mocks.privacy = false
   mocks.commit.mockResolvedValue({ status: 'success', data: {} })
 })
@@ -559,4 +575,32 @@ it('masks transfer account balances when privacy mode is enabled', () => {
   )
   expect(screen.getAllByText('•••••••')).toHaveLength(2)
   expect(screen.queryByText('$1,000.00')).toBeNull()
+})
+
+it('prefills and clears the merchant when editing an expense', async () => {
+  open({
+    ...fixture,
+    merchant: { id: 'cafe', name: 'Corner Cafe', icon: null },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Merchant: Corner Cafe' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'No merchant' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables().input.clearMerchant).toBe(true)
+  expect(variables().input.merchantID).toBeUndefined()
+})
+
+it('creates a newly named merchant as part of the same expense edit', async () => {
+  open()
+  fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
+  fireEvent.change(await screen.findByRole('combobox', { name: /Merchant/ }), {
+    target: { value: 'New Bakery' },
+  })
+  fireEvent.click(
+    await screen.findByRole('option', { name: /Add “New Bakery”/ }),
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+  expect(variables().merchantName).toBe('New Bakery')
+  expect(variables().input.clearMerchant).toBe(false)
 })

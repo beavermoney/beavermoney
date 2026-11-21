@@ -506,3 +506,17 @@
   clip-path: inset(0);
   isolation: isolate;
 }
+
+/* Keep amount and merchant equally sized as the active amount changes. */
+.composer-expense-row > * {
+  min-width: 0;
+}
+.composer-expense-row .composer-amount,
+.composer-expense-row .composer-merchant {
+  width: 100%;
+  height: calc(var(--spacing-10) * 2);
+  min-height: calc(var(--spacing-10) * 2);
+}
+.composer-merchant {
+  white-space: normal;
+}

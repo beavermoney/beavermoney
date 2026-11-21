@@ -16,6 +16,11 @@ const state = vi.hoisted(() => ({
   load: vi.fn(),
   isOpen: true,
 }))
+vi.mock('./merchant-avatar', () => ({
+  MerchantAvatar: ({ merchant }: { merchant: { name: string } }) => (
+    <svg role="img" aria-label={merchant.name} />
+  ),
+}))
 vi.mock('@/lib/logo', () => ({
   getLogoDomainURL: (domain: string) => `https://${domain}/logo`,
   getLogoTickerURL: (symbol: string) => `https://example.com/${symbol}`,
@@ -50,6 +55,17 @@ const account = {
 }
 const data = {
   node: {
+    merchants: {
+      edges: [
+        {
+          node: {
+            id: 'merchant1',
+            name: 'Grocery Store',
+            icon: 'grocery.example',
+          },
+        },
+      ],
+    },
     accounts: { edges: [{ node: account }] },
     investments: {
       edges: [
@@ -159,7 +175,9 @@ it('shows a useful empty state and retains the loading input while results are p
   fireEvent.change(screen.getByRole('combobox'), {
     target: { value: 'no such investment' },
   })
-  await screen.findByText('No matching accounts, investments, or commands.')
+  await screen.findByText(
+    'No matching accounts, investments, merchants, or commands.',
+  )
 })
 
 it('shows account and owner identity and opens the selected account directly', async () => {
@@ -175,5 +193,27 @@ it('shows account and owner identity and opens the selected account directly', a
         params: { householdId: 'household', accountId: 'account1' },
       }),
     ),
+  )
+})
+
+it('searches a merchant, shows its identity and opens its detail after closing the palette', async () => {
+  render(<CommandMenu />)
+  const input = screen.getByRole('combobox')
+  fireEvent.change(input, { target: { value: 'grocery' } })
+  const option = await screen.findByRole('option', { name: /Grocery Store/ })
+  expect(
+    within(option).getByRole('img', { name: 'Grocery Store' }),
+  ).toBeTruthy()
+  fireEvent.click(option)
+  await waitFor(() =>
+    expect(state.navigate).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        to: '/household/$householdId/merchants/$merchantId',
+        params: { householdId: 'household', merchantId: 'merchant1' },
+      }),
+    ),
+  )
+  expect(state.navigate.mock.calls[0][0]).toEqual(
+    expect.objectContaining({ replace: true, resetScroll: false }),
   )
 })

@@ -12,7 +12,7 @@ import { dynamicIconImports, type IconName } from 'lucide-react/dynamic'
 export function CategoryIcon({
   type,
   icon,
-  size: _size = 'default',
+  size = 'default',
 }: {
   type: string
   icon?: string | null
@@ -28,12 +28,18 @@ export function CategoryIcon({
           : type === 'setup'
             ? WrenchIcon
             : ArrowLeftRightIcon
-  const fallback = <AstryxIcon icon={TypeIcon} />
+  const fallback = (
+    <AstryxIcon icon={TypeIcon} size={size === 'sm' ? 'sm' : undefined} />
+  )
 
   return (
     <span aria-hidden="true">
       {icon && Object.hasOwn(dynamicIconImports, icon) ? (
-        <CategoryGlyph name={icon as IconName} fallback={fallback} />
+        <CategoryGlyph
+          name={icon as IconName}
+          fallback={fallback}
+          size={size === 'sm' ? 'sm' : undefined}
+        />
       ) : (
         fallback
       )}

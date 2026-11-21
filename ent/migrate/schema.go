@@ -254,6 +254,37 @@ var (
 			},
 		},
 	}
+	// MerchantsColumns holds the columns for the "merchants" table.
+	MerchantsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString, SchemaType: map[string]string{"postgres": "varchar(120)"}},
+		{Name: "name_key", Type: field.TypeString, Size: 512},
+		{Name: "icon", Type: field.TypeString, Nullable: true, Size: 253},
+		{Name: "household_id", Type: field.TypeInt},
+	}
+	// MerchantsTable holds the schema information for the "merchants" table.
+	MerchantsTable = &schema.Table{
+		Name:       "merchants",
+		Columns:    MerchantsColumns,
+		PrimaryKey: []*schema.Column{MerchantsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "merchants_households_merchants",
+				Columns:    []*schema.Column{MerchantsColumns[6]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "merchant_household_id_name_key",
+				Unique:  true,
+				Columns: []*schema.Column{MerchantsColumns[6], MerchantsColumns[4]},
+			},
+		},
+	}
 	// RecurringSubscriptionsColumns holds the columns for the "recurring_subscriptions" table.
 	RecurringSubscriptionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -551,6 +582,7 @@ var (
 		{Name: "exclude_from_reports", Type: field.TypeBool, Default: false},
 		{Name: "pending", Type: field.TypeBool, Default: false},
 		{Name: "household_id", Type: field.TypeInt},
+		{Name: "merchant_id", Type: field.TypeInt, Nullable: true},
 		{Name: "category_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
 	}
@@ -567,19 +599,30 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "transactions_transaction_categories_transactions",
+				Symbol:     "transactions_merchants_transactions",
 				Columns:    []*schema.Column{TransactionsColumns[8]},
+				RefColumns: []*schema.Column{MerchantsColumns[0]},
+				OnDelete:   schema.Restrict,
+			},
+			{
+				Symbol:     "transactions_transaction_categories_transactions",
+				Columns:    []*schema.Column{TransactionsColumns[9]},
 				RefColumns: []*schema.Column{TransactionCategoriesColumns[0]},
 				OnDelete:   schema.Restrict,
 			},
 			{
 				Symbol:     "transactions_users_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[9]},
+				Columns:    []*schema.Column{TransactionsColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "transaction_household_id_merchant_id_datetime",
+				Unique:  false,
+				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[8], TransactionsColumns[4]},
+			},
 			{
 				Name:    "transaction_datetime",
 				Unique:  false,
@@ -588,12 +631,12 @@ var (
 			{
 				Name:    "transaction_category_id_datetime",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[8], TransactionsColumns[4]},
+				Columns: []*schema.Column{TransactionsColumns[9], TransactionsColumns[4]},
 			},
 			{
 				Name:    "transaction_household_id_user_id_datetime",
 				Unique:  false,
-				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[9], TransactionsColumns[4]},
+				Columns: []*schema.Column{TransactionsColumns[7], TransactionsColumns[10], TransactionsColumns[4]},
 			},
 		},
 	}
@@ -773,6 +816,7 @@ var (
 		HouseholdRatesTable,
 		InvestmentsTable,
 		InvestmentLotsTable,
+		MerchantsTable,
 		RecurringSubscriptionsTable,
 		SnapshotsTable,
 		SnapshotAccountsTable,
@@ -828,6 +872,10 @@ func init() {
 	InvestmentLotsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(47244640256),
 	}
+	MerchantsTable.ForeignKeys[0].RefTable = HouseholdsTable
+	MerchantsTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(90194313216),
+	}
 	RecurringSubscriptionsTable.ForeignKeys[0].RefTable = HouseholdsTable
 	RecurringSubscriptionsTable.ForeignKeys[1].RefTable = HouseholdCurrenciesTable
 	RecurringSubscriptionsTable.ForeignKeys[2].RefTable = UsersTable
@@ -870,8 +918,9 @@ func init() {
 		IncrementStart: func(i int) *int { return &i }(68719476736),
 	}
 	TransactionsTable.ForeignKeys[0].RefTable = HouseholdsTable
-	TransactionsTable.ForeignKeys[1].RefTable = TransactionCategoriesTable
-	TransactionsTable.ForeignKeys[2].RefTable = UsersTable
+	TransactionsTable.ForeignKeys[1].RefTable = MerchantsTable
+	TransactionsTable.ForeignKeys[2].RefTable = TransactionCategoriesTable
+	TransactionsTable.ForeignKeys[3].RefTable = UsersTable
 	TransactionsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(12884901888),
 	}

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4970478f1452d04b5fdb75620bfafb87>>
+ * @generated SignedSource<<094f6fe18acb447b203509e4e865b3a7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -49,6 +49,11 @@ export type mobileEditTransactionFragment$data = {
     };
     readonly price: string;
   }> | null | undefined;
+  readonly merchant: {
+    readonly icon: string | null | undefined;
+    readonly id: string;
+    readonly name: string;
+  } | null | undefined;
   readonly pending: boolean;
   readonly transactionEntries: ReadonlyArray<{
     readonly account: {
@@ -96,6 +101,13 @@ v1 = {
 v2 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
   "concreteType": "User",
   "kind": "LinkedField",
   "name": "user",
@@ -105,18 +117,11 @@ v2 = {
   ],
   "storageKey": null
 },
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "type",
-  "storageKey": null
-},
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "icon",
+  "name": "type",
   "storageKey": null
 },
 v5 = {
@@ -136,8 +141,8 @@ v6 = {
   "selections": [
     (v0/*: any*/),
     (v1/*: any*/),
+    (v2/*: any*/),
     (v4/*: any*/),
-    (v3/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -152,7 +157,7 @@ v6 = {
       "name": "balance",
       "storageKey": null
     },
-    (v2/*: any*/),
+    (v3/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -191,6 +196,20 @@ return {
     {
       "alias": null,
       "args": null,
+      "concreteType": "Merchant",
+      "kind": "LinkedField",
+      "name": "merchant",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        (v1/*: any*/),
+        (v2/*: any*/)
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "kind": "ScalarField",
       "name": "datetime",
       "storageKey": null
@@ -209,7 +228,7 @@ return {
       "name": "pending",
       "storageKey": null
     },
-    (v2/*: any*/),
+    (v3/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -220,8 +239,8 @@ return {
       "selections": [
         (v0/*: any*/),
         (v1/*: any*/),
-        (v3/*: any*/),
-        (v4/*: any*/)
+        (v4/*: any*/),
+        (v2/*: any*/)
       ],
       "storageKey": null
     },
@@ -273,7 +292,7 @@ return {
               "name": "symbol",
               "storageKey": null
             },
-            (v3/*: any*/),
+            (v4/*: any*/),
             (v6/*: any*/)
           ],
           "storageKey": null
@@ -287,6 +306,6 @@ return {
 };
 })();
 
-(node as any).hash = "46dafae5d091e361e33758c5faf04425";
+(node as any).hash = "9a2f9c9fe065129d3559502609f75b47";
 
 export default node;

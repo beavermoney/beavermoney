@@ -22,6 +22,7 @@ type Transaction struct {
 // Fields of the Transaction.
 func (Transaction) Fields() []ent.Field {
 	return []ent.Field{
+		field.Int("merchant_id").Optional().Nillable().Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		field.String("description").Optional(),
 		field.Time("datetime").
 			Annotations(
@@ -38,6 +39,7 @@ func (Transaction) Fields() []ent.Field {
 // Edges of the Transaction.
 func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("merchant", Merchant.Type).Ref("transactions").Field("merchant_id").Unique().Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		edge.From("user", User.Type).
 			Field("user_id").
 			Ref("transactions").
@@ -87,6 +89,7 @@ func (Transaction) Edges() []ent.Edge {
 
 func (Transaction) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("household_id", "merchant_id", "datetime"),
 		index.Fields("datetime"),
 		index.Fields("category_id", "datetime"),
 		index.Fields("household_id", "user_id", "datetime"),

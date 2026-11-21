@@ -21,6 +21,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldHouseholdID holds the string denoting the household_id field in the database.
 	FieldHouseholdID = "household_id"
+	// FieldMerchantID holds the string denoting the merchant_id field in the database.
+	FieldMerchantID = "merchant_id"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
 	// FieldDatetime holds the string denoting the datetime field in the database.
@@ -33,6 +35,8 @@ const (
 	FieldExcludeFromReports = "exclude_from_reports"
 	// FieldPending holds the string denoting the pending field in the database.
 	FieldPending = "pending"
+	// EdgeMerchant holds the string denoting the merchant edge name in mutations.
+	EdgeMerchant = "merchant"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
@@ -45,6 +49,13 @@ const (
 	EdgeInvestmentLots = "investment_lots"
 	// Table holds the table name of the transaction in the database.
 	Table = "transactions"
+	// MerchantTable is the table that holds the merchant relation/edge.
+	MerchantTable = "transactions"
+	// MerchantInverseTable is the table name for the Merchant entity.
+	// It exists in this package in order to avoid circular dependency with the "merchant" package.
+	MerchantInverseTable = "merchants"
+	// MerchantColumn is the table column denoting the merchant relation/edge.
+	MerchantColumn = "merchant_id"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "transactions"
 	// UserInverseTable is the table name for the User entity.
@@ -88,6 +99,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldHouseholdID,
+	FieldMerchantID,
 	FieldDescription,
 	FieldDatetime,
 	FieldUserID,
@@ -153,6 +165,11 @@ func ByHouseholdID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHouseholdID, opts...).ToFunc()
 }
 
+// ByMerchantID orders the results by the merchant_id field.
+func ByMerchantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMerchantID, opts...).ToFunc()
+}
+
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
@@ -181,6 +198,13 @@ func ByExcludeFromReports(opts ...sql.OrderTermOption) OrderOption {
 // ByPending orders the results by the pending field.
 func ByPending(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPending, opts...).ToFunc()
+}
+
+// ByMerchantField orders the results by merchant field.
+func ByMerchantField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMerchantStep(), sql.OrderByField(field, opts...))
+	}
 }
 
 // ByUserField orders the results by user field.
@@ -230,6 +254,13 @@ func ByInvestmentLots(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newInvestmentLotsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newMerchantStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MerchantInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, MerchantTable, MerchantColumn),
+	)
 }
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

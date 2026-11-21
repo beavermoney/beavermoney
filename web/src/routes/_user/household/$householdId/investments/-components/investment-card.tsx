@@ -2,7 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { RouterListItem } from '@/components/router-list-item'
 import { useCurrency } from '@/hooks/use-currency'
 import { Avatar } from '@astryxdesign/core/Avatar'
-import { VStack } from '@astryxdesign/core/Layout'
+import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { Text } from '@astryxdesign/core/Text'
 import { LinkOptions } from '@tanstack/react-router'
 import currency from 'currency.js'
@@ -83,15 +83,18 @@ export function InvestmentCard({
       {...linkOptions}
       label={data.name}
       startContent={
-        <Avatar src={getLogoTickerURL(data.symbol || '')} name={data.name} />
+        <HStack gap={0} vAlign="center" className="relative shrink-0 pr-2 pb-2">
+          <Avatar src={getLogoTickerURL(data.symbol || '')} name={data.name} />
+          <HStack className="absolute right-1 bottom-1 z-10 rounded-full bg-(--color-background-card) ring-2 ring-(--color-background-card)">
+            <Avatar name={data.user.name} size="xsm" />
+          </HStack>
+        </HStack>
       }
       description={
         <VStack gap={1}>
-          <Text type="supporting">
-            {[data.symbol !== data.name ? data.symbol : null, data.user.name]
-              .filter(Boolean)
-              .join(' · ')}
-          </Text>
+          {data.symbol && data.symbol !== data.name && (
+            <Text type="supporting">{data.symbol}</Text>
+          )}
           <Text type="supporting" hasTabularNumbers>
             {isPrivacyModeEnabled ? '•••' : data.amount} <Trans>shares ·</Trans>{' '}
             {formatCurrency({

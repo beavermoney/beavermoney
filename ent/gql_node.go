@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/internal"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/merchant"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
 	"beavermoney.app/ent/snapshotentry"
@@ -63,6 +64,11 @@ var investmentlotImplementors = []string{"InvestmentLot", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*InvestmentLot) IsNode() {}
+
+var merchantImplementors = []string{"Merchant", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Merchant) IsNode() {}
 
 var recurringsubscriptionImplementors = []string{"RecurringSubscription", "Node"}
 
@@ -241,6 +247,15 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			Where(investmentlot.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, investmentlotImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
+	case merchant.Table:
+		query := c.Merchant.Query().
+			Where(merchant.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, merchantImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -492,6 +507,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		query := c.InvestmentLot.Query().
 			Where(investmentlot.IDIn(ids...))
 		query, err := query.CollectFields(ctx, investmentlotImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case merchant.Table:
+		query := c.Merchant.Query().
+			Where(merchant.IDIn(ids...))
+		query, err := query.CollectFields(ctx, merchantImplementors...)
 		if err != nil {
 			return nil, err
 		}

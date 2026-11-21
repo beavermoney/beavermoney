@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b587fbd7ebb1823cbc6ca45b87ba9cfe>>
+ * @generated SignedSource<<73aef03d3f8ffd73e61e28cd861bc430>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -51,6 +51,15 @@ export type commandMenuQuery$data = {
         } | null | undefined;
       } | null | undefined> | null | undefined;
     };
+    readonly merchants?: {
+      readonly edges: ReadonlyArray<{
+        readonly node: {
+          readonly icon: string | null | undefined;
+          readonly id: string;
+          readonly name: string;
+        } | null | undefined;
+      } | null | undefined> | null | undefined;
+    };
   } | null | undefined;
 };
 export type commandMenuQuery = {
@@ -79,47 +88,83 @@ v1 = [
   }
 ],
 v2 = {
-  "kind": "Literal",
-  "name": "archived",
-  "value": false
-},
-v3 = {
-  "kind": "Variable",
-  "name": "userIDIn",
-  "variableName": "viewUserIds"
-},
-v4 = [
-  {
-    "fields": [
-      (v2/*: any*/),
-      (v3/*: any*/)
-    ],
-    "kind": "ObjectValue",
-    "name": "where"
-  }
-],
-v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v6 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v7 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "icon",
   "storageKey": null
 },
-v8 = {
+v5 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "MerchantConnection",
+  "kind": "LinkedField",
+  "name": "merchants",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "MerchantEdge",
+      "kind": "LinkedField",
+      "name": "edges",
+      "plural": true,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "Merchant",
+          "kind": "LinkedField",
+          "name": "node",
+          "plural": false,
+          "selections": [
+            (v2/*: any*/),
+            (v3/*: any*/),
+            (v4/*: any*/)
+          ],
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v6 = {
+  "kind": "Literal",
+  "name": "archived",
+  "value": false
+},
+v7 = {
+  "kind": "Variable",
+  "name": "userIDIn",
+  "variableName": "viewUserIds"
+},
+v8 = [
+  {
+    "fields": [
+      (v6/*: any*/),
+      (v7/*: any*/)
+    ],
+    "kind": "ObjectValue",
+    "name": "where"
+  }
+],
+v9 = {
   "alias": null,
   "args": null,
   "concreteType": "User",
@@ -127,18 +172,18 @@ v8 = {
   "name": "user",
   "plural": false,
   "selections": [
-    (v6/*: any*/)
+    (v3/*: any*/)
   ],
   "storageKey": null
 },
-v9 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "code",
   "storageKey": null
 },
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -146,14 +191,14 @@ v10 = {
   "name": "householdCurrency",
   "plural": false,
   "selections": [
-    (v9/*: any*/)
+    (v10/*: any*/)
   ],
   "storageKey": null
 },
-v11 = [
+v12 = [
   {
     "fields": [
-      (v2/*: any*/),
+      (v6/*: any*/),
       {
         "kind": "Literal",
         "name": "hasAccountWith",
@@ -161,27 +206,27 @@ v11 = [
           "archived": false
         }
       },
-      (v3/*: any*/)
+      (v7/*: any*/)
     ],
     "kind": "ObjectValue",
     "name": "where"
   }
 ],
-v12 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "symbol",
   "storageKey": null
 },
-v13 = {
+v14 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "type",
   "storageKey": null
 },
-v14 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "User",
@@ -189,12 +234,12 @@ v14 = {
   "name": "user",
   "plural": false,
   "selections": [
-    (v6/*: any*/),
-    (v5/*: any*/)
+    (v3/*: any*/),
+    (v2/*: any*/)
   ],
   "storageKey": null
 },
-v15 = {
+v16 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
@@ -202,8 +247,8 @@ v15 = {
   "name": "householdCurrency",
   "plural": false,
   "selections": [
-    (v9/*: any*/),
-    (v5/*: any*/)
+    (v10/*: any*/),
+    (v2/*: any*/)
   ],
   "storageKey": null
 };
@@ -225,9 +270,10 @@ return {
           {
             "kind": "InlineFragment",
             "selections": [
+              (v5/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "AccountConnection",
                 "kind": "LinkedField",
                 "name": "accounts",
@@ -249,11 +295,11 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v5/*: any*/),
-                          (v6/*: any*/),
-                          (v7/*: any*/),
-                          (v8/*: any*/),
-                          (v10/*: any*/)
+                          (v2/*: any*/),
+                          (v3/*: any*/),
+                          (v4/*: any*/),
+                          (v9/*: any*/),
+                          (v11/*: any*/)
                         ],
                         "storageKey": null
                       }
@@ -265,7 +311,7 @@ return {
               },
               {
                 "alias": null,
-                "args": (v11/*: any*/),
+                "args": (v12/*: any*/),
                 "concreteType": "InvestmentConnection",
                 "kind": "LinkedField",
                 "name": "investments",
@@ -287,10 +333,10 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v5/*: any*/),
-                          (v6/*: any*/),
-                          (v12/*: any*/),
+                          (v2/*: any*/),
+                          (v3/*: any*/),
                           (v13/*: any*/),
+                          (v14/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -299,10 +345,10 @@ return {
                             "name": "account",
                             "plural": false,
                             "selections": [
-                              (v6/*: any*/),
-                              (v7/*: any*/),
-                              (v8/*: any*/),
-                              (v10/*: any*/)
+                              (v3/*: any*/),
+                              (v4/*: any*/),
+                              (v9/*: any*/),
+                              (v11/*: any*/)
                             ],
                             "storageKey": null
                           }
@@ -350,9 +396,10 @@ return {
           {
             "kind": "InlineFragment",
             "selections": [
+              (v5/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v8/*: any*/),
                 "concreteType": "AccountConnection",
                 "kind": "LinkedField",
                 "name": "accounts",
@@ -374,11 +421,11 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v5/*: any*/),
-                          (v6/*: any*/),
-                          (v7/*: any*/),
-                          (v14/*: any*/),
-                          (v15/*: any*/)
+                          (v2/*: any*/),
+                          (v3/*: any*/),
+                          (v4/*: any*/),
+                          (v15/*: any*/),
+                          (v16/*: any*/)
                         ],
                         "storageKey": null
                       }
@@ -390,7 +437,7 @@ return {
               },
               {
                 "alias": null,
-                "args": (v11/*: any*/),
+                "args": (v12/*: any*/),
                 "concreteType": "InvestmentConnection",
                 "kind": "LinkedField",
                 "name": "investments",
@@ -412,10 +459,10 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v5/*: any*/),
-                          (v6/*: any*/),
-                          (v12/*: any*/),
+                          (v2/*: any*/),
+                          (v3/*: any*/),
                           (v13/*: any*/),
+                          (v14/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -424,11 +471,11 @@ return {
                             "name": "account",
                             "plural": false,
                             "selections": [
-                              (v6/*: any*/),
-                              (v7/*: any*/),
-                              (v14/*: any*/),
+                              (v3/*: any*/),
+                              (v4/*: any*/),
                               (v15/*: any*/),
-                              (v5/*: any*/)
+                              (v16/*: any*/),
+                              (v2/*: any*/)
                             ],
                             "storageKey": null
                           }
@@ -445,23 +492,23 @@ return {
             "type": "Household",
             "abstractKey": null
           },
-          (v5/*: any*/)
+          (v2/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "3593befd476a77bfd12ba950b5ef611b",
+    "cacheID": "c0c9c48f576766e986186f0203e81a18",
     "id": null,
     "metadata": {},
     "name": "commandMenuQuery",
     "operationKind": "query",
-    "text": "query commandMenuQuery(\n  $householdId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $householdId) {\n    __typename\n    ... on Household {\n      accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n        edges {\n          node {\n            id\n            name\n            icon\n            user {\n              name\n              id\n            }\n            householdCurrency {\n              code\n              id\n            }\n          }\n        }\n      }\n      investments(where: {archived: false, userIDIn: $viewUserIds, hasAccountWith: {archived: false}}) {\n        edges {\n          node {\n            id\n            name\n            symbol\n            type\n            account {\n              name\n              icon\n              user {\n                name\n                id\n              }\n              householdCurrency {\n                code\n                id\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query commandMenuQuery(\n  $householdId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $householdId) {\n    __typename\n    ... on Household {\n      merchants {\n        edges {\n          node {\n            id\n            name\n            icon\n          }\n        }\n      }\n      accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n        edges {\n          node {\n            id\n            name\n            icon\n            user {\n              name\n              id\n            }\n            householdCurrency {\n              code\n              id\n            }\n          }\n        }\n      }\n      investments(where: {archived: false, userIDIn: $viewUserIds, hasAccountWith: {archived: false}}) {\n        edges {\n          node {\n            id\n            name\n            symbol\n            type\n            account {\n              name\n              icon\n              user {\n                name\n                id\n              }\n              householdCurrency {\n                code\n                id\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a0ad27200c22633f47d255e516d9510c";
+(node as any).hash = "1812bff8a096d1119d6d163321087edb";
 
 export default node;

@@ -88,6 +88,11 @@ func (r *queryResolver) InvestmentLots(ctx context.Context, after *entgql.Cursor
 	return r.entClient.InvestmentLot.Query().Paginate(ctx, after, first, before, last, ent.WithInvestmentLotFilter(where.Filter))
 }
 
+// Merchants is the resolver for the merchants field.
+func (r *queryResolver) Merchants(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.MerchantWhereInput) (*ent.MerchantConnection, error) {
+	return r.entClient.Merchant.Query().Paginate(ctx, after, first, before, last, ent.WithMerchantFilter(where.Filter))
+}
+
 // RecurringSubscriptions is the resolver for the recurringSubscriptions field.
 func (r *queryResolver) RecurringSubscriptions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, where *ent.RecurringSubscriptionWhereInput) (*ent.RecurringSubscriptionConnection, error) {
 	return r.entClient.RecurringSubscription.Query().Paginate(ctx, after, first, before, last, ent.WithRecurringSubscriptionFilter(where.Filter))
@@ -886,6 +891,9 @@ func (r *Resolver) Investment() InvestmentResolver { return &investmentResolver{
 // InvestmentLot returns InvestmentLotResolver implementation.
 func (r *Resolver) InvestmentLot() InvestmentLotResolver { return &investmentLotResolver{r} }
 
+// Merchant returns MerchantResolver implementation.
+func (r *Resolver) Merchant() MerchantResolver { return &merchantResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
@@ -997,6 +1005,7 @@ type (
 	householdRateResolver                    struct{ *Resolver }
 	investmentResolver                       struct{ *Resolver }
 	investmentLotResolver                    struct{ *Resolver }
+	merchantResolver                         struct{ *Resolver }
 	queryResolver                            struct{ *Resolver }
 	recurringSubscriptionResolver            struct{ *Resolver }
 	snapshotResolver                         struct{ *Resolver }

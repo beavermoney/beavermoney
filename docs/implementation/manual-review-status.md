@@ -64,6 +64,8 @@ The complete table definitions, indexes, relationships, migration sequence and r
 
 ## Release verification
 
+The following broad release counts cover the snapshot/navigation work before the merchant extension. Final combined merchant checks are recorded below.
+
 Completed review evidence includes:
 
 - PostgreSQL forward-migration compatibility, frozen legacy values/FX/metadata, observation deduplication, archive/restore, source-entry deletion, immutable-value guards and manual-average invalidation.
@@ -87,6 +89,50 @@ Final backend and browser verification (2026-11-21):
 - After a full browser reload, search open/close and search-result → investment → Back retained the Accounts scroll position, collapsed Liquidity group and selected 3M range. Journal and holding history loaded without new console errors or Relay normalization warnings. Desktop review remained correctly laid out; the preview was left on the review drawer with temporary viewport overrides removed.
 - Final logs: `/tmp/review-ci-bootstrap-final.log`, `/tmp/review-ci-fixture-final.log`, `/tmp/release-go-tests-final.log`, `/tmp/release-go-lint-final.log`, `/tmp/release-go-build.log`. Browser evidence: `/tmp/beaver-preview/release-restoration-desktop.jpg` and `/tmp/beaver-preview/release-review-desktop.jpg`.
 
-Schema, backend and UI release reviews have no remaining blocking findings. CI is configured to start PostgreSQL, prepare the deterministic compatibility fixture and run the database-backed tests with the Go suite. Mobile layout checks used browser viewport emulation, not a physical phone.
+Schema, backend and UI release reviews for the snapshot/navigation work have no remaining blocking findings. CI is configured to start PostgreSQL, prepare the deterministic compatibility fixture and run the database-backed tests with the Go suite. Mobile layout checks used browser viewport emulation, not a physical phone.
 
 Go tooling: `env -u GOROOT GOTOOLCHAIN=go1.26.8` for generation and checks. The local app uses the isolated `beaver_review_preview` database; labeled sample journal entries are preview-only data.
+
+## Merchant extension
+
+The later merchant work adds nullable expense assignment, normalized household-local names, merchant management/merge and period/lifetime spending insights. Migration `20261121190000_merchants` adds `merchants` and nullable `transactions.merchant_id`, with a household/name uniqueness index, an expense/household guard and a restricting foreign key. Account and holding archive rules are unchanged.
+
+Merchant logos use a nullable `merchants.icon` website domain and Logo.dev, matching account icons. The editor supports setting or clearing the domain; uploads and image storage are deferred. This adds no media routes or storage configuration. See [merchant-data-model.md](merchant-data-model.md) for the database and validation contract.
+
+Initial combined merchant verification (2026-11-21, local only; before the later Logo.dev-only simplification):
+
+- **276 frontend tests across 50 files passed**. The final routing test fixture correction was followed by both real-router tests and full TypeScript passing. Coverage includes staged/new/existing merchant selection, failed search, Save again/reset, expense editing, merge confirmed writes, logo crop/transport, privacy percentages and navigation with date filters.
+- Full `go test ./...` passed. The complete gql race suite and focused real PostgreSQL merchant tests passed, including exact FX/refunds/member slices, opposite concurrent merges, duplicate creation, failed-write rollback and household/category guards. Backend lint reports zero issues.
+- Fresh migration bootstrap preserved legacy snapshots and transactions and left existing expenses unassigned. The isolated preview database was aligned to the final unreleased1900 schema using forward DDL only, without changing financial data.
+- TypeScript, English/Chinese catalog validation, production build and whitespace checks passed. ESLint has zero errors and99 warnings across the application. Astryx built-output doctor has12 passes, one grouped source-style warning and zero failures; its warnings include existing raw elements/token utility classes and test markup.
+- Browser review covered390px mobile and1440px desktop dark layouts, half-width amount/merchant entry, autocomplete/new-name staging, reset, native logo crop controls, existing unassigned expense totals, filtered drill-down and Back navigation. A shared Astryx link adapter bug that duplicated query strings was fixed and verified in browser and real-router tests. No financial records were added or changed during visual review. Viewport overrides were removed.
+- Evidence: `/tmp/merchant-final-tests.log`, `/tmp/merchant-routing-tests.log`, `/tmp/merchant-routing-tsc.log`, `/tmp/merchant-go-final.log`, `/tmp/merchant-gql-race.log`, `/tmp/merchant-pg-tests.log`, `/tmp/merchant-migration-check.log`, `/tmp/merchant-final-lint.log`, `/tmp/merchant-build-final.log`, `/tmp/merchant-eslint.log`, `/tmp/merchant-astryx-doctor.log`.
+
+Implementation is ready for local user review. Nothing from the merchant extension has been pushed or deployed. The current Logo.dev-only implementation requires no upload or persistent-media configuration.
+
+
+### Logo.dev and compact merchant display follow-up
+
+User deferred uploaded logos. Merchants now use nullable `icon` domains, with Logo.dev rendering shared with accounts. Upload UI, transport, server routes/package and storage configuration were removed. Fresh migration1900 creates only the domain field; old local prototype file references/assets are retained untouched but unused.
+
+Merchant amount/name tiles share typography and spacing; overflowing names reuse `ScrollingName`, including its reduced-motion fallback. Transaction cards and table rows use the merchant avatar with a small bottom-right category badge and place the merchant name beside the category name. Unassigned transactions retain their category icon.
+
+After these changes, **269 frontend tests across48 files passed**, TypeScript and production build passed, and scoped ESLint reported no errors. Backend domain lifecycle/race tests, lint and fresh migration compatibility passed. Browser checks confirmed overflow scrolling and the compact row at390px, plus the domain-only edit form. No preview financial values were changed.
+
+Latest frontend evidence: `/tmp/frontend-merchant-domain-final-tests.log`, `/tmp/frontend-merchant-domain-lint.log`, `/tmp/merchant-domain-tsc-final.log`, `/tmp/merchant-domain-build.log`.
+
+### Merchant leaderboard and icon refinement
+
+The merchant index now shows only the selected period's leaderboard, with Spend/Count ranking and a separate unassigned row when needed. Rows use Astryx's spacious padded list treatment without dividers against the hover surface. Merchant details show period spend, transaction count, average and lifetime spend, followed directly by transactions. English and Chinese catalogs are complete.
+
+The complete frontend suite passed **267 tests across 47 files** after removing obsolete percentage-helper tests. TypeScript and the production build passed. Scoped lint has no errors (Relay projection warnings remain); Astryx doctor has no failures. Mobile (390px) and desktop (1440px) browser review verified ranking toggle, detail navigation/Back, and the simplified layouts.
+
+Transaction merchant and investment avatars now share the larger 36px size in a consistent icon column. Investment list/detail cards display owner avatars at the bottom right, matching accounts; the separate owner-name line is removed. These final presentational changes passed TypeScript, production build and scoped lint, and were inspected at both viewport sizes. No schema changes accompany these refinements.
+
+Evidence: `/tmp/merchant-leaderboard-final-tests.log`, `/tmp/merchant-leaderboard-build.log`, `/tmp/merchant-leaderboard-lint.log`, `/tmp/merchant-leaderboard-doctor.log`, `/tmp/merchant-final-size-build.log`, `/tmp/merchant-final-icon-lint.log`. Merchant changes remain local and unpushed.
+
+### Merchant release verification
+
+Final release checks passed: 267 frontend tests across 47 files; TypeScript; full frontend formatting; production build; full Go race-test suite against the isolated compatibility database; Go build and module tidy; zero backend lint issues; migration checksums using the repository's golang-migrate format; and diff whitespace checks. Frontend ESLint reports 96 warnings and no errors. The two test-file formatting findings were corrected before release. The first local database run targeted an older fixture without merchants; rerunning against the migrated release fixture passed.
+
+Evidence: `/tmp/merchant-ship-tests.log`, `/tmp/merchant-ship-format.log`, `/tmp/merchant-ship-eslint.log`, `/tmp/merchant-ship-build.log`, `/tmp/merchant-ship-go-tests.log`, `/tmp/merchant-ship-go-lint.log`, `/tmp/merchant-ship-go-build.log`. User authorized pushing this merchant extension and the final icon refinements to main.

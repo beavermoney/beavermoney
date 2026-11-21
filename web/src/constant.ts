@@ -9,6 +9,7 @@ import {
   LucideIcon,
   ReceiptIcon,
   SettingsIcon,
+  StoreIcon,
   TagIcon,
   TrendingUpIcon,
 } from 'lucide-react'
@@ -162,6 +163,16 @@ export const NAV: Array<{
     },
     icon: TagIcon,
     shortcut: ['G', 'C'],
+  },
+  {
+    name: msg`Merchants`,
+    link: {
+      to: '/household/$householdId/merchants',
+      activeOptions: { exact: false, includeSearch: false },
+      search: (prev) => ({ ...prev }),
+    },
+    icon: StoreIcon,
+    shortcut: ['G', 'M'],
   },
   {
     name: msg`Subscriptions`,

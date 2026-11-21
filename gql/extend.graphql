@@ -85,3 +85,43 @@ type SnapshotRateState {
   to: String!
   rate: String!
 }
+
+extend type Household {
+  merchantSearch(query: String!, first: Int = 20): [Merchant!]!
+  merchantInsights(period: TimePeriodInput!, viewUserIDs: [ID!]): MerchantOverview!
+}
+extend type Merchant {
+  insights(period: TimePeriodInput!, viewUserIDs: [ID!]): MerchantInsights!
+}
+type MerchantSpendSummary {
+  total: String!
+  transactionCount: Int!
+  average: String!
+}
+type MerchantPeriodSummary {
+  merchant: Merchant!
+  summary: MerchantSpendSummary!
+}
+type MerchantOverview {
+  currencyCode: String!
+  total: MerchantSpendSummary!
+  merchants: [MerchantPeriodSummary!]!
+  unassigned: MerchantSpendSummary!
+}
+type MerchantInsights {
+  currencyCode: String!
+  period: MerchantSpendSummary!
+  lifetime: MerchantSpendSummary!
+  categories: [MerchantCategorySummary!]!
+  monthly: [MerchantMonthlySummary!]!
+}
+type MerchantCategorySummary {
+  category: TransactionCategory!
+  total: String!
+  transactionCount: Int!
+}
+type MerchantMonthlySummary {
+  month: String!
+  total: String!
+  transactionCount: Int!
+}

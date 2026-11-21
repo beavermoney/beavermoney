@@ -66,7 +66,8 @@ func run() error {
 	const historyQuery = `SELECT jsonb_build_object(
  'stamps',(SELECT jsonb_agg(jsonb_build_object('id',id,'household_id',household_id,'create_time',create_time,'update_time',update_time,'note',note) ORDER BY id) FROM snapshots),
  'entries',(SELECT jsonb_agg(to_jsonb(e) ORDER BY id) FROM snapshot_entries e),
- 'rates',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM snapshot_rates r)
+ 'rates',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM snapshot_rates r),
+ 'transactions',(SELECT jsonb_agg(to_jsonb(t)-'merchant_id' ORDER BY id) FROM transactions t)
 )::text`
 	var before, after string
 	if err := db.QueryRow(historyQuery).Scan(&before); err != nil {
@@ -81,6 +82,20 @@ func run() error {
 	if before != after {
 		return fmt.Errorf("forward migrations changed legacy snapshot values, FX or metadata")
 	}
-	slog.Info("legacy snapshot preserved by server migration runner")
+	var merchants, assigned int
+	if err := db.QueryRow("SELECT (SELECT count(*) FROM merchants),(SELECT count(*) FROM transactions WHERE merchant_id IS NOT NULL)").Scan(&merchants, &assigned); err != nil {
+		return err
+	}
+	if merchants != 0 || assigned != 0 {
+		return fmt.Errorf("merchant migration fabricated merchants or historical assignments")
+	}
+	var iconColumns, obsoleteLogoColumns int
+	if err := db.QueryRow("SELECT count(*) FILTER (WHERE column_name='icon' AND character_maximum_length=253),count(*) FILTER (WHERE column_name='logo_key') FROM information_schema.columns WHERE table_schema='public' AND table_name='merchants'").Scan(&iconColumns, &obsoleteLogoColumns); err != nil {
+		return err
+	}
+	if iconColumns != 1 || obsoleteLogoColumns != 0 {
+		return fmt.Errorf("fresh merchant schema must store only the domain icon field")
+	}
+	slog.Info("legacy snapshot and transactions preserved by server migration runner; existing expenses remain unassigned")
 	return nil
 }

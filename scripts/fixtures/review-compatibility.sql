@@ -77,6 +77,10 @@ END $$;
 \ir ../../ent/migrate/migrations/20261121170000_snapshot-capture-times.up.sql
 \ir ../../ent/migrate/migrations/20261121180000_monotonic-average-review.up.sql
 UPDATE households SET is_demo=false WHERE id=8589934692;
-UPDATE schema_migrations SET version=20261121180000,dirty=false;
+SELECT NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='merchants') AS needs_merchants \gset
+\if :needs_merchants
+\ir ../../ent/migrate/migrations/20261121190000_merchants.up.sql
+\endif
+UPDATE schema_migrations SET version=20261121190000,dirty=false;
 COMMIT;
 SELECT 'PASS: old snapshot values, FX, metadata and notes survived the forward migration exactly';
