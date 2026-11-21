@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6e15b756dc414395bbd5bd8ceb079d43>>
+ * @generated SignedSource<<e35473b086cac0856dad20c4cbb298cd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -442,6 +442,33 @@ export type InvestmentWhereInput = {
   amountNEQ?: string | null | undefined;
   amountNotIn?: ReadonlyArray<string> | null | undefined;
   and?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
+  archived?: boolean | null | undefined;
+  archivedNEQ?: boolean | null | undefined;
+  averageCostConfirmedAt?: any | null | undefined;
+  averageCostConfirmedAtGT?: any | null | undefined;
+  averageCostConfirmedAtGTE?: any | null | undefined;
+  averageCostConfirmedAtIn?: ReadonlyArray<any> | null | undefined;
+  averageCostConfirmedAtIsNil?: boolean | null | undefined;
+  averageCostConfirmedAtLT?: any | null | undefined;
+  averageCostConfirmedAtLTE?: any | null | undefined;
+  averageCostConfirmedAtNEQ?: any | null | undefined;
+  averageCostConfirmedAtNotIn?: ReadonlyArray<any> | null | undefined;
+  averageCostConfirmedAtNotNil?: boolean | null | undefined;
+  confirmedAverageCost?: string | null | undefined;
+  confirmedAverageCostContains?: string | null | undefined;
+  confirmedAverageCostContainsFold?: string | null | undefined;
+  confirmedAverageCostEqualFold?: string | null | undefined;
+  confirmedAverageCostGT?: string | null | undefined;
+  confirmedAverageCostGTE?: string | null | undefined;
+  confirmedAverageCostHasPrefix?: string | null | undefined;
+  confirmedAverageCostHasSuffix?: string | null | undefined;
+  confirmedAverageCostIn?: ReadonlyArray<string> | null | undefined;
+  confirmedAverageCostIsNil?: boolean | null | undefined;
+  confirmedAverageCostLT?: string | null | undefined;
+  confirmedAverageCostLTE?: string | null | undefined;
+  confirmedAverageCostNEQ?: string | null | undefined;
+  confirmedAverageCostNotIn?: ReadonlyArray<string> | null | undefined;
+  confirmedAverageCostNotNil?: boolean | null | undefined;
   createTime?: any | null | undefined;
   createTimeGT?: any | null | undefined;
   createTimeGTE?: any | null | undefined;
@@ -460,6 +487,16 @@ export type InvestmentWhereInput = {
   hasInvestmentLotsWith?: ReadonlyArray<InvestmentLotWhereInput> | null | undefined;
   hasUser?: boolean | null | undefined;
   hasUserWith?: ReadonlyArray<UserWhereInput> | null | undefined;
+  holdingsChangedAt?: any | null | undefined;
+  holdingsChangedAtGT?: any | null | undefined;
+  holdingsChangedAtGTE?: any | null | undefined;
+  holdingsChangedAtIn?: ReadonlyArray<any> | null | undefined;
+  holdingsChangedAtIsNil?: boolean | null | undefined;
+  holdingsChangedAtLT?: any | null | undefined;
+  holdingsChangedAtLTE?: any | null | undefined;
+  holdingsChangedAtNEQ?: any | null | undefined;
+  holdingsChangedAtNotIn?: ReadonlyArray<any> | null | undefined;
+  holdingsChangedAtNotNil?: boolean | null | undefined;
   householdCurrencyID?: string | null | undefined;
   householdCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
   householdCurrencyIDNEQ?: string | null | undefined;
@@ -808,6 +845,14 @@ export type SnapshotWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  formatVersion?: number | null | undefined;
+  formatVersionGT?: number | null | undefined;
+  formatVersionGTE?: number | null | undefined;
+  formatVersionIn?: ReadonlyArray<number> | null | undefined;
+  formatVersionLT?: number | null | undefined;
+  formatVersionLTE?: number | null | undefined;
+  formatVersionNEQ?: number | null | undefined;
+  formatVersionNotIn?: ReadonlyArray<number> | null | undefined;
   hasHousehold?: boolean | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;
@@ -1186,7 +1231,7 @@ export type InvestmentIdQuery$data = {
     readonly " $fragmentSpreads": FragmentRefs<"transactionsListFragment">;
   };
   readonly node: {
-    readonly " $fragmentSpreads": FragmentRefs<"InvestmentIdDetailFragment" | "investmentCardFragment">;
+    readonly " $fragmentSpreads": FragmentRefs<"InvestmentIdDetailFragment" | "investmentArchiveActionFragment" | "investmentCardFragment">;
   } | null | undefined;
 };
 export type InvestmentIdQuery = {
@@ -1286,7 +1331,14 @@ v9 = {
   "name": "amount",
   "storageKey": null
 },
-v10 = [
+v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "archived",
+  "storageKey": null
+},
+v11 = [
   {
     "kind": "Literal",
     "name": "first",
@@ -1302,14 +1354,14 @@ v10 = [
   },
   (v2/*: any*/)
 ],
-v11 = {
+v12 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "type",
   "storageKey": null
 },
-v12 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -1343,6 +1395,11 @@ return {
                 "args": null,
                 "kind": "FragmentSpread",
                 "name": "InvestmentIdDetailFragment"
+              },
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "investmentArchiveActionFragment"
               }
             ],
             "type": "Investment",
@@ -1432,6 +1489,14 @@ return {
                 "name": "unrealizedReturnPercent",
                 "storageKey": null
               },
+              (v10/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "averageNeedsReview",
+                "storageKey": null
+              },
               {
                 "alias": null,
                 "args": null,
@@ -1444,6 +1509,19 @@ return {
                 "args": null,
                 "kind": "ScalarField",
                 "name": "averageCost",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "Account",
+                "kind": "LinkedField",
+                "name": "account",
+                "plural": false,
+                "selections": [
+                  (v10/*: any*/),
+                  (v4/*: any*/)
+                ],
                 "storageKey": null
               }
             ],
@@ -1464,7 +1542,7 @@ return {
           (v4/*: any*/),
           {
             "alias": null,
-            "args": (v10/*: any*/),
+            "args": (v11/*: any*/),
             "concreteType": "TransactionConnection",
             "kind": "LinkedField",
             "name": "transactions",
@@ -1509,10 +1587,10 @@ return {
                         "name": "category",
                         "plural": false,
                         "selections": [
-                          (v11/*: any*/),
+                          (v12/*: any*/),
                           (v4/*: any*/),
                           (v5/*: any*/),
-                          (v12/*: any*/)
+                          (v13/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -1549,7 +1627,7 @@ return {
                               (v7/*: any*/),
                               (v4/*: any*/),
                               (v5/*: any*/),
-                              (v12/*: any*/)
+                              (v13/*: any*/)
                             ],
                             "storageKey": null
                           },
@@ -1591,7 +1669,7 @@ return {
                             "selections": [
                               (v5/*: any*/),
                               (v6/*: any*/),
-                              (v11/*: any*/),
+                              (v12/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
@@ -1602,7 +1680,7 @@ return {
                                 "selections": [
                                   (v5/*: any*/),
                                   (v4/*: any*/),
-                                  (v12/*: any*/),
+                                  (v13/*: any*/),
                                   (v8/*: any*/)
                                 ],
                                 "storageKey": null
@@ -1679,7 +1757,7 @@ return {
           },
           {
             "alias": null,
-            "args": (v10/*: any*/),
+            "args": (v11/*: any*/),
             "filters": [
               "where",
               "orderBy"
@@ -1695,16 +1773,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "cec7472207b2cfb95fab77efb4185ee0",
+    "cacheID": "91778e36a1221af662b391fb51a8c085",
     "id": null,
     "metadata": {},
     "name": "InvestmentIdQuery",
     "operationKind": "query",
-    "text": "query InvestmentIdQuery(\n  $id: ID!\n  $where: TransactionWhereInput\n) {\n  node(id: $id) {\n    __typename\n    ... on Investment {\n      ...investmentCardFragment\n      ...InvestmentIdDetailFragment\n    }\n    id\n  }\n  household {\n    ...transactionsListFragment_3FC4Qo\n    id\n  }\n}\n\nfragment InvestmentIdDetailFragment on Investment {\n  householdCurrency {\n    code\n    id\n  }\n  costBasis\n  averageCost\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n\nfragment transactionDaySummaryFragment on Transaction {\n  excludeFromReports\n  category {\n    type\n    id\n  }\n  transactionEntries {\n    amount\n    account {\n      user {\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment transactionDialogPreviewFragment on Transaction {\n  datetime\n  excludeFromReports\n  category {\n    icon\n    name\n    type\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  id\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        datetime\n        ...transactionDaySummaryFragment\n        ...transactionCardFragment\n        ...transactionDialogPreviewFragment\n        ...transactionsTableFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsTableFragment on Transaction {\n  id\n  datetime\n  description\n  excludeFromReports\n  pending\n  category {\n    icon\n    type\n    name\n    id\n  }\n  user {\n    name\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      icon\n      name\n      user {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      symbol\n      account {\n        icon\n        name\n        user {\n          name\n          id\n        }\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query InvestmentIdQuery(\n  $id: ID!\n  $where: TransactionWhereInput\n) {\n  node(id: $id) {\n    __typename\n    ... on Investment {\n      ...investmentCardFragment\n      ...InvestmentIdDetailFragment\n      ...investmentArchiveActionFragment\n    }\n    id\n  }\n  household {\n    ...transactionsListFragment_3FC4Qo\n    id\n  }\n}\n\nfragment InvestmentIdDetailFragment on Investment {\n  id\n  householdCurrency {\n    code\n    id\n  }\n  archived\n  averageNeedsReview\n  costBasis\n  averageCost\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentArchiveActionFragment on Investment {\n  id\n  archived\n  amount\n  account {\n    archived\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment transactionCardFragment on Transaction {\n  id\n  excludeFromReports\n  pending\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      type\n      account {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  category {\n    name\n    type\n    icon\n    id\n  }\n}\n\nfragment transactionDaySummaryFragment on Transaction {\n  excludeFromReports\n  category {\n    type\n    id\n  }\n  transactionEntries {\n    amount\n    account {\n      user {\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n    id\n  }\n}\n\nfragment transactionDialogPreviewFragment on Transaction {\n  datetime\n  excludeFromReports\n  category {\n    icon\n    name\n    type\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      name\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      name\n      symbol\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n\nfragment transactionsListFragment_3FC4Qo on Household {\n  id\n  transactions(first: 20, where: $where, orderBy: {field: DATETIME, direction: DESC}) {\n    edges {\n      node {\n        id\n        datetime\n        ...transactionDaySummaryFragment\n        ...transactionCardFragment\n        ...transactionDialogPreviewFragment\n        ...transactionsTableFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n\nfragment transactionsTableFragment on Transaction {\n  id\n  datetime\n  description\n  excludeFromReports\n  pending\n  category {\n    icon\n    type\n    name\n    id\n  }\n  user {\n    name\n    id\n  }\n  transactionEntries {\n    id\n    amount\n    account {\n      icon\n      name\n      user {\n        name\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n  investmentLots {\n    id\n    amount\n    price\n    investment {\n      symbol\n      account {\n        icon\n        name\n        user {\n          name\n          id\n        }\n        id\n      }\n      householdCurrency {\n        code\n        id\n      }\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6d08a311ff3b0deae3c8d5232172a87d";
+(node as any).hash = "f9764fec56aaf56d201e19c37cc8354b";
 
 export default node;

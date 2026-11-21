@@ -1,3 +1,4 @@
+import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
@@ -16,6 +17,7 @@ import { isMembershipRevokedError } from '@/lib/auth'
 export function GenericError(error: ErrorComponentProps) {
   const { t } = useLingui()
   const navigate = useNavigate()
+  const goBack = useBackNavigation()
   const isRevoked = isMembershipRevokedError(error.error)
 
   if (isRevoked) return <Navigate to="/household" />
@@ -37,7 +39,7 @@ export function GenericError(error: ErrorComponentProps) {
       </Stack>
       <Stack direction="vertical" gap={4}>
         <Button
-          onClick={() => navigate({ to: '..' })}
+          onClick={() => goBack({ to: '/' })}
           label={t`Go back`}
           variant={'secondary'}
         >

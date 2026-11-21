@@ -17,15 +17,9 @@ import { match } from 'ts-pattern'
 import * as z from 'zod'
 
 import type { editAccountFragment$key } from './__generated__/editAccountFragment.graphql'
-import type {
-  AccountCategory,
-  editAccountMutation,
-} from './__generated__/editAccountMutation.graphql'
+import type { editAccountMutation } from './__generated__/editAccountMutation.graphql'
 
-import { ACCOUNT_CATEGORY_APPLICABLE_TYPES } from '@/constant'
 import { commitMutationResult } from '@/lib/relay'
-
-import { AccountCategoryPicker } from './account-category-picker'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const editAccountFragment = graphql`
@@ -67,7 +61,6 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
       .min(1, t`Account name must be at least 1 character.`)
       .max(64, t`Account name must be at most 64 characters.`),
     icon: z.string(),
-    category: z.string(),
   })
 
   const showToast = useToast()
@@ -81,7 +74,6 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
     defaultValues: {
       name: data.name,
       icon: data.icon || '',
-      category: data.category || '',
     },
     validators: {
       onSubmit: formSchema,
@@ -98,8 +90,6 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
               name: formData.name,
               icon: formData.icon || null,
               clearIcon: !formData.icon,
-              category: (formData.category || null) as AccountCategory | null,
-              clearCategory: !formData.category,
             },
           },
         },
@@ -148,36 +138,6 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
             }}
           >
             <FormLayout>
-              {ACCOUNT_CATEGORY_APPLICABLE_TYPES.has(data.type) && (
-                <form.Field
-                  name="category"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid
-                    return (
-                      <Stack
-                        direction="vertical"
-                        gap={2}
-                        data-invalid={isInvalid}
-                      >
-                        <label htmlFor={field.name}>
-                          <Trans>Category (optional)</Trans>
-                        </label>
-                        <AccountCategoryPicker
-                          name={field.name}
-                          value={field.state.value}
-                          onValueChange={field.handleChange}
-                          onBlur={field.handleBlur}
-                          invalid={isInvalid}
-                        />
-                        {isInvalid && (
-                          <FormError errors={field.state.meta.errors} />
-                        )}
-                      </Stack>
-                    )
-                  }}
-                />
-              )}
               <form.Field
                 name="name"
                 children={(field) => {

@@ -13,6 +13,7 @@ import (
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -59,6 +60,62 @@ func (_c *InvestmentCreate) SetNillableUpdateTime(v *time.Time) *InvestmentCreat
 // SetHouseholdID sets the "household_id" field.
 func (_c *InvestmentCreate) SetHouseholdID(v int) *InvestmentCreate {
 	_c.mutation.SetHouseholdID(v)
+	return _c
+}
+
+// SetArchived sets the "archived" field.
+func (_c *InvestmentCreate) SetArchived(v bool) *InvestmentCreate {
+	_c.mutation.SetArchived(v)
+	return _c
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_c *InvestmentCreate) SetNillableArchived(v *bool) *InvestmentCreate {
+	if v != nil {
+		_c.SetArchived(*v)
+	}
+	return _c
+}
+
+// SetConfirmedAverageCost sets the "confirmed_average_cost" field.
+func (_c *InvestmentCreate) SetConfirmedAverageCost(v string) *InvestmentCreate {
+	_c.mutation.SetConfirmedAverageCost(v)
+	return _c
+}
+
+// SetNillableConfirmedAverageCost sets the "confirmed_average_cost" field if the given value is not nil.
+func (_c *InvestmentCreate) SetNillableConfirmedAverageCost(v *string) *InvestmentCreate {
+	if v != nil {
+		_c.SetConfirmedAverageCost(*v)
+	}
+	return _c
+}
+
+// SetAverageCostConfirmedAt sets the "average_cost_confirmed_at" field.
+func (_c *InvestmentCreate) SetAverageCostConfirmedAt(v time.Time) *InvestmentCreate {
+	_c.mutation.SetAverageCostConfirmedAt(v)
+	return _c
+}
+
+// SetNillableAverageCostConfirmedAt sets the "average_cost_confirmed_at" field if the given value is not nil.
+func (_c *InvestmentCreate) SetNillableAverageCostConfirmedAt(v *time.Time) *InvestmentCreate {
+	if v != nil {
+		_c.SetAverageCostConfirmedAt(*v)
+	}
+	return _c
+}
+
+// SetHoldingsChangedAt sets the "holdings_changed_at" field.
+func (_c *InvestmentCreate) SetHoldingsChangedAt(v time.Time) *InvestmentCreate {
+	_c.mutation.SetHoldingsChangedAt(v)
+	return _c
+}
+
+// SetNillableHoldingsChangedAt sets the "holdings_changed_at" field if the given value is not nil.
+func (_c *InvestmentCreate) SetNillableHoldingsChangedAt(v *time.Time) *InvestmentCreate {
+	if v != nil {
+		_c.SetHoldingsChangedAt(*v)
+	}
 	return _c
 }
 
@@ -130,6 +187,21 @@ func (_c *InvestmentCreate) SetHouseholdCurrencyID(v int) *InvestmentCreate {
 func (_c *InvestmentCreate) SetUserID(v int) *InvestmentCreate {
 	_c.mutation.SetUserID(v)
 	return _c
+}
+
+// AddSnapshotInvestmentIDs adds the "snapshot_investments" edge to the SnapshotInvestment entity by IDs.
+func (_c *InvestmentCreate) AddSnapshotInvestmentIDs(ids ...int) *InvestmentCreate {
+	_c.mutation.AddSnapshotInvestmentIDs(ids...)
+	return _c
+}
+
+// AddSnapshotInvestments adds the "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_c *InvestmentCreate) AddSnapshotInvestments(v ...*SnapshotInvestment) *InvestmentCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotInvestmentIDs(ids...)
 }
 
 // SetAccount sets the "account" edge to the Account entity.
@@ -218,6 +290,10 @@ func (_c *InvestmentCreate) defaults() error {
 		v := investment.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
+	if _, ok := _c.mutation.Archived(); !ok {
+		v := investment.DefaultArchived
+		_c.mutation.SetArchived(v)
+	}
 	if _, ok := _c.mutation.Amount(); !ok {
 		if investment.DefaultAmount == nil {
 			return fmt.Errorf("ent: uninitialized investment.DefaultAmount (forgotten import ent/runtime?)")
@@ -245,6 +321,9 @@ func (_c *InvestmentCreate) check() error {
 	}
 	if _, ok := _c.mutation.HouseholdID(); !ok {
 		return &ValidationError{Name: "household_id", err: errors.New(`ent: missing required field "Investment.household_id"`)}
+	}
+	if _, ok := _c.mutation.Archived(); !ok {
+		return &ValidationError{Name: "archived", err: errors.New(`ent: missing required field "Investment.archived"`)}
 	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Investment.name"`)}
@@ -345,6 +424,22 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 		_spec.SetField(investment.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
+	if value, ok := _c.mutation.Archived(); ok {
+		_spec.SetField(investment.FieldArchived, field.TypeBool, value)
+		_node.Archived = value
+	}
+	if value, ok := _c.mutation.ConfirmedAverageCost(); ok {
+		_spec.SetField(investment.FieldConfirmedAverageCost, field.TypeString, value)
+		_node.ConfirmedAverageCost = &value
+	}
+	if value, ok := _c.mutation.AverageCostConfirmedAt(); ok {
+		_spec.SetField(investment.FieldAverageCostConfirmedAt, field.TypeTime, value)
+		_node.AverageCostConfirmedAt = &value
+	}
+	if value, ok := _c.mutation.HoldingsChangedAt(); ok {
+		_spec.SetField(investment.FieldHoldingsChangedAt, field.TypeTime, value)
+		_node.HoldingsChangedAt = &value
+	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(investment.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -368,6 +463,22 @@ func (_c *InvestmentCreate) createSpec() (*Investment, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Value(); ok {
 		_spec.SetField(investment.FieldValue, field.TypeFloat64, value)
 		_node.Value = value
+	}
+	if nodes := _c.mutation.SnapshotInvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.AccountIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -517,6 +628,72 @@ func (u *InvestmentUpsert) UpdateUpdateTime() *InvestmentUpsert {
 	return u
 }
 
+// SetArchived sets the "archived" field.
+func (u *InvestmentUpsert) SetArchived(v bool) *InvestmentUpsert {
+	u.Set(investment.FieldArchived, v)
+	return u
+}
+
+// UpdateArchived sets the "archived" field to the value that was provided on create.
+func (u *InvestmentUpsert) UpdateArchived() *InvestmentUpsert {
+	u.SetExcluded(investment.FieldArchived)
+	return u
+}
+
+// SetConfirmedAverageCost sets the "confirmed_average_cost" field.
+func (u *InvestmentUpsert) SetConfirmedAverageCost(v string) *InvestmentUpsert {
+	u.Set(investment.FieldConfirmedAverageCost, v)
+	return u
+}
+
+// UpdateConfirmedAverageCost sets the "confirmed_average_cost" field to the value that was provided on create.
+func (u *InvestmentUpsert) UpdateConfirmedAverageCost() *InvestmentUpsert {
+	u.SetExcluded(investment.FieldConfirmedAverageCost)
+	return u
+}
+
+// ClearConfirmedAverageCost clears the value of the "confirmed_average_cost" field.
+func (u *InvestmentUpsert) ClearConfirmedAverageCost() *InvestmentUpsert {
+	u.SetNull(investment.FieldConfirmedAverageCost)
+	return u
+}
+
+// SetAverageCostConfirmedAt sets the "average_cost_confirmed_at" field.
+func (u *InvestmentUpsert) SetAverageCostConfirmedAt(v time.Time) *InvestmentUpsert {
+	u.Set(investment.FieldAverageCostConfirmedAt, v)
+	return u
+}
+
+// UpdateAverageCostConfirmedAt sets the "average_cost_confirmed_at" field to the value that was provided on create.
+func (u *InvestmentUpsert) UpdateAverageCostConfirmedAt() *InvestmentUpsert {
+	u.SetExcluded(investment.FieldAverageCostConfirmedAt)
+	return u
+}
+
+// ClearAverageCostConfirmedAt clears the value of the "average_cost_confirmed_at" field.
+func (u *InvestmentUpsert) ClearAverageCostConfirmedAt() *InvestmentUpsert {
+	u.SetNull(investment.FieldAverageCostConfirmedAt)
+	return u
+}
+
+// SetHoldingsChangedAt sets the "holdings_changed_at" field.
+func (u *InvestmentUpsert) SetHoldingsChangedAt(v time.Time) *InvestmentUpsert {
+	u.Set(investment.FieldHoldingsChangedAt, v)
+	return u
+}
+
+// UpdateHoldingsChangedAt sets the "holdings_changed_at" field to the value that was provided on create.
+func (u *InvestmentUpsert) UpdateHoldingsChangedAt() *InvestmentUpsert {
+	u.SetExcluded(investment.FieldHoldingsChangedAt)
+	return u
+}
+
+// ClearHoldingsChangedAt clears the value of the "holdings_changed_at" field.
+func (u *InvestmentUpsert) ClearHoldingsChangedAt() *InvestmentUpsert {
+	u.SetNull(investment.FieldHoldingsChangedAt)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *InvestmentUpsert) SetName(v string) *InvestmentUpsert {
 	u.Set(investment.FieldName, v)
@@ -526,30 +703,6 @@ func (u *InvestmentUpsert) SetName(v string) *InvestmentUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *InvestmentUpsert) UpdateName() *InvestmentUpsert {
 	u.SetExcluded(investment.FieldName)
-	return u
-}
-
-// SetType sets the "type" field.
-func (u *InvestmentUpsert) SetType(v investment.Type) *InvestmentUpsert {
-	u.Set(investment.FieldType, v)
-	return u
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *InvestmentUpsert) UpdateType() *InvestmentUpsert {
-	u.SetExcluded(investment.FieldType)
-	return u
-}
-
-// SetSymbol sets the "symbol" field.
-func (u *InvestmentUpsert) SetSymbol(v string) *InvestmentUpsert {
-	u.Set(investment.FieldSymbol, v)
-	return u
-}
-
-// UpdateSymbol sets the "symbol" field to the value that was provided on create.
-func (u *InvestmentUpsert) UpdateSymbol() *InvestmentUpsert {
-	u.SetExcluded(investment.FieldSymbol)
 	return u
 }
 
@@ -587,6 +740,12 @@ func (u *InvestmentUpsertOne) UpdateNewValues() *InvestmentUpsertOne {
 		}
 		if _, exists := u.create.mutation.HouseholdID(); exists {
 			s.SetIgnore(investment.FieldHouseholdID)
+		}
+		if _, exists := u.create.mutation.GetType(); exists {
+			s.SetIgnore(investment.FieldType)
+		}
+		if _, exists := u.create.mutation.Symbol(); exists {
+			s.SetIgnore(investment.FieldSymbol)
 		}
 		if _, exists := u.create.mutation.Amount(); exists {
 			s.SetIgnore(investment.FieldAmount)
@@ -648,6 +807,83 @@ func (u *InvestmentUpsertOne) UpdateUpdateTime() *InvestmentUpsertOne {
 	})
 }
 
+// SetArchived sets the "archived" field.
+func (u *InvestmentUpsertOne) SetArchived(v bool) *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetArchived(v)
+	})
+}
+
+// UpdateArchived sets the "archived" field to the value that was provided on create.
+func (u *InvestmentUpsertOne) UpdateArchived() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateArchived()
+	})
+}
+
+// SetConfirmedAverageCost sets the "confirmed_average_cost" field.
+func (u *InvestmentUpsertOne) SetConfirmedAverageCost(v string) *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetConfirmedAverageCost(v)
+	})
+}
+
+// UpdateConfirmedAverageCost sets the "confirmed_average_cost" field to the value that was provided on create.
+func (u *InvestmentUpsertOne) UpdateConfirmedAverageCost() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateConfirmedAverageCost()
+	})
+}
+
+// ClearConfirmedAverageCost clears the value of the "confirmed_average_cost" field.
+func (u *InvestmentUpsertOne) ClearConfirmedAverageCost() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.ClearConfirmedAverageCost()
+	})
+}
+
+// SetAverageCostConfirmedAt sets the "average_cost_confirmed_at" field.
+func (u *InvestmentUpsertOne) SetAverageCostConfirmedAt(v time.Time) *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetAverageCostConfirmedAt(v)
+	})
+}
+
+// UpdateAverageCostConfirmedAt sets the "average_cost_confirmed_at" field to the value that was provided on create.
+func (u *InvestmentUpsertOne) UpdateAverageCostConfirmedAt() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateAverageCostConfirmedAt()
+	})
+}
+
+// ClearAverageCostConfirmedAt clears the value of the "average_cost_confirmed_at" field.
+func (u *InvestmentUpsertOne) ClearAverageCostConfirmedAt() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.ClearAverageCostConfirmedAt()
+	})
+}
+
+// SetHoldingsChangedAt sets the "holdings_changed_at" field.
+func (u *InvestmentUpsertOne) SetHoldingsChangedAt(v time.Time) *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetHoldingsChangedAt(v)
+	})
+}
+
+// UpdateHoldingsChangedAt sets the "holdings_changed_at" field to the value that was provided on create.
+func (u *InvestmentUpsertOne) UpdateHoldingsChangedAt() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateHoldingsChangedAt()
+	})
+}
+
+// ClearHoldingsChangedAt clears the value of the "holdings_changed_at" field.
+func (u *InvestmentUpsertOne) ClearHoldingsChangedAt() *InvestmentUpsertOne {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.ClearHoldingsChangedAt()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *InvestmentUpsertOne) SetName(v string) *InvestmentUpsertOne {
 	return u.Update(func(s *InvestmentUpsert) {
@@ -659,34 +895,6 @@ func (u *InvestmentUpsertOne) SetName(v string) *InvestmentUpsertOne {
 func (u *InvestmentUpsertOne) UpdateName() *InvestmentUpsertOne {
 	return u.Update(func(s *InvestmentUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *InvestmentUpsertOne) SetType(v investment.Type) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *InvestmentUpsertOne) UpdateType() *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateType()
-	})
-}
-
-// SetSymbol sets the "symbol" field.
-func (u *InvestmentUpsertOne) SetSymbol(v string) *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetSymbol(v)
-	})
-}
-
-// UpdateSymbol sets the "symbol" field to the value that was provided on create.
-func (u *InvestmentUpsertOne) UpdateSymbol() *InvestmentUpsertOne {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateSymbol()
 	})
 }
 
@@ -893,6 +1101,12 @@ func (u *InvestmentUpsertBulk) UpdateNewValues() *InvestmentUpsertBulk {
 			if _, exists := b.mutation.HouseholdID(); exists {
 				s.SetIgnore(investment.FieldHouseholdID)
 			}
+			if _, exists := b.mutation.GetType(); exists {
+				s.SetIgnore(investment.FieldType)
+			}
+			if _, exists := b.mutation.Symbol(); exists {
+				s.SetIgnore(investment.FieldSymbol)
+			}
 			if _, exists := b.mutation.Amount(); exists {
 				s.SetIgnore(investment.FieldAmount)
 			}
@@ -954,6 +1168,83 @@ func (u *InvestmentUpsertBulk) UpdateUpdateTime() *InvestmentUpsertBulk {
 	})
 }
 
+// SetArchived sets the "archived" field.
+func (u *InvestmentUpsertBulk) SetArchived(v bool) *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetArchived(v)
+	})
+}
+
+// UpdateArchived sets the "archived" field to the value that was provided on create.
+func (u *InvestmentUpsertBulk) UpdateArchived() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateArchived()
+	})
+}
+
+// SetConfirmedAverageCost sets the "confirmed_average_cost" field.
+func (u *InvestmentUpsertBulk) SetConfirmedAverageCost(v string) *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetConfirmedAverageCost(v)
+	})
+}
+
+// UpdateConfirmedAverageCost sets the "confirmed_average_cost" field to the value that was provided on create.
+func (u *InvestmentUpsertBulk) UpdateConfirmedAverageCost() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateConfirmedAverageCost()
+	})
+}
+
+// ClearConfirmedAverageCost clears the value of the "confirmed_average_cost" field.
+func (u *InvestmentUpsertBulk) ClearConfirmedAverageCost() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.ClearConfirmedAverageCost()
+	})
+}
+
+// SetAverageCostConfirmedAt sets the "average_cost_confirmed_at" field.
+func (u *InvestmentUpsertBulk) SetAverageCostConfirmedAt(v time.Time) *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetAverageCostConfirmedAt(v)
+	})
+}
+
+// UpdateAverageCostConfirmedAt sets the "average_cost_confirmed_at" field to the value that was provided on create.
+func (u *InvestmentUpsertBulk) UpdateAverageCostConfirmedAt() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateAverageCostConfirmedAt()
+	})
+}
+
+// ClearAverageCostConfirmedAt clears the value of the "average_cost_confirmed_at" field.
+func (u *InvestmentUpsertBulk) ClearAverageCostConfirmedAt() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.ClearAverageCostConfirmedAt()
+	})
+}
+
+// SetHoldingsChangedAt sets the "holdings_changed_at" field.
+func (u *InvestmentUpsertBulk) SetHoldingsChangedAt(v time.Time) *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.SetHoldingsChangedAt(v)
+	})
+}
+
+// UpdateHoldingsChangedAt sets the "holdings_changed_at" field to the value that was provided on create.
+func (u *InvestmentUpsertBulk) UpdateHoldingsChangedAt() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.UpdateHoldingsChangedAt()
+	})
+}
+
+// ClearHoldingsChangedAt clears the value of the "holdings_changed_at" field.
+func (u *InvestmentUpsertBulk) ClearHoldingsChangedAt() *InvestmentUpsertBulk {
+	return u.Update(func(s *InvestmentUpsert) {
+		s.ClearHoldingsChangedAt()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *InvestmentUpsertBulk) SetName(v string) *InvestmentUpsertBulk {
 	return u.Update(func(s *InvestmentUpsert) {
@@ -965,34 +1256,6 @@ func (u *InvestmentUpsertBulk) SetName(v string) *InvestmentUpsertBulk {
 func (u *InvestmentUpsertBulk) UpdateName() *InvestmentUpsertBulk {
 	return u.Update(func(s *InvestmentUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *InvestmentUpsertBulk) SetType(v investment.Type) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *InvestmentUpsertBulk) UpdateType() *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateType()
-	})
-}
-
-// SetSymbol sets the "symbol" field.
-func (u *InvestmentUpsertBulk) SetSymbol(v string) *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.SetSymbol(v)
-	})
-}
-
-// UpdateSymbol sets the "symbol" field to the value that was provided on create.
-func (u *InvestmentUpsertBulk) UpdateSymbol() *InvestmentUpsertBulk {
-	return u.Update(func(s *InvestmentUpsert) {
-		s.UpdateSymbol()
 	})
 }
 

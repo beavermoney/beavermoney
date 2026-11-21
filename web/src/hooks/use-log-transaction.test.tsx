@@ -6,10 +6,16 @@ import { useLogTransaction } from './use-log-transaction'
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
+  back: vi.fn(),
+  canGoBack: false,
   pathname: '/household/test/transactions',
 }))
 vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mocks.navigate,
+  useRouter: () => ({
+    navigate: mocks.navigate,
+    history: { back: mocks.back },
+  }),
+  useCanGoBack: () => mocks.canGoBack,
   useRouterState: ({
     select,
   }: {
@@ -18,12 +24,15 @@ vi.mock('@tanstack/react-router', () => ({
 }))
 beforeEach(() => {
   mocks.navigate.mockClear()
+  mocks.back.mockClear()
+  mocks.canGoBack = false
   mocks.pathname = '/household/test/transactions'
   logTransactionStore.setState(() => ({ type: null }))
 })
 afterEach(cleanup)
 
 it('opens and closes over the current page without navigating', () => {
+  mocks.canGoBack = true
   const { result } = renderHook(() => useLogTransaction())
   act(() => result.current.open('expense', { accountId: 'checking' }))
   expect(result.current.isOpen).toBe(true)
@@ -31,6 +40,7 @@ it('opens and closes over the current page without navigating', () => {
   act(() => result.current.close())
   expect(result.current.isOpen).toBe(false)
   expect(mocks.navigate).not.toHaveBeenCalled()
+  expect(mocks.back).not.toHaveBeenCalled()
 })
 
 it('still returns from a directly opened legacy new-transaction page', () => {
@@ -40,7 +50,17 @@ it('still returns from a directly opened legacy new-transaction page', () => {
   expect(mocks.navigate).toHaveBeenCalledWith(
     expect.objectContaining({
       to: '..',
+      replace: true,
       resetScroll: false,
     }),
   )
+})
+
+it('returns to the origin when closing a legacy transaction page with history', () => {
+  mocks.pathname = '/household/test/transactions/new'
+  mocks.canGoBack = true
+  const { result } = renderHook(() => useLogTransaction())
+  act(() => result.current.close())
+  expect(mocks.back).toHaveBeenCalledOnce()
+  expect(mocks.navigate).not.toHaveBeenCalled()
 })

@@ -5,10 +5,12 @@ type Mutation {
 
   createAccount(input: CreateAccountInput!): AccountEdge!
   updateAccount(id: ID!, input: UpdateAccountInput!): AccountEdge!
-  deleteAccount(id: ID!): DeleteAccountPayload!
+  deleteAccount(id: ID!): DeleteAccountPayload! @deprecated(reason: "Accounts are archived, never deleted. Use archiveAccount.")
   archiveAccount(id: ID!): Boolean!
   unarchiveAccount(id: ID!): Account!
 
+  archiveInvestment(id: ID!): Investment!
+  unarchiveInvestment(id: ID!): Investment!
   createInvestment(input: CreateInvestmentInputCustom!): InvestmentEdge!
 
   createTransactionCategory(
@@ -54,7 +56,8 @@ type Mutation {
   removeHouseholdUser(id: ID!): RemoveHouseholdUserPayload!
   updateHouseholdUserRole(id: ID!, role: UserHouseholdRole!): UserHousehold!
 
-  createSnapshot(input: CreateSnapshotInput!): SnapshotEdge!
+  confirmInvestmentAverage(id: ID!, average: String!, expectedAmount: String!, expectedChangedAt: Time): Investment!
+  createSnapshot(input: CreateSnapshotInput!, expectedRevisions: [ReviewAccountVersion!]): SnapshotEdge!
   updateSnapshot(id: ID!, input: UpdateSnapshotInput!): SnapshotEdge!
   deleteSnapshot(id: ID!): DeleteSnapshotPayload!
 
@@ -152,4 +155,9 @@ input MoveInvestmentInputCustom {
 input CreateHouseholdInputCustom {
   input: CreateHouseholdInput!
   currencyCode: String!
+}
+
+input ReviewAccountVersion {
+ id: ID!
+ revision: String!
 }

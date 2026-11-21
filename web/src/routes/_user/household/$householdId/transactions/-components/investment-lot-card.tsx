@@ -1,5 +1,6 @@
 import { PendingTransactionIcon } from '@/components/pending-transaction-icon'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { useCurrency } from '@/hooks/use-currency'
 import { Avatar } from '@astryxdesign/core/Avatar'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
@@ -48,7 +49,8 @@ export function InvestmentLotCard({
   showDate?: boolean
   onClick?: () => void
 }) {
-  const { formatCurrency } = useCurrency()
+  const { formatCurrencyWithPrivacyMode: formatCurrency } = useCurrency()
+  const { isPrivacyModeEnabled } = usePrivacyMode()
 
   const format = useDateFormatter()
   const data = useFragment<investmentLotCardFragment$key>(
@@ -56,11 +58,17 @@ export function InvestmentLotCard({
     fragmentRef,
   )
 
+  const shares = isPrivacyModeEnabled ? '•••' : data.amount
+
   return (
     <ListItem
       id={data.id}
       label={data.transaction.category.name}
-      description={`${data.amount} ${data.investment.name} @ ${formatCurrency({ value: currency(data.price, { precision: 8 }), currencyCode: data.investment.householdCurrency.code })}`}
+      description={
+        data.transaction.category.name === 'Move'
+          ? `${shares} ${data.investment.name}`
+          : `${shares} ${data.investment.name} @ ${formatCurrency({ value: currency(data.price, { precision: 8 }), currencyCode: data.investment.householdCurrency.code })}`
+      }
       startContent={
         <Avatar
           src={getLogoTickerURL(data.investment.symbol || '')}
@@ -73,12 +81,14 @@ export function InvestmentLotCard({
           <HStack gap={1} vAlign="center">
             {data.transaction.pending && <PendingTransactionIcon />}
             <Text type="label" hasTabularNumbers>
-              {formatCurrency({
-                value: currency(data.price, { precision: 8 }).multiply(
-                  currency(data.amount, { precision: 8 }),
-                ),
-                currencyCode: data.investment.householdCurrency.code,
-              })}
+              {data.transaction.category.name === 'Move'
+                ? shares
+                : formatCurrency({
+                    value: currency(data.price, { precision: 8 }).multiply(
+                      currency(data.amount, { precision: 8 }),
+                    ),
+                    currencyCode: data.investment.householdCurrency.code,
+                  })}
             </Text>
           </HStack>
           {showDate && (

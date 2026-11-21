@@ -20,8 +20,9 @@ import { proportional, Table } from '@astryxdesign/core/Table'
 import { Text } from '@astryxdesign/core/Text'
 import { Link } from '@tanstack/react-router'
 import { ArrowDownIcon, ArrowUpIcon, Columns3Icon } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 import { usePaginationSentinel } from '@/hooks/use-pagination-sentinel'
+import { usePageScrollRestoration } from '@/hooks/use-page-scroll-restoration'
 import { graphql, useFragment } from 'react-relay'
 
 import { isToday, isYesterday } from 'date-fns'
@@ -131,6 +132,14 @@ export function TransactionsTable({
   >({})
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
     null,
+  )
+  const restoreScroll = usePageScrollRestoration('transaction-table')
+  const scrollRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      setScrollContainer(node)
+      return restoreScroll(node)
+    },
+    [restoreScroll],
   )
   const loadMoreRef = usePaginationSentinel({
     root: scrollContainer,
@@ -373,7 +382,8 @@ export function TransactionsTable({
       </Stack>
       <ScrollableArea
         label={t`Scrollable content`}
-        ref={setScrollContainer}
+        ref={scrollRef}
+        data-scroll-restoration-id="transaction-table"
         axis="block"
       >
         <Table

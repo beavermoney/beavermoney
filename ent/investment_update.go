@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/snapshotinvestment"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -37,6 +38,80 @@ func (_u *InvestmentUpdate) SetUpdateTime(v time.Time) *InvestmentUpdate {
 	return _u
 }
 
+// SetArchived sets the "archived" field.
+func (_u *InvestmentUpdate) SetArchived(v bool) *InvestmentUpdate {
+	_u.mutation.SetArchived(v)
+	return _u
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_u *InvestmentUpdate) SetNillableArchived(v *bool) *InvestmentUpdate {
+	if v != nil {
+		_u.SetArchived(*v)
+	}
+	return _u
+}
+
+// SetConfirmedAverageCost sets the "confirmed_average_cost" field.
+func (_u *InvestmentUpdate) SetConfirmedAverageCost(v string) *InvestmentUpdate {
+	_u.mutation.SetConfirmedAverageCost(v)
+	return _u
+}
+
+// SetNillableConfirmedAverageCost sets the "confirmed_average_cost" field if the given value is not nil.
+func (_u *InvestmentUpdate) SetNillableConfirmedAverageCost(v *string) *InvestmentUpdate {
+	if v != nil {
+		_u.SetConfirmedAverageCost(*v)
+	}
+	return _u
+}
+
+// ClearConfirmedAverageCost clears the value of the "confirmed_average_cost" field.
+func (_u *InvestmentUpdate) ClearConfirmedAverageCost() *InvestmentUpdate {
+	_u.mutation.ClearConfirmedAverageCost()
+	return _u
+}
+
+// SetAverageCostConfirmedAt sets the "average_cost_confirmed_at" field.
+func (_u *InvestmentUpdate) SetAverageCostConfirmedAt(v time.Time) *InvestmentUpdate {
+	_u.mutation.SetAverageCostConfirmedAt(v)
+	return _u
+}
+
+// SetNillableAverageCostConfirmedAt sets the "average_cost_confirmed_at" field if the given value is not nil.
+func (_u *InvestmentUpdate) SetNillableAverageCostConfirmedAt(v *time.Time) *InvestmentUpdate {
+	if v != nil {
+		_u.SetAverageCostConfirmedAt(*v)
+	}
+	return _u
+}
+
+// ClearAverageCostConfirmedAt clears the value of the "average_cost_confirmed_at" field.
+func (_u *InvestmentUpdate) ClearAverageCostConfirmedAt() *InvestmentUpdate {
+	_u.mutation.ClearAverageCostConfirmedAt()
+	return _u
+}
+
+// SetHoldingsChangedAt sets the "holdings_changed_at" field.
+func (_u *InvestmentUpdate) SetHoldingsChangedAt(v time.Time) *InvestmentUpdate {
+	_u.mutation.SetHoldingsChangedAt(v)
+	return _u
+}
+
+// SetNillableHoldingsChangedAt sets the "holdings_changed_at" field if the given value is not nil.
+func (_u *InvestmentUpdate) SetNillableHoldingsChangedAt(v *time.Time) *InvestmentUpdate {
+	if v != nil {
+		_u.SetHoldingsChangedAt(*v)
+	}
+	return _u
+}
+
+// ClearHoldingsChangedAt clears the value of the "holdings_changed_at" field.
+func (_u *InvestmentUpdate) ClearHoldingsChangedAt() *InvestmentUpdate {
+	_u.mutation.ClearHoldingsChangedAt()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *InvestmentUpdate) SetName(v string) *InvestmentUpdate {
 	_u.mutation.SetName(v)
@@ -47,34 +122,6 @@ func (_u *InvestmentUpdate) SetName(v string) *InvestmentUpdate {
 func (_u *InvestmentUpdate) SetNillableName(v *string) *InvestmentUpdate {
 	if v != nil {
 		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetType sets the "type" field.
-func (_u *InvestmentUpdate) SetType(v investment.Type) *InvestmentUpdate {
-	_u.mutation.SetType(v)
-	return _u
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_u *InvestmentUpdate) SetNillableType(v *investment.Type) *InvestmentUpdate {
-	if v != nil {
-		_u.SetType(*v)
-	}
-	return _u
-}
-
-// SetSymbol sets the "symbol" field.
-func (_u *InvestmentUpdate) SetSymbol(v string) *InvestmentUpdate {
-	_u.mutation.SetSymbol(v)
-	return _u
-}
-
-// SetNillableSymbol sets the "symbol" field if the given value is not nil.
-func (_u *InvestmentUpdate) SetNillableSymbol(v *string) *InvestmentUpdate {
-	if v != nil {
-		_u.SetSymbol(*v)
 	}
 	return _u
 }
@@ -100,6 +147,21 @@ func (_u *InvestmentUpdate) AddQuote(v decimal.Decimal) *InvestmentUpdate {
 	return _u
 }
 
+// AddSnapshotInvestmentIDs adds the "snapshot_investments" edge to the SnapshotInvestment entity by IDs.
+func (_u *InvestmentUpdate) AddSnapshotInvestmentIDs(ids ...int) *InvestmentUpdate {
+	_u.mutation.AddSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// AddSnapshotInvestments adds the "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *InvestmentUpdate) AddSnapshotInvestments(v ...*SnapshotInvestment) *InvestmentUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotInvestmentIDs(ids...)
+}
+
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by IDs.
 func (_u *InvestmentUpdate) AddInvestmentLotIDs(ids ...int) *InvestmentUpdate {
 	_u.mutation.AddInvestmentLotIDs(ids...)
@@ -118,6 +180,27 @@ func (_u *InvestmentUpdate) AddInvestmentLots(v ...*InvestmentLot) *InvestmentUp
 // Mutation returns the InvestmentMutation object of the builder.
 func (_u *InvestmentUpdate) Mutation() *InvestmentMutation {
 	return _u.mutation
+}
+
+// ClearSnapshotInvestments clears all "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *InvestmentUpdate) ClearSnapshotInvestments() *InvestmentUpdate {
+	_u.mutation.ClearSnapshotInvestments()
+	return _u
+}
+
+// RemoveSnapshotInvestmentIDs removes the "snapshot_investments" edge to SnapshotInvestment entities by IDs.
+func (_u *InvestmentUpdate) RemoveSnapshotInvestmentIDs(ids ...int) *InvestmentUpdate {
+	_u.mutation.RemoveSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotInvestments removes "snapshot_investments" edges to SnapshotInvestment entities.
+func (_u *InvestmentUpdate) RemoveSnapshotInvestments(v ...*SnapshotInvestment) *InvestmentUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotInvestmentIDs(ids...)
 }
 
 // ClearInvestmentLots clears all "investment_lots" edges to the InvestmentLot entity.
@@ -185,16 +268,6 @@ func (_u *InvestmentUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *InvestmentUpdate) check() error {
-	if v, ok := _u.mutation.GetType(); ok {
-		if err := investment.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Investment.type": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Symbol(); ok {
-		if err := investment.SymbolValidator(v); err != nil {
-			return &ValidationError{Name: "symbol", err: fmt.Errorf(`ent: validator failed for field "Investment.symbol": %w`, err)}
-		}
-	}
 	if _u.mutation.AccountCleared() && len(_u.mutation.AccountIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Investment.account"`)
 	}
@@ -231,20 +304,80 @@ func (_u *InvestmentUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.UpdateTime(); ok {
 		_spec.SetField(investment.FieldUpdateTime, field.TypeTime, value)
 	}
+	if value, ok := _u.mutation.Archived(); ok {
+		_spec.SetField(investment.FieldArchived, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.ConfirmedAverageCost(); ok {
+		_spec.SetField(investment.FieldConfirmedAverageCost, field.TypeString, value)
+	}
+	if _u.mutation.ConfirmedAverageCostCleared() {
+		_spec.ClearField(investment.FieldConfirmedAverageCost, field.TypeString)
+	}
+	if value, ok := _u.mutation.AverageCostConfirmedAt(); ok {
+		_spec.SetField(investment.FieldAverageCostConfirmedAt, field.TypeTime, value)
+	}
+	if _u.mutation.AverageCostConfirmedAtCleared() {
+		_spec.ClearField(investment.FieldAverageCostConfirmedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.HoldingsChangedAt(); ok {
+		_spec.SetField(investment.FieldHoldingsChangedAt, field.TypeTime, value)
+	}
+	if _u.mutation.HoldingsChangedAtCleared() {
+		_spec.ClearField(investment.FieldHoldingsChangedAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(investment.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(investment.FieldType, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.Symbol(); ok {
-		_spec.SetField(investment.FieldSymbol, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Quote(); ok {
 		_spec.SetField(investment.FieldQuote, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedQuote(); ok {
 		_spec.AddField(investment.FieldQuote, field.TypeFloat64, value)
+	}
+	if _u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotInvestmentsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotInvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.InvestmentLotsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -319,6 +452,80 @@ func (_u *InvestmentUpdateOne) SetUpdateTime(v time.Time) *InvestmentUpdateOne {
 	return _u
 }
 
+// SetArchived sets the "archived" field.
+func (_u *InvestmentUpdateOne) SetArchived(v bool) *InvestmentUpdateOne {
+	_u.mutation.SetArchived(v)
+	return _u
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (_u *InvestmentUpdateOne) SetNillableArchived(v *bool) *InvestmentUpdateOne {
+	if v != nil {
+		_u.SetArchived(*v)
+	}
+	return _u
+}
+
+// SetConfirmedAverageCost sets the "confirmed_average_cost" field.
+func (_u *InvestmentUpdateOne) SetConfirmedAverageCost(v string) *InvestmentUpdateOne {
+	_u.mutation.SetConfirmedAverageCost(v)
+	return _u
+}
+
+// SetNillableConfirmedAverageCost sets the "confirmed_average_cost" field if the given value is not nil.
+func (_u *InvestmentUpdateOne) SetNillableConfirmedAverageCost(v *string) *InvestmentUpdateOne {
+	if v != nil {
+		_u.SetConfirmedAverageCost(*v)
+	}
+	return _u
+}
+
+// ClearConfirmedAverageCost clears the value of the "confirmed_average_cost" field.
+func (_u *InvestmentUpdateOne) ClearConfirmedAverageCost() *InvestmentUpdateOne {
+	_u.mutation.ClearConfirmedAverageCost()
+	return _u
+}
+
+// SetAverageCostConfirmedAt sets the "average_cost_confirmed_at" field.
+func (_u *InvestmentUpdateOne) SetAverageCostConfirmedAt(v time.Time) *InvestmentUpdateOne {
+	_u.mutation.SetAverageCostConfirmedAt(v)
+	return _u
+}
+
+// SetNillableAverageCostConfirmedAt sets the "average_cost_confirmed_at" field if the given value is not nil.
+func (_u *InvestmentUpdateOne) SetNillableAverageCostConfirmedAt(v *time.Time) *InvestmentUpdateOne {
+	if v != nil {
+		_u.SetAverageCostConfirmedAt(*v)
+	}
+	return _u
+}
+
+// ClearAverageCostConfirmedAt clears the value of the "average_cost_confirmed_at" field.
+func (_u *InvestmentUpdateOne) ClearAverageCostConfirmedAt() *InvestmentUpdateOne {
+	_u.mutation.ClearAverageCostConfirmedAt()
+	return _u
+}
+
+// SetHoldingsChangedAt sets the "holdings_changed_at" field.
+func (_u *InvestmentUpdateOne) SetHoldingsChangedAt(v time.Time) *InvestmentUpdateOne {
+	_u.mutation.SetHoldingsChangedAt(v)
+	return _u
+}
+
+// SetNillableHoldingsChangedAt sets the "holdings_changed_at" field if the given value is not nil.
+func (_u *InvestmentUpdateOne) SetNillableHoldingsChangedAt(v *time.Time) *InvestmentUpdateOne {
+	if v != nil {
+		_u.SetHoldingsChangedAt(*v)
+	}
+	return _u
+}
+
+// ClearHoldingsChangedAt clears the value of the "holdings_changed_at" field.
+func (_u *InvestmentUpdateOne) ClearHoldingsChangedAt() *InvestmentUpdateOne {
+	_u.mutation.ClearHoldingsChangedAt()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *InvestmentUpdateOne) SetName(v string) *InvestmentUpdateOne {
 	_u.mutation.SetName(v)
@@ -329,34 +536,6 @@ func (_u *InvestmentUpdateOne) SetName(v string) *InvestmentUpdateOne {
 func (_u *InvestmentUpdateOne) SetNillableName(v *string) *InvestmentUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetType sets the "type" field.
-func (_u *InvestmentUpdateOne) SetType(v investment.Type) *InvestmentUpdateOne {
-	_u.mutation.SetType(v)
-	return _u
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_u *InvestmentUpdateOne) SetNillableType(v *investment.Type) *InvestmentUpdateOne {
-	if v != nil {
-		_u.SetType(*v)
-	}
-	return _u
-}
-
-// SetSymbol sets the "symbol" field.
-func (_u *InvestmentUpdateOne) SetSymbol(v string) *InvestmentUpdateOne {
-	_u.mutation.SetSymbol(v)
-	return _u
-}
-
-// SetNillableSymbol sets the "symbol" field if the given value is not nil.
-func (_u *InvestmentUpdateOne) SetNillableSymbol(v *string) *InvestmentUpdateOne {
-	if v != nil {
-		_u.SetSymbol(*v)
 	}
 	return _u
 }
@@ -382,6 +561,21 @@ func (_u *InvestmentUpdateOne) AddQuote(v decimal.Decimal) *InvestmentUpdateOne 
 	return _u
 }
 
+// AddSnapshotInvestmentIDs adds the "snapshot_investments" edge to the SnapshotInvestment entity by IDs.
+func (_u *InvestmentUpdateOne) AddSnapshotInvestmentIDs(ids ...int) *InvestmentUpdateOne {
+	_u.mutation.AddSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// AddSnapshotInvestments adds the "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *InvestmentUpdateOne) AddSnapshotInvestments(v ...*SnapshotInvestment) *InvestmentUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotInvestmentIDs(ids...)
+}
+
 // AddInvestmentLotIDs adds the "investment_lots" edge to the InvestmentLot entity by IDs.
 func (_u *InvestmentUpdateOne) AddInvestmentLotIDs(ids ...int) *InvestmentUpdateOne {
 	_u.mutation.AddInvestmentLotIDs(ids...)
@@ -400,6 +594,27 @@ func (_u *InvestmentUpdateOne) AddInvestmentLots(v ...*InvestmentLot) *Investmen
 // Mutation returns the InvestmentMutation object of the builder.
 func (_u *InvestmentUpdateOne) Mutation() *InvestmentMutation {
 	return _u.mutation
+}
+
+// ClearSnapshotInvestments clears all "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *InvestmentUpdateOne) ClearSnapshotInvestments() *InvestmentUpdateOne {
+	_u.mutation.ClearSnapshotInvestments()
+	return _u
+}
+
+// RemoveSnapshotInvestmentIDs removes the "snapshot_investments" edge to SnapshotInvestment entities by IDs.
+func (_u *InvestmentUpdateOne) RemoveSnapshotInvestmentIDs(ids ...int) *InvestmentUpdateOne {
+	_u.mutation.RemoveSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotInvestments removes "snapshot_investments" edges to SnapshotInvestment entities.
+func (_u *InvestmentUpdateOne) RemoveSnapshotInvestments(v ...*SnapshotInvestment) *InvestmentUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotInvestmentIDs(ids...)
 }
 
 // ClearInvestmentLots clears all "investment_lots" edges to the InvestmentLot entity.
@@ -480,16 +695,6 @@ func (_u *InvestmentUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *InvestmentUpdateOne) check() error {
-	if v, ok := _u.mutation.GetType(); ok {
-		if err := investment.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Investment.type": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Symbol(); ok {
-		if err := investment.SymbolValidator(v); err != nil {
-			return &ValidationError{Name: "symbol", err: fmt.Errorf(`ent: validator failed for field "Investment.symbol": %w`, err)}
-		}
-	}
 	if _u.mutation.AccountCleared() && len(_u.mutation.AccountIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Investment.account"`)
 	}
@@ -543,20 +748,80 @@ func (_u *InvestmentUpdateOne) sqlSave(ctx context.Context) (_node *Investment, 
 	if value, ok := _u.mutation.UpdateTime(); ok {
 		_spec.SetField(investment.FieldUpdateTime, field.TypeTime, value)
 	}
+	if value, ok := _u.mutation.Archived(); ok {
+		_spec.SetField(investment.FieldArchived, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.ConfirmedAverageCost(); ok {
+		_spec.SetField(investment.FieldConfirmedAverageCost, field.TypeString, value)
+	}
+	if _u.mutation.ConfirmedAverageCostCleared() {
+		_spec.ClearField(investment.FieldConfirmedAverageCost, field.TypeString)
+	}
+	if value, ok := _u.mutation.AverageCostConfirmedAt(); ok {
+		_spec.SetField(investment.FieldAverageCostConfirmedAt, field.TypeTime, value)
+	}
+	if _u.mutation.AverageCostConfirmedAtCleared() {
+		_spec.ClearField(investment.FieldAverageCostConfirmedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.HoldingsChangedAt(); ok {
+		_spec.SetField(investment.FieldHoldingsChangedAt, field.TypeTime, value)
+	}
+	if _u.mutation.HoldingsChangedAtCleared() {
+		_spec.ClearField(investment.FieldHoldingsChangedAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(investment.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(investment.FieldType, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.Symbol(); ok {
-		_spec.SetField(investment.FieldSymbol, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Quote(); ok {
 		_spec.SetField(investment.FieldQuote, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedQuote(); ok {
 		_spec.AddField(investment.FieldQuote, field.TypeFloat64, value)
+	}
+	if _u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotInvestmentsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotInvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.InvestmentLotsCleared() {
 		edge := &sqlgraph.EdgeSpec{

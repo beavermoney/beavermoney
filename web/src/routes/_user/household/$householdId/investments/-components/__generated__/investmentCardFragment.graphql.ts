@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b6ec6aab1ac6a450dc13eb4914be923a>>
+ * @generated SignedSource<<ea774cbad9ab850c81d7dfafb99f1529>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,8 +19,8 @@ export type investmentCardFragment$data = {
   readonly name: string;
   readonly quote: string;
   readonly symbol: string;
-  readonly unrealizedReturn: string;
-  readonly unrealizedReturnPercent: string;
+  readonly unrealizedReturn: string | null | undefined;
+  readonly unrealizedReturnPercent: string | null | undefined;
   readonly updateTime: any;
   readonly user: {
     readonly name: string;

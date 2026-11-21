@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5692f1c0544b8bbcb2c95f38e3385ec5>>
+ * @generated SignedSource<<d3042d38ec9bd40f920dc8b0f9194a45>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,6 +21,7 @@ export type newMoveFragment$data = {
         };
         readonly id: string;
         readonly investments: ReadonlyArray<{
+          readonly archived: boolean;
           readonly id: string;
           readonly symbol: string;
           readonly " $fragmentSpreads": FragmentRefs<"transactionInvestmentPickerFragment">;
@@ -222,6 +223,13 @@ return {
                   "name": "investments",
                   "plural": true,
                   "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "archived",
+                      "storageKey": null
+                    },
                     (v0/*: any*/),
                     (v5/*: any*/),
                     {
@@ -290,6 +298,6 @@ return {
 };
 })();
 
-(node as any).hash = "c07111ffdca29b8b46fecc7c1e2c424b";
+(node as any).hash = "20469424f570042672dfe7447d6ebd6d";
 
 export default node;

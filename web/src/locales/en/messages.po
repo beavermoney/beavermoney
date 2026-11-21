@@ -53,6 +53,10 @@ msgstr "{0} updated!"
 msgid "{0}, user menu"
 msgstr "{0}, user menu"
 
+#: src/components/review-journal.tsx
+msgid "{changeAmount} since last snapshot"
+msgstr "{changeAmount} since last snapshot"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
 msgid "{count, plural, one {Every month} other {Every # months}}"
 msgstr "{count, plural, one {Every month} other {Every # months}}"
@@ -80,6 +84,10 @@ msgstr "{name} unarchived."
 #: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, one {# transaction} other {# transactions}}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "+{otherCount} more"
+msgstr "+{otherCount} more"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "1 2 3 on the top row of the transaction number pad. Saved automatically on this device."
@@ -126,6 +134,14 @@ msgstr "A little attention. A clearer picture."
 msgid "A little more clarity.<0/>Starting today."
 msgstr "A little more clarity.<0/>Starting today."
 
+#: src/components/review-journal.tsx
+msgid "A moment to check in. No note added."
+msgstr "A moment to check in. No note added."
+
+#: src/components/review-journal.tsx
+msgid "A record of what you reviewed, and what was happening in your life."
+msgstr "A record of what you reviewed, and what was happening in your life."
+
 #: src/routes/index.tsx
 msgid "A shared life. A shared perspective."
 msgstr "A shared life. A shared perspective."
@@ -166,10 +182,6 @@ msgid "Account data refreshed."
 msgstr "Account data refreshed."
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Account deleted!"
-msgstr "Account deleted!"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "Account Detail"
 msgstr "Account Detail"
 
@@ -207,6 +219,10 @@ msgstr "Account settings"
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
 msgid "Account type"
 msgstr "Account type"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Account value"
+msgstr "Account value"
 
 #: src/components/app-sidebar.tsx
 #: src/components/command-menu.tsx
@@ -313,6 +329,10 @@ msgstr "Amount to credit"
 msgid "Amount to debit"
 msgstr "Amount to debit"
 
+#: src/components/review-journal.tsx
+msgid "Amounts use the exchange rates saved with this review."
+msgstr "Amounts use the exchange rates saved with this review."
+
 #: src/components/generic-error.tsx
 msgid "An unexpected error occurred. Please try again."
 msgstr "An unexpected error occurred. Please try again."
@@ -337,9 +357,17 @@ msgstr "Archive account"
 msgid "Archive Account"
 msgstr "Archive Account"
 
+#: src/components/investment-archive-action.tsx
+msgid "Archive investment"
+msgstr "Archive investment"
+
 #: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
 msgid "Archived accounts"
 msgstr "Archived accounts"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Archived investments"
+msgstr "Archived investments"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "Archiving..."
@@ -356,6 +384,34 @@ msgstr "Assets"
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "At least one admin must remain."
 msgstr "At least one admin must remain."
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Average cost cannot be negative"
+msgstr "Average cost cannot be negative"
+
+#: src/components/average-cost-editor.tsx
+msgid "Average cost confirmed"
+msgstr "Average cost confirmed"
+
+#: src/components/average-cost-editor.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Average cost needs review"
+msgstr "Average cost needs review"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Average cost per share"
+msgstr "Average cost per share"
+
+#. placeholder {0}: inv.householdCurrency.code
+#: src/components/average-cost-editor.tsx
+msgid "Average cost per share · {0}"
+msgstr "Average cost per share · {0}"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Average costs are up to date for all holdings."
+msgstr "Average costs are up to date for all holdings."
 
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Avg Cost / Share"
@@ -460,6 +516,7 @@ msgid "cash"
 msgstr "cash"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 msgid "Cash"
 msgstr "Cash"
@@ -488,7 +545,6 @@ msgstr "Category"
 msgid "CATEGORY"
 msgstr "CATEGORY"
 
-#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 msgid "Category (optional)"
 msgstr "Category (optional)"
@@ -514,6 +570,10 @@ msgstr "Category not found"
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Change account"
 msgstr "Change account"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Change since last snapshot"
+msgstr "Change since last snapshot"
 
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Change source"
@@ -578,6 +638,8 @@ msgstr "Choose the source account"
 msgid "Choose your investment and enter its details."
 msgstr "Choose your investment and enter its details."
 
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "Close"
@@ -595,6 +657,18 @@ msgstr "Coffee at Starbucks"
 msgid "Columns"
 msgstr "Columns"
 
+#: src/components/average-cost-editor.tsx
+msgid "Confirm average cost"
+msgstr "Confirm average cost"
+
+#: src/components/average-cost-prompt.tsx
+msgid "Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review."
+msgstr "Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review."
+
+#: src/components/average-cost-editor.tsx
+msgid "Confirm the average for all remaining shares"
+msgstr "Confirm the average for all remaining shares"
+
 #: src/components/login-form.tsx
 msgid "Continue with Google"
 msgstr "Continue with Google"
@@ -607,7 +681,7 @@ msgstr "Cost (High to Low)"
 msgid "Cost (Low to High)"
 msgstr "Cost (Low to High)"
 
-#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Cost Basis"
 msgstr "Cost Basis"
@@ -620,6 +694,10 @@ msgstr "Cost per payment"
 #: src/components/transaction-composer/delete-confirmation.tsx
 msgid "Could not delete this transaction. Please try again."
 msgstr "Could not delete this transaction. Please try again."
+
+#: src/components/command-menu.tsx
+msgid "Could not load accounts and investments. Type to retry."
+msgstr "Could not load accounts and investments. Type to retry."
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 msgid "Could not load more transactions."
@@ -657,7 +735,6 @@ msgid "Create Household"
 msgstr "Create Household"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-#: src/routes/_user/household/$householdId/route.tsx
 msgid "Create snapshot"
 msgstr "Create snapshot"
 
@@ -781,7 +858,6 @@ msgstr "Decimal separator"
 msgid "Deficit"
 msgstr "Deficit"
 
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -790,14 +866,6 @@ msgstr "Deficit"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Delete"
 msgstr "Delete"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Delete account"
-msgstr "Delete account"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Delete Account"
-msgstr "Delete Account"
 
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 msgid "Delete Category"
@@ -815,9 +883,21 @@ msgstr "Delete household?"
 msgid "Delete last digit"
 msgstr "Delete last digit"
 
+#: src/components/review-journal.tsx
+msgid "Delete permanently"
+msgstr "Delete permanently"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Delete Recurring Subscription"
 msgstr "Delete Recurring Subscription"
+
+#: src/components/review-journal.tsx
+msgid "Delete review"
+msgstr "Delete review"
+
+#: src/components/review-journal.tsx
+msgid "Delete this review permanently? Its journal entry will be removed. Other reviews and transactions are not affected."
+msgstr "Delete this review permanently? Its journal entry will be removed. Other reviews and transactions are not affected."
 
 #: src/components/transaction-composer/composer.tsx
 #: src/components/transaction-composer/delete-confirmation.tsx
@@ -832,7 +912,6 @@ msgstr "Delete Transaction"
 msgid "Delete transaction?"
 msgstr "Delete transaction?"
 
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -1001,6 +1080,10 @@ msgstr "Expenses"
 msgid "Failed to save snapshot: {error}"
 msgstr "Failed to save snapshot: {error}"
 
+#: src/components/review-journal.tsx
+msgid "Financial values are fixed. You can edit your journal note, but not the amounts."
+msgstr "Financial values are fixed. You can edit your journal note, but not the amounts."
+
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "First day of week"
 msgstr "First day of week"
@@ -1088,6 +1171,10 @@ msgstr "Go back"
 msgid "Go home"
 msgstr "Go home"
 
+#: src/components/command-menu.tsx
+msgid "Go to"
+msgstr "Go to"
+
 #: src/components/not-logged-in-error.tsx
 msgid "Go to login"
 msgstr "Go to login"
@@ -1109,6 +1196,14 @@ msgstr "Hide balances"
 #: src/components/transaction-options.tsx
 msgid "Hide from reports. Still included in account balances."
 msgstr "Hide from reports. Still included in account balances."
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Holding details"
+msgstr "Holding details"
+
+#: src/components/average-cost-editor.tsx
+msgid "Holding unavailable"
+msgstr "Holding unavailable"
 
 #: src/components/nav-projects.tsx
 #: src/routes/index.tsx
@@ -1215,9 +1310,17 @@ msgstr "Investment"
 msgid "Investment account"
 msgstr "Investment account"
 
+#: src/components/investment-archive-action.tsx
+msgid "Investment archived. Its history is preserved."
+msgstr "Investment archived. Its history is preserved."
+
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
 msgid "Investment buy"
 msgstr "Investment buy"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Investment history"
+msgstr "Investment history"
 
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Investment moved successfully!"
@@ -1235,9 +1338,17 @@ msgstr "Investment name must be at most 32 characters."
 msgid "Investment not found"
 msgstr "Investment not found"
 
+#: src/components/investment-archive-action.tsx
+msgid "Investment restored."
+msgstr "Investment restored."
+
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
 msgid "Investment sell"
 msgstr "Investment sell"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "Investment shortcuts"
+msgstr "Investment shortcuts"
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Investment symbol must be at least 1 character."
@@ -1266,6 +1377,20 @@ msgstr "Join us on Discord"
 msgid "Joint"
 msgstr "Joint"
 
+#: src/components/command-menu.tsx
+#: src/components/review-journal.tsx
+#: src/constant.ts
+msgid "Journal"
+msgstr "Journal"
+
+#: src/components/review-journal.tsx
+msgid "Journal note saved"
+msgstr "Journal note saved"
+
+#: src/components/review-journal.tsx
+msgid "Keep review"
+msgstr "Keep review"
+
 #: src/routes/login.index.tsx
 msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
 msgstr "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
@@ -1282,9 +1407,21 @@ msgstr "Language"
 msgid "Largest first"
 msgstr "Largest first"
 
+#: src/components/average-cost-editor.tsx
+msgid "Last confirmed average"
+msgstr "Last confirmed average"
+
 #: src/components/date-period-filter.tsx
 msgid "Last week"
 msgstr "Last week"
+
+#: src/components/average-cost-prompt.tsx
+msgid "Later"
+msgstr "Later"
+
+#: src/components/review-journal.tsx
+msgid "Legacy category review"
+msgstr "Legacy category review"
 
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
@@ -1310,6 +1447,11 @@ msgstr "Light"
 msgid "Liquidity"
 msgstr "Liquidity"
 
+#: src/components/review-journal.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Load older reviews"
+msgstr "Load older reviews"
+
 #: src/components/route-content-boundary.tsx
 msgid "Loading content"
 msgstr "Loading content"
@@ -1317,6 +1459,12 @@ msgstr "Loading content"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
 msgid "Loading daily totals"
 msgstr "Loading daily totals"
+
+#: src/components/average-cost-prompt.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Loading holding…"
+msgstr "Loading holding…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Loading more transactions…"
@@ -1377,6 +1525,10 @@ msgstr "Make yourself<0/>at home."
 #: src/routes/index.tsx
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Market value"
+msgstr "Market value"
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1503,6 +1655,11 @@ msgid "Name A–Z"
 msgstr "Name A–Z"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Needs attention"
+msgstr "Needs attention"
+
+#: src/components/review-journal.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "Net Worth"
@@ -1599,6 +1756,10 @@ msgstr "No currency found."
 msgid "No data was refreshed"
 msgstr "No data was refreshed"
 
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "No holdings"
+msgstr "No holdings"
+
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -1612,6 +1773,10 @@ msgstr "No items found."
 #: src/routes/_user/household/new.tsx
 msgid "No locale found."
 msgstr "No locale found."
+
+#: src/components/command-menu.tsx
+msgid "No matching accounts, investments, or commands."
+msgstr "No matching accounts, investments, or commands."
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
 msgid "No matching accounts."
@@ -1631,8 +1796,8 @@ msgid "No matching options."
 msgstr "No matching options."
 
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
-msgid "No snapshots in this period. Choose a wider date range, or create a snapshot from the toolbar to start tracking balances."
-msgstr "No snapshots in this period. Choose a wider date range, or create a snapshot from the toolbar to start tracking balances."
+msgid "No snapshots in this period. Choose a wider date range, or visit Journal to review your net worth and save a snapshot."
+msgstr "No snapshots in this period. Choose a wider date range, or visit Journal to review your net worth and save a snapshot."
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "No subscriptions yet"
@@ -1667,10 +1832,6 @@ msgstr "Not enough income data to draw the category Sankey chart for this period
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Note"
 msgstr "Note"
-
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-msgid "Note (optional)"
-msgstr "Note (optional)"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Number pad order"
@@ -1755,10 +1916,6 @@ msgstr "Pending — review later"
 msgid "per share"
 msgstr "per share"
 
-#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Performance"
-msgstr "Performance"
-
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Permanently remove this household and all its data."
 msgstr "Permanently remove this household and all its data."
@@ -1784,7 +1941,6 @@ msgstr "Please enter a number"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Please enter a price"
 msgstr "Please enter a price"
@@ -1861,6 +2017,10 @@ msgstr "Please select an owner"
 msgid "Portfolio value"
 msgstr "Portfolio value"
 
+#: src/components/average-cost-editor.tsx
+msgid "Position closed. No average cost to review."
+msgstr "Position closed. No average cost to review."
+
 #: src/routes/_user/household/$householdId/route.tsx
 msgid "Preferences"
 msgstr "Preferences"
@@ -1876,14 +2036,12 @@ msgstr "Previous year"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Price per share"
 msgstr "Price per share"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Price per share must be positive"
 msgstr "Price per share must be positive"
@@ -1892,6 +2050,10 @@ msgstr "Price per share must be positive"
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "Property"
 msgstr "Property"
+
+#: src/components/review-journal.tsx
+msgid "Read entry"
+msgstr "Read entry"
 
 #: src/constant.ts
 msgid "Real estate or other valuable property"
@@ -1958,14 +2120,34 @@ msgstr "Reset"
 msgid "Reset to this month"
 msgstr "Reset to this month"
 
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Restore an account first to make its investments available again. All history stays intact."
+msgstr "Restore an account first to make its investments available again. All history stays intact."
+
+#: src/components/investment-archive-action.tsx
+msgid "Restore investment"
+msgstr "Restore investment"
+
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Retry"
 msgstr "Retry"
 
-#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Return %"
-msgstr "Return %"
+#: src/components/review-journal.tsx
+msgid "Review"
+msgstr "Review"
+
+#: src/components/review-journal.tsx
+msgid "Review & snapshot"
+msgstr "Review & snapshot"
+
+#: src/components/average-cost-editor.tsx
+msgid "Review latest holding"
+msgstr "Review latest holding"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Review your net worth"
+msgstr "Review your net worth"
 
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "Role"
@@ -1980,7 +2162,6 @@ msgid "Saturday"
 msgstr "Saturday"
 
 #: src/components/transaction-composer/composer.tsx
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
@@ -2012,11 +2193,18 @@ msgstr "Save again"
 msgid "Save Changes"
 msgstr "Save Changes"
 
+#: src/components/review-journal.tsx
+msgid "Save note"
+msgstr "Save note"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Save snapshot"
+msgstr "Save snapshot"
+
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Saved automatically on this device."
 msgstr "Saved automatically on this device."
 
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
@@ -2051,28 +2239,31 @@ msgstr "Savings rate"
 msgid "Scrollable content"
 msgstr "Scrollable content"
 
+#: src/components/app-sidebar.tsx
+msgid "Search"
+msgstr "Search"
+
 #. placeholder {0}: label.toLowerCase()
 #: src/components/search-select.tsx
 #: src/components/transaction-composer/controls.tsx
 msgid "Search {0}"
 msgstr "Search {0}"
 
-#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
 msgid "Search accounts"
 msgstr "Search accounts"
 
-#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
-msgid "Search by name"
-msgstr "Search by name"
+#: src/components/command-menu.tsx
+msgid "Search accounts and investments"
+msgstr "Search accounts and investments"
+
+#: src/components/command-menu.tsx
+msgid "Search accounts, symbols, or owners…"
+msgstr "Search accounts, symbols, or owners…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 msgid "Search categories"
 msgstr "Search categories"
-
-#: src/components/command-menu.tsx
-msgid "Search commands"
-msgstr "Search commands"
 
 #: src/components/icon-picker.tsx
 msgid "Search icons"
@@ -2166,6 +2357,7 @@ msgid "Shared owner — auto-managed"
 msgstr "Shared owner — auto-managed"
 
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
 msgid "shares"
 msgstr "shares"
 
@@ -2180,10 +2372,6 @@ msgstr "Shares"
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "shares ·"
 msgstr "shares ·"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
-msgid "shares @"
-msgstr "shares @"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
@@ -2205,12 +2393,16 @@ msgid "SMALL HABITS. A BIGGER PICTURE."
 msgstr "SMALL HABITS. A BIGGER PICTURE."
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-msgid "Snapshot"
-msgstr "Snapshot"
-
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Snapshot saved!"
 msgstr "Snapshot saved!"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far."
+msgstr "Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far."
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Some values are unavailable because the saved average cost or exchange rate is missing or needs review."
+msgstr "Some values are unavailable because the saved average cost or exchange rate is missing or needs review."
 
 #: src/components/generic-error.tsx
 msgid "Something went wrong :("
@@ -2316,9 +2508,9 @@ msgstr "The joint owner's role is fixed and can't be changed."
 msgid "The transaction owner cannot be changed."
 msgstr "The transaction owner cannot be changed."
 
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "This action cannot be undone. This will permanently delete the account. Delete is only allowed if there are no transactions or investments attached."
-msgstr "This action cannot be undone. This will permanently delete the account. Delete is only allowed if there are no transactions or investments attached."
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "These average costs need review. You can still save; their gains will be marked unavailable."
+msgstr "These average costs need review. You can still save; their gains will be marked unavailable."
 
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 msgid "This action cannot be undone. This will permanently delete the category."
@@ -2332,21 +2524,25 @@ msgstr "This action cannot be undone. This will permanently delete the recurring
 msgid "This action cannot be undone. This will permanently delete the transaction and all associated entries and investment lots."
 msgstr "This action cannot be undone. This will permanently delete the transaction and all associated entries and investment lots."
 
+#: src/components/average-cost-editor.tsx
+msgid "This holding changed while you were reviewing it."
+msgstr "This holding changed while you were reviewing it."
+
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "This household is in an unexpected state. Refresh and try again."
 msgstr "This household is in an unexpected state. Refresh and try again."
 
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
-msgid "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
-msgstr "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
+msgid "This member or the joint owner has household records or history and cannot be removed."
+msgstr "This member or the joint owner has household records or history and cannot be removed."
 
 #: src/components/date-period-filter.tsx
 msgid "This week"
 msgstr "This week"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
-msgstr "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
+msgid "This will archive the account and hide it from the main list. Archive is only allowed when cash and all holdings are empty. You can unarchive it later in Settings → Accounts."
+msgstr "This will archive the account and hide it from the main list. Archive is only allowed when cash and all holdings are empty. You can unarchive it later in Settings → Accounts."
 
 #. placeholder {0}: household.name
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
@@ -2419,6 +2615,10 @@ msgstr "Today"
 msgid "tomorrow"
 msgstr "tomorrow"
 
+#: src/components/app-sidebar.tsx
+msgid "Tools"
+msgstr "Tools"
+
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 msgid "Total amount paid"
 msgstr "Total amount paid"
@@ -2448,6 +2648,10 @@ msgstr "Total received"
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Total received must be positive"
 msgstr "Total received must be positive"
+
+#: src/components/average-cost-prompt.tsx
+msgid "Trade saved. Update average cost?"
+msgstr "Trade saved. Update average cost?"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
@@ -2514,10 +2718,6 @@ msgstr "Transfer to savings"
 msgid "Transfer type"
 msgstr "Transfer type"
 
-#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
-msgid "Try another account name."
-msgstr "Try another account name."
-
 #: src/routes/_user/household/new.tsx
 msgid "Try it with sample data first."
 msgstr "Try it with sample data first."
@@ -2558,9 +2758,32 @@ msgstr "Unarchiving makes an account available for new transactions again. Its h
 msgid "Unarchiving…"
 msgstr "Unarchiving…"
 
+#: src/components/review-journal.tsx
+msgid "Unconfirmed averages: {attentionCount}"
+msgstr "Unconfirmed averages: {attentionCount}"
+
+#: src/components/review-journal.tsx
+msgid "Unconfirmed averages: {unconfirmedCount}"
+msgstr "Unconfirmed averages: {unconfirmedCount}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Unrealized Return"
-msgstr "Unrealized Return"
+msgid "Unrealized return"
+msgstr "Unrealized return"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Unrealized return %"
+msgstr "Unrealized return %"
+
+#: src/components/review-journal.tsx
+msgid "Unrealized return was unavailable when this snapshot was saved."
+msgstr "Unrealized return was unavailable when this snapshot was saved."
+
+#: src/components/average-cost-editor.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Update average"
+msgstr "Update average"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 msgid "Update entry details. Switching the account also switches the entry's currency."
@@ -2582,6 +2805,10 @@ msgstr "Updating date range"
 #: src/routes/index.tsx
 msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
 msgstr "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
+
+#: src/components/review-journal.tsx
+msgid "Value unavailable"
+msgstr "Value unavailable"
 
 #: src/components/not-found-error.tsx
 msgid "We could not find what you were looking for. It may have been moved or deleted."
@@ -2609,8 +2836,8 @@ msgid "Welcome to {name}! Your household is ready."
 msgstr "Welcome to {name}! Your household is ready."
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-msgid "What changed since your last snapshot?"
-msgstr "What changed since your last snapshot?"
+msgid "What happened today? Money decisions, milestones, or anything you want to remember."
+msgstr "What happened today? Money decisions, milestones, or anything you want to remember."
 
 #: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
@@ -2641,9 +2868,25 @@ msgstr "You can't remove yourself from the household."
 msgid "You no longer have access to this household."
 msgstr "You no longer have access to this household."
 
+#: src/components/review-journal.tsx
+msgid "Your first review starts this journal. Choose Review & snapshot to capture your net worth and write a note."
+msgstr "Your first review starts this journal. Choose Review & snapshot to capture your net worth and write a note."
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Your first snapshot"
+msgstr "Your first snapshot"
+
 #: src/routes/_user/household/new.tsx
 msgid "Your household's primary currency for reporting"
 msgstr "Your household's primary currency for reporting"
+
+#: src/components/review-journal.tsx
+msgid "Your journal"
+msgstr "Your journal"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Your journal (optional)"
+msgstr "Your journal (optional)"
 
 #: src/routes/login.index.tsx
 msgid "Your money,<0/>made clearer."

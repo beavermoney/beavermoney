@@ -1,13 +1,18 @@
+import { preserveHistoryViewKey } from '@/lib/history-view-key'
 import { useLingui } from '@lingui/react/macro'
+import { useAppShellMobile } from '@astryxdesign/core/AppShell'
+import { useNavigate } from '@tanstack/react-router'
 import { MobileNav } from '@astryxdesign/core/MobileNav'
 import { HStack, Layout } from '@astryxdesign/core/Layout'
 import { Icon } from '@astryxdesign/core/Icon'
-import { PanelLeft, Settings, CreditCard, Users } from 'lucide-react'
+import { PanelLeft, Settings, CreditCard, Users, Search } from 'lucide-react'
 import { HouseholdSwitcher } from '@/components/household-switcher'
 import { NAV } from '@/constant'
 import { useHousehold } from '@/hooks/use-household'
 import {
   SideNav,
+  SideNavItem,
+  SideNavSection,
   SideNavCollapseButton,
   useSideNavRenderMode,
 } from '@astryxdesign/core/SideNav'
@@ -27,11 +32,19 @@ const appSidebarFragment = graphql`
 `
 
 const MAIN_NAV = NAV.filter(
-  (item) => item.link.to !== '/household/$householdId/settings',
+  (item) =>
+    item.link.to !== '/household/$householdId/settings' &&
+    item.link.to !== '/household/$householdId/subscriptions',
+)
+
+const TOOLS_NAV = NAV.filter(
+  (item) => item.link.to === '/household/$householdId/subscriptions',
 )
 
 function SidebarSections() {
   const { t, i18n } = useLingui()
+  const navigate = useNavigate()
+  const { closeMobileNav } = useAppShellMobile()
   const SETTINGS_NAV: React.ComponentProps<typeof NavProjects>['projects'] = [
     {
       name: t`General`,
@@ -54,9 +67,32 @@ function SidebarSections() {
   const { household } = useHousehold()
   return (
     <>
+      <SideNavSection title={t`Search`} isHeaderHidden>
+        <SideNavItem
+          label={t`Search`}
+          icon={Search}
+          onClick={() => {
+            closeMobileNav()
+            void navigate({
+              to: '.',
+              search: (previous) => ({ ...previous, command_open: true }),
+              replace: true,
+              state: preserveHistoryViewKey,
+              resetScroll: false,
+            })
+          }}
+        />
+      </SideNavSection>
       <NavProjects
         title={household.name}
         projects={MAIN_NAV.map((item) => ({
+          ...item,
+          name: i18n._(item.name),
+        }))}
+      />
+      <NavProjects
+        title={t`Tools`}
+        projects={TOOLS_NAV.map((item) => ({
           ...item,
           name: i18n._(item.name),
         }))}

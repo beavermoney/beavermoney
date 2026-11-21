@@ -1,3 +1,4 @@
+import { AverageCostPrompt } from '@/components/average-cost-prompt'
 import { TransactionActionsTarget } from '@/components/transaction-actions-context'
 import { LayoutFooter } from '@astryxdesign/core/Layout'
 import { useLingui } from '@lingui/react/macro'
@@ -17,7 +18,7 @@ import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { DropdownMenu } from '@astryxdesign/core/DropdownMenu'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { HStack, Layout, LayoutHeader } from '@astryxdesign/core/Layout'
-import { PlusIcon, Settings2Icon, EllipsisIcon, FlagIcon } from 'lucide-react'
+import { PlusIcon, Settings2Icon, EllipsisIcon } from 'lucide-react'
 
 import { AppSidebar } from '@/components/app-sidebar'
 import { useToast } from '@astryxdesign/core/Toast'
@@ -68,7 +69,6 @@ import {
   isMembershipRevokedError,
 } from '@/lib/auth'
 import Hotkeys from './-components/hotkeys'
-import { SnapshotDialog } from './-components/snapshot-dialog'
 import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
 import { LogTransaction } from './transactions/-components/log-transaction'
 
@@ -90,7 +90,6 @@ const routeHouseholdIdQuery = graphql`
       ...useHouseholdMembersFragment
       ...useDisplayCurrencyFragment
       ...logTransactionFragment @arguments(viewUserIds: $viewUserIds)
-      ...snapshotDialogFragment @arguments(viewUserIds: $viewUserIds)
       # eslint-disable-next-line relay/unused-fields
       householdCurrencies {
         id
@@ -250,6 +249,7 @@ function RouteComponent() {
         <HouseholdMembersProvider householdRef={data.household}>
           <UserHouseholdProvider userHouseholdRef={data.userHousehold}>
             <DisplayCurrencyProvider householdRef={data.household}>
+              <AverageCostPrompt />
               <Hotkeys />
               <CommandMenu />
               <AppShell
@@ -286,41 +286,26 @@ function RouteComponent() {
                         </HStack>
                         <HStack gap={2} vAlign="center">
                           {isMobile ? (
-                            <SnapshotDialog
-                              fragmentRef={data.household}
-                              renderTrigger={(openSnapshot) => (
-                                <HouseholdActionsMenu
-                                  button={{
-                                    label: t`More actions`,
-                                    icon: <AstryxIcon icon={EllipsisIcon} />,
-                                    isIconOnly: true,
-                                    variant: 'ghost',
-                                  }}
-                                  showViewScope={!isOnSettingsPage}
-                                  items={[
-                                    {
-                                      label: t`Create snapshot`,
-                                      icon: <AstryxIcon icon={FlagIcon} />,
-                                      onClick: openSnapshot,
-                                    },
-                                    ...preferenceItems,
-                                  ]}
-                                />
-                              )}
+                            <HouseholdActionsMenu
+                              button={{
+                                label: t`More actions`,
+                                icon: <AstryxIcon icon={EllipsisIcon} />,
+                                isIconOnly: true,
+                                variant: 'ghost',
+                              }}
+                              showViewScope={!isOnSettingsPage}
+                              items={preferenceItems}
                             />
                           ) : (
-                            <>
-                              <SnapshotDialog fragmentRef={data.household} />
-                              <DropdownMenu
-                                button={{
-                                  label: t`Preferences`,
-                                  icon: <AstryxIcon icon={Settings2Icon} />,
-                                  isIconOnly: true,
-                                  variant: 'ghost',
-                                }}
-                                items={preferenceItems}
-                              />
-                            </>
+                            <DropdownMenu
+                              button={{
+                                label: t`Preferences`,
+                                icon: <AstryxIcon icon={Settings2Icon} />,
+                                isIconOnly: true,
+                                variant: 'ghost',
+                              }}
+                              items={preferenceItems}
+                            />
                           )}
                           <NewEntryButton />
                           {isMobile && <MobileNavToggle />}

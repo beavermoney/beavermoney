@@ -300,6 +300,52 @@ func IsDemoNEQ(v bool) predicate.Household {
 	return predicate.Household(sql.FieldNEQ(FieldIsDemo, v))
 }
 
+// HasSnapshotAccounts applies the HasEdge predicate on the "snapshot_accounts" edge.
+func HasSnapshotAccounts() predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotAccountsTable, SnapshotAccountsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotAccountsWith applies the HasEdge predicate on the "snapshot_accounts" edge with a given conditions (other predicates).
+func HasSnapshotAccountsWith(preds ...predicate.SnapshotAccount) predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := newSnapshotAccountsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSnapshotInvestments applies the HasEdge predicate on the "snapshot_investments" edge.
+func HasSnapshotInvestments() predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotInvestmentsTable, SnapshotInvestmentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotInvestmentsWith applies the HasEdge predicate on the "snapshot_investments" edge with a given conditions (other predicates).
+func HasSnapshotInvestmentsWith(preds ...predicate.SnapshotInvestment) predicate.Household {
+	return predicate.Household(func(s *sql.Selector) {
+		step := newSnapshotInvestmentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasUsers applies the HasEdge predicate on the "users" edge.
 func HasUsers() predicate.Household {
 	return predicate.Household(func(s *sql.Selector) {

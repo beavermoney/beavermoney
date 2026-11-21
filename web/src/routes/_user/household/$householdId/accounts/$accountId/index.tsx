@@ -1,3 +1,4 @@
+import { NetWorthChart } from '@/routes/_user/household/$householdId/accounts/-components/net-worth-chart'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { createFileRoute } from '@tanstack/react-router'
@@ -92,5 +93,10 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  return <TransactionsList fragmentRef={data.household} />
+  return (
+    <>
+      <NetWorthChart accountId={params.accountId} />
+      <TransactionsList fragmentRef={data.household} />
+    </>
+  )
 }

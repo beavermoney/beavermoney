@@ -22,6 +22,8 @@ import query from '../__generated__/accountsSettingsQuery.graphql'
 import type { accountsSettingsQuery } from '../__generated__/accountsSettingsQuery.graphql'
 import { AccountSettings } from './account-settings'
 
+vi.mock('@/lib/logo', () => ({ getLogoDomainURL: () => null }))
+
 vi.mock('@/hooks/use-household', () => ({
   useHousehold: () => ({ household: { id: 'household-1', locale: 'en-US' } }),
 }))
@@ -48,6 +50,7 @@ function setup(hasAccounts = true) {
       return Observable.from({
         data: {
           household: { id: 'household-1' },
+          investments: { edges: [] },
           accounts: {
             edges: hasAccounts
               ? [
@@ -55,6 +58,7 @@ function setup(hasAccounts = true) {
                     node: {
                       id: 'account-1',
                       name: 'Old savings',
+                      icon: null,
                       type: 'liquidity',
                       archived: true,
                       user: { id: 'user-1', name: 'Joey' },
@@ -125,7 +129,9 @@ describe('Account settings', () => {
     fireEvent.click(button)
     request.fail()
     await waitFor(() => expect(button.hasAttribute('disabled')).toBe(false))
-    expect(screen.getByText('Old savings')).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: 'Unarchive Old savings' }),
+    ).toBeTruthy()
   })
 
   it('explains the empty archive', async () => {

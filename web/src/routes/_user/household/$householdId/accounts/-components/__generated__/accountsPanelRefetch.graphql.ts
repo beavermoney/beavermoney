@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2accb059d1d1f18ae9b641fa44805d92>>
+ * @generated SignedSource<<4722d2bbef9b0acd57523c12276d8d11>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -100,7 +100,41 @@ v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "name",
+  "storageKey": null
+},
+v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "value",
+  "storageKey": null
+},
+v11 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "code",
+    "storageKey": null
+  },
+  (v6/*: any*/)
+],
+v12 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "HouseholdCurrency",
+  "kind": "LinkedField",
+  "name": "householdCurrency",
+  "plural": false,
+  "selections": (v11/*: any*/),
   "storageKey": null
 };
 return {
@@ -200,13 +234,7 @@ return {
                         "plural": false,
                         "selections": [
                           (v6/*: any*/),
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "type",
-                            "storageKey": null
-                          },
+                          (v8/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -214,14 +242,8 @@ return {
                             "name": "category",
                             "storageKey": null
                           },
-                          (v8/*: any*/),
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "value",
-                            "storageKey": null
-                          },
+                          (v9/*: any*/),
+                          (v10/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -241,25 +263,7 @@ return {
                             ],
                             "storageKey": null
                           },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "concreteType": "HouseholdCurrency",
-                            "kind": "LinkedField",
-                            "name": "householdCurrency",
-                            "plural": false,
-                            "selections": [
-                              {
-                                "alias": null,
-                                "args": null,
-                                "kind": "ScalarField",
-                                "name": "code",
-                                "storageKey": null
-                              },
-                              (v6/*: any*/)
-                            ],
-                            "storageKey": null
-                          },
+                          (v12/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -277,12 +281,93 @@ return {
                           {
                             "alias": null,
                             "args": null,
+                            "concreteType": "Investment",
+                            "kind": "LinkedField",
+                            "name": "investments",
+                            "plural": true,
+                            "selections": [
+                              (v6/*: any*/),
+                              (v9/*: any*/),
+                              (v8/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "symbol",
+                                "storageKey": null
+                              },
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "amount",
+                                "storageKey": null
+                              },
+                              (v10/*: any*/),
+                              (v12/*: any*/)
+                            ],
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "Household",
+                            "kind": "LinkedField",
+                            "name": "household",
+                            "plural": false,
+                            "selections": [
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "HouseholdRate",
+                                "kind": "LinkedField",
+                                "name": "householdRates",
+                                "plural": true,
+                                "selections": [
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "kind": "ScalarField",
+                                    "name": "rate",
+                                    "storageKey": null
+                                  },
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "HouseholdCurrency",
+                                    "kind": "LinkedField",
+                                    "name": "fromCurrency",
+                                    "plural": false,
+                                    "selections": (v11/*: any*/),
+                                    "storageKey": null
+                                  },
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "HouseholdCurrency",
+                                    "kind": "LinkedField",
+                                    "name": "toCurrency",
+                                    "plural": false,
+                                    "selections": (v11/*: any*/),
+                                    "storageKey": null
+                                  },
+                                  (v6/*: any*/)
+                                ],
+                                "storageKey": null
+                              },
+                              (v6/*: any*/)
+                            ],
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
                             "concreteType": "User",
                             "kind": "LinkedField",
                             "name": "user",
                             "plural": false,
                             "selections": [
-                              (v8/*: any*/),
+                              (v9/*: any*/),
                               (v6/*: any*/)
                             ],
                             "storageKey": null
@@ -362,12 +447,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "18e017451f680123b183866aca4b805c",
+    "cacheID": "0555ce0aa91f03bd0cb7ccb46720b390",
     "id": null,
     "metadata": {},
     "name": "accountsPanelRefetch",
     "operationKind": "query",
-    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment accountLedgerRowFragment on Account {\n  id\n  name\n  type\n  icon\n  value\n  balance\n  latestTransaction {\n    datetime\n    id\n  }\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n}\n\nfragment accountsPanelFragment_2mcrba on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        latestTransaction {\n          datetime\n          id\n        }\n        householdCurrency {\n          code\n          id\n        }\n        ...accountLedgerRowFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query accountsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...accountsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment accountLedgerRowFragment on Account {\n  id\n  name\n  type\n  icon\n  value\n  balance\n  investments {\n    id\n    name\n    type\n    symbol\n    amount\n    value\n    householdCurrency {\n      code\n      id\n    }\n  }\n  household {\n    householdRates {\n      rate\n      fromCurrency {\n        code\n        id\n      }\n      toCurrency {\n        code\n        id\n      }\n      id\n    }\n    id\n  }\n  latestTransaction {\n    datetime\n    id\n  }\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n}\n\nfragment accountsPanelFragment_2mcrba on Household {\n  accounts(first: $count, after: $cursor, where: {archived: false, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        type\n        category\n        name\n        value\n        latestTransaction {\n          datetime\n          id\n        }\n        householdCurrency {\n          code\n          id\n        }\n        ...accountLedgerRowFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

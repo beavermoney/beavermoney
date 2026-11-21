@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<774e2637c9d28c8bc71c52763bb6c3ff>>
+ * @generated SignedSource<<e151355cc588fc4a87d29d18a63465e5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -42,11 +42,54 @@ v1 = {
   ],
   "storageKey": null
 },
-v2 = {
+v2 = [
+  {
+    "kind": "Literal",
+    "name": "where",
+    "value": {
+      "archived": true
+    }
+  }
+],
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "archived",
+  "storageKey": null
+},
+v6 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v7 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "User",
+  "kind": "LinkedField",
+  "name": "user",
+  "plural": false,
+  "selections": [
+    (v3/*: any*/),
+    (v0/*: any*/)
+  ],
   "storageKey": null
 };
 return {
@@ -75,15 +118,74 @@ return {
       (v1/*: any*/),
       {
         "alias": null,
-        "args": [
+        "args": (v2/*: any*/),
+        "concreteType": "InvestmentConnection",
+        "kind": "LinkedField",
+        "name": "investments",
+        "plural": false,
+        "selections": [
           {
-            "kind": "Literal",
-            "name": "where",
-            "value": {
-              "archived": true
-            }
+            "alias": null,
+            "args": null,
+            "concreteType": "InvestmentEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "Investment",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v0/*: any*/),
+                  (v3/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "symbol",
+                    "storageKey": null
+                  },
+                  (v4/*: any*/),
+                  (v5/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Account",
+                    "kind": "LinkedField",
+                    "name": "account",
+                    "plural": false,
+                    "selections": [
+                      (v3/*: any*/),
+                      (v6/*: any*/),
+                      (v5/*: any*/),
+                      (v7/*: any*/),
+                      (v0/*: any*/)
+                    ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "amount",
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
           }
         ],
+        "storageKey": "investments(where:{\"archived\":true})"
+      },
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
         "concreteType": "AccountConnection",
         "kind": "LinkedField",
         "name": "accounts",
@@ -106,34 +208,11 @@ return {
                 "plural": false,
                 "selections": [
                   (v0/*: any*/),
-                  (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "type",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "archived",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "User",
-                    "kind": "LinkedField",
-                    "name": "user",
-                    "plural": false,
-                    "selections": [
-                      (v2/*: any*/),
-                      (v0/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
+                  (v3/*: any*/),
+                  (v6/*: any*/),
+                  (v4/*: any*/),
+                  (v5/*: any*/),
+                  (v7/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -165,12 +244,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "85222acbf6f8a29b7f8418b0e9f6590d",
+    "cacheID": "eff419274922ebc52d8822acdaf8de56",
     "id": null,
     "metadata": {},
     "name": "accountsSettingsQuery",
     "operationKind": "query",
-    "text": "query accountsSettingsQuery {\n  household {\n    id\n  }\n  ...accountSettingsFragment\n}\n\nfragment accountSettingsFragment on Query {\n  accounts(where: {archived: true}) {\n    edges {\n      node {\n        id\n        name\n        type\n        archived\n        user {\n          name\n          id\n        }\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query accountsSettingsQuery {\n  household {\n    id\n  }\n  ...accountSettingsFragment\n}\n\nfragment accountSettingsFragment on Query {\n  investments(where: {archived: true}) {\n    edges {\n      node {\n        id\n        name\n        symbol\n        type\n        archived\n        account {\n          name\n          icon\n          archived\n          user {\n            name\n            id\n          }\n          id\n        }\n        ...investmentArchiveActionFragment\n      }\n    }\n  }\n  accounts(where: {archived: true}) {\n    edges {\n      node {\n        id\n        name\n        icon\n        type\n        archived\n        user {\n          name\n          id\n        }\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment investmentArchiveActionFragment on Investment {\n  id\n  archived\n  amount\n  account {\n    archived\n    id\n  }\n}\n"
   }
 };
 })();

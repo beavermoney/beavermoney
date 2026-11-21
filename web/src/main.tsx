@@ -1,3 +1,4 @@
+import { getHistoryViewKey } from '@/lib/history-view-key'
 import { AppI18nProvider } from '@/components/app-i18n-provider'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
@@ -27,6 +28,13 @@ const router = createRouter({
   defaultPreload: 'intent',
   defaultStructuralSharing: true,
   defaultViewTransition: false,
+  scrollRestoration: true,
+  getScrollRestorationKey: getHistoryViewKey,
+  scrollRestorationBehavior: 'instant',
+  scrollToTopSelectors: [
+    '[data-scroll-restoration-id="page-content"]',
+    '[data-scroll-restoration-id="transaction-table"]',
+  ],
 })
 
 declare module '@tanstack/react-router' {

@@ -21,6 +21,11 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+// ReviewRevision is the resolver for the reviewRevision field.
+func (r *accountResolver) ReviewRevision(ctx context.Context, obj *ent.Account) (string, error) {
+	return accountReviewRevision(ctx, r.entClient, obj)
+}
+
 // LatestTransaction is the resolver for the latestTransaction field.
 func (r *accountResolver) LatestTransaction(ctx context.Context, obj *ent.Account) (*ent.Transaction, error) {
 	txn, err := r.entClient.Transaction.Query().
@@ -94,6 +99,11 @@ func (r *householdResolver) FinancialReport(ctx context.Context, obj *ent.Househ
 	return report, nil
 }
 
+// AverageNeedsReview is the resolver for the averageNeedsReview field.
+func (r *investmentResolver) AverageNeedsReview(ctx context.Context, obj *ent.Investment) (bool, error) {
+	return averageNeedsReview(obj), nil
+}
+
 // LatestTransaction is the resolver for the latestTransaction field.
 func (r *investmentResolver) LatestTransaction(ctx context.Context, obj *ent.Investment) (*ent.Transaction, error) {
 	txn, err := r.entClient.Transaction.Query().
@@ -107,45 +117,58 @@ func (r *investmentResolver) LatestTransaction(ctx context.Context, obj *ent.Inv
 }
 
 // CostBasis is the resolver for the costBasis field.
-func (r *investmentResolver) CostBasis(ctx context.Context, obj *ent.Investment) (string, error) {
-	basis, _, err := r.computeAvgCostBasis(ctx, obj)
-	if err != nil {
-		return "", err
+func (r *investmentResolver) CostBasis(ctx context.Context, obj *ent.Investment) (*string, error) {
+	if obj.Amount.IsZero() {
+		zero := "0"
+		return &zero, nil
 	}
-	return basis.String(), nil
+	if averageNeedsReview(obj) || obj.ConfirmedAverageCost == nil {
+		return nil, nil
+	}
+	avg, err := decimal.NewFromString(*obj.ConfirmedAverageCost)
+	if err != nil {
+		return nil, err
+	}
+	value := obj.Amount.Mul(avg).String()
+	return &value, nil
 }
 
 // AverageCost is the resolver for the averageCost field.
-func (r *investmentResolver) AverageCost(ctx context.Context, obj *ent.Investment) (string, error) {
-	basis, shares, err := r.computeAvgCostBasis(ctx, obj)
-	if err != nil {
-		return "", err
-	}
-	if !shares.IsPositive() {
-		return decimal.Zero.String(), nil
-	}
-	return basis.Div(shares).String(), nil
+func (r *investmentResolver) AverageCost(ctx context.Context, obj *ent.Investment) (*string, error) {
+	return obj.ConfirmedAverageCost, nil
 }
 
 // UnrealizedReturn is the resolver for the unrealizedReturn field.
-func (r *investmentResolver) UnrealizedReturn(ctx context.Context, obj *ent.Investment) (string, error) {
-	basis, _, err := r.computeAvgCostBasis(ctx, obj)
-	if err != nil {
-		return "", err
+func (r *investmentResolver) UnrealizedReturn(ctx context.Context, obj *ent.Investment) (*string, error) {
+	basis, err := r.CostBasis(ctx, obj)
+	if err != nil || basis == nil {
+		return nil, err
 	}
-	return obj.Value.Sub(basis).String(), nil
+	value := obj.Value.Sub(decimal.RequireFromString(*basis)).String()
+	return &value, nil
 }
 
 // UnrealizedReturnPercent is the resolver for the unrealizedReturnPercent field.
-func (r *investmentResolver) UnrealizedReturnPercent(ctx context.Context, obj *ent.Investment) (string, error) {
-	basis, _, err := r.computeAvgCostBasis(ctx, obj)
-	if err != nil {
-		return "", err
+func (r *investmentResolver) UnrealizedReturnPercent(ctx context.Context, obj *ent.Investment) (*string, error) {
+	basis, err := r.CostBasis(ctx, obj)
+	if err != nil || basis == nil {
+		return nil, err
 	}
-	if !basis.IsPositive() {
-		return decimal.Zero.String(), nil
+	b := decimal.RequireFromString(*basis)
+	if !b.IsPositive() {
+		return nil, nil
 	}
-	return obj.Value.Sub(basis).Div(basis).String(), nil
+	value := obj.Value.Sub(b).Div(b).String()
+	return &value, nil
+}
+
+// Review is the resolver for the review field.
+func (r *snapshotResolver) Review(ctx context.Context, obj *ent.Snapshot) (*model.SnapshotReview, error) {
+	client := ent.FromContext(ctx)
+	if client == nil {
+		client = r.entClient
+	}
+	return cachedSnapshotReview(ctx, client, obj)
 }
 
 // LatestTransaction is the resolver for the latestTransaction field.

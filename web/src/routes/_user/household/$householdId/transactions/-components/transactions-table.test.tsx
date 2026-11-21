@@ -12,6 +12,10 @@ import { TransactionsTable } from './transactions-table'
 import type { transactionsTableFragment$key } from './__generated__/transactionsTableFragment.graphql'
 
 HTMLElement.prototype.scrollTo = vi.fn()
+vi.mock('@/hooks/use-page-scroll-restoration', () => ({
+  usePageScrollRestoration: () => undefinedScrollRef,
+}))
+const undefinedScrollRef = () => {}
 
 const state = vi.hoisted(() => ({
   privacy: false,

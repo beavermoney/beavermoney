@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react/macro'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
-import { Collapsible } from '@astryxdesign/core/Collapsible'
+import { HistoryCollapsible } from '@/components/history-collapsible'
 import { Heading } from '@astryxdesign/core/Heading'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { List } from '@astryxdesign/core/List'
@@ -193,7 +193,8 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
             const categories = groupedCategories[type]
             const typeAggregate = categoryTypeMap.get(type)
             return (
-              <Collapsible
+              <HistoryCollapsible
+                historyId={`categories:${type}`}
                 value={type}
                 key={type}
                 trigger={
@@ -230,7 +231,7 @@ export function CategoriesPanel({ fragmentRef }: CategoriesListPageProps) {
                     )
                   })}
                 </List>
-              </Collapsible>
+              </HistoryCollapsible>
             )
           })}
         </Stack>

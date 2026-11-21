@@ -25,6 +25,14 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldHouseholdID holds the string denoting the household_id field in the database.
 	FieldHouseholdID = "household_id"
+	// FieldArchived holds the string denoting the archived field in the database.
+	FieldArchived = "archived"
+	// FieldConfirmedAverageCost holds the string denoting the confirmed_average_cost field in the database.
+	FieldConfirmedAverageCost = "confirmed_average_cost"
+	// FieldAverageCostConfirmedAt holds the string denoting the average_cost_confirmed_at field in the database.
+	FieldAverageCostConfirmedAt = "average_cost_confirmed_at"
+	// FieldHoldingsChangedAt holds the string denoting the holdings_changed_at field in the database.
+	FieldHoldingsChangedAt = "holdings_changed_at"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldType holds the string denoting the type field in the database.
@@ -43,6 +51,8 @@ const (
 	FieldHouseholdCurrencyID = "household_currency_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// EdgeSnapshotInvestments holds the string denoting the snapshot_investments edge name in mutations.
+	EdgeSnapshotInvestments = "snapshot_investments"
 	// EdgeAccount holds the string denoting the account edge name in mutations.
 	EdgeAccount = "account"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
@@ -55,6 +65,13 @@ const (
 	EdgeInvestmentLots = "investment_lots"
 	// Table holds the table name of the investment in the database.
 	Table = "investments"
+	// SnapshotInvestmentsTable is the table that holds the snapshot_investments relation/edge.
+	SnapshotInvestmentsTable = "snapshot_investments"
+	// SnapshotInvestmentsInverseTable is the table name for the SnapshotInvestment entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotinvestment" package.
+	SnapshotInvestmentsInverseTable = "snapshot_investments"
+	// SnapshotInvestmentsColumn is the table column denoting the snapshot_investments relation/edge.
+	SnapshotInvestmentsColumn = "investment_id"
 	// AccountTable is the table that holds the account relation/edge.
 	AccountTable = "investments"
 	// AccountInverseTable is the table name for the Account entity.
@@ -98,6 +115,10 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldHouseholdID,
+	FieldArchived,
+	FieldConfirmedAverageCost,
+	FieldAverageCostConfirmedAt,
+	FieldHoldingsChangedAt,
 	FieldName,
 	FieldType,
 	FieldSymbol,
@@ -133,6 +154,8 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// DefaultArchived holds the default value on creation for the "archived" field.
+	DefaultArchived bool
 	// SymbolValidator is a validator for the "symbol" field. It is called by the builders before save.
 	SymbolValidator func(string) error
 	// DefaultAmount holds the default value on creation for the "amount" field.
@@ -193,6 +216,26 @@ func ByHouseholdID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHouseholdID, opts...).ToFunc()
 }
 
+// ByArchived orders the results by the archived field.
+func ByArchived(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArchived, opts...).ToFunc()
+}
+
+// ByConfirmedAverageCost orders the results by the confirmed_average_cost field.
+func ByConfirmedAverageCost(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldConfirmedAverageCost, opts...).ToFunc()
+}
+
+// ByAverageCostConfirmedAt orders the results by the average_cost_confirmed_at field.
+func ByAverageCostConfirmedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAverageCostConfirmedAt, opts...).ToFunc()
+}
+
+// ByHoldingsChangedAt orders the results by the holdings_changed_at field.
+func ByHoldingsChangedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHoldingsChangedAt, opts...).ToFunc()
+}
+
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -238,6 +281,20 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
+// BySnapshotInvestmentsCount orders the results by snapshot_investments count.
+func BySnapshotInvestmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotInvestmentsStep(), opts...)
+	}
+}
+
+// BySnapshotInvestments orders the results by snapshot_investments terms.
+func BySnapshotInvestments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotInvestmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByAccountField orders the results by account field.
 func ByAccountField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -278,6 +335,13 @@ func ByInvestmentLots(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newInvestmentLotsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newSnapshotInvestmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotInvestmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotInvestmentsTable, SnapshotInvestmentsColumn),
+	)
 }
 func newAccountStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

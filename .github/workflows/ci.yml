@@ -95,6 +95,22 @@ jobs:
   server-tests:
     name: Server Tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: beaver_review_compat_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d beaver_review_compat_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      REVIEW_TEST_DATABASE_URL: postgresql://user:password@localhost:5432/beaver_review_compat_test?sslmode=disable
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -105,5 +121,14 @@ jobs:
           go-version-file: "go.mod"
           cache-dependency-path: go.sum
 
-      - name: Run Go tests
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Bootstrap snapshot database through real forward migrations
+        run: go run ./scripts/fixtures/review-setup
+
+      - name: Verify legacy and prototype snapshot migration compatibility
+        run: psql "$REVIEW_TEST_DATABASE_URL" -v ON_ERROR_STOP=1 -f scripts/fixtures/review-compatibility.sql
+
+      - name: Run Go tests including PostgreSQL snapshot regressions
         run: go test -race -count=1 ./...

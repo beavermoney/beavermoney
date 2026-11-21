@@ -1,6 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
-import { Collapsible } from '@astryxdesign/core/Collapsible'
+import { HistoryCollapsible } from '@/components/history-collapsible'
 import { Heading } from '@astryxdesign/core/Heading'
 import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { List } from '@astryxdesign/core/List'
@@ -35,7 +35,11 @@ const InvestmentsPanelFragment = graphql`
     investments(
       first: $count
       after: $cursor
-      where: { userIDIn: $viewUserIds }
+      where: {
+        archived: false
+        hasAccountWith: { archived: false }
+        userIDIn: $viewUserIds
+      }
     ) @connection(key: "investmentsPanel_investments") {
       __id
       edges {
@@ -211,7 +215,8 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                 : null
 
             return (
-              <Collapsible
+              <HistoryCollapsible
+                historyId={`investments:${groupByOption}:${groupKey}`}
                 value={groupKey}
                 key={groupKey}
                 trigger={
@@ -253,7 +258,7 @@ export function InvestmentsPanel({ fragmentRef }: InvestmentsPanelProps) {
                     )
                   })}
                 </List>
-              </Collapsible>
+              </HistoryCollapsible>
             )
           })}
         </Stack>

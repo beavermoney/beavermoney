@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0a0fbbe60c8e374a3e83acf83d6cf818>>
+ * @generated SignedSource<<8457daee3ed5693cd81f7389396c574d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -81,6 +81,18 @@ v7 = [
   },
   {
     "fields": [
+      {
+        "kind": "Literal",
+        "name": "archived",
+        "value": false
+      },
+      {
+        "kind": "Literal",
+        "name": "hasAccountWith",
+        "value": {
+          "archived": false
+        }
+      },
       {
         "kind": "Variable",
         "name": "userIDIn",
@@ -367,16 +379,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "43849645dfe0ced23877fcdd8aa79d54",
+    "cacheID": "3d0b217f00a49ba806f62d7bfbbb74db",
     "id": null,
     "metadata": {},
     "name": "investmentsPanelRefetch",
     "operationKind": "query",
-    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_2mcrba on Household {\n  investments(first: $count, after: $cursor, where: {userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_2mcrba on Household {\n  investments(first: $count, after: $cursor, where: {archived: false, hasAccountWith: {archived: false}, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "7bf74328390e52acc340a7ff24b166cf";
+(node as any).hash = "e64ae71e6a9f3ba3436669f7d89cb76e";
 
 export default node;

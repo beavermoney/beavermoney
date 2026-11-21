@@ -33,6 +33,8 @@ func (Household) Fields() []ent.Field {
 // Edges of the Household.
 func (Household) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("snapshot_accounts", SnapshotAccount.Type).StorageKey(edge.Symbol("snapshot_accounts_household_id_fkey")).Annotations(entgql.Skip(), entsql.OnDelete(entsql.Cascade)),
+		edge.To("snapshot_investments", SnapshotInvestment.Type).StorageKey(edge.Symbol("snapshot_investments_household_id_fkey")).Annotations(entgql.Skip(), entsql.OnDelete(entsql.Cascade)),
 		edge.From("users", User.Type).
 			Ref("households").
 			Through("user_households", UserHousehold.Type).

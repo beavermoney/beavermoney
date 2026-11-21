@@ -3,7 +3,13 @@ import { Stack } from '@astryxdesign/core/Stack'
 import { ChevronRightIcon } from 'lucide-react'
 import { useCallback, useState, type ReactNode } from 'react'
 
-export function ComposerChipRail({ children }: { children: ReactNode }) {
+export function ComposerChipRail({
+  children,
+  label,
+}: {
+  children: ReactNode
+  label?: string
+}) {
   const [hasMore, setHasMore] = useState(false)
 
   const attachRail = useCallback((rail: HTMLElement | null) => {
@@ -35,6 +41,9 @@ export function ComposerChipRail({ children }: { children: ReactNode }) {
     <Stack className="composer-chip-rail" data-has-more={hasMore}>
       <Stack
         ref={attachRail}
+        role="group"
+        aria-label={label}
+        tabIndex={label ? 0 : undefined}
         direction="horizontal"
         gap={2}
         className="composer-chips"

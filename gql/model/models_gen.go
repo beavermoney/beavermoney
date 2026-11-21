@@ -118,11 +118,59 @@ type RemoveHouseholdUserPayload struct {
 	RemovedUserHouseholdID int `json:"removedUserHouseholdID"`
 }
 
+type ReviewAccountVersion struct {
+	ID       int    `json:"id"`
+	Revision string `json:"revision"`
+}
+
 type SellInvestmentInputCustom struct {
 	Transaction      *ent.CreateTransactionInput        `json:"transaction"`
 	TransactionEntry *ent.CreateTransactionEntryInput   `json:"transactionEntry"`
 	InvestmentLot    *ent.CreateInvestmentLotInput      `json:"investmentLot"`
 	Fees             []*ent.CreateTransactionEntryInput `json:"fees"`
+}
+
+type SnapshotAccountState struct {
+	AccountID int                        `json:"accountId"`
+	Icon      *string                    `json:"icon,omitempty"`
+	Name      string                     `json:"name"`
+	Type      string                     `json:"type"`
+	Category  *string                    `json:"category,omitempty"`
+	OwnerID   int                        `json:"ownerId"`
+	OwnerName string                     `json:"ownerName"`
+	Currency  string                     `json:"currency"`
+	Cash      string                     `json:"cash"`
+	Value     string                     `json:"value"`
+	Archived  bool                       `json:"archived"`
+	Holdings  []*SnapshotInvestmentState `json:"holdings"`
+}
+
+type SnapshotInvestmentState struct {
+	InvestmentID int        `json:"investmentId"`
+	Name         string     `json:"name"`
+	Symbol       string     `json:"symbol"`
+	Currency     string     `json:"currency"`
+	Quantity     string     `json:"quantity"`
+	Price        string     `json:"price"`
+	Value        string     `json:"value"`
+	Average      *string    `json:"average,omitempty"`
+	ConfirmedAt  *time.Time `json:"confirmedAt,omitempty"`
+	NeedsReview  bool       `json:"needsReview"`
+	Archived     bool       `json:"archived"`
+}
+
+type SnapshotRateState struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+	Rate string `json:"rate"`
+}
+
+type SnapshotReview struct {
+	Version          int                     `json:"version"`
+	Complete         bool                    `json:"complete"`
+	ActiveAccountIds []int                   `json:"activeAccountIds"`
+	Accounts         []*SnapshotAccountState `json:"accounts"`
+	Rates            []*SnapshotRateState    `json:"rates"`
 }
 
 type StockQuoteResult struct {

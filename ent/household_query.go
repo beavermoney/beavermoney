@@ -18,7 +18,9 @@ import (
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -38,6 +40,8 @@ type HouseholdQuery struct {
 	order                           []household.OrderOption
 	inters                          []Interceptor
 	predicates                      []predicate.Household
+	withSnapshotAccounts            *SnapshotAccountQuery
+	withSnapshotInvestments         *SnapshotInvestmentQuery
 	withUsers                       *UserQuery
 	withAccounts                    *AccountQuery
 	withTransactions                *TransactionQuery
@@ -54,6 +58,8 @@ type HouseholdQuery struct {
 	withUserHouseholds              *UserHouseholdQuery
 	loadTotal                       []func(context.Context, []*Household) error
 	modifiers                       []func(*sql.Selector)
+	withNamedSnapshotAccounts       map[string]*SnapshotAccountQuery
+	withNamedSnapshotInvestments    map[string]*SnapshotInvestmentQuery
 	withNamedUsers                  map[string]*UserQuery
 	withNamedAccounts               map[string]*AccountQuery
 	withNamedTransactions           map[string]*TransactionQuery
@@ -102,6 +108,50 @@ func (_q *HouseholdQuery) Unique(unique bool) *HouseholdQuery {
 func (_q *HouseholdQuery) Order(o ...household.OrderOption) *HouseholdQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QuerySnapshotAccounts chains the current query on the "snapshot_accounts" edge.
+func (_q *HouseholdQuery) QuerySnapshotAccounts() *SnapshotAccountQuery {
+	query := (&SnapshotAccountClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, selector),
+			sqlgraph.To(snapshotaccount.Table, snapshotaccount.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.SnapshotAccountsTable, household.SnapshotAccountsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySnapshotInvestments chains the current query on the "snapshot_investments" edge.
+func (_q *HouseholdQuery) QuerySnapshotInvestments() *SnapshotInvestmentQuery {
+	query := (&SnapshotInvestmentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(household.Table, household.FieldID, selector),
+			sqlgraph.To(snapshotinvestment.Table, snapshotinvestment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, household.SnapshotInvestmentsTable, household.SnapshotInvestmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryUsers chains the current query on the "users" edge.
@@ -604,6 +654,8 @@ func (_q *HouseholdQuery) Clone() *HouseholdQuery {
 		order:                      append([]household.OrderOption{}, _q.order...),
 		inters:                     append([]Interceptor{}, _q.inters...),
 		predicates:                 append([]predicate.Household{}, _q.predicates...),
+		withSnapshotAccounts:       _q.withSnapshotAccounts.Clone(),
+		withSnapshotInvestments:    _q.withSnapshotInvestments.Clone(),
 		withUsers:                  _q.withUsers.Clone(),
 		withAccounts:               _q.withAccounts.Clone(),
 		withTransactions:           _q.withTransactions.Clone(),
@@ -623,6 +675,28 @@ func (_q *HouseholdQuery) Clone() *HouseholdQuery {
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithSnapshotAccounts tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_accounts" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithSnapshotAccounts(opts ...func(*SnapshotAccountQuery)) *HouseholdQuery {
+	query := (&SnapshotAccountClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotAccounts = query
+	return _q
+}
+
+// WithSnapshotInvestments tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_investments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithSnapshotInvestments(opts ...func(*SnapshotInvestmentQuery)) *HouseholdQuery {
+	query := (&SnapshotInvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotInvestments = query
+	return _q
 }
 
 // WithUsers tells the query-builder to eager-load the nodes that are connected to
@@ -863,7 +937,9 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	var (
 		nodes       = []*Household{}
 		_spec       = _q.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [16]bool{
+			_q.withSnapshotAccounts != nil,
+			_q.withSnapshotInvestments != nil,
 			_q.withUsers != nil,
 			_q.withAccounts != nil,
 			_q.withTransactions != nil,
@@ -900,6 +976,22 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := _q.withSnapshotAccounts; query != nil {
+		if err := _q.loadSnapshotAccounts(ctx, query, nodes,
+			func(n *Household) { n.Edges.SnapshotAccounts = []*SnapshotAccount{} },
+			func(n *Household, e *SnapshotAccount) { n.Edges.SnapshotAccounts = append(n.Edges.SnapshotAccounts, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSnapshotInvestments; query != nil {
+		if err := _q.loadSnapshotInvestments(ctx, query, nodes,
+			func(n *Household) { n.Edges.SnapshotInvestments = []*SnapshotInvestment{} },
+			func(n *Household, e *SnapshotInvestment) {
+				n.Edges.SnapshotInvestments = append(n.Edges.SnapshotInvestments, e)
+			}); err != nil {
+			return nil, err
+		}
 	}
 	if query := _q.withUsers; query != nil {
 		if err := _q.loadUsers(ctx, query, nodes,
@@ -1004,6 +1096,20 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 		if err := _q.loadUserHouseholds(ctx, query, nodes,
 			func(n *Household) { n.Edges.UserHouseholds = []*UserHousehold{} },
 			func(n *Household, e *UserHousehold) { n.Edges.UserHouseholds = append(n.Edges.UserHouseholds, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotAccounts {
+		if err := _q.loadSnapshotAccounts(ctx, query, nodes,
+			func(n *Household) { n.appendNamedSnapshotAccounts(name) },
+			func(n *Household, e *SnapshotAccount) { n.appendNamedSnapshotAccounts(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSnapshotInvestments {
+		if err := _q.loadSnapshotInvestments(ctx, query, nodes,
+			func(n *Household) { n.appendNamedSnapshotInvestments(name) },
+			func(n *Household, e *SnapshotInvestment) { n.appendNamedSnapshotInvestments(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1113,6 +1219,66 @@ func (_q *HouseholdQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ho
 	return nodes, nil
 }
 
+func (_q *HouseholdQuery) loadSnapshotAccounts(ctx context.Context, query *SnapshotAccountQuery, nodes []*Household, init func(*Household), assign func(*Household, *SnapshotAccount)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Household)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotaccount.FieldHouseholdID)
+	}
+	query.Where(predicate.SnapshotAccount(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(household.SnapshotAccountsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *HouseholdQuery) loadSnapshotInvestments(ctx context.Context, query *SnapshotInvestmentQuery, nodes []*Household, init func(*Household), assign func(*Household, *SnapshotInvestment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Household)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotinvestment.FieldHouseholdID)
+	}
+	query.Where(predicate.SnapshotInvestment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(household.SnapshotInvestmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.HouseholdID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "household_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (_q *HouseholdQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Household, init func(*Household), assign func(*Household, *User)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[int]*Household)
@@ -1656,6 +1822,34 @@ func (_q *HouseholdQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *HouseholdQuery) Modify(modifiers ...func(s *sql.Selector)) *HouseholdSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedSnapshotAccounts tells the query-builder to eager-load the nodes that are connected to the "snapshot_accounts"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithNamedSnapshotAccounts(name string, opts ...func(*SnapshotAccountQuery)) *HouseholdQuery {
+	query := (&SnapshotAccountClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotAccounts == nil {
+		_q.withNamedSnapshotAccounts = make(map[string]*SnapshotAccountQuery)
+	}
+	_q.withNamedSnapshotAccounts[name] = query
+	return _q
+}
+
+// WithNamedSnapshotInvestments tells the query-builder to eager-load the nodes that are connected to the "snapshot_investments"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *HouseholdQuery) WithNamedSnapshotInvestments(name string, opts ...func(*SnapshotInvestmentQuery)) *HouseholdQuery {
+	query := (&SnapshotInvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotInvestments == nil {
+		_q.withNamedSnapshotInvestments = make(map[string]*SnapshotInvestmentQuery)
+	}
+	_q.withNamedSnapshotInvestments[name] = query
+	return _q
 }
 
 // WithNamedUsers tells the query-builder to eager-load the nodes that are connected to the "users"

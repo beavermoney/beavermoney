@@ -493,6 +493,7 @@
   border-bottom-right-radius: 0;
 }
 .account-sticky-group > .astryx-collapsible-content {
+  padding-block-start: 0;
   background: var(--color-background-card);
   border: var(--border-width) solid var(--color-border);
   border-top: 0;

@@ -84,7 +84,7 @@ function getRemoveErrorMessage(error: unknown): string {
   if (msg.includes('LAST_ADMIN_PROTECTED'))
     return t`At least one admin must remain.`
   if (msg.includes('MEMBER_HAS_OWNED_RECORDS'))
-    return t`This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first.`
+    return t`This member or the joint owner has household records or history and cannot be removed.`
   if (msg.includes('SELF_REMOVAL_NOT_ALLOWED'))
     return t`You can't remove yourself from the household.`
   if (msg.includes('SYNTHETIC_USER_REMOVAL_NOT_ALLOWED'))

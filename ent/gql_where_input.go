@@ -2100,6 +2100,51 @@ type InvestmentWhereInput struct {
 	HouseholdIDIn    []int `json:"householdIDIn,omitempty"`
 	HouseholdIDNotIn []int `json:"householdIDNotIn,omitempty"`
 
+	// "archived" field predicates.
+	Archived    *bool `json:"archived,omitempty"`
+	ArchivedNEQ *bool `json:"archivedNEQ,omitempty"`
+
+	// "confirmed_average_cost" field predicates.
+	ConfirmedAverageCost             *string  `json:"confirmedAverageCost,omitempty"`
+	ConfirmedAverageCostNEQ          *string  `json:"confirmedAverageCostNEQ,omitempty"`
+	ConfirmedAverageCostIn           []string `json:"confirmedAverageCostIn,omitempty"`
+	ConfirmedAverageCostNotIn        []string `json:"confirmedAverageCostNotIn,omitempty"`
+	ConfirmedAverageCostGT           *string  `json:"confirmedAverageCostGT,omitempty"`
+	ConfirmedAverageCostGTE          *string  `json:"confirmedAverageCostGTE,omitempty"`
+	ConfirmedAverageCostLT           *string  `json:"confirmedAverageCostLT,omitempty"`
+	ConfirmedAverageCostLTE          *string  `json:"confirmedAverageCostLTE,omitempty"`
+	ConfirmedAverageCostContains     *string  `json:"confirmedAverageCostContains,omitempty"`
+	ConfirmedAverageCostHasPrefix    *string  `json:"confirmedAverageCostHasPrefix,omitempty"`
+	ConfirmedAverageCostHasSuffix    *string  `json:"confirmedAverageCostHasSuffix,omitempty"`
+	ConfirmedAverageCostIsNil        bool     `json:"confirmedAverageCostIsNil,omitempty"`
+	ConfirmedAverageCostNotNil       bool     `json:"confirmedAverageCostNotNil,omitempty"`
+	ConfirmedAverageCostEqualFold    *string  `json:"confirmedAverageCostEqualFold,omitempty"`
+	ConfirmedAverageCostContainsFold *string  `json:"confirmedAverageCostContainsFold,omitempty"`
+
+	// "average_cost_confirmed_at" field predicates.
+	AverageCostConfirmedAt       *time.Time  `json:"averageCostConfirmedAt,omitempty"`
+	AverageCostConfirmedAtNEQ    *time.Time  `json:"averageCostConfirmedAtNEQ,omitempty"`
+	AverageCostConfirmedAtIn     []time.Time `json:"averageCostConfirmedAtIn,omitempty"`
+	AverageCostConfirmedAtNotIn  []time.Time `json:"averageCostConfirmedAtNotIn,omitempty"`
+	AverageCostConfirmedAtGT     *time.Time  `json:"averageCostConfirmedAtGT,omitempty"`
+	AverageCostConfirmedAtGTE    *time.Time  `json:"averageCostConfirmedAtGTE,omitempty"`
+	AverageCostConfirmedAtLT     *time.Time  `json:"averageCostConfirmedAtLT,omitempty"`
+	AverageCostConfirmedAtLTE    *time.Time  `json:"averageCostConfirmedAtLTE,omitempty"`
+	AverageCostConfirmedAtIsNil  bool        `json:"averageCostConfirmedAtIsNil,omitempty"`
+	AverageCostConfirmedAtNotNil bool        `json:"averageCostConfirmedAtNotNil,omitempty"`
+
+	// "holdings_changed_at" field predicates.
+	HoldingsChangedAt       *time.Time  `json:"holdingsChangedAt,omitempty"`
+	HoldingsChangedAtNEQ    *time.Time  `json:"holdingsChangedAtNEQ,omitempty"`
+	HoldingsChangedAtIn     []time.Time `json:"holdingsChangedAtIn,omitempty"`
+	HoldingsChangedAtNotIn  []time.Time `json:"holdingsChangedAtNotIn,omitempty"`
+	HoldingsChangedAtGT     *time.Time  `json:"holdingsChangedAtGT,omitempty"`
+	HoldingsChangedAtGTE    *time.Time  `json:"holdingsChangedAtGTE,omitempty"`
+	HoldingsChangedAtLT     *time.Time  `json:"holdingsChangedAtLT,omitempty"`
+	HoldingsChangedAtLTE    *time.Time  `json:"holdingsChangedAtLTE,omitempty"`
+	HoldingsChangedAtIsNil  bool        `json:"holdingsChangedAtIsNil,omitempty"`
+	HoldingsChangedAtNotNil bool        `json:"holdingsChangedAtNotNil,omitempty"`
+
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
 	NameNEQ          *string  `json:"nameNEQ,omitempty"`
@@ -2359,6 +2404,117 @@ func (i *InvestmentWhereInput) P() (predicate.Investment, error) {
 	}
 	if len(i.HouseholdIDNotIn) > 0 {
 		predicates = append(predicates, investment.HouseholdIDNotIn(i.HouseholdIDNotIn...))
+	}
+	if i.Archived != nil {
+		predicates = append(predicates, investment.ArchivedEQ(*i.Archived))
+	}
+	if i.ArchivedNEQ != nil {
+		predicates = append(predicates, investment.ArchivedNEQ(*i.ArchivedNEQ))
+	}
+	if i.ConfirmedAverageCost != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostEQ(*i.ConfirmedAverageCost))
+	}
+	if i.ConfirmedAverageCostNEQ != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostNEQ(*i.ConfirmedAverageCostNEQ))
+	}
+	if len(i.ConfirmedAverageCostIn) > 0 {
+		predicates = append(predicates, investment.ConfirmedAverageCostIn(i.ConfirmedAverageCostIn...))
+	}
+	if len(i.ConfirmedAverageCostNotIn) > 0 {
+		predicates = append(predicates, investment.ConfirmedAverageCostNotIn(i.ConfirmedAverageCostNotIn...))
+	}
+	if i.ConfirmedAverageCostGT != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostGT(*i.ConfirmedAverageCostGT))
+	}
+	if i.ConfirmedAverageCostGTE != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostGTE(*i.ConfirmedAverageCostGTE))
+	}
+	if i.ConfirmedAverageCostLT != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostLT(*i.ConfirmedAverageCostLT))
+	}
+	if i.ConfirmedAverageCostLTE != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostLTE(*i.ConfirmedAverageCostLTE))
+	}
+	if i.ConfirmedAverageCostContains != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostContains(*i.ConfirmedAverageCostContains))
+	}
+	if i.ConfirmedAverageCostHasPrefix != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostHasPrefix(*i.ConfirmedAverageCostHasPrefix))
+	}
+	if i.ConfirmedAverageCostHasSuffix != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostHasSuffix(*i.ConfirmedAverageCostHasSuffix))
+	}
+	if i.ConfirmedAverageCostIsNil {
+		predicates = append(predicates, investment.ConfirmedAverageCostIsNil())
+	}
+	if i.ConfirmedAverageCostNotNil {
+		predicates = append(predicates, investment.ConfirmedAverageCostNotNil())
+	}
+	if i.ConfirmedAverageCostEqualFold != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostEqualFold(*i.ConfirmedAverageCostEqualFold))
+	}
+	if i.ConfirmedAverageCostContainsFold != nil {
+		predicates = append(predicates, investment.ConfirmedAverageCostContainsFold(*i.ConfirmedAverageCostContainsFold))
+	}
+	if i.AverageCostConfirmedAt != nil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtEQ(*i.AverageCostConfirmedAt))
+	}
+	if i.AverageCostConfirmedAtNEQ != nil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtNEQ(*i.AverageCostConfirmedAtNEQ))
+	}
+	if len(i.AverageCostConfirmedAtIn) > 0 {
+		predicates = append(predicates, investment.AverageCostConfirmedAtIn(i.AverageCostConfirmedAtIn...))
+	}
+	if len(i.AverageCostConfirmedAtNotIn) > 0 {
+		predicates = append(predicates, investment.AverageCostConfirmedAtNotIn(i.AverageCostConfirmedAtNotIn...))
+	}
+	if i.AverageCostConfirmedAtGT != nil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtGT(*i.AverageCostConfirmedAtGT))
+	}
+	if i.AverageCostConfirmedAtGTE != nil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtGTE(*i.AverageCostConfirmedAtGTE))
+	}
+	if i.AverageCostConfirmedAtLT != nil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtLT(*i.AverageCostConfirmedAtLT))
+	}
+	if i.AverageCostConfirmedAtLTE != nil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtLTE(*i.AverageCostConfirmedAtLTE))
+	}
+	if i.AverageCostConfirmedAtIsNil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtIsNil())
+	}
+	if i.AverageCostConfirmedAtNotNil {
+		predicates = append(predicates, investment.AverageCostConfirmedAtNotNil())
+	}
+	if i.HoldingsChangedAt != nil {
+		predicates = append(predicates, investment.HoldingsChangedAtEQ(*i.HoldingsChangedAt))
+	}
+	if i.HoldingsChangedAtNEQ != nil {
+		predicates = append(predicates, investment.HoldingsChangedAtNEQ(*i.HoldingsChangedAtNEQ))
+	}
+	if len(i.HoldingsChangedAtIn) > 0 {
+		predicates = append(predicates, investment.HoldingsChangedAtIn(i.HoldingsChangedAtIn...))
+	}
+	if len(i.HoldingsChangedAtNotIn) > 0 {
+		predicates = append(predicates, investment.HoldingsChangedAtNotIn(i.HoldingsChangedAtNotIn...))
+	}
+	if i.HoldingsChangedAtGT != nil {
+		predicates = append(predicates, investment.HoldingsChangedAtGT(*i.HoldingsChangedAtGT))
+	}
+	if i.HoldingsChangedAtGTE != nil {
+		predicates = append(predicates, investment.HoldingsChangedAtGTE(*i.HoldingsChangedAtGTE))
+	}
+	if i.HoldingsChangedAtLT != nil {
+		predicates = append(predicates, investment.HoldingsChangedAtLT(*i.HoldingsChangedAtLT))
+	}
+	if i.HoldingsChangedAtLTE != nil {
+		predicates = append(predicates, investment.HoldingsChangedAtLTE(*i.HoldingsChangedAtLTE))
+	}
+	if i.HoldingsChangedAtIsNil {
+		predicates = append(predicates, investment.HoldingsChangedAtIsNil())
+	}
+	if i.HoldingsChangedAtNotNil {
+		predicates = append(predicates, investment.HoldingsChangedAtNotNil())
 	}
 	if i.Name != nil {
 		predicates = append(predicates, investment.NameEQ(*i.Name))
@@ -3640,6 +3796,16 @@ type SnapshotWhereInput struct {
 	UpdateTimeLT    *time.Time  `json:"updateTimeLT,omitempty"`
 	UpdateTimeLTE   *time.Time  `json:"updateTimeLTE,omitempty"`
 
+	// "format_version" field predicates.
+	FormatVersion      *int  `json:"formatVersion,omitempty"`
+	FormatVersionNEQ   *int  `json:"formatVersionNEQ,omitempty"`
+	FormatVersionIn    []int `json:"formatVersionIn,omitempty"`
+	FormatVersionNotIn []int `json:"formatVersionNotIn,omitempty"`
+	FormatVersionGT    *int  `json:"formatVersionGT,omitempty"`
+	FormatVersionGTE   *int  `json:"formatVersionGTE,omitempty"`
+	FormatVersionLT    *int  `json:"formatVersionLT,omitempty"`
+	FormatVersionLTE   *int  `json:"formatVersionLTE,omitempty"`
+
 	// "note" field predicates.
 	Note             *string  `json:"note,omitempty"`
 	NoteNEQ          *string  `json:"noteNEQ,omitempty"`
@@ -3824,6 +3990,30 @@ func (i *SnapshotWhereInput) P() (predicate.Snapshot, error) {
 	}
 	if i.UpdateTimeLTE != nil {
 		predicates = append(predicates, snapshot.UpdateTimeLTE(*i.UpdateTimeLTE))
+	}
+	if i.FormatVersion != nil {
+		predicates = append(predicates, snapshot.FormatVersionEQ(*i.FormatVersion))
+	}
+	if i.FormatVersionNEQ != nil {
+		predicates = append(predicates, snapshot.FormatVersionNEQ(*i.FormatVersionNEQ))
+	}
+	if len(i.FormatVersionIn) > 0 {
+		predicates = append(predicates, snapshot.FormatVersionIn(i.FormatVersionIn...))
+	}
+	if len(i.FormatVersionNotIn) > 0 {
+		predicates = append(predicates, snapshot.FormatVersionNotIn(i.FormatVersionNotIn...))
+	}
+	if i.FormatVersionGT != nil {
+		predicates = append(predicates, snapshot.FormatVersionGT(*i.FormatVersionGT))
+	}
+	if i.FormatVersionGTE != nil {
+		predicates = append(predicates, snapshot.FormatVersionGTE(*i.FormatVersionGTE))
+	}
+	if i.FormatVersionLT != nil {
+		predicates = append(predicates, snapshot.FormatVersionLT(*i.FormatVersionLT))
+	}
+	if i.FormatVersionLTE != nil {
+		predicates = append(predicates, snapshot.FormatVersionLTE(*i.FormatVersionLTE))
 	}
 	if i.Note != nil {
 		predicates = append(predicates, snapshot.NoteEQ(*i.Note))

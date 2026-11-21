@@ -1,10 +1,11 @@
+import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Stack } from '@astryxdesign/core/Stack'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   loadQuery,
   usePreloadedQuery,
@@ -17,7 +18,6 @@ import type { CategoryIdQuery } from './__generated__/CategoryIdQuery.graphql'
 
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { parseDateRangeFromURL } from '@/lib/date-range'
-import { identity } from 'lodash-es'
 import invariant from 'tiny-invariant'
 import type { TransactionWhereInput } from '../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { TransactionsList } from '../transactions/-components/transactions-list'
@@ -103,14 +103,20 @@ function RouteComponent() {
 
   invariant(data.node, t`Category not found`)
 
-  const navigate = useNavigate()
+  const goBack = useBackNavigation()
 
   return (
     <HouseholdContentLayout>
       <Stack direction="vertical" gap={4}>
         <Stack direction="vertical" gap={4}>
           <Button
-            onClick={() => navigate({ to: '..', search: identity })}
+            onClick={() =>
+              goBack({
+                to: '/household/$householdId/categories',
+                params: { householdId: params.householdId },
+                search: (previous) => previous,
+              })
+            }
             label={t`Back`}
             width="fit-content"
             variant={'secondary'}

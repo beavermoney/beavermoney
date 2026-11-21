@@ -1,5 +1,6 @@
 import { LayoutContent, VStack } from '@astryxdesign/core/Layout'
 import type { ReactNode } from 'react'
+import { usePageScrollRestoration } from '@/hooks/use-page-scroll-restoration'
 export function HouseholdContentLayout({
   children,
   className,
@@ -7,8 +8,14 @@ export function HouseholdContentLayout({
   children: ReactNode
   className?: string
 }) {
+  const scrollRef = usePageScrollRestoration()
   return (
-    <LayoutContent padding={6} className={className}>
+    <LayoutContent
+      ref={scrollRef}
+      data-scroll-restoration-id="page-content"
+      padding={6}
+      className={className}
+    >
       <VStack gap={6} className="app-scroll-content">
         {children}
       </VStack>

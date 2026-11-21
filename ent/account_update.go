@@ -11,6 +11,7 @@ import (
 	"beavermoney.app/ent/account"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/transactionentry"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -51,26 +52,6 @@ func (_u *AccountUpdate) SetNillableName(v *string) *AccountUpdate {
 	return _u
 }
 
-// SetCategory sets the "category" field.
-func (_u *AccountUpdate) SetCategory(v account.Category) *AccountUpdate {
-	_u.mutation.SetCategory(v)
-	return _u
-}
-
-// SetNillableCategory sets the "category" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableCategory(v *account.Category) *AccountUpdate {
-	if v != nil {
-		_u.SetCategory(*v)
-	}
-	return _u
-}
-
-// ClearCategory clears the value of the "category" field.
-func (_u *AccountUpdate) ClearCategory() *AccountUpdate {
-	_u.mutation.ClearCategory()
-	return _u
-}
-
 // SetIcon sets the "icon" field.
 func (_u *AccountUpdate) SetIcon(v string) *AccountUpdate {
 	_u.mutation.SetIcon(v)
@@ -103,6 +84,21 @@ func (_u *AccountUpdate) SetNillableArchived(v *bool) *AccountUpdate {
 		_u.SetArchived(*v)
 	}
 	return _u
+}
+
+// AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
+func (_u *AccountUpdate) AddSnapshotAccountIDs(ids ...int) *AccountUpdate {
+	_u.mutation.AddSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// AddSnapshotAccounts adds the "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *AccountUpdate) AddSnapshotAccounts(v ...*SnapshotAccount) *AccountUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotAccountIDs(ids...)
 }
 
 // AddTransactionEntryIDs adds the "transaction_entries" edge to the TransactionEntry entity by IDs.
@@ -138,6 +134,27 @@ func (_u *AccountUpdate) AddInvestments(v ...*Investment) *AccountUpdate {
 // Mutation returns the AccountMutation object of the builder.
 func (_u *AccountUpdate) Mutation() *AccountMutation {
 	return _u.mutation
+}
+
+// ClearSnapshotAccounts clears all "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *AccountUpdate) ClearSnapshotAccounts() *AccountUpdate {
+	_u.mutation.ClearSnapshotAccounts()
+	return _u
+}
+
+// RemoveSnapshotAccountIDs removes the "snapshot_accounts" edge to SnapshotAccount entities by IDs.
+func (_u *AccountUpdate) RemoveSnapshotAccountIDs(ids ...int) *AccountUpdate {
+	_u.mutation.RemoveSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotAccounts removes "snapshot_accounts" edges to SnapshotAccount entities.
+func (_u *AccountUpdate) RemoveSnapshotAccounts(v ...*SnapshotAccount) *AccountUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotAccountIDs(ids...)
 }
 
 // ClearTransactionEntries clears all "transaction_entries" edges to the TransactionEntry entity.
@@ -231,11 +248,6 @@ func (_u *AccountUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Category(); ok {
-		if err := account.CategoryValidator(v); err != nil {
-			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Account.category": %w`, err)}
-		}
-	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.household"`)
 	}
@@ -272,9 +284,6 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(account.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Category(); ok {
-		_spec.SetField(account.FieldCategory, field.TypeEnum, value)
-	}
 	if _u.mutation.CategoryCleared() {
 		_spec.ClearField(account.FieldCategory, field.TypeEnum)
 	}
@@ -286,6 +295,51 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)
+	}
+	if _u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotAccountsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.TransactionEntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -419,26 +473,6 @@ func (_u *AccountUpdateOne) SetNillableName(v *string) *AccountUpdateOne {
 	return _u
 }
 
-// SetCategory sets the "category" field.
-func (_u *AccountUpdateOne) SetCategory(v account.Category) *AccountUpdateOne {
-	_u.mutation.SetCategory(v)
-	return _u
-}
-
-// SetNillableCategory sets the "category" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableCategory(v *account.Category) *AccountUpdateOne {
-	if v != nil {
-		_u.SetCategory(*v)
-	}
-	return _u
-}
-
-// ClearCategory clears the value of the "category" field.
-func (_u *AccountUpdateOne) ClearCategory() *AccountUpdateOne {
-	_u.mutation.ClearCategory()
-	return _u
-}
-
 // SetIcon sets the "icon" field.
 func (_u *AccountUpdateOne) SetIcon(v string) *AccountUpdateOne {
 	_u.mutation.SetIcon(v)
@@ -471,6 +505,21 @@ func (_u *AccountUpdateOne) SetNillableArchived(v *bool) *AccountUpdateOne {
 		_u.SetArchived(*v)
 	}
 	return _u
+}
+
+// AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
+func (_u *AccountUpdateOne) AddSnapshotAccountIDs(ids ...int) *AccountUpdateOne {
+	_u.mutation.AddSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// AddSnapshotAccounts adds the "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *AccountUpdateOne) AddSnapshotAccounts(v ...*SnapshotAccount) *AccountUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotAccountIDs(ids...)
 }
 
 // AddTransactionEntryIDs adds the "transaction_entries" edge to the TransactionEntry entity by IDs.
@@ -506,6 +555,27 @@ func (_u *AccountUpdateOne) AddInvestments(v ...*Investment) *AccountUpdateOne {
 // Mutation returns the AccountMutation object of the builder.
 func (_u *AccountUpdateOne) Mutation() *AccountMutation {
 	return _u.mutation
+}
+
+// ClearSnapshotAccounts clears all "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *AccountUpdateOne) ClearSnapshotAccounts() *AccountUpdateOne {
+	_u.mutation.ClearSnapshotAccounts()
+	return _u
+}
+
+// RemoveSnapshotAccountIDs removes the "snapshot_accounts" edge to SnapshotAccount entities by IDs.
+func (_u *AccountUpdateOne) RemoveSnapshotAccountIDs(ids ...int) *AccountUpdateOne {
+	_u.mutation.RemoveSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotAccounts removes "snapshot_accounts" edges to SnapshotAccount entities.
+func (_u *AccountUpdateOne) RemoveSnapshotAccounts(v ...*SnapshotAccount) *AccountUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotAccountIDs(ids...)
 }
 
 // ClearTransactionEntries clears all "transaction_entries" edges to the TransactionEntry entity.
@@ -612,11 +682,6 @@ func (_u *AccountUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Category(); ok {
-		if err := account.CategoryValidator(v); err != nil {
-			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Account.category": %w`, err)}
-		}
-	}
 	if _u.mutation.HouseholdCleared() && len(_u.mutation.HouseholdIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Account.household"`)
 	}
@@ -670,9 +735,6 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(account.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Category(); ok {
-		_spec.SetField(account.FieldCategory, field.TypeEnum, value)
-	}
 	if _u.mutation.CategoryCleared() {
 		_spec.ClearField(account.FieldCategory, field.TypeEnum)
 	}
@@ -684,6 +746,51 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.Archived(); ok {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)
+	}
+	if _u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotAccountsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.TransactionEntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{

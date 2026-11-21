@@ -526,6 +526,29 @@ func ArchivedNEQ(v bool) predicate.Account {
 	return predicate.Account(sql.FieldNEQ(FieldArchived, v))
 }
 
+// HasSnapshotAccounts applies the HasEdge predicate on the "snapshot_accounts" edge.
+func HasSnapshotAccounts() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotAccountsTable, SnapshotAccountsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotAccountsWith applies the HasEdge predicate on the "snapshot_accounts" edge with a given conditions (other predicates).
+func HasSnapshotAccountsWith(preds ...predicate.SnapshotAccount) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		step := newSnapshotAccountsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasHousehold applies the HasEdge predicate on the "household" edge.
 func HasHousehold() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {

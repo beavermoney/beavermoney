@@ -196,11 +196,17 @@ export function TransactionCard({
                     undefined,
                     { maximumFractionDigits: 8 },
                   )}{' '}
-              <Trans>shares @</Trans>{' '}
-              {formatAmount({
-                value: lot.price,
-                currencyCode: lot.investment.householdCurrency.code,
-              })}
+              <Trans>shares</Trans>
+              {data.category.name !== 'Move' && (
+                <>
+                  {' '}
+                  @
+                  {formatAmount({
+                    value: lot.price,
+                    currencyCode: lot.investment.householdCurrency.code,
+                  })}
+                </>
+              )}
             </Text>
           )}
         </Stack>

@@ -43,6 +43,8 @@ const (
 	FieldUserID = "user_id"
 	// FieldArchived holds the string denoting the archived field in the database.
 	FieldArchived = "archived"
+	// EdgeSnapshotAccounts holds the string denoting the snapshot_accounts edge name in mutations.
+	EdgeSnapshotAccounts = "snapshot_accounts"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
 	EdgeHousehold = "household"
 	// EdgeHouseholdCurrency holds the string denoting the household_currency edge name in mutations.
@@ -55,6 +57,13 @@ const (
 	EdgeInvestments = "investments"
 	// Table holds the table name of the account in the database.
 	Table = "accounts"
+	// SnapshotAccountsTable is the table that holds the snapshot_accounts relation/edge.
+	SnapshotAccountsTable = "snapshot_accounts"
+	// SnapshotAccountsInverseTable is the table name for the SnapshotAccount entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotaccount" package.
+	SnapshotAccountsInverseTable = "snapshot_accounts"
+	// SnapshotAccountsColumn is the table column denoting the snapshot_accounts relation/edge.
+	SnapshotAccountsColumn = "account_id"
 	// HouseholdTable is the table that holds the household relation/edge.
 	HouseholdTable = "accounts"
 	// HouseholdInverseTable is the table name for the Household entity.
@@ -279,6 +288,20 @@ func ByArchived(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldArchived, opts...).ToFunc()
 }
 
+// BySnapshotAccountsCount orders the results by snapshot_accounts count.
+func BySnapshotAccountsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotAccountsStep(), opts...)
+	}
+}
+
+// BySnapshotAccounts orders the results by snapshot_accounts terms.
+func BySnapshotAccounts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotAccountsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByHouseholdField orders the results by household field.
 func ByHouseholdField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -326,6 +349,13 @@ func ByInvestments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newInvestmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newSnapshotAccountsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotAccountsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotAccountsTable, SnapshotAccountsColumn),
+	)
 }
 func newHouseholdStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

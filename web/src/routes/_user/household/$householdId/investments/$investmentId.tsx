@@ -1,3 +1,9 @@
+import { InvestmentArchiveAction } from '@/components/investment-archive-action'
+import { useBackNavigation } from '@/hooks/use-back-navigation'
+import { Suspense, useState } from 'react'
+import { NetWorthChart } from '@/routes/_user/household/$householdId/accounts/-components/net-worth-chart'
+import { usePrivacyMode } from '@/hooks/use-privacy-mode'
+import { AverageCostEditor } from '@/components/average-cost-editor'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { PendingComponent } from '@/components/pending-component'
@@ -9,7 +15,7 @@ import { Grid } from '@astryxdesign/core/Grid'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import currency from 'currency.js'
 import {
   fetchQuery,
@@ -56,6 +62,7 @@ const InvestmentIdQuery = graphql`
       ... on Investment {
         ...investmentCardFragment
         ...InvestmentIdDetailFragment
+        ...investmentArchiveActionFragment
       }
     }
     household {
@@ -66,9 +73,12 @@ const InvestmentIdQuery = graphql`
 
 const investmentIdDetailFragment = graphql`
   fragment InvestmentIdDetailFragment on Investment {
+    id
     householdCurrency {
       code
     }
+    archived
+    averageNeedsReview
     costBasis
     averageCost
     unrealizedReturn
@@ -103,24 +113,32 @@ function RouteComponent() {
 
   invariant(data.node, t`Investment not found`)
 
-  const navigate = useNavigate()
+  const goBack = useBackNavigation()
 
   return (
     <Stack direction="vertical" gap={4}>
-      <Stack direction="vertical" gap={4}>
+      <Stack direction="horizontal" gap={4} justify="between" wrap="wrap">
         <Button
-          onClick={() => navigate({ to: '..' })}
+          onClick={() =>
+            goBack({
+              to: '/household/$householdId/investments',
+              params: { householdId: params.householdId },
+              search: (previous) => previous,
+            })
+          }
           label={t`Back`}
           width="fit-content"
           variant={'secondary'}
         >
           <Trans>Back</Trans>
         </Button>
+        <InvestmentArchiveAction fragmentRef={data.node} />
       </Stack>
       <Stack direction="vertical" gap={4}>
         <InvestmentCard fragmentRef={data.node} showReturn={false} />
       </Stack>
       <InvestmentDetail fragmentRef={data.node} />
+      <NetWorthChart investmentId={params.investmentId} />
       <Divider />
       <TransactionsList fragmentRef={data.household} />
     </Stack>
@@ -132,45 +150,74 @@ type InvestmentDetailProps = {
 }
 
 function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
+  const { t } = useLingui()
+  const [editing, setEditing] = useState(false)
   const data = useFragment(investmentIdDetailFragment, fragmentRef)
-  const { formatCurrency, formatCurrencyWithPrivacyMode } = useCurrency()
+  const { formatCurrencyWithPrivacyMode } = useCurrency()
+  const { isPrivacyModeEnabled } = usePrivacyMode()
 
-  const unrealizedReturn = currency(data.unrealizedReturn, { precision: 8 })
-  const unrealizedReturnPercent = parseFloat(data.unrealizedReturnPercent) * 100
+  const unrealizedReturn = currency(data.unrealizedReturn ?? 0, {
+    precision: 8,
+  })
+  const unrealizedReturnPercent =
+    parseFloat(data.unrealizedReturnPercent ?? '0') * 100
   const isPositive = unrealizedReturn.value > 0
   const isNegative = unrealizedReturn.value < 0
 
   const formattedReturn = formatCurrencyWithPrivacyMode({
-    value: data.unrealizedReturn,
+    value: data.unrealizedReturn ?? '0',
     currencyCode: data.householdCurrency.code,
   })
-  const signedReturn = isPositive ? `+${formattedReturn}` : formattedReturn
+  const signedReturn =
+    !isPrivacyModeEnabled && isPositive
+      ? `+${formattedReturn}`
+      : formattedReturn
   const formattedPercent = `${Math.abs(unrealizedReturnPercent).toFixed(2)}%`
-  const signedPercent = isPositive
-    ? `+${formattedPercent}`
-    : isNegative
-      ? `−${formattedPercent}`
-      : formattedPercent
+  const signedPercent = isPrivacyModeEnabled
+    ? '•••'
+    : isPositive
+      ? `+${formattedPercent}`
+      : isNegative
+        ? `−${formattedPercent}`
+        : formattedPercent
 
   return (
     <Card>
       <Stack direction="vertical" gap={4}>
-        <Stack direction="vertical" gap={2} as="header">
+        <Stack
+          direction="horizontal"
+          gap={3}
+          as="header"
+          justify="between"
+          align="center"
+          wrap="wrap"
+        >
           <Heading level={2}>
-            <Trans>Performance</Trans>
+            <Trans>Holding details</Trans>
           </Heading>
+          <Button
+            isDisabled={data.archived}
+            className="shrink-0"
+            label={editing ? t`Close` : t`Update average`}
+            onClick={() => setEditing((value) => !value)}
+          />
         </Stack>
         <Stack direction="vertical" gap={4}>
+          {data.averageNeedsReview && (
+            <Text type="label">{t`Average cost needs review`}</Text>
+          )}
           <Grid columns={{ minWidth: 140, max: 4, repeat: 'fit' }} gap={4}>
             <Stack direction="vertical" gap={1}>
               <Text type="supporting">
                 <Trans>Cost Basis</Trans>
               </Text>
               <Text type="label" hasTabularNumbers>
-                {formatCurrencyWithPrivacyMode({
-                  value: data.costBasis,
-                  currencyCode: data.householdCurrency.code,
-                })}
+                {data.costBasis == null
+                  ? '—'
+                  : formatCurrencyWithPrivacyMode({
+                      value: data.costBasis,
+                      currencyCode: data.householdCurrency.code,
+                    })}
               </Text>
             </Stack>
             <Stack direction="vertical" gap={1}>
@@ -178,29 +225,39 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
                 <Trans>Avg Cost / Share</Trans>
               </Text>
               <Text type="label" hasTabularNumbers>
-                {formatCurrency({
-                  value: data.averageCost,
-                  currencyCode: data.householdCurrency.code,
-                })}
+                {data.averageCost == null
+                  ? '—'
+                  : formatCurrencyWithPrivacyMode({
+                      value: data.averageCost,
+                      currencyCode: data.householdCurrency.code,
+                    })}
               </Text>
             </Stack>
             <Stack direction="vertical" gap={1}>
               <Text type="supporting">
-                <Trans>Unrealized Return</Trans>
+                <Trans>Unrealized return</Trans>
               </Text>
               <Text type="label" hasTabularNumbers>
-                {signedReturn}
+                {data.unrealizedReturn === null ? '—' : signedReturn}
               </Text>
             </Stack>
             <Stack direction="vertical" gap={1}>
               <Text type="supporting">
-                <Trans>Return %</Trans>
+                <Trans>Unrealized return %</Trans>
               </Text>
               <Text type="label" hasTabularNumbers>
-                {signedPercent}
+                {data.unrealizedReturnPercent === null ? '—' : signedPercent}
               </Text>
             </Stack>
           </Grid>
+          {editing && (
+            <Suspense fallback={<Text>{t`Loading holding…`}</Text>}>
+              <AverageCostEditor
+                investmentId={data.id}
+                onSaved={() => setEditing(false)}
+              />
+            </Suspense>
+          )}
         </Stack>
       </Stack>
     </Card>

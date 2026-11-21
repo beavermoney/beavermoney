@@ -560,6 +560,7 @@ function EditTransactionContent({
   if (lotDialogOpen && editingLot)
     return (
       <EditInvestmentLotDialog
+        isTransfer={transaction.category.name === 'Move'}
         key={editingLot.id}
         lotId={editingLot.id}
         currentAmount={editingLot.amount}

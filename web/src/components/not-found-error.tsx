@@ -1,3 +1,4 @@
+import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
@@ -10,6 +11,7 @@ import { SearchXIcon } from 'lucide-react'
 export function NotFoundError() {
   const { t } = useLingui()
   const navigate = useNavigate()
+  const goBack = useBackNavigation()
 
   return (
     <Stack direction="vertical" gap={4}>
@@ -29,7 +31,7 @@ export function NotFoundError() {
       </Stack>
       <Stack direction="vertical" gap={4}>
         <Button
-          onClick={() => navigate({ to: '..' })}
+          onClick={() => goBack({ to: '/' })}
           label={t`Go back`}
           variant={'secondary'}
         >

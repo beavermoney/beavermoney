@@ -52,23 +52,28 @@ export function InvestmentCard({
   const { isPrivacyModeEnabled } = usePrivacyMode()
 
   const hasShares = currency(data.amount).value !== 0
-  const unrealizedReturn = currency(data.unrealizedReturn, { precision: 8 })
-  const unrealizedReturnPercent = parseFloat(data.unrealizedReturnPercent) * 100
+  const unrealizedReturn = currency(data.unrealizedReturn ?? 0, {
+    precision: 8,
+  })
+  const unrealizedReturnPercent =
+    parseFloat(data.unrealizedReturnPercent ?? '0') * 100
   const isPositive = unrealizedReturn.value > 0
   const isNegative = unrealizedReturn.value < 0
 
   const formattedReturn = formatCurrencyWithPrivacyMode({
-    value: data.unrealizedReturn,
+    value: data.unrealizedReturn ?? '0',
     currencyCode: data.householdCurrency.code,
   })
   const formattedPercent = isPrivacyModeEnabled
     ? '•••'
     : ` ${Math.abs(unrealizedReturnPercent).toFixed(2)}%`
-  const signedPercent = isPositive
-    ? `+${formattedPercent}`
-    : isNegative
-      ? `−${formattedPercent}`
-      : formattedPercent
+  const signedPercent = isPrivacyModeEnabled
+    ? '•••'
+    : isPositive
+      ? `+${formattedPercent}`
+      : isNegative
+        ? `−${formattedPercent}`
+        : formattedPercent
 
   return (
     <RouterListItem
@@ -107,7 +112,14 @@ export function InvestmentCard({
           </Text>
           {showReturn && hasShares && (
             <Text type="supporting" hasTabularNumbers>
-              {formattedReturn} ({signedPercent})
+              {data.unrealizedReturn === null ? (
+                <Trans>Average cost needs review</Trans>
+              ) : (
+                <>
+                  {formattedReturn} (
+                  {data.unrealizedReturnPercent === null ? '—' : signedPercent})
+                </>
+              )}
             </Text>
           )}
         </VStack>

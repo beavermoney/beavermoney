@@ -16,7 +16,9 @@ import (
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -88,6 +90,36 @@ func (_c *HouseholdCreate) SetNillableIsDemo(v *bool) *HouseholdCreate {
 		_c.SetIsDemo(*v)
 	}
 	return _c
+}
+
+// AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
+func (_c *HouseholdCreate) AddSnapshotAccountIDs(ids ...int) *HouseholdCreate {
+	_c.mutation.AddSnapshotAccountIDs(ids...)
+	return _c
+}
+
+// AddSnapshotAccounts adds the "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_c *HouseholdCreate) AddSnapshotAccounts(v ...*SnapshotAccount) *HouseholdCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotAccountIDs(ids...)
+}
+
+// AddSnapshotInvestmentIDs adds the "snapshot_investments" edge to the SnapshotInvestment entity by IDs.
+func (_c *HouseholdCreate) AddSnapshotInvestmentIDs(ids ...int) *HouseholdCreate {
+	_c.mutation.AddSnapshotInvestmentIDs(ids...)
+	return _c
+}
+
+// AddSnapshotInvestments adds the "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_c *HouseholdCreate) AddSnapshotInvestments(v ...*SnapshotInvestment) *HouseholdCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotInvestmentIDs(ids...)
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
@@ -431,6 +463,38 @@ func (_c *HouseholdCreate) createSpec() (*Household, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsDemo(); ok {
 		_spec.SetField(household.FieldIsDemo, field.TypeBool, value)
 		_node.IsDemo = value
+	}
+	if nodes := _c.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SnapshotInvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

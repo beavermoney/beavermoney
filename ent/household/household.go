@@ -25,6 +25,10 @@ const (
 	FieldLocale = "locale"
 	// FieldIsDemo holds the string denoting the is_demo field in the database.
 	FieldIsDemo = "is_demo"
+	// EdgeSnapshotAccounts holds the string denoting the snapshot_accounts edge name in mutations.
+	EdgeSnapshotAccounts = "snapshot_accounts"
+	// EdgeSnapshotInvestments holds the string denoting the snapshot_investments edge name in mutations.
+	EdgeSnapshotInvestments = "snapshot_investments"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -55,6 +59,20 @@ const (
 	EdgeUserHouseholds = "user_households"
 	// Table holds the table name of the household in the database.
 	Table = "households"
+	// SnapshotAccountsTable is the table that holds the snapshot_accounts relation/edge.
+	SnapshotAccountsTable = "snapshot_accounts"
+	// SnapshotAccountsInverseTable is the table name for the SnapshotAccount entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotaccount" package.
+	SnapshotAccountsInverseTable = "snapshot_accounts"
+	// SnapshotAccountsColumn is the table column denoting the snapshot_accounts relation/edge.
+	SnapshotAccountsColumn = "household_id"
+	// SnapshotInvestmentsTable is the table that holds the snapshot_investments relation/edge.
+	SnapshotInvestmentsTable = "snapshot_investments"
+	// SnapshotInvestmentsInverseTable is the table name for the SnapshotInvestment entity.
+	// It exists in this package in order to avoid circular dependency with the "snapshotinvestment" package.
+	SnapshotInvestmentsInverseTable = "snapshot_investments"
+	// SnapshotInvestmentsColumn is the table column denoting the snapshot_investments relation/edge.
+	SnapshotInvestmentsColumn = "household_id"
 	// UsersTable is the table that holds the users relation/edge. The primary key declared below.
 	UsersTable = "user_households"
 	// UsersInverseTable is the table name for the User entity.
@@ -232,6 +250,34 @@ func ByLocale(opts ...sql.OrderTermOption) OrderOption {
 // ByIsDemo orders the results by the is_demo field.
 func ByIsDemo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsDemo, opts...).ToFunc()
+}
+
+// BySnapshotAccountsCount orders the results by snapshot_accounts count.
+func BySnapshotAccountsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotAccountsStep(), opts...)
+	}
+}
+
+// BySnapshotAccounts orders the results by snapshot_accounts terms.
+func BySnapshotAccounts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotAccountsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySnapshotInvestmentsCount orders the results by snapshot_investments count.
+func BySnapshotInvestmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSnapshotInvestmentsStep(), opts...)
+	}
+}
+
+// BySnapshotInvestments orders the results by snapshot_investments terms.
+func BySnapshotInvestments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSnapshotInvestmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
 }
 
 // ByUsersCount orders the results by users count.
@@ -428,6 +474,20 @@ func ByUserHouseholds(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUserHouseholdsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newSnapshotAccountsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotAccountsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotAccountsTable, SnapshotAccountsColumn),
+	)
+}
+func newSnapshotInvestmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SnapshotInvestmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SnapshotInvestmentsTable, SnapshotInvestmentsColumn),
+	)
 }
 func newUsersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

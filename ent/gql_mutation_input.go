@@ -48,23 +48,15 @@ func (c *AccountCreate) SetInput(i CreateAccountInput) *AccountCreate {
 
 // UpdateAccountInput represents a mutation input for updating accounts.
 type UpdateAccountInput struct {
-	Name          *string
-	ClearCategory bool
-	Category      *account.Category
-	ClearIcon     bool
-	Icon          *string
+	Name      *string
+	ClearIcon bool
+	Icon      *string
 }
 
 // Mutate applies the UpdateAccountInput on the AccountMutation builder.
 func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
 	if v := i.Name; v != nil {
 		m.SetName(*v)
-	}
-	if i.ClearCategory {
-		m.ClearCategory()
-	}
-	if v := i.Category; v != nil {
-		m.SetCategory(*v)
 	}
 	if i.ClearIcon {
 		m.ClearIcon()
@@ -336,21 +328,13 @@ func (c *InvestmentCreate) SetInput(i CreateInvestmentInput) *InvestmentCreate {
 
 // UpdateInvestmentInput represents a mutation input for updating investments.
 type UpdateInvestmentInput struct {
-	Name   *string
-	Type   *investment.Type
-	Symbol *string
+	Name *string
 }
 
 // Mutate applies the UpdateInvestmentInput on the InvestmentMutation builder.
 func (i *UpdateInvestmentInput) Mutate(m *InvestmentMutation) {
 	if v := i.Name; v != nil {
 		m.SetName(*v)
-	}
-	if v := i.Type; v != nil {
-		m.SetType(*v)
-	}
-	if v := i.Symbol; v != nil {
-		m.SetSymbol(*v)
 	}
 }
 

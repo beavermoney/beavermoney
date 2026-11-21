@@ -71,6 +71,26 @@ func HouseholdID(v int) predicate.Investment {
 	return predicate.Investment(sql.FieldEQ(FieldHouseholdID, v))
 }
 
+// Archived applies equality check predicate on the "archived" field. It's identical to ArchivedEQ.
+func Archived(v bool) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldArchived, v))
+}
+
+// ConfirmedAverageCost applies equality check predicate on the "confirmed_average_cost" field. It's identical to ConfirmedAverageCostEQ.
+func ConfirmedAverageCost(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldConfirmedAverageCost, v))
+}
+
+// AverageCostConfirmedAt applies equality check predicate on the "average_cost_confirmed_at" field. It's identical to AverageCostConfirmedAtEQ.
+func AverageCostConfirmedAt(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldAverageCostConfirmedAt, v))
+}
+
+// HoldingsChangedAt applies equality check predicate on the "holdings_changed_at" field. It's identical to HoldingsChangedAtEQ.
+func HoldingsChangedAt(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldHoldingsChangedAt, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Investment {
 	return predicate.Investment(sql.FieldEQ(FieldName, v))
@@ -209,6 +229,191 @@ func HouseholdIDIn(vs ...int) predicate.Investment {
 // HouseholdIDNotIn applies the NotIn predicate on the "household_id" field.
 func HouseholdIDNotIn(vs ...int) predicate.Investment {
 	return predicate.Investment(sql.FieldNotIn(FieldHouseholdID, vs...))
+}
+
+// ArchivedEQ applies the EQ predicate on the "archived" field.
+func ArchivedEQ(v bool) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldArchived, v))
+}
+
+// ArchivedNEQ applies the NEQ predicate on the "archived" field.
+func ArchivedNEQ(v bool) predicate.Investment {
+	return predicate.Investment(sql.FieldNEQ(FieldArchived, v))
+}
+
+// ConfirmedAverageCostEQ applies the EQ predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostEQ(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostNEQ applies the NEQ predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostNEQ(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldNEQ(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostIn applies the In predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostIn(vs ...string) predicate.Investment {
+	return predicate.Investment(sql.FieldIn(FieldConfirmedAverageCost, vs...))
+}
+
+// ConfirmedAverageCostNotIn applies the NotIn predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostNotIn(vs ...string) predicate.Investment {
+	return predicate.Investment(sql.FieldNotIn(FieldConfirmedAverageCost, vs...))
+}
+
+// ConfirmedAverageCostGT applies the GT predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostGT(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldGT(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostGTE applies the GTE predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostGTE(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldGTE(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostLT applies the LT predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostLT(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldLT(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostLTE applies the LTE predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostLTE(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldLTE(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostContains applies the Contains predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostContains(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldContains(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostHasPrefix applies the HasPrefix predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostHasPrefix(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldHasPrefix(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostHasSuffix applies the HasSuffix predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostHasSuffix(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldHasSuffix(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostIsNil applies the IsNil predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostIsNil() predicate.Investment {
+	return predicate.Investment(sql.FieldIsNull(FieldConfirmedAverageCost))
+}
+
+// ConfirmedAverageCostNotNil applies the NotNil predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostNotNil() predicate.Investment {
+	return predicate.Investment(sql.FieldNotNull(FieldConfirmedAverageCost))
+}
+
+// ConfirmedAverageCostEqualFold applies the EqualFold predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostEqualFold(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldEqualFold(FieldConfirmedAverageCost, v))
+}
+
+// ConfirmedAverageCostContainsFold applies the ContainsFold predicate on the "confirmed_average_cost" field.
+func ConfirmedAverageCostContainsFold(v string) predicate.Investment {
+	return predicate.Investment(sql.FieldContainsFold(FieldConfirmedAverageCost, v))
+}
+
+// AverageCostConfirmedAtEQ applies the EQ predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtEQ(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldAverageCostConfirmedAt, v))
+}
+
+// AverageCostConfirmedAtNEQ applies the NEQ predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtNEQ(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldNEQ(FieldAverageCostConfirmedAt, v))
+}
+
+// AverageCostConfirmedAtIn applies the In predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtIn(vs ...time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldIn(FieldAverageCostConfirmedAt, vs...))
+}
+
+// AverageCostConfirmedAtNotIn applies the NotIn predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtNotIn(vs ...time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldNotIn(FieldAverageCostConfirmedAt, vs...))
+}
+
+// AverageCostConfirmedAtGT applies the GT predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtGT(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldGT(FieldAverageCostConfirmedAt, v))
+}
+
+// AverageCostConfirmedAtGTE applies the GTE predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtGTE(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldGTE(FieldAverageCostConfirmedAt, v))
+}
+
+// AverageCostConfirmedAtLT applies the LT predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtLT(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldLT(FieldAverageCostConfirmedAt, v))
+}
+
+// AverageCostConfirmedAtLTE applies the LTE predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtLTE(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldLTE(FieldAverageCostConfirmedAt, v))
+}
+
+// AverageCostConfirmedAtIsNil applies the IsNil predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtIsNil() predicate.Investment {
+	return predicate.Investment(sql.FieldIsNull(FieldAverageCostConfirmedAt))
+}
+
+// AverageCostConfirmedAtNotNil applies the NotNil predicate on the "average_cost_confirmed_at" field.
+func AverageCostConfirmedAtNotNil() predicate.Investment {
+	return predicate.Investment(sql.FieldNotNull(FieldAverageCostConfirmedAt))
+}
+
+// HoldingsChangedAtEQ applies the EQ predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtEQ(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldEQ(FieldHoldingsChangedAt, v))
+}
+
+// HoldingsChangedAtNEQ applies the NEQ predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtNEQ(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldNEQ(FieldHoldingsChangedAt, v))
+}
+
+// HoldingsChangedAtIn applies the In predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtIn(vs ...time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldIn(FieldHoldingsChangedAt, vs...))
+}
+
+// HoldingsChangedAtNotIn applies the NotIn predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtNotIn(vs ...time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldNotIn(FieldHoldingsChangedAt, vs...))
+}
+
+// HoldingsChangedAtGT applies the GT predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtGT(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldGT(FieldHoldingsChangedAt, v))
+}
+
+// HoldingsChangedAtGTE applies the GTE predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtGTE(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldGTE(FieldHoldingsChangedAt, v))
+}
+
+// HoldingsChangedAtLT applies the LT predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtLT(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldLT(FieldHoldingsChangedAt, v))
+}
+
+// HoldingsChangedAtLTE applies the LTE predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtLTE(v time.Time) predicate.Investment {
+	return predicate.Investment(sql.FieldLTE(FieldHoldingsChangedAt, v))
+}
+
+// HoldingsChangedAtIsNil applies the IsNil predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtIsNil() predicate.Investment {
+	return predicate.Investment(sql.FieldIsNull(FieldHoldingsChangedAt))
+}
+
+// HoldingsChangedAtNotNil applies the NotNil predicate on the "holdings_changed_at" field.
+func HoldingsChangedAtNotNil() predicate.Investment {
+	return predicate.Investment(sql.FieldNotNull(FieldHoldingsChangedAt))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -539,6 +744,29 @@ func UserIDIn(vs ...int) predicate.Investment {
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
 func UserIDNotIn(vs ...int) predicate.Investment {
 	return predicate.Investment(sql.FieldNotIn(FieldUserID, vs...))
+}
+
+// HasSnapshotInvestments applies the HasEdge predicate on the "snapshot_investments" edge.
+func HasSnapshotInvestments() predicate.Investment {
+	return predicate.Investment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SnapshotInvestmentsTable, SnapshotInvestmentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSnapshotInvestmentsWith applies the HasEdge predicate on the "snapshot_investments" edge with a given conditions (other predicates).
+func HasSnapshotInvestmentsWith(preds ...predicate.SnapshotInvestment) predicate.Investment {
+	return predicate.Investment(func(s *sql.Selector) {
+		step := newSnapshotInvestmentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasAccount applies the HasEdge predicate on the "account" edge.

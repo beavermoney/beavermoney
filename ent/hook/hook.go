@@ -105,6 +105,18 @@ func (f SnapshotFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotMutation", m)
 }
 
+// The SnapshotAccountFunc type is an adapter to allow the use of ordinary
+// function as SnapshotAccount mutator.
+type SnapshotAccountFunc func(context.Context, *ent.SnapshotAccountMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SnapshotAccountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SnapshotAccountMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotAccountMutation", m)
+}
+
 // The SnapshotEntryFunc type is an adapter to allow the use of ordinary
 // function as SnapshotEntry mutator.
 type SnapshotEntryFunc func(context.Context, *ent.SnapshotEntryMutation) (ent.Value, error)
@@ -115,6 +127,18 @@ func (f SnapshotEntryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotEntryMutation", m)
+}
+
+// The SnapshotInvestmentFunc type is an adapter to allow the use of ordinary
+// function as SnapshotInvestment mutator.
+type SnapshotInvestmentFunc func(context.Context, *ent.SnapshotInvestmentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SnapshotInvestmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SnapshotInvestmentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SnapshotInvestmentMutation", m)
 }
 
 // The SnapshotRateFunc type is an adapter to allow the use of ordinary

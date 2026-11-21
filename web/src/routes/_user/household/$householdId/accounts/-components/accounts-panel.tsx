@@ -3,7 +3,7 @@ import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Card } from '@astryxdesign/core/Card'
-import { Collapsible } from '@astryxdesign/core/Collapsible'
+import { HistoryCollapsible } from '@/components/history-collapsible'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Heading } from '@astryxdesign/core/Heading'
@@ -13,11 +13,10 @@ import { Section } from '@astryxdesign/core/Section'
 import { Selector } from '@astryxdesign/core/Selector'
 import { Skeleton } from '@astryxdesign/core/Skeleton'
 import { Text } from '@astryxdesign/core/Text'
-import { TextInput } from '@astryxdesign/core/TextInput'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { groupBy } from 'lodash-es'
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useMemo } from 'react'
 import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -115,8 +114,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
     NodeType.Account,
   )
 
-  const [searchFilter, setSearchFilter] = useState('')
-
   const handleGroupByChange = (newGroupBy: string | null) => {
     if (!newGroupBy) return
     navigate({
@@ -177,16 +174,9 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
   }, [groupedAccounts, groupByOption])
 
   const visibleGroups = useMemo(() => {
-    const filterLower = searchFilter.trim().toLocaleLowerCase(household.locale)
-
     return groupKeys
       .map((key) => {
-        const accounts = groupedAccounts[key].filter(({ node }) => {
-          if (!filterLower) return true
-          return node.name
-            .toLocaleLowerCase(household.locale)
-            .includes(filterLower)
-        })
+        const accounts = [...groupedAccounts[key]]
 
         accounts.sort((accountA, accountB) => {
           switch (sortOption) {
@@ -223,7 +213,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         return { key, accounts }
       })
       .filter(({ accounts }) => accounts.length > 0)
-  }, [groupKeys, groupedAccounts, household.locale, searchFilter, sortOption])
+  }, [groupKeys, groupedAccounts, household.locale, sortOption])
 
   const displayOptions = useMemo(() => {
     let assets = currency(0)
@@ -310,12 +300,6 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
         <Section padding={6}>
           <VStack gap={4}>
             <HStack gap={3} vAlign="end" wrap="wrap">
-              <TextInput
-                label={t`Search accounts`}
-                placeholder={t`Search by name`}
-                value={searchFilter}
-                onChange={setSearchFilter}
-              />
               <Selector
                 label={t`Sort by`}
                 value={sortOption}
@@ -350,7 +334,8 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                     padding={0}
                     className="overflow-clip! border-0!"
                   >
-                    <Collapsible
+                    <HistoryCollapsible
+                      historyId={`accounts:${groupByOption}:${key}`}
                       defaultIsOpen
                       className="account-sticky-group"
                       chevronPosition="start"
@@ -391,18 +376,14 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                           />
                         ))}
                       </List>
-                    </Collapsible>
+                    </HistoryCollapsible>
                   </Card>
                 )
               })
             ) : (
               <EmptyState
                 title={t`No accounts found`}
-                description={
-                  searchFilter
-                    ? t`Try another account name.`
-                    : t`Add your first account to start tracking your balances.`
-                }
+                description={t`Add your first account to start tracking your balances.`}
               />
             )}
           </VStack>

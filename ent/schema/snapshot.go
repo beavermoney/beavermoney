@@ -22,6 +22,7 @@ type Snapshot struct {
 // Fields of the Snapshot.
 func (Snapshot) Fields() []ent.Field {
 	return []ent.Field{
+		field.Int("format_version").Default(0).Immutable().Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 		field.Text("note").
 			Optional().
 			Comment("Optional user note for this Snapshot"),
@@ -67,6 +68,7 @@ func (Snapshot) Indexes() []ent.Index {
 	return []ent.Index{
 		// Index for querying Snapshots by household and creation time
 		index.Fields("household_id", "create_time"),
+		index.Fields("household_id", "create_time").Unique().StorageKey("snapshot_household_capture_time").Annotations(entsql.IndexWhere("format_version = 1")),
 	}
 }
 

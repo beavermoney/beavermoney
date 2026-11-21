@@ -16,6 +16,7 @@ import {
   withPreparedTransactionRange,
 } from '../-data/transaction-range'
 import { TransactionsList } from './transactions-list'
+import { usePageScrollRestoration } from '@/hooks/use-page-scroll-restoration'
 
 const transactionsPanelFragment = graphql`
   fragment transactionsPanelFragment on Household
@@ -41,6 +42,7 @@ type TransactionsPanelProps = {
 }
 
 export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
+  const scrollRef = usePageScrollRestoration()
   const { t } = useLingui()
   const search = useSearch({
     from: '/_user/household/$householdId/transactions',
@@ -89,7 +91,11 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         </LayoutHeader>
       }
       content={
-        <LayoutContent className="sticky-list-scrollport">
+        <LayoutContent
+          ref={scrollRef}
+          data-scroll-restoration-id="page-content"
+          className="sticky-list-scrollport"
+        >
           <Stack direction="vertical" gap={6}>
             <FinancialSummaryCards fragmentRef={data.financialReport} />
             <TransactionsList

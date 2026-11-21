@@ -1,4 +1,5 @@
-import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { useBackNavigation } from './use-back-navigation'
+import { useRouterState } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { useCallback } from 'react'
 import {
@@ -11,7 +12,7 @@ import {
 } from './log-transaction-store'
 
 export function useLogTransaction() {
-  const navigate = useNavigate()
+  const goBack = useBackNavigation()
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
@@ -36,9 +37,9 @@ export function useLogTransaction() {
   const close = useCallback(() => {
     logTransactionStore.setState(() => ({ type: null }))
     if (pathname.endsWith('/transactions/new')) {
-      navigate({ to: '..', search: (prev) => prev, resetScroll: false })
+      goBack({ to: '..', search: (prev) => prev, resetScroll: false })
     }
-  }, [pathname, navigate])
+  }, [pathname, goBack])
 
   return {
     type,

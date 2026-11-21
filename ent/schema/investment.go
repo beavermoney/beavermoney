@@ -5,6 +5,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -21,9 +22,14 @@ type Investment struct {
 // Fields of the Investment.
 func (Investment) Fields() []ent.Field {
 	return []ent.Field{
+		field.Bool("archived").Default(false).Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+		field.String("confirmed_average_cost").SchemaType(map[string]string{dialect.Postgres: "numeric(36,18)"}).Optional().Nillable().Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+		field.Time("average_cost_confirmed_at").Optional().Nillable().Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+		field.Time("holdings_changed_at").Optional().Nillable().Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+
 		field.String("name"),
-		field.Enum("type").Values("stock", "crypto"),
-		field.String("symbol").NotEmpty(),
+		field.Enum("type").Values("stock", "crypto").Immutable(),
+		field.String("symbol").NotEmpty().Immutable(),
 
 		field.Float("amount").GoType(decimal.Decimal{}).
 			SchemaType(map[string]string{
@@ -71,6 +77,7 @@ func (Investment) Fields() []ent.Field {
 // Edges of the Investment.
 func (Investment) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("snapshot_investments", SnapshotInvestment.Type).StorageKey(edge.Symbol("snapshot_investments_investment_id_fkey")).Annotations(entgql.Skip()),
 		edge.From("account", Account.Type).
 			Field("account_id").
 			Ref("investments").
@@ -130,6 +137,10 @@ func (Investment) Indexes() []ent.Index {
 
 func (Investment) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entsql.Checks(map[string]string{
+			"archived_investment_empty":  "NOT archived OR amount = 0",
+			"manual_average_nonnegative": "confirmed_average_cost IS NULL OR confirmed_average_cost >= 0",
+		}),
 		entgql.QueryField(),
 		entgql.RelayConnection(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),

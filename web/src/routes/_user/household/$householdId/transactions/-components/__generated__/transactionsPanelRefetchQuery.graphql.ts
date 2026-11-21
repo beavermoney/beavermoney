@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<deefdb5fb0277d9a10e5a5c79804792c>>
+ * @generated SignedSource<<30611849c03bfffbf5556d4a8448a49c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -442,6 +442,33 @@ export type InvestmentWhereInput = {
   amountNEQ?: string | null | undefined;
   amountNotIn?: ReadonlyArray<string> | null | undefined;
   and?: ReadonlyArray<InvestmentWhereInput> | null | undefined;
+  archived?: boolean | null | undefined;
+  archivedNEQ?: boolean | null | undefined;
+  averageCostConfirmedAt?: any | null | undefined;
+  averageCostConfirmedAtGT?: any | null | undefined;
+  averageCostConfirmedAtGTE?: any | null | undefined;
+  averageCostConfirmedAtIn?: ReadonlyArray<any> | null | undefined;
+  averageCostConfirmedAtIsNil?: boolean | null | undefined;
+  averageCostConfirmedAtLT?: any | null | undefined;
+  averageCostConfirmedAtLTE?: any | null | undefined;
+  averageCostConfirmedAtNEQ?: any | null | undefined;
+  averageCostConfirmedAtNotIn?: ReadonlyArray<any> | null | undefined;
+  averageCostConfirmedAtNotNil?: boolean | null | undefined;
+  confirmedAverageCost?: string | null | undefined;
+  confirmedAverageCostContains?: string | null | undefined;
+  confirmedAverageCostContainsFold?: string | null | undefined;
+  confirmedAverageCostEqualFold?: string | null | undefined;
+  confirmedAverageCostGT?: string | null | undefined;
+  confirmedAverageCostGTE?: string | null | undefined;
+  confirmedAverageCostHasPrefix?: string | null | undefined;
+  confirmedAverageCostHasSuffix?: string | null | undefined;
+  confirmedAverageCostIn?: ReadonlyArray<string> | null | undefined;
+  confirmedAverageCostIsNil?: boolean | null | undefined;
+  confirmedAverageCostLT?: string | null | undefined;
+  confirmedAverageCostLTE?: string | null | undefined;
+  confirmedAverageCostNEQ?: string | null | undefined;
+  confirmedAverageCostNotIn?: ReadonlyArray<string> | null | undefined;
+  confirmedAverageCostNotNil?: boolean | null | undefined;
   createTime?: any | null | undefined;
   createTimeGT?: any | null | undefined;
   createTimeGTE?: any | null | undefined;
@@ -460,6 +487,16 @@ export type InvestmentWhereInput = {
   hasInvestmentLotsWith?: ReadonlyArray<InvestmentLotWhereInput> | null | undefined;
   hasUser?: boolean | null | undefined;
   hasUserWith?: ReadonlyArray<UserWhereInput> | null | undefined;
+  holdingsChangedAt?: any | null | undefined;
+  holdingsChangedAtGT?: any | null | undefined;
+  holdingsChangedAtGTE?: any | null | undefined;
+  holdingsChangedAtIn?: ReadonlyArray<any> | null | undefined;
+  holdingsChangedAtIsNil?: boolean | null | undefined;
+  holdingsChangedAtLT?: any | null | undefined;
+  holdingsChangedAtLTE?: any | null | undefined;
+  holdingsChangedAtNEQ?: any | null | undefined;
+  holdingsChangedAtNotIn?: ReadonlyArray<any> | null | undefined;
+  holdingsChangedAtNotNil?: boolean | null | undefined;
   householdCurrencyID?: string | null | undefined;
   householdCurrencyIDIn?: ReadonlyArray<string> | null | undefined;
   householdCurrencyIDNEQ?: string | null | undefined;
@@ -808,6 +845,14 @@ export type SnapshotWhereInput = {
   createTimeLTE?: any | null | undefined;
   createTimeNEQ?: any | null | undefined;
   createTimeNotIn?: ReadonlyArray<any> | null | undefined;
+  formatVersion?: number | null | undefined;
+  formatVersionGT?: number | null | undefined;
+  formatVersionGTE?: number | null | undefined;
+  formatVersionIn?: ReadonlyArray<number> | null | undefined;
+  formatVersionLT?: number | null | undefined;
+  formatVersionLTE?: number | null | undefined;
+  formatVersionNEQ?: number | null | undefined;
+  formatVersionNotIn?: ReadonlyArray<number> | null | undefined;
   hasHousehold?: boolean | null | undefined;
   hasHouseholdWith?: ReadonlyArray<HouseholdWhereInput> | null | undefined;
   hasSnapshotEntries?: boolean | null | undefined;

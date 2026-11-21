@@ -14,6 +14,7 @@ import (
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/transactionentry"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent"
@@ -29,6 +30,7 @@ type AccountQuery struct {
 	order                       []account.OrderOption
 	inters                      []Interceptor
 	predicates                  []predicate.Account
+	withSnapshotAccounts        *SnapshotAccountQuery
 	withHousehold               *HouseholdQuery
 	withHouseholdCurrency       *HouseholdCurrencyQuery
 	withUser                    *UserQuery
@@ -36,6 +38,7 @@ type AccountQuery struct {
 	withInvestments             *InvestmentQuery
 	loadTotal                   []func(context.Context, []*Account) error
 	modifiers                   []func(*sql.Selector)
+	withNamedSnapshotAccounts   map[string]*SnapshotAccountQuery
 	withNamedTransactionEntries map[string]*TransactionEntryQuery
 	withNamedInvestments        map[string]*InvestmentQuery
 	// intermediate query (i.e. traversal path).
@@ -72,6 +75,28 @@ func (_q *AccountQuery) Unique(unique bool) *AccountQuery {
 func (_q *AccountQuery) Order(o ...account.OrderOption) *AccountQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QuerySnapshotAccounts chains the current query on the "snapshot_accounts" edge.
+func (_q *AccountQuery) QuerySnapshotAccounts() *SnapshotAccountQuery {
+	query := (&SnapshotAccountClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, selector),
+			sqlgraph.To(snapshotaccount.Table, snapshotaccount.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, account.SnapshotAccountsTable, account.SnapshotAccountsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryHousehold chains the current query on the "household" edge.
@@ -376,6 +401,7 @@ func (_q *AccountQuery) Clone() *AccountQuery {
 		order:                  append([]account.OrderOption{}, _q.order...),
 		inters:                 append([]Interceptor{}, _q.inters...),
 		predicates:             append([]predicate.Account{}, _q.predicates...),
+		withSnapshotAccounts:   _q.withSnapshotAccounts.Clone(),
 		withHousehold:          _q.withHousehold.Clone(),
 		withHouseholdCurrency:  _q.withHouseholdCurrency.Clone(),
 		withUser:               _q.withUser.Clone(),
@@ -386,6 +412,17 @@ func (_q *AccountQuery) Clone() *AccountQuery {
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithSnapshotAccounts tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_accounts" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AccountQuery) WithSnapshotAccounts(opts ...func(*SnapshotAccountQuery)) *AccountQuery {
+	query := (&SnapshotAccountClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotAccounts = query
+	return _q
 }
 
 // WithHousehold tells the query-builder to eager-load the nodes that are connected to
@@ -527,7 +564,8 @@ func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	var (
 		nodes       = []*Account{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
+			_q.withSnapshotAccounts != nil,
 			_q.withHousehold != nil,
 			_q.withHouseholdCurrency != nil,
 			_q.withUser != nil,
@@ -555,6 +593,13 @@ func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := _q.withSnapshotAccounts; query != nil {
+		if err := _q.loadSnapshotAccounts(ctx, query, nodes,
+			func(n *Account) { n.Edges.SnapshotAccounts = []*SnapshotAccount{} },
+			func(n *Account, e *SnapshotAccount) { n.Edges.SnapshotAccounts = append(n.Edges.SnapshotAccounts, e) }); err != nil {
+			return nil, err
+		}
 	}
 	if query := _q.withHousehold; query != nil {
 		if err := _q.loadHousehold(ctx, query, nodes, nil,
@@ -590,6 +635,13 @@ func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 			return nil, err
 		}
 	}
+	for name, query := range _q.withNamedSnapshotAccounts {
+		if err := _q.loadSnapshotAccounts(ctx, query, nodes,
+			func(n *Account) { n.appendNamedSnapshotAccounts(name) },
+			func(n *Account, e *SnapshotAccount) { n.appendNamedSnapshotAccounts(name, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedTransactionEntries {
 		if err := _q.loadTransactionEntries(ctx, query, nodes,
 			func(n *Account) { n.appendNamedTransactionEntries(name) },
@@ -612,6 +664,36 @@ func (_q *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	return nodes, nil
 }
 
+func (_q *AccountQuery) loadSnapshotAccounts(ctx context.Context, query *SnapshotAccountQuery, nodes []*Account, init func(*Account), assign func(*Account, *SnapshotAccount)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Account)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotaccount.FieldAccountID)
+	}
+	query.Where(predicate.SnapshotAccount(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(account.SnapshotAccountsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AccountID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "account_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (_q *AccountQuery) loadHousehold(ctx context.Context, query *HouseholdQuery, nodes []*Account, init func(*Account), assign func(*Account, *Household)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Account)
@@ -860,6 +942,20 @@ func (_q *AccountQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *AccountQuery) Modify(modifiers ...func(s *sql.Selector)) *AccountSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedSnapshotAccounts tells the query-builder to eager-load the nodes that are connected to the "snapshot_accounts"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *AccountQuery) WithNamedSnapshotAccounts(name string, opts ...func(*SnapshotAccountQuery)) *AccountQuery {
+	query := (&SnapshotAccountClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotAccounts == nil {
+		_q.withNamedSnapshotAccounts = make(map[string]*SnapshotAccountQuery)
+	}
+	_q.withNamedSnapshotAccounts[name] = query
+	return _q
 }
 
 // WithNamedTransactionEntries tells the query-builder to eager-load the nodes that are connected to the "transaction_entries"

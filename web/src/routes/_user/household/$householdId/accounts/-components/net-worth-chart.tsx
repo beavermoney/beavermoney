@@ -1,4 +1,13 @@
+import {
+  reviewHistory,
+  parseReview,
+  selectedValue,
+  historyMeasure,
+  snapshotValue,
+} from '@/lib/review-history'
 import { useLingui } from '@lingui/react/macro'
+import { useHistoryState } from '@/hooks/use-history-state'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Trans } from '@lingui/react/macro'
 import { Heading } from '@astryxdesign/core/Heading'
 import { useCurrency } from '@/hooks/use-currency'
@@ -7,12 +16,14 @@ import { useHousehold } from '@/hooks/use-household'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { Button } from '@astryxdesign/core/Button'
-import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
+import { ComposerChipRail } from '@/components/transaction-composer/chip-rail'
 import { Spinner } from '@astryxdesign/core/Spinner'
 import { Stack } from '@astryxdesign/core/Stack'
+import { Card } from '@astryxdesign/core/Card'
+import { ACCOUNT_TYPE_ACCENT_CLASSES } from './account-ledger-utils'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
-import { useMemo, useState, useTransition } from 'react'
+import { useMemo, useTransition } from 'react'
 import {
   fetchQuery,
   graphql,
@@ -30,34 +41,7 @@ import {
 } from 'recharts'
 
 import { environment } from '@/environment'
-import type {
-  SnapshotWhereInput,
-  netWorthChartQuery,
-} from './__generated__/netWorthChartQuery.graphql'
-
-function buildRateMap(
-  rates: ReadonlyArray<{
-    readonly rate: string
-    readonly fromCurrency: { readonly code: string }
-    readonly toCurrency: { readonly code: string }
-  }>,
-): Map<string, number> {
-  return new Map(
-    rates.map((r) => [
-      `${r.fromCurrency.code}->${r.toCurrency.code}`,
-      parseFloat(r.rate),
-    ]),
-  )
-}
-
-function getRate(
-  rateMap: Map<string, number>,
-  fromCode: string,
-  toCode: string,
-): number {
-  if (fromCode === toCode) return 1
-  return rateMap.get(`${fromCode}->${toCode}`) ?? 1
-}
+import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.graphql'
 
 function niceStep(rawStep: number): number {
   const exponent = Math.floor(Math.log10(rawStep))
@@ -67,11 +51,51 @@ function niceStep(rawStep: number): number {
 }
 
 const NetWorthChartQuery = graphql`
-  query netWorthChartQuery($where: SnapshotWhereInput) {
+  query netWorthChartQuery($count: Int!) {
     household {
-      snapshots(first: 500, where: $where) {
+      snapshots(last: $count) {
+        pageInfo {
+          hasPreviousPage
+        }
         edges {
           node {
+            id
+            review {
+              version
+              complete
+              activeAccountIds
+              accounts {
+                accountId
+                icon
+                name
+                type
+                category
+                ownerId
+                ownerName
+                currency
+                cash
+                value
+                archived
+                holdings {
+                  investmentId
+                  name
+                  symbol
+                  currency
+                  quantity
+                  price
+                  value
+                  average
+                  confirmedAt
+                  needsReview
+                  archived
+                }
+              }
+              rates {
+                from
+                to
+                rate
+              }
+            }
             createTime
             snapshotEntries {
               userID
@@ -140,33 +164,58 @@ type SeriesKey =
   | 'netWorth'
   | 'liquidity'
   | 'investment'
-  // | 'property'
+  | 'property'
   | 'receivable'
   | 'liability'
   | 'asset'
 
-export function NetWorthChart() {
+export function NetWorthChart({
+  accountId,
+  investmentId,
+}: { accountId?: string; investmentId?: string } = {}) {
   const { t } = useLingui()
+  const isMobile = useIsMobile()
   const chartConfig = {
-    netWorth: { label: t`Net Worth`, color: 'var(--chart-net-worth)' },
+    netWorth: {
+      label: investmentId
+        ? t`Market value`
+        : accountId
+          ? t`Account value`
+          : t`Net Worth`,
+      color: 'var(--chart-net-worth)',
+    },
     asset: { label: t`Asset`, color: 'var(--chart-asset)' },
-    liquidity: { label: t`Liquidity`, color: 'var(--chart-liquidity)' },
-    investment: { label: t`Investment`, color: 'var(--chart-investment)' },
+    liquidity: {
+      label: investmentId ? t`Cost Basis` : accountId ? t`Cash` : t`Liquidity`,
+      color: 'var(--chart-liquidity)',
+    },
+    investment: {
+      label: investmentId ? t`Unrealized return` : t`Investment`,
+      color: 'var(--chart-investment)',
+    },
     property: { label: t`Property`, color: 'var(--chart-property)' },
     receivable: { label: t`Receivable`, color: 'var(--chart-receivable)' },
     liability: { label: t`Liability`, color: 'var(--chart-liability)' },
   }
 
   const SERIES: { key: SeriesKey; label: string; color: string }[] = [
-    { key: 'netWorth', label: t`Net Worth`, color: 'var(--chart-net-worth)' },
+    {
+      key: 'netWorth',
+      label: chartConfig.netWorth.label,
+      color: 'var(--chart-net-worth)',
+    },
     { key: 'asset', label: t`Asset`, color: 'var(--chart-asset)' },
-    { key: 'liquidity', label: t`Liquidity`, color: 'var(--chart-liquidity)' },
+    {
+      key: 'liquidity',
+      label: chartConfig.liquidity.label,
+      color: 'var(--chart-liquidity)',
+    },
     {
       key: 'investment',
-      label: t`Investment`,
+      label: chartConfig.investment.label,
       color: 'var(--chart-investment)',
     },
-    // { key: 'property', label: 'Property', color: 'var(--chart-property)' },
+    { key: 'property', label: t`Property`, color: 'var(--chart-property)' },
     {
       key: 'receivable',
       label: t`Receivable`,
@@ -181,27 +230,30 @@ export function NetWorthChart() {
   const { isPrivacyModeEnabled } = usePrivacyMode()
   const { viewUserIds } = useHouseholdViewScope()
 
-  const [duration, setDuration] = useState<Duration>('1M')
-  const [isPending, startTransition] = useTransition()
-  const [activeSeries, setActiveSeries] = useState<Set<SeriesKey>>(
-    new Set(['netWorth']),
+  const historyKey = `net-worth-chart:${investmentId ? `holding:${investmentId}` : accountId ? `account:${accountId}` : 'all'}`
+  const [count, setCount] = useHistoryState(`${historyKey}:count`, 500)
+  const [duration, setDuration] = useHistoryState<Duration>(
+    `${historyKey}:duration`,
+    '1M',
   )
+  const [isPending, startTransition] = useTransition()
+  const [seriesKeys, setSeriesKeys] = useHistoryState<SeriesKey[]>(
+    `${historyKey}:series`,
+    ['netWorth'],
+  )
+  const activeSeries = new Set(seriesKeys)
 
   const createTimeGTE = durationToDate(duration)
 
-  const where: SnapshotWhereInput = {
-    createTimeGTE,
-  }
-
   const data = useLazyLoadQuery<netWorthChartQuery>(NetWorthChartQuery, {
-    where,
+    count,
   })
 
   useSubscribeToInvalidationState([household.id], () => {
     fetchQuery<netWorthChartQuery>(
       environment,
       NetWorthChartQuery,
-      { where },
+      { count },
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })
@@ -209,70 +261,125 @@ export function NetWorthChart() {
   const displayCurrency = displayCurrencyCode
 
   const chartData = useMemo(() => {
-    return (data.household.snapshots.edges ?? [])
-      .flatMap((edge) => {
-        if (!edge?.node) return []
-        const snap = edge.node
-        const rateMap = buildRateMap(snap.snapshotRates ?? [])
-
-        const filteredEntries = (snap.snapshotEntries ?? []).filter((entry) =>
-          viewUserIds === null ? true : viewUserIds.includes(entry.userID),
-        )
-
-        const totals = filteredEntries.reduce(
-          (acc, entry) => {
-            const rate = getRate(
-              rateMap,
-              entry.householdCurrency.code,
+    const rows = (data.household.snapshots.edges ?? []).flatMap((e) =>
+      e?.node ? [e.node] : [],
+    )
+    const detailed = reviewHistory(rows)
+      .filter((p) => {
+        const doc = parseReview(p.row.review)
+        if (investmentId)
+          return doc?.accounts.some((a) =>
+            a.holdings.some((h) => String(h.id) === investmentId),
+          )
+        if (accountId)
+          return doc?.accounts.some((a) => String(a.id) === accountId)
+        return true
+      })
+      .map((p) => {
+        const scope = investmentId
+          ? `holding:${investmentId}`
+          : accountId
+            ? `account:${accountId}`
+            : 'all'
+        const value =
+          selectedValue(p, scope, displayCurrency, viewUserIds)?.toNumber() ??
+          NaN
+        const typeValue = (type: string) =>
+          p.accounts.some(
+            (o) =>
+              o.account.type === type &&
+              (viewUserIds === null ||
+                viewUserIds.includes(String(o.account.ownerId))),
+          )
+            ? (selectedValue(
+                p,
+                `type:${type}`,
+                displayCurrency,
+                viewUserIds,
+              )?.toNumber() ?? NaN)
+            : 0
+        const cash = accountId
+          ? (selectedValue(
+              p,
+              `cash:${accountId}`,
               displayCurrency,
-            )
-            return {
-              liquidity:
-                acc.liquidity +
-                currency(entry.liquidity, { precision: 8 }).value * rate,
-              investment:
-                acc.investment +
-                currency(entry.investment, { precision: 8 }).value * rate,
-              property:
-                acc.property +
-                currency(entry.property, { precision: 8 }).value * rate,
-              receivable:
-                acc.receivable +
-                currency(entry.receivable, { precision: 8 }).value * rate,
-              liability:
-                acc.liability +
-                currency(entry.liability, { precision: 8 }).value * rate,
-            }
-          },
-          {
-            liquidity: 0,
-            investment: 0,
-            property: 0,
-            receivable: 0,
-            liability: 0,
-          },
-        )
-
-        // `totals.liability` is negative (DB convention). Keep it negative for the
-        // net-worth sum, but flip to positive for the standalone liability series.
-        const asset =
-          totals.liquidity +
-          totals.investment +
-          totals.property +
-          totals.receivable
+              viewUserIds,
+            )?.toNumber() ?? NaN)
+          : typeValue('liquidity')
+        const gain = investmentId
+          ? (historyMeasure(
+              p,
+              scope,
+              'gain',
+              displayCurrency,
+              viewUserIds,
+            )?.toNumber() ?? NaN)
+          : 0
         return {
-          date: new Date(snap.createTime).getTime(),
-          netWorth: asset + totals.liability,
-          asset,
-          liquidity: totals.liquidity,
-          investment: totals.investment,
-          property: totals.property,
-          receivable: totals.receivable,
-          liability: -totals.liability,
+          date: new Date(p.row.createTime).getTime(),
+          netWorth: value,
+          asset:
+            accountId || investmentId ? value : value - typeValue('liability'),
+          liquidity: investmentId ? value - gain : cash,
+          investment: investmentId
+            ? gain
+            : accountId
+              ? value - cash
+              : typeValue('investment'),
+          property: typeValue('property'),
+          receivable: typeValue('receivable'),
+          liability: -typeValue('liability'),
         }
       })
+    const legacy = (data.household.snapshots.edges ?? []).flatMap((edge) => {
+      if (!edge?.node) return []
+      const snap = edge.node
+      if (snap.review || accountId || investmentId) return []
+      const categoryValue = (
+        type:
+          'liquidity' | 'investment' | 'property' | 'receivable' | 'liability',
+      ) =>
+        snapshotValue(snap, displayCurrency, viewUserIds, type)?.toNumber() ??
+        NaN
+      const totals = {
+        liquidity: categoryValue('liquidity'),
+        investment: categoryValue('investment'),
+        property: categoryValue('property'),
+        receivable: categoryValue('receivable'),
+        liability: categoryValue('liability'),
+      }
+
+      // `totals.liability` is negative (DB convention). Keep it negative for the
+      // net-worth sum, but flip to positive for the standalone liability series.
+      const asset =
+        totals.liquidity +
+        totals.investment +
+        totals.property +
+        totals.receivable
+      return {
+        date: new Date(snap.createTime).getTime(),
+        netWorth: asset + totals.liability,
+        asset,
+        liquidity: totals.liquidity,
+        investment: totals.investment,
+        property: totals.property,
+        receivable: totals.receivable,
+        liability: -totals.liability,
+      }
+    })
+    return [...legacy, ...detailed]
+      .filter(
+        (p) => !createTimeGTE || p.date >= new Date(createTimeGTE).getTime(),
+      )
       .sort((a, b) => a.date - b.date)
-  }, [data.household.snapshots.edges, displayCurrency, viewUserIds])
+  }, [
+    data.household.snapshots.edges,
+    displayCurrency,
+    viewUserIds,
+    accountId,
+    investmentId,
+    createTimeGTE,
+  ])
 
   const yDomain = useMemo((): [number, number] => {
     const values = chartData
@@ -286,7 +393,11 @@ export function NetWorthChart() {
     const rawRange =
       rawMax === rawMin ? Math.max(Math.abs(rawMax) * 0.1, 1) : rawMax - rawMin
     const step = niceStep(rawRange / 4)
-    return [Math.floor(rawMin / step) * step, Math.ceil(rawMax / step) * step]
+    const padding = rawMin === rawMax ? rawRange / 2 : 0
+    return [
+      Math.floor((rawMin - padding) / step) * step,
+      Math.ceil((rawMax + padding) / step) * step,
+    ]
   }, [chartData, activeSeries])
 
   const formatDate = (ts: number) => {
@@ -297,17 +408,27 @@ export function NetWorthChart() {
   }
 
   const toggleSeries = (key: SeriesKey) => {
-    setActiveSeries((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) {
-        next.delete(key)
-      } else {
-        next.add(key)
-      }
-      return next
-    })
+    setSeriesKeys((prev) =>
+      prev.includes(key)
+        ? prev.filter((value) => value !== key)
+        : [...prev, key],
+    )
   }
 
+  const incompleteHistory =
+    !accountId &&
+    !investmentId &&
+    reviewHistory(
+      (data.household.snapshots.edges ?? []).flatMap((e) =>
+        e?.node ? [e.node] : [],
+      ),
+    ).some(
+      (p) =>
+        !p.complete && (!createTimeGTE || p.row.createTime >= createTimeGTE),
+    )
+  const unavailableValues = chartData.some((p) =>
+    [...activeSeries].some((key) => !Number.isFinite(p[key])),
+  )
   const hasActiveSeries = activeSeries.size > 0
   const selectedSeries = activeSeries.size === 1 ? [...activeSeries][0] : null
 
@@ -340,7 +461,7 @@ export function NetWorthChart() {
       },
     })
 
-    return value > 0 ? `+${formatted}` : formatted
+    return !isPrivacyModeEnabled && value > 0 ? `+${formatted}` : formatted
   }
 
   const formatSignedPercent = (value: number | null) => {
@@ -355,32 +476,40 @@ export function NetWorthChart() {
   return (
     <Stack direction="vertical" gap={4}>
       <Heading level={2}>
-        <Trans>Account history</Trans>
+        {investmentId ? t`Investment history` : t`Account history`}
       </Heading>
       {chartData.length > 0 && (
-        <ScrollableArea axis="inline" label={t`Account history series`}>
-          <Stack direction="horizontal" gap={1}>
-            {SERIES.map((s) => {
-              const active = activeSeries.has(s.key)
-              return (
-                <Button
-                  key={s.key}
-                  onClick={() => toggleSeries(s.key)}
-                  label={String(s.label)}
-                  variant={active ? 'primary' : 'secondary'}
-                >
-                  {s.label}
-                </Button>
-              )
-            })}
-          </Stack>
-        </ScrollableArea>
+        <ComposerChipRail label={t`Account history series`}>
+          {SERIES.filter(
+            (s) =>
+              (!accountId && !investmentId) ||
+              ['netWorth', 'liquidity', 'investment'].includes(s.key),
+          ).map((s) => {
+            const active = activeSeries.has(s.key)
+            return (
+              <Button
+                key={s.key}
+                onClick={() => toggleSeries(s.key)}
+                label={String(s.label)}
+                variant={active ? 'primary' : 'secondary'}
+              >
+                {s.label}
+              </Button>
+            )
+          })}
+        </ComposerChipRail>
+      )}
+      {incompleteHistory && (
+        <Text color="secondary">{t`Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far.`}</Text>
+      )}
+      {unavailableValues && (
+        <Text color="secondary">{t`Some values are unavailable because the saved average cost or exchange rate is missing or needs review.`}</Text>
       )}
       {chartData.length === 0 ? (
         <Text color="secondary">
           <Trans>
-            No snapshots in this period. Choose a wider date range, or create a
-            snapshot from the toolbar to start tracking balances.
+            No snapshots in this period. Choose a wider date range, or visit
+            Journal to review your net worth and save a snapshot.
           </Trans>
         </Text>
       ) : hasActiveSeries ? (
@@ -441,23 +570,66 @@ export function NetWorthChart() {
               }
             />
             <Tooltip
-              contentStyle={{
-                background: 'var(--color-background-popover)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-container)',
+              // The plot starts after the Y axis. On narrow screens anchor to
+              // the full chart instead, so a readable tooltip can use that space.
+              position={isMobile ? { x: 0 } : undefined}
+              wrapperStyle={{
+                maxWidth: '100%',
+                ...(isMobile ? { width: '100%' } : {}),
               }}
-              labelFormatter={(label) =>
-                typeof label === 'number'
-                  ? new Date(label).toLocaleDateString(household.locale)
-                  : String(label)
-              }
-              formatter={(value, name) => [
-                formatCurrencyWithPrivacyMode({
-                  value: currency(Number(value)),
-                  currencyCode: displayCurrency,
-                }),
-                chartConfig[name as SeriesKey]?.label ?? String(name),
-              ]}
+              content={({ active, payload, label }) => {
+                if (!active || !payload?.length) return null
+                return (
+                  <Card padding={3} elevation="low" className="w-80 max-w-full">
+                    <Stack direction="vertical" gap={3} className="min-w-0">
+                      <Text type="supporting">
+                        {typeof label === 'number'
+                          ? new Date(label).toLocaleDateString(household.locale)
+                          : String(label)}
+                      </Text>
+                      {payload.map((entry) => {
+                        const key = String(entry.dataKey) as SeriesKey
+                        return (
+                          <Stack
+                            key={key}
+                            direction="horizontal"
+                            justify="between"
+                            align="center"
+                            gap={3}
+                          >
+                            <Stack
+                              direction="horizontal"
+                              align="center"
+                              gap={2}
+                              className="min-w-0 flex-1"
+                            >
+                              <Stack
+                                aria-hidden="true"
+                                className={`h-2 w-2 shrink-0 rounded-full ${key === 'netWorth' ? 'bg-chart-net-worth' : ACCOUNT_TYPE_ACCENT_CLASSES[key]}`}
+                              />
+                              <Text>
+                                {chartConfig[key]?.label ?? String(entry.name)}
+                              </Text>
+                            </Stack>
+                            <Text
+                              type="label"
+                              hasTabularNumbers
+                              justify="end"
+                              className="min-w-0 flex-1"
+                              wordBreak="break-word"
+                            >
+                              {formatCurrencyWithPrivacyMode({
+                                value: currency(Number(entry.value)),
+                                currencyCode: displayCurrency,
+                              })}
+                            </Text>
+                          </Stack>
+                        )
+                      })}
+                    </Stack>
+                  </Card>
+                )
+              }}
             />
 
             {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
@@ -477,19 +649,14 @@ export function NetWorthChart() {
           <Trans>Select at least one series to view chart</Trans>
         </Stack>
       )}
-      <Stack direction="horizontal" gap={2} align="center">
-        {singleSeriesStats && (
-          <Stack direction="vertical" gap={4}>
-            <Text>
-              {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)} (
-              {isPrivacyModeEnabled
-                ? '•••'
-                : formatSignedPercent(singleSeriesStats.percentChange)}
-              )
-            </Text>
-          </Stack>
-        )}
-        <Stack direction="horizontal" gap={0.5} align="center" justify="end">
+      <Stack
+        direction="horizontal"
+        gap={2}
+        align="center"
+        justify="between"
+        wrap="wrap"
+      >
+        <Stack direction="horizontal" gap={0.5} align="center" justify="start">
           {isPending && <Spinner />}
           {DURATIONS.map((d) => (
             <Button
@@ -511,7 +678,28 @@ export function NetWorthChart() {
             </Button>
           ))}
         </Stack>
+        {singleSeriesStats && (
+          <Stack
+            direction="vertical"
+            gap={4}
+            className="ml-auto text-right whitespace-nowrap"
+          >
+            <Text>
+              {formatSignedCurrencyShort(singleSeriesStats.absoluteChange)} (
+              {isPrivacyModeEnabled
+                ? '•••'
+                : formatSignedPercent(singleSeriesStats.percentChange)}
+              )
+            </Text>
+          </Stack>
+        )}
       </Stack>
+      {data.household.snapshots.pageInfo.hasPreviousPage && (
+        <Button
+          label={t`Load older reviews`}
+          onClick={() => setCount((n) => n + 500)}
+        />
+      )}
     </Stack>
   )
 }

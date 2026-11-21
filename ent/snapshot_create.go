@@ -59,6 +59,20 @@ func (_c *SnapshotCreate) SetNillableUpdateTime(v *time.Time) *SnapshotCreate {
 	return _c
 }
 
+// SetFormatVersion sets the "format_version" field.
+func (_c *SnapshotCreate) SetFormatVersion(v int) *SnapshotCreate {
+	_c.mutation.SetFormatVersion(v)
+	return _c
+}
+
+// SetNillableFormatVersion sets the "format_version" field if the given value is not nil.
+func (_c *SnapshotCreate) SetNillableFormatVersion(v *int) *SnapshotCreate {
+	if v != nil {
+		_c.SetFormatVersion(*v)
+	}
+	return _c
+}
+
 // SetNote sets the "note" field.
 func (_c *SnapshotCreate) SetNote(v string) *SnapshotCreate {
 	_c.mutation.SetNote(v)
@@ -159,6 +173,10 @@ func (_c *SnapshotCreate) defaults() error {
 		v := snapshot.DefaultUpdateTime()
 		_c.mutation.SetUpdateTime(v)
 	}
+	if _, ok := _c.mutation.FormatVersion(); !ok {
+		v := snapshot.DefaultFormatVersion
+		_c.mutation.SetFormatVersion(v)
+	}
 	return nil
 }
 
@@ -172,6 +190,9 @@ func (_c *SnapshotCreate) check() error {
 	}
 	if _, ok := _c.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "Snapshot.update_time"`)}
+	}
+	if _, ok := _c.mutation.FormatVersion(); !ok {
+		return &ValidationError{Name: "format_version", err: errors.New(`ent: missing required field "Snapshot.format_version"`)}
 	}
 	if len(_c.mutation.HouseholdIDs()) == 0 {
 		return &ValidationError{Name: "household", err: errors.New(`ent: missing required edge "Snapshot.household"`)}
@@ -210,6 +231,10 @@ func (_c *SnapshotCreate) createSpec() (*Snapshot, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdateTime(); ok {
 		_spec.SetField(snapshot.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
+	}
+	if value, ok := _c.mutation.FormatVersion(); ok {
+		_spec.SetField(snapshot.FieldFormatVersion, field.TypeInt, value)
+		_node.FormatVersion = value
 	}
 	if value, ok := _c.mutation.Note(); ok {
 		_spec.SetField(snapshot.FieldNote, field.TypeString, value)
@@ -362,6 +387,9 @@ func (u *SnapshotUpsertOne) UpdateNewValues() *SnapshotUpsertOne {
 		}
 		if _, exists := u.create.mutation.CreateTime(); exists {
 			s.SetIgnore(snapshot.FieldCreateTime)
+		}
+		if _, exists := u.create.mutation.FormatVersion(); exists {
+			s.SetIgnore(snapshot.FieldFormatVersion)
 		}
 	}))
 	return u
@@ -610,6 +638,9 @@ func (u *SnapshotUpsertBulk) UpdateNewValues() *SnapshotUpsertBulk {
 			}
 			if _, exists := b.mutation.CreateTime(); exists {
 				s.SetIgnore(snapshot.FieldCreateTime)
+			}
+			if _, exists := b.mutation.FormatVersion(); exists {
+				s.SetIgnore(snapshot.FieldFormatVersion)
 			}
 		}
 	}))

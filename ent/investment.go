@@ -28,6 +28,14 @@ type Investment struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// HouseholdID holds the value of the "household_id" field.
 	HouseholdID int `json:"household_id,omitempty"`
+	// Archived holds the value of the "archived" field.
+	Archived bool `json:"archived,omitempty"`
+	// ConfirmedAverageCost holds the value of the "confirmed_average_cost" field.
+	ConfirmedAverageCost *string `json:"confirmed_average_cost,omitempty"`
+	// AverageCostConfirmedAt holds the value of the "average_cost_confirmed_at" field.
+	AverageCostConfirmedAt *time.Time `json:"average_cost_confirmed_at,omitempty"`
+	// HoldingsChangedAt holds the value of the "holdings_changed_at" field.
+	HoldingsChangedAt *time.Time `json:"holdings_changed_at,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Type holds the value of the "type" field.
@@ -54,6 +62,8 @@ type Investment struct {
 
 // InvestmentEdges holds the relations/edges for other nodes in the graph.
 type InvestmentEdges struct {
+	// SnapshotInvestments holds the value of the snapshot_investments edge.
+	SnapshotInvestments []*SnapshotInvestment `json:"snapshot_investments,omitempty"`
 	// Account holds the value of the account edge.
 	Account *Account `json:"account,omitempty"`
 	// Household holds the value of the household edge.
@@ -66,11 +76,21 @@ type InvestmentEdges struct {
 	InvestmentLots []*InvestmentLot `json:"investment_lots,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 	// totalCount holds the count of the edges above.
 	totalCount [5]map[string]int
 
-	namedInvestmentLots map[string][]*InvestmentLot
+	namedSnapshotInvestments map[string][]*SnapshotInvestment
+	namedInvestmentLots      map[string][]*InvestmentLot
+}
+
+// SnapshotInvestmentsOrErr returns the SnapshotInvestments value or an error if the edge
+// was not loaded in eager-loading.
+func (e InvestmentEdges) SnapshotInvestmentsOrErr() ([]*SnapshotInvestment, error) {
+	if e.loadedTypes[0] {
+		return e.SnapshotInvestments, nil
+	}
+	return nil, &NotLoadedError{edge: "snapshot_investments"}
 }
 
 // AccountOrErr returns the Account value or an error if the edge
@@ -78,7 +98,7 @@ type InvestmentEdges struct {
 func (e InvestmentEdges) AccountOrErr() (*Account, error) {
 	if e.Account != nil {
 		return e.Account, nil
-	} else if e.loadedTypes[0] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: account.Label}
 	}
 	return nil, &NotLoadedError{edge: "account"}
@@ -89,7 +109,7 @@ func (e InvestmentEdges) AccountOrErr() (*Account, error) {
 func (e InvestmentEdges) HouseholdOrErr() (*Household, error) {
 	if e.Household != nil {
 		return e.Household, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: household.Label}
 	}
 	return nil, &NotLoadedError{edge: "household"}
@@ -100,7 +120,7 @@ func (e InvestmentEdges) HouseholdOrErr() (*Household, error) {
 func (e InvestmentEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
 	if e.HouseholdCurrency != nil {
 		return e.HouseholdCurrency, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: householdcurrency.Label}
 	}
 	return nil, &NotLoadedError{edge: "household_currency"}
@@ -111,7 +131,7 @@ func (e InvestmentEdges) HouseholdCurrencyOrErr() (*HouseholdCurrency, error) {
 func (e InvestmentEdges) UserOrErr() (*User, error) {
 	if e.User != nil {
 		return e.User, nil
-	} else if e.loadedTypes[3] {
+	} else if e.loadedTypes[4] {
 		return nil, &NotFoundError{label: user.Label}
 	}
 	return nil, &NotLoadedError{edge: "user"}
@@ -120,7 +140,7 @@ func (e InvestmentEdges) UserOrErr() (*User, error) {
 // InvestmentLotsOrErr returns the InvestmentLots value or an error if the edge
 // was not loaded in eager-loading.
 func (e InvestmentEdges) InvestmentLotsOrErr() ([]*InvestmentLot, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.InvestmentLots, nil
 	}
 	return nil, &NotLoadedError{edge: "investment_lots"}
@@ -133,11 +153,13 @@ func (*Investment) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case investment.FieldAmount, investment.FieldQuote, investment.FieldValue:
 			values[i] = new(decimal.Decimal)
+		case investment.FieldArchived:
+			values[i] = new(sql.NullBool)
 		case investment.FieldID, investment.FieldHouseholdID, investment.FieldAccountID, investment.FieldHouseholdCurrencyID, investment.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case investment.FieldName, investment.FieldType, investment.FieldSymbol:
+		case investment.FieldConfirmedAverageCost, investment.FieldName, investment.FieldType, investment.FieldSymbol:
 			values[i] = new(sql.NullString)
-		case investment.FieldCreateTime, investment.FieldUpdateTime:
+		case investment.FieldCreateTime, investment.FieldUpdateTime, investment.FieldAverageCostConfirmedAt, investment.FieldHoldingsChangedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -177,6 +199,33 @@ func (_m *Investment) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field household_id", values[i])
 			} else if value.Valid {
 				_m.HouseholdID = int(value.Int64)
+			}
+		case investment.FieldArchived:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field archived", values[i])
+			} else if value.Valid {
+				_m.Archived = value.Bool
+			}
+		case investment.FieldConfirmedAverageCost:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field confirmed_average_cost", values[i])
+			} else if value.Valid {
+				_m.ConfirmedAverageCost = new(string)
+				*_m.ConfirmedAverageCost = value.String
+			}
+		case investment.FieldAverageCostConfirmedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field average_cost_confirmed_at", values[i])
+			} else if value.Valid {
+				_m.AverageCostConfirmedAt = new(time.Time)
+				*_m.AverageCostConfirmedAt = value.Time
+			}
+		case investment.FieldHoldingsChangedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field holdings_changed_at", values[i])
+			} else if value.Valid {
+				_m.HoldingsChangedAt = new(time.Time)
+				*_m.HoldingsChangedAt = value.Time
 			}
 		case investment.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -245,6 +294,11 @@ func (_m *Investment) GetValue(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
+// QuerySnapshotInvestments queries the "snapshot_investments" edge of the Investment entity.
+func (_m *Investment) QuerySnapshotInvestments() *SnapshotInvestmentQuery {
+	return NewInvestmentClient(_m.config).QuerySnapshotInvestments(_m)
+}
+
 // QueryAccount queries the "account" edge of the Investment entity.
 func (_m *Investment) QueryAccount() *AccountQuery {
 	return NewInvestmentClient(_m.config).QueryAccount(_m)
@@ -302,6 +356,24 @@ func (_m *Investment) String() string {
 	builder.WriteString("household_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HouseholdID))
 	builder.WriteString(", ")
+	builder.WriteString("archived=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Archived))
+	builder.WriteString(", ")
+	if v := _m.ConfirmedAverageCost; v != nil {
+		builder.WriteString("confirmed_average_cost=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.AverageCostConfirmedAt; v != nil {
+		builder.WriteString("average_cost_confirmed_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.HoldingsChangedAt; v != nil {
+		builder.WriteString("holdings_changed_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
@@ -330,6 +402,30 @@ func (_m *Investment) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.UserID))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedSnapshotInvestments returns the SnapshotInvestments named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Investment) NamedSnapshotInvestments(name string) ([]*SnapshotInvestment, error) {
+	if _m.Edges.namedSnapshotInvestments == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSnapshotInvestments[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Investment) appendNamedSnapshotInvestments(name string, edges ...*SnapshotInvestment) {
+	if _m.Edges.namedSnapshotInvestments == nil {
+		_m.Edges.namedSnapshotInvestments = make(map[string][]*SnapshotInvestment)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSnapshotInvestments[name] = []*SnapshotInvestment{}
+	} else {
+		_m.Edges.namedSnapshotInvestments[name] = append(_m.Edges.namedSnapshotInvestments[name], edges...)
+	}
 }
 
 // NamedInvestmentLots returns the InvestmentLots named value or an error if the edge was not

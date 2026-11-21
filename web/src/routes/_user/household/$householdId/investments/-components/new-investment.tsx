@@ -150,7 +150,7 @@ export function NewInvestment({
       .max(32, t`Investment symbol must be at most 32 characters.`),
     type: z.literal(['stock', 'crypto']),
     amount: z.number(),
-    costBasis: z.number(),
+    costBasis: z.number().nonnegative(t`Average cost cannot be negative`),
     accountId: z.string(),
   })
 
@@ -673,7 +673,7 @@ export function NewInvestment({
                       data-invalid={isInvalid}
                     >
                       <CurrencyInput
-                        aria-label={t`Cost Basis`}
+                        aria-label={t`Average cost per share`}
                         id={field.name}
                         name={field.name}
                         placeholder={t`Please enter a number`}

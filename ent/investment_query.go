@@ -15,6 +15,7 @@ import (
 	"beavermoney.app/ent/investment"
 	"beavermoney.app/ent/investmentlot"
 	"beavermoney.app/ent/predicate"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -25,18 +26,20 @@ import (
 // InvestmentQuery is the builder for querying Investment entities.
 type InvestmentQuery struct {
 	config
-	ctx                     *QueryContext
-	order                   []investment.OrderOption
-	inters                  []Interceptor
-	predicates              []predicate.Investment
-	withAccount             *AccountQuery
-	withHousehold           *HouseholdQuery
-	withHouseholdCurrency   *HouseholdCurrencyQuery
-	withUser                *UserQuery
-	withInvestmentLots      *InvestmentLotQuery
-	loadTotal               []func(context.Context, []*Investment) error
-	modifiers               []func(*sql.Selector)
-	withNamedInvestmentLots map[string]*InvestmentLotQuery
+	ctx                          *QueryContext
+	order                        []investment.OrderOption
+	inters                       []Interceptor
+	predicates                   []predicate.Investment
+	withSnapshotInvestments      *SnapshotInvestmentQuery
+	withAccount                  *AccountQuery
+	withHousehold                *HouseholdQuery
+	withHouseholdCurrency        *HouseholdCurrencyQuery
+	withUser                     *UserQuery
+	withInvestmentLots           *InvestmentLotQuery
+	loadTotal                    []func(context.Context, []*Investment) error
+	modifiers                    []func(*sql.Selector)
+	withNamedSnapshotInvestments map[string]*SnapshotInvestmentQuery
+	withNamedInvestmentLots      map[string]*InvestmentLotQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -71,6 +74,28 @@ func (_q *InvestmentQuery) Unique(unique bool) *InvestmentQuery {
 func (_q *InvestmentQuery) Order(o ...investment.OrderOption) *InvestmentQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QuerySnapshotInvestments chains the current query on the "snapshot_investments" edge.
+func (_q *InvestmentQuery) QuerySnapshotInvestments() *SnapshotInvestmentQuery {
+	query := (&SnapshotInvestmentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(investment.Table, investment.FieldID, selector),
+			sqlgraph.To(snapshotinvestment.Table, snapshotinvestment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, investment.SnapshotInvestmentsTable, investment.SnapshotInvestmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryAccount chains the current query on the "account" edge.
@@ -370,21 +395,33 @@ func (_q *InvestmentQuery) Clone() *InvestmentQuery {
 		return nil
 	}
 	return &InvestmentQuery{
-		config:                _q.config,
-		ctx:                   _q.ctx.Clone(),
-		order:                 append([]investment.OrderOption{}, _q.order...),
-		inters:                append([]Interceptor{}, _q.inters...),
-		predicates:            append([]predicate.Investment{}, _q.predicates...),
-		withAccount:           _q.withAccount.Clone(),
-		withHousehold:         _q.withHousehold.Clone(),
-		withHouseholdCurrency: _q.withHouseholdCurrency.Clone(),
-		withUser:              _q.withUser.Clone(),
-		withInvestmentLots:    _q.withInvestmentLots.Clone(),
+		config:                  _q.config,
+		ctx:                     _q.ctx.Clone(),
+		order:                   append([]investment.OrderOption{}, _q.order...),
+		inters:                  append([]Interceptor{}, _q.inters...),
+		predicates:              append([]predicate.Investment{}, _q.predicates...),
+		withSnapshotInvestments: _q.withSnapshotInvestments.Clone(),
+		withAccount:             _q.withAccount.Clone(),
+		withHousehold:           _q.withHousehold.Clone(),
+		withHouseholdCurrency:   _q.withHouseholdCurrency.Clone(),
+		withUser:                _q.withUser.Clone(),
+		withInvestmentLots:      _q.withInvestmentLots.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithSnapshotInvestments tells the query-builder to eager-load the nodes that are connected to
+// the "snapshot_investments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *InvestmentQuery) WithSnapshotInvestments(opts ...func(*SnapshotInvestmentQuery)) *InvestmentQuery {
+	query := (&SnapshotInvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSnapshotInvestments = query
+	return _q
 }
 
 // WithAccount tells the query-builder to eager-load the nodes that are connected to
@@ -526,7 +563,8 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	var (
 		nodes       = []*Investment{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
+			_q.withSnapshotInvestments != nil,
 			_q.withAccount != nil,
 			_q.withHousehold != nil,
 			_q.withHouseholdCurrency != nil,
@@ -554,6 +592,15 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := _q.withSnapshotInvestments; query != nil {
+		if err := _q.loadSnapshotInvestments(ctx, query, nodes,
+			func(n *Investment) { n.Edges.SnapshotInvestments = []*SnapshotInvestment{} },
+			func(n *Investment, e *SnapshotInvestment) {
+				n.Edges.SnapshotInvestments = append(n.Edges.SnapshotInvestments, e)
+			}); err != nil {
+			return nil, err
+		}
 	}
 	if query := _q.withAccount; query != nil {
 		if err := _q.loadAccount(ctx, query, nodes, nil,
@@ -586,6 +633,13 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 			return nil, err
 		}
 	}
+	for name, query := range _q.withNamedSnapshotInvestments {
+		if err := _q.loadSnapshotInvestments(ctx, query, nodes,
+			func(n *Investment) { n.appendNamedSnapshotInvestments(name) },
+			func(n *Investment, e *SnapshotInvestment) { n.appendNamedSnapshotInvestments(name, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedInvestmentLots {
 		if err := _q.loadInvestmentLots(ctx, query, nodes,
 			func(n *Investment) { n.appendNamedInvestmentLots(name) },
@@ -601,6 +655,36 @@ func (_q *InvestmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	return nodes, nil
 }
 
+func (_q *InvestmentQuery) loadSnapshotInvestments(ctx context.Context, query *SnapshotInvestmentQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *SnapshotInvestment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Investment)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(snapshotinvestment.FieldInvestmentID)
+	}
+	query.Where(predicate.SnapshotInvestment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(investment.SnapshotInvestmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.InvestmentID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "investment_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (_q *InvestmentQuery) loadAccount(ctx context.Context, query *AccountQuery, nodes []*Investment, init func(*Investment), assign func(*Investment, *Account)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Investment)
@@ -851,6 +935,20 @@ func (_q *InvestmentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *InvestmentQuery) Modify(modifiers ...func(s *sql.Selector)) *InvestmentSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedSnapshotInvestments tells the query-builder to eager-load the nodes that are connected to the "snapshot_investments"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *InvestmentQuery) WithNamedSnapshotInvestments(name string, opts ...func(*SnapshotInvestmentQuery)) *InvestmentQuery {
+	query := (&SnapshotInvestmentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSnapshotInvestments == nil {
+		_q.withNamedSnapshotInvestments = make(map[string]*SnapshotInvestmentQuery)
+	}
+	_q.withNamedSnapshotInvestments[name] = query
+	return _q
 }
 
 // WithNamedInvestmentLots tells the query-builder to eager-load the nodes that are connected to the "investment_lots"

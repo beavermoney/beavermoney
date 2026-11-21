@@ -70,6 +70,11 @@ func UpdateTime(v time.Time) predicate.Snapshot {
 	return predicate.Snapshot(sql.FieldEQ(FieldUpdateTime, v))
 }
 
+// FormatVersion applies equality check predicate on the "format_version" field. It's identical to FormatVersionEQ.
+func FormatVersion(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldEQ(FieldFormatVersion, v))
+}
+
 // Note applies equality check predicate on the "note" field. It's identical to NoteEQ.
 func Note(v string) predicate.Snapshot {
 	return predicate.Snapshot(sql.FieldEQ(FieldNote, v))
@@ -173,6 +178,46 @@ func UpdateTimeLT(v time.Time) predicate.Snapshot {
 // UpdateTimeLTE applies the LTE predicate on the "update_time" field.
 func UpdateTimeLTE(v time.Time) predicate.Snapshot {
 	return predicate.Snapshot(sql.FieldLTE(FieldUpdateTime, v))
+}
+
+// FormatVersionEQ applies the EQ predicate on the "format_version" field.
+func FormatVersionEQ(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldEQ(FieldFormatVersion, v))
+}
+
+// FormatVersionNEQ applies the NEQ predicate on the "format_version" field.
+func FormatVersionNEQ(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldNEQ(FieldFormatVersion, v))
+}
+
+// FormatVersionIn applies the In predicate on the "format_version" field.
+func FormatVersionIn(vs ...int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldIn(FieldFormatVersion, vs...))
+}
+
+// FormatVersionNotIn applies the NotIn predicate on the "format_version" field.
+func FormatVersionNotIn(vs ...int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldNotIn(FieldFormatVersion, vs...))
+}
+
+// FormatVersionGT applies the GT predicate on the "format_version" field.
+func FormatVersionGT(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldGT(FieldFormatVersion, v))
+}
+
+// FormatVersionGTE applies the GTE predicate on the "format_version" field.
+func FormatVersionGTE(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldGTE(FieldFormatVersion, v))
+}
+
+// FormatVersionLT applies the LT predicate on the "format_version" field.
+func FormatVersionLT(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldLT(FieldFormatVersion, v))
+}
+
+// FormatVersionLTE applies the LTE predicate on the "format_version" field.
+func FormatVersionLTE(v int) predicate.Snapshot {
+	return predicate.Snapshot(sql.FieldLTE(FieldFormatVersion, v))
 }
 
 // NoteEQ applies the EQ predicate on the "note" field.

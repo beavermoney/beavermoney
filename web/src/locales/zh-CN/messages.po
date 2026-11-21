@@ -53,6 +53,10 @@ msgstr "{0} 已更新！"
 msgid "{0}, user menu"
 msgstr "{0}，用户菜单"
 
+#: src/components/review-journal.tsx
+msgid "{changeAmount} since last snapshot"
+msgstr "较上次快照变化 {changeAmount}"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscription-card.tsx
 msgid "{count, plural, one {Every month} other {Every # months}}"
 msgstr "{count, plural, other {每 # 个月}}"
@@ -80,6 +84,10 @@ msgstr "{name} 已取消归档。"
 #: src/routes/_user/household/$householdId/categories/-components/category-card.tsx
 msgid "{transactionCount, plural, one {# transaction} other {# transactions}}"
 msgstr "{transactionCount, plural, other {# 笔交易}}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "+{otherCount} more"
+msgstr "还有 {otherCount} 项"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "1 2 3 on the top row of the transaction number pad. Saved automatically on this device."
@@ -126,6 +134,14 @@ msgstr "用心记录，从容掌握。"
 msgid "A little more clarity.<0/>Starting today."
 msgstr "让收支更清楚，<0/>就从今天开始。"
 
+#: src/components/review-journal.tsx
+msgid "A moment to check in. No note added."
+msgstr "一次财务回顾，尚未添加记录。"
+
+#: src/components/review-journal.tsx
+msgid "A record of what you reviewed, and what was happening in your life."
+msgstr "记录每次财务回顾，也记录当时的生活。"
+
 #: src/routes/index.tsx
 msgid "A shared life. A shared perspective."
 msgstr "共同生活，一起掌握。"
@@ -166,10 +182,6 @@ msgid "Account data refreshed."
 msgstr "账户数据已刷新。"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Account deleted!"
-msgstr "账户已删除！"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "Account Detail"
 msgstr "账户详情"
 
@@ -207,6 +219,10 @@ msgstr "账户设置"
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
 msgid "Account type"
 msgstr "账户类型"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Account value"
+msgstr "账户价值"
 
 #: src/components/app-sidebar.tsx
 #: src/components/command-menu.tsx
@@ -313,6 +329,10 @@ msgstr "转入金额"
 msgid "Amount to debit"
 msgstr "转出金额"
 
+#: src/components/review-journal.tsx
+msgid "Amounts use the exchange rates saved with this review."
+msgstr "金额按本次回顾保存的汇率换算。"
+
 #: src/components/generic-error.tsx
 msgid "An unexpected error occurred. Please try again."
 msgstr "发生意外错误，请重试。"
@@ -337,9 +357,17 @@ msgstr "归档账户"
 msgid "Archive Account"
 msgstr "归档账户"
 
+#: src/components/investment-archive-action.tsx
+msgid "Archive investment"
+msgstr "归档投资"
+
 #: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
 msgid "Archived accounts"
 msgstr "已归档账户"
+
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Archived investments"
+msgstr "已归档投资"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 msgid "Archiving..."
@@ -356,6 +384,34 @@ msgstr "资产"
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
 msgid "At least one admin must remain."
 msgstr "必须保留至少一位管理员。"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Average cost cannot be negative"
+msgstr "平均成本不能为负数"
+
+#: src/components/average-cost-editor.tsx
+msgid "Average cost confirmed"
+msgstr "平均成本已确认"
+
+#: src/components/average-cost-editor.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Average cost needs review"
+msgstr "平均成本待确认"
+
+#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+msgid "Average cost per share"
+msgstr "每股平均成本"
+
+#. placeholder {0}: inv.householdCurrency.code
+#: src/components/average-cost-editor.tsx
+msgid "Average cost per share · {0}"
+msgstr "每股平均成本 · {0}"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Average costs are up to date for all holdings."
+msgstr "所有持仓的平均成本均已确认。"
 
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Avg Cost / Share"
@@ -460,6 +516,7 @@ msgid "cash"
 msgstr "现金"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 msgid "Cash"
 msgstr "现金"
@@ -488,7 +545,6 @@ msgstr "分类"
 msgid "CATEGORY"
 msgstr "分类"
 
-#: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 msgid "Category (optional)"
 msgstr "分类（可选）"
@@ -514,6 +570,10 @@ msgstr "未找到分类"
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Change account"
 msgstr "更换账户"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Change since last snapshot"
+msgstr "较上次快照的变化"
 
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
 msgid "Change source"
@@ -578,6 +638,8 @@ msgstr "选择转出账户"
 msgid "Choose your investment and enter its details."
 msgstr "选择投资并填写详细信息。"
 
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "Close"
@@ -595,6 +657,18 @@ msgstr "星巴克咖啡"
 msgid "Columns"
 msgstr "显示列"
 
+#: src/components/average-cost-editor.tsx
+msgid "Confirm average cost"
+msgstr "确认平均成本"
+
+#: src/components/average-cost-prompt.tsx
+msgid "Confirm the average cost for the shares you still hold. You can also do this later from the holding or your next review."
+msgstr "请确认剩余持仓的平均成本。你也可以稍后在持仓详情或下次回顾时更新。"
+
+#: src/components/average-cost-editor.tsx
+msgid "Confirm the average for all remaining shares"
+msgstr "确认全部剩余股份的平均成本"
+
 #: src/components/login-form.tsx
 msgid "Continue with Google"
 msgstr "使用 Google 继续"
@@ -607,7 +681,7 @@ msgstr "费用从高到低"
 msgid "Cost (Low to High)"
 msgstr "费用从低到高"
 
-#: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Cost Basis"
 msgstr "成本基础"
@@ -620,6 +694,10 @@ msgstr "每次付款金额"
 #: src/components/transaction-composer/delete-confirmation.tsx
 msgid "Could not delete this transaction. Please try again."
 msgstr "无法删除这笔交易，请重试。"
+
+#: src/components/command-menu.tsx
+msgid "Could not load accounts and investments. Type to retry."
+msgstr "无法加载账户和投资。输入内容以重试。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 msgid "Could not load more transactions."
@@ -657,7 +735,6 @@ msgid "Create Household"
 msgstr "创建家庭"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-#: src/routes/_user/household/$householdId/route.tsx
 msgid "Create snapshot"
 msgstr "创建快照"
 
@@ -781,7 +858,6 @@ msgstr "小数点"
 msgid "Deficit"
 msgstr "赤字"
 
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -790,14 +866,6 @@ msgstr "赤字"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Delete"
 msgstr "删除"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Delete account"
-msgstr "删除账户"
-
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "Delete Account"
-msgstr "删除账户"
 
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 msgid "Delete Category"
@@ -815,9 +883,21 @@ msgstr "删除家庭？"
 msgid "Delete last digit"
 msgstr "删除最后一位数字"
 
+#: src/components/review-journal.tsx
+msgid "Delete permanently"
+msgstr "永久删除"
+
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 msgid "Delete Recurring Subscription"
 msgstr "删除定期订阅"
+
+#: src/components/review-journal.tsx
+msgid "Delete review"
+msgstr "删除回顾"
+
+#: src/components/review-journal.tsx
+msgid "Delete this review permanently? Its journal entry will be removed. Other reviews and transactions are not affected."
+msgstr "永久删除这次回顾？此日记条目将被删除，其他回顾和交易不受影响。"
 
 #: src/components/transaction-composer/composer.tsx
 #: src/components/transaction-composer/delete-confirmation.tsx
@@ -832,7 +912,6 @@ msgstr "删除交易"
 msgid "Delete transaction?"
 msgstr "删除交易？"
 
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
@@ -1001,6 +1080,10 @@ msgstr "支出"
 msgid "Failed to save snapshot: {error}"
 msgstr "无法保存快照：{error}"
 
+#: src/components/review-journal.tsx
+msgid "Financial values are fixed. You can edit your journal note, but not the amounts."
+msgstr "财务数值已固定。你可以编辑日记，但不能修改金额。"
+
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "First day of week"
 msgstr "每周起始日"
@@ -1088,6 +1171,10 @@ msgstr "返回"
 msgid "Go home"
 msgstr "返回首页"
 
+#: src/components/command-menu.tsx
+msgid "Go to"
+msgstr "前往"
+
 #: src/components/not-logged-in-error.tsx
 msgid "Go to login"
 msgstr "前往登录"
@@ -1109,6 +1196,14 @@ msgstr "隐藏余额"
 #: src/components/transaction-options.tsx
 msgid "Hide from reports. Still included in account balances."
 msgstr "不计入报表，但仍计入账户余额。"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Holding details"
+msgstr "持仓详情"
+
+#: src/components/average-cost-editor.tsx
+msgid "Holding unavailable"
+msgstr "无法读取持仓"
 
 #: src/components/nav-projects.tsx
 #: src/routes/index.tsx
@@ -1215,9 +1310,17 @@ msgstr "投资"
 msgid "Investment account"
 msgstr "投资账户"
 
+#: src/components/investment-archive-action.tsx
+msgid "Investment archived. Its history is preserved."
+msgstr "投资已归档，历史记录已保留。"
+
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
 msgid "Investment buy"
 msgstr "买入投资"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Investment history"
+msgstr "投资历史"
 
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 msgid "Investment moved successfully!"
@@ -1235,9 +1338,17 @@ msgstr "投资名称不能超过 32 个字符。"
 msgid "Investment not found"
 msgstr "未找到投资"
 
+#: src/components/investment-archive-action.tsx
+msgid "Investment restored."
+msgstr "投资已恢复。"
+
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
 msgid "Investment sell"
 msgstr "卖出投资"
+
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "Investment shortcuts"
+msgstr "投资快捷入口"
 
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Investment symbol must be at least 1 character."
@@ -1266,6 +1377,20 @@ msgstr "加入 Discord 社区"
 msgid "Joint"
 msgstr "共同持有"
 
+#: src/components/command-menu.tsx
+#: src/components/review-journal.tsx
+#: src/constant.ts
+msgid "Journal"
+msgstr "日记"
+
+#: src/components/review-journal.tsx
+msgid "Journal note saved"
+msgstr "日记已保存"
+
+#: src/components/review-journal.tsx
+msgid "Keep review"
+msgstr "保留回顾"
+
 #: src/routes/login.index.tsx
 msgid "Keep track of the everyday. See how it all adds up. A thoughtful place for your personal and household finances."
 msgstr "记录日常点滴，看清收支全貌。用心管理你和家人的每一笔钱。"
@@ -1282,9 +1407,21 @@ msgstr "语言"
 msgid "Largest first"
 msgstr "金额从大到小"
 
+#: src/components/average-cost-editor.tsx
+msgid "Last confirmed average"
+msgstr "上次确认的平均成本"
+
 #: src/components/date-period-filter.tsx
 msgid "Last week"
 msgstr "上周"
+
+#: src/components/average-cost-prompt.tsx
+msgid "Later"
+msgstr "稍后"
+
+#: src/components/review-journal.tsx
+msgid "Legacy category review"
+msgstr "早期分类回顾"
 
 #: src/routes/index.tsx
 msgid "Less scattered.<0/>More understood."
@@ -1310,6 +1447,11 @@ msgstr "浅色"
 msgid "Liquidity"
 msgstr "流动资金"
 
+#: src/components/review-journal.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Load older reviews"
+msgstr "加载更早的回顾"
+
 #: src/components/route-content-boundary.tsx
 msgid "Loading content"
 msgstr "正在加载内容"
@@ -1317,6 +1459,12 @@ msgstr "正在加载内容"
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
 msgid "Loading daily totals"
 msgstr "正在加载每日汇总"
+
+#: src/components/average-cost-prompt.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Loading holding…"
+msgstr "正在加载持仓…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Loading more transactions…"
@@ -1377,6 +1525,10 @@ msgstr "你的账本，<0/>从这里开始。"
 #: src/routes/index.tsx
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "一起管理家庭财务，兼顾每个人的账户。将点滴收支汇集起来，共同掌握全貌。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Market value"
+msgstr "市值"
 
 #. placeholder {0}: fromInvestment.symbol
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
@@ -1503,6 +1655,11 @@ msgid "Name A–Z"
 msgstr "名称从 A 到 Z"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Needs attention"
+msgstr "待处理事项"
+
+#: src/components/review-journal.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "Net Worth"
@@ -1599,6 +1756,10 @@ msgstr "未找到货币。"
 msgid "No data was refreshed"
 msgstr "没有刷新任何数据"
 
+#: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
+msgid "No holdings"
+msgstr "暂无持仓"
+
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
@@ -1612,6 +1773,10 @@ msgstr "未找到项目。"
 #: src/routes/_user/household/new.tsx
 msgid "No locale found."
 msgstr "未找到地区格式。"
+
+#: src/components/command-menu.tsx
+msgid "No matching accounts, investments, or commands."
+msgstr "未找到匹配的账户、投资或命令。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
 msgid "No matching accounts."
@@ -1631,8 +1796,8 @@ msgid "No matching options."
 msgstr "没有匹配的选项。"
 
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
-msgid "No snapshots in this period. Choose a wider date range, or create a snapshot from the toolbar to start tracking balances."
-msgstr "此时段内没有快照。请选择更大的日期范围，或从工具栏创建快照以开始追踪余额。"
+msgid "No snapshots in this period. Choose a wider date range, or visit Journal to review your net worth and save a snapshot."
+msgstr "此期间没有快照。请选择更大的日期范围，或前往日记回顾净资产并保存快照。"
 
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "No subscriptions yet"
@@ -1667,10 +1832,6 @@ msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Note"
 msgstr "备注"
-
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-msgid "Note (optional)"
-msgstr "备注（可选）"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Number pad order"
@@ -1755,10 +1916,6 @@ msgstr "待确认 — 稍后复核"
 msgid "per share"
 msgstr "每股"
 
-#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Performance"
-msgstr "收益表现"
-
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Permanently remove this household and all its data."
 msgstr "永久删除此家庭及其所有数据。"
@@ -1784,7 +1941,6 @@ msgstr "请输入数字"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Please enter a price"
 msgstr "请输入价格"
@@ -1861,6 +2017,10 @@ msgstr "请选择持有人"
 msgid "Portfolio value"
 msgstr "投资组合市值"
 
+#: src/components/average-cost-editor.tsx
+msgid "Position closed. No average cost to review."
+msgstr "持仓已清空，无需确认平均成本。"
+
 #: src/routes/_user/household/$householdId/route.tsx
 msgid "Preferences"
 msgstr "偏好设置"
@@ -1876,14 +2036,12 @@ msgstr "上一年"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Price per share"
 msgstr "每股价格"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Price per share must be positive"
 msgstr "每股价格必须大于零"
@@ -1892,6 +2050,10 @@ msgstr "每股价格必须大于零"
 #: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 msgid "Property"
 msgstr "不动产"
+
+#: src/components/review-journal.tsx
+msgid "Read entry"
+msgstr "阅读记录"
 
 #: src/constant.ts
 msgid "Real estate or other valuable property"
@@ -1958,14 +2120,34 @@ msgstr "重置"
 msgid "Reset to this month"
 msgstr "重置为本月"
 
+#: src/routes/_user/household/$householdId/settings/-components/account-settings.tsx
+msgid "Restore an account first to make its investments available again. All history stays intact."
+msgstr "请先恢复账户，再恢复其中的投资。所有历史记录都会保留。"
+
+#: src/components/investment-archive-action.tsx
+msgid "Restore investment"
+msgstr "恢复投资"
+
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Retry"
 msgstr "重试"
 
-#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Return %"
-msgstr "收益率"
+#: src/components/review-journal.tsx
+msgid "Review"
+msgstr "回顾"
+
+#: src/components/review-journal.tsx
+msgid "Review & snapshot"
+msgstr "回顾并保存快照"
+
+#: src/components/average-cost-editor.tsx
+msgid "Review latest holding"
+msgstr "重新核对最新持仓"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Review your net worth"
+msgstr "回顾你的净资产"
 
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "Role"
@@ -1980,7 +2162,6 @@ msgid "Saturday"
 msgstr "星期六"
 
 #: src/components/transaction-composer/composer.tsx
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
@@ -2012,11 +2193,18 @@ msgstr "再次保存"
 msgid "Save Changes"
 msgstr "保存更改"
 
+#: src/components/review-journal.tsx
+msgid "Save note"
+msgstr "保存日记"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Save snapshot"
+msgstr "保存快照"
+
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 msgid "Saved automatically on this device."
 msgstr "已自动保存在此设备上。"
 
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/edit-account.tsx
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
@@ -2051,28 +2239,31 @@ msgstr "结余率"
 msgid "Scrollable content"
 msgstr "可滚动内容"
 
+#: src/components/app-sidebar.tsx
+msgid "Search"
+msgstr "搜索"
+
 #. placeholder {0}: label.toLowerCase()
 #: src/components/search-select.tsx
 #: src/components/transaction-composer/controls.tsx
 msgid "Search {0}"
 msgstr "搜索{0}"
 
-#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-account-picker.tsx
 msgid "Search accounts"
 msgstr "搜索账户"
 
-#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
-msgid "Search by name"
-msgstr "按名称搜索"
+#: src/components/command-menu.tsx
+msgid "Search accounts and investments"
+msgstr "搜索账户和投资"
+
+#: src/components/command-menu.tsx
+msgid "Search accounts, symbols, or owners…"
+msgstr "搜索账户、代码或所有者…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
 msgid "Search categories"
 msgstr "搜索分类"
-
-#: src/components/command-menu.tsx
-msgid "Search commands"
-msgstr "搜索命令"
 
 #: src/components/icon-picker.tsx
 msgid "Search icons"
@@ -2166,6 +2357,7 @@ msgid "Shared owner — auto-managed"
 msgstr "共同持有人 — 自动管理"
 
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
 msgid "shares"
 msgstr "股"
 
@@ -2180,10 +2372,6 @@ msgstr "股数"
 #: src/routes/_user/household/$householdId/investments/-components/investment-card.tsx
 msgid "shares ·"
 msgstr "股 ·"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-card.tsx
-msgid "shares @"
-msgstr "股，单价"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
@@ -2205,12 +2393,16 @@ msgid "SMALL HABITS. A BIGGER PICTURE."
 msgstr "小小习惯，看清全貌。"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-msgid "Snapshot"
-msgstr "快照"
-
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Snapshot saved!"
 msgstr "快照已保存！"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far."
+msgstr "部分回顾仅包含部分账户。总额反映截至当时已回顾的账户。"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+msgid "Some values are unavailable because the saved average cost or exchange rate is missing or needs review."
+msgstr "部分数值暂不可用，因为保存的平均成本或汇率缺失或需要确认。"
 
 #: src/components/generic-error.tsx
 msgid "Something went wrong :("
@@ -2316,9 +2508,9 @@ msgstr "共同持有人的角色是固定的，无法更改。"
 msgid "The transaction owner cannot be changed."
 msgstr "无法更改交易的持有人。"
 
-#: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "This action cannot be undone. This will permanently delete the account. Delete is only allowed if there are no transactions or investments attached."
-msgstr "此操作无法撤销，将永久删除账户。只有未关联任何交易或投资的账户才能删除。"
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "These average costs need review. You can still save; their gains will be marked unavailable."
+msgstr "这些平均成本需要确认。你仍可以保存，相关收益将标为暂不可用。"
 
 #: src/routes/_user/household/$householdId/categories/-components/edit-category.tsx
 msgid "This action cannot be undone. This will permanently delete the category."
@@ -2332,21 +2524,25 @@ msgstr "此操作无法撤销，将永久删除此定期订阅。"
 msgid "This action cannot be undone. This will permanently delete the transaction and all associated entries and investment lots."
 msgstr "此操作无法撤销，将永久删除此交易及其关联的所有分录和投资批次。"
 
+#: src/components/average-cost-editor.tsx
+msgid "This holding changed while you were reviewing it."
+msgstr "核对期间，这笔持仓发生了变化。"
+
 #: src/routes/_user/household/$householdId/settings/-components/add-member-dialog.tsx
 msgid "This household is in an unexpected state. Refresh and try again."
 msgstr "此家庭的状态异常，请刷新后重试。"
 
 #: src/routes/_user/household/$householdId/settings/-components/members-settings.tsx
-msgid "This member or the joint owner owns accounts, investments, or subscriptions. Remove or archive them first."
-msgstr "此成员或共同持有人名下仍有账户、投资或订阅。请先删除或归档这些项目。"
+msgid "This member or the joint owner has household records or history and cannot be removed."
+msgstr "此成员或共同持有人已有家庭记录或历史数据，无法移除。"
 
 #: src/components/date-period-filter.tsx
 msgid "This week"
 msgstr "本周"
 
 #: src/routes/_user/household/$householdId/accounts/$accountId/route.tsx
-msgid "This will archive the account and hide it from the main list. Archive is only allowed when the account value is zero. You can unarchive it later in Settings → Accounts."
-msgstr "此操作会归档账户并将其从主列表隐藏。只有余额为零的账户才能归档。之后可在“设置 → 账户”中取消归档。"
+msgid "This will archive the account and hide it from the main list. Archive is only allowed when cash and all holdings are empty. You can unarchive it later in Settings → Accounts."
+msgstr "这将归档账户并从主列表中隐藏。只有现金余额及所有持仓均为空时才能归档。您可以稍后在“设置 → 账户”中恢复。"
 
 #. placeholder {0}: household.name
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
@@ -2419,6 +2615,10 @@ msgstr "今天"
 msgid "tomorrow"
 msgstr "明天"
 
+#: src/components/app-sidebar.tsx
+msgid "Tools"
+msgstr "工具"
+
 #: src/routes/_user/household/$householdId/transactions/-components/new-buy.tsx
 msgid "Total amount paid"
 msgstr "支付总额"
@@ -2448,6 +2648,10 @@ msgstr "收取总额"
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 msgid "Total received must be positive"
 msgstr "收取总额必须大于零"
+
+#: src/components/average-cost-prompt.tsx
+msgid "Trade saved. Update average cost?"
+msgstr "交易已保存。更新平均成本？"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Transaction"
@@ -2514,10 +2718,6 @@ msgstr "转入储蓄账户"
 msgid "Transfer type"
 msgstr "转账类型"
 
-#: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
-msgid "Try another account name."
-msgstr "请尝试其他账户名称。"
-
 #: src/routes/_user/household/new.tsx
 msgid "Try it with sample data first."
 msgstr "先用示例数据体验一下。"
@@ -2558,9 +2758,32 @@ msgstr "取消归档后，可再次为此账户添加交易。历史记录将完
 msgid "Unarchiving…"
 msgstr "正在取消归档…"
 
+#: src/components/review-journal.tsx
+msgid "Unconfirmed averages: {attentionCount}"
+msgstr "未确认的平均成本：{attentionCount}"
+
+#: src/components/review-journal.tsx
+msgid "Unconfirmed averages: {unconfirmedCount}"
+msgstr "未确认的平均成本：{unconfirmedCount}"
+
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Unrealized Return"
+msgid "Unrealized return"
 msgstr "未实现收益"
+
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Unrealized return %"
+msgstr "未实现收益率"
+
+#: src/components/review-journal.tsx
+msgid "Unrealized return was unavailable when this snapshot was saved."
+msgstr "保存此快照时，未实现收益暂不可用。"
+
+#: src/components/average-cost-editor.tsx
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
+msgid "Update average"
+msgstr "更新平均成本"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 msgid "Update entry details. Switching the account also switches the entry's currency."
@@ -2582,6 +2805,10 @@ msgstr "正在更新日期范围"
 #: src/routes/index.tsx
 msgid "Use Beaver Money for your everyday finances, or host it yourself. The code is open, and the choice is yours."
 msgstr "用 Beaver Money 管理日常财务，也可以自行部署。代码开放，选择由你。"
+
+#: src/components/review-journal.tsx
+msgid "Value unavailable"
+msgstr "数值暂不可用"
 
 #: src/components/not-found-error.tsx
 msgid "We could not find what you were looking for. It may have been moved or deleted."
@@ -2609,8 +2836,8 @@ msgid "Welcome to {name}! Your household is ready."
 msgstr "欢迎加入 {name}！你的家庭已创建。"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-msgid "What changed since your last snapshot?"
-msgstr "与上次快照相比有哪些变化？"
+msgid "What happened today? Money decisions, milestones, or anything you want to remember."
+msgstr "今天发生了什么？记下财务决定、重要时刻，或任何想留下的回忆。"
 
 #: src/components/date-period-filter.tsx
 #: src/hooks/use-finance-label.ts
@@ -2641,9 +2868,25 @@ msgstr "你无法将自己移出家庭。"
 msgid "You no longer have access to this household."
 msgstr "你已无权访问此家庭。"
 
+#: src/components/review-journal.tsx
+msgid "Your first review starts this journal. Choose Review & snapshot to capture your net worth and write a note."
+msgstr "从第一次回顾开始记录。选择“回顾并保存快照”，记录净资产并写下日记。"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Your first snapshot"
+msgstr "您的第一份快照"
+
 #: src/routes/_user/household/new.tsx
 msgid "Your household's primary currency for reporting"
 msgstr "用于家庭报表的主要货币"
+
+#: src/components/review-journal.tsx
+msgid "Your journal"
+msgstr "你的日记"
+
+#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
+msgid "Your journal (optional)"
+msgstr "你的日记（可选）"
 
 #: src/routes/login.index.tsx
 msgid "Your money,<0/>made clearer."

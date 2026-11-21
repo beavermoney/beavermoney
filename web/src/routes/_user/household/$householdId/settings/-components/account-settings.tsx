@@ -1,3 +1,6 @@
+import { AccountAvatar } from '@/components/account-avatar'
+import { InvestmentIcon } from '@/components/investment-icon'
+import { InvestmentArchiveAction } from '@/components/investment-archive-action'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -17,11 +20,32 @@ import { commitMutationResult } from '@/lib/relay'
 
 const fragment = graphql`
   fragment accountSettingsFragment on Query {
+    investments(where: { archived: true }) {
+      edges {
+        node {
+          id
+          name
+          symbol
+          type
+          archived
+          account {
+            name
+            icon
+            archived
+            user {
+              name
+            }
+          }
+          ...investmentArchiveActionFragment
+        }
+      }
+    }
     accounts(where: { archived: true }) {
       edges {
         node {
           id
           name
+          icon
           type
           archived
           user {
@@ -120,6 +144,7 @@ export function AccountSettings({
               <ListItem
                 key={account.id}
                 id={account.id}
+                startContent={<AccountAvatar account={account} size="small" />}
                 label={<Text maxLines={2}>{account.name}</Text>}
                 description={`${account.user.name} · ${financeLabel(account.type)} · ${account.householdCurrency.code}`}
                 endContent={
@@ -137,6 +162,42 @@ export function AccountSettings({
             ))}
           </List>
         )}
+      </Stack>
+      <Stack
+        direction="vertical"
+        gap={4}
+        as="section"
+        aria-label={t`Archived investments`}
+      >
+        <Heading level={2}>{t`Archived investments`}</Heading>
+        <Text color="secondary">{t`Restore an account first to make its investments available again. All history stays intact.`}</Text>
+        <List hasDividers edge="outset">
+          {(data.investments.edges ?? [])
+            .flatMap((e) => (e?.node?.archived ? [e.node] : []))
+            .map((holding) => (
+              <ListItem
+                key={holding.id}
+                id={holding.id}
+                startContent={
+                  <InvestmentIcon
+                    name={holding.name}
+                    symbol={holding.symbol}
+                    type={holding.type}
+                  />
+                }
+                label={<Text maxLines={2}>{holding.name}</Text>}
+                description={
+                  <Stack direction="horizontal" gap={2} align="center">
+                    <AccountAvatar account={holding.account} size="small" />
+                    <Text maxLines={2}>
+                      {holding.account.name} · {holding.account.user.name}
+                    </Text>
+                  </Stack>
+                }
+                endContent={<InvestmentArchiveAction fragmentRef={holding} />}
+              />
+            ))}
+        </List>
       </Stack>
       <Text as="p" display="block" color="secondary" role="status">
         {feedback}

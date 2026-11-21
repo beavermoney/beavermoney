@@ -151,6 +151,10 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "archived", Type: field.TypeBool, Default: false},
+		{Name: "confirmed_average_cost", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "average_cost_confirmed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "holdings_changed_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"stock", "crypto"}},
 		{Name: "symbol", Type: field.TypeString},
@@ -170,25 +174,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "investments_accounts_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[9]},
+				Columns:    []*schema.Column{InvestmentsColumns[13]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "investments_households_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[10]},
+				Columns:    []*schema.Column{InvestmentsColumns[14]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "investments_household_currencies_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[11]},
+				Columns:    []*schema.Column{InvestmentsColumns[15]},
 				RefColumns: []*schema.Column{HouseholdCurrenciesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "investments_users_investments",
-				Columns:    []*schema.Column{InvestmentsColumns[12]},
+				Columns:    []*schema.Column{InvestmentsColumns[16]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -197,7 +201,7 @@ var (
 			{
 				Name:    "investment_household_id_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{InvestmentsColumns[10], InvestmentsColumns[12]},
+				Columns: []*schema.Column{InvestmentsColumns[14], InvestmentsColumns[16]},
 			},
 		},
 	}
@@ -304,6 +308,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "format_version", Type: field.TypeInt, Default: 0},
 		{Name: "note", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "household_id", Type: field.TypeInt},
 	}
@@ -315,7 +320,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "snapshots_households_snapshots",
-				Columns:    []*schema.Column{SnapshotsColumns[4]},
+				Columns:    []*schema.Column{SnapshotsColumns[5]},
 				RefColumns: []*schema.Column{HouseholdsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -324,7 +329,56 @@ var (
 			{
 				Name:    "snapshot_household_id_create_time",
 				Unique:  false,
-				Columns: []*schema.Column{SnapshotsColumns[4], SnapshotsColumns[1]},
+				Columns: []*schema.Column{SnapshotsColumns[5], SnapshotsColumns[1]},
+			},
+			{
+				Name:    "snapshot_household_capture_time",
+				Unique:  true,
+				Columns: []*schema.Column{SnapshotsColumns[5], SnapshotsColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Where: "format_version = 1",
+				},
+			},
+		},
+	}
+	// SnapshotAccountsColumns holds the columns for the "snapshot_accounts" table.
+	SnapshotAccountsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "balance", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "archived", Type: field.TypeBool},
+		{Name: "account_id", Type: field.TypeInt},
+		{Name: "household_id", Type: field.TypeInt},
+	}
+	// SnapshotAccountsTable holds the schema information for the "snapshot_accounts" table.
+	SnapshotAccountsTable = &schema.Table{
+		Name:       "snapshot_accounts",
+		Columns:    SnapshotAccountsColumns,
+		PrimaryKey: []*schema.Column{SnapshotAccountsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "snapshot_accounts_account_id_fkey",
+				Columns:    []*schema.Column{SnapshotAccountsColumns[4]},
+				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "snapshot_accounts_household_id_fkey",
+				Columns:    []*schema.Column{SnapshotAccountsColumns[5]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "snapshotaccount_household_id_account_id_create_time",
+				Unique:  true,
+				Columns: []*schema.Column{SnapshotAccountsColumns[5], SnapshotAccountsColumns[4], SnapshotAccountsColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					DescColumns: map[string]bool{
+						SnapshotAccountsColumns[1].Name: true,
+					},
+				},
 			},
 		},
 	}
@@ -384,6 +438,51 @@ var (
 				Name:    "snapshotentry_snapshot_id_user_id_household_currency_id",
 				Unique:  true,
 				Columns: []*schema.Column{SnapshotEntriesColumns[10], SnapshotEntriesColumns[11], SnapshotEntriesColumns[9]},
+			},
+		},
+	}
+	// SnapshotInvestmentsColumns holds the columns for the "snapshot_investments" table.
+	SnapshotInvestmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "quantity", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "average_cost", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "market_price", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(36,18)"}},
+		{Name: "average_confirmed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "needs_review", Type: field.TypeBool},
+		{Name: "archived", Type: field.TypeBool},
+		{Name: "household_id", Type: field.TypeInt},
+		{Name: "investment_id", Type: field.TypeInt},
+	}
+	// SnapshotInvestmentsTable holds the schema information for the "snapshot_investments" table.
+	SnapshotInvestmentsTable = &schema.Table{
+		Name:       "snapshot_investments",
+		Columns:    SnapshotInvestmentsColumns,
+		PrimaryKey: []*schema.Column{SnapshotInvestmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "snapshot_investments_household_id_fkey",
+				Columns:    []*schema.Column{SnapshotInvestmentsColumns[8]},
+				RefColumns: []*schema.Column{HouseholdsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "snapshot_investments_investment_id_fkey",
+				Columns:    []*schema.Column{SnapshotInvestmentsColumns[9]},
+				RefColumns: []*schema.Column{InvestmentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "snapshotinvestment_household_id_investment_id_create_time",
+				Unique:  true,
+				Columns: []*schema.Column{SnapshotInvestmentsColumns[8], SnapshotInvestmentsColumns[9], SnapshotInvestmentsColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					DescColumns: map[string]bool{
+						SnapshotInvestmentsColumns[1].Name: true,
+					},
+				},
 			},
 		},
 	}
@@ -676,7 +775,9 @@ var (
 		InvestmentLotsTable,
 		RecurringSubscriptionsTable,
 		SnapshotsTable,
+		SnapshotAccountsTable,
 		SnapshotEntriesTable,
+		SnapshotInvestmentsTable,
 		SnapshotRatesTable,
 		TransactionsTable,
 		TransactionCategoriesTable,
@@ -693,6 +794,9 @@ func init() {
 	AccountsTable.ForeignKeys[2].RefTable = UsersTable
 	AccountsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(0),
+	}
+	AccountsTable.Annotation.Checks = map[string]string{
+		"archived_account_empty": "NOT archived OR (balance = 0 AND value = 0)",
 	}
 	HouseholdsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(8589934592),
@@ -714,6 +818,10 @@ func init() {
 	InvestmentsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(30064771072),
 	}
+	InvestmentsTable.Annotation.Checks = map[string]string{
+		"archived_investment_empty":  "NOT archived OR amount = 0",
+		"manual_average_nonnegative": "confirmed_average_cost IS NULL OR confirmed_average_cost >= 0",
+	}
 	InvestmentLotsTable.ForeignKeys[0].RefTable = HouseholdsTable
 	InvestmentLotsTable.ForeignKeys[1].RefTable = InvestmentsTable
 	InvestmentLotsTable.ForeignKeys[2].RefTable = TransactionsTable
@@ -730,12 +838,29 @@ func init() {
 	SnapshotsTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(60129542144),
 	}
+	SnapshotAccountsTable.ForeignKeys[0].RefTable = AccountsTable
+	SnapshotAccountsTable.ForeignKeys[1].RefTable = HouseholdsTable
+	SnapshotAccountsTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(81604378624),
+	}
+	SnapshotAccountsTable.Annotation.Checks = map[string]string{
+		"snapshot_account_archived_empty": "NOT archived OR balance = 0",
+	}
 	SnapshotEntriesTable.ForeignKeys[0].RefTable = HouseholdsTable
 	SnapshotEntriesTable.ForeignKeys[1].RefTable = HouseholdCurrenciesTable
 	SnapshotEntriesTable.ForeignKeys[2].RefTable = SnapshotsTable
 	SnapshotEntriesTable.ForeignKeys[3].RefTable = UsersTable
 	SnapshotEntriesTable.Annotation = &entsql.Annotation{
 		IncrementStart: func(i int) *int { return &i }(64424509440),
+	}
+	SnapshotInvestmentsTable.ForeignKeys[0].RefTable = HouseholdsTable
+	SnapshotInvestmentsTable.ForeignKeys[1].RefTable = InvestmentsTable
+	SnapshotInvestmentsTable.Annotation = &entsql.Annotation{
+		IncrementStart: func(i int) *int { return &i }(85899345920),
+	}
+	SnapshotInvestmentsTable.Annotation.Checks = map[string]string{
+		"snapshot_investment_archived_empty":      "NOT archived OR quantity = 0",
+		"snapshot_investment_average_nonnegative": "average_cost IS NULL OR average_cost >= 0",
 	}
 	SnapshotRatesTable.ForeignKeys[0].RefTable = HouseholdsTable
 	SnapshotRatesTable.ForeignKeys[1].RefTable = HouseholdCurrenciesTable

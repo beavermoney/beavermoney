@@ -500,6 +500,21 @@ it.each([
     const shares = screen.getByRole('button', {
       name: chinese ? /编辑股数：/ : /Edit Shares:/,
     })
+    if (kind === 'Move') {
+      expect(
+        screen.queryByRole('button', {
+          name: chinese ? /编辑每股价格：/ : /Edit Price per share:/i,
+        }),
+      ).toBeNull()
+      fireEvent.click(shares)
+      fireEvent.click(screen.getByRole('button', { name: '2' }))
+      expect(
+        screen.getByRole('button', {
+          name: chinese ? /编辑股数：.*2/ : /Edit Shares:.*2/,
+        }),
+      ).toBeTruthy()
+      return
+    }
     const price = screen.getByRole('button', {
       name: chinese ? /编辑每股价格：/ : /Edit Price per share:/i,
     })

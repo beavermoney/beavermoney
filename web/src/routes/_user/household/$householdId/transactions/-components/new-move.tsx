@@ -1,3 +1,4 @@
+import { requestAverageReview } from '@/hooks/average-cost-review-store'
 import { TransactionFormActions } from '@/components/transaction-form-actions'
 import { TransactionOption } from '@/components/transaction-options'
 import { useLingui } from '@lingui/react/macro'
@@ -56,6 +57,7 @@ const newMoveFragment = graphql`
             code
           }
           investments {
+            archived
             id
             symbol
             ...transactionInvestmentPickerFragment
@@ -103,7 +105,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
       .string()
       .max(256, t`Description must be at most 256 characters.`),
     shares: z.number().positive(t`Shares must be positive`),
-    pricePerShare: z.number().positive(t`Price per share must be positive`),
     datetime: z.date(),
     ownerUserID: z.string().min(1, t`Please select an owner`),
     fromInvestmentId: z.string().min(1, t`Please select a from investment`),
@@ -117,7 +118,26 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
   const submissionIntent = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
-  const data = useFragment(newMoveFragment, fragmentRef)
+  const source = useFragment(newMoveFragment, fragmentRef)
+  const data = {
+    ...source,
+    accounts: {
+      ...source.accounts,
+      edges: source.accounts.edges?.map((edge) =>
+        edge?.node
+          ? {
+              ...edge,
+              node: {
+                ...edge.node,
+                investments: edge.node.investments?.filter(
+                  (holding) => !holding.archived,
+                ),
+              },
+            }
+          : edge,
+      ),
+    },
+  }
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newMoveMutation>(newMoveMutation)
@@ -139,11 +159,13 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         })
         .filter((account) => account.type === 'investment')
         .flatMap((account) =>
-          (account.investments ?? []).map((investment) => ({
-            ...investment,
-            accountName: account.name,
-            currencyCode: account.householdCurrency.code,
-          })),
+          (account.investments ?? [])
+            .filter((i) => !i.archived)
+            .map((investment) => ({
+              ...investment,
+              accountName: account.name,
+              currencyCode: account.householdCurrency.code,
+            })),
         ) ?? []
     )
   }, [data.accounts.edges])
@@ -163,7 +185,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
       description: '',
       pending: false,
       shares: undefined as unknown as number,
-      pricePerShare: undefined as unknown as number,
       datetime: initialDatetime,
       ownerUserID: defaultOwnerUserID,
       fromInvestmentId: '',
@@ -208,12 +229,12 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 {
                   amount: currency(value.shares).multiply(-1).toString(),
                   investmentID: value.fromInvestmentId,
-                  price: value.pricePerShare.toString(),
+                  price: '0',
                 },
                 {
                   amount: currency(value.shares).toString(),
                   investmentID: value.toInvestmentId,
-                  price: value.pricePerShare.toString(),
+                  price: '0',
                 },
               ],
               fees: [],
@@ -228,6 +249,8 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
 
       match(result)
         .with({ status: 'success' }, ({ data: resultData }) => {
+          if (!value.pending)
+            requestAverageReview([value.fromInvestmentId, value.toInvestmentId])
           invariant(
             resultData.moveInvestment.node,
             'No data returned from mutation',
@@ -241,7 +264,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
                 description: '',
                 pending: false,
                 shares: undefined as unknown as number,
-                pricePerShare: undefined as unknown as number,
                 datetime: value.datetime,
                 ownerUserID: value.ownerUserID,
                 // Move accounts are identified by their investment positions.
@@ -527,35 +549,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
         }}
       />
     ),
-    pricePerShare: (
-      <form.Field
-        name="pricePerShare"
-        children={(field) => {
-          const isInvalid =
-            field.state.meta.isTouched && !field.state.meta.isValid
-          return (
-            <Stack direction="vertical" gap={2} data-invalid={isInvalid}>
-              <CurrencyInput
-                aria-label={t`Price per share`}
-                id={field.name}
-                name={field.name}
-                placeholder={t`Please enter a price`}
-                onValueChange={(e) => {
-                  field.handleChange(e.floatValue!)
-                }}
-                value={field.state.value}
-                locale={household.locale}
-                currency={fromInvestment?.currencyCode ?? displayCurrencyCode}
-                onBlur={field.handleBlur}
-                aria-invalid={isInvalid}
-                decimalScale={8}
-              />
-              {isInvalid && <FormError errors={field.state.meta.errors} />}
-            </Stack>
-          )
-        }}
-      />
-    ),
     description: (
       <form.Field
         name="description"
@@ -730,12 +723,7 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
           />
         }
         firstAmount={'shares'}
-        amounts={
-          <>
-            {fields.shares}
-            {fields.pricePerShare}
-          </>
-        }
+        amounts={<>{fields.shares}</>}
         chips={<>{ownerOptions.length > 1 && fields.ownerUserID}</>}
         date={fields.datetime}
         note={fields.description}
@@ -833,7 +821,6 @@ export function NewMove({ fragmentRef }: NewMoveProps) {
               justify="stretch"
             >
               {fields.shares}
-              {fields.pricePerShare}
             </Grid>
           </TransactionFormFields>
         </Stack>

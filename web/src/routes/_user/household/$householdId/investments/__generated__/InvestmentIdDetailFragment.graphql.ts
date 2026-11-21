@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fc3a65e7c90d0e20d0826ce718077492>>
+ * @generated SignedSource<<6729acc08d1212f8472fcecc58a4f46f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,13 +11,16 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type InvestmentIdDetailFragment$data = {
-  readonly averageCost: string;
-  readonly costBasis: string;
+  readonly archived: boolean;
+  readonly averageCost: string | null | undefined;
+  readonly averageNeedsReview: boolean;
+  readonly costBasis: string | null | undefined;
   readonly householdCurrency: {
     readonly code: string;
   };
-  readonly unrealizedReturn: string;
-  readonly unrealizedReturnPercent: string;
+  readonly id: string;
+  readonly unrealizedReturn: string | null | undefined;
+  readonly unrealizedReturnPercent: string | null | undefined;
   readonly " $fragmentType": "InvestmentIdDetailFragment";
 };
 export type InvestmentIdDetailFragment$key = {
@@ -34,6 +37,13 @@ const node: ReaderFragment = {
     {
       "alias": null,
       "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": "HouseholdCurrency",
       "kind": "LinkedField",
       "name": "householdCurrency",
@@ -47,6 +57,20 @@ const node: ReaderFragment = {
           "storageKey": null
         }
       ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "archived",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "averageNeedsReview",
       "storageKey": null
     },
     {
@@ -82,6 +106,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "a10b3f45699108991e7e8ac2557b0253";
+(node as any).hash = "ca9a546b58a7bee58d4e820b9c78add1";
 
 export default node;

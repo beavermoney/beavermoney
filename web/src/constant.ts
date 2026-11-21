@@ -4,6 +4,7 @@ import { LinkOptions } from '@tanstack/react-router'
 import type { HotkeySequence } from '@tanstack/react-hotkeys'
 import {
   AppWindowMacIcon,
+  BookOpenIcon,
   CreditCardIcon,
   LucideIcon,
   ReceiptIcon,
@@ -176,6 +177,16 @@ export const NAV: Array<{
     },
     icon: AppWindowMacIcon,
     shortcut: ['G', 'S'],
+  },
+  {
+    name: msg`Journal`,
+    link: {
+      to: '/household/$householdId/journal',
+      activeOptions: { exact: false, includeSearch: false },
+      search: (prev) => ({ ...prev }),
+    },
+    icon: BookOpenIcon,
+    shortcut: ['G', 'J'],
   },
   {
     name: msg`Settings`,

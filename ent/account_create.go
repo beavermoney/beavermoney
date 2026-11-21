@@ -12,6 +12,7 @@ import (
 	"beavermoney.app/ent/household"
 	"beavermoney.app/ent/householdcurrency"
 	"beavermoney.app/ent/investment"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/transactionentry"
 	"beavermoney.app/ent/user"
 	"entgo.io/ent/dialect/sql"
@@ -154,6 +155,21 @@ func (_c *AccountCreate) SetNillableArchived(v *bool) *AccountCreate {
 		_c.SetArchived(*v)
 	}
 	return _c
+}
+
+// AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
+func (_c *AccountCreate) AddSnapshotAccountIDs(ids ...int) *AccountCreate {
+	_c.mutation.AddSnapshotAccountIDs(ids...)
+	return _c
+}
+
+// AddSnapshotAccounts adds the "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_c *AccountCreate) AddSnapshotAccounts(v ...*SnapshotAccount) *AccountCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSnapshotAccountIDs(ids...)
 }
 
 // SetHousehold sets the "household" edge to the Household entity.
@@ -402,6 +418,22 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		_spec.SetField(account.FieldArchived, field.TypeBool, value)
 		_node.Archived = value
 	}
+	if nodes := _c.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := _c.mutation.HouseholdIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -561,24 +593,6 @@ func (u *AccountUpsert) UpdateName() *AccountUpsert {
 	return u
 }
 
-// SetCategory sets the "category" field.
-func (u *AccountUpsert) SetCategory(v account.Category) *AccountUpsert {
-	u.Set(account.FieldCategory, v)
-	return u
-}
-
-// UpdateCategory sets the "category" field to the value that was provided on create.
-func (u *AccountUpsert) UpdateCategory() *AccountUpsert {
-	u.SetExcluded(account.FieldCategory)
-	return u
-}
-
-// ClearCategory clears the value of the "category" field.
-func (u *AccountUpsert) ClearCategory() *AccountUpsert {
-	u.SetNull(account.FieldCategory)
-	return u
-}
-
 // SetIcon sets the "icon" field.
 func (u *AccountUpsert) SetIcon(v string) *AccountUpsert {
 	u.Set(account.FieldIcon, v)
@@ -631,6 +645,9 @@ func (u *AccountUpsertOne) UpdateNewValues() *AccountUpsertOne {
 		}
 		if _, exists := u.create.mutation.Balance(); exists {
 			s.SetIgnore(account.FieldBalance)
+		}
+		if _, exists := u.create.mutation.Category(); exists {
+			s.SetIgnore(account.FieldCategory)
 		}
 		if _, exists := u.create.mutation.Value(); exists {
 			s.SetIgnore(account.FieldValue)
@@ -697,27 +714,6 @@ func (u *AccountUpsertOne) SetName(v string) *AccountUpsertOne {
 func (u *AccountUpsertOne) UpdateName() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetCategory sets the "category" field.
-func (u *AccountUpsertOne) SetCategory(v account.Category) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetCategory(v)
-	})
-}
-
-// UpdateCategory sets the "category" field to the value that was provided on create.
-func (u *AccountUpsertOne) UpdateCategory() *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateCategory()
-	})
-}
-
-// ClearCategory clears the value of the "category" field.
-func (u *AccountUpsertOne) ClearCategory() *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.ClearCategory()
 	})
 }
 
@@ -944,6 +940,9 @@ func (u *AccountUpsertBulk) UpdateNewValues() *AccountUpsertBulk {
 			if _, exists := b.mutation.Balance(); exists {
 				s.SetIgnore(account.FieldBalance)
 			}
+			if _, exists := b.mutation.Category(); exists {
+				s.SetIgnore(account.FieldCategory)
+			}
 			if _, exists := b.mutation.Value(); exists {
 				s.SetIgnore(account.FieldValue)
 			}
@@ -1010,27 +1009,6 @@ func (u *AccountUpsertBulk) SetName(v string) *AccountUpsertBulk {
 func (u *AccountUpsertBulk) UpdateName() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetCategory sets the "category" field.
-func (u *AccountUpsertBulk) SetCategory(v account.Category) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetCategory(v)
-	})
-}
-
-// UpdateCategory sets the "category" field to the value that was provided on create.
-func (u *AccountUpsertBulk) UpdateCategory() *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateCategory()
-	})
-}
-
-// ClearCategory clears the value of the "category" field.
-func (u *AccountUpsertBulk) ClearCategory() *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.ClearCategory()
 	})
 }
 

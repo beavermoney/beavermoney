@@ -5,6 +5,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -53,7 +54,7 @@ func (Account) Fields() []ent.Field {
 				"hsa", "plan_529",
 			).
 			Optional().
-			Nillable(),
+			Nillable().Immutable(),
 
 		field.String("icon").Optional().Nillable(),
 
@@ -91,6 +92,7 @@ func (Account) Fields() []ent.Field {
 // Edges of the Account.
 func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("snapshot_accounts", SnapshotAccount.Type).StorageKey(edge.Symbol("snapshot_accounts_account_id_fkey")).Annotations(entgql.Skip()),
 		edge.From("household", Household.Type).
 			Field("household_id").
 			Ref("accounts").
@@ -146,6 +148,9 @@ func (Account) Edges() []ent.Edge {
 
 func (Account) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entsql.Checks(map[string]string{
+			"archived_account_empty": "NOT archived OR (balance = 0 AND value = 0)",
+		}),
 		entgql.QueryField(),
 		entgql.RelayConnection(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),

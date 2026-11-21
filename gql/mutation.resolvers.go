@@ -204,6 +204,14 @@ func (r *mutationResolver) DeleteHousehold(ctx context.Context, id int) (*model.
 		return nil, err
 	}
 
+	// Shared observations belong to the household, not an individual journal entry.
+	if _, err := client.SnapshotInvestment.Delete().Exec(ctx); err != nil {
+		return nil, err
+	}
+	if _, err := client.SnapshotAccount.Delete().Exec(ctx); err != nil {
+		return nil, err
+	}
+
 	// 3. Investment — must go before Account (account delete is restricted by investments)
 	_, err = client.Investment.Delete().
 		Where(investment.HouseholdIDEQ(id)).
@@ -415,40 +423,10 @@ func (r *mutationResolver) UpdateAccount(ctx context.Context, id int, input ent.
 
 // DeleteAccount is the resolver for the deleteAccount field.
 func (r *mutationResolver) DeleteAccount(ctx context.Context, id int) (*model.DeleteAccountPayload, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "mutationResolver.DeleteAccount",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	client := ent.FromContext(ctx)
-
-	hasEntries, err := client.TransactionEntry.Query().Where(transactionentry.AccountID(id)).Exist(ctx)
-	if err != nil {
+	// Retain the old API name for older clients, but never remove the identity.
+	if _, err := r.ArchiveAccount(ctx, id); err != nil {
 		return nil, err
 	}
-	if hasEntries {
-		return nil, fmt.Errorf("cannot delete account with existing transactions")
-	}
-
-	hasInvestments, err := client.Investment.Query().Where(investment.AccountID(id)).Exist(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if hasInvestments {
-		return nil, fmt.Errorf("cannot delete account with existing investments")
-	}
-
-	err = client.Account.DeleteOneID(id).Exec(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	return &model.DeleteAccountPayload{DeletedAccountID: id}, nil
 }
 
@@ -466,14 +444,27 @@ func (r *mutationResolver) ArchiveAccount(ctx context.Context, id int) (bool, er
 	defer span.End()
 
 	client := ent.FromContext(ctx)
+	if err := lockReviewState(ctx, client); err != nil {
+		return false, err
+	}
 
 	acc, err := client.Account.Get(ctx, id)
 	if err != nil {
 		return false, fmt.Errorf("account not found: %w", err)
 	}
 
-	if !acc.Value.IsZero() {
-		return false, fmt.Errorf("cannot archive account with non-zero value")
+	if !acc.Balance.IsZero() || !acc.Value.IsZero() {
+		return false, fmt.Errorf("empty the account before archiving it")
+	}
+	hasShares, err := client.Investment.Query().Where(investment.AccountIDEQ(id), investment.AmountNEQ(decimal.Zero)).Exist(ctx)
+	if err != nil {
+		return false, err
+	}
+	if hasShares {
+		return false, fmt.Errorf("move or sell all shares before archiving this account")
+	}
+	if _, err := client.Investment.Update().Where(investment.AccountIDEQ(id)).SetArchived(true).Save(ctx); err != nil {
+		return false, err
 	}
 
 	err = client.Account.UpdateOneID(id).SetArchived(true).Exec(ctx)
@@ -497,8 +488,37 @@ func (r *mutationResolver) UnarchiveAccount(ctx context.Context, id int) (*ent.A
 	return ent.FromContext(ctx).Account.UpdateOneID(id).SetArchived(false).Save(ctx)
 }
 
+// ArchiveInvestment retains the holding identity and all of its history.
+func (r *mutationResolver) ArchiveInvestment(ctx context.Context, id int) (*ent.Investment, error) {
+	client := ent.FromContext(ctx)
+	inv, err := client.Investment.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if !inv.Amount.IsZero() {
+		return nil, fmt.Errorf("move or sell all shares before archiving this investment")
+	}
+	return client.Investment.UpdateOneID(id).SetArchived(true).Save(ctx)
+}
+
+// UnarchiveInvestment is the resolver for the unarchiveInvestment field.
+func (r *mutationResolver) UnarchiveInvestment(ctx context.Context, id int) (*ent.Investment, error) {
+	client := ent.FromContext(ctx)
+	inv, err := client.Investment.Query().Where(investment.IDEQ(id)).WithAccount().Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if inv.Edges.Account.Archived {
+		return nil, fmt.Errorf("restore the account before restoring this investment")
+	}
+	return client.Investment.UpdateOneID(id).SetArchived(false).Save(ctx)
+}
+
 // CreateInvestment is the resolver for the createInvestment field.
 func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.CreateInvestmentInputCustom) (*ent.InvestmentEdge, error) {
+	if !reviewDecimal.MatchString(input.CostBasis) {
+		return nil, fmt.Errorf("average cost must be a nonnegative decimal with at most 18 decimal places")
+	}
 	userID := contextkeys.GetUserID(ctx)
 	householdID := contextkeys.GetHouseholdID(ctx)
 
@@ -602,7 +622,16 @@ func (r *mutationResolver) CreateInvestment(ctx context.Context, input model.Cre
 		return nil, err
 	}
 
+	if costBasis.IsNegative() {
+		return nil, fmt.Errorf("average cost cannot be negative")
+	}
+	// Reload the lot-triggered quantity/change marker, then use the same
+	// monotonic, conditional confirmation path as later manual reviews.
 	investment, err = client.Investment.Get(ctx, investment.ID)
+	if err != nil {
+		return nil, err
+	}
+	investment, err = confirmAverage(ctx, client, investment.ID, costBasis.String(), investment.Amount.String(), investment.HoldingsChangedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -1101,6 +1130,9 @@ func (r *mutationResolver) BuyInvestment(ctx context.Context, input model.BuyInv
 	if err != nil {
 		return nil, fmt.Errorf("investment not found: %w", err)
 	}
+	if investment.Archived {
+		return nil, fmt.Errorf("restore the investment before adding a trade")
+	}
 	if investment.AccountID != account.ID {
 		return nil, fmt.Errorf("investment does not belong to account")
 	}
@@ -1216,6 +1248,9 @@ func (r *mutationResolver) SellInvestment(ctx context.Context, input model.SellI
 	investment, err := client.Investment.Get(ctx, input.InvestmentLot.InvestmentID)
 	if err != nil {
 		return nil, fmt.Errorf("investment not found: %w", err)
+	}
+	if investment.Archived {
+		return nil, fmt.Errorf("restore the investment before adding a trade")
 	}
 	if investment.AccountID != account.ID {
 		return nil, fmt.Errorf("investment does not belong to account")
@@ -1359,6 +1394,9 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 		return nil, fmt.Errorf("to investment not found: %w", err)
 	}
 
+	if fromInvestment.Archived || toInvestment.Archived {
+		return nil, fmt.Errorf("restore the investments before transferring shares")
+	}
 	// Validate both investments belong to household
 	fromAccount, err := fromInvestment.QueryAccount().Only(ctx)
 	if err != nil {
@@ -1382,18 +1420,18 @@ func (r *mutationResolver) MoveInvestment(ctx context.Context, input model.MoveI
 		return nil, fmt.Errorf("cannot add transaction to archived account")
 	}
 
+	if fromInvestment.AccountID == toInvestment.AccountID {
+		return nil, fmt.Errorf("choose two different accounts for a share transfer")
+	}
+
 	// Validate same symbol
 	if fromInvestment.Symbol != toInvestment.Symbol {
 		return nil, fmt.Errorf("investments must have the same symbol")
 	}
 
-	// Validate client-provided prices are positive
-	if fromLot.Price.IsZero() || fromLot.Price.IsNegative() {
-		return nil, fmt.Errorf("from lot price must be positive")
-	}
-	if toLot.Price.IsZero() || toLot.Price.IsNegative() {
-		return nil, fmt.Errorf("to lot price must be positive")
-	}
+	// Share transfers carry quantities, not a purchase or sale price.
+	fromLot.Price = decimal.Zero
+	toLot.Price = decimal.Zero
 
 	if fromInvestment.Amount.IsZero() || fromInvestment.Amount.IsNegative() {
 		return nil, fmt.Errorf("insufficient shares in from investment")
@@ -1552,7 +1590,62 @@ func (r *mutationResolver) UpdateInvestmentLot(ctx context.Context, id int, inpu
 	defer span.End()
 
 	client := ent.FromContext(ctx)
+	if err := lockReviewState(ctx, client); err != nil {
+		return nil, err
+	}
 
+	original, err := client.InvestmentLot.Query().Where(investmentlot.IDEQ(id)).WithInvestment().WithTransaction(func(q *ent.TransactionQuery) { q.WithCategory().WithInvestmentLots() }).Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if original.Edges.Transaction.Edges.Category.Name == "Move" {
+		lots := original.Edges.Transaction.Edges.InvestmentLots
+		if len(lots) != 2 {
+			return nil, fmt.Errorf("share transfer must contain two matching holdings")
+		}
+		other := lots[0]
+		if other.ID == id {
+			other = lots[1]
+		}
+		amount := original.Amount
+		if input.Amount != nil {
+			amount = *input.Amount
+		}
+		if amount.IsZero() || amount.Sign() != original.Amount.Sign() {
+			return nil, fmt.Errorf("keep the direction of this share transfer")
+		}
+		target := original.Edges.Investment
+		if input.InvestmentID != nil {
+			target, err = client.Investment.Get(ctx, *input.InvestmentID)
+			if err != nil {
+				return nil, err
+			}
+		}
+		peer, err := client.Investment.Get(ctx, other.InvestmentID)
+		if err != nil {
+			return nil, err
+		}
+		if target.AccountID == peer.AccountID || target.Symbol != peer.Symbol {
+			return nil, fmt.Errorf("choose matching securities in different accounts")
+		}
+		// Undo the old lot when calculating shares available for a replacement.
+		available := target.Amount
+		if target.ID == original.InvestmentID {
+			available = available.Sub(original.Amount)
+		}
+		if amount.IsNegative() && available.Add(amount).IsNegative() {
+			return nil, fmt.Errorf("insufficient shares")
+		}
+		peerAvailable := peer.Amount.Sub(other.Amount)
+		if amount.IsPositive() && peerAvailable.Sub(amount).IsNegative() {
+			return nil, fmt.Errorf("insufficient shares in the source account")
+		}
+		zero := decimal.Zero
+		input.Price = &zero
+		if err := client.InvestmentLot.UpdateOneID(other.ID).SetAmount(amount.Neg()).SetPrice(zero).Exec(ctx); err != nil {
+			return nil, err
+		}
+	}
 	data, err := client.InvestmentLot.UpdateOneID(id).SetInput(input).Save(ctx)
 	if err != nil {
 		return nil, err
@@ -1578,6 +1671,9 @@ func (r *mutationResolver) DeleteTransaction(ctx context.Context, id int) (*mode
 	defer span.End()
 
 	client := ent.FromContext(ctx)
+	if err := lockReviewState(ctx, client); err != nil {
+		return nil, err
+	}
 
 	err := client.Transaction.DeleteOneID(id).Exec(ctx)
 	if err != nil {
@@ -1694,6 +1790,29 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 		return nil, fmt.Errorf("cannot delete a currency that is used by accounts")
 	}
 
+	// Holdings can use a currency different from their parent account. Archived
+	// accounts/holdings remain permanent evidence that a currency was used.
+	hasInvestments, err := client.Investment.Query().Where(investment.HouseholdCurrencyIDEQ(hc.ID)).Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if hasInvestments {
+		return nil, fmt.Errorf("cannot delete a currency that has been used by investments")
+	}
+	hasHistory, err := client.SnapshotEntry.Query().Where(snapshotentry.HouseholdCurrencyIDEQ(hc.ID)).Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	hasRates, err := client.SnapshotRate.Query().Where(snapshotrate.Or(
+		snapshotrate.FromHouseholdCurrencyIDEQ(hc.ID), snapshotrate.ToHouseholdCurrencyIDEQ(hc.ID),
+	)).Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if hasHistory || hasRates {
+		return nil, fmt.Errorf("cannot delete a currency preserved in snapshot history")
+	}
+
 	hasSubscriptions, err := client.RecurringSubscription.Query().
 		Where(
 			recurringsubscription.HouseholdIDEQ(householdID),
@@ -1731,29 +1850,6 @@ func (r *mutationResolver) DeleteHouseholdCurrency(ctx context.Context, id int) 
 		Exec(ctx)
 	if err != nil {
 		return nil, err
-	}
-
-	snapshots, err := client.Snapshot.Query().All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if len(snapshots) > 0 {
-		snapshotIDs := make([]int, len(snapshots))
-		for i, s := range snapshots {
-			snapshotIDs[i] = s.ID
-		}
-		_, err = client.SnapshotRate.Delete().
-			Where(
-				snapshotrate.SnapshotIDIn(snapshotIDs...),
-				snapshotrate.Or(
-					snapshotrate.HasFromCurrencyWith(householdcurrency.ID(hc.ID)),
-					snapshotrate.HasToCurrencyWith(householdcurrency.ID(hc.ID)),
-				),
-			).
-			Exec(ctx)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	if err := client.HouseholdCurrency.DeleteOneID(id).Exec(ctx); err != nil {
@@ -1994,7 +2090,6 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 		Where(
 			account.HouseholdIDEQ(target.HouseholdID),
 			account.UserIDIn(ownerUserIDs...),
-			account.ArchivedEQ(false),
 		).
 		Count(householdCtx)
 	if err != nil {
@@ -2021,9 +2116,19 @@ func (r *mutationResolver) RemoveHouseholdUser(ctx context.Context, id int) (*mo
 		return nil, err
 	}
 
-	if accountCount+investmentCount+subscriptionCount > 0 {
-		return nil, fmt.Errorf("MEMBER_HAS_OWNED_RECORDS: %d accounts, %d investments, %d subscriptions",
-			accountCount, investmentCount, subscriptionCount)
+	transactionCount, err := client.Transaction.Query().Where(transaction.UserIDIn(ownerUserIDs...)).Count(householdCtx)
+	if err != nil {
+		return nil, err
+	}
+	historyCount, err := client.SnapshotEntry.Query().Where(snapshotentry.UserIDIn(ownerUserIDs...)).Count(householdCtx)
+	if err != nil {
+		return nil, err
+	}
+	// Archived/inactive records and legacy history still belong to this member
+	// (or the joint owner removed alongside them). Never orphan that history.
+	if accountCount+investmentCount+subscriptionCount+transactionCount+historyCount > 0 {
+		return nil, fmt.Errorf("MEMBER_HAS_OWNED_RECORDS: %d accounts, %d investments, %d subscriptions, %d transactions, %d historical entries",
+			accountCount, investmentCount, subscriptionCount, transactionCount, historyCount)
 	}
 
 	if err := client.UserHousehold.DeleteOneID(id).Exec(householdCtx); err != nil {
@@ -2128,131 +2233,14 @@ func (r *mutationResolver) UpdateHouseholdUserRole(ctx context.Context, id int, 
 	return updated, nil
 }
 
+// ConfirmInvestmentAverage is the resolver for the confirmInvestmentAverage field.
+func (r *mutationResolver) ConfirmInvestmentAverage(ctx context.Context, id int, average string, expectedAmount string, expectedChangedAt *time.Time) (*ent.Investment, error) {
+	return confirmAverage(ctx, ent.FromContext(ctx), id, average, expectedAmount, expectedChangedAt)
+}
+
 // CreateSnapshot is the resolver for the createSnapshot field.
-func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput) (*ent.SnapshotEdge, error) {
-	userID := contextkeys.GetUserID(ctx)
-	householdID := contextkeys.GetHouseholdID(ctx)
-
-	ctx, span := r.tracer.Start(ctx, "mutationResolver.CreateSnapshot",
-		trace.WithAttributes(
-			attribute.Int("householdID", householdID),
-			attribute.Int("userID", userID),
-		),
-	)
-	defer span.End()
-
-	client := ent.FromContext(ctx)
-
-	accounts, err := client.Account.Query().
-		Where(account.ArchivedEQ(false)).
-		WithHouseholdCurrency().
-		All(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch accounts", "error", err)
-		return nil, err
-	}
-
-	snap, err := client.Snapshot.Create().
-		SetHouseholdID(householdID).
-		SetInput(input).
-		Save(ctx)
-	if err != nil {
-		r.logger.Error("Failed to create snapshot", "error", err)
-		return nil, err
-	}
-
-	type entryKey struct {
-		UserID              int
-		HouseholdCurrencyID int
-	}
-	type entryValues struct {
-		Liquidity  decimal.Decimal
-		Investment decimal.Decimal
-		Property   decimal.Decimal
-		Receivable decimal.Decimal
-		Liability  decimal.Decimal
-	}
-
-	grouped := make(map[entryKey]*entryValues)
-	zero := decimal.NewFromInt(0)
-
-	for _, acc := range accounts {
-		key := entryKey{UserID: acc.UserID, HouseholdCurrencyID: acc.Edges.HouseholdCurrency.ID}
-		vals, ok := grouped[key]
-		if !ok {
-			vals = &entryValues{
-				Liquidity:  zero,
-				Investment: zero,
-				Property:   zero,
-				Receivable: zero,
-				Liability:  zero,
-			}
-			grouped[key] = vals
-		}
-
-		switch acc.Type {
-		case account.TypeLiquidity:
-			vals.Liquidity = vals.Liquidity.Add(acc.Value)
-		case account.TypeInvestment:
-			vals.Investment = vals.Investment.Add(acc.Value)
-		case account.TypeProperty:
-			vals.Property = vals.Property.Add(acc.Value)
-		case account.TypeReceivable:
-			vals.Receivable = vals.Receivable.Add(acc.Value)
-		case account.TypeLiability:
-			vals.Liability = vals.Liability.Add(acc.Value)
-		}
-	}
-
-	builders := make([]*ent.SnapshotEntryCreate, 0, len(grouped))
-	for key, vals := range grouped {
-		builders = append(builders, client.SnapshotEntry.Create().
-			SetSnapshotID(snap.ID).
-			SetHouseholdID(householdID).
-			SetUserID(key.UserID).
-			SetHouseholdCurrencyID(key.HouseholdCurrencyID).
-			SetLiquidity(vals.Liquidity).
-			SetInvestment(vals.Investment).
-			SetProperty(vals.Property).
-			SetReceivable(vals.Receivable).
-			SetLiability(vals.Liability),
-		)
-	}
-
-	if len(builders) > 0 {
-		if _, err := client.SnapshotEntry.CreateBulk(builders...).Save(ctx); err != nil {
-			r.logger.Error("Failed to create snapshot entries", "error", err)
-			return nil, err
-		}
-	}
-
-	householdRates, err := client.HouseholdRate.Query().All(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch household rates", "error", err)
-		return nil, err
-	}
-
-	if len(householdRates) > 0 {
-		rateBuilders := make([]*ent.SnapshotRateCreate, 0, len(householdRates))
-		for _, hr := range householdRates {
-			rateBuilders = append(rateBuilders, client.SnapshotRate.Create().
-				SetHouseholdID(householdID).
-				SetSnapshotID(snap.ID).
-				SetFromCurrencyID(hr.FromHouseholdCurrencyID).
-				SetToCurrencyID(hr.ToHouseholdCurrencyID).
-				SetRate(hr.Rate),
-			)
-		}
-		if _, err := client.SnapshotRate.CreateBulk(rateBuilders...).Save(ctx); err != nil {
-			r.logger.Error("Failed to create snapshot rates", "error", err)
-			return nil, err
-		}
-	}
-
-	return &ent.SnapshotEdge{
-		Node:   snap,
-		Cursor: gqlutil.EncodeCursor(snap.ID),
-	}, nil
+func (r *mutationResolver) CreateSnapshot(ctx context.Context, input ent.CreateSnapshotInput, expectedRevisions []*model.ReviewAccountVersion) (*ent.SnapshotEdge, error) {
+	return r.createReview(ctx, input, expectedRevisions)
 }
 
 // UpdateSnapshot is the resolver for the updateSnapshot field.
@@ -2319,17 +2307,16 @@ func (r *mutationResolver) Refresh(ctx context.Context) (bool, error) {
 	defer span.End()
 
 	client := ent.FromContext(ctx)
-
-	// Fetch all investments for the household
-	investments, err := client.Investment.Query().
-		All(ctx)
-	if err != nil {
-		r.logger.Error("Failed to fetch investments", "error", err)
+	if err := lockReviewState(ctx, client); err != nil {
 		return false, err
 	}
 
-	if len(investments) == 0 {
-		return true, nil
+	// Archived holdings retain their last price and cannot change silently.
+	investments, err := client.Investment.Query().
+		Where(investment.ArchivedEQ(false), investment.HasAccountWith(account.ArchivedEQ(false))).All(ctx)
+	if err != nil {
+		r.logger.Error("Failed to fetch investments", "error", err)
+		return false, err
 	}
 
 	// Group investments by type (stock vs crypto)

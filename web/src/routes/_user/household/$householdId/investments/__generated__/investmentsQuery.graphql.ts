@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6d88c711bcb90adc3ba054d464b37a0b>>
+ * @generated SignedSource<<2890b52bbfd1f27e6b82986f93000196>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -39,6 +39,18 @@ v1 = [
   },
   {
     "fields": [
+      {
+        "kind": "Literal",
+        "name": "archived",
+        "value": false
+      },
+      {
+        "kind": "Literal",
+        "name": "hasAccountWith",
+        "value": {
+          "archived": false
+        }
+      },
       {
         "kind": "Variable",
         "name": "userIDIn",
@@ -310,12 +322,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "130a9278daf1059900681361698993ac",
+    "cacheID": "3108db9f349c9c85e48c5c515c459c3f",
     "id": null,
     "metadata": {},
     "name": "investmentsQuery",
     "operationKind": "query",
-    "text": "query investmentsQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...investmentsPanelFragment_3rIbPZ\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_3rIbPZ on Household {\n  investments(first: 50, where: {userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsQuery(\n  $viewUserIds: [ID!]\n) {\n  household {\n    ...investmentsPanelFragment_3rIbPZ\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_3rIbPZ on Household {\n  investments(first: 50, where: {archived: false, hasAccountWith: {archived: false}, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

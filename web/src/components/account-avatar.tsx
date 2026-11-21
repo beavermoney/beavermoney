@@ -9,9 +9,14 @@ type Props = {
     user: { name: string }
   }
   size?: 'small' | 'large'
+  tooltip?: boolean
 }
 
-export function AccountAvatar({ account, size = 'large' }: Props) {
+export function AccountAvatar({
+  account,
+  size = 'large',
+  tooltip = true,
+}: Props) {
   const small = size === 'small'
   return (
     <HStack
@@ -20,6 +25,7 @@ export function AccountAvatar({ account, size = 'large' }: Props) {
       className={small ? 'relative shrink-0' : 'relative shrink-0 pr-2 pb-2'}
     >
       <Avatar
+        tooltip={tooltip}
         name={account.name}
         src={account.icon ? getLogoDomainURL(account.icon) : undefined}
         size={small ? 'xsm' : 'md'}
@@ -31,7 +37,11 @@ export function AccountAvatar({ account, size = 'large' }: Props) {
             : 'absolute right-1 bottom-1 z-10 rounded-full bg-(--color-background-card) ring-2 ring-(--color-background-card)'
         }
       >
-        <Avatar name={account.user?.name ?? '?'} size={small ? 16 : 'xsm'} />
+        <Avatar
+          tooltip={tooltip}
+          name={account.user?.name ?? '?'}
+          size={small ? 16 : 'xsm'}
+        />
       </HStack>
     </HStack>
   )

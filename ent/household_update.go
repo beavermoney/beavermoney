@@ -17,7 +17,9 @@ import (
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -75,6 +77,36 @@ func (_u *HouseholdUpdate) SetNillableLocale(v *string) *HouseholdUpdate {
 		_u.SetLocale(*v)
 	}
 	return _u
+}
+
+// AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
+func (_u *HouseholdUpdate) AddSnapshotAccountIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.AddSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// AddSnapshotAccounts adds the "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *HouseholdUpdate) AddSnapshotAccounts(v ...*SnapshotAccount) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotAccountIDs(ids...)
+}
+
+// AddSnapshotInvestmentIDs adds the "snapshot_investments" edge to the SnapshotInvestment entity by IDs.
+func (_u *HouseholdUpdate) AddSnapshotInvestmentIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.AddSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// AddSnapshotInvestments adds the "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *HouseholdUpdate) AddSnapshotInvestments(v ...*SnapshotInvestment) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotInvestmentIDs(ids...)
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
@@ -290,6 +322,48 @@ func (_u *HouseholdUpdate) AddUserHouseholds(v ...*UserHousehold) *HouseholdUpda
 // Mutation returns the HouseholdMutation object of the builder.
 func (_u *HouseholdUpdate) Mutation() *HouseholdMutation {
 	return _u.mutation
+}
+
+// ClearSnapshotAccounts clears all "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *HouseholdUpdate) ClearSnapshotAccounts() *HouseholdUpdate {
+	_u.mutation.ClearSnapshotAccounts()
+	return _u
+}
+
+// RemoveSnapshotAccountIDs removes the "snapshot_accounts" edge to SnapshotAccount entities by IDs.
+func (_u *HouseholdUpdate) RemoveSnapshotAccountIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.RemoveSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotAccounts removes "snapshot_accounts" edges to SnapshotAccount entities.
+func (_u *HouseholdUpdate) RemoveSnapshotAccounts(v ...*SnapshotAccount) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotAccountIDs(ids...)
+}
+
+// ClearSnapshotInvestments clears all "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *HouseholdUpdate) ClearSnapshotInvestments() *HouseholdUpdate {
+	_u.mutation.ClearSnapshotInvestments()
+	return _u
+}
+
+// RemoveSnapshotInvestmentIDs removes the "snapshot_investments" edge to SnapshotInvestment entities by IDs.
+func (_u *HouseholdUpdate) RemoveSnapshotInvestmentIDs(ids ...int) *HouseholdUpdate {
+	_u.mutation.RemoveSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotInvestments removes "snapshot_investments" edges to SnapshotInvestment entities.
+func (_u *HouseholdUpdate) RemoveSnapshotInvestments(v ...*SnapshotInvestment) *HouseholdUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotInvestmentIDs(ids...)
 }
 
 // ClearUsers clears all "users" edges to the User entity.
@@ -669,6 +743,96 @@ func (_u *HouseholdUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
+	}
+	if _u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotAccountsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotInvestmentsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotInvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1368,6 +1532,36 @@ func (_u *HouseholdUpdateOne) SetNillableLocale(v *string) *HouseholdUpdateOne {
 	return _u
 }
 
+// AddSnapshotAccountIDs adds the "snapshot_accounts" edge to the SnapshotAccount entity by IDs.
+func (_u *HouseholdUpdateOne) AddSnapshotAccountIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.AddSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// AddSnapshotAccounts adds the "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *HouseholdUpdateOne) AddSnapshotAccounts(v ...*SnapshotAccount) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotAccountIDs(ids...)
+}
+
+// AddSnapshotInvestmentIDs adds the "snapshot_investments" edge to the SnapshotInvestment entity by IDs.
+func (_u *HouseholdUpdateOne) AddSnapshotInvestmentIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.AddSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// AddSnapshotInvestments adds the "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *HouseholdUpdateOne) AddSnapshotInvestments(v ...*SnapshotInvestment) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSnapshotInvestmentIDs(ids...)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (_u *HouseholdUpdateOne) AddUserIDs(ids ...int) *HouseholdUpdateOne {
 	_u.mutation.AddUserIDs(ids...)
@@ -1581,6 +1775,48 @@ func (_u *HouseholdUpdateOne) AddUserHouseholds(v ...*UserHousehold) *HouseholdU
 // Mutation returns the HouseholdMutation object of the builder.
 func (_u *HouseholdUpdateOne) Mutation() *HouseholdMutation {
 	return _u.mutation
+}
+
+// ClearSnapshotAccounts clears all "snapshot_accounts" edges to the SnapshotAccount entity.
+func (_u *HouseholdUpdateOne) ClearSnapshotAccounts() *HouseholdUpdateOne {
+	_u.mutation.ClearSnapshotAccounts()
+	return _u
+}
+
+// RemoveSnapshotAccountIDs removes the "snapshot_accounts" edge to SnapshotAccount entities by IDs.
+func (_u *HouseholdUpdateOne) RemoveSnapshotAccountIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.RemoveSnapshotAccountIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotAccounts removes "snapshot_accounts" edges to SnapshotAccount entities.
+func (_u *HouseholdUpdateOne) RemoveSnapshotAccounts(v ...*SnapshotAccount) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotAccountIDs(ids...)
+}
+
+// ClearSnapshotInvestments clears all "snapshot_investments" edges to the SnapshotInvestment entity.
+func (_u *HouseholdUpdateOne) ClearSnapshotInvestments() *HouseholdUpdateOne {
+	_u.mutation.ClearSnapshotInvestments()
+	return _u
+}
+
+// RemoveSnapshotInvestmentIDs removes the "snapshot_investments" edge to SnapshotInvestment entities by IDs.
+func (_u *HouseholdUpdateOne) RemoveSnapshotInvestmentIDs(ids ...int) *HouseholdUpdateOne {
+	_u.mutation.RemoveSnapshotInvestmentIDs(ids...)
+	return _u
+}
+
+// RemoveSnapshotInvestments removes "snapshot_investments" edges to SnapshotInvestment entities.
+func (_u *HouseholdUpdateOne) RemoveSnapshotInvestments(v ...*SnapshotInvestment) *HouseholdUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSnapshotInvestmentIDs(ids...)
 }
 
 // ClearUsers clears all "users" edges to the User entity.
@@ -1990,6 +2226,96 @@ func (_u *HouseholdUpdateOne) sqlSave(ctx context.Context) (_node *Household, er
 	}
 	if value, ok := _u.mutation.Locale(); ok {
 		_spec.SetField(household.FieldLocale, field.TypeString, value)
+	}
+	if _u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotAccountsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotAccountsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotaccount.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSnapshotInvestmentsIDs(); len(nodes) > 0 && !_u.mutation.SnapshotInvestmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SnapshotInvestmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(snapshotinvestment.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{

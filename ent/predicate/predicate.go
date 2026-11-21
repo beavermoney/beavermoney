@@ -30,8 +30,14 @@ type RecurringSubscription func(*sql.Selector)
 // Snapshot is the predicate function for snapshot builders.
 type Snapshot func(*sql.Selector)
 
+// SnapshotAccount is the predicate function for snapshotaccount builders.
+type SnapshotAccount func(*sql.Selector)
+
 // SnapshotEntry is the predicate function for snapshotentry builders.
 type SnapshotEntry func(*sql.Selector)
+
+// SnapshotInvestment is the predicate function for snapshotinvestment builders.
+type SnapshotInvestment func(*sql.Selector)
 
 // SnapshotRate is the predicate function for snapshotrate builders.
 type SnapshotRate func(*sql.Selector)

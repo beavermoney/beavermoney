@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8e71a58be137fba79be5d1fe84f0209d>>
+ * @generated SignedSource<<c8a15483276674cd7989db13e51e5886>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ReaderFragment } from 'relay-runtime';
 export type AccountType = "investment" | "liability" | "liquidity" | "property" | "receivable" | "%future added value";
+export type InvestmentType = "crypto" | "stock" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type accountSettingsFragment$data = {
   readonly accounts: {
@@ -19,12 +20,33 @@ export type accountSettingsFragment$data = {
         readonly householdCurrency: {
           readonly code: string;
         };
+        readonly icon: string | null | undefined;
         readonly id: string;
         readonly name: string;
         readonly type: AccountType;
         readonly user: {
           readonly name: string;
         };
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  };
+  readonly investments: {
+    readonly edges: ReadonlyArray<{
+      readonly node: {
+        readonly account: {
+          readonly archived: boolean;
+          readonly icon: string | null | undefined;
+          readonly name: string;
+          readonly user: {
+            readonly name: string;
+          };
+        };
+        readonly archived: boolean;
+        readonly id: string;
+        readonly name: string;
+        readonly symbol: string;
+        readonly type: InvestmentType;
+        readonly " $fragmentSpreads": FragmentRefs<"investmentArchiveActionFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   };
@@ -36,11 +58,60 @@ export type accountSettingsFragment$key = {
 };
 
 const node: ReaderFragment = (function(){
-var v0 = {
+var v0 = [
+  {
+    "kind": "Literal",
+    "name": "where",
+    "value": {
+      "archived": true
+    }
+  }
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "archived",
+  "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v6 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "User",
+  "kind": "LinkedField",
+  "name": "user",
+  "plural": false,
+  "selections": [
+    (v2/*: any*/)
+  ],
   "storageKey": null
 };
 return {
@@ -51,15 +122,71 @@ return {
   "selections": [
     {
       "alias": null,
-      "args": [
+      "args": (v0/*: any*/),
+      "concreteType": "InvestmentConnection",
+      "kind": "LinkedField",
+      "name": "investments",
+      "plural": false,
+      "selections": [
         {
-          "kind": "Literal",
-          "name": "where",
-          "value": {
-            "archived": true
-          }
+          "alias": null,
+          "args": null,
+          "concreteType": "InvestmentEdge",
+          "kind": "LinkedField",
+          "name": "edges",
+          "plural": true,
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "concreteType": "Investment",
+              "kind": "LinkedField",
+              "name": "node",
+              "plural": false,
+              "selections": [
+                (v1/*: any*/),
+                (v2/*: any*/),
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "symbol",
+                  "storageKey": null
+                },
+                (v3/*: any*/),
+                (v4/*: any*/),
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "Account",
+                  "kind": "LinkedField",
+                  "name": "account",
+                  "plural": false,
+                  "selections": [
+                    (v2/*: any*/),
+                    (v5/*: any*/),
+                    (v4/*: any*/),
+                    (v6/*: any*/)
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "args": null,
+                  "kind": "FragmentSpread",
+                  "name": "investmentArchiveActionFragment"
+                }
+              ],
+              "storageKey": null
+            }
+          ],
+          "storageKey": null
         }
       ],
+      "storageKey": "investments(where:{\"archived\":true})"
+    },
+    {
+      "alias": null,
+      "args": (v0/*: any*/),
       "concreteType": "AccountConnection",
       "kind": "LinkedField",
       "name": "accounts",
@@ -81,40 +208,12 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
-                (v0/*: any*/),
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "type",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "archived",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "concreteType": "User",
-                  "kind": "LinkedField",
-                  "name": "user",
-                  "plural": false,
-                  "selections": [
-                    (v0/*: any*/)
-                  ],
-                  "storageKey": null
-                },
+                (v1/*: any*/),
+                (v2/*: any*/),
+                (v5/*: any*/),
+                (v3/*: any*/),
+                (v4/*: any*/),
+                (v6/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -148,6 +247,6 @@ return {
 };
 })();
 
-(node as any).hash = "5e3831bbfbe3cd6147ba158aabbe5000";
+(node as any).hash = "3f393b49121dbebe201eb0ab169c9480";
 
 export default node;

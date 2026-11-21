@@ -15,7 +15,9 @@ import (
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/schema"
 	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -205,28 +207,32 @@ func init() {
 	investment.DefaultUpdateTime = investmentDescUpdateTime.Default.(func() time.Time)
 	// investment.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	investment.UpdateDefaultUpdateTime = investmentDescUpdateTime.UpdateDefault.(func() time.Time)
+	// investmentDescArchived is the schema descriptor for archived field.
+	investmentDescArchived := investmentFields[0].Descriptor()
+	// investment.DefaultArchived holds the default value on creation for the archived field.
+	investment.DefaultArchived = investmentDescArchived.Default.(bool)
 	// investmentDescSymbol is the schema descriptor for symbol field.
-	investmentDescSymbol := investmentFields[2].Descriptor()
+	investmentDescSymbol := investmentFields[6].Descriptor()
 	// investment.SymbolValidator is a validator for the "symbol" field. It is called by the builders before save.
 	investment.SymbolValidator = investmentDescSymbol.Validators[0].(func(string) error)
 	// investmentDescAmount is the schema descriptor for amount field.
-	investmentDescAmount := investmentFields[3].Descriptor()
+	investmentDescAmount := investmentFields[7].Descriptor()
 	// investment.DefaultAmount holds the default value on creation for the amount field.
 	investment.DefaultAmount = investmentDescAmount.Default.(func() decimal.Decimal)
 	// investmentDescValue is the schema descriptor for value field.
-	investmentDescValue := investmentFields[5].Descriptor()
+	investmentDescValue := investmentFields[9].Descriptor()
 	// investment.DefaultValue holds the default value on creation for the value field.
 	investment.DefaultValue = investmentDescValue.Default.(func() decimal.Decimal)
 	// investmentDescAccountID is the schema descriptor for account_id field.
-	investmentDescAccountID := investmentFields[6].Descriptor()
+	investmentDescAccountID := investmentFields[10].Descriptor()
 	// investment.AccountIDValidator is a validator for the "account_id" field. It is called by the builders before save.
 	investment.AccountIDValidator = investmentDescAccountID.Validators[0].(func(int) error)
 	// investmentDescHouseholdCurrencyID is the schema descriptor for household_currency_id field.
-	investmentDescHouseholdCurrencyID := investmentFields[7].Descriptor()
+	investmentDescHouseholdCurrencyID := investmentFields[11].Descriptor()
 	// investment.HouseholdCurrencyIDValidator is a validator for the "household_currency_id" field. It is called by the builders before save.
 	investment.HouseholdCurrencyIDValidator = investmentDescHouseholdCurrencyID.Validators[0].(func(int) error)
 	// investmentDescUserID is the schema descriptor for user_id field.
-	investmentDescUserID := investmentFields[8].Descriptor()
+	investmentDescUserID := investmentFields[12].Descriptor()
 	// investment.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	investment.UserIDValidator = investmentDescUserID.Validators[0].(func(int) error)
 	investmentlotMixin := schema.InvestmentLot{}.Mixin()
@@ -335,6 +341,28 @@ func init() {
 	snapshot.DefaultUpdateTime = snapshotDescUpdateTime.Default.(func() time.Time)
 	// snapshot.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	snapshot.UpdateDefaultUpdateTime = snapshotDescUpdateTime.UpdateDefault.(func() time.Time)
+	// snapshotDescFormatVersion is the schema descriptor for format_version field.
+	snapshotDescFormatVersion := snapshotFields[0].Descriptor()
+	// snapshot.DefaultFormatVersion holds the default value on creation for the format_version field.
+	snapshot.DefaultFormatVersion = snapshotDescFormatVersion.Default.(int)
+	snapshotaccountMixin := schema.SnapshotAccount{}.Mixin()
+	snapshotaccount.Policy = privacy.NewPolicies(snapshotaccountMixin[1], schema.SnapshotAccount{})
+	snapshotaccount.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := snapshotaccount.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	snapshotaccountMixinFields0 := snapshotaccountMixin[0].Fields()
+	_ = snapshotaccountMixinFields0
+	snapshotaccountFields := schema.SnapshotAccount{}.Fields()
+	_ = snapshotaccountFields
+	// snapshotaccountDescCreateTime is the schema descriptor for create_time field.
+	snapshotaccountDescCreateTime := snapshotaccountMixinFields0[0].Descriptor()
+	// snapshotaccount.DefaultCreateTime holds the default value on creation for the create_time field.
+	snapshotaccount.DefaultCreateTime = snapshotaccountDescCreateTime.Default.(func() time.Time)
 	snapshotentryMixin := schema.SnapshotEntry{}.Mixin()
 	snapshotentry.Policy = privacy.NewPolicies(snapshotentryMixin[0], schema.SnapshotEntry{})
 	snapshotentry.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -371,6 +399,24 @@ func init() {
 	snapshotentryDescSnapshotID := snapshotentryFields[7].Descriptor()
 	// snapshotentry.SnapshotIDValidator is a validator for the "snapshot_id" field. It is called by the builders before save.
 	snapshotentry.SnapshotIDValidator = snapshotentryDescSnapshotID.Validators[0].(func(int) error)
+	snapshotinvestmentMixin := schema.SnapshotInvestment{}.Mixin()
+	snapshotinvestment.Policy = privacy.NewPolicies(snapshotinvestmentMixin[1], schema.SnapshotInvestment{})
+	snapshotinvestment.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := snapshotinvestment.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	snapshotinvestmentMixinFields0 := snapshotinvestmentMixin[0].Fields()
+	_ = snapshotinvestmentMixinFields0
+	snapshotinvestmentFields := schema.SnapshotInvestment{}.Fields()
+	_ = snapshotinvestmentFields
+	// snapshotinvestmentDescCreateTime is the schema descriptor for create_time field.
+	snapshotinvestmentDescCreateTime := snapshotinvestmentMixinFields0[0].Descriptor()
+	// snapshotinvestment.DefaultCreateTime holds the default value on creation for the create_time field.
+	snapshotinvestment.DefaultCreateTime = snapshotinvestmentDescCreateTime.Default.(func() time.Time)
 	snapshotrateMixin := schema.SnapshotRate{}.Mixin()
 	snapshotrate.Policy = privacy.NewPolicies(snapshotrateMixin[0], schema.SnapshotRate{})
 	snapshotrate.Hooks[0] = func(next ent.Mutator) ent.Mutator {

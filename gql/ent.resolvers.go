@@ -894,6 +894,9 @@ func (r *Resolver) RecurringSubscription() RecurringSubscriptionResolver {
 	return &recurringSubscriptionResolver{r}
 }
 
+// Snapshot returns SnapshotResolver implementation.
+func (r *Resolver) Snapshot() SnapshotResolver { return &snapshotResolver{r} }
+
 // SnapshotEntry returns SnapshotEntryResolver implementation.
 func (r *Resolver) SnapshotEntry() SnapshotEntryResolver { return &snapshotEntryResolver{r} }
 
@@ -996,6 +999,7 @@ type (
 	investmentLotResolver                    struct{ *Resolver }
 	queryResolver                            struct{ *Resolver }
 	recurringSubscriptionResolver            struct{ *Resolver }
+	snapshotResolver                         struct{ *Resolver }
 	snapshotEntryResolver                    struct{ *Resolver }
 	snapshotRateResolver                     struct{ *Resolver }
 	transactionCategoryResolver              struct{ *Resolver }

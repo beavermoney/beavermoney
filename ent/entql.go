@@ -12,7 +12,9 @@ import (
 	"beavermoney.app/ent/predicate"
 	"beavermoney.app/ent/recurringsubscription"
 	"beavermoney.app/ent/snapshot"
+	"beavermoney.app/ent/snapshotaccount"
 	"beavermoney.app/ent/snapshotentry"
+	"beavermoney.app/ent/snapshotinvestment"
 	"beavermoney.app/ent/snapshotrate"
 	"beavermoney.app/ent/transaction"
 	"beavermoney.app/ent/transactioncategory"
@@ -29,7 +31,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 16)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 18)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   account.Table,
@@ -121,18 +123,22 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Investment",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			investment.FieldCreateTime:          {Type: field.TypeTime, Column: investment.FieldCreateTime},
-			investment.FieldUpdateTime:          {Type: field.TypeTime, Column: investment.FieldUpdateTime},
-			investment.FieldHouseholdID:         {Type: field.TypeInt, Column: investment.FieldHouseholdID},
-			investment.FieldName:                {Type: field.TypeString, Column: investment.FieldName},
-			investment.FieldType:                {Type: field.TypeEnum, Column: investment.FieldType},
-			investment.FieldSymbol:              {Type: field.TypeString, Column: investment.FieldSymbol},
-			investment.FieldAmount:              {Type: field.TypeFloat64, Column: investment.FieldAmount},
-			investment.FieldQuote:               {Type: field.TypeFloat64, Column: investment.FieldQuote},
-			investment.FieldValue:               {Type: field.TypeFloat64, Column: investment.FieldValue},
-			investment.FieldAccountID:           {Type: field.TypeInt, Column: investment.FieldAccountID},
-			investment.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: investment.FieldHouseholdCurrencyID},
-			investment.FieldUserID:              {Type: field.TypeInt, Column: investment.FieldUserID},
+			investment.FieldCreateTime:             {Type: field.TypeTime, Column: investment.FieldCreateTime},
+			investment.FieldUpdateTime:             {Type: field.TypeTime, Column: investment.FieldUpdateTime},
+			investment.FieldHouseholdID:            {Type: field.TypeInt, Column: investment.FieldHouseholdID},
+			investment.FieldArchived:               {Type: field.TypeBool, Column: investment.FieldArchived},
+			investment.FieldConfirmedAverageCost:   {Type: field.TypeString, Column: investment.FieldConfirmedAverageCost},
+			investment.FieldAverageCostConfirmedAt: {Type: field.TypeTime, Column: investment.FieldAverageCostConfirmedAt},
+			investment.FieldHoldingsChangedAt:      {Type: field.TypeTime, Column: investment.FieldHoldingsChangedAt},
+			investment.FieldName:                   {Type: field.TypeString, Column: investment.FieldName},
+			investment.FieldType:                   {Type: field.TypeEnum, Column: investment.FieldType},
+			investment.FieldSymbol:                 {Type: field.TypeString, Column: investment.FieldSymbol},
+			investment.FieldAmount:                 {Type: field.TypeFloat64, Column: investment.FieldAmount},
+			investment.FieldQuote:                  {Type: field.TypeFloat64, Column: investment.FieldQuote},
+			investment.FieldValue:                  {Type: field.TypeFloat64, Column: investment.FieldValue},
+			investment.FieldAccountID:              {Type: field.TypeInt, Column: investment.FieldAccountID},
+			investment.FieldHouseholdCurrencyID:    {Type: field.TypeInt, Column: investment.FieldHouseholdCurrencyID},
+			investment.FieldUserID:                 {Type: field.TypeInt, Column: investment.FieldUserID},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -191,13 +197,32 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Snapshot",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			snapshot.FieldHouseholdID: {Type: field.TypeInt, Column: snapshot.FieldHouseholdID},
-			snapshot.FieldCreateTime:  {Type: field.TypeTime, Column: snapshot.FieldCreateTime},
-			snapshot.FieldUpdateTime:  {Type: field.TypeTime, Column: snapshot.FieldUpdateTime},
-			snapshot.FieldNote:        {Type: field.TypeString, Column: snapshot.FieldNote},
+			snapshot.FieldHouseholdID:   {Type: field.TypeInt, Column: snapshot.FieldHouseholdID},
+			snapshot.FieldCreateTime:    {Type: field.TypeTime, Column: snapshot.FieldCreateTime},
+			snapshot.FieldUpdateTime:    {Type: field.TypeTime, Column: snapshot.FieldUpdateTime},
+			snapshot.FieldFormatVersion: {Type: field.TypeInt, Column: snapshot.FieldFormatVersion},
+			snapshot.FieldNote:          {Type: field.TypeString, Column: snapshot.FieldNote},
 		},
 	}
 	graph.Nodes[8] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   snapshotaccount.Table,
+			Columns: snapshotaccount.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeInt,
+				Column: snapshotaccount.FieldID,
+			},
+		},
+		Type: "SnapshotAccount",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			snapshotaccount.FieldCreateTime:  {Type: field.TypeTime, Column: snapshotaccount.FieldCreateTime},
+			snapshotaccount.FieldHouseholdID: {Type: field.TypeInt, Column: snapshotaccount.FieldHouseholdID},
+			snapshotaccount.FieldAccountID:   {Type: field.TypeInt, Column: snapshotaccount.FieldAccountID},
+			snapshotaccount.FieldBalance:     {Type: field.TypeFloat64, Column: snapshotaccount.FieldBalance},
+			snapshotaccount.FieldArchived:    {Type: field.TypeBool, Column: snapshotaccount.FieldArchived},
+		},
+	}
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   snapshotentry.Table,
 			Columns: snapshotentry.Columns,
@@ -221,7 +246,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 			snapshotentry.FieldSnapshotID:          {Type: field.TypeInt, Column: snapshotentry.FieldSnapshotID},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   snapshotinvestment.Table,
+			Columns: snapshotinvestment.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeInt,
+				Column: snapshotinvestment.FieldID,
+			},
+		},
+		Type: "SnapshotInvestment",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			snapshotinvestment.FieldCreateTime:         {Type: field.TypeTime, Column: snapshotinvestment.FieldCreateTime},
+			snapshotinvestment.FieldHouseholdID:        {Type: field.TypeInt, Column: snapshotinvestment.FieldHouseholdID},
+			snapshotinvestment.FieldInvestmentID:       {Type: field.TypeInt, Column: snapshotinvestment.FieldInvestmentID},
+			snapshotinvestment.FieldQuantity:           {Type: field.TypeFloat64, Column: snapshotinvestment.FieldQuantity},
+			snapshotinvestment.FieldAverageCost:        {Type: field.TypeFloat64, Column: snapshotinvestment.FieldAverageCost},
+			snapshotinvestment.FieldMarketPrice:        {Type: field.TypeFloat64, Column: snapshotinvestment.FieldMarketPrice},
+			snapshotinvestment.FieldAverageConfirmedAt: {Type: field.TypeTime, Column: snapshotinvestment.FieldAverageConfirmedAt},
+			snapshotinvestment.FieldNeedsReview:        {Type: field.TypeBool, Column: snapshotinvestment.FieldNeedsReview},
+			snapshotinvestment.FieldArchived:           {Type: field.TypeBool, Column: snapshotinvestment.FieldArchived},
+		},
+	}
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   snapshotrate.Table,
 			Columns: snapshotrate.Columns,
@@ -241,7 +288,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			snapshotrate.FieldToHouseholdCurrencyID:   {Type: field.TypeInt, Column: snapshotrate.FieldToHouseholdCurrencyID},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transaction.Table,
 			Columns: transaction.Columns,
@@ -263,7 +310,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transaction.FieldPending:            {Type: field.TypeBool, Column: transaction.FieldPending},
 		},
 	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[13] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactioncategory.Table,
 			Columns: transactioncategory.Columns,
@@ -283,7 +330,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactioncategory.FieldIsImmutable: {Type: field.TypeBool, Column: transactioncategory.FieldIsImmutable},
 		},
 	}
-	graph.Nodes[12] = &sqlgraph.Node{
+	graph.Nodes[14] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   transactionentry.Table,
 			Columns: transactionentry.Columns,
@@ -302,7 +349,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			transactionentry.FieldTransactionID: {Type: field.TypeInt, Column: transactionentry.FieldTransactionID},
 		},
 	}
-	graph.Nodes[13] = &sqlgraph.Node{
+	graph.Nodes[15] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -320,7 +367,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldIsSynthetic: {Type: field.TypeBool, Column: user.FieldIsSynthetic},
 		},
 	}
-	graph.Nodes[14] = &sqlgraph.Node{
+	graph.Nodes[16] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userhousehold.Table,
 			Columns: userhousehold.Columns,
@@ -339,7 +386,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userhousehold.FieldHouseholdCurrencyID: {Type: field.TypeInt, Column: userhousehold.FieldHouseholdCurrencyID},
 		},
 	}
-	graph.Nodes[15] = &sqlgraph.Node{
+	graph.Nodes[17] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userkey.Table,
 			Columns: userkey.Columns,
@@ -357,6 +404,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userkey.FieldUserID:     {Type: field.TypeInt, Column: userkey.FieldUserID},
 		},
 	}
+	graph.MustAddE(
+		"snapshot_accounts",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.SnapshotAccountsTable,
+			Columns: []string{account.SnapshotAccountsColumn},
+			Bidi:    false,
+		},
+		"Account",
+		"SnapshotAccount",
+	)
 	graph.MustAddE(
 		"household",
 		&sqlgraph.EdgeSpec{
@@ -416,6 +475,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Account",
 		"Investment",
+	)
+	graph.MustAddE(
+		"snapshot_accounts",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotAccountsTable,
+			Columns: []string{household.SnapshotAccountsColumn},
+			Bidi:    false,
+		},
+		"Household",
+		"SnapshotAccount",
+	)
+	graph.MustAddE(
+		"snapshot_investments",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   household.SnapshotInvestmentsTable,
+			Columns: []string{household.SnapshotInvestmentsColumn},
+			Bidi:    false,
+		},
+		"Household",
+		"SnapshotInvestment",
 	)
 	graph.MustAddE(
 		"users",
@@ -730,6 +813,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"HouseholdCurrency",
 	)
 	graph.MustAddE(
+		"snapshot_investments",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   investment.SnapshotInvestmentsTable,
+			Columns: []string{investment.SnapshotInvestmentsColumn},
+			Bidi:    false,
+		},
+		"Investment",
+		"SnapshotInvestment",
+	)
+	graph.MustAddE(
 		"account",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -902,6 +997,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
+			Table:   snapshotaccount.HouseholdTable,
+			Columns: []string{snapshotaccount.HouseholdColumn},
+			Bidi:    false,
+		},
+		"SnapshotAccount",
+		"Household",
+	)
+	graph.MustAddE(
+		"account",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   snapshotaccount.AccountTable,
+			Columns: []string{snapshotaccount.AccountColumn},
+			Bidi:    false,
+		},
+		"SnapshotAccount",
+		"Account",
+	)
+	graph.MustAddE(
+		"household",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
 			Table:   snapshotentry.HouseholdTable,
 			Columns: []string{snapshotentry.HouseholdColumn},
 			Bidi:    false,
@@ -944,6 +1063,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SnapshotEntry",
 		"Snapshot",
+	)
+	graph.MustAddE(
+		"household",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   snapshotinvestment.HouseholdTable,
+			Columns: []string{snapshotinvestment.HouseholdColumn},
+			Bidi:    false,
+		},
+		"SnapshotInvestment",
+		"Household",
+	)
+	graph.MustAddE(
+		"investment",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   snapshotinvestment.InvestmentTable,
+			Columns: []string{snapshotinvestment.InvestmentColumn},
+			Bidi:    false,
+		},
+		"SnapshotInvestment",
+		"Investment",
 	)
 	graph.MustAddE(
 		"household",
@@ -1366,6 +1509,20 @@ func (f *AccountFilter) WhereArchived(p entql.BoolP) {
 	f.Where(p.Field(account.FieldArchived))
 }
 
+// WhereHasSnapshotAccounts applies a predicate to check if query has an edge snapshot_accounts.
+func (f *AccountFilter) WhereHasSnapshotAccounts() {
+	f.Where(entql.HasEdge("snapshot_accounts"))
+}
+
+// WhereHasSnapshotAccountsWith applies a predicate to check if query has an edge snapshot_accounts with a given conditions (other predicates).
+func (f *AccountFilter) WhereHasSnapshotAccountsWith(preds ...predicate.SnapshotAccount) {
+	f.Where(entql.HasEdgeWith("snapshot_accounts", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // WhereHasHousehold applies a predicate to check if query has an edge household.
 func (f *AccountFilter) WhereHasHousehold() {
 	f.Where(entql.HasEdge("household"))
@@ -1499,6 +1656,34 @@ func (f *HouseholdFilter) WhereLocale(p entql.StringP) {
 // WhereIsDemo applies the entql bool predicate on the is_demo field.
 func (f *HouseholdFilter) WhereIsDemo(p entql.BoolP) {
 	f.Where(p.Field(household.FieldIsDemo))
+}
+
+// WhereHasSnapshotAccounts applies a predicate to check if query has an edge snapshot_accounts.
+func (f *HouseholdFilter) WhereHasSnapshotAccounts() {
+	f.Where(entql.HasEdge("snapshot_accounts"))
+}
+
+// WhereHasSnapshotAccountsWith applies a predicate to check if query has an edge snapshot_accounts with a given conditions (other predicates).
+func (f *HouseholdFilter) WhereHasSnapshotAccountsWith(preds ...predicate.SnapshotAccount) {
+	f.Where(entql.HasEdgeWith("snapshot_accounts", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSnapshotInvestments applies a predicate to check if query has an edge snapshot_investments.
+func (f *HouseholdFilter) WhereHasSnapshotInvestments() {
+	f.Where(entql.HasEdge("snapshot_investments"))
+}
+
+// WhereHasSnapshotInvestmentsWith applies a predicate to check if query has an edge snapshot_investments with a given conditions (other predicates).
+func (f *HouseholdFilter) WhereHasSnapshotInvestmentsWith(preds ...predicate.SnapshotInvestment) {
+	f.Where(entql.HasEdgeWith("snapshot_investments", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasUsers applies a predicate to check if query has an edge users.
@@ -2055,6 +2240,26 @@ func (f *InvestmentFilter) WhereHouseholdID(p entql.IntP) {
 	f.Where(p.Field(investment.FieldHouseholdID))
 }
 
+// WhereArchived applies the entql bool predicate on the archived field.
+func (f *InvestmentFilter) WhereArchived(p entql.BoolP) {
+	f.Where(p.Field(investment.FieldArchived))
+}
+
+// WhereConfirmedAverageCost applies the entql string predicate on the confirmed_average_cost field.
+func (f *InvestmentFilter) WhereConfirmedAverageCost(p entql.StringP) {
+	f.Where(p.Field(investment.FieldConfirmedAverageCost))
+}
+
+// WhereAverageCostConfirmedAt applies the entql time.Time predicate on the average_cost_confirmed_at field.
+func (f *InvestmentFilter) WhereAverageCostConfirmedAt(p entql.TimeP) {
+	f.Where(p.Field(investment.FieldAverageCostConfirmedAt))
+}
+
+// WhereHoldingsChangedAt applies the entql time.Time predicate on the holdings_changed_at field.
+func (f *InvestmentFilter) WhereHoldingsChangedAt(p entql.TimeP) {
+	f.Where(p.Field(investment.FieldHoldingsChangedAt))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *InvestmentFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(investment.FieldName))
@@ -2098,6 +2303,20 @@ func (f *InvestmentFilter) WhereHouseholdCurrencyID(p entql.IntP) {
 // WhereUserID applies the entql int predicate on the user_id field.
 func (f *InvestmentFilter) WhereUserID(p entql.IntP) {
 	f.Where(p.Field(investment.FieldUserID))
+}
+
+// WhereHasSnapshotInvestments applies a predicate to check if query has an edge snapshot_investments.
+func (f *InvestmentFilter) WhereHasSnapshotInvestments() {
+	f.Where(entql.HasEdge("snapshot_investments"))
+}
+
+// WhereHasSnapshotInvestmentsWith applies a predicate to check if query has an edge snapshot_investments with a given conditions (other predicates).
+func (f *InvestmentFilter) WhereHasSnapshotInvestmentsWith(preds ...predicate.SnapshotInvestment) {
+	f.Where(entql.HasEdgeWith("snapshot_investments", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasAccount applies a predicate to check if query has an edge account.
@@ -2484,6 +2703,11 @@ func (f *SnapshotFilter) WhereUpdateTime(p entql.TimeP) {
 	f.Where(p.Field(snapshot.FieldUpdateTime))
 }
 
+// WhereFormatVersion applies the entql int predicate on the format_version field.
+func (f *SnapshotFilter) WhereFormatVersion(p entql.IntP) {
+	f.Where(p.Field(snapshot.FieldFormatVersion))
+}
+
 // WhereNote applies the entql string predicate on the note field.
 func (f *SnapshotFilter) WhereNote(p entql.StringP) {
 	f.Where(p.Field(snapshot.FieldNote))
@@ -2532,6 +2756,99 @@ func (f *SnapshotFilter) WhereHasSnapshotRatesWith(preds ...predicate.SnapshotRa
 }
 
 // addPredicate implements the predicateAdder interface.
+func (_q *SnapshotAccountQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the SnapshotAccountQuery builder.
+func (_q *SnapshotAccountQuery) Filter() *SnapshotAccountFilter {
+	return &SnapshotAccountFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *SnapshotAccountMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the SnapshotAccountMutation builder.
+func (m *SnapshotAccountMutation) Filter() *SnapshotAccountFilter {
+	return &SnapshotAccountFilter{config: m.config, predicateAdder: m}
+}
+
+// SnapshotAccountFilter provides a generic filtering capability at runtime for SnapshotAccountQuery.
+type SnapshotAccountFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *SnapshotAccountFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql int predicate on the id field.
+func (f *SnapshotAccountFilter) WhereID(p entql.IntP) {
+	f.Where(p.Field(snapshotaccount.FieldID))
+}
+
+// WhereCreateTime applies the entql time.Time predicate on the create_time field.
+func (f *SnapshotAccountFilter) WhereCreateTime(p entql.TimeP) {
+	f.Where(p.Field(snapshotaccount.FieldCreateTime))
+}
+
+// WhereHouseholdID applies the entql int predicate on the household_id field.
+func (f *SnapshotAccountFilter) WhereHouseholdID(p entql.IntP) {
+	f.Where(p.Field(snapshotaccount.FieldHouseholdID))
+}
+
+// WhereAccountID applies the entql int predicate on the account_id field.
+func (f *SnapshotAccountFilter) WhereAccountID(p entql.IntP) {
+	f.Where(p.Field(snapshotaccount.FieldAccountID))
+}
+
+// WhereBalance applies the entql float64 predicate on the balance field.
+func (f *SnapshotAccountFilter) WhereBalance(p entql.Float64P) {
+	f.Where(p.Field(snapshotaccount.FieldBalance))
+}
+
+// WhereArchived applies the entql bool predicate on the archived field.
+func (f *SnapshotAccountFilter) WhereArchived(p entql.BoolP) {
+	f.Where(p.Field(snapshotaccount.FieldArchived))
+}
+
+// WhereHasHousehold applies a predicate to check if query has an edge household.
+func (f *SnapshotAccountFilter) WhereHasHousehold() {
+	f.Where(entql.HasEdge("household"))
+}
+
+// WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
+func (f *SnapshotAccountFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
+	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAccount applies a predicate to check if query has an edge account.
+func (f *SnapshotAccountFilter) WhereHasAccount() {
+	f.Where(entql.HasEdge("account"))
+}
+
+// WhereHasAccountWith applies a predicate to check if query has an edge account with a given conditions (other predicates).
+func (f *SnapshotAccountFilter) WhereHasAccountWith(preds ...predicate.Account) {
+	f.Where(entql.HasEdgeWith("account", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (_q *SnapshotEntryQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -2560,7 +2877,7 @@ type SnapshotEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SnapshotEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2683,6 +3000,119 @@ func (f *SnapshotEntryFilter) WhereHasSnapshotWith(preds ...predicate.Snapshot) 
 }
 
 // addPredicate implements the predicateAdder interface.
+func (_q *SnapshotInvestmentQuery) addPredicate(pred func(s *sql.Selector)) {
+	_q.predicates = append(_q.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the SnapshotInvestmentQuery builder.
+func (_q *SnapshotInvestmentQuery) Filter() *SnapshotInvestmentFilter {
+	return &SnapshotInvestmentFilter{config: _q.config, predicateAdder: _q}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *SnapshotInvestmentMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the SnapshotInvestmentMutation builder.
+func (m *SnapshotInvestmentMutation) Filter() *SnapshotInvestmentFilter {
+	return &SnapshotInvestmentFilter{config: m.config, predicateAdder: m}
+}
+
+// SnapshotInvestmentFilter provides a generic filtering capability at runtime for SnapshotInvestmentQuery.
+type SnapshotInvestmentFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *SnapshotInvestmentFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql int predicate on the id field.
+func (f *SnapshotInvestmentFilter) WhereID(p entql.IntP) {
+	f.Where(p.Field(snapshotinvestment.FieldID))
+}
+
+// WhereCreateTime applies the entql time.Time predicate on the create_time field.
+func (f *SnapshotInvestmentFilter) WhereCreateTime(p entql.TimeP) {
+	f.Where(p.Field(snapshotinvestment.FieldCreateTime))
+}
+
+// WhereHouseholdID applies the entql int predicate on the household_id field.
+func (f *SnapshotInvestmentFilter) WhereHouseholdID(p entql.IntP) {
+	f.Where(p.Field(snapshotinvestment.FieldHouseholdID))
+}
+
+// WhereInvestmentID applies the entql int predicate on the investment_id field.
+func (f *SnapshotInvestmentFilter) WhereInvestmentID(p entql.IntP) {
+	f.Where(p.Field(snapshotinvestment.FieldInvestmentID))
+}
+
+// WhereQuantity applies the entql float64 predicate on the quantity field.
+func (f *SnapshotInvestmentFilter) WhereQuantity(p entql.Float64P) {
+	f.Where(p.Field(snapshotinvestment.FieldQuantity))
+}
+
+// WhereAverageCost applies the entql float64 predicate on the average_cost field.
+func (f *SnapshotInvestmentFilter) WhereAverageCost(p entql.Float64P) {
+	f.Where(p.Field(snapshotinvestment.FieldAverageCost))
+}
+
+// WhereMarketPrice applies the entql float64 predicate on the market_price field.
+func (f *SnapshotInvestmentFilter) WhereMarketPrice(p entql.Float64P) {
+	f.Where(p.Field(snapshotinvestment.FieldMarketPrice))
+}
+
+// WhereAverageConfirmedAt applies the entql time.Time predicate on the average_confirmed_at field.
+func (f *SnapshotInvestmentFilter) WhereAverageConfirmedAt(p entql.TimeP) {
+	f.Where(p.Field(snapshotinvestment.FieldAverageConfirmedAt))
+}
+
+// WhereNeedsReview applies the entql bool predicate on the needs_review field.
+func (f *SnapshotInvestmentFilter) WhereNeedsReview(p entql.BoolP) {
+	f.Where(p.Field(snapshotinvestment.FieldNeedsReview))
+}
+
+// WhereArchived applies the entql bool predicate on the archived field.
+func (f *SnapshotInvestmentFilter) WhereArchived(p entql.BoolP) {
+	f.Where(p.Field(snapshotinvestment.FieldArchived))
+}
+
+// WhereHasHousehold applies a predicate to check if query has an edge household.
+func (f *SnapshotInvestmentFilter) WhereHasHousehold() {
+	f.Where(entql.HasEdge("household"))
+}
+
+// WhereHasHouseholdWith applies a predicate to check if query has an edge household with a given conditions (other predicates).
+func (f *SnapshotInvestmentFilter) WhereHasHouseholdWith(preds ...predicate.Household) {
+	f.Where(entql.HasEdgeWith("household", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasInvestment applies a predicate to check if query has an edge investment.
+func (f *SnapshotInvestmentFilter) WhereHasInvestment() {
+	f.Where(entql.HasEdge("investment"))
+}
+
+// WhereHasInvestmentWith applies a predicate to check if query has an edge investment with a given conditions (other predicates).
+func (f *SnapshotInvestmentFilter) WhereHasInvestmentWith(preds ...predicate.Investment) {
+	f.Where(entql.HasEdgeWith("investment", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (_q *SnapshotRateQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -2711,7 +3141,7 @@ type SnapshotRateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SnapshotRateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2842,7 +3272,7 @@ type TransactionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2997,7 +3427,7 @@ type TransactionCategoryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionCategoryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3100,7 +3530,7 @@ type TransactionEntryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TransactionEntryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3212,7 +3642,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3389,7 +3819,7 @@ type UserHouseholdFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserHouseholdFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3501,7 +3931,7 @@ type UserKeyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserKeyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[17].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

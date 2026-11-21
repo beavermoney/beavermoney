@@ -157,7 +157,7 @@ func main() {
 		// We recommend adjusting this value in production,
 		EnableTracing:    true,
 		TracesSampleRate: 1.0,
-		SendDefaultPII:   true,
+		DataCollection:   &sentry.DataCollection{},
 		Integrations: func(integrations []sentry.Integration) []sentry.Integration {
 			return append(integrations, sentryotel.NewOtelIntegration())
 		},
@@ -277,6 +277,7 @@ func main() {
 		),
 	)
 	gqlHandler.Use(entgql.Transactioner{TxOpener: entClient})
+	gqlHandler.AroundOperations(gql.WithSnapshotReviewCache)
 
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))

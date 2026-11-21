@@ -1702,6 +1702,26 @@ func (_q *InvestmentQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				selectedFields = append(selectedFields, investment.FieldHouseholdID)
 				fieldSeen[investment.FieldHouseholdID] = struct{}{}
 			}
+		case "archived":
+			if _, ok := fieldSeen[investment.FieldArchived]; !ok {
+				selectedFields = append(selectedFields, investment.FieldArchived)
+				fieldSeen[investment.FieldArchived] = struct{}{}
+			}
+		case "confirmedAverageCost":
+			if _, ok := fieldSeen[investment.FieldConfirmedAverageCost]; !ok {
+				selectedFields = append(selectedFields, investment.FieldConfirmedAverageCost)
+				fieldSeen[investment.FieldConfirmedAverageCost] = struct{}{}
+			}
+		case "averageCostConfirmedAt":
+			if _, ok := fieldSeen[investment.FieldAverageCostConfirmedAt]; !ok {
+				selectedFields = append(selectedFields, investment.FieldAverageCostConfirmedAt)
+				fieldSeen[investment.FieldAverageCostConfirmedAt] = struct{}{}
+			}
+		case "holdingsChangedAt":
+			if _, ok := fieldSeen[investment.FieldHoldingsChangedAt]; !ok {
+				selectedFields = append(selectedFields, investment.FieldHoldingsChangedAt)
+				fieldSeen[investment.FieldHoldingsChangedAt] = struct{}{}
+			}
 		case "name":
 			if _, ok := fieldSeen[investment.FieldName]; !ok {
 				selectedFields = append(selectedFields, investment.FieldName)
@@ -2173,6 +2193,11 @@ func (_q *SnapshotQuery) collectField(ctx context.Context, oneNode bool, opCtx *
 			if _, ok := fieldSeen[snapshot.FieldUpdateTime]; !ok {
 				selectedFields = append(selectedFields, snapshot.FieldUpdateTime)
 				fieldSeen[snapshot.FieldUpdateTime] = struct{}{}
+			}
+		case "formatVersion":
+			if _, ok := fieldSeen[snapshot.FieldFormatVersion]; !ok {
+				selectedFields = append(selectedFields, snapshot.FieldFormatVersion)
+				fieldSeen[snapshot.FieldFormatVersion] = struct{}{}
 			}
 		case "note":
 			if _, ok := fieldSeen[snapshot.FieldNote]; !ok {

@@ -24,6 +24,8 @@ type Snapshot struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// FormatVersion holds the value of the "format_version" field.
+	FormatVersion int `json:"format_version,omitempty"`
 	// Optional user note for this Snapshot
 	Note string `json:"note,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -84,7 +86,7 @@ func (*Snapshot) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case snapshot.FieldID, snapshot.FieldHouseholdID:
+		case snapshot.FieldID, snapshot.FieldHouseholdID, snapshot.FieldFormatVersion:
 			values[i] = new(sql.NullInt64)
 		case snapshot.FieldNote:
 			values[i] = new(sql.NullString)
@@ -128,6 +130,12 @@ func (_m *Snapshot) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field update_time", values[i])
 			} else if value.Valid {
 				_m.UpdateTime = value.Time
+			}
+		case snapshot.FieldFormatVersion:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field format_version", values[i])
+			} else if value.Valid {
+				_m.FormatVersion = int(value.Int64)
 			}
 		case snapshot.FieldNote:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -194,6 +202,9 @@ func (_m *Snapshot) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(_m.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("format_version=")
+	builder.WriteString(fmt.Sprintf("%v", _m.FormatVersion))
 	builder.WriteString(", ")
 	builder.WriteString("note=")
 	builder.WriteString(_m.Note)

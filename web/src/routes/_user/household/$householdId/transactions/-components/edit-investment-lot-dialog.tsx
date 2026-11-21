@@ -66,6 +66,7 @@ export type EditLotAccount = {
 }
 
 type EditInvestmentLotDialogProps = {
+  isTransfer?: boolean
   lotId: string
   currentAmount: string
   currentPrice: string
@@ -76,6 +77,7 @@ type EditInvestmentLotDialogProps = {
 }
 
 export function EditInvestmentLotDialog({
+  isTransfer = false,
   lotId,
   currentAmount,
   currentPrice,
@@ -87,7 +89,9 @@ export function EditInvestmentLotDialog({
   const { t } = useLingui()
   const formSchema = z.object({
     shares: z.number().positive(t`Shares must be positive`),
-    pricePerShare: z.number().positive(t`Price per share must be positive`),
+    pricePerShare: isTransfer
+      ? z.number().nonnegative()
+      : z.number().positive(t`Price per share must be positive`),
     accountId: z.string().min(1, t`Please select an account`),
     investmentId: z.string().min(1, t`Please select an investment`),
   })
@@ -112,7 +116,7 @@ export function EditInvestmentLotDialog({
   const form = useForm({
     defaultValues: {
       shares: Math.abs(parseFloat(currentAmount)),
-      pricePerShare: parseFloat(currentPrice),
+      pricePerShare: isTransfer ? 0 : parseFloat(currentPrice),
       accountId: currentAccountId,
       investmentId: currentInvestmentId,
     },
@@ -380,42 +384,44 @@ export function EditInvestmentLotDialog({
                   )
                 }}
               />
-              <form.Field
-                name="pricePerShare"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Stack
-                      direction="vertical"
-                      gap={2}
-                      data-invalid={isInvalid}
-                    >
-                      <CurrencyInput
-                        aria-label={t`Price per share`}
-                        id={field.name}
-                        name={field.name}
-                        placeholder={t`Please enter a price`}
-                        onValueChange={(e) => {
-                          field.handleChange(e.floatValue!)
-                        }}
-                        value={field.state.value}
-                        locale={household.locale}
-                        currency={
-                          selectedAccount?.householdCurrency.code ??
-                          displayCurrencyCode
-                        }
-                        onBlur={field.handleBlur}
-                        aria-invalid={isInvalid}
-                        decimalScale={8}
-                      />
-                      {isInvalid && (
-                        <FormError errors={field.state.meta.errors} />
-                      )}
-                    </Stack>
-                  )
-                }}
-              />
+              {!isTransfer && (
+                <form.Field
+                  name="pricePerShare"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid
+                    return (
+                      <Stack
+                        direction="vertical"
+                        gap={2}
+                        data-invalid={isInvalid}
+                      >
+                        <CurrencyInput
+                          aria-label={t`Price per share`}
+                          id={field.name}
+                          name={field.name}
+                          placeholder={t`Please enter a price`}
+                          onValueChange={(e) => {
+                            field.handleChange(e.floatValue!)
+                          }}
+                          value={field.state.value}
+                          locale={household.locale}
+                          currency={
+                            selectedAccount?.householdCurrency.code ??
+                            displayCurrencyCode
+                          }
+                          onBlur={field.handleBlur}
+                          aria-invalid={isInvalid}
+                          decimalScale={8}
+                        />
+                        {isInvalid && (
+                          <FormError errors={field.state.meta.errors} />
+                        )}
+                      </Stack>
+                    )
+                  }}
+                />
+              )}
             </FormLayout>
           </Stack>
 

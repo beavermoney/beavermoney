@@ -1,3 +1,4 @@
+import { requestAverageReview } from '@/hooks/average-cost-review-store'
 import { TransactionFormActions } from '@/components/transaction-form-actions'
 import { TransactionOption } from '@/components/transaction-options'
 import { useLingui } from '@lingui/react/macro'
@@ -53,6 +54,7 @@ const newSellFragment = graphql`
             code
           }
           investments {
+            archived
             id
             ...transactionInvestmentPickerFragment
           }
@@ -114,7 +116,26 @@ export function NewSell({ fragmentRef }: NewSellProps) {
   const submissionIntent = useRef<'close' | 'again' | null>(null)
   const { close: closeComposer } = useLogTransaction()
 
-  const data = useFragment(newSellFragment, fragmentRef)
+  const source = useFragment(newSellFragment, fragmentRef)
+  const data = {
+    ...source,
+    accounts: {
+      ...source.accounts,
+      edges: source.accounts.edges?.map((edge) =>
+        edge?.node
+          ? {
+              ...edge,
+              node: {
+                ...edge.node,
+                investments: edge.node.investments?.filter(
+                  (holding) => !holding.archived,
+                ),
+              },
+            }
+          : edge,
+      ),
+    },
+  }
 
   const [commitMutation, isMutationInFlight] =
     useMutation<newSellMutation>(newSellMutation)
@@ -201,6 +222,7 @@ export function NewSell({ fragmentRef }: NewSellProps) {
 
       match(result)
         .with({ status: 'success' }, ({ data: resultData }) => {
+          if (!value.pending) requestAverageReview([value.investmentId])
           invariant(
             resultData.sellInvestment.node,
             'No data returned from mutation',
@@ -261,7 +283,8 @@ export function NewSell({ fragmentRef }: NewSellProps) {
   )
 
   // Get available investments for selected account
-  const availableInvestments = selectedAccount?.investments ?? []
+  const availableInvestments =
+    selectedAccount?.investments?.filter((i) => !i.archived) ?? []
 
   const optionValues = useStore(form.store, (state) => state.values)
   const selectedOptions = [...(optionValues.pending ? [t`Pending`] : [])]

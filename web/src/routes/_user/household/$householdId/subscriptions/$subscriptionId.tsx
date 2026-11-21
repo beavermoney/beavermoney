@@ -1,10 +1,11 @@
+import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Stack } from '@astryxdesign/core/Stack'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
   loadQuery,
@@ -14,7 +15,6 @@ import {
 import { graphql } from 'relay-runtime'
 import { EditSubscription } from './-components/edit-subscription'
 
-import { identity } from 'lodash-es'
 import invariant from 'tiny-invariant'
 import { SubscriptionIdQuery } from './__generated__/SubscriptionIdQuery.graphql'
 
@@ -63,7 +63,7 @@ function RouteComponent() {
     ).subscribe({})
   })
 
-  const navigate = useNavigate()
+  const goBack = useBackNavigation()
 
   invariant(data.node, t`Subscription not found`)
 
@@ -71,7 +71,13 @@ function RouteComponent() {
     <Stack direction="vertical" gap={4}>
       <Stack direction="vertical" gap={4}>
         <Button
-          onClick={() => navigate({ to: '..', search: identity })}
+          onClick={() =>
+            goBack({
+              to: '/household/$householdId/subscriptions',
+              params: { householdId: params.householdId },
+              search: (previous) => previous,
+            })
+          }
           label={t`Back`}
           width="fit-content"
           variant={'secondary'}

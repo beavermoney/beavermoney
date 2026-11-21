@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<94996455e420a3ffb4cba8984bdb7bbf>>
+ * @generated SignedSource<<f3b41f0cd276140e474e8b22a747f607>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,12 @@ import { ConcreteRequest } from 'relay-runtime';
 export type CreateSnapshotInput = {
   note?: string | null | undefined;
 };
+export type ReviewAccountVersion = {
+  id: string;
+  revision: string;
+};
 export type snapshotDialogMutation$variables = {
+  expectedRevisions?: ReadonlyArray<ReviewAccountVersion> | null | undefined;
   input: CreateSnapshotInput;
 };
 export type snapshotDialogMutation$data = {
@@ -29,17 +34,25 @@ export type snapshotDialogMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "expectedRevisions"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "input"
+},
+v2 = [
   {
     "alias": null,
     "args": [
+      {
+        "kind": "Variable",
+        "name": "expectedRevisions",
+        "variableName": "expectedRevisions"
+      },
       {
         "kind": "Variable",
         "name": "input",
@@ -82,32 +95,38 @@ v1 = [
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "snapshotDialogMutation",
-    "selections": (v1/*: any*/),
+    "selections": (v2/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "snapshotDialogMutation",
-    "selections": (v1/*: any*/)
+    "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "797472e88c6ea224733f862a1f883197",
+    "cacheID": "0a0ac322fcafa25a608bf5348b9aa8d5",
     "id": null,
     "metadata": {},
     "name": "snapshotDialogMutation",
     "operationKind": "mutation",
-    "text": "mutation snapshotDialogMutation(\n  $input: CreateSnapshotInput!\n) {\n  createSnapshot(input: $input) {\n    node {\n      id\n      createTime\n    }\n  }\n}\n"
+    "text": "mutation snapshotDialogMutation(\n  $input: CreateSnapshotInput!\n  $expectedRevisions: [ReviewAccountVersion!]\n) {\n  createSnapshot(input: $input, expectedRevisions: $expectedRevisions) {\n    node {\n      id\n      createTime\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "696ce8d90af204bb449e717ddee88485";
+(node as any).hash = "a83859dccdae682b4ecdaee5e13462b8";
 
 export default node;

@@ -6,6 +6,7 @@ extend type Household {
 }
 
 extend type Account {
+  reviewRevision: String!
   """
   Most recent transaction involving this account, either through a cash entry
   or an investment lot. Null when the account has never been used.
@@ -22,38 +23,65 @@ extend type TransactionCategory {
 }
 
 extend type Investment {
+  averageNeedsReview: Boolean!
   """
   Most recent transaction involving this investment. Null when the investment
   has no lots.
   """
   latestTransaction: Transaction
 
-  """
-  Cost basis of currently held shares using the moving-average-cost method.
-  Recomputed on read by replaying lots in chronological order. Sells reduce
-  the basis proportionally at the current average cost (not at the sell price),
-  so realized gains/losses do not affect this value. Denominated in the
-  investment's household currency.
-  """
-  costBasis: String!
+  """Remaining basis derived only from the user-confirmed average; null until reviewed."""
+  costBasis: String
+  """Last user-entered average, possibly needing review."""
+  averageCost: String
+  """Unavailable until average cost is confirmed after holding changes."""
+  unrealizedReturn: String
+  """Decimal fraction; unavailable for unconfirmed or zero cost basis."""
+  unrealizedReturnPercent: String
+}
 
-  """
-  Average cost per held share (costBasis / amount). Returns "0" when no
-  shares are held, to avoid divide-by-zero.
-  """
-  averageCost: String!
-
-  """
-  Unrealized return on currently held shares: value - costBasis. Positive
-  means unrealized gain, negative means unrealized loss. Denominated in the
-  investment's household currency.
-  """
-  unrealizedReturn: String!
-
-  """
-  Unrealized return as a decimal fraction: (value - costBasis) / costBasis.
-  E.g. "0.15" represents a 15% unrealized gain. Returns "0" when costBasis
-  is zero, to avoid divide-by-zero.
-  """
-  unrealizedReturnPercent: String!
+extend type Snapshot {
+  """The complete state as of this capture, resolved from shared immutable observations."""
+  review: SnapshotReview
+}
+type SnapshotReview {
+  version: Int!
+  complete: Boolean!
+  activeAccountIds: [ID!]!
+  accounts: [SnapshotAccountState!]!
+  rates: [SnapshotRateState!]!
+}
+# Historical projections deliberately have no Relay `id`: each snapshot owns
+# its own inline state, while accountId/investmentId link to the live identity.
+type SnapshotAccountState {
+  accountId: ID!
+  icon: String
+  name: String!
+  type: String!
+  category: String
+  ownerId: ID!
+  ownerName: String!
+  currency: String!
+  cash: String!
+  value: String!
+  archived: Boolean!
+  holdings: [SnapshotInvestmentState!]!
+}
+type SnapshotInvestmentState {
+  investmentId: ID!
+  name: String!
+  symbol: String!
+  currency: String!
+  quantity: String!
+  price: String!
+  value: String!
+  average: String
+  confirmedAt: Time
+  needsReview: Boolean!
+  archived: Boolean!
+}
+type SnapshotRateState {
+  from: String!
+  to: String!
+  rate: String!
 }

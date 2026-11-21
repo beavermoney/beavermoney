@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b0a39e256595b460a9e57e51ad9350d6>>
+ * @generated SignedSource<<9e5ff25f54b5fddc3180a4cee8259318>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,6 +21,7 @@ export type newBuyFragment$data = {
         };
         readonly id: string;
         readonly investments: ReadonlyArray<{
+          readonly archived: boolean;
           readonly id: string;
           readonly " $fragmentSpreads": FragmentRefs<"transactionInvestmentPickerFragment">;
         }> | null | undefined;
@@ -204,6 +205,13 @@ return {
                   "name": "investments",
                   "plural": true,
                   "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "archived",
+                      "storageKey": null
+                    },
                     (v0/*: any*/),
                     {
                       "kind": "InlineDataFragmentSpread",
@@ -277,6 +285,6 @@ return {
 };
 })();
 
-(node as any).hash = "132e451808721fa16da6dc68247ad216";
+(node as any).hash = "bf47b2ca06c5ecc20f001b662d0f39e6";
 
 export default node;

@@ -21,6 +21,8 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldFormatVersion holds the string denoting the format_version field in the database.
+	FieldFormatVersion = "format_version"
 	// FieldNote holds the string denoting the note field in the database.
 	FieldNote = "note"
 	// EdgeHousehold holds the string denoting the household edge name in mutations.
@@ -60,6 +62,7 @@ var Columns = []string{
 	FieldHouseholdID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldFormatVersion,
 	FieldNote,
 }
 
@@ -87,6 +90,8 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// DefaultFormatVersion holds the default value on creation for the "format_version" field.
+	DefaultFormatVersion int
 )
 
 // OrderOption defines the ordering options for the Snapshot queries.
@@ -110,6 +115,11 @@ func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdateTime orders the results by the update_time field.
 func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
+}
+
+// ByFormatVersion orders the results by the format_version field.
+func ByFormatVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFormatVersion, opts...).ToFunc()
 }
 
 // ByNote orders the results by the note field.
