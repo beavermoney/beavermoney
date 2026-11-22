@@ -1,3 +1,4 @@
+import { startupScreenPlugin } from './startup/loading-screen.mjs'
 import { defineConfig } from 'vitest/config'
 import { lingui } from '@lingui/vite-plugin'
 import { devtools } from '@tanstack/devtools-vite'
@@ -29,6 +30,7 @@ const config = defineConfig({
     },
   },
   plugins: [
+    startupScreenPlugin(),
     relay,
     lingui(),
     devtools({

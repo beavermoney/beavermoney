@@ -5,7 +5,7 @@ import { startApplication } from './start-application'
 beforeEach(() => {
   localStorage.clear()
   document.body.innerHTML =
-    '<section id="app-startup"><p id="app-startup-status">Loading…</p><button id="app-startup-retry" hidden>Reload</button></section><div id="app"></div>'
+    '<section id="app-startup"><p id="app-startup-status">Loading…</p><section id="app-startup-retry" hidden><button><span class="astryx-text">Reload</span></button></section></section><div id="app"></div>'
 })
 afterEach(() => vi.restoreAllMocks())
 
@@ -39,7 +39,10 @@ it('shows a reload action when application loading fails', async () => {
   )
   const retry = document.getElementById('app-startup-retry')!
   expect(retry.hidden).toBe(false)
-  expect(typeof retry.onclick).toBe('function')
+  expect(typeof retry.querySelector('button')?.onclick).toBe('function')
+  expect(
+    document.getElementById('app-startup')?.hasAttribute('data-failed'),
+  ).toBe(true)
 })
 
 it('uses the saved language and appearance before the application loads', async () => {

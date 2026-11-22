@@ -21,14 +21,17 @@ export async function startApplication(load: () => Promise<ApplicationModule>) {
     const app = await load()
     app.mountApp(() => startup?.remove())
   } catch {
+    startup?.setAttribute('data-failed', '')
     if (status)
       status.textContent = chinese
         ? '无法加载应用，请重试。'
         : 'Could not load the app. Please try again.'
     if (retry) {
       retry.hidden = false
-      retry.textContent = chinese ? '重新加载' : 'Reload'
-      retry.onclick = () => location.reload()
+      const button = retry.querySelector('button') ?? retry
+      const label = button.querySelector('.astryx-text') ?? button
+      label.textContent = chinese ? '重新加载' : 'Reload'
+      button.onclick = () => location.reload()
     }
   }
 }

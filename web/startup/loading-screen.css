@@ -1,0 +1,28 @@
+/* Placement only; component appearance and tokens are extracted from Astryx. */
+#app-startup {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: max(var(--spacing-6), env(safe-area-inset-top))
+    max(var(--spacing-6), env(safe-area-inset-right))
+    max(var(--spacing-6), env(safe-area-inset-bottom))
+    max(var(--spacing-6), env(safe-area-inset-left));
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  color-scheme: light dark;
+  text-align: center;
+}
+#app-startup[data-theme='light'] {
+  color-scheme: light;
+}
+#app-startup[data-theme='dark'] {
+  color-scheme: dark;
+}
+#app-startup [hidden] {
+  display: none !important;
+}
+#app-startup[data-failed] #app-startup-indicator {
+  visibility: hidden;
+}
