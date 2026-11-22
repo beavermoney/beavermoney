@@ -239,7 +239,7 @@ msgid "Account value"
 msgstr "账户价值"
 
 #: src/components/app-sidebar.tsx
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
@@ -564,7 +564,7 @@ msgstr "现金流"
 msgid "Cash or cash-equivalent accounts, such as checking or savings"
 msgstr "现金或现金等价物账户，例如支票账户或储蓄账户"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/categories/-components/categories-panel.tsx
 msgid "Categories"
@@ -734,7 +734,7 @@ msgstr "无法加载商户，请重新输入以重试。"
 msgid "Could not load more transactions."
 msgstr "无法加载更多交易。"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 msgid "Could not load search results. Type to retry."
 msgstr "无法加载搜索结果，请重新输入以重试。"
 
@@ -1235,7 +1235,7 @@ msgstr "返回"
 msgid "Go home"
 msgstr "返回首页"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 msgid "Go to"
 msgstr "前往"
 
@@ -1426,7 +1426,7 @@ msgstr "投资代码不能为空。"
 msgid "Investment symbol must be at most 32 characters."
 msgstr "投资代码不能超过 32 个字符。"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/investments/-components/investments-panel.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/investment-start.tsx
@@ -1445,7 +1445,7 @@ msgstr "加入 Discord 社区"
 msgid "Joint"
 msgstr "共同持有"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/components/review-journal.tsx
 #: src/constant.ts
 msgid "Journal"
@@ -1483,7 +1483,7 @@ msgstr "上次确认的平均成本"
 msgid "Last week"
 msgstr "上周"
 
-#: src/components/average-cost-prompt.tsx
+#: src/components/average-cost-prompt-surface.tsx
 msgid "Later"
 msgstr "稍后"
 
@@ -1528,7 +1528,10 @@ msgstr "流动资金"
 msgid "Load older reviews"
 msgstr "加载更早的回顾"
 
+#: src/components/average-cost-prompt.tsx
+#: src/components/command-menu.tsx
 #: src/components/route-content-boundary.tsx
+#: src/components/transaction-composer/transaction-entry.tsx
 msgid "Loading content"
 msgstr "正在加载内容"
 
@@ -1536,7 +1539,7 @@ msgstr "正在加载内容"
 msgid "Loading daily totals"
 msgstr "正在加载每日汇总"
 
-#: src/components/average-cost-prompt.tsx
+#: src/components/average-cost-prompt-surface.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Loading holding…"
@@ -1668,7 +1671,7 @@ msgstr "已更新商户"
 msgid "Merchant: {0}"
 msgstr "商户：{0}"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/merchants/-components/merchants-panel.tsx
 msgid "Merchants"
@@ -1814,12 +1817,12 @@ msgstr "新建"
 msgid "New {0}"
 msgstr "新建{0}"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/new-account.tsx
 msgid "New Account"
 msgstr "新建账户"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/routes/_user/household/$householdId/categories/-components/new-category.tsx
 msgid "New Category"
 msgstr "新建分类"
@@ -1828,12 +1831,12 @@ msgstr "新建分类"
 msgid "New entry"
 msgstr "新建分录"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "New Investment"
 msgstr "新建投资"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/routes/_user/household/$householdId/subscriptions/-components/new-subscription.tsx
 msgid "New Subscription"
 msgstr "新建订阅"
@@ -1842,12 +1845,12 @@ msgstr "新建订阅"
 msgid "New to Beaver Money?"
 msgstr "初次使用 Beaver Money？"
 
-#: src/components/transaction-composer/transaction-entry.tsx
+#: src/components/transaction-composer/transaction-entry-surface.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "New transaction"
 msgstr "新建交易"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 msgid "New Transaction"
 msgstr "新建交易"
 
@@ -1910,7 +1913,7 @@ msgstr "未找到项目。"
 msgid "No locale found."
 msgstr "未找到地区格式。"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 msgid "No matching accounts, investments, merchants, or commands."
 msgstr "没有匹配的账户、投资、商户或命令。"
 
@@ -2402,11 +2405,11 @@ msgstr "搜索{0}"
 msgid "Search accounts"
 msgstr "搜索账户"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 msgid "Search accounts, investments and merchants"
 msgstr "搜索账户、投资和商户"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 msgid "Search accounts, symbols, merchants, or owners…"
 msgstr "搜索账户、代码、商户或所有者…"
 
@@ -2621,7 +2624,7 @@ msgstr "订阅名称不能超过 64 个字符。"
 msgid "Subscription not found"
 msgstr "未找到订阅"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/subscriptions/-components/subscriptions-panel.tsx
 msgid "Subscriptions"
@@ -2822,7 +2825,7 @@ msgstr "收取总额"
 msgid "Total received must be positive"
 msgstr "收取总额必须大于零"
 
-#: src/components/average-cost-prompt.tsx
+#: src/components/average-cost-prompt-surface.tsx
 msgid "Trade saved. Enter your updated average cost per share."
 msgstr "交易已保存。请输入更新后的每股平均成本。"
 
@@ -2862,7 +2865,7 @@ msgstr "交易类型"
 msgid "Transaction updated successfully!"
 msgstr "交易已更新！"
 
-#: src/components/command-menu.tsx
+#: src/components/command-menu-dialog.tsx
 #: src/constant.ts
 #: src/routes/_user/household/$householdId/merchants/-components/merchant-detail.tsx
 #: src/routes/_user/household/$householdId/merchants/-components/merchant-statistics.tsx
@@ -2969,7 +2972,7 @@ msgstr "保存此快照时，未实现收益暂不可用。"
 msgid "Update average"
 msgstr "更新平均成本"
 
-#: src/components/average-cost-prompt.tsx
+#: src/components/average-cost-prompt-surface.tsx
 msgid "Update average cost"
 msgstr "更新平均成本"
 
@@ -3051,7 +3054,7 @@ msgstr "昨天"
 msgid "You are not logged in"
 msgstr "你尚未登录"
 
-#: src/components/average-cost-prompt.tsx
+#: src/components/average-cost-prompt-surface.tsx
 msgid "You can also do this later from the holding or your next review."
 msgstr "你也可以稍后在持仓详情或下次回顾时更新。"
 

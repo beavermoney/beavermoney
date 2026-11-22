@@ -16,8 +16,56 @@
     <meta name="apple-mobile-web-app-title" content="Beaver Money" />
     <link rel="manifest" href="/manifest.json" />
     <title>Beaver Money</title>
+    <!-- This tiny, self-contained surface paints before application JS or CSS. -->
+    <style>
+      #app-startup {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: grid;
+        place-content: center;
+        gap: 1rem;
+        text-align: center;
+        padding: max(1.5rem, env(safe-area-inset-top))
+          max(1.5rem, env(safe-area-inset-right))
+          max(1.5rem, env(safe-area-inset-bottom))
+          max(1.5rem, env(safe-area-inset-left));
+        background: #fff;
+        color: #1b1b1b;
+        font:
+          1rem/1.5 system-ui,
+          sans-serif;
+      }
+      #app-startup strong {
+        font-size: 1.5rem;
+      }
+      #app-startup p {
+        margin: 0;
+      }
+      #app-startup button {
+        font: inherit;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+      }
+      #app-startup[data-theme='dark'] {
+        background: #1b1b1b;
+        color: #fff;
+      }
+      @media (prefers-color-scheme: dark) {
+        #app-startup:not([data-theme='light']) {
+          background: #1b1b1b;
+          color: #fff;
+        }
+      }
+    </style>
   </head>
   <body>
+    <section id="app-startup" aria-label="Beaver Money">
+      <strong>Beaver Money</strong>
+      <p id="app-startup-status" role="status">Loading…</p>
+      <button id="app-startup-retry" type="button" hidden>Reload</button>
+      <noscript>Enable JavaScript to open Beaver Money.</noscript>
+    </section>
     <div id="app"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

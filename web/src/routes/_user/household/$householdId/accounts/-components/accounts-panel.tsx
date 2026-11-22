@@ -17,7 +17,7 @@ import { Text } from '@astryxdesign/core/Text'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import currency from 'currency.js'
 import { groupBy } from 'lodash-es'
-import { Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { useFragment } from 'react-relay'
 import { graphql } from 'relay-runtime'
 import invariant from 'tiny-invariant'
@@ -29,8 +29,6 @@ import {
   calculateAllocationPercentage,
   getAccountDisplayValue,
 } from './account-ledger-utils'
-import { NetWorthChart } from './net-worth-chart'
-
 import {
   ACCOUNT_CATEGORY_APPLICABLE_TYPES,
   ACCOUNT_CATEGORY_LABEL,
@@ -40,6 +38,12 @@ import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { NodeType, useRegisterConnection } from '@/lib/relay'
+
+const NetWorthChart = lazy(() =>
+  import('./net-worth-chart').then((module) => ({
+    default: module.NetWorthChart,
+  })),
+)
 
 const AccountsPanelFragment = graphql`
   fragment accountsPanelFragment on Household

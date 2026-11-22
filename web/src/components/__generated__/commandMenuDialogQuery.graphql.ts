@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<73aef03d3f8ffd73e61e28cd861bc430>>
+ * @generated SignedSource<<1331f0f4e77742cc2604196d00bb529a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,11 +10,11 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type InvestmentType = "crypto" | "stock" | "%future added value";
-export type commandMenuQuery$variables = {
+export type commandMenuDialogQuery$variables = {
   householdId: string;
   viewUserIds?: ReadonlyArray<string> | null | undefined;
 };
-export type commandMenuQuery$data = {
+export type commandMenuDialogQuery$data = {
   readonly node: {
     readonly accounts?: {
       readonly edges: ReadonlyArray<{
@@ -62,9 +62,9 @@ export type commandMenuQuery$data = {
     };
   } | null | undefined;
 };
-export type commandMenuQuery = {
-  response: commandMenuQuery$data;
-  variables: commandMenuQuery$variables;
+export type commandMenuDialogQuery = {
+  response: commandMenuDialogQuery$data;
+  variables: commandMenuDialogQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -257,7 +257,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "commandMenuQuery",
+    "name": "commandMenuDialogQuery",
     "selections": [
       {
         "alias": null,
@@ -376,7 +376,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "commandMenuQuery",
+    "name": "commandMenuDialogQuery",
     "selections": [
       {
         "alias": null,
@@ -499,16 +499,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c0c9c48f576766e986186f0203e81a18",
+    "cacheID": "17cb4ce963daf8c3b9249ab1c15663fa",
     "id": null,
     "metadata": {},
-    "name": "commandMenuQuery",
+    "name": "commandMenuDialogQuery",
     "operationKind": "query",
-    "text": "query commandMenuQuery(\n  $householdId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $householdId) {\n    __typename\n    ... on Household {\n      merchants {\n        edges {\n          node {\n            id\n            name\n            icon\n          }\n        }\n      }\n      accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n        edges {\n          node {\n            id\n            name\n            icon\n            user {\n              name\n              id\n            }\n            householdCurrency {\n              code\n              id\n            }\n          }\n        }\n      }\n      investments(where: {archived: false, userIDIn: $viewUserIds, hasAccountWith: {archived: false}}) {\n        edges {\n          node {\n            id\n            name\n            symbol\n            type\n            account {\n              name\n              icon\n              user {\n                name\n                id\n              }\n              householdCurrency {\n                code\n                id\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query commandMenuDialogQuery(\n  $householdId: ID!\n  $viewUserIds: [ID!]\n) {\n  node(id: $householdId) {\n    __typename\n    ... on Household {\n      merchants {\n        edges {\n          node {\n            id\n            name\n            icon\n          }\n        }\n      }\n      accounts(where: {archived: false, userIDIn: $viewUserIds}) {\n        edges {\n          node {\n            id\n            name\n            icon\n            user {\n              name\n              id\n            }\n            householdCurrency {\n              code\n              id\n            }\n          }\n        }\n      }\n      investments(where: {archived: false, userIDIn: $viewUserIds, hasAccountWith: {archived: false}}) {\n        edges {\n          node {\n            id\n            name\n            symbol\n            type\n            account {\n              name\n              icon\n              user {\n                name\n                id\n              }\n              householdCurrency {\n                code\n                id\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1812bff8a096d1119d6d163321087edb";
+(node as any).hash = "6c78124a0a396fc90d7d3d20b3110074";
 
 export default node;

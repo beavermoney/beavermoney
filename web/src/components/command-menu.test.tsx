@@ -115,8 +115,8 @@ afterEach(() => {
 
 it('searches a holding by symbol and owner, then selects it with the keyboard', async () => {
   render(<CommandMenu />)
-  await screen.findByRole('option', { name: /Apple/ })
-  const input = screen.getByRole('combobox')
+  await screen.findByRole('option', { name: /Apple/ }, { timeout: 5000 })
+  const input = await screen.findByRole('combobox', {}, { timeout: 5000 })
   fireEvent.change(input, { target: { value: 'aapl joey' } })
   await waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(1))
   const option = screen.getByRole('option')
@@ -169,7 +169,9 @@ it('shows a useful empty state and retains the loading input while results are p
     }),
   )
   render(<CommandMenu />)
-  expect(screen.getByRole('combobox')).toBeTruthy()
+  expect(
+    await screen.findByRole('combobox', {}, { timeout: 5000 }),
+  ).toBeTruthy()
   expect(screen.queryAllByRole('option')).toHaveLength(0)
   await act(async () => resolve(data))
   fireEvent.change(screen.getByRole('combobox'), {
@@ -198,7 +200,7 @@ it('shows account and owner identity and opens the selected account directly', a
 
 it('searches a merchant, shows its identity and opens its detail after closing the palette', async () => {
   render(<CommandMenu />)
-  const input = screen.getByRole('combobox')
+  const input = await screen.findByRole('combobox', {}, { timeout: 5000 })
   fireEvent.change(input, { target: { value: 'grocery' } })
   const option = await screen.findByRole('option', { name: /Grocery Store/ })
   expect(
