@@ -1,4 +1,4 @@
-import { loadQuery } from 'react-relay'
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { environment } from '@/environment'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 import { parseDateRangeFromURL } from '@/lib/date-range'
@@ -27,7 +27,7 @@ export function loadMerchantDetail(
   start: string,
   end: string,
 ) {
-  return loadQuery<merchantDetailQuery>(
+  return loadRouteQuery<merchantDetailQuery>(
     environment,
     query,
     merchantDetailVariables(householdId, merchantId, start, end),

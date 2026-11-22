@@ -1,10 +1,11 @@
+import { presentedLocation } from '@/lib/presented-location'
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { RouteContentBoundary } from '@/components/route-content-boundary'
 import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
@@ -24,7 +25,6 @@ import {
 import { ArchiveIcon, EditIcon, MoreHorizontalIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
-  loadQuery,
   useFragment,
   useMutation,
   usePreloadedQuery,
@@ -46,14 +46,13 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<routeAccountIdQuery>(
+    return loadRouteQuery<routeAccountIdQuery>(
       environment,
       RouteAccountIdQuery,
       { id: params.accountId },
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const RouteAccountIdQuery = graphql`
@@ -89,7 +88,7 @@ function RouteComponent() {
   const navigate = useNavigate()
   const goBack = useBackNavigation()
   const isEditing = useRouterState({
-    select: (state) => state.location.pathname.endsWith('/edit'),
+    select: (state) => presentedLocation(state).pathname.endsWith('/edit'),
   })
 
   const data = usePreloadedQuery<routeAccountIdQuery>(

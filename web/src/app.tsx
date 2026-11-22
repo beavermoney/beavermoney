@@ -2,7 +2,6 @@ import { getHistoryViewKey } from '@/lib/history-view-key'
 import { AppI18nProvider } from '@/components/app-i18n-provider'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
-import { PendingComponent } from '@/components/pending-component'
 import ReactDOM from 'react-dom/client'
 
 import { routeTree } from './routeTree.gen'
@@ -26,8 +25,7 @@ Sentry.init({
 const router = createRouter({
   routeTree,
   context: {},
-  defaultPendingComponent: PendingComponent,
-  defaultPendingMs: 0,
+  defaultPendingMs: Infinity,
   defaultPendingMinMs: 0,
   defaultPreload: 'intent',
   defaultStructuralSharing: true,
@@ -47,7 +45,9 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export function mountApp(onCommit: () => void) {
+export async function mountApp(onCommit: () => void) {
+  // Keep the fixed HTML startup surface until the first route is ready.
+  await router.load()
   const rootElement = document.getElementById('app')
   if (!rootElement) throw new Error('Application root is missing')
   const root = ReactDOM.createRoot(rootElement)

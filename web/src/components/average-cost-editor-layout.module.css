@@ -1,0 +1,14 @@
+.editor {
+  width: 100%;
+  max-width: 32rem;
+  min-width: 0;
+}
+.summary,
+.controls {
+  height: calc(var(--spacing-8) * 3 + var(--spacing-4));
+  min-height: 0;
+}
+.feedback {
+  height: calc(var(--spacing-8) * 2);
+  min-height: 0;
+}

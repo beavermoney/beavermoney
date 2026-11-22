@@ -13,6 +13,8 @@
   color: var(--color-text-primary);
   color-scheme: light dark;
   text-align: center;
+  /* Bootstrap text must not move when the application font becomes available. */
+  font-family: system-ui, sans-serif;
 }
 #app-startup[data-theme='light'] {
   color-scheme: light;

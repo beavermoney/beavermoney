@@ -1,3 +1,5 @@
+import { presentedLocation } from '@/lib/presented-location'
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { TransactionEntry } from '@/components/transaction-composer/transaction-entry'
 import safeAreaStyles from '@/components/layouts/safe-area.module.css'
 import { AverageCostPrompt } from '@/components/average-cost-prompt'
@@ -29,7 +31,6 @@ import {
 import { useStore } from '@tanstack/react-store'
 import { useCallback } from 'react'
 import {
-  loadQuery,
   useMutation,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -44,7 +45,6 @@ import { AppShell } from '@astryxdesign/core/AppShell'
 import { CommandMenu } from '@/components/command-menu'
 import { GenericError } from '@/components/generic-error'
 import { NotFoundError } from '@/components/not-found-error'
-import { PendingComponent } from '@/components/pending-component'
 import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
 import { environment } from '@/environment'
 import {
@@ -138,14 +138,13 @@ export const Route = createFileRoute('/_user/household/$householdId')({
       throw error
     }
 
-    return loadQuery<routeHouseholdIdQuery>(
+    return loadRouteQuery<routeHouseholdIdQuery>(
       environment,
       routeHouseholdIdQuery,
       variables,
       { fetchPolicy: 'store-only' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 function RouteComponent() {
@@ -159,7 +158,9 @@ function RouteComponent() {
     queryRef,
   )
   const isMobile = useIsMobile()
-  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const pathname = useRouterState({
+    select: (s) => presentedLocation(s).pathname,
+  })
   const { isPrivacyModeEnabled, togglePrivacyMode } = usePrivacyMode()
   const router = useRouter()
   const isOnSettingsPage = pathname.includes('/settings')

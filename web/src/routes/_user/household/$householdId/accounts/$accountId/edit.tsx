@@ -1,11 +1,10 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { useLingui } from '@lingui/react/macro'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -20,14 +19,13 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<editAccountQuery>(
+    return loadRouteQuery<editAccountQuery>(
       environment,
       editAccountQuery,
       { id: params.accountId },
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const editAccountQuery = graphql`

@@ -1,3 +1,4 @@
+import { presentedLocation } from '@/lib/presented-location'
 import { handleHouseholdError } from '@/lib/auth'
 import { LayoutContent } from '@astryxdesign/core/Layout'
 import { GenericError } from '@/components/generic-error'
@@ -33,7 +34,9 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const isList = useRouterState({
     select: (state) =>
-      state.location.pathname.replace(/\/$/, '').endsWith('/transactions'),
+      presentedLocation(state)
+        .pathname.replace(/\/$/, '')
+        .endsWith('/transactions'),
   })
   if (isList)
     return (

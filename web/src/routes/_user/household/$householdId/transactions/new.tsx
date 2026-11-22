@@ -1,7 +1,7 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
-import { PendingComponent } from '@/components/pending-component'
 import { Heading } from '@astryxdesign/core/Heading'
 import { Stack } from '@astryxdesign/core/Stack'
 
@@ -10,11 +10,10 @@ import { logTransactionStore } from '@/hooks/log-transaction-store'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { readViewUserIds } from '@/hooks/view-scope-store'
-import { createFileRoute, Navigate } from '@tanstack/react-router'
+import { createFileRoute, Navigate, redirect } from '@tanstack/react-router'
 import { identity } from 'lodash-es'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -26,20 +25,28 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/new',
 )({
   component: RouteComponent,
+  beforeLoad: ({ params }) => {
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      throw redirect({
+        to: '/household/$householdId/transactions',
+        params,
+        replace: true,
+      })
+    }
+  },
   onEnter: () => {
     if (logTransactionStore.state.type === null)
       logTransactionStore.setState(() => ({ type: 'expense' }))
   },
   onLeave: () => logTransactionStore.setState(() => ({ type: null })),
   loader: ({ params }) => {
-    return loadQuery<newTransactionQuery>(
+    return loadRouteQuery<newTransactionQuery>(
       environment,
       newTransactionQuery,
       { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const newTransactionQuery = graphql`

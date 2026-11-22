@@ -1,12 +1,12 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { InvestmentArchiveAction } from '@/components/investment-archive-action'
 import { useBackNavigation } from '@/hooks/use-back-navigation'
-import { Suspense, useState } from 'react'
+import { useState } from 'react'
 import { NetWorthChart } from '@/routes/_user/household/$householdId/accounts/-components/net-worth-chart'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { AverageCostEditor } from '@/components/average-cost-editor'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Card } from '@astryxdesign/core/Card'
@@ -19,7 +19,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import currency from 'currency.js'
 import {
   fetchQuery,
-  loadQuery,
   useFragment,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
@@ -39,7 +38,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<InvestmentIdQuery>(
+    return loadRouteQuery<InvestmentIdQuery>(
       environment,
       InvestmentIdQuery,
       {
@@ -53,7 +52,6 @@ export const Route = createFileRoute(
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const InvestmentIdQuery = graphql`
@@ -251,12 +249,10 @@ function InvestmentDetail({ fragmentRef }: InvestmentDetailProps) {
             </Stack>
           </Grid>
           {editing && (
-            <Suspense fallback={<Text>{t`Loading holding…`}</Text>}>
-              <AverageCostEditor
-                investmentId={data.id}
-                onSaved={() => setEditing(false)}
-              />
-            </Suspense>
+            <AverageCostEditor
+              investmentId={data.id}
+              onSaved={() => setEditing(false)}
+            />
           )}
         </Stack>
       </Stack>

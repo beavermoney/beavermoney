@@ -1,14 +1,13 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import { NewInvestment } from './-components/new-investment'
 
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 import {
   fetchQuery,
   graphql,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -19,14 +18,13 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<newInvestmentQuery>(
+    return loadRouteQuery<newInvestmentQuery>(
       environment,
       newInvestmentQuery,
       { viewUserIds: readViewUserIds(params.householdId) },
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const newInvestmentQuery = graphql`

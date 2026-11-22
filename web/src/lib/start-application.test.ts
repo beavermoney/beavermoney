@@ -66,3 +66,18 @@ it('still starts when browser storage is unavailable', async () => {
   await startApplication(async () => ({ mountApp }))
   expect(mountApp).toHaveBeenCalledOnce()
 })
+
+it('keeps startup visible during route preparation and offers retry on failure', async () => {
+  let reject!: (error: Error) => void
+  const preparation = new Promise<void>((_resolve, fail) => {
+    reject = fail
+  })
+  const start = startApplication(async () => ({ mountApp: () => preparation }))
+  await Promise.resolve()
+  expect(document.getElementById('app-startup')).not.toBeNull()
+  reject(new Error('route data unavailable'))
+  await start
+  expect(
+    document.getElementById('app-startup')?.hasAttribute('data-failed'),
+  ).toBe(true)
+})

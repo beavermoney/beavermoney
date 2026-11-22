@@ -24,6 +24,8 @@ const state = vi.hoisted(() => ({
   privacy: false,
   pending: null as Promise<void> | null,
   empty: false,
+  rangePending: null as Promise<void> | null,
+  blockedRange: null as string | null,
   requestedCount: 0,
   where: null as null | { createTimeGTE: string },
   includeHoldings: true,
@@ -59,6 +61,11 @@ vi.mock('react-relay', () => ({
     },
   ) => {
     if (state.pending) throw state.pending
+    if (
+      state.rangePending &&
+      variables.where?.createTimeGTE === state.blockedRange
+    )
+      throw state.rangePending
     state.requestedCount = variables.count
     state.where = variables.where
     state.includeHoldings = variables.includeHoldings
@@ -123,6 +130,8 @@ afterEach(() => {
   state.privacy = false
   state.pending = null
   state.empty = false
+  state.rangePending = null
+  state.blockedRange = null
 })
 function mountChart() {
   const root = createRootRoute({ component: Outlet })
@@ -222,4 +231,36 @@ it('keeps the chart loading local and preserves all layout slots for empty histo
   expect(
     screen.getByRole('button', { name: 'Property' }).hasAttribute('disabled'),
   ).toBe(false)
+})
+
+it('keeps the visible chart and statistics while a requested range suspends', async () => {
+  mountChart()
+  await screen.findByRole('button', { name: 'Property' })
+  const chart = document.querySelector('svg')!
+  const stats = document.querySelector('[data-chart-stats]')!.textContent
+  let resolve!: () => void
+  state.blockedRange = durationToDate('3M')
+  state.rangePending = new Promise<void>((done) => {
+    resolve = done
+  })
+  fireEvent.click(screen.getByRole('button', { name: '3 months' }))
+  await waitFor(() =>
+    expect(
+      document.querySelector('[data-chart-layout]')!.getAttribute('aria-busy'),
+    ).toBe('true'),
+  )
+  expect(document.querySelector('svg')).toBe(chart)
+  expect(document.querySelector('[data-chart-stats]')!.textContent).toBe(stats)
+  expect(document.querySelector('.astryx-skeleton')).toBeNull()
+  expect(state.where).toEqual({ createTimeGTE: durationToDate('1M') })
+  await act(async () => {
+    state.rangePending = null
+    resolve()
+  })
+  await waitFor(() =>
+    expect(
+      document.querySelector('[data-chart-layout]')!.getAttribute('aria-busy'),
+    ).toBe('false'),
+  )
+  expect(state.where).toEqual({ createTimeGTE: durationToDate('3M') })
 })

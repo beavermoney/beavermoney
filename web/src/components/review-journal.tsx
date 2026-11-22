@@ -1,3 +1,4 @@
+import { notifyError } from '@/lib/notifications'
 import { SnapshotDialog } from '@/routes/_user/household/$householdId/-components/snapshot-dialog'
 import { ACCOUNT_TYPE_ACCENT_CLASSES } from '@/routes/_user/household/$householdId/accounts/-components/account-ledger-utils'
 import { Divider } from '@astryxdesign/core/Divider'
@@ -31,6 +32,7 @@ import { parseReview, snapshotValue } from '@/lib/review-history'
 import type { reviewJournalQuery } from './__generated__/reviewJournalQuery.graphql'
 import type { reviewJournalNoteMutation } from './__generated__/reviewJournalNoteMutation.graphql'
 import type { reviewJournalDeleteMutation } from './__generated__/reviewJournalDeleteMutation.graphql'
+
 const query = graphql`
   query reviewJournalQuery($count: Int!) {
     household {
@@ -103,6 +105,7 @@ const query = graphql`
     }
   }
 `
+
 const noteMutation = graphql`
   mutation reviewJournalNoteMutation($id: ID!, $input: UpdateSnapshotInput!) {
     updateSnapshot(id: $id, input: $input) {
@@ -128,10 +131,28 @@ export function ReviewJournal() {
   const { viewUserIds } = useHouseholdViewScope()
   const [count, setCount] = useHistoryState('journal:count', 100)
   const [refresh, setRefresh] = useState(0)
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  async function loadOlder() {
+    if (loadingOlder) return
+    setLoadingOlder(true)
+    try {
+      await fetchQuery<reviewJournalQuery>(
+        environment,
+        query,
+        { count: count + 100 },
+        { fetchPolicy: 'store-or-network' },
+      ).toPromise()
+      setCount(count + 100)
+    } catch (error) {
+      notifyError(String(error))
+    } finally {
+      setLoadingOlder(false)
+    }
+  }
   const data = useLazyLoadQuery<reviewJournalQuery>(
     query,
     { count },
-    { fetchKey: refresh, fetchPolicy: 'store-and-network' },
+    { fetchKey: refresh, fetchPolicy: 'store-or-network' },
   )
   useSubscribeToInvalidationState([household.id], () => {
     fetchQuery<reviewJournalQuery>(
@@ -336,7 +357,8 @@ export function ReviewJournal() {
           {data.household.snapshots.pageInfo.hasPreviousPage && (
             <Button
               label={t`Load older reviews`}
-              onClick={() => setCount((n) => n + 100)}
+              onClick={loadOlder}
+              isDisabled={loadingOlder}
             />
           )}
         </Stack>

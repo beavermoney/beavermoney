@@ -5,6 +5,9 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { TransactionEntry } from './transaction-entry'
 
 const state = vi.hoisted(() => ({ open: false, loads: vi.fn() }))
+vi.mock('./use-transaction-entry-data', () => ({
+  useTransactionEntryData: () => ({}),
+}))
 vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => true }))
 vi.mock('@/hooks/use-log-transaction', () => ({
   useLogTransaction: () => ({

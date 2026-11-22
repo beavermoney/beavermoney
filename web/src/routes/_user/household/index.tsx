@@ -1,10 +1,8 @@
-import { PendingComponent } from '@/components/pending-component'
 import { LOCAL_STORAGE_HOUSEHOLD_ID_KEY } from '@/constant'
 import { environment } from '@/environment'
-import { Navigate, createFileRoute } from '@tanstack/react-router'
-import { loadQuery, usePreloadedQuery } from 'react-relay'
-import { graphql } from 'relay-runtime'
-import { householdQuery } from './__generated__/householdQuery.graphql'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { fetchQuery, graphql } from 'relay-runtime'
+import type { householdQuery } from './__generated__/householdQuery.graphql'
 
 const query = graphql`
   query householdQuery {
@@ -15,39 +13,26 @@ const query = graphql`
 `
 
 export const Route = createFileRoute('/_user/household/')({
-  component: RouteComponent,
-  pendingComponent: PendingComponent,
-  loader: () => {
-    return loadQuery<householdQuery>(
+  loader: async () => {
+    const data = await fetchQuery<householdQuery>(
       environment,
       query,
       {},
       {
         fetchPolicy: 'store-or-network',
       },
-    )
+    ).toPromise()
+    const saved = localStorage.getItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
+    const householdId =
+      data?.households.find((h) => h.id === saved)?.id ??
+      data?.households[0]?.id
+    if (!householdId) throw redirect({ to: '/household/new', replace: true })
+    localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, householdId)
+    // Redirect during preparation, rather than briefly rendering an empty page.
+    throw redirect({
+      to: '/household/$householdId/transactions',
+      params: { householdId },
+      replace: true,
+    })
   },
 })
-
-function RouteComponent() {
-  const queryRef = Route.useLoaderData()
-  const data = usePreloadedQuery<householdQuery>(query, queryRef)
-
-  const householdId = localStorage.getItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY)
-
-  if (householdId && data.households.some((h) => h.id === householdId)) {
-    return <Navigate to={'/household/$householdId'} params={{ householdId }} />
-  }
-
-  if (data.households.length > 0) {
-    localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, data.households[0].id)
-    return (
-      <Navigate
-        to={'/household/$householdId'}
-        params={{ householdId: data.households[0].id }}
-      />
-    )
-  }
-
-  return <Navigate to="/household/new" />
-}

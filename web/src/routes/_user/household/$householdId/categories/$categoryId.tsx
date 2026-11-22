@@ -1,16 +1,12 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  loadQuery,
-  usePreloadedQuery,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
+import { usePreloadedQuery, useSubscribeToInvalidationState } from 'react-relay'
 import { fetchQuery, graphql } from 'relay-runtime'
 import { CategoryCard } from './-components/category-card'
 import { EditCategory } from './-components/edit-category'
@@ -29,7 +25,7 @@ export const Route = createFileRoute(
   loaderDeps: ({ search }) => search,
   loader: ({ params, deps: search }) => {
     const period = parseDateRangeFromURL(search.start, search.end)
-    return loadQuery<CategoryIdQuery>(
+    return loadRouteQuery<CategoryIdQuery>(
       environment,
       CategoryIdQuery,
       {
@@ -45,7 +41,6 @@ export const Route = createFileRoute(
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const CategoryIdQuery = graphql`

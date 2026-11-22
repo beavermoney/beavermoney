@@ -1,4 +1,6 @@
-type ApplicationModule = { mountApp: (onCommit: () => void) => void }
+type ApplicationModule = {
+  mountApp: (onCommit: () => void) => void | Promise<void>
+}
 
 export async function startApplication(load: () => Promise<ApplicationModule>) {
   const startup = document.getElementById('app-startup')
@@ -19,7 +21,7 @@ export async function startApplication(load: () => Promise<ApplicationModule>) {
   if (status) status.textContent = chinese ? '正在加载…' : 'Loading…'
   try {
     const app = await load()
-    app.mountApp(() => {
+    await app.mountApp(() => {
       startup?.remove()
       document.getElementById('app-startup-style')?.remove()
     })

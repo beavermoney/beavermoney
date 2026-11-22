@@ -1,14 +1,13 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { useBackNavigation } from '@/hooks/use-back-navigation'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { Button } from '@astryxdesign/core/Button'
 import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -23,14 +22,13 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<SubscriptionIdQuery>(
+    return loadRouteQuery<SubscriptionIdQuery>(
       environment,
       subscriptionIdQuery,
       { id: params.subscriptionId },
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const subscriptionIdQuery = graphql`

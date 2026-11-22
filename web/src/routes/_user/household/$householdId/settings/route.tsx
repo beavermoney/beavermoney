@@ -1,3 +1,4 @@
+import { presentedLocation } from '@/lib/presented-location'
 import { t } from '@lingui/core/macro'
 import { handleHouseholdError } from '@/lib/auth'
 import { RouteContentBoundary } from '@/components/route-content-boundary'
@@ -28,7 +29,7 @@ function RouteComponent() {
   }
 
   const pathname = useRouterState({
-    select: (state) => state.location.pathname,
+    select: (state) => presentedLocation(state).pathname,
   })
   const section = pathname.split('/').filter(Boolean).at(-1)
   const header =

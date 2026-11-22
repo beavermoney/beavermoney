@@ -427,14 +427,11 @@ msgstr "Average cost confirmed"
 msgid "Average cost needs review"
 msgstr "Average cost needs review"
 
+#: src/components/average-cost-editor-layout.tsx
+#: src/components/average-cost-editor.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Average cost per share"
 msgstr "Average cost per share"
-
-#. placeholder {0}: inv.householdCurrency.code
-#: src/components/average-cost-editor.tsx
-msgid "Average cost per share · {0}"
-msgstr "Average cost per share · {0}"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Average costs are up to date for all holdings."
@@ -571,7 +568,6 @@ msgid "Categories"
 msgstr "Categories"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Category"
 msgstr "Category"
 
@@ -679,12 +675,12 @@ msgstr "Choose your investment and enter its details."
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "Close"
 msgstr "Close"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Close the dialog and try opening the transaction again."
 msgstr "Close the dialog and try opening the transaction again."
 
@@ -696,6 +692,7 @@ msgstr "Coffee at Starbucks"
 msgid "Columns"
 msgstr "Columns"
 
+#: src/components/average-cost-editor-layout.tsx
 #: src/components/average-cost-editor.tsx
 msgid "Confirm average cost"
 msgstr "Confirm average cost"
@@ -738,7 +735,7 @@ msgstr "Could not load more transactions."
 msgid "Could not load search results. Type to retry."
 msgstr "Could not load search results. Type to retry."
 
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Could not load transaction"
 msgstr "Could not load transaction"
 
@@ -868,7 +865,6 @@ msgstr "Dark"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Date"
 msgstr "Date"
@@ -914,7 +910,6 @@ msgstr "Deficit"
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Delete"
 msgstr "Delete"
 
@@ -1052,13 +1047,12 @@ msgstr "Edit merchant"
 msgid "Edit Subscription"
 msgstr "Edit Subscription"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Edit transaction"
 msgstr "Edit transaction"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Edit Transaction"
 msgstr "Edit Transaction"
 
@@ -1111,13 +1105,8 @@ msgstr "Example transaction ledger"
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Exclude from reports"
 msgstr "Exclude from reports"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-msgid "Excluded"
-msgstr "Excluded"
 
 #: src/components/excluded-from-reports-icon.tsx
 msgid "Excluded from reports"
@@ -1532,18 +1521,13 @@ msgstr "Load older reviews"
 #: src/components/command-menu.tsx
 #: src/components/route-content-boundary.tsx
 #: src/components/transaction-composer/transaction-entry.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Loading content"
 msgstr "Loading content"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
 msgid "Loading daily totals"
 msgstr "Loading daily totals"
-
-#: src/components/average-cost-prompt-surface.tsx
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Loading holding…"
-msgstr "Loading holding…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Loading more transactions…"
@@ -1552,10 +1536,6 @@ msgstr "Loading more transactions…"
 #: src/components/route-content-boundary.tsx
 msgid "Loading page"
 msgstr "Loading page"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-msgid "Loading transaction editing controls"
-msgstr "Loading transaction editing controls"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/new.tsx
@@ -1976,7 +1956,6 @@ msgstr "Not enough income data to draw the category Sankey chart for this period
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Note"
 msgstr "Note"
 
@@ -2014,7 +1993,6 @@ msgstr "OPEN SOURCE. OPEN POSSIBILITIES."
 
 #: src/components/transaction-composer/composer.tsx
 #: src/components/transaction-options.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Options"
 msgstr "Options"
 
@@ -2341,7 +2319,6 @@ msgstr "Save again"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -2985,7 +2962,6 @@ msgid "Update lot details. Switching the investment moves the lot's shares."
 msgstr "Update lot details. Switching the investment moves the lot's shares."
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Update transaction details. Click on entries or lots below to edit them individually."
 msgstr "Update transaction details. Click on entries or lots below to edit them individually."
 

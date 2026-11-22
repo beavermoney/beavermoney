@@ -1,3 +1,5 @@
+import { Stack } from '@astryxdesign/core/Stack'
+import styles from './category-glyph.module.css'
 import { Icon as AstryxIcon, type IconSize } from '@astryxdesign/core/Icon'
 import { Icon, type IconNode } from 'lucide-react'
 import { type IconName } from 'lucide-react/dynamic'
@@ -39,9 +41,14 @@ export function CategoryGlyph({
     iconNode ? <Icon iconNode={iconNode} {...props} /> : null
 
   return (
-    <span aria-hidden="true">
+    <Stack
+      as="span"
+      aria-hidden="true"
+      className={styles.glyph}
+      data-size={size ?? 'md'}
+    >
       {iconNode ? <AstryxIcon icon={ResolvedIcon} size={size} /> : fallback}
-    </span>
+    </Stack>
   )
 }
 

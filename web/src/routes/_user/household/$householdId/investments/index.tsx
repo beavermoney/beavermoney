@@ -1,10 +1,9 @@
-import { PendingComponent } from '@/components/pending-component'
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { environment } from '@/environment'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -25,9 +24,8 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/investments/',
 )({
   component: RouteComponent,
-  pendingComponent: PendingComponent,
   loader: ({ params }) => {
-    return loadQuery<investmentsQuery>(
+    return loadRouteQuery<investmentsQuery>(
       environment,
       query,
       { viewUserIds: readViewUserIds(params.householdId) },

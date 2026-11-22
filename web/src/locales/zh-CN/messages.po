@@ -427,14 +427,11 @@ msgstr "平均成本已确认"
 msgid "Average cost needs review"
 msgstr "平均成本待确认"
 
+#: src/components/average-cost-editor-layout.tsx
+#: src/components/average-cost-editor.tsx
 #: src/routes/_user/household/$householdId/investments/-components/new-investment.tsx
 msgid "Average cost per share"
 msgstr "每股平均成本"
-
-#. placeholder {0}: inv.householdCurrency.code
-#: src/components/average-cost-editor.tsx
-msgid "Average cost per share · {0}"
-msgstr "每股平均成本 · {0}"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 msgid "Average costs are up to date for all holdings."
@@ -571,7 +568,6 @@ msgid "Categories"
 msgstr "分类"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-category-picker.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Category"
 msgstr "分类"
 
@@ -679,12 +675,12 @@ msgstr "选择投资并填写详细信息。"
 
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "Close"
 msgstr "关闭"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Close the dialog and try opening the transaction again."
 msgstr "请关闭对话框，然后重新打开这笔交易。"
 
@@ -696,6 +692,7 @@ msgstr "星巴克咖啡"
 msgid "Columns"
 msgstr "显示列"
 
+#: src/components/average-cost-editor-layout.tsx
 #: src/components/average-cost-editor.tsx
 msgid "Confirm average cost"
 msgstr "确认平均成本"
@@ -738,7 +735,7 @@ msgstr "无法加载更多交易。"
 msgid "Could not load search results. Type to retry."
 msgstr "无法加载搜索结果，请重新输入以重试。"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Could not load transaction"
 msgstr "无法加载交易"
 
@@ -868,7 +865,6 @@ msgstr "深色"
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Date"
 msgstr "日期"
@@ -914,7 +910,6 @@ msgstr "赤字"
 #: src/routes/_user/household/$householdId/subscriptions/-components/edit-subscription.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Delete"
 msgstr "删除"
 
@@ -1052,13 +1047,12 @@ msgstr "编辑商户"
 msgid "Edit Subscription"
 msgstr "编辑订阅"
 
-#: src/routes/_user/household/$householdId/transactions/-components/transactions-list.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Edit transaction"
 msgstr "编辑交易"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Edit Transaction"
 msgstr "编辑交易"
 
@@ -1111,13 +1105,8 @@ msgstr "交易账本示例"
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-expense.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-income.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Exclude from reports"
 msgstr "不计入报表"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-msgid "Excluded"
-msgstr "已排除"
 
 #: src/components/excluded-from-reports-icon.tsx
 msgid "Excluded from reports"
@@ -1532,18 +1521,13 @@ msgstr "加载更早的回顾"
 #: src/components/command-menu.tsx
 #: src/components/route-content-boundary.tsx
 #: src/components/transaction-composer/transaction-entry.tsx
+#: src/routes/_user/household/$householdId/transactions/-components/transaction-detail-dialog.tsx
 msgid "Loading content"
 msgstr "正在加载内容"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transaction-day-summary.tsx
 msgid "Loading daily totals"
 msgstr "正在加载每日汇总"
-
-#: src/components/average-cost-prompt-surface.tsx
-#: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
-#: src/routes/_user/household/$householdId/investments/$investmentId.tsx
-msgid "Loading holding…"
-msgstr "正在加载持仓…"
 
 #: src/routes/_user/household/$householdId/transactions/-components/transactions-table.tsx
 msgid "Loading more transactions…"
@@ -1552,10 +1536,6 @@ msgstr "正在加载更多交易…"
 #: src/components/route-content-boundary.tsx
 msgid "Loading page"
 msgstr "正在加载页面"
-
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
-msgid "Loading transaction editing controls"
-msgstr "正在加载交易编辑功能"
 
 #: src/routes/_user/household/$householdId/settings/-components/general-settings.tsx
 #: src/routes/_user/household/new.tsx
@@ -1976,7 +1956,6 @@ msgstr "此时段的收入数据不足，无法绘制分类桑基图。请选择
 #: src/routes/_user/household/$householdId/transactions/-components/new-move.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-sell.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/new-transfer.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Note"
 msgstr "备注"
 
@@ -2014,7 +1993,6 @@ msgstr "开放源代码，更多可能。"
 
 #: src/components/transaction-composer/composer.tsx
 #: src/components/transaction-options.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Options"
 msgstr "选项"
 
@@ -2341,7 +2319,6 @@ msgstr "再次保存"
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-entry-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Save Changes"
 msgstr "保存更改"
 
@@ -2985,7 +2962,6 @@ msgid "Update lot details. Switching the investment moves the lot's shares."
 msgstr "更新投资批次详情。更换投资时，该批次的股份也会转移。"
 
 #: src/routes/_user/household/$householdId/transactions/-components/edit-transaction-dialog.tsx
-#: src/routes/_user/household/$householdId/transactions/-components/transaction-dialog-preview.tsx
 msgid "Update transaction details. Click on entries or lots below to edit them individually."
 msgstr "更新交易详情。点击下方的分录或投资批次可单独编辑。"
 

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<aaf920cc39df7f678793e67c2a9c14a4>>
+ * @generated SignedSource<<4fe80021ca5f95aeb314127c906b7749>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,7 +18,7 @@ export type transactionsListFragment$data = {
       readonly node: {
         readonly datetime: any;
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"transactionCardFragment" | "transactionDaySummaryFragment" | "transactionDialogPreviewFragment">;
+        readonly " $fragmentSpreads": FragmentRefs<"transactionCardFragment" | "transactionDaySummaryFragment">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
     readonly pageInfo: {
@@ -158,11 +158,6 @@ return {
                   "name": "transactionCardFragment"
                 },
                 {
-                  "args": null,
-                  "kind": "FragmentSpread",
-                  "name": "transactionDialogPreviewFragment"
-                },
-                {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
@@ -228,6 +223,6 @@ return {
 };
 })();
 
-(node as any).hash = "a29c8b3985161814a2844bce6eb4bae3";
+(node as any).hash = "28aa70e632e297610984fa8a504a3b8b";
 
 export default node;

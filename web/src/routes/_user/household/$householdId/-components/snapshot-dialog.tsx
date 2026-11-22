@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { converted, snapshotDelta, type ReviewRow } from '@/lib/review-history'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { ACCOUNT_TYPE_ACCENT_CLASSES } from '@/routes/_user/household/$householdId/accounts/-components/account-ledger-utils'
@@ -377,18 +376,10 @@ export function SnapshotDialog({
                       />
                     </Stack>
                     {editing === inv.id && (
-                      <Suspense
-                        fallback={
-                          <Text>
-                            <Trans>Loading holding…</Trans>
-                          </Text>
-                        }
-                      >
-                        <AverageCostEditor
-                          investmentId={inv.id}
-                          onSaved={() => setEditing(null)}
-                        />
-                      </Suspense>
+                      <AverageCostEditor
+                        investmentId={inv.id}
+                        onSaved={() => setEditing(null)}
+                      />
                     )}
                   </Stack>
                 ))}

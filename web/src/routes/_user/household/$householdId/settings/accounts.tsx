@@ -1,9 +1,8 @@
-import { PendingComponent } from '@/components/pending-component'
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { environment } from '@/environment'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -24,9 +23,8 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/settings/accounts',
 )({
   component: RouteComponent,
-  pendingComponent: PendingComponent,
   loader: () => {
-    return loadQuery<accountsSettingsQuery>(
+    return loadRouteQuery<accountsSettingsQuery>(
       environment,
       query,
       {},

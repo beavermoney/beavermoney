@@ -2,7 +2,7 @@
    financial color tokens, and document defaults. Component styles are imported
    by their owners; do not add feature selectors here. */
 @layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
-@import '@astryxdesign/theme-neutral/fonts.css';
+@import './fonts.css';
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 @import '@astryxdesign/core/reset.css';

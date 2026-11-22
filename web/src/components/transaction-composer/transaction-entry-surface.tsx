@@ -1,10 +1,10 @@
-import { Suspense, useState } from 'react'
+import { useState } from 'react'
+import { useTransactionEntryData } from './use-transaction-entry-data'
 import { useLingui } from '@lingui/react/macro'
 import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { Layout, LayoutContent, LayoutFooter } from '@astryxdesign/core/Layout'
 import { Stack } from '@astryxdesign/core/Stack'
-import { PendingComponent } from '@/components/pending-component'
 import { TransactionActionsTarget } from '@/components/transaction-actions-context'
 import { useLogTransaction } from '@/hooks/use-log-transaction'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -12,6 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import TransactionEntryContent from './transaction-entry-content'
 
 export default function TransactionEntrySurface() {
+  useTransactionEntryData()
   const { t } = useLingui()
   const { type: logTransactionType, close: closeLogTransaction } =
     useLogTransaction()
@@ -37,11 +38,7 @@ export default function TransactionEntrySurface() {
               if (!open) closeLogTransaction()
             }}
           />
-          {logTransactionType && (
-            <Suspense fallback={<PendingComponent />}>
-              <TransactionEntryContent />
-            </Suspense>
-          )}
+          {logTransactionType && <TransactionEntryContent />}
         </Stack>
       </BottomSheet>
     )
@@ -64,7 +61,7 @@ export default function TransactionEntrySurface() {
             padding={4}
             footer={
               <LayoutFooter hasDivider padding={4}>
-                <Stack ref={setActionsTarget} />
+                <Stack ref={setActionsTarget} minHeight="var(--spacing-8)" />
               </LayoutFooter>
             }
             header={
@@ -78,11 +75,7 @@ export default function TransactionEntrySurface() {
           >
             <LayoutContent>
               <Stack direction="vertical" paddingBlockStart={4}>
-                {logTransactionType && (
-                  <Suspense fallback={<PendingComponent />}>
-                    <TransactionEntryContent />
-                  </Suspense>
-                )}
+                {logTransactionType && <TransactionEntryContent />}
               </Stack>
             </LayoutContent>
           </Layout>

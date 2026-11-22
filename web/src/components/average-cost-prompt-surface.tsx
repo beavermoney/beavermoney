@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -29,14 +28,13 @@ export default function AverageCostPromptSurface() {
         />
         <Text color="secondary">{t`You can also do this later from the holding or your next review.`}</Text>
         {ids.map((id) => (
-          <Suspense key={id} fallback={<Text>{t`Loading holding…`}</Text>}>
-            <AverageCostEditor
-              investmentId={id}
-              onSaved={() =>
-                requestAverageReview(ids.filter((value) => value !== id))
-              }
-            />
-          </Suspense>
+          <AverageCostEditor
+            key={id}
+            investmentId={id}
+            onSaved={() =>
+              requestAverageReview(ids.filter((value) => value !== id))
+            }
+          />
         ))}
         <Button
           variant="ghost"

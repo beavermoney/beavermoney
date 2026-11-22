@@ -1,3 +1,4 @@
+import { presentedLocation } from '@/lib/presented-location'
 import { getHistoryViewKey } from '@/lib/history-view-key'
 import { useCallback, useSyncExternalStore, type SetStateAction } from 'react'
 import { useRouterState } from '@tanstack/react-router'
@@ -40,7 +41,7 @@ function subscribe(listener: () => void) {
 // history entry has its own layout, so Back and Forward restore it before paint.
 export function useHistoryState<T>(name: string, initial: T) {
   const key = useRouterState({
-    select: (state) => getHistoryViewKey(state.location),
+    select: (state) => getHistoryViewKey(presentedLocation(state)),
   })
   const stored = useSyncExternalStore(subscribe, () => entries.get(key)?.[name])
   const value = stored === undefined ? initial : (stored as T)

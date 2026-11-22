@@ -1,12 +1,8 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { NetWorthChart } from '@/routes/_user/household/$householdId/accounts/-components/net-worth-chart'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  loadQuery,
-  usePreloadedQuery,
-  useSubscribeToInvalidationState,
-} from 'react-relay'
+import { usePreloadedQuery, useSubscribeToInvalidationState } from 'react-relay'
 import { fetchQuery, graphql } from 'relay-runtime'
 import type { TransactionWhereInput } from '../../transactions/-components/__generated__/transactionsListRefetch.graphql'
 import { TransactionsList } from '../../transactions/-components/transactions-list'
@@ -17,7 +13,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ params }) => {
-    return loadQuery<AccountIdTransactionsQuery>(
+    return loadRouteQuery<AccountIdTransactionsQuery>(
       environment,
       AccountIdTransactionsQuery,
       {
@@ -45,7 +41,6 @@ export const Route = createFileRoute(
       { fetchPolicy: 'store-or-network' },
     )
   },
-  pendingComponent: PendingComponent,
 })
 
 const AccountIdTransactionsQuery = graphql`

@@ -40,4 +40,9 @@ states must respect the same geometry. Bound unknown list content to its scroll
 region rather than guessing its eventual row count. Verify delayed responses on
 desktop and mobile by comparing control and neighboring-content rectangles, not
 only the container height or CLS score. See `docs/loading-layout-audit.md` for the
-current audit and remaining work.
+current audit and verification.
+
+Keep existing data visible during range changes and pagination until replacement
+data is ready. Prepare route and dialog queries before committing their content;
+do not replace an already useful page or form with an approximate skeleton.
+URL-driven layout must describe the page still on screen while navigation waits.

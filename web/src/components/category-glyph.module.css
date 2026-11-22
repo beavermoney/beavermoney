@@ -1,0 +1,21 @@
+.glyph {
+  display: inline-grid;
+  flex: none;
+  width: var(--spacing-5);
+  height: var(--spacing-5);
+  place-items: center;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.glyph[data-size='xsm'] {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+}
+.glyph[data-size='sm'] {
+  width: var(--spacing-4);
+  height: var(--spacing-4);
+}
+.glyph[data-size='lg'] {
+  width: var(--spacing-6);
+  height: var(--spacing-6);
+}

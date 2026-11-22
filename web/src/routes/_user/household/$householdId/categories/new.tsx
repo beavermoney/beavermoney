@@ -1,4 +1,3 @@
-import { PendingComponent } from '@/components/pending-component'
 import { Stack } from '@astryxdesign/core/Stack'
 import { createFileRoute } from '@tanstack/react-router'
 import { NewCategory } from './-components/new-category'
@@ -9,7 +8,6 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/categories/new',
 )({
   component: RouteComponent,
-  pendingComponent: PendingComponent,
 })
 
 function RouteComponent() {

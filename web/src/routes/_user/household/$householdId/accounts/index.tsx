@@ -1,3 +1,4 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { readHistoryState } from '@/hooks/use-history-state'
 import { getHistoryViewKey } from '@/lib/history-view-key'
 import {
@@ -7,13 +8,11 @@ import {
 } from './-components/net-worth-chart-query'
 import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -33,7 +32,6 @@ const query = graphql`
 export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
   {
     component: RouteComponent,
-    pendingComponent: PendingComponent,
     loader: ({ params, location }) => {
       const viewKey = getHistoryViewKey(location)
       const duration = readHistoryState<Duration>(
@@ -53,7 +51,7 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
         },
         { fetchPolicy: 'store-or-network' },
       ).subscribe({ error: () => {} })
-      return loadQuery<accountsQuery>(
+      return loadRouteQuery<accountsQuery>(
         environment,
         query,
         { viewUserIds: readViewUserIds(params.householdId) },

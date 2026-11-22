@@ -1,5 +1,5 @@
 import { LOCAL_STORAGE_TOKEN_KEY } from '@/constant'
-import { Navigate, createFileRoute } from '@tanstack/react-router'
+import { redirect, createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
 const SearchSchema = z.object({
@@ -7,12 +7,9 @@ const SearchSchema = z.object({
 })
 
 export const Route = createFileRoute('/auth/callback/')({
-  component: RouteComponent,
   validateSearch: (search) => SearchSchema.parse(search),
+  beforeLoad: ({ search }) => {
+    localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, search.token)
+    throw redirect({ to: '/household', replace: true })
+  },
 })
-
-function RouteComponent() {
-  localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, Route.useSearch().token)
-
-  return <Navigate to="/household" />
-}

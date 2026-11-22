@@ -1,14 +1,13 @@
-import { Navigate, createFileRoute } from '@tanstack/react-router'
-import { identity } from 'lodash-es'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_user/household/$householdId/settings/')(
   {
-    component: () => (
-      <Navigate
-        from="/household/$householdId/settings"
-        to="/household/$householdId/settings/general"
-        search={identity}
-      />
-    ),
+    beforeLoad: ({ params }) => {
+      throw redirect({
+        to: '/household/$householdId/settings/general',
+        params,
+        replace: true,
+      })
+    },
   },
 )

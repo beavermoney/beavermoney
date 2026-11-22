@@ -1,4 +1,8 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import {
+  AverageCostEditorLayout,
+  AverageCostEditorSkeleton,
+} from './average-cost-editor-layout'
 import { useLingui } from '@lingui/react/macro'
 import { Button } from '@astryxdesign/core/Button'
 import { TextInput } from '@astryxdesign/core/TextInput'
@@ -111,96 +115,119 @@ function AverageCostEditorContent({
       setRefresh((v) => v + 1)
     }
   }
-  if (!inv) return <Text>{t`Holding unavailable`}</Text>
+  if (!inv)
+    return (
+      <AverageCostEditorLayout
+        summary={<Text>{t`Holding unavailable`}</Text>}
+      />
+    )
   if (Number(inv.amount) === 0)
     return (
-      <Text>
-        {inv.name} · {t`Position closed. No average cost to review.`}
-      </Text>
+      <AverageCostEditorLayout
+        summary={
+          <Text>
+            {inv.name} · {t`Position closed. No average cost to review.`}
+          </Text>
+        }
+      />
     )
   return (
-    <Stack direction="vertical" gap={3} className="w-full max-w-lg">
-      <Stack direction="vertical" gap={1}>
-        <Text type="label">
-          {inv.name} · {inv.account.name}
-        </Text>
-        <Text color="secondary">
-          {t`Current shares`}: {isPrivacyModeEnabled ? '•••' : inv.amount}
-        </Text>
-      </Stack>
-      {inv.averageNeedsReview && (
-        <Text role="status" type="label">{t`Average cost needs review`}</Text>
-      )}
-      {inv.confirmedAverageCost != null && (
-        <Text color="secondary">
-          {t`Last confirmed average`}:{' '}
-          {formatCurrencyWithPrivacyMode({
-            value: inv.confirmedAverageCost,
-            currencyCode: inv.householdCurrency.code,
-          })}
-          {inv.averageCostConfirmedAt
-            ? ` · ${new Date(inv.averageCostConfirmedAt).toLocaleDateString()}`
-            : ''}
-        </Text>
-      )}
-      {saved && !changed ? (
-        <Stack
-          direction="horizontal"
-          align="center"
-          justify="between"
-          gap={3}
-          wrap="wrap"
-        >
-          <Text role="status">{t`Average cost confirmed`}</Text>
-          <Button
-            variant="ghost"
-            label={t`Update average`}
-            onClick={() => {
-              setSaved(false)
-              setMessage('')
-            }}
-          />
-        </Stack>
-      ) : (
+    <AverageCostEditorLayout
+      summary={
         <>
-          <TextInput
-            label={t`Average cost per share · ${inv.householdCurrency.code}`}
-            value={value}
-            onChange={setValue}
-            inputMode="decimal"
-          />
-          <Button
-            className="self-start"
-            variant="primary"
-            label={t`Confirm average cost`}
-            onClick={save}
-            isDisabled={
-              pending ||
-              changed ||
-              !/^\d{1,18}(\.\d{1,18})?$/.test(value.trim())
-            }
-          />
+          <Stack direction="vertical" gap={1}>
+            <Text type="label">
+              {inv.name} · {inv.account.name}
+            </Text>
+            <Text color="secondary">
+              {t`Current shares`}: {isPrivacyModeEnabled ? '•••' : inv.amount}
+            </Text>
+          </Stack>
+          <Text type="supporting">{inv.householdCurrency.code}</Text>
+          {inv.averageNeedsReview && (
+            <Text
+              role="status"
+              type="label"
+            >{t`Average cost needs review`}</Text>
+          )}
+          {inv.confirmedAverageCost != null && (
+            <Text color="secondary">
+              {t`Last confirmed average`}:{' '}
+              {formatCurrencyWithPrivacyMode({
+                value: inv.confirmedAverageCost,
+                currencyCode: inv.householdCurrency.code,
+              })}
+              {inv.averageCostConfirmedAt
+                ? ` · ${new Date(inv.averageCostConfirmedAt).toLocaleDateString()}`
+                : ''}
+            </Text>
+          )}
         </>
-      )}
-      {changed && (
+      }
+      controls={
+        saved && !changed ? (
+          <Stack
+            direction="horizontal"
+            align="center"
+            justify="between"
+            gap={3}
+            wrap="wrap"
+          >
+            <Text role="status">{t`Average cost confirmed`}</Text>
+            <Button
+              variant="ghost"
+              label={t`Update average`}
+              onClick={() => {
+                setSaved(false)
+                setMessage('')
+              }}
+            />
+          </Stack>
+        ) : (
+          <>
+            <TextInput
+              label={t`Average cost per share`}
+              value={value}
+              onChange={setValue}
+              inputMode="decimal"
+            />
+            <Button
+              className="self-start"
+              variant="primary"
+              label={t`Confirm average cost`}
+              onClick={save}
+              isDisabled={
+                pending ||
+                changed ||
+                !/^\d{1,18}(\.\d{1,18})?$/.test(value.trim())
+              }
+            />
+          </>
+        )
+      }
+      feedback={
         <>
-          <Text role="status">{t`This holding changed while you were reviewing it.`}</Text>
-          <Button
-            label={t`Review latest holding`}
-            onClick={() => {
-              setExpected({
-                amount: inv.amount,
-                changed: inv.holdingsChangedAt ?? null,
-              })
-              setValue('')
-              setMessage('')
-              setSaved(false)
-            }}
-          />
+          {changed && (
+            <>
+              <Text role="status">{t`This holding changed while you were reviewing it.`}</Text>
+              <Button
+                label={t`Review latest holding`}
+                onClick={() => {
+                  setExpected({
+                    amount: inv.amount,
+                    changed: inv.holdingsChangedAt ?? null,
+                  })
+                  setValue('')
+                  setMessage('')
+                  setSaved(false)
+                }}
+              />
+            </>
+          )}
+          {message && <Text role="alert">{message}</Text>}
         </>
-      )}
-      {message && <Text role="alert">{message}</Text>}
-    </Stack>
+      }
+    />
   )
 }
 
@@ -208,5 +235,9 @@ export function AverageCostEditor(props: {
   investmentId: string
   onSaved?: () => void
 }) {
-  return <AverageCostEditorContent key={props.investmentId} {...props} />
+  return (
+    <Suspense fallback={<AverageCostEditorSkeleton />}>
+      <AverageCostEditorContent key={props.investmentId} {...props} />
+    </Suspense>
+  )
 }

@@ -1,3 +1,4 @@
+import { presentedLocation } from '@/lib/presented-location'
 import { getHistoryViewKey } from '@/lib/history-view-key'
 import { useCallback } from 'react'
 import {
@@ -8,7 +9,7 @@ import { restoreScrollPosition } from '@/lib/restore-scroll-position'
 
 export function usePageScrollRestoration(id = 'page-content') {
   const key = useRouterState({
-    select: (state) => getHistoryViewKey(state.location),
+    select: (state) => getHistoryViewKey(presentedLocation(state)),
   })
   const position = useElementScrollRestoration({
     id,

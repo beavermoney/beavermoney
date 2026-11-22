@@ -1,4 +1,4 @@
-import { PendingComponent } from '@/components/pending-component'
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { environment } from '@/environment'
 import { useHousehold } from '@/hooks/use-household'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
@@ -7,7 +7,6 @@ import { transactionRangeVariables } from './-data/transaction-range'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -39,7 +38,6 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/transactions/',
 )({
   component: RouteComponent,
-  pendingComponent: PendingComponent,
   loaderDeps: ({ search }) => ({
     start: search.start,
     end: search.end,
@@ -51,7 +49,7 @@ export const Route = createFileRoute(
       readViewUserIds(params.householdId),
     )
 
-    return loadQuery<transactionsQuery>(environment, query, variables, {
+    return loadRouteQuery<transactionsQuery>(environment, query, variables, {
       fetchPolicy: 'store-or-network',
     })
   },

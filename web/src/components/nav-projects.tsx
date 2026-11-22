@@ -1,3 +1,4 @@
+import { presentedLocation } from '@/lib/presented-location'
 import { useLingui } from '@lingui/react/macro'
 import { useAppShellMobile } from '@astryxdesign/core/AppShell'
 import { Kbd } from '@astryxdesign/core/Kbd'
@@ -27,7 +28,7 @@ export function NavProjects({
   const { closeMobileNav } = useAppShellMobile()
   const router = useRouter()
   const location = useRouterState({
-    select: (state) => state.location,
+    select: (state) => presentedLocation(state),
   })
   return (
     <SideNavSection title={title ?? t`Household`}>

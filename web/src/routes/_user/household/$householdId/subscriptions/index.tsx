@@ -1,13 +1,12 @@
+import { loadRouteQuery } from '@/lib/relay/load-route-query'
 import { createFileRoute } from '@tanstack/react-router'
 import {
   fetchQuery,
-  loadQuery,
   usePreloadedQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
 import { graphql } from 'relay-runtime'
 
-import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
 import { readViewUserIds } from '@/hooks/view-scope-store'
 
@@ -28,9 +27,8 @@ export const Route = createFileRoute(
   '/_user/household/$householdId/subscriptions/',
 )({
   component: RouteComponent,
-  pendingComponent: PendingComponent,
   loader: ({ params }) => {
-    return loadQuery<subscriptionsQuery>(
+    return loadRouteQuery<subscriptionsQuery>(
       environment,
       query,
       { viewUserIds: readViewUserIds(params.householdId) },

@@ -20,7 +20,7 @@ import { Card } from '@astryxdesign/core/Card'
 import { ACCOUNT_TYPE_ACCENT_CLASSES } from './account-ledger-utils'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
-import { Suspense, useMemo, useTransition } from 'react'
+import { Suspense, useDeferredValue, useMemo } from 'react'
 import {
   NetWorthChartLayout,
   NetWorthChartSkeleton,
@@ -94,17 +94,22 @@ function NetWorthChartContent({
     `${historyKey}:duration`,
     '1M',
   )
-  const [isPending, startTransition] = useTransition()
+  // History state is an external store: wrapping its updates in a transition
+  // cannot prevent suspension. Defer the query inputs instead, retaining the
+  // current plot and statistics until the requested range is ready.
+  const requestedRange = useMemo(() => ({ duration, count }), [duration, count])
+  const visibleRange = useDeferredValue(requestedRange)
+  const isPending = requestedRange !== visibleRange
   const [seriesKeys, setSeriesKeys] = useHistoryState<SeriesKey[]>(
     `${historyKey}:series`,
     ['netWorth'],
   )
   const activeSeries = new Set(seriesKeys)
 
-  const createTimeGTE = durationToDate(duration)
+  const createTimeGTE = durationToDate(visibleRange.duration)
 
   const variables = {
-    count,
+    count: visibleRange.count,
     where: createTimeGTE ? { createTimeGTE } : null,
     includeHoldings: !!investmentId,
   }
@@ -329,6 +334,7 @@ function NetWorthChartContent({
 
   return (
     <NetWorthChartLayout
+      loading={isPending}
       investmentId={investmentId}
       series={
         <>
@@ -530,7 +536,7 @@ function NetWorthChartContent({
             <Button
               key={d}
 
-              onClick={() => startTransition(() => setDuration(d))}
+              onClick={() => setDuration(d)}
               label={
                 {
                   '1M': t`1 month`,
@@ -571,7 +577,7 @@ function NetWorthChartContent({
         data.household.snapshots.pageInfo.hasPreviousPage && (
           <Button
             label={t`Load older reviews`}
-            onClick={() => startTransition(() => setCount((n) => n + 500))}
+            onClick={() => setCount((n) => n + 500)}
           />
         )
       }

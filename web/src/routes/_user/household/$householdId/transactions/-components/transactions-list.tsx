@@ -1,3 +1,4 @@
+import { TransactionDetailDialog } from './transaction-detail-dialog'
 import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { formatLocalizedDate } from '@/lib/localized-date'
 import { useLingui } from '@lingui/react/macro'
@@ -9,21 +10,16 @@ import { Divider } from '@astryxdesign/core/Divider'
 import { EmptyState } from '@astryxdesign/core/EmptyState'
 import { Icon } from '@astryxdesign/core/Icon'
 import { ReceiptText } from 'lucide-react'
-import { BottomSheet } from '@astryxdesign/core/BottomSheet'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@astryxdesign/core/Button'
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
-import { Layout, LayoutContent } from '@astryxdesign/core/Layout'
 import { ScrollableArea } from '@astryxdesign/core/ScrollableArea'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Text } from '@astryxdesign/core/Text'
-import { Suspense, useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { graphql } from 'relay-runtime'
 
-import { ErrorBoundary } from '@sentry/react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { usePaginationSentinel } from '@/hooks/use-pagination-sentinel'
-import type { PreloadedQuery } from 'react-relay'
 import { usePaginationFragment, useQueryLoader } from 'react-relay'
 import { Fragment } from 'react/jsx-runtime'
 import type { editTransactionDialogQuery } from './__generated__/editTransactionDialogQuery.graphql'
@@ -40,15 +36,9 @@ import {
   startOfToday,
   subDays,
 } from 'date-fns'
-import {
-  EditTransactionDialog,
-  LazyEditTransactionDialog,
-  EditTransactionDialogQuery,
-} from './edit-transaction-dialog'
+import { EditTransactionDialogQuery } from './edit-transaction-dialog'
 
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
-import type { transactionDialogPreviewFragment$key } from './__generated__/transactionDialogPreviewFragment.graphql'
-import { TransactionDialogPreview } from './transaction-dialog-preview'
 
 const transactionsListFragment = graphql`
   fragment transactionsListFragment on Household
@@ -76,7 +66,6 @@ const transactionsListFragment = graphql`
           datetime
           ...transactionDaySummaryFragment
           ...transactionCardFragment
-          ...transactionDialogPreviewFragment
         }
       }
       pageInfo {
@@ -254,12 +243,6 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
           viewUserIds={viewUserIds}
           retainedTransactionId={editTransactionId ?? retainedTransactionId}
           queryRef={editQueryRef}
-          previewRef={
-            transactions.find(
-              (transaction) =>
-                transaction.id === (editTransactionId ?? retainedTransactionId),
-            ) ?? null
-          }
           onClose={() => {
             navigate({
               to: '.',
@@ -274,127 +257,6 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
         />
       </>
     </section>
-  )
-}
-
-type TransactionDetailDialogProps = {
-  viewUserIds: readonly string[] | null
-  transactionId: string | null
-  retainedTransactionId: string | null
-  queryRef: PreloadedQuery<editTransactionDialogQuery> | null | undefined
-  previewRef: transactionDialogPreviewFragment$key | null
-  onClose: () => void
-  onCloseComplete: () => void
-}
-
-function TransactionDetailDialog({
-  viewUserIds,
-  transactionId,
-  retainedTransactionId,
-  queryRef,
-  previewRef,
-  onClose,
-  onCloseComplete,
-}: TransactionDetailDialogProps) {
-  const { t } = useLingui()
-  const mobile = useIsMobile()
-  const [editingPending, setEditingPending] = useState(false)
-  const Surface = mobile ? BottomSheet : Dialog
-  const matchingQueryRef =
-    retainedTransactionId === queryRef?.variables.transactionId &&
-    JSON.stringify(viewUserIds) ===
-      JSON.stringify(queryRef.variables.viewUserIds ?? null)
-      ? queryRef
-      : null
-
-  return (
-    <>
-      <Surface
-        label={t`Edit transaction`}
-        {...(mobile
-          ? { height: 'hug' as const }
-          : {
-              width: 640,
-              maxHeight: 'calc(100dvh - var(--spacing-4) - var(--spacing-4))',
-            })}
-        isOpen={transactionId !== null}
-        onOpenChange={(open) => {
-          if (!open && !editingPending) {
-            onClose()
-            onCloseComplete()
-          }
-        }}
-        purpose={editingPending ? 'required' : 'info'}
-        padding={0}
-      >
-        <ErrorBoundary
-          key={retainedTransactionId ?? 'closed'}
-          fallback={
-            <Layout
-              padding={6}
-              header={
-                <DialogHeader
-                  title={t`Could not load transaction`}
-                  onOpenChange={(open) => {
-                    if (!open) onClose()
-                  }}
-                />
-              }
-            >
-              <LayoutContent>
-                <Stack direction="vertical" gap={6} paddingBlockStart={4}>
-                  <Text type="supporting">
-                    <Trans>
-                      Close the dialog and try opening the transaction again.
-                    </Trans>
-                  </Text>
-                  <Stack direction="horizontal" justify="end">
-                    <Button
-                      onClick={onClose}
-                      label={t`Close`}
-                      variant="secondary"
-                    />
-                  </Stack>
-                </Stack>
-              </LayoutContent>
-            </Layout>
-          }
-        >
-          {transactionId !== null ? (
-            <Suspense
-              fallback={
-                <TransactionDialogPreview
-                  fragmentRef={previewRef}
-                  onClose={onClose}
-                />
-              }
-            >
-              {matchingQueryRef ? (
-                <EditTransactionDialog
-                  key={retainedTransactionId}
-                  queryRef={matchingQueryRef}
-                  onClose={onClose}
-                  onPendingChange={setEditingPending}
-                />
-              ) : (
-                <LazyEditTransactionDialog
-                  key={`${transactionId}:${viewUserIds?.join(',') ?? 'all'}`}
-                  transactionId={transactionId}
-                  viewUserIds={viewUserIds}
-                  onClose={onClose}
-                  onPendingChange={setEditingPending}
-                />
-              )}
-            </Suspense>
-          ) : (
-            <TransactionDialogPreview
-              fragmentRef={previewRef}
-              onClose={onClose}
-            />
-          )}
-        </ErrorBoundary>
-      </Surface>
-    </>
   )
 }
 

@@ -26,6 +26,7 @@ const viewScope = vi.hoisted(() => ({
   viewUserIds: null as string[] | null,
 }))
 vi.mock('react-relay', () => ({
+  useLazyLoadQuery: () => ({}),
   usePaginationFragment: () => ({
     data: {
       id: 'household',

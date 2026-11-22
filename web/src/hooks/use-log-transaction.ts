@@ -1,3 +1,4 @@
+import { presentedLocation } from '@/lib/presented-location'
 import { useBackNavigation } from './use-back-navigation'
 import { useRouterState } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
@@ -14,7 +15,7 @@ import {
 export function useLogTransaction() {
   const goBack = useBackNavigation()
   const pathname = useRouterState({
-    select: (state) => state.location.pathname,
+    select: (state) => presentedLocation(state).pathname,
   })
 
   const type = useStore(logTransactionStore, (s) => s.type)

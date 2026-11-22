@@ -1,5 +1,4 @@
 import { NotLoggedInError } from '@/components/not-logged-in-error'
-import { PendingComponent } from '@/components/pending-component'
 import {
   ErrorComponentProps,
   Outlet,
@@ -21,7 +20,6 @@ function ErrorComponent(error: ErrorComponentProps) {
 export const Route = createFileRoute('/_user/household')({
   component: RouteComponent,
   errorComponent: ErrorComponent,
-  pendingComponent: PendingComponent,
 })
 
 function RouteComponent() {
