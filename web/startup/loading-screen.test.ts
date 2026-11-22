@@ -20,6 +20,11 @@ it('builds a small Astryx loading surface with no external assets', () => {
   expect(markup).toContain('id="app-startup-status"')
   expect(markup).toContain('id="app-startup-retry" hidden')
   expect(markup).not.toMatch(/<(script|link|img)\b/)
+  expect(
+    css.startsWith(
+      '@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;',
+    ),
+  ).toBe(true)
   expect(css).not.toContain('@import')
   expect(css).toContain('@keyframes')
   expect(css).toContain('prefers-reduced-motion')

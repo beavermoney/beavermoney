@@ -19,7 +19,10 @@ export async function startApplication(load: () => Promise<ApplicationModule>) {
   if (status) status.textContent = chinese ? '正在加载…' : 'Loading…'
   try {
     const app = await load()
-    app.mountApp(() => startup?.remove())
+    app.mountApp(() => {
+      startup?.remove()
+      document.getElementById('app-startup-style')?.remove()
+    })
   } catch {
     startup?.setAttribute('data-failed', '')
     if (status)

@@ -145,7 +145,14 @@ function criticalStyles(markup, layout) {
         : `:where(#app-startup) ${selector}`,
     )
   })
-  return `${root.toString()}\n${layout}`
+  // Layer order is global even when every selector is scoped. Establish the
+  // application's complete order before Astryx's shorter layer declarations.
+  const layerOrder = readFileSync(
+    new URL('../src/styles.css', import.meta.url),
+    'utf8',
+  ).match(/@layer[^;]+;/)?.[0]
+  if (!layerOrder) throw new Error('Application CSS layer order is missing')
+  return `${layerOrder}\n${root.toString()}\n${layout}`
 }
 
 export function startupScreenPlugin() {
@@ -156,7 +163,10 @@ export function startupScreenPlugin() {
       handler(html) {
         const { markup, css } = loadingScreen()
         return html
-          .replace('<!-- startup-style -->', `<style>${css}</style>`)
+          .replace(
+            '<!-- startup-style -->',
+            `<style id="app-startup-style">${css}</style>`,
+          )
           .replace('<!-- startup-screen -->', markup)
       },
     },

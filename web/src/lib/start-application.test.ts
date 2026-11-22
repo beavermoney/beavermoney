@@ -5,7 +5,7 @@ import { startApplication } from './start-application'
 beforeEach(() => {
   localStorage.clear()
   document.body.innerHTML =
-    '<section id="app-startup"><p id="app-startup-status">Loading…</p><section id="app-startup-retry" hidden><button><span class="astryx-text">Reload</span></button></section></section><div id="app"></div>'
+    '<style id="app-startup-style"></style><section id="app-startup"><p id="app-startup-status">Loading…</p><section id="app-startup-retry" hidden><button><span class="astryx-text">Reload</span></button></section></section><div id="app"></div>'
 })
 afterEach(() => vi.restoreAllMocks())
 
@@ -29,6 +29,7 @@ it('keeps the HTML loading screen until React commits, not just until JS downloa
   expect(document.getElementById('app-startup')).not.toBeNull()
   commit!()
   expect(document.getElementById('app-startup')).toBeNull()
+  expect(document.getElementById('app-startup-style')).toBeNull()
   expect(document.getElementById('app')).not.toBeNull()
 })
 
