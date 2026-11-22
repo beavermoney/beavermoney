@@ -1,3 +1,4 @@
+import styles from './app-sidebar.module.css'
 import { preserveHistoryViewKey } from '@/lib/history-view-key'
 import { useLingui } from '@lingui/react/macro'
 import { useAppShellMobile } from '@astryxdesign/core/AppShell'
@@ -123,7 +124,7 @@ export function AppSidebar({ fragmentRef, ...props }: AppSidebarProps) {
 
   if (renderMode === 'drawer') {
     return (
-      <MobileNav className="app-mobile-nav">
+      <MobileNav className={styles.drawer}>
         <Layout
           height="fill"
           content={<SidebarSections />}

@@ -1,0 +1,69 @@
+/* Cover fractional scrollport seams in WebKit without changing header geometry. */
+.sticky-group-header,
+.account-sticky-group > :global(.astryx-collapsible-trigger) {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  isolation: isolate;
+}
+.sticky-group-header {
+  background: var(--color-background-surface);
+}
+.sticky-group-header::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: calc(-1 * var(--border-width));
+  height: var(--border-width);
+  background: var(--color-background-surface);
+  pointer-events: none;
+}
+.account-sticky-group {
+  background: var(--color-background-surface);
+}
+.account-sticky-group > :global(.astryx-collapsible-trigger) {
+  /* Supplied by the owning scrollport; nested lists default to its top. */
+  top: var(--group-header-offset, 0px);
+  padding: calc(var(--spacing-3) - var(--border-width));
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-container);
+  background: transparent;
+}
+/* A square opaque backing masks the scrolling content's straight borders;
+   the foreground paints the same rounded outline as transaction headers. */
+.account-sticky-group > :global(.astryx-collapsible-trigger)::before,
+.account-sticky-group > :global(.astryx-collapsible-trigger)::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--border-width));
+  pointer-events: none;
+}
+.account-sticky-group > :global(.astryx-collapsible-trigger)::before {
+  z-index: -2;
+  background: var(--color-background-surface);
+}
+.account-sticky-group > :global(.astryx-collapsible-trigger)::after {
+  z-index: -1;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-card);
+}
+.account-sticky-group
+  > :global(.astryx-collapsible-trigger)[aria-expanded='true']::after {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.account-sticky-group > :global(.astryx-collapsible-content) {
+  padding-block-start: 0;
+  background: var(--color-background-card);
+  border: var(--border-width) solid var(--color-border);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-container) var(--radius-container);
+}
+
+/* Keep WebKit's independently composited sticky layers inside the same
+   explicit paint boundary as the scrolling rows, including fractional edges. */
+.sticky-list-scrollport {
+  clip-path: inset(0);
+  isolation: isolate;
+}

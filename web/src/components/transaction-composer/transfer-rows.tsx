@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { useLingui } from '@lingui/react/macro'
 import { Grid } from '@astryxdesign/core/Grid'
 import { Stack } from '@astryxdesign/core/Stack'
@@ -36,9 +37,15 @@ function TransferRow({
   return (
     <Stack gap={1} role="group" aria-label={label}>
       <Text type="supporting">{label}</Text>
-      <Grid columns={amount ? 2 : 1} gap={2} className="composer-transfer-row">
-        <Stack className="composer-transfer-account">{account}</Stack>
-        {amount && <Stack className="composer-transfer-value">{amount}</Stack>}
+      <Grid
+        columns={amount ? 2 : 1}
+        gap={2}
+        className={composerStyles['composer-transfer-row']}
+      >
+        <Stack className={composerStyles['composer-transfer-account']}>
+          {account}
+        </Stack>
+        {amount && <Stack>{amount}</Stack>}
       </Grid>
     </Stack>
   )

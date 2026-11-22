@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import {
   MerchantPicker,
   type MerchantSelection,
@@ -506,7 +507,11 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           firstAmount={'amount'}
           amounts={null}
           entryRows={
-            <Grid columns={2} gap={2} className="composer-expense-row">
+            <Grid
+              columns={2}
+              gap={2}
+              className={composerStyles['composer-expense-row']}
+            >
               {fields.amount}
               {fields.merchant}
             </Grid>

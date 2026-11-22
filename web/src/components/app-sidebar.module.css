@@ -1,0 +1,8 @@
+/* MobileNav is a portaled dialog, outside the shell. Its direct child is the
+   full-height drawer surface; inset it without shrinking the backdrop. */
+.drawer > div {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}

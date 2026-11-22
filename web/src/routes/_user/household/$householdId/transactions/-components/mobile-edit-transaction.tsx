@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import {
   MerchantPicker,
   type MerchantSelection,
@@ -875,7 +876,11 @@ export function MobileEditTransaction({
             />
           ) : isExpense && entries.length > 0 ? (
             <Stack gap={2}>
-              <Grid columns={2} gap={2} className="composer-expense-row">
+              <Grid
+                columns={2}
+                gap={2}
+                className={composerStyles['composer-expense-row']}
+              >
                 {entryAmount(0)}
                 {merchantField}
               </Grid>

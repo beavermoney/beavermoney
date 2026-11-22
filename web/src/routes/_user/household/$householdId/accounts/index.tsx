@@ -1,3 +1,4 @@
+import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { PendingComponent } from '@/components/pending-component'
 import { environment } from '@/environment'
@@ -53,7 +54,7 @@ function RouteComponent() {
   })
 
   return (
-    <HouseholdContentLayout className="sticky-list-scrollport">
+    <HouseholdContentLayout className={groupStyles['sticky-list-scrollport']}>
       <AccountsPanel fragmentRef={data.household} />
     </HouseholdContentLayout>
   )

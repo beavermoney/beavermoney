@@ -1,3 +1,4 @@
+import './theme-provider.css'
 import { LOCAL_STORAGE_THEME_KEY } from '@/constant'
 import { Theme as AstryxTheme } from '@astryxdesign/core/theme'
 import { neutralTheme } from '@astryxdesign/theme-neutral/built'

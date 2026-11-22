@@ -81,8 +81,8 @@ vi.mock('react-relay', () => ({
     }
   },
 }))
-vi.mock('@/components/transaction-composer/chip-rail', () => ({
-  ComposerChipRail: ({ children }: { children: React.ReactNode }) => (
+vi.mock('@/components/horizontal-chip-rail', () => ({
+  HorizontalChipRail: ({ children }: { children: React.ReactNode }) => (
     <section>{children}</section>
   ),
 }))

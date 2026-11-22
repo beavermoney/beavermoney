@@ -1,0 +1,99 @@
+/* Transaction-entry geometry; appearance comes from the Astryx theme. */
+.composer-category {
+  height: auto;
+  padding-block: var(--spacing-3);
+  min-height: calc(var(--spacing-10) * 2);
+  white-space: normal;
+}
+.composer-amount {
+  min-height: calc(var(--spacing-10) * 2);
+}
+.composer-amounts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.composer-key {
+  min-height: calc(var(--spacing-10) + var(--spacing-3));
+  font-size: var(--font-size-xl);
+  touch-action: manipulation;
+  user-select: none;
+}
+.composer-date-key {
+  font-size: var(--font-size-sm);
+}
+
+.composer-amounts > * {
+  min-width: 0;
+}
+.composer-amounts > .composer-amount[aria-pressed='true'],
+.composer-amounts > :has(.composer-amount[aria-pressed='true']) {
+  order: -1;
+  grid-column: 1 / -1;
+}
+.composer-amount[aria-pressed='false'] {
+  min-height: calc(var(--spacing-10) + var(--spacing-4));
+}
+
+.composer-choice {
+  height: 100%;
+  min-height: 0;
+}
+.composer-choice-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.composer-category-results {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.composer-transfer-row > * {
+  min-width: 0;
+}
+.composer-transfer-account .composer-choice-trigger,
+.composer-transfer-row .composer-amount {
+  width: 100%;
+  height: calc(var(--spacing-10) + var(--spacing-8));
+  min-height: calc(var(--spacing-10) + var(--spacing-8));
+}
+.composer-transfer-account .composer-choice-trigger {
+  white-space: normal;
+  text-align: start;
+}
+
+.composer-investment-amounts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.composer-investment-amounts > * {
+  min-width: 0;
+}
+.composer-investment-amounts > :first-child {
+  grid-column: 1 / -1;
+}
+.composer-investment-amounts .composer-amount {
+  min-height: calc(var(--spacing-10) * 2);
+  height: calc(var(--spacing-10) * 2);
+}
+
+.composer-investment-amounts > :nth-child(2):last-child {
+  grid-column: 1 / -1;
+}
+
+/* Keep amount and merchant equally sized as the active amount changes. */
+.composer-expense-row > * {
+  min-width: 0;
+}
+.composer-expense-row .composer-amount,
+.composer-expense-row .composer-merchant {
+  width: 100%;
+  height: calc(var(--spacing-10) * 2);
+  min-height: calc(var(--spacing-10) * 2);
+}
+.composer-merchant {
+  white-space: normal;
+}

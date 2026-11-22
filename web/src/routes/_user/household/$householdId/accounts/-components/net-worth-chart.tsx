@@ -16,7 +16,7 @@ import { useHousehold } from '@/hooks/use-household'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { Button } from '@astryxdesign/core/Button'
-import { ComposerChipRail } from '@/components/transaction-composer/chip-rail'
+import { HorizontalChipRail } from '@/components/horizontal-chip-rail'
 import { Spinner } from '@astryxdesign/core/Spinner'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Card } from '@astryxdesign/core/Card'
@@ -479,7 +479,7 @@ export function NetWorthChart({
         {investmentId ? t`Investment history` : t`Account history`}
       </Heading>
       {chartData.length > 0 && (
-        <ComposerChipRail label={t`Account history series`}>
+        <HorizontalChipRail label={t`Account history series`}>
           {SERIES.filter(
             (s) =>
               (!accountId && !investmentId) ||
@@ -497,7 +497,7 @@ export function NetWorthChart({
               </Button>
             )
           })}
-        </ComposerChipRail>
+        </HorizontalChipRail>
       )}
       {incompleteHistory && (
         <Text color="secondary">{t`Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far.`}</Text>

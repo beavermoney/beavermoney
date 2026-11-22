@@ -1,9 +1,10 @@
+import railStyles from '@/components/horizontal-chip-rail.module.css'
 import { Icon } from '@astryxdesign/core/Icon'
 import { Stack } from '@astryxdesign/core/Stack'
 import { ChevronRightIcon } from 'lucide-react'
 import { useCallback, useState, type ReactNode } from 'react'
 
-export function ComposerChipRail({
+export function HorizontalChipRail({
   children,
   label,
 }: {
@@ -38,7 +39,7 @@ export function ComposerChipRail({
   }, [])
 
   return (
-    <Stack className="composer-chip-rail" data-has-more={hasMore}>
+    <Stack className={railStyles.rail} data-has-more={hasMore}>
       <Stack
         ref={attachRail}
         role="group"
@@ -46,14 +47,14 @@ export function ComposerChipRail({
         tabIndex={label ? 0 : undefined}
         direction="horizontal"
         gap={2}
-        className="composer-chips"
+        className={railStyles.track}
         isScrollable
       >
         {children}
       </Stack>
       {hasMore && (
         <Stack
-          className="composer-chip-hint"
+          className={railStyles.hint}
           aria-hidden="true"
           vAlign="center"
           hAlign="center"

@@ -1,3 +1,6 @@
+import safeAreaStyles from '@/components/layouts/safe-area.module.css'
+import homeStyles from '@/routes/home.module.css'
+import publicStyles from '@/components/public-layout.module.css'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { PublicHeader } from '@/components/public-header'
 import { Button } from '@astryxdesign/core/Button'
@@ -15,12 +18,22 @@ function App() {
   const exampleMoney = (amount: number) =>
     i18n.number(amount, { style: 'currency', currency: 'CAD' })
   return (
-    <Stack direction="vertical" className="app-safe-area app-scroll-content">
+    <Stack
+      direction="vertical"
+      className={`${safeAreaStyles.safeArea} ${safeAreaStyles.scrollContent}`}
+    >
       <PublicHeader />
-      <main className="home-main">
+      <main className={homeStyles['home-main']}>
         <Theme theme={neutralTheme} mode="dark">
-          <section className="home-hero" aria-labelledby="home-title">
-            <Stack direction="vertical" gap={8} className="home-hero-copy">
+          <section
+            className={homeStyles['home-hero']}
+            aria-labelledby="home-title"
+          >
+            <Stack
+              direction="vertical"
+              gap={8}
+              className={homeStyles['home-hero-copy']}
+            >
               <Text type="supporting" color="secondary">
                 <Trans>A little attention. A clearer picture.</Trans>
               </Text>
@@ -56,7 +69,7 @@ function App() {
             </Stack>
             <Theme theme={neutralTheme} mode="light">
               <section
-                className="home-ledger"
+                className={homeStyles['home-ledger']}
                 aria-label={t`Example transaction ledger`}
               >
                 <Stack
@@ -101,7 +114,7 @@ function App() {
                       align="center"
                       gap={4}
                       paddingBlock={5}
-                      className="home-ledger-row"
+                      className={homeStyles['home-ledger-row']}
                     >
                       <Stack direction="horizontal" gap={4} align="center">
                         <Text type="supporting" color="secondary">
@@ -114,7 +127,7 @@ function App() {
                           </Text>
                         </Stack>
                       </Stack>
-                      <Text className="home-ledger-amount">
+                      <Text className={homeStyles['home-ledger-amount']}>
                         {entry.amount > 0 ? '+' : ''}
                         {exampleMoney(entry.amount)}
                       </Text>
@@ -125,7 +138,7 @@ function App() {
                   as="p"
                   type="supporting"
                   color="secondary"
-                  className="home-ledger-caption"
+                  className={homeStyles['home-ledger-caption']}
                 >
                   <Trans>Illustrative entries in Canadian dollars.</Trans>
                 </Text>
@@ -134,8 +147,15 @@ function App() {
           </section>
         </Theme>
 
-        <section className="home-details" aria-labelledby="home-details-title">
-          <Stack direction="vertical" gap={4} className="home-section-intro">
+        <section
+          className={homeStyles['home-details']}
+          aria-labelledby="home-details-title"
+        >
+          <Stack
+            direction="vertical"
+            gap={4}
+            className={homeStyles['home-section-intro']}
+          >
             <Text type="supporting" color="secondary">
               <Trans>SMALL HABITS. A BIGGER PICTURE.</Trans>
             </Text>
@@ -181,7 +201,7 @@ function App() {
                 direction="vertical"
                 gap={4}
                 paddingBlock={8}
-                className="home-feature"
+                className={homeStyles['home-feature']}
               >
                 <Text type="supporting" color="secondary">
                   0{index + 1}
@@ -198,7 +218,10 @@ function App() {
           </Stack>
         </section>
 
-        <section className="home-closing" aria-labelledby="home-closing-title">
+        <section
+          className={homeStyles['home-closing']}
+          aria-labelledby="home-closing-title"
+        >
           <Stack direction="vertical" gap={4}>
             <Text type="supporting" color="secondary">
               <Trans>OPEN SOURCE. OPEN POSSIBILITIES.</Trans>
@@ -230,7 +253,7 @@ function App() {
           </Stack>
         </section>
       </main>
-      <footer className="login-footer">
+      <footer className={publicStyles['public-footer']}>
         <Text type="supporting" color="secondary">
           <Trans>Built with care. Built for clarity.</Trans>
         </Text>

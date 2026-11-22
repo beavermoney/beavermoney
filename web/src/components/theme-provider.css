@@ -1,0 +1,7 @@
+/* Compatibility with Astryx 0.7.11. These selectors depend on library DOM.
+   Keep until equivalent public styling hooks are available. */
+/* Keep sheet handles visible without fading content beneath them. Astryx
+   exposes the sheet target, but has no public handle-gradient option. */
+.astryx-bottom-sheet > [aria-hidden='true'] {
+  background-image: none;
+}

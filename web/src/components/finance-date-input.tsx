@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { useLingui } from '@lingui/react/macro'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { FinanceCalendar } from './finance-calendar'
@@ -56,12 +57,12 @@ export function FinanceDateInput({
       <Button
         size="lg"
         width="100%"
-        className="composer-key composer-date-key"
+        className={`${composerStyles['composer-key']} ${composerStyles['composer-date-key']}`}
         label={format(value, 'MMM d')}
         onClick={() => composer.setEditor(id)}
       />
       <ComposerEditor name={id}>
-        <Stack gap={4} className="composer-choice">
+        <Stack gap={4} className={composerStyles['composer-choice']}>
           <Text type="label">{label}</Text>
           <Stack direction="horizontal" gap={2}>
             <Button label={t`Today`} onClick={() => choose(new Date())} />
@@ -70,7 +71,7 @@ export function FinanceDateInput({
               onClick={() => choose(subDays(new Date(), 1))}
             />
           </Stack>
-          <Stack className="composer-choice-results">
+          <Stack className={composerStyles['composer-choice-results']}>
             <FinanceCalendar
               selected={value}
               defaultMonth={value}

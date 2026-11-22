@@ -1,3 +1,4 @@
+import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { useLingui } from '@lingui/react/macro'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
 import { Trans } from '@lingui/react/macro'
@@ -337,7 +338,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
                     <HistoryCollapsible
                       historyId={`accounts:${groupByOption}:${key}`}
                       defaultIsOpen
-                      className="account-sticky-group"
+                      className={groupStyles['account-sticky-group']}
                       chevronPosition="start"
                       trigger={
                         <HStack

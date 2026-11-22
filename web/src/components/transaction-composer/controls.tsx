@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { ScrollingName } from '@/components/scrolling-name'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -76,6 +77,7 @@ export function ComposerChoice<T>({
     <>
       <Button
         type="button"
+        className={composerStyles['composer-choice-trigger']}
         label={`${label}: ${value == null ? t`Choose` : getLabel(value)}`}
         isDisabled={disabled}
         aria-invalid={invalid}
@@ -131,7 +133,7 @@ export function ComposerChoice<T>({
         </Stack>
       </Button>
       <ComposerEditor name={name}>
-        <Stack gap={3} className="composer-choice">
+        <Stack gap={3} className={composerStyles['composer-choice']}>
           <Text type="label">{label}</Text>
           {searchable && (
             <TextInput
@@ -142,7 +144,7 @@ export function ComposerChoice<T>({
               onChange={setQuery}
             />
           )}
-          <Stack className="composer-choice-results">
+          <Stack className={composerStyles['composer-choice-results']}>
             <Stack gap={2}>
               {matches.map((item) => (
                 <Card key={getKey(item)} padding={0}>
@@ -208,7 +210,7 @@ export function ComposerAmount({
         type="button"
         label={t`Edit ${label}: ${prefix}${raw || '0'}${suffix}`}
         width="100%"
-        className="composer-amount"
+        className={composerStyles['composer-amount']}
         isDisabled={disabled}
         aria-pressed={active}
         aria-invalid={invalid}

@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { ScrollingName } from '@/components/scrolling-name'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -54,7 +55,7 @@ export function TransactionCategoryPicker({
   )
   if (composer)
     return (
-      <Stack gap={3} className="composer-category-picker">
+      <Stack gap={3}>
         <Text type="label">
           {composer.compactCategories ? t`Transfer type` : t`Choose a category`}
         </Text>
@@ -65,7 +66,7 @@ export function TransactionCategoryPicker({
           value={query}
           onChange={setQuery}
         />
-        <Stack className="composer-category-results">
+        <Stack className={composerStyles['composer-category-results']}>
           <Grid columns={3} gap={3}>
             {matches.map((category) => {
               const data = categoryData(category)
@@ -80,7 +81,7 @@ export function TransactionCategoryPicker({
                   type="button"
                   width="100%"
                   size="lg"
-                  className="composer-category"
+                  className={composerStyles['composer-category']}
                   label={data.name}
                   aria-pressed={value === category.id}
                   variant={value === category.id ? 'primary' : 'secondary'}

@@ -1,7 +1,9 @@
+import styles from './date-period-filter.module.css'
+import { cn } from '@/lib/utils'
 import { useLingui } from '@lingui/react/macro'
 import { useDateFormatter } from '@/hooks/use-date-formatter'
 import { Trans } from '@lingui/react/macro'
-import { ProgressBar } from '@astryxdesign/core/ProgressBar'
+import { PageProgress } from '@/components/page-progress'
 import { useIsMobile } from '@/hooks/use-mobile'
 import {
   DropdownMenu,
@@ -368,15 +370,7 @@ export function DatePeriodFilter({
   )
   return (
     <Stack direction="vertical" gap={3} width="100%">
-      {pending && (
-        <Stack className="pointer-events-none fixed inset-x-0 top-0 z-50 [&_.astryx-progress-bar-track]:h-0.5">
-          <ProgressBar
-            label={t`Updating date range`}
-            isLabelHidden
-            isIndeterminate
-          />
-        </Stack>
-      )}
+      {pending && <PageProgress label={t`Updating date range`} />}
       <Stack direction="horizontal" gap={2} align="center">
         <Button
           size={isMobile ? 'lg' : 'md'}
@@ -446,7 +440,7 @@ export function DatePeriodFilter({
                     }}
                     header={
                       option === 'year' ? undefined : (
-                        <Stack data-date-range-picker>
+                        <Stack className={styles.pickerContent}>
                           {
                             periodContents.find(({ view }) => view === option)
                               ?.content
@@ -467,11 +461,12 @@ export function DatePeriodFilter({
                                 periodRange('year', date, weekStartsOn),
                               ) || undefined
                             }
-                            className={
-                              selected(periodRange('year', date, weekStartsOn))
-                                ? 'bg-muted'
-                                : undefined
-                            }
+                            className={cn(
+                              styles.yearOption,
+                              selected(
+                                periodRange('year', date, weekStartsOn),
+                              ) && 'bg-muted',
+                            )}
                             endContent={
                               selected(
                                 periodRange('year', date, weekStartsOn),

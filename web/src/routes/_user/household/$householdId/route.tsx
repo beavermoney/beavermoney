@@ -1,3 +1,4 @@
+import safeAreaStyles from '@/components/layouts/safe-area.module.css'
 import { AverageCostPrompt } from '@/components/average-cost-prompt'
 import { TransactionActionsTarget } from '@/components/transaction-actions-context'
 import { LayoutFooter } from '@astryxdesign/core/Layout'
@@ -253,7 +254,7 @@ function RouteComponent() {
               <Hotkeys />
               <CommandMenu />
               <AppShell
-                className="app-safe-area"
+                className={safeAreaStyles.safeArea}
                 sideNav={<AppSidebar fragmentRef={data} />}
                 mobileNav={{ hasToggle: false }}
               >

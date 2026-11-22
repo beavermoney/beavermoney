@@ -1,0 +1,34 @@
+.track {
+  padding-bottom: var(--spacing-1);
+  /* Clip vertical overflow in the rail; vertical gestures still scroll the page. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+.track::-webkit-scrollbar {
+  display: none;
+}
+.track > * {
+  min-width: max-content;
+  flex-shrink: 0;
+}
+.rail {
+  position: relative;
+  min-width: 0;
+}
+.rail[data-has-more='true'] .track {
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - var(--spacing-10)),
+    transparent calc(100% - var(--spacing-3))
+  );
+}
+.hint {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: var(--spacing-6);
+  pointer-events: none;
+  opacity: 0.6;
+}

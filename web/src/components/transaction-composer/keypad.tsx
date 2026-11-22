@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { useKeypadOrder } from '@/hooks/use-keypad-order'
 import { useLingui } from '@lingui/react/macro'
 import {
@@ -73,16 +74,14 @@ export function ComposerKeypad({
           '=',
         ].map((key) =>
           key === 'date' ? (
-            <Stack key="date" className="composer-key-date">
-              {date}
-            </Stack>
+            <Stack key="date">{date}</Stack>
           ) : (
             <Button
               key={key}
               type="button"
               size="lg"
               width="100%"
-              className="composer-key"
+              className={composerStyles['composer-key']}
               label={
                 key === 'backspace'
                   ? t`Delete last digit`

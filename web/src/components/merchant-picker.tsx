@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { useMemo, useRef, useState } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { Typeahead, type SearchSource } from '@astryxdesign/core/Typeahead'
@@ -56,7 +57,7 @@ export function MerchantPicker(props: MerchantPickerProps) {
         }
         variant="secondary"
         width="100%"
-        className="composer-merchant"
+        className={composerStyles['composer-merchant']}
         isDisabled={props.disabled}
         aria-expanded={composer.editor === 'merchant'}
         onClick={() => composer.setEditor('merchant')}

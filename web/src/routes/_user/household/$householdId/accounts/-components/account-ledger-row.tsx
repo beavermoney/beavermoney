@@ -7,7 +7,7 @@ import { rankInvestmentHoldings } from '@/lib/investment-shortcuts'
 import { Link } from '@astryxdesign/core/Link'
 import { RouterButton } from '@/components/router-button'
 import { InvestmentIcon } from '@/components/investment-icon'
-import { ComposerChipRail } from '@/components/transaction-composer/chip-rail'
+import { HorizontalChipRail } from '@/components/horizontal-chip-rail'
 import { Stack } from '@astryxdesign/core/Stack'
 import { ListItem } from '@astryxdesign/core/List'
 import { Text } from '@astryxdesign/core/Text'
@@ -175,7 +175,7 @@ export function AccountLedgerRow({
             >
               <Stack className="min-w-0 flex-1">
                 {topHoldings.length ? (
-                  <ComposerChipRail label={t`Investment shortcuts`}>
+                  <HorizontalChipRail label={t`Investment shortcuts`}>
                     {topHoldings.map((holding) => (
                       <RouterButton
                         key={holding.id}
@@ -207,7 +207,7 @@ export function AccountLedgerRow({
                         onClick={() => setShowAllHoldings(true)}
                       />
                     )}
-                  </ComposerChipRail>
+                  </HorizontalChipRail>
                 ) : (
                   <Text type="supporting">{t`No holdings`}</Text>
                 )}

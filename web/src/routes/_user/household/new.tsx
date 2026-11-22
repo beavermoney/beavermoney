@@ -1,3 +1,4 @@
+import safeAreaStyles from '@/components/layouts/safe-area.module.css'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { FormError } from '@/components/form-error'
@@ -188,7 +189,7 @@ function NewHouseholdForm() {
       direction="vertical"
       gap={6}
       width="100%"
-      className="app-safe-area app-scroll-content"
+      className={`${safeAreaStyles.safeArea} ${safeAreaStyles.scrollContent}`}
     >
       <Stack
         direction="vertical"

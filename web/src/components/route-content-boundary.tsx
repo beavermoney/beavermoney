@@ -1,6 +1,6 @@
 import { useLingui } from '@lingui/react/macro'
 import { useRouterState } from '@tanstack/react-router'
-import { ProgressBar } from '@astryxdesign/core/ProgressBar'
+import { PageProgress } from '@/components/page-progress'
 import { Skeleton } from '@astryxdesign/core/Skeleton'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Suspense, type ReactNode } from 'react'
@@ -31,9 +31,5 @@ export function NavigationProgress() {
   const { t } = useLingui()
   const isLoading = useRouterState({ select: (state) => state.isLoading })
   if (!isLoading) return null
-  return (
-    <Stack className="pointer-events-none fixed inset-x-0 top-0 z-50 [&_.astryx-progress-bar-track]:h-0.5">
-      <ProgressBar label={t`Loading page`} isLabelHidden isIndeterminate />
-    </Stack>
-  )
+  return <PageProgress label={t`Loading page`} />
 }

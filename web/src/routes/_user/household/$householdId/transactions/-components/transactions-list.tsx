@@ -1,3 +1,4 @@
+import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { formatLocalizedDate } from '@/lib/localized-date'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
@@ -184,7 +185,7 @@ export function TransactionsList({ fragmentRef }: TransactionsListProps) {
               padding={0}
               className="overflow-clip! border-0!"
             >
-              <Stack className="sticky-group-header">
+              <Stack className={groupStyles['sticky-group-header']}>
                 <Stack
                   direction="horizontal"
                   gap={3}
@@ -310,7 +311,6 @@ function TransactionDetailDialog({
   return (
     <>
       <Surface
-        className={mobile ? 'transaction-composer-sheet' : undefined}
         label={t`Edit transaction`}
         {...(mobile
           ? { height: 'hug' as const }

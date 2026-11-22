@@ -1,3 +1,4 @@
+import composerStyles from '@/components/transaction-composer/composer.module.css'
 import { TransactionOptions } from '@/components/transaction-options'
 import { useLingui } from '@lingui/react/macro'
 import { useFinanceLabel } from '@/hooks/use-finance-label'
@@ -13,7 +14,7 @@ import { Text } from '@astryxdesign/core/Text'
 import { useState, type ReactNode } from 'react'
 import { ComposerContext } from './context'
 import { ComposerEditor } from './controls'
-import { ComposerChipRail } from './chip-rail'
+import { HorizontalChipRail } from '@/components/horizontal-chip-rail'
 
 export function MobileTransactionComposer({
   kind,
@@ -131,7 +132,6 @@ export function MobileTransactionComposer({
         </Stack>
       )}
       <ComposerSurface
-        className="transaction-composer-sheet"
         embedded={embedded}
         isOpen={isOpen}
         onOpenChange={(open) => {
@@ -200,14 +200,14 @@ export function MobileTransactionComposer({
                   gap={2}
                   className={
                     stableAmounts
-                      ? 'composer-investment-amounts'
-                      : 'composer-amounts'
+                      ? composerStyles['composer-investment-amounts']
+                      : composerStyles['composer-amounts']
                   }
                 >
                   {amounts}
                 </Stack>
               )}
-              <ComposerChipRail>
+              <HorizontalChipRail>
                 {chips}
                 <Button
                   type="button"
@@ -229,7 +229,7 @@ export function MobileTransactionComposer({
                   aria-expanded={editor === 'options'}
                   onClick={() => setEditor('options')}
                 />
-              </ComposerChipRail>
+              </HorizontalChipRail>
               {mode === 'edit' && (
                 <ComposerEditor name="category">{category}</ComposerEditor>
               )}

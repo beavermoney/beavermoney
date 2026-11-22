@@ -1,0 +1,4 @@
+.content {
+  --group-header-offset: calc(-1 * var(--spacing-6));
+  padding: var(--spacing-6);
+}

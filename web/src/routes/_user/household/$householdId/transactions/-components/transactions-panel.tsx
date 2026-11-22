@@ -1,3 +1,4 @@
+import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { useLingui } from '@lingui/react/macro'
 import { Trans } from '@lingui/react/macro'
 import { Layout, LayoutHeader, LayoutContent } from '@astryxdesign/core/Layout'
@@ -94,7 +95,7 @@ export function TransactionsPanel({ fragmentRef }: TransactionsPanelProps) {
         <LayoutContent
           ref={scrollRef}
           data-scroll-restoration-id="page-content"
-          className="sticky-list-scrollport"
+          className={groupStyles['sticky-list-scrollport']}
         >
           <Stack direction="vertical" gap={6}>
             <FinancialSummaryCards fragmentRef={data.financialReport} />

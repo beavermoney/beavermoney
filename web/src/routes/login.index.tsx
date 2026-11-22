@@ -1,3 +1,6 @@
+import safeAreaStyles from '@/components/layouts/safe-area.module.css'
+import loginStyles from '@/routes/login.module.css'
+import publicStyles from '@/components/public-layout.module.css'
 import { Trans } from '@lingui/react/macro'
 import { PublicHeader } from '@/components/public-header'
 import { LoginForm } from '@/components/login-form'
@@ -17,12 +20,15 @@ function RouteComponent() {
     <Stack
       direction="vertical"
       minHeight="100dvh"
-      className="login-page app-safe-area app-scroll-content"
+      className={`${safeAreaStyles.safeArea} ${safeAreaStyles.scrollContent}`}
     >
       <PublicHeader />
-      <main className="login-main">
+      <main className={loginStyles['login-main']}>
         <Theme theme={neutralTheme} mode="dark">
-          <section className="login-story" aria-labelledby="login-story-title">
+          <section
+            className={loginStyles['login-story']}
+            aria-labelledby="login-story-title"
+          >
             <Stack direction="vertical" gap={8}>
               <Text type="supporting" color="secondary">
                 <Trans>A little attention. A clearer picture.</Trans>
@@ -42,7 +48,7 @@ function RouteComponent() {
               <Text
                 as="p"
                 color="secondary"
-                className="login-story-description"
+                className={loginStyles['login-story-description']}
               >
                 <Trans>
                   Keep track of the everyday. See how it all adds up. A
@@ -50,13 +56,17 @@ function RouteComponent() {
                 </Trans>
               </Text>
             </Stack>
-            <Stack direction="vertical" gap={0} className="login-principles">
+            <Stack
+              direction="vertical"
+              gap={0}
+              className={loginStyles['login-principles']}
+            >
               <Stack
                 direction="horizontal"
                 gap={6}
                 paddingBlock={5}
                 align="center"
-                className="login-principle"
+                className={loginStyles['login-principle']}
               >
                 <Text type="supporting" color="secondary">
                   01
@@ -70,7 +80,7 @@ function RouteComponent() {
                 gap={6}
                 paddingBlock={5}
                 align="center"
-                className="login-principle"
+                className={loginStyles['login-principle']}
               >
                 <Text type="supporting" color="secondary">
                   02
@@ -84,7 +94,7 @@ function RouteComponent() {
                 gap={6}
                 paddingBlock={5}
                 align="center"
-                className="login-principle"
+                className={loginStyles['login-principle']}
               >
                 <Text type="supporting" color="secondary">
                   03
@@ -96,12 +106,15 @@ function RouteComponent() {
             </Stack>
           </section>
         </Theme>
-        <section className="login-entry" aria-labelledby="login-title">
+        <section
+          className={loginStyles['login-entry']}
+          aria-labelledby="login-title"
+        >
           <Stack
             direction="vertical"
             gap={8}
             width="100%"
-            className="login-form-content"
+            className={loginStyles['login-form-content']}
           >
             <Stack direction="vertical" gap={4}>
               <Text type="supporting" color="secondary">
@@ -135,13 +148,13 @@ function RouteComponent() {
           <Text
             type="supporting"
             color="secondary"
-            className="login-entry-note"
+            className={loginStyles['login-entry-note']}
           >
             <Trans>Personal finances. Shared perspective.</Trans>
           </Text>
         </section>
       </main>
-      <footer className="login-footer">
+      <footer className={publicStyles['public-footer']}>
         <Text type="supporting" color="secondary">
           <Trans>Built with care. Built for clarity.</Trans>
         </Text>

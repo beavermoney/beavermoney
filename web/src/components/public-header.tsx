@@ -1,3 +1,4 @@
+import publicStyles from '@/components/public-layout.module.css'
 import { useLingui } from '@lingui/react/macro'
 import { LanguageSelector } from '@/components/language-selector'
 import { Logo } from '@/components/logo'
@@ -9,10 +10,14 @@ import { Link } from '@tanstack/react-router'
 export function PublicHeader() {
   const { t } = useLingui()
   return (
-    <header className="login-header">
-      <Link to="/" aria-label="Beaver Money" className="login-brand">
+    <header className={publicStyles['public-header']}>
+      <Link
+        to="/"
+        aria-label="Beaver Money"
+        className={publicStyles['public-brand']}
+      >
         <Logo size={32} />
-        <Text weight="semibold" className="public-wordmark">
+        <Text weight="semibold" className={publicStyles['public-wordmark']}>
           Beaver Money
         </Text>
       </Link>
