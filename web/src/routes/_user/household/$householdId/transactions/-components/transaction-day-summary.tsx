@@ -1,5 +1,5 @@
 import { useLingui } from '@lingui/react/macro'
-import { transactionDayTotals } from '@/lib/transaction-day-totals'
+import { transactionDayTotalsFromFragments } from '@/lib/transaction-day-totals'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
@@ -13,21 +13,7 @@ import type { transactionDaySummaryFragment$key } from './__generated__/transact
 
 const fragment = graphql`
   fragment transactionDaySummaryFragment on Transaction @relay(plural: true) {
-    excludeFromReports
-    category {
-      type
-    }
-    transactionEntries {
-      amount
-      account {
-        user {
-          id
-        }
-        householdCurrency {
-          code
-        }
-      }
-    }
+    ...transactionDayTotalsFragment
   }
 `
 export function TransactionDaySummary({
@@ -42,7 +28,7 @@ export function TransactionDaySummary({
   const { convert, displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const { viewUserIds } = useHouseholdViewScope()
-  const { income, expense } = transactionDayTotals(
+  const { income, expense } = transactionDayTotalsFromFragments(
     transactions,
     convert,
     viewUserIds,

@@ -108,7 +108,15 @@ export function MerchantDetail({
         }
       : null
   const summary =
-    merchant?.insights.period ?? data.household.merchantInsights?.unassigned
+    merchant?.insights.period ??
+    (data.household.merchantInsights?.unassigned
+      ? {
+          total: data.household.merchantInsights.unassigned.total,
+          transactionCount:
+            data.household.merchantInsights.unassigned.transactionCount,
+          average: data.household.merchantInsights.unassigned.average,
+        }
+      : undefined)
   const currencyCode =
     merchant?.insights.currencyCode ??
     data.household.merchantInsights?.currencyCode

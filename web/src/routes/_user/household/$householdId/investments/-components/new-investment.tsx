@@ -383,7 +383,13 @@ export function NewInvestment({
                                 wrap="wrap"
                               >
                                 <Stack direction="vertical" gap={4}>
-                                  <AccountAvatar account={account} />
+                                  <AccountAvatar
+                                    account={{
+                                      name: account.name,
+                                      icon: account.icon,
+                                      user: account.user,
+                                    }}
+                                  />
                                 </Stack>
                                 <Stack direction="vertical" gap={4}>
                                   <Stack direction="vertical" gap={4}>

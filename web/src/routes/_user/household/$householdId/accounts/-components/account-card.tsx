@@ -65,7 +65,9 @@ export function AccountCard({ fragmentRef }: AccountCardProps) {
       aria-labelledby={`account-${data.id}-name`}
     >
       <Stack direction="horizontal" gap={2} align="center">
-        <AccountAvatar account={data} />
+        <AccountAvatar
+          account={{ name: data.name, icon: data.icon, user: data.user }}
+        />
         <Heading level={2} id={`account-${data.id}-name`}>
           {data.name}
         </Heading>

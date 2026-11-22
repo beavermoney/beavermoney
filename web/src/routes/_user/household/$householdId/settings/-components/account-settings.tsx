@@ -144,7 +144,16 @@ export function AccountSettings({
               <ListItem
                 key={account.id}
                 id={account.id}
-                startContent={<AccountAvatar account={account} size="small" />}
+                startContent={
+                  <AccountAvatar
+                    account={{
+                      name: account.name,
+                      icon: account.icon,
+                      user: account.user,
+                    }}
+                    size="small"
+                  />
+                }
                 label={<Text maxLines={2}>{account.name}</Text>}
                 description={`${account.user.name} · ${financeLabel(account.type)} · ${account.householdCurrency.code}`}
                 endContent={
@@ -188,7 +197,14 @@ export function AccountSettings({
                 label={<Text maxLines={2}>{holding.name}</Text>}
                 description={
                   <Stack direction="horizontal" gap={2} align="center">
-                    <AccountAvatar account={holding.account} size="small" />
+                    <AccountAvatar
+                      account={{
+                        name: holding.account.name,
+                        icon: holding.account.icon,
+                        user: holding.account.user,
+                      }}
+                      size="small"
+                    />
                     <Text maxLines={2}>
                       {holding.account.name} · {holding.account.user.name}
                     </Text>

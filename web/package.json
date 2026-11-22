@@ -8,9 +8,9 @@
     "build": "pnpm i18n:check && vite build",
     "preview": "vite preview",
     "test": "pnpm i18n:check && vitest run",
-    "lint": "eslint",
+    "lint": "eslint --max-warnings=0",
     "format": "prettier",
-    "check": "prettier --write . && eslint --fix && tsc --noEmit",
+    "check": "prettier --write . && eslint --fix --max-warnings=0 && tsc --noEmit",
     "i18n:extract": "lingui extract",
     "i18n:check": "node scripts/check-i18n.mjs",
     "i18n:compile": "lingui compile --strict"

@@ -9,7 +9,16 @@ import {
 } from 'relay-runtime'
 import journalQuery from '@/components/__generated__/reviewJournalQuery.graphql'
 import chartQuery from '@/routes/_user/household/$householdId/accounts/-components/__generated__/netWorthChartQuery.graphql'
-import { parseReview, snapshotValue, type ReviewRow } from './review-history'
+import {
+  parseReview,
+  snapshotValue,
+  chartHistory,
+  selectedValue,
+  historyMeasure,
+  type ReviewRow,
+} from './review-history'
+import { chartSnapshots } from '@/routes/_user/household/$householdId/accounts/-components/net-worth-chart-query'
+import type { netWorthChartQuery } from '@/routes/_user/household/$householdId/accounts/-components/__generated__/netWorthChartQuery.graphql'
 
 afterEach(() => vi.restoreAllMocks())
 
@@ -74,7 +83,11 @@ it('isolates each captured state from other reviews and live entities in the rea
     store: new Store(source),
   })
   const journal = createOperationDescriptor(journalQuery, { count: 100 })
-  const chart = createOperationDescriptor(chartQuery, { count: 500 })
+  const chart = createOperationDescriptor(chartQuery, {
+    count: 500,
+    includeHoldings: true,
+    where: null,
+  })
   const first = snapshot('review-1', '10', '2', '10', '30')
   const second = snapshot('review-2', '20', '3', '20', '80')
   const liveAccount = {
@@ -139,6 +152,22 @@ it('isolates each captured state from other reviews and live entities in the rea
   expect(parseReview(rows[0].review)?.accounts[0].holdings[0].id).toBe(
     'holding-1',
   )
+  const chartData = environment.lookup(chart.fragment)
+    .data as netWorthChartQuery['response']
+  const points = chartHistory(chartSnapshots(chartData))
+  expect(
+    points.map((point) => selectedValue(point, 'all', 'CAD')?.toString()),
+  ).toEqual(['30', '80'])
+  expect(
+    points.map((point) =>
+      historyMeasure(point, 'holding:holding-1', 'quantity', 'CAD')?.toString(),
+    ),
+  ).toEqual(['2', '3'])
+  expect(
+    points.map((point) =>
+      historyMeasure(point, 'holding:holding-1', 'gain', 'CAD')?.toString(),
+    ),
+  ).toEqual(['10', '45'])
   expect(warn).not.toHaveBeenCalled()
   expect(error).not.toHaveBeenCalled()
 })

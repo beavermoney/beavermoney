@@ -41,6 +41,7 @@ import {
 import { environment } from '@/environment'
 import {
   NetWorthChartQuery,
+  chartSnapshots,
   durationToDate,
   DURATIONS,
   type Duration,
@@ -158,9 +159,7 @@ export function NetWorthChart({
   const displayCurrency = displayCurrencyCode
 
   const chartData = useMemo(() => {
-    const rows = (data.household.snapshots.edges ?? []).flatMap((e) =>
-      e?.node ? [e.node] : [],
-    )
+    const rows = chartSnapshots(data)
     const detailed = chartHistory(rows)
       .filter((p) => {
         const accounts = p.accounts.map((observation) => observation.account)
@@ -269,7 +268,7 @@ export function NetWorthChart({
       )
       .sort((a, b) => a.date - b.date)
   }, [
-    data.household.snapshots.edges,
+    data,
     displayCurrency,
     viewUserIds,
     accountId,
@@ -279,7 +278,7 @@ export function NetWorthChart({
 
   const yDomain = useMemo((): [number, number] => {
     const values = chartData
-      .flatMap((point) => [...activeSeries].map((series) => point[series]))
+      .flatMap((point) => seriesKeys.map((series) => point[series]))
       .filter((value) => Number.isFinite(value))
 
     if (values.length === 0) return [0, 1]
@@ -294,7 +293,7 @@ export function NetWorthChart({
       Math.floor((rawMin - padding) / step) * step,
       Math.ceil((rawMax + padding) / step) * step,
     ]
-  }, [chartData, activeSeries])
+  }, [chartData, seriesKeys])
 
   const formatDate = (ts: number) => {
     return new Date(ts).toLocaleDateString(household.locale, {
@@ -314,11 +313,7 @@ export function NetWorthChart({
   const incompleteHistory =
     !accountId &&
     !investmentId &&
-    chartHistory(
-      (data.household.snapshots.edges ?? []).flatMap((e) =>
-        e?.node ? [e.node] : [],
-      ),
-    ).some(
+    chartHistory(chartSnapshots(data)).some(
       (p) =>
         !p.complete && (!createTimeGTE || p.row.createTime >= createTimeGTE),
     )

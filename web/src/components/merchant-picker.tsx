@@ -125,7 +125,11 @@ function MerchantSearch({
           .map((merchant) => ({
             id: merchant.id,
             label: merchant.name,
-            merchant,
+            merchant: {
+              id: merchant.id,
+              name: merchant.name,
+              icon: merchant.icon,
+            },
           }))
         const normalized = name.normalize('NFKC').toLocaleLowerCase()
         if (

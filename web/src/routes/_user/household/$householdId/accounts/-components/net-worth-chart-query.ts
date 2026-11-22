@@ -1,4 +1,4 @@
-/* eslint-disable relay/unused-fields -- Shared with the chart so route prefetch does not import Recharts. */
+import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.graphql'
 import { graphql } from 'relay-runtime'
 
 export const NetWorthChartQuery = graphql`
@@ -103,4 +103,64 @@ export function durationToDate(d: Duration): string | null {
     case 'All':
       return null
   }
+}
+
+// The query and projection stay separate from Recharts so loaders can prefetch
+// without pulling chart rendering code into the startup dependency chain.
+export function chartSnapshots(data: netWorthChartQuery['response']) {
+  return (data.household.snapshots.edges ?? []).flatMap((edge) => {
+    const node = edge?.node
+    if (!node) return []
+    return [
+      {
+        id: node.id,
+        createTime: node.createTime,
+        review: node.review
+          ? {
+              version: node.review.version,
+              complete: node.review.complete,
+              accounts: node.review.accounts.map((account) => ({
+                id: account.accountId,
+
+                type: account.type,
+                category: account.category,
+                ownerId: account.ownerId,
+                currency: account.currency,
+                cash: account.cash,
+                value: account.value,
+                holdings: account.holdings?.map((holding) => ({
+                  id: holding.investmentId,
+
+                  currency: holding.currency,
+                  quantity: holding.quantity,
+                  value: holding.value,
+                  average: holding.average,
+                  needsReview: holding.needsReview,
+                })),
+              })),
+              rates: node.review.rates.map((rate) => ({
+                from: rate.from,
+                to: rate.to,
+                rate: rate.rate,
+              })),
+            }
+          : null,
+
+        snapshotEntries: node.snapshotEntries?.map((entry) => ({
+          userID: entry.userID,
+          liquidity: entry.liquidity,
+          investment: entry.investment,
+          property: entry.property,
+          receivable: entry.receivable,
+          liability: entry.liability,
+          householdCurrency: { code: entry.householdCurrency.code },
+        })),
+        snapshotRates: node.snapshotRates?.map((rate) => ({
+          rate: rate.rate,
+          fromCurrency: { code: rate.fromCurrency.code },
+          toCurrency: { code: rate.toCurrency.code },
+        })),
+      },
+    ]
+  })
 }

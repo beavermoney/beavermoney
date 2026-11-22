@@ -1030,7 +1030,10 @@ function EditAccount({
     ? accounts
     : [value, ...accounts]
   const icon = (a: Account) => (
-    <AccountAvatar account={a} size={showBalance ? 'large' : 'small'} />
+    <AccountAvatar
+      account={{ name: a.name, icon: a.icon, user: a.user }}
+      size={showBalance ? 'large' : 'small'}
+    />
   )
   return (
     <SearchSelect

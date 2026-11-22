@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ea774cbad9ab850c81d7dfafb99f1529>>
+ * @generated SignedSource<<be66b99f5d70a8d61a17a797f8a9c8de>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,7 +21,6 @@ export type investmentCardFragment$data = {
   readonly symbol: string;
   readonly unrealizedReturn: string | null | undefined;
   readonly unrealizedReturnPercent: string | null | undefined;
-  readonly updateTime: any;
   readonly user: {
     readonly name: string;
   };
@@ -67,13 +66,6 @@ return {
       "args": null,
       "kind": "ScalarField",
       "name": "quote",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "updateTime",
       "storageKey": null
     },
     {
@@ -140,6 +132,6 @@ return {
 };
 })();
 
-(node as any).hash = "7670a93cacf9dbe9e0adeb9f3f626b5f";
+(node as any).hash = "2bf1c593f284399d70db1fb6ae32d3e5";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8457daee3ed5693cd81f7389396c574d>>
+ * @generated SignedSource<<e7ce4566f6fa4673457e18689d76d1a0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -269,13 +269,6 @@ return {
                             "name": "quote",
                             "storageKey": null
                           },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "updateTime",
-                            "storageKey": null
-                          },
                           (v9/*: any*/),
                           {
                             "alias": null,
@@ -379,12 +372,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3d0b217f00a49ba806f62d7bfbbb74db",
+    "cacheID": "c21394923e4265583cfbf73a307a4a55",
     "id": null,
     "metadata": {},
     "name": "investmentsPanelRefetch",
     "operationKind": "query",
-    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_2mcrba on Household {\n  investments(first: $count, after: $cursor, where: {archived: false, hasAccountWith: {archived: false}, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query investmentsPanelRefetch(\n  $count: Int = 50\n  $cursor: Cursor\n  $viewUserIds: [ID!]\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...investmentsPanelFragment_2mcrba\n    id\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n\nfragment investmentsPanelFragment_2mcrba on Household {\n  investments(first: $count, after: $cursor, where: {archived: false, hasAccountWith: {archived: false}, userIDIn: $viewUserIds}) {\n    edges {\n      node {\n        id\n        name\n        amount\n        value\n        account {\n          name\n          id\n          householdCurrency {\n            code\n            id\n          }\n        }\n        ...investmentCardFragment\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();

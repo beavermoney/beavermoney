@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9172de8f658b249353c63a0cf80cbffd>>
+ * @generated SignedSource<<0803b97d877083f033bbd6000f7667dd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,12 +24,10 @@ export type reviewJournalQuery$data = {
           readonly review: {
             readonly accounts: ReadonlyArray<{
               readonly accountId: string;
-              readonly archived: boolean;
               readonly cash: string;
               readonly category: string | null | undefined;
               readonly currency: string;
               readonly holdings: ReadonlyArray<{
-                readonly archived: boolean;
                 readonly average: string | null | undefined;
                 readonly confirmedAt: any | null | undefined;
                 readonly currency: string;
@@ -48,7 +46,6 @@ export type reviewJournalQuery$data = {
               readonly type: string;
               readonly value: string;
             }>;
-            readonly activeAccountIds: ReadonlyArray<string>;
             readonly complete: boolean;
             readonly rates: ReadonlyArray<{
               readonly from: string;
@@ -177,17 +174,10 @@ v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "archived",
-  "storageKey": null
-},
-v11 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
   "name": "rate",
   "storageKey": null
 },
-v12 = {
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "SnapshotReview",
@@ -207,13 +197,6 @@ v12 = {
       "args": null,
       "kind": "ScalarField",
       "name": "complete",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "activeAccountIds",
       "storageKey": null
     },
     {
@@ -270,7 +253,6 @@ v12 = {
           "storageKey": null
         },
         (v9/*: any*/),
-        (v10/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -330,8 +312,7 @@ v12 = {
               "kind": "ScalarField",
               "name": "needsReview",
               "storageKey": null
-            },
-            (v10/*: any*/)
+            }
           ],
           "storageKey": null
         }
@@ -360,71 +341,71 @@ v12 = {
           "name": "to",
           "storageKey": null
         },
-        (v11/*: any*/)
+        (v10/*: any*/)
       ],
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v13 = {
+v12 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "userID",
   "storageKey": null
 },
-v14 = {
+v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "liquidity",
   "storageKey": null
 },
-v15 = {
+v14 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "investment",
   "storageKey": null
 },
-v16 = {
+v15 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "property",
   "storageKey": null
 },
-v17 = {
+v16 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "receivable",
   "storageKey": null
 },
-v18 = {
+v17 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "liability",
   "storageKey": null
 },
-v19 = {
+v18 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "code",
   "storageKey": null
 },
-v20 = [
-  (v19/*: any*/)
+v19 = [
+  (v18/*: any*/)
 ],
-v21 = [
-  (v19/*: any*/),
+v20 = [
+  (v18/*: any*/),
   (v3/*: any*/)
 ],
-v22 = [
-  (v11/*: any*/),
+v21 = [
+  (v10/*: any*/),
   {
     "alias": null,
     "args": null,
@@ -432,7 +413,7 @@ v22 = [
     "kind": "LinkedField",
     "name": "fromCurrency",
     "plural": false,
-    "selections": (v21/*: any*/),
+    "selections": (v20/*: any*/),
     "storageKey": null
   },
   {
@@ -442,19 +423,19 @@ v22 = [
     "kind": "LinkedField",
     "name": "toCurrency",
     "plural": false,
-    "selections": (v21/*: any*/),
+    "selections": (v20/*: any*/),
     "storageKey": null
   },
   (v3/*: any*/)
 ],
-v23 = {
+v22 = {
   "alias": null,
   "args": null,
   "concreteType": "HouseholdCurrency",
   "kind": "LinkedField",
   "name": "householdCurrency",
   "plural": false,
-  "selections": (v21/*: any*/),
+  "selections": (v20/*: any*/),
   "storageKey": null
 };
 return {
@@ -505,7 +486,7 @@ return {
                       (v3/*: any*/),
                       (v4/*: any*/),
                       (v5/*: any*/),
-                      (v12/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -514,12 +495,12 @@ return {
                         "name": "snapshotEntries",
                         "plural": true,
                         "selections": [
+                          (v12/*: any*/),
                           (v13/*: any*/),
                           (v14/*: any*/),
                           (v15/*: any*/),
                           (v16/*: any*/),
                           (v17/*: any*/),
-                          (v18/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -527,7 +508,7 @@ return {
                             "kind": "LinkedField",
                             "name": "householdCurrency",
                             "plural": false,
-                            "selections": (v20/*: any*/),
+                            "selections": (v19/*: any*/),
                             "storageKey": null
                           }
                         ],
@@ -541,7 +522,7 @@ return {
                         "name": "snapshotRates",
                         "plural": true,
                         "selections": [
-                          (v11/*: any*/),
+                          (v10/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -549,7 +530,7 @@ return {
                             "kind": "LinkedField",
                             "name": "fromCurrency",
                             "plural": false,
-                            "selections": (v20/*: any*/),
+                            "selections": (v19/*: any*/),
                             "storageKey": null
                           },
                           {
@@ -559,7 +540,7 @@ return {
                             "kind": "LinkedField",
                             "name": "toCurrency",
                             "plural": false,
-                            "selections": (v20/*: any*/),
+                            "selections": (v19/*: any*/),
                             "storageKey": null
                           }
                         ],
@@ -602,7 +583,7 @@ return {
             "kind": "LinkedField",
             "name": "householdRates",
             "plural": true,
-            "selections": (v22/*: any*/),
+            "selections": (v21/*: any*/),
             "storageKey": null
           },
           {
@@ -668,7 +649,7 @@ return {
                       },
                       (v7/*: any*/),
                       (v9/*: any*/),
-                      (v23/*: any*/)
+                      (v22/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -706,7 +687,7 @@ return {
                       (v3/*: any*/),
                       (v4/*: any*/),
                       (v5/*: any*/),
-                      (v12/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -715,13 +696,13 @@ return {
                         "name": "snapshotEntries",
                         "plural": true,
                         "selections": [
+                          (v12/*: any*/),
                           (v13/*: any*/),
                           (v14/*: any*/),
                           (v15/*: any*/),
                           (v16/*: any*/),
                           (v17/*: any*/),
-                          (v18/*: any*/),
-                          (v23/*: any*/),
+                          (v22/*: any*/),
                           (v3/*: any*/)
                         ],
                         "storageKey": null
@@ -733,7 +714,7 @@ return {
                         "kind": "LinkedField",
                         "name": "snapshotRates",
                         "plural": true,
-                        "selections": (v22/*: any*/),
+                        "selections": (v21/*: any*/),
                         "storageKey": null
                       }
                     ],
@@ -752,16 +733,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8abd0dccaa45a10193297a0c93b85d32",
+    "cacheID": "9003b430832d80f6ef930bb228a9f40a",
     "id": null,
     "metadata": {},
     "name": "reviewJournalQuery",
     "operationKind": "query",
-    "text": "query reviewJournalQuery(\n  $count: Int!\n) {\n  household {\n    ...snapshotDialogFragment\n    snapshots(last: $count) {\n      pageInfo {\n        hasPreviousPage\n      }\n      edges {\n        node {\n          id\n          createTime\n          note\n          review {\n            version\n            complete\n            activeAccountIds\n            accounts {\n              accountId\n              icon\n              name\n              type\n              category\n              ownerId\n              ownerName\n              currency\n              cash\n              value\n              archived\n              holdings {\n                investmentId\n                name\n                symbol\n                currency\n                quantity\n                price\n                value\n                average\n                confirmedAt\n                needsReview\n                archived\n              }\n            }\n            rates {\n              from\n              to\n              rate\n            }\n          }\n          snapshotEntries {\n            userID\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            householdCurrency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n        }\n      }\n    }\n    id\n  }\n}\n\nfragment snapshotDialogFragment on Household {\n  householdRates {\n    rate\n    fromCurrency {\n      code\n      id\n    }\n    toCurrency {\n      code\n      id\n    }\n    id\n  }\n  reviewAccounts: accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        reviewRevision\n        investments {\n          id\n          name\n          averageNeedsReview\n        }\n        type\n        value\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query reviewJournalQuery(\n  $count: Int!\n) {\n  household {\n    ...snapshotDialogFragment\n    snapshots(last: $count) {\n      pageInfo {\n        hasPreviousPage\n      }\n      edges {\n        node {\n          id\n          createTime\n          note\n          review {\n            version\n            complete\n            accounts {\n              accountId\n              icon\n              name\n              type\n              category\n              ownerId\n              ownerName\n              currency\n              cash\n              value\n              holdings {\n                investmentId\n                name\n                symbol\n                currency\n                quantity\n                price\n                value\n                average\n                confirmedAt\n                needsReview\n              }\n            }\n            rates {\n              from\n              to\n              rate\n            }\n          }\n          snapshotEntries {\n            userID\n            liquidity\n            investment\n            property\n            receivable\n            liability\n            householdCurrency {\n              code\n              id\n            }\n            id\n          }\n          snapshotRates {\n            rate\n            fromCurrency {\n              code\n              id\n            }\n            toCurrency {\n              code\n              id\n            }\n            id\n          }\n        }\n      }\n    }\n    id\n  }\n}\n\nfragment snapshotDialogFragment on Household {\n  householdRates {\n    rate\n    fromCurrency {\n      code\n      id\n    }\n    toCurrency {\n      code\n      id\n    }\n    id\n  }\n  reviewAccounts: accounts(where: {archived: false}) {\n    edges {\n      node {\n        id\n        name\n        reviewRevision\n        investments {\n          id\n          name\n          averageNeedsReview\n        }\n        type\n        value\n        householdCurrency {\n          code\n          id\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8880bf060083099deabbb73abb07821e";
+(node as any).hash = "539cf34e1e1ff83962ae95532eefd240";
 
 export default node;

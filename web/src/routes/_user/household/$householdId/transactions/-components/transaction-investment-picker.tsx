@@ -71,7 +71,11 @@ export function TransactionInvestmentPicker({
   return (
     <SearchSelect
       renderChipIcon={(investment) => (
-        <InvestmentIcon {...investmentData(investment)} />
+        <InvestmentIcon
+          name={investmentData(investment).name}
+          symbol={investmentData(investment).symbol}
+          type={investmentData(investment).type}
+        />
       )}
       hideChipLabel
       chipDescriptionLayout="inline"
@@ -100,7 +104,11 @@ export function TransactionInvestmentPicker({
       emptyText={t`No matching investments available.`}
       renderOption={(investment) => (
         <HStack gap={2} vAlign="center">
-          <InvestmentIcon {...investmentData(investment)} />
+          <InvestmentIcon
+            name={investmentData(investment).name}
+            symbol={investmentData(investment).symbol}
+            type={investmentData(investment).type}
+          />
           <VStack gap={0.5}>
             <Text maxLines={2}>{title(investment)}</Text>
             {showAvailableShares && (

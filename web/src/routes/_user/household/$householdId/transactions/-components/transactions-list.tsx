@@ -77,7 +77,6 @@ const transactionsListFragment = graphql`
           ...transactionDaySummaryFragment
           ...transactionCardFragment
           ...transactionDialogPreviewFragment
-          ...transactionsTableFragment
         }
       }
       pageInfo {

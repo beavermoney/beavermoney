@@ -104,9 +104,21 @@ export function AccountLedgerRow({
     ? new Decimal(data.balance).div(data.value).mul(100).toNumber()
     : null
   const holdings = rankInvestmentHoldings(
-    data.investments ?? [],
+    (data.investments ?? []).map((holding) => ({
+      id: holding.id,
+      name: holding.name,
+      symbol: holding.symbol,
+      type: holding.type,
+      amount: holding.amount,
+      value: holding.value,
+      householdCurrency: holding.householdCurrency,
+    })),
     data.householdCurrency.code,
-    data.household.householdRates ?? [],
+    (data.household.householdRates ?? []).map((rate) => ({
+      rate: rate.rate,
+      fromCurrency: rate.fromCurrency,
+      toCurrency: rate.toCurrency,
+    })),
   )
   const percentage = (value: number | null) =>
     formatPercentageWithPrivacyMode(
@@ -132,7 +144,9 @@ export function AccountLedgerRow({
             className="block! no-underline!"
           >
             <Stack direction="horizontal" gap={3} align="center">
-              <AccountAvatar account={data} />
+              <AccountAvatar
+                account={{ name: data.name, icon: data.icon, user: data.user }}
+              />
               <Stack direction="vertical" gap={1} className="min-w-0 flex-1">
                 <Stack
                   direction="horizontal"

@@ -101,7 +101,7 @@ export function TransactionAccountPicker({
         const data = accountData(account)
         return (
           <AccountAvatar
-            account={data}
+            account={{ name: data.name, icon: data.icon, user: data.user }}
             size={showBalance ? 'large' : 'small'}
           />
         )
@@ -126,7 +126,9 @@ export function TransactionAccountPicker({
         const data = accountData(account)
         return (
           <HStack gap={2} vAlign="center">
-            <AccountAvatar account={data} />
+            <AccountAvatar
+              account={{ name: data.name, icon: data.icon, user: data.user }}
+            />
             <VStack gap={0.5}>
               <Text maxLines={2}>{data.name}</Text>
               <Text type="supporting" color="secondary">

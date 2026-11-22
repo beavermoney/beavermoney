@@ -1,3 +1,5 @@
+import { graphql, readInlineData } from 'relay-runtime'
+import type { transactionDayTotalsFragment$key } from './__generated__/transactionDayTotalsFragment.graphql'
 import currency from 'currency.js'
 
 type Transaction = {
@@ -31,4 +33,36 @@ export function transactionDayTotals(
     }
   }
   return { income, expense }
+}
+
+const fragment = graphql`
+  fragment transactionDayTotalsFragment on Transaction @inline {
+    excludeFromReports
+    category {
+      type
+    }
+    transactionEntries {
+      amount
+      account {
+        user {
+          id
+        }
+        householdCurrency {
+          code
+        }
+      }
+    }
+  }
+`
+
+export function transactionDayTotalsFromFragments(
+  refs: readonly transactionDayTotalsFragment$key[],
+  convert: (amount: string, code: string) => currency,
+  viewUserIds: readonly string[] | null,
+) {
+  return transactionDayTotals(
+    refs.map((ref) => readInlineData(fragment, ref)),
+    convert,
+    viewUserIds,
+  )
 }

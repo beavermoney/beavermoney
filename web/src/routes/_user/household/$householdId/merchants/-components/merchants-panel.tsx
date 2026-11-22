@@ -145,7 +145,9 @@ export function MerchantsPanel({
                   >
                     {i18n.number(index + 1)}
                   </Text>
-                  <MerchantAvatar merchant={merchant} />
+                  <MerchantAvatar
+                    merchant={{ name: merchant.name, icon: merchant.icon }}
+                  />
                 </Stack>
               }
               description={

@@ -204,7 +204,12 @@ function CommandMenuDialog({
           items.push({
             id: `account:${account.id}`,
             label: account.name,
-            account,
+            account: {
+              name: account.name,
+              icon: account.icon,
+              user: account.user,
+              householdCurrency: account.householdCurrency,
+            },
             keywords: `${account.user.name} ${account.householdCurrency.code}`,
             auxiliaryData: { group: t`Accounts` },
             run: async () => {
@@ -224,8 +229,17 @@ function CommandMenuDialog({
           items.push({
             id: `investment:${investment.id}`,
             label: investment.name,
-            investment,
-            account,
+            investment: {
+              name: investment.name,
+              symbol: investment.symbol,
+              type: investment.type,
+            },
+            account: {
+              name: account.name,
+              icon: account.icon,
+              user: account.user,
+              householdCurrency: account.householdCurrency,
+            },
             keywords: `${investment.symbol} ${account.name} ${account.user.name} ${account.householdCurrency.code}`,
             auxiliaryData: { group: t`Investments` },
             run: async () => {

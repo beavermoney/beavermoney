@@ -1,6 +1,9 @@
 import { expect, it } from 'vitest'
 import currency from 'currency.js'
-import { transactionDayTotals } from './transaction-day-totals'
+import {
+  transactionDayTotals,
+  transactionDayTotalsFromFragments,
+} from './transaction-day-totals'
 const transaction = (
   type: string,
   amount: string,
@@ -45,4 +48,17 @@ it('respects selected household members and exact cent addition', () => {
   )
   expect(result.income.value).toBe(0)
   expect(result.expense.value).toBe(0.3)
+})
+
+it('reads the inline fragment owned by the daily totals calculation', () => {
+  const refs = [
+    transaction('expense', '-10'),
+    transaction('income', '20', 'CAD'),
+  ].map((data) => ({
+    __fragments: { transactionDayTotalsFragment: data },
+    ' $fragmentSpreads': { transactionDayTotalsFragment: true as const },
+  }))
+  const totals = transactionDayTotalsFromFragments(refs, convert, ['a'])
+  expect(totals.income.value).toBe(15)
+  expect(totals.expense.value).toBe(10)
 })

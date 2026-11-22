@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d3904716af4d3563328e585eaeb13c04>>
+ * @generated SignedSource<<c33bb5d50ac062e680ae2bdc636d93f5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -169,13 +169,6 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "updateTime",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
                 "concreteType": "HouseholdCurrency",
                 "kind": "LinkedField",
                 "name": "householdCurrency",
@@ -239,12 +232,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ec5c92f7436c9e31d1d30a4f8b823fba",
+    "cacheID": "df9dfff26dfff85df10b5519e7b3217e",
     "id": null,
     "metadata": {},
     "name": "newInvestmentMutation",
     "operationKind": "mutation",
-    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  updateTime\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n"
+    "text": "mutation newInvestmentMutation(\n  $input: CreateInvestmentInputCustom!\n) {\n  createInvestment(input: $input) {\n    node {\n      id\n      name\n      account {\n        name\n        id\n      }\n      ...investmentCardFragment\n    }\n  }\n}\n\nfragment investmentCardFragment on Investment {\n  id\n  name\n  symbol\n  quote\n  householdCurrency {\n    code\n    id\n  }\n  user {\n    name\n    id\n  }\n  amount\n  value\n  unrealizedReturn\n  unrealizedReturnPercent\n}\n"
   }
 };
 })();

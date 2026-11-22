@@ -47,7 +47,6 @@ const query = graphql`
             review {
               version
               complete
-              activeAccountIds
               accounts {
                 accountId
                 icon
@@ -59,7 +58,6 @@ const query = graphql`
                 currency
                 cash
                 value
-                archived
                 holdings {
                   investmentId
                   name
@@ -71,7 +69,6 @@ const query = graphql`
                   average
                   confirmedAt
                   needsReview
-                  archived
                 }
               }
               rates {
@@ -155,7 +152,7 @@ export function ReviewJournal() {
   const { displayCurrencyCode } = useDisplayCurrency()
   const { formatCurrencyWithPrivacyMode } = useCurrency()
   const rows = (data.household.snapshots.edges ?? [])
-    .flatMap((e) => (e?.node ? [e.node] : []))
+    .flatMap((e) => (e?.node ? [journalSnapshot(e.node)] : []))
     .sort((a, b) => b.createTime.localeCompare(a.createTime))
   const current = rows.find((row) => row.id === selected)
   const parsed = parseReview(current?.review)
@@ -499,4 +496,69 @@ export function ReviewJournal() {
       </Stack>
     </Stack>
   )
+}
+
+// Normalize snapshot-local IDs and expose the validator's input explicitly.
+// Keeping this projection with its query makes its financial dependencies visible.
+type JournalSnapshot = NonNullable<
+  NonNullable<
+    reviewJournalQuery['response']['household']['snapshots']['edges']
+  >[number]
+>['node']
+function journalSnapshot(node: NonNullable<JournalSnapshot>) {
+  return {
+    id: node.id,
+    createTime: node.createTime,
+    note: node.note,
+    review: node.review
+      ? {
+          version: node.review.version,
+          complete: node.review.complete,
+          accounts: node.review.accounts.map((account) => ({
+            id: account.accountId,
+            name: account.name,
+            icon: account.icon,
+            ownerName: account.ownerName,
+            type: account.type,
+            category: account.category,
+            ownerId: account.ownerId,
+            currency: account.currency,
+            cash: account.cash,
+            value: account.value,
+            holdings: account.holdings.map((holding) => ({
+              id: holding.investmentId,
+              name: holding.name,
+              symbol: holding.symbol,
+              price: holding.price,
+              confirmedAt: holding.confirmedAt,
+              currency: holding.currency,
+              quantity: holding.quantity,
+              value: holding.value,
+              average: holding.average,
+              needsReview: holding.needsReview,
+            })),
+          })),
+          rates: node.review.rates.map((rate) => ({
+            from: rate.from,
+            to: rate.to,
+            rate: rate.rate,
+          })),
+        }
+      : null,
+
+    snapshotEntries: node.snapshotEntries?.map((entry) => ({
+      userID: entry.userID,
+      liquidity: entry.liquidity,
+      investment: entry.investment,
+      property: entry.property,
+      receivable: entry.receivable,
+      liability: entry.liability,
+      householdCurrency: { code: entry.householdCurrency.code },
+    })),
+    snapshotRates: node.snapshotRates?.map((rate) => ({
+      rate: rate.rate,
+      fromCurrency: { code: rate.fromCurrency.code },
+      toCurrency: { code: rate.toCurrency.code },
+    })),
+  }
 }

@@ -19,7 +19,6 @@ const investmentCardFragment = graphql`
     name
     symbol
     quote
-    updateTime
     householdCurrency {
       code
     }

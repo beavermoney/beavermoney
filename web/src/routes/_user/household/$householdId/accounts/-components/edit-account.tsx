@@ -27,8 +27,6 @@ export const editAccountFragment = graphql`
     id
     name
     icon
-    type
-    category
     user {
       name
     }
@@ -118,7 +116,9 @@ export function EditAccount({ fragmentRef }: EditAccountProps) {
       <Stack direction="vertical" gap={6}>
         <Stack direction="vertical" gap={2} as="header">
           <Stack direction="horizontal" gap={3} align="center">
-            <AccountAvatar account={data} />
+            <AccountAvatar
+              account={{ name: data.name, icon: data.icon, user: data.user }}
+            />
             <Stack direction="vertical" gap={4}>
               <Heading level={2}>
                 <Trans>Edit Account</Trans>

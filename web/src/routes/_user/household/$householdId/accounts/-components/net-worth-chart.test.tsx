@@ -75,7 +75,7 @@ vi.mock('react-relay', () => ({
                 rates: [],
                 accounts: [
                   {
-                    id: '1',
+                    accountId: '1',
                     icon: null,
                     name: 'Property',
                     type: 'property',

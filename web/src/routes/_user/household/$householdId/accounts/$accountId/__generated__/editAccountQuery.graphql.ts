@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2b32878f878228d4ea8a4a1fedc45550>>
+ * @generated SignedSource<<152074b4b765209bd95f576bcfff5635>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -124,20 +124,6 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "type",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "category",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
                 "concreteType": "User",
                 "kind": "LinkedField",
                 "name": "user",
@@ -158,12 +144,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8ddc8f7c6c99ddaaaf500d1674076ae7",
+    "cacheID": "f11846bbd6026a5adf93e1d6cc497232",
     "id": null,
     "metadata": {},
     "name": "editAccountQuery",
     "operationKind": "query",
-    "text": "query editAccountQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      id\n      ...editAccountFragment\n    }\n    id\n  }\n}\n\nfragment editAccountFragment on Account {\n  id\n  name\n  icon\n  type\n  category\n  user {\n    name\n    id\n  }\n}\n"
+    "text": "query editAccountQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ... on Account {\n      id\n      ...editAccountFragment\n    }\n    id\n  }\n}\n\nfragment editAccountFragment on Account {\n  id\n  name\n  icon\n  user {\n    name\n    id\n  }\n}\n"
   }
 };
 })();
