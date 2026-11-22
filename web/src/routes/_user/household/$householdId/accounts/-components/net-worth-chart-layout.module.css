@@ -1,0 +1,39 @@
+.plot {
+  height: 240px;
+  min-width: 0;
+}
+.plot > * {
+  min-height: 0;
+}
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-2);
+}
+.stats {
+  height: var(--spacing-6);
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  overflow: auto;
+  white-space: nowrap;
+}
+.older {
+  height: var(--spacing-8);
+  align-items: flex-start;
+}
+.notices {
+  flex-shrink: 0;
+  max-height: 50%;
+  overflow: auto;
+}
+.canvas {
+  flex: 1;
+  min-height: 0;
+}
+@media (min-width: 48rem) {
+  .controls {
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+  }
+}

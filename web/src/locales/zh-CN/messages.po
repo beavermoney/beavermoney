@@ -199,11 +199,11 @@ msgstr "账户数据已刷新。"
 msgid "Account Detail"
 msgstr "账户详情"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart-layout.tsx
 msgid "Account history"
 msgstr "账户历史"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart-layout.tsx
 msgid "Account history series"
 msgstr "账户历史数据系列"
 
@@ -234,7 +234,7 @@ msgstr "账户设置"
 msgid "Account type"
 msgstr "账户类型"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Account value"
 msgstr "账户价值"
 
@@ -400,7 +400,7 @@ msgstr "已归档投资"
 msgid "Archiving..."
 msgstr "正在归档…"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Asset"
 msgstr "资产"
 
@@ -550,7 +550,7 @@ msgid "cash"
 msgstr "现金"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 msgid "Cash"
 msgstr "现金"
@@ -712,7 +712,7 @@ msgstr "费用从高到低"
 msgid "Cost (Low to High)"
 msgstr "费用从低到高"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Cost Basis"
 msgstr "成本基础"
@@ -1365,7 +1365,7 @@ msgstr "投入金额"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -1386,7 +1386,7 @@ msgstr "投资已归档，历史记录已保留。"
 msgid "Investment buy"
 msgstr "买入投资"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart-layout.tsx
 msgid "Investment history"
 msgstr "投资历史"
 
@@ -1505,7 +1505,7 @@ msgstr "负债"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Liability"
 msgstr "负债"
 
@@ -1519,7 +1519,7 @@ msgstr "浅色"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Liquidity"
 msgstr "流动资金"
 
@@ -1605,7 +1605,7 @@ msgstr "你的账本，<0/>从这里开始。"
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "一起管理家庭财务，兼顾每个人的账户。将点滴收支汇集起来，共同掌握全貌。"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Market value"
 msgstr "市值"
 
@@ -1800,7 +1800,7 @@ msgstr "待处理事项"
 #: src/components/review-journal.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Net Worth"
 msgstr "净资产"
 
@@ -2194,7 +2194,7 @@ msgid "Price per share must be positive"
 msgstr "每股价格必须大于零"
 
 #: src/hooks/use-finance-label.ts
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Property"
 msgstr "不动产"
 
@@ -2212,7 +2212,7 @@ msgstr "房产或其他有价值的财产"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Receivable"
 msgstr "应收款"
 
@@ -2953,7 +2953,7 @@ msgstr "未确认的平均成本：{attentionCount}"
 msgid "Unconfirmed averages: {unconfirmedCount}"
 msgstr "未确认的平均成本：{unconfirmedCount}"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Unrealized return"
 msgstr "未实现收益"

@@ -22,6 +22,8 @@ import { NetWorthChart } from './net-worth-chart'
 
 const state = vi.hoisted(() => ({
   privacy: false,
+  pending: null as Promise<void> | null,
+  empty: false,
   requestedCount: 0,
   where: null as null | { createTimeGTE: string },
   includeHoldings: true,
@@ -56,6 +58,7 @@ vi.mock('react-relay', () => ({
       includeHoldings: boolean
     },
   ) => {
+    if (state.pending) throw state.pending
     state.requestedCount = variables.count
     state.where = variables.where
     state.includeHoldings = variables.includeHoldings
@@ -63,7 +66,7 @@ vi.mock('react-relay', () => ({
       household: {
         snapshots: {
           pageInfo: { hasPreviousPage: variables.count === 500 },
-          edges: [10, 20].map((value, index) => ({
+          edges: (state.empty ? [] : [10, 20]).map((value, index) => ({
             node: {
               id: String(index),
               createTime: new Date(
@@ -118,6 +121,8 @@ vi.mock('recharts', () => ({
 afterEach(() => {
   cleanup()
   state.privacy = false
+  state.pending = null
+  state.empty = false
 })
 function mountChart() {
   const root = createRootRoute({ component: Outlet })
@@ -183,4 +188,38 @@ it('does not reveal the change direction when financial values are hidden', asyn
   await screen.findByRole('button', { name: 'Property' })
   expect(screen.getByText('••• (•••)')).toBeTruthy()
   expect(screen.queryByText('+••• (•••)')).toBeNull()
+})
+
+it('keeps the chart loading local and preserves all layout slots for empty history', async () => {
+  let resolve!: () => void
+  state.pending = new Promise<void>((done) => {
+    resolve = done
+  })
+  state.empty = true
+  mountChart()
+  const heading = await screen.findByRole('heading', {
+    name: 'Account history',
+  })
+  const loading = heading.closest('[data-chart-layout]')!
+  expect(loading.getAttribute('aria-busy')).toBe('true')
+  expect(
+    screen.getByRole('button', { name: 'Property' }).hasAttribute('disabled'),
+  ).toBe(true)
+  const slots = ['plot', 'controls', 'stats', 'older']
+  for (const slot of slots)
+    expect(loading.querySelector(`[data-chart-${slot}]`)).not.toBeNull()
+  await act(async () => {
+    state.pending = null
+    resolve()
+  })
+  await screen.findByText(/No snapshots in this period/)
+  const loaded = screen
+    .getByRole('heading', { name: 'Account history' })
+    .closest('[data-chart-layout]')!
+  expect(loaded.getAttribute('aria-busy')).toBe('false')
+  for (const slot of slots)
+    expect(loaded.querySelector(`[data-chart-${slot}]`)).not.toBeNull()
+  expect(
+    screen.getByRole('button', { name: 'Property' }).hasAttribute('disabled'),
+  ).toBe(false)
 })

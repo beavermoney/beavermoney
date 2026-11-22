@@ -199,11 +199,11 @@ msgstr "Account data refreshed."
 msgid "Account Detail"
 msgstr "Account Detail"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart-layout.tsx
 msgid "Account history"
 msgstr "Account history"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart-layout.tsx
 msgid "Account history series"
 msgstr "Account history series"
 
@@ -234,7 +234,7 @@ msgstr "Account settings"
 msgid "Account type"
 msgstr "Account type"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Account value"
 msgstr "Account value"
 
@@ -400,7 +400,7 @@ msgstr "Archived investments"
 msgid "Archiving..."
 msgstr "Archiving..."
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Asset"
 msgstr "Asset"
 
@@ -550,7 +550,7 @@ msgid "cash"
 msgstr "cash"
 
 #: src/routes/_user/household/$householdId/accounts/-components/account-ledger-row.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 msgid "Cash"
 msgstr "Cash"
@@ -712,7 +712,7 @@ msgstr "Cost (High to Low)"
 msgid "Cost (Low to High)"
 msgstr "Cost (Low to High)"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Cost Basis"
 msgstr "Cost Basis"
@@ -1365,7 +1365,7 @@ msgstr "Invested "
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/transactions/-components/edit-investment-lot-dialog.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/log-transaction.tsx
 #: src/routes/_user/household/$householdId/transactions/-components/mobile-edit-transaction.tsx
@@ -1386,7 +1386,7 @@ msgstr "Investment archived. Its history is preserved."
 msgid "Investment buy"
 msgstr "Investment buy"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart-layout.tsx
 msgid "Investment history"
 msgstr "Investment history"
 
@@ -1505,7 +1505,7 @@ msgstr "Liabilities"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Liability"
 msgstr "Liability"
 
@@ -1519,7 +1519,7 @@ msgstr "Light"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Liquidity"
 msgstr "Liquidity"
 
@@ -1605,7 +1605,7 @@ msgstr "Make yourself<0/>at home."
 msgid "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 msgstr "Manage a household together, with room for everyone's accounts. Keep the details connected so you can see the same bigger picture."
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Market value"
 msgstr "Market value"
 
@@ -1800,7 +1800,7 @@ msgstr "Needs attention"
 #: src/components/review-journal.tsx
 #: src/routes/_user/household/$householdId/-components/snapshot-dialog.tsx
 #: src/routes/_user/household/$householdId/accounts/-components/accounts-panel.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Net Worth"
 msgstr "Net Worth"
 
@@ -2194,7 +2194,7 @@ msgid "Price per share must be positive"
 msgstr "Price per share must be positive"
 
 #: src/hooks/use-finance-label.ts
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Property"
 msgstr "Property"
 
@@ -2212,7 +2212,7 @@ msgstr "Real estate or other valuable property"
 
 #: src/hooks/use-finance-label.ts
 #: src/routes/_user/household/$householdId/accounts/-components/account-type-picker.tsx
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 msgid "Receivable"
 msgstr "Receivable"
 
@@ -2953,7 +2953,7 @@ msgstr "Unconfirmed averages: {attentionCount}"
 msgid "Unconfirmed averages: {unconfirmedCount}"
 msgstr "Unconfirmed averages: {unconfirmedCount}"
 
-#: src/routes/_user/household/$householdId/accounts/-components/net-worth-chart.tsx
+#: src/routes/_user/household/$householdId/accounts/-components/use-chart-series.ts
 #: src/routes/_user/household/$householdId/investments/$investmentId.tsx
 msgid "Unrealized return"
 msgstr "Unrealized return"

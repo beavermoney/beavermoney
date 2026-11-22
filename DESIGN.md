@@ -29,3 +29,15 @@ Preserve signed amounts, exact decimal handling, privacy masking, keyboard opera
 ## Verification
 
 Run frontend tests, TypeScript, ESLint, the production build, and `pnpm exec astryx doctor --built .`. Review desktop and mobile layouts in both themes, including menus, selection, dialogs, and transaction entry.
+
+## Loading layout stability
+
+Loading and loaded content must share the same layout owner, spacing, responsive
+breakpoints and reserved regions. Keep known headings and controls in place;
+replace only unknown content. Avoid approximate full-section rectangles or generic
+page skeletons where the real structure is known. Empty, partial and paginated
+states must respect the same geometry. Bound unknown list content to its scroll
+region rather than guessing its eventual row count. Verify delayed responses on
+desktop and mobile by comparing control and neighboring-content rectangles, not
+only the container height or CLS score. See `docs/loading-layout-audit.md` for the
+current audit and remaining work.

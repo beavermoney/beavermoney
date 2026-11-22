@@ -12,7 +12,7 @@ import { HStack, VStack } from '@astryxdesign/core/Layout'
 import { List } from '@astryxdesign/core/List'
 import { Section } from '@astryxdesign/core/Section'
 import { Selector } from '@astryxdesign/core/Selector'
-import { Skeleton } from '@astryxdesign/core/Skeleton'
+import { NetWorthChartSkeleton } from './net-worth-chart-layout'
 import { Text } from '@astryxdesign/core/Text'
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import currency from 'currency.js'
@@ -299,7 +299,7 @@ export function AccountsPanel({ fragmentRef }: AccountsListPageProps) {
             ))}
           </Grid>
         )}
-        <Suspense fallback={<Skeleton height={200} />}>
+        <Suspense fallback={<NetWorthChartSkeleton />}>
           <NetWorthChart />
         </Suspense>
         <Section padding={6}>

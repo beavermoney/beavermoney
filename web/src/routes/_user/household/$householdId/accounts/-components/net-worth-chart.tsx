@@ -8,21 +8,29 @@ import { useLingui } from '@lingui/react/macro'
 import { useHistoryState } from '@/hooks/use-history-state'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Trans } from '@lingui/react/macro'
-import { Heading } from '@astryxdesign/core/Heading'
 import { useCurrency } from '@/hooks/use-currency'
 import { useDisplayCurrency } from '@/hooks/use-display-currency'
 import { useHousehold } from '@/hooks/use-household'
 import { useHouseholdViewScope } from '@/hooks/use-household-view-scope'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { Button } from '@astryxdesign/core/Button'
-import { HorizontalChipRail } from '@/components/horizontal-chip-rail'
 import { Spinner } from '@astryxdesign/core/Spinner'
 import { Stack } from '@astryxdesign/core/Stack'
 import { Card } from '@astryxdesign/core/Card'
 import { ACCOUNT_TYPE_ACCENT_CLASSES } from './account-ledger-utils'
 import { Text } from '@astryxdesign/core/Text'
 import currency from 'currency.js'
-import { useMemo, useTransition } from 'react'
+import { Suspense, useMemo, useTransition } from 'react'
+import {
+  NetWorthChartLayout,
+  NetWorthChartSkeleton,
+} from './net-worth-chart-layout'
+import styles from './net-worth-chart-layout.module.css'
+import {
+  useChartSeries,
+  type ChartScope,
+  type SeriesKey,
+} from './use-chart-series'
 import {
   fetchQuery,
   useLazyLoadQuery,
@@ -55,69 +63,24 @@ function niceStep(rawStep: number): number {
   return nice * Math.pow(10, exponent)
 }
 
-type SeriesKey =
-  | 'netWorth'
-  | 'liquidity'
-  | 'investment'
-  | 'property'
-  | 'receivable'
-  | 'liability'
-  | 'asset'
+export function NetWorthChart(scope: ChartScope = {}) {
+  return (
+    <Suspense fallback={<NetWorthChartSkeleton {...scope} />}>
+      <NetWorthChartContent {...scope} />
+    </Suspense>
+  )
+}
 
-export function NetWorthChart({
+function NetWorthChartContent({
   accountId,
   investmentId,
 }: { accountId?: string; investmentId?: string } = {}) {
   const { t } = useLingui()
   const isMobile = useIsMobile()
-  const chartConfig = {
-    netWorth: {
-      label: investmentId
-        ? t`Market value`
-        : accountId
-          ? t`Account value`
-          : t`Net Worth`,
-      color: 'var(--chart-net-worth)',
-    },
-    asset: { label: t`Asset`, color: 'var(--chart-asset)' },
-    liquidity: {
-      label: investmentId ? t`Cost Basis` : accountId ? t`Cash` : t`Liquidity`,
-      color: 'var(--chart-liquidity)',
-    },
-    investment: {
-      label: investmentId ? t`Unrealized return` : t`Investment`,
-      color: 'var(--chart-investment)',
-    },
-    property: { label: t`Property`, color: 'var(--chart-property)' },
-    receivable: { label: t`Receivable`, color: 'var(--chart-receivable)' },
-    liability: { label: t`Liability`, color: 'var(--chart-liability)' },
-  }
-
-  const SERIES: { key: SeriesKey; label: string; color: string }[] = [
-    {
-      key: 'netWorth',
-      label: chartConfig.netWorth.label,
-      color: 'var(--chart-net-worth)',
-    },
-    { key: 'asset', label: t`Asset`, color: 'var(--chart-asset)' },
-    {
-      key: 'liquidity',
-      label: chartConfig.liquidity.label,
-      color: 'var(--chart-liquidity)',
-    },
-    {
-      key: 'investment',
-      label: chartConfig.investment.label,
-      color: 'var(--chart-investment)',
-    },
-    { key: 'property', label: t`Property`, color: 'var(--chart-property)' },
-    {
-      key: 'receivable',
-      label: t`Receivable`,
-      color: 'var(--chart-receivable)',
-    },
-    { key: 'liability', label: t`Liability`, color: 'var(--chart-liability)' },
-  ]
+  const { chartConfig, series: SERIES } = useChartSeries({
+    accountId,
+    investmentId,
+  })
 
   const { household } = useHousehold()
   const { displayCurrencyCode } = useDisplayCurrency()
@@ -365,17 +328,11 @@ export function NetWorthChart({
   }
 
   return (
-    <Stack direction="vertical" gap={4}>
-      <Heading level={2}>
-        {investmentId ? t`Investment history` : t`Account history`}
-      </Heading>
-      {chartData.length > 0 && (
-        <HorizontalChipRail label={t`Account history series`}>
-          {SERIES.filter(
-            (s) =>
-              (!accountId && !investmentId) ||
-              ['netWorth', 'liquidity', 'investment'].includes(s.key),
-          ).map((s) => {
+    <NetWorthChartLayout
+      investmentId={investmentId}
+      series={
+        <>
+          {SERIES.map((s) => {
             const active = activeSeries.has(s.key)
             return (
               <Button
@@ -388,165 +345,186 @@ export function NetWorthChart({
               </Button>
             )
           })}
-        </HorizontalChipRail>
-      )}
-      {incompleteHistory && (
-        <Text color="secondary">{t`Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far.`}</Text>
-      )}
-      {unavailableValues && (
-        <Text color="secondary">{t`Some values are unavailable because the saved average cost or exchange rate is missing or needs review.`}</Text>
-      )}
-      {chartData.length === 0 ? (
-        <Text color="secondary">
-          <Trans>
-            No snapshots in this period. Choose a wider date range, or visit
-            Journal to review your net worth and save a snapshot.
-          </Trans>
-        </Text>
-      ) : hasActiveSeries ? (
-        <ResponsiveContainer
-          width="100%"
-          height={240}
-          initialDimension={{ width: 640, height: 240 }}
-        >
-          <AreaChart
-            data={chartData}
-            margin={{ top: 4, right: 24, left: 0, bottom: 0 }}
-          >
-            <defs>
-              {SERIES.map((s) => (
-                <linearGradient
-                  key={s.key}
-                  id={`${s.key}Gradient`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
+        </>
+      }
+      plot={
+        <>
+          <Stack className={styles.notices}>
+            {incompleteHistory && (
+              <Text color="secondary">{t`Some reviews cover only part of your accounts. Totals reflect the accounts reviewed so far.`}</Text>
+            )}
+            {unavailableValues && (
+              <Text color="secondary">{t`Some values are unavailable because the saved average cost or exchange rate is missing or needs review.`}</Text>
+            )}
+          </Stack>
+          <Stack className={styles.canvas}>
+            {chartData.length === 0 ? (
+              <Text color="secondary">
+                <Trans>
+                  No snapshots in this period. Choose a wider date range, or
+                  visit Journal to review your net worth and save a snapshot.
+                </Trans>
+              </Text>
+            ) : hasActiveSeries ? (
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+                initialDimension={{ width: 640, height: 240 }}
+              >
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 4, right: 24, left: 0, bottom: 0 }}
                 >
-                  <stop offset="5%" stopColor={s.color} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={s.color} stopOpacity={0} />
-                </linearGradient>
-              ))}
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              type="number"
-              scale="time"
-              domain={['dataMin', 'dataMax']}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tick={{ fontSize: 10 }}
-              tickFormatter={formatDate}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={4}
-              width={56}
-              domain={yDomain}
-              allowDecimals={false}
-              tick={{ fontSize: 10 }}
-              tickFormatter={(value: number) =>
-                formatCurrencyWithPrivacyMode({
-                  value: currency(value),
-                  currencyCode: displayCurrency,
-                  numberFormatOptions: {
-                    notation: 'compact',
-                    maximumFractionDigits: 1,
-                  },
-                  privacyMaskLength: 5,
-                })
-              }
-            />
-            <Tooltip
-              // The plot starts after the Y axis. On narrow screens anchor to
-              // the full chart instead, so a readable tooltip can use that space.
-              position={isMobile ? { x: 0 } : undefined}
-              wrapperStyle={{
-                maxWidth: '100%',
-                ...(isMobile ? { width: '100%' } : {}),
-              }}
-              content={({ active, payload, label }) => {
-                if (!active || !payload?.length) return null
-                return (
-                  <Card padding={3} elevation="low" className="w-80 max-w-full">
-                    <Stack direction="vertical" gap={3} className="min-w-0">
-                      <Text type="supporting">
-                        {typeof label === 'number'
-                          ? new Date(label).toLocaleDateString(household.locale)
-                          : String(label)}
-                      </Text>
-                      {payload.map((entry) => {
-                        const key = String(entry.dataKey) as SeriesKey
-                        return (
+                  <defs>
+                    {SERIES.map((s) => (
+                      <linearGradient
+                        key={s.key}
+                        id={`${s.key}Gradient`}
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={s.color}
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={s.color}
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    type="number"
+                    scale="time"
+                    domain={['dataMin', 'dataMax']}
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={formatDate}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={4}
+                    width={56}
+                    domain={yDomain}
+                    allowDecimals={false}
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(value: number) =>
+                      formatCurrencyWithPrivacyMode({
+                        value: currency(value),
+                        currencyCode: displayCurrency,
+                        numberFormatOptions: {
+                          notation: 'compact',
+                          maximumFractionDigits: 1,
+                        },
+                        privacyMaskLength: 5,
+                      })
+                    }
+                  />
+                  <Tooltip
+                    // The plot starts after the Y axis. On narrow screens anchor to
+                    // the full chart instead, so a readable tooltip can use that space.
+                    position={isMobile ? { x: 0 } : undefined}
+                    wrapperStyle={{
+                      maxWidth: '100%',
+                      ...(isMobile ? { width: '100%' } : {}),
+                    }}
+                    content={({ active, payload, label }) => {
+                      if (!active || !payload?.length) return null
+                      return (
+                        <Card
+                          padding={3}
+                          elevation="low"
+                          className="w-80 max-w-full"
+                        >
                           <Stack
-                            key={key}
-                            direction="horizontal"
-                            justify="between"
-                            align="center"
+                            direction="vertical"
                             gap={3}
+                            className="min-w-0"
                           >
-                            <Stack
-                              direction="horizontal"
-                              align="center"
-                              gap={2}
-                              className="min-w-0 flex-1"
-                            >
-                              <Stack
-                                aria-hidden="true"
-                                className={`h-2 w-2 shrink-0 rounded-full ${key === 'netWorth' ? 'bg-chart-net-worth' : ACCOUNT_TYPE_ACCENT_CLASSES[key]}`}
-                              />
-                              <Text>
-                                {chartConfig[key]?.label ?? String(entry.name)}
-                              </Text>
-                            </Stack>
-                            <Text
-                              type="label"
-                              hasTabularNumbers
-                              justify="end"
-                              className="min-w-0 flex-1"
-                              wordBreak="break-word"
-                            >
-                              {formatCurrencyWithPrivacyMode({
-                                value: currency(Number(entry.value)),
-                                currencyCode: displayCurrency,
-                              })}
+                            <Text type="supporting">
+                              {typeof label === 'number'
+                                ? new Date(label).toLocaleDateString(
+                                    household.locale,
+                                  )
+                                : String(label)}
                             </Text>
+                            {payload.map((entry) => {
+                              const key = String(entry.dataKey) as SeriesKey
+                              return (
+                                <Stack
+                                  key={key}
+                                  direction="horizontal"
+                                  justify="between"
+                                  align="center"
+                                  gap={3}
+                                >
+                                  <Stack
+                                    direction="horizontal"
+                                    align="center"
+                                    gap={2}
+                                    className="min-w-0 flex-1"
+                                  >
+                                    <Stack
+                                      aria-hidden="true"
+                                      className={`h-2 w-2 shrink-0 rounded-full ${key === 'netWorth' ? 'bg-chart-net-worth' : ACCOUNT_TYPE_ACCENT_CLASSES[key]}`}
+                                    />
+                                    <Text>
+                                      {chartConfig[key]?.label ??
+                                        String(entry.name)}
+                                    </Text>
+                                  </Stack>
+                                  <Text
+                                    type="label"
+                                    hasTabularNumbers
+                                    justify="end"
+                                    className="min-w-0 flex-1"
+                                    wordBreak="break-word"
+                                  >
+                                    {formatCurrencyWithPrivacyMode({
+                                      value: currency(Number(entry.value)),
+                                      currencyCode: displayCurrency,
+                                    })}
+                                  </Text>
+                                </Stack>
+                              )
+                            })}
                           </Stack>
-                        )
-                      })}
-                    </Stack>
-                  </Card>
-                )
-              }}
-            />
+                        </Card>
+                      )
+                    }}
+                  />
 
-            {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
-              <Area
-                key={s.key}
-                type="monotone"
-                dataKey={s.key}
-                stroke={s.color}
-                strokeWidth={2}
-                fill={`url(#${s.key}Gradient)`}
-              />
-            ))}
-          </AreaChart>
-        </ResponsiveContainer>
-      ) : (
-        <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
-          <Trans>Select at least one series to view chart</Trans>
-        </Stack>
-      )}
-      <Stack
-        direction="horizontal"
-        gap={2}
-        align="center"
-        justify="between"
-        wrap="wrap"
-      >
+                  {SERIES.filter((s) => activeSeries.has(s.key)).map((s) => (
+                    <Area
+                      key={s.key}
+                      type="monotone"
+                      dataKey={s.key}
+                      stroke={s.color}
+                      strokeWidth={2}
+                      fill={`url(#${s.key}Gradient)`}
+                    />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+                <Trans>Select at least one series to view chart</Trans>
+              </Stack>
+            )}
+          </Stack>
+        </>
+      }
+      controls={
         <Stack direction="horizontal" gap={0.5} align="center" justify="start">
           {DURATIONS.map((d) => (
             <Button
@@ -571,7 +549,9 @@ export function NetWorthChart({
             {isPending && <Spinner />}
           </Stack>
         </Stack>
-        {singleSeriesStats && (
+      }
+      stats={
+        singleSeriesStats && (
           <Stack
             direction="vertical"
             gap={4}
@@ -585,14 +565,16 @@ export function NetWorthChart({
               )
             </Text>
           </Stack>
-        )}
-      </Stack>
-      {data.household.snapshots.pageInfo.hasPreviousPage && (
-        <Button
-          label={t`Load older reviews`}
-          onClick={() => setCount((n) => n + 500)}
-        />
-      )}
-    </Stack>
+        )
+      }
+      older={
+        data.household.snapshots.pageInfo.hasPreviousPage && (
+          <Button
+            label={t`Load older reviews`}
+            onClick={() => startTransition(() => setCount((n) => n + 500))}
+          />
+        )
+      }
+    />
   )
 }
