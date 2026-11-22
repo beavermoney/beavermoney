@@ -98,12 +98,10 @@
 }
 .composer-chips {
   padding-bottom: var(--spacing-1);
-  /* Both transaction chips and investment shortcuts scroll only horizontally. */
+  /* Clip vertical overflow in the rail; vertical gestures still scroll the page. */
   overflow-x: auto;
   overflow-y: hidden;
-  touch-action: pan-x pinch-zoom;
   overscroll-behavior-inline: contain;
-  overscroll-behavior-y: none;
   scrollbar-width: none;
 }
 .composer-chips::-webkit-scrollbar {
