@@ -24,6 +24,11 @@ try {
   /* Storage is optional, including in private browsing. */
 }
 
+export function readHistoryState<T>(key: string, name: string, initial: T): T {
+  const stored = entries.get(key)?.[name]
+  return stored === undefined ? initial : (stored as T)
+}
+
 function subscribe(listener: () => void) {
   listeners.add(listener)
   return () => {

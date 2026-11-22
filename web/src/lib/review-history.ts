@@ -110,7 +110,9 @@ export function converted(
     ? new Decimal(value).mul(rate.rate)
     : null
 }
-export function holdingGain(h: ReviewHolding) {
+export function holdingGain(
+  h: Pick<ReviewHolding, 'quantity' | 'average' | 'value' | 'needsReview'>,
+) {
   if (new Decimal(h.quantity).isZero()) return { amount: '0', percent: null }
   if (h.needsReview || h.average === null)
     return { amount: null, percent: null }
@@ -157,8 +159,75 @@ export function reviewHistory(rows: readonly ReviewRow[]): HistoryPoint[] {
       ]
     })
 }
+
+// Charts need financial observations, not journal labels or icon metadata.
+const chartHoldingSchema = z.preprocess(
+  (value) => reviewIdentity(value, 'investmentId'),
+  z.object({
+    id: identity,
+    currency: z.string(),
+    quantity: amount,
+    value: amount,
+    average: amount.nullable(),
+    needsReview: z.boolean(),
+  }),
+)
+const chartAccountSchema = z.preprocess(
+  (value) => reviewIdentity(value, 'accountId'),
+  z.object({
+    id: identity,
+    type: z.string(),
+    category: z.string().nullable(),
+    ownerId: z.coerce.string(),
+    currency: z.string(),
+    cash: amount,
+    value: amount,
+    holdings: z.array(chartHoldingSchema).optional().default([]),
+  }),
+)
+const chartDocumentSchema = documentSchema.extend({
+  accounts: z.array(chartAccountSchema),
+})
+type ChartAccount = z.infer<typeof chartAccountSchema>
+type FinancialHistoryPoint = Omit<HistoryPoint, 'accounts'> & {
+  accounts: Array<Omit<Observation, 'account'> & { account: ChartAccount }>
+}
+export function chartHistory(
+  rows: readonly ReviewRow[],
+): FinancialHistoryPoint[] {
+  return [...rows]
+    .sort(
+      (a, b) =>
+        a.createTime.localeCompare(b.createTime) || Number(a.id) - Number(b.id),
+    )
+    .flatMap((row) => {
+      const parsed = chartDocumentSchema.safeParse(row.review)
+      if (!parsed.success) return []
+      const doc = parsed.data
+      const rates =
+        doc.rates ??
+        (row.snapshotRates ?? []).map((r) => ({
+          from: r.fromCurrency.code,
+          to: r.toCurrency.code,
+          rate: r.rate,
+        }))
+      return [
+        {
+          row,
+          complete: !!doc.complete,
+          accounts: doc.accounts.map((account) => ({
+            account,
+            date: row.createTime,
+            rates,
+            reviewId: row.id,
+          })),
+        },
+      ]
+    })
+}
+
 export function selectedValue(
-  point: HistoryPoint,
+  point: FinancialHistoryPoint,
   scope: string,
   currency: string,
   ownerIds: readonly string[] | null = null,
@@ -206,7 +275,7 @@ export function selectedValue(
 export type HoldingMetric =
   'value' | 'gain' | 'percent' | 'average' | 'quantity'
 export function historyMeasure(
-  point: HistoryPoint,
+  point: FinancialHistoryPoint,
   scope: string,
   metric: HoldingMetric,
   currency: string,

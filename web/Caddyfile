@@ -10,12 +10,12 @@
 :{$PORT:8080} {
 	root * /app/dist
 	encode gzip zstd
+	header -Server
 	header {
 		X-Content-Type-Options nosniff
 		Cache-Control "no-store"
 		CDN-Cache-Control "no-store"
 		Cloudflare-CDN-Cache-Control "no-store"
-		-Server
 	}
 	handle_errors {
 		header {

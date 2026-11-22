@@ -1,6 +1,5 @@
 import {
-  reviewHistory,
-  parseReview,
+  chartHistory,
   selectedValue,
   historyMeasure,
   snapshotValue,
@@ -26,7 +25,6 @@ import currency from 'currency.js'
 import { useMemo, useTransition } from 'react'
 import {
   fetchQuery,
-  graphql,
   useLazyLoadQuery,
   useSubscribeToInvalidationState,
 } from 'react-relay'
@@ -41,6 +39,12 @@ import {
 } from 'recharts'
 
 import { environment } from '@/environment'
+import {
+  NetWorthChartQuery,
+  durationToDate,
+  DURATIONS,
+  type Duration,
+} from './net-worth-chart-query'
 import type { netWorthChartQuery } from './__generated__/netWorthChartQuery.graphql'
 
 function niceStep(rawStep: number): number {
@@ -48,116 +52,6 @@ function niceStep(rawStep: number): number {
   const fraction = rawStep / Math.pow(10, exponent)
   const nice = fraction < 1.5 ? 1 : fraction < 3 ? 2 : fraction < 7 ? 5 : 10
   return nice * Math.pow(10, exponent)
-}
-
-const NetWorthChartQuery = graphql`
-  query netWorthChartQuery($count: Int!) {
-    household {
-      snapshots(last: $count) {
-        pageInfo {
-          hasPreviousPage
-        }
-        edges {
-          node {
-            id
-            review {
-              version
-              complete
-              activeAccountIds
-              accounts {
-                accountId
-                icon
-                name
-                type
-                category
-                ownerId
-                ownerName
-                currency
-                cash
-                value
-                archived
-                holdings {
-                  investmentId
-                  name
-                  symbol
-                  currency
-                  quantity
-                  price
-                  value
-                  average
-                  confirmedAt
-                  needsReview
-                  archived
-                }
-              }
-              rates {
-                from
-                to
-                rate
-              }
-            }
-            createTime
-            snapshotEntries {
-              userID
-              liquidity
-              investment
-              property
-              receivable
-              liability
-              householdCurrency {
-                code
-              }
-            }
-            snapshotRates {
-              rate
-              fromCurrency {
-                code
-              }
-              toCurrency {
-                code
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
-type Duration = '1M' | '3M' | '6M' | '1Y' | 'All'
-
-const DURATIONS: Duration[] = ['1M', '3M', '6M', '1Y', 'All']
-
-function durationToDate(d: Duration): string | null {
-  const now = new Date()
-  switch (d) {
-    case '1M':
-      return new Date(
-        now.getFullYear(),
-        now.getMonth() - 1,
-        now.getDate(),
-      ).toISOString()
-    case '3M':
-      return new Date(
-        now.getFullYear(),
-        now.getMonth() - 3,
-        now.getDate(),
-      ).toISOString()
-    case '6M':
-      return new Date(
-        now.getFullYear(),
-        now.getMonth() - 6,
-        now.getDate(),
-      ).toISOString()
-    case '1Y':
-      return new Date(
-        now.getFullYear() - 1,
-        now.getMonth(),
-        now.getDate(),
-      ).toISOString()
-    case 'All':
-      return null
-  }
 }
 
 type SeriesKey =
@@ -245,17 +139,20 @@ export function NetWorthChart({
 
   const createTimeGTE = durationToDate(duration)
 
-  const data = useLazyLoadQuery<netWorthChartQuery>(NetWorthChartQuery, {
+  const variables = {
     count,
-  })
+    where: createTimeGTE ? { createTimeGTE } : null,
+    includeHoldings: !!investmentId,
+  }
+  const data = useLazyLoadQuery<netWorthChartQuery>(
+    NetWorthChartQuery,
+    variables,
+  )
 
   useSubscribeToInvalidationState([household.id], () => {
-    fetchQuery<netWorthChartQuery>(
-      environment,
-      NetWorthChartQuery,
-      { count },
-      { fetchPolicy: 'network-only' },
-    ).subscribe({})
+    fetchQuery<netWorthChartQuery>(environment, NetWorthChartQuery, variables, {
+      fetchPolicy: 'network-only',
+    }).subscribe({})
   })
 
   const displayCurrency = displayCurrencyCode
@@ -264,15 +161,14 @@ export function NetWorthChart({
     const rows = (data.household.snapshots.edges ?? []).flatMap((e) =>
       e?.node ? [e.node] : [],
     )
-    const detailed = reviewHistory(rows)
+    const detailed = chartHistory(rows)
       .filter((p) => {
-        const doc = parseReview(p.row.review)
+        const accounts = p.accounts.map((observation) => observation.account)
         if (investmentId)
-          return doc?.accounts.some((a) =>
+          return accounts.some((a) =>
             a.holdings.some((h) => String(h.id) === investmentId),
           )
-        if (accountId)
-          return doc?.accounts.some((a) => String(a.id) === accountId)
+        if (accountId) return accounts.some((a) => String(a.id) === accountId)
         return true
       })
       .map((p) => {
@@ -418,7 +314,7 @@ export function NetWorthChart({
   const incompleteHistory =
     !accountId &&
     !investmentId &&
-    reviewHistory(
+    chartHistory(
       (data.household.snapshots.edges ?? []).flatMap((e) =>
         e?.node ? [e.node] : [],
       ),

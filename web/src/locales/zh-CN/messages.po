@@ -1842,7 +1842,7 @@ msgstr "新建订阅"
 msgid "New to Beaver Money?"
 msgstr "初次使用 Beaver Money？"
 
-#: src/routes/_user/household/$householdId/route.tsx
+#: src/components/transaction-composer/transaction-entry.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "New transaction"
 msgstr "新建交易"

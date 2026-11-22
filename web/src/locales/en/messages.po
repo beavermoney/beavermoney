@@ -1842,7 +1842,7 @@ msgstr "New Subscription"
 msgid "New to Beaver Money?"
 msgstr "New to Beaver Money?"
 
-#: src/routes/_user/household/$householdId/route.tsx
+#: src/components/transaction-composer/transaction-entry.tsx
 #: src/routes/_user/household/$householdId/transactions/new.tsx
 msgid "New transaction"
 msgstr "New transaction"

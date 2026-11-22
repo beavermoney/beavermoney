@@ -1,21 +1,16 @@
+import { TransactionEntry } from '@/components/transaction-composer/transaction-entry'
 import safeAreaStyles from '@/components/layouts/safe-area.module.css'
 import { AverageCostPrompt } from '@/components/average-cost-prompt'
-import { TransactionActionsTarget } from '@/components/transaction-actions-context'
-import { LayoutFooter } from '@astryxdesign/core/Layout'
 import { useLingui } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { handleHouseholdError } from '@/lib/auth'
-import { Stack } from '@astryxdesign/core/Stack'
 import {
   RouteContentBoundary,
   NavigationProgress,
 } from '@/components/route-content-boundary'
-import { LayoutContent } from '@astryxdesign/core/Layout'
 import { MobileNavToggle } from '@astryxdesign/core/MobileNav'
 import { notifyError } from '@/lib/notifications'
 import { Button } from '@astryxdesign/core/Button'
-import { BottomSheet } from '@astryxdesign/core/BottomSheet'
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog'
 import { DropdownMenu } from '@astryxdesign/core/DropdownMenu'
 import { Icon as AstryxIcon } from '@astryxdesign/core/Icon'
 import { HStack, Layout, LayoutHeader } from '@astryxdesign/core/Layout'
@@ -32,7 +27,7 @@ import {
   useRouterState,
 } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import {
   loadQuery,
   useMutation,
@@ -64,21 +59,18 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { usePrivacyMode } from '@/hooks/use-privacy-mode'
 import { UserProvider } from '@/hooks/use-user'
 import { UserHouseholdProvider } from '@/hooks/use-user-household'
-import { readViewUserIds } from '@/hooks/view-scope-store'
 import {
   clearHouseholdScopedStorage,
   isMembershipRevokedError,
 } from '@/lib/auth'
 import Hotkeys from './-components/hotkeys'
-import type { logTransactionFragment$key } from './transactions/-components/__generated__/logTransactionFragment.graphql'
-import { LogTransaction } from './transactions/-components/log-transaction'
 
 import { identity } from 'lodash-es'
 import { ViewScopeSwitcher } from './-components/view-scope-switcher'
 import { HouseholdActionsMenu } from './-components/household-actions-menu'
 
 const routeHouseholdIdQuery = graphql`
-  query routeHouseholdIdQuery($viewUserIds: [ID!]) {
+  query routeHouseholdIdQuery {
     ...appSidebarFragment
     user {
       ...useUserFragment
@@ -90,7 +82,6 @@ const routeHouseholdIdQuery = graphql`
       ...useHouseholdFragment
       ...useHouseholdMembersFragment
       ...useDisplayCurrencyFragment
-      ...logTransactionFragment @arguments(viewUserIds: $viewUserIds)
       # eslint-disable-next-line relay/unused-fields
       householdCurrencies {
         id
@@ -130,9 +121,7 @@ export const Route = createFileRoute('/_user/household/$householdId')({
   loader: async ({ params }) => {
     localStorage.setItem(LOCAL_STORAGE_HOUSEHOLD_ID_KEY, params.householdId)
 
-    const variables = {
-      viewUserIds: readViewUserIds(params.householdId),
-    }
+    const variables = {}
 
     try {
       await fetchQuery<routeHouseholdIdQuery>(
@@ -227,7 +216,7 @@ function RouteComponent() {
     fetchQuery(
       environment,
       routeHouseholdIdQuery,
-      { viewUserIds: readViewUserIds(params.householdId) },
+      {},
       { fetchPolicy: 'network-only' },
     ).subscribe({})
   })
@@ -325,7 +314,7 @@ function RouteComponent() {
                 />
 
                 {!pathname.endsWith('/transactions/new') && (
-                  <FloatingLogTransactionWindow fragmentRef={data.household} />
+                  <TransactionEntry />
                 )}
               </AppShell>
             </DisplayCurrencyProvider>
@@ -333,87 +322,6 @@ function RouteComponent() {
         </HouseholdMembersProvider>
       </HouseholdProvider>
     </UserProvider>
-  )
-}
-
-type FloatingLogTransactionWindowProps = {
-  fragmentRef: logTransactionFragment$key
-}
-
-function FloatingLogTransactionWindow({
-  fragmentRef,
-}: FloatingLogTransactionWindowProps) {
-  const { t } = useLingui()
-  const { type: logTransactionType, close: closeLogTransaction } =
-    useLogTransaction()
-
-  const [actionsTarget, setActionsTarget] = useState<HTMLElement | null>(null)
-  const isMobile = useIsMobile()
-
-  if (isMobile) {
-    return (
-      <BottomSheet
-        isOpen={logTransactionType !== null}
-        onOpenChange={(open) => {
-          if (!open) closeLogTransaction()
-        }}
-        label={t`New transaction`}
-        height="tall"
-        padding={4}
-      >
-        <Stack gap={4}>
-          <DialogHeader
-            title={t`New transaction`}
-            onOpenChange={(open) => {
-              if (!open) closeLogTransaction()
-            }}
-          />
-          {logTransactionType && <LogTransaction fragmentRef={fragmentRef} />}
-        </Stack>
-      </BottomSheet>
-    )
-  }
-
-  return (
-    <Dialog
-      isOpen={logTransactionType !== null}
-      onOpenChange={(open) => {
-        if (!open) closeLogTransaction()
-      }}
-      purpose="info"
-      width={640}
-      maxHeight="calc(100dvh - var(--spacing-4) - var(--spacing-4))"
-      padding={0}
-    >
-      <TransactionActionsTarget value={actionsTarget}>
-        <Stack height="min(620px, calc(100dvh - var(--spacing-8)))">
-          <Layout
-            padding={4}
-            footer={
-              <LayoutFooter hasDivider padding={4}>
-                <Stack ref={setActionsTarget} />
-              </LayoutFooter>
-            }
-            header={
-              <DialogHeader
-                title={t`New transaction`}
-                onOpenChange={(open) => {
-                  if (!open) closeLogTransaction()
-                }}
-              />
-            }
-          >
-            <LayoutContent>
-              <Stack direction="vertical" paddingBlockStart={4}>
-                {logTransactionType && (
-                  <LogTransaction fragmentRef={fragmentRef} />
-                )}
-              </Stack>
-            </LayoutContent>
-          </Layout>
-        </Stack>
-      </TransactionActionsTarget>
-    </Dialog>
   )
 }
 

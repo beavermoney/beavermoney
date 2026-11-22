@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { expect, it, vi } from 'vitest'
 import { CategoryGlyph } from './category-glyph'
 
@@ -19,7 +19,9 @@ it('immediately renders a cached icon on remount', async () => {
   await act(async () => {
     await Promise.resolve()
   })
-  expect(first.container.querySelector('svg')).not.toBeNull()
+  await waitFor(() =>
+    expect(first.container.querySelector('svg')).not.toBeNull(),
+  )
   first.unmount()
   const second = render(
     <CategoryGlyph name="wallet" fallback={<span>Loading icon</span>} />,
@@ -28,4 +30,18 @@ it('immediately renders a cached icon on remount', async () => {
   expect(screen.queryByText('Loading icon')).toBeNull()
   expect(loadIcon).toHaveBeenCalledTimes(1)
   second.unmount()
+})
+
+it('keeps the fallback for an unknown icon name', async () => {
+  const view = render(
+    <CategoryGlyph
+      name={'not-an-icon' as 'wallet'}
+      fallback={<span>Default icon</span>}
+    />,
+  )
+  await act(async () => {
+    await Promise.resolve()
+  })
+  expect(screen.getByText('Default icon')).toBeTruthy()
+  view.unmount()
 })

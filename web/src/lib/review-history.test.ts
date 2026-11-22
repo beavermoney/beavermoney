@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
   parseReview,
+  chartHistory,
+  historyMeasure,
   snapshotValue,
   snapshotDelta,
   reviewHistory,
@@ -250,4 +252,60 @@ it('keeps liability deltas correct when a payment turns debt into a credit balan
     '1.3',
   )
   expect(snapshotDelta('-50', credit, 'CAD', 'liability')?.toFixed()).toBe('70')
+})
+
+describe('compact chart observations', () => {
+  const holding = {
+    investmentId: '9',
+    currency: 'USD',
+    quantity: '2',
+    value: '30',
+    average: '10',
+    needsReview: false,
+  }
+  const account = {
+    accountId: '7',
+    type: 'investment',
+    category: 'tfsa',
+    ownerId: '1',
+    currency: 'USD',
+    cash: '5',
+    value: '35',
+  }
+  const row = (
+    rates: { from: string; to: string; rate: string }[],
+    holdings?: (typeof holding)[],
+  ) => ({
+    id: '1',
+    createTime: '2026-11-01',
+    review: {
+      version: 2,
+      complete: true,
+      rates,
+      accounts: [{ ...account, ...(holdings ? { holdings } : {}) }],
+    },
+  })
+  it('uses capture FX and owner filters without loading holdings or labels', () => {
+    const input = row([{ from: 'USD', to: 'CAD', rate: '1.4' }])
+    const point = chartHistory([input])[0]
+    expect(selectedValue(point, 'all', 'CAD')?.toString()).toBe('49')
+    expect(selectedValue(point, 'cash:7', 'CAD')?.toString()).toBe('7')
+    expect(selectedValue(point, 'all', 'CAD', ['2'])?.toString()).toBe('0')
+    expect(selectedValue(point, 'account:8', 'CAD')).toBeNull()
+    expect(parseReview(input.review)).toBeNull() // Full journals still require labels.
+    expect(selectedValue(chartHistory([row([])])[0], 'all', 'CAD')).toBeNull()
+  })
+  it('retains holding values and hides unconfirmed gains', () => {
+    const rates = [{ from: 'USD', to: 'CAD', rate: '1.4' }]
+    const point = chartHistory([row(rates, [holding])])[0]
+    expect(selectedValue(point, 'holding:9', 'CAD')?.toString()).toBe('42')
+    expect(historyMeasure(point, 'holding:9', 'gain', 'CAD')?.toString()).toBe(
+      '14',
+    )
+    expect(historyMeasure(point, 'holding:9', 'gain', 'CAD', ['2'])).toBeNull()
+    const unconfirmed = chartHistory([
+      row(rates, [{ ...holding, needsReview: true }]),
+    ])[0]
+    expect(historyMeasure(unconfirmed, 'holding:9', 'gain', 'CAD')).toBeNull()
+  })
 })

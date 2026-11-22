@@ -1,3 +1,10 @@
+import { readHistoryState } from '@/hooks/use-history-state'
+import { getHistoryViewKey } from '@/lib/history-view-key'
+import {
+  NetWorthChartQuery,
+  durationToDate,
+  type Duration,
+} from './-components/net-worth-chart-query'
 import groupStyles from '@/components/layouts/grouped-list.module.css'
 import { HouseholdContentLayout } from '@/components/layouts/household-content-layout'
 import { PendingComponent } from '@/components/pending-component'
@@ -27,7 +34,25 @@ export const Route = createFileRoute('/_user/household/$householdId/accounts/')(
   {
     component: RouteComponent,
     pendingComponent: PendingComponent,
-    loader: ({ params }) => {
+    loader: ({ params, location }) => {
+      const viewKey = getHistoryViewKey(location)
+      const duration = readHistoryState<Duration>(
+        viewKey,
+        'net-worth-chart:all:duration',
+        '1M',
+      )
+      const createTimeGTE = durationToDate(duration)
+      // Begin history alongside accounts. The chart owns its loading/error UI.
+      fetchQuery(
+        environment,
+        NetWorthChartQuery,
+        {
+          count: readHistoryState(viewKey, 'net-worth-chart:all:count', 500),
+          where: createTimeGTE ? { createTimeGTE } : null,
+          includeHoldings: false,
+        },
+        { fetchPolicy: 'store-or-network' },
+      ).subscribe({ error: () => {} })
       return loadQuery<accountsQuery>(
         environment,
         query,

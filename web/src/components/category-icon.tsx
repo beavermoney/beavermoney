@@ -7,7 +7,7 @@ import {
   TrendingUpIcon,
   WrenchIcon,
 } from 'lucide-react'
-import { dynamicIconImports, type IconName } from 'lucide-react/dynamic'
+import { type IconName } from 'lucide-react/dynamic'
 
 export function CategoryIcon({
   type,
@@ -34,7 +34,7 @@ export function CategoryIcon({
 
   return (
     <span aria-hidden="true">
-      {icon && Object.hasOwn(dynamicIconImports, icon) ? (
+      {icon ? (
         <CategoryGlyph
           name={icon as IconName}
           fallback={fallback}

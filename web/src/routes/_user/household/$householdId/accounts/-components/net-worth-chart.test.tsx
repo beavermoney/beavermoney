@@ -17,9 +17,15 @@ import {
   Outlet,
   RouterProvider,
 } from '@tanstack/react-router'
+import { durationToDate } from './net-worth-chart-query'
 import { NetWorthChart } from './net-worth-chart'
 
-const state = vi.hoisted(() => ({ privacy: false, requestedCount: 0 }))
+const state = vi.hoisted(() => ({
+  privacy: false,
+  requestedCount: 0,
+  where: null as null | { createTimeGTE: string },
+  includeHoldings: true,
+}))
 vi.mock('@/hooks/use-mobile', () => ({ useIsMobile: () => false }))
 vi.mock('@/environment', () => ({ environment: {} }))
 vi.mock('@/hooks/use-household', () => ({
@@ -42,8 +48,17 @@ vi.mock('@/hooks/use-currency', () => ({
 vi.mock('react-relay', () => ({
   graphql: () => ({}),
   useSubscribeToInvalidationState: () => {},
-  useLazyLoadQuery: (_query: unknown, variables: { count: number }) => {
+  useLazyLoadQuery: (
+    _query: unknown,
+    variables: {
+      count: number
+      where: null | { createTimeGTE: string }
+      includeHoldings: boolean
+    },
+  ) => {
     state.requestedCount = variables.count
+    state.where = variables.where
+    state.includeHoldings = variables.includeHoldings
     return {
       household: {
         snapshots: {
@@ -128,6 +143,8 @@ function mountChart() {
 it('offers property history and restores series, duration, and loaded pages after Back', async () => {
   const { router, history } = mountChart()
   fireEvent.click(await screen.findByRole('button', { name: 'Property' }))
+  expect(state.where).toEqual({ createTimeGTE: durationToDate('1M') })
+  expect(state.includeHoldings).toBe(false)
   fireEvent.click(screen.getByRole('button', { name: 'Net Worth' }))
   fireEvent.click(screen.getByRole('button', { name: 'All' }))
   fireEvent.click(screen.getByRole('button', { name: 'Load older reviews' }))
@@ -141,6 +158,7 @@ it('offers property history and restores series, duration, and loaded pages afte
   })
   await screen.findByRole('button', { name: 'Property' })
   expect(state.requestedCount).toBe(1000)
+  expect(state.where).toBeNull()
   expect(
     screen.queryByRole('button', { name: 'Load older reviews' }),
   ).toBeNull()
