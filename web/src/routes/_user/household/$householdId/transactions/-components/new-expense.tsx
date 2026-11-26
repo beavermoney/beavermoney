@@ -215,7 +215,7 @@ export function NewExpense({ fragmentRef }: NewExpenseProps) {
           if (submissionIntent.current === 'again') {
             form.reset(
               {
-                merchant: null,
+                merchant: value.merchant,
                 description: '',
                 pending: false,
                 amount: undefined as unknown as number,

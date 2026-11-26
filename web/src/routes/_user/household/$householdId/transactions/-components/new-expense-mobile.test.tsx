@@ -777,23 +777,40 @@ it.each([
   },
 )
 
-it('selects an existing merchant and clears it after Save again', async () => {
-  await enter()
-  fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
-  fireEvent.click(await screen.findByRole('option', { name: /Corner Cafe/ }))
-  expect(
-    screen.getByRole('button', { name: 'Merchant: Corner Cafe' }),
-  ).toBeTruthy()
-  fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
-  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
-  expect(mocks.commit.mock.calls[0][1].variables.input).toMatchObject({
-    merchantID: 'cafe',
-    merchantName: undefined,
-  })
-  await screen.findByRole('button', { name: 'Choose merchant' })
-})
+it.each([true, false])(
+  'Save again keeps the merchant for the next expense (mobile: %s)',
+  async (mobile) => {
+    const view = await enter()
+    fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
+    fireEvent.click(await screen.findByRole('option', { name: /Corner Cafe/ }))
+    mocks.mobile = mobile
+    view.rerender(<NewExpense fragmentRef={fixture as never} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
+    await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
+    if (mobile) {
+      await screen.findByRole('button', { name: 'Edit Amount: $0' })
+      expect(
+        screen.getByRole('button', { name: 'Merchant: Corner Cafe' }),
+      ).toBeTruthy()
+      fireEvent.click(screen.getByRole('button', { name: '4' }))
+    } else {
+      const amount = screen.getByRole('textbox', { name: /^Amount/ })
+      await waitFor(() => expect((amount as HTMLInputElement).value).toBe(''))
+      expect(screen.getAllByText('Corner Cafe').length).toBeGreaterThan(0)
+      fireEvent.change(amount, { target: { value: '4' } })
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(2))
+    for (const call of mocks.commit.mock.calls) {
+      expect(call[1].variables.input).toMatchObject({
+        merchantID: 'cafe',
+        merchantName: undefined,
+      })
+    }
+  },
+)
 
-it('stages a new merchant until expense save and sends only the new name', async () => {
+it('preserves a newly entered merchant after Save again', async () => {
   await enter()
   fireEvent.click(screen.getByRole('button', { name: 'Choose merchant' }))
   fireEvent.change(await screen.findByRole('combobox', { name: /Merchant/ }), {
@@ -803,12 +820,22 @@ it('stages a new merchant until expense save and sends only the new name', async
     await screen.findByRole('option', { name: /Add “New Bakery”/ }),
   )
   expect(mocks.commit).not.toHaveBeenCalled()
-  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save again' }))
   await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(1))
   expect(mocks.commit.mock.calls[0][1].variables.input).toMatchObject({
     merchantID: undefined,
     merchantName: 'New Bakery',
   })
+  await screen.findByRole('button', { name: 'Edit Amount: $0' })
+  expect(
+    screen.getByRole('button', { name: 'Merchant: New Bakery' }),
+  ).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: '4' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+  await waitFor(() => expect(mocks.commit).toHaveBeenCalledTimes(2))
+  expect(mocks.commit.mock.calls[1][1].variables.input.merchantName).toBe(
+    'New Bakery',
+  )
 })
 
 it('reset discards a staged merchant without creating it', async () => {
