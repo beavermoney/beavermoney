@@ -3,7 +3,10 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { AverageCostEditor } from './average-cost-editor'
 
-const state = vi.hoisted(() => ({ changed: null as string | null }))
+const state = vi.hoisted(() => ({
+  changed: null as string | null,
+  amount: '10',
+}))
 vi.mock('react-relay', () => ({
   graphql: () => ({}),
   useLazyLoadQuery: (_query: unknown, variables: { id: string }) => ({
@@ -11,7 +14,7 @@ vi.mock('react-relay', () => ({
       __typename: 'Investment',
       id: variables.id,
       name: variables.id,
-      amount: '10',
+      amount: state.amount,
       holdingsChangedAt: state.changed,
       confirmedAverageCost: '50',
       averageCostConfirmedAt: null,
@@ -35,6 +38,7 @@ vi.mock('@/hooks/use-privacy-mode', () => ({
 afterEach(() => {
   cleanup()
   state.changed = null
+  state.amount = '10'
 })
 
 it('does not carry an entered average into a different holding with the same quantity', () => {
@@ -73,4 +77,12 @@ it('requires a fresh review when a trade changes even if the quantity stays the 
       }) as HTMLButtonElement
     ).disabled,
   ).toBe(false)
+})
+
+it('shows a closed source holding without reserving an empty editor after a move', () => {
+  state.amount = '0'
+  const { container } = render(<AverageCostEditor investmentId="XEQT" />)
+  expect(screen.getByText(/Position closed/)).toBeTruthy()
+  expect(screen.queryByRole('textbox')).toBeNull()
+  expect(container.querySelector('[data-average-editor]')).toBeNull()
 })

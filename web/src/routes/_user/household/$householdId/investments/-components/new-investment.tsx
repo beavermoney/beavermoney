@@ -375,41 +375,37 @@ export function NewInvestment({
                           )
                           if (!account) return null
                           return (
-                            <span>
-                              <Stack
-                                direction="horizontal"
-                                gap={3}
-                                align="center"
-                                wrap="wrap"
-                              >
-                                <Stack direction="vertical" gap={4}>
-                                  <AccountAvatar
-                                    account={{
-                                      name: account.name,
-                                      icon: account.icon,
-                                      user: account.user,
-                                    }}
-                                  />
-                                </Stack>
-                                <Stack direction="vertical" gap={4}>
-                                  <Stack direction="vertical" gap={4}>
-                                    {account.name}
-                                  </Stack>
-                                  <Stack direction="vertical" gap={4}>
-                                    <Text hasTabularNumbers>
-                                      {formatCurrencyWithPrivacyMode({
-                                        value: account.value,
-                                        currencyCode:
-                                          account.householdCurrency.code,
-                                        liability: account.type === 'liability',
-                                      })}
-                                    </Text>
-                                    <span aria-hidden="true"> · </span>
-                                    {account.user.name}
-                                  </Stack>
-                                </Stack>
+                            <Stack
+                              direction="horizontal"
+                              gap={3}
+                              vAlign="center"
+                              className="min-w-0"
+                            >
+                              <AccountAvatar
+                                account={{
+                                  name: account.name,
+                                  icon: account.icon,
+                                  user: account.user,
+                                }}
+                              />
+                              <Stack gap={0.5} className="min-w-0">
+                                <Text maxLines={1}>{account.name}</Text>
+                                <Text
+                                  type="supporting"
+                                  color="secondary"
+                                  hasTabularNumbers
+                                >
+                                  {formatCurrencyWithPrivacyMode({
+                                    value: account.value,
+                                    currencyCode:
+                                      account.householdCurrency.code,
+                                    liability: account.type === 'liability',
+                                  })}
+                                  {' · '}
+                                  {account.user.name}
+                                </Text>
                               </Stack>
-                            </span>
+                            </Stack>
                           )
                         }}
                         emptyText={

@@ -3,12 +3,10 @@
   max-width: 32rem;
   min-width: 0;
 }
-.summary,
-.controls {
-  height: calc(var(--spacing-8) * 3 + var(--spacing-4));
-  min-height: 0;
+/* Reserve the shared loading/editing regions without clipping longer content. */
+.summary {
+  min-height: calc(var(--spacing-8) * 3 + var(--spacing-4));
 }
-.feedback {
-  height: calc(var(--spacing-8) * 2);
-  min-height: 0;
+.controls {
+  min-height: calc(var(--spacing-8) * 3);
 }

@@ -115,21 +115,12 @@ function AverageCostEditorContent({
       setRefresh((v) => v + 1)
     }
   }
-  if (!inv)
-    return (
-      <AverageCostEditorLayout
-        summary={<Text>{t`Holding unavailable`}</Text>}
-      />
-    )
+  if (!inv) return <Text>{t`Holding unavailable`}</Text>
   if (Number(inv.amount) === 0)
     return (
-      <AverageCostEditorLayout
-        summary={
-          <Text>
-            {inv.name} · {t`Position closed. No average cost to review.`}
-          </Text>
-        }
-      />
+      <Text>
+        {inv.name} · {t`Position closed. No average cost to review.`}
+      </Text>
     )
   return (
     <AverageCostEditorLayout
@@ -206,26 +197,28 @@ function AverageCostEditorContent({
         )
       }
       feedback={
-        <>
-          {changed && (
-            <>
-              <Text role="status">{t`This holding changed while you were reviewing it.`}</Text>
-              <Button
-                label={t`Review latest holding`}
-                onClick={() => {
-                  setExpected({
-                    amount: inv.amount,
-                    changed: inv.holdingsChangedAt ?? null,
-                  })
-                  setValue('')
-                  setMessage('')
-                  setSaved(false)
-                }}
-              />
-            </>
-          )}
-          {message && <Text role="alert">{message}</Text>}
-        </>
+        changed || message ? (
+          <>
+            {changed && (
+              <>
+                <Text role="status">{t`This holding changed while you were reviewing it.`}</Text>
+                <Button
+                  label={t`Review latest holding`}
+                  onClick={() => {
+                    setExpected({
+                      amount: inv.amount,
+                      changed: inv.holdingsChangedAt ?? null,
+                    })
+                    setValue('')
+                    setMessage('')
+                    setSaved(false)
+                  }}
+                />
+              </>
+            )}
+            {message && <Text role="alert">{message}</Text>}
+          </>
+        ) : null
       }
     />
   )

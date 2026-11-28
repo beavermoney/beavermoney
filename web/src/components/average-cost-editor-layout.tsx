@@ -24,15 +24,13 @@ export function AverageCostEditorLayout({
       aria-busy={loading}
       data-average-editor
     >
-      <Stack gap={1} className={styles.summary} isScrollable>
+      <Stack gap={1} className={styles.summary}>
         {summary}
       </Stack>
       <Stack gap={3} className={styles.controls}>
         {controls}
       </Stack>
-      <Stack gap={2} className={styles.feedback} isScrollable>
-        {feedback}
-      </Stack>
+      {feedback && <Stack gap={2}>{feedback}</Stack>}
     </Stack>
   )
 }
